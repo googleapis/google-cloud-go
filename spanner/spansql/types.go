@@ -276,8 +276,10 @@ type Select struct {
 
 type SelectFrom struct {
 	// This only supports a FROM clause directly from a table.
-	Table       string
-	TableSample *TableSample
+	Table string
+	Alias string // empty if not aliased
+
+	TableSample *TableSample // TODO: This isn't part of from_item; move elsewhere.
 }
 
 type Order struct {
@@ -362,8 +364,8 @@ const (
 )
 
 type ComparisonOp struct {
-	LHS, RHS Expr
 	Op       ComparisonOperator
+	LHS, RHS Expr
 
 	// RHS2 is the third operand for BETWEEN.
 	// "<LHS> BETWEEN <RHS> AND <RHS2>".
