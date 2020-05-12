@@ -76,7 +76,7 @@ func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []optio
 	return append(grpcHeadersEnforcer.CallOptions(), opts...)
 }
 
-func integrationTestClient(ctx context.Context, t *testing.T) *Client {
+func integrationTestClient(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -88,7 +88,7 @@ func integrationTestClient(ctx context.Context, t *testing.T) *Client {
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	opts := withGRPCHeadersAssertion(t, option.WithTokenSource(ts))
+	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
 	client, err := NewClient(ctx, projID, opts...)
 	if err != nil {
 		t.Fatalf("Creating client error: %v", err)
@@ -1523,11 +1523,9 @@ func TestIntegration_BadEndpoint(t *testing.T) {
 	opts := withGRPCHeadersAssertion(t,
 		option.WithEndpoint("example.googleapis.com:443"),
 	)
-	client, err := NewClient(ctx, testutil.ProjID(), opts...)
-	if err != nil {
-		t.Fatalf("Creating client error: %v", err)
-	}
-	if _, err = client.CreateTopic(ctx, topicIDs.New()); err == nil {
+	client := integrationTestClient(ctx, t, opts...)
+	defer client.Close()
+	if _, err := client.CreateTopic(ctx, topicIDs.New()); err == nil {
 		t.Fatalf("CreateTopic should fail with fake endpoint, got nil err")
 	}
 }
