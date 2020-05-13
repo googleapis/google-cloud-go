@@ -41,6 +41,7 @@ type BigQueryWriteCallOptions struct {
 	GetWriteStream          []gax.CallOption
 	FinalizeWriteStream     []gax.CallOption
 	BatchCommitWriteStreams []gax.CallOption
+	FlushRows               []gax.CallOption
 }
 
 func defaultBigQueryWriteClientOptions() []option.ClientOption {
@@ -114,6 +115,7 @@ func defaultBigQueryWriteCallOptions() *BigQueryWriteCallOptions {
 				})
 			}),
 		},
+		FlushRows: []gax.CallOption{},
 	}
 }
 
@@ -286,6 +288,27 @@ func (c *BigQueryWriteClient) BatchCommitWriteStreams(ctx context.Context, req *
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.bigQueryWriteClient.BatchCommitWriteStreams(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// FlushRows flushes rows to a BUFFERED stream.
+// If users are appending rows to BUFFERED stream, flush operation is
+// required in order for the rows to become available for reading. A
+// Flush operation flushes up to any previously flushed offset in a BUFFERED
+// stream, to the offset specified in the request.
+func (c *BigQueryWriteClient) FlushRows(ctx context.Context, req *storagepb.FlushRowsRequest, opts ...gax.CallOption) (*storagepb.FlushRowsResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "write_stream", url.QueryEscape(req.GetWriteStream())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.FlushRows[0:len(c.CallOptions.FlushRows):len(c.CallOptions.FlushRows)], opts...)
+	var resp *storagepb.FlushRowsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.bigQueryWriteClient.FlushRows(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

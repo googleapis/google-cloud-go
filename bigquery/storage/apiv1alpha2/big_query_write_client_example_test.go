@@ -149,3 +149,23 @@ func ExampleBigQueryWriteClient_BatchCommitWriteStreams() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleBigQueryWriteClient_FlushRows() {
+	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2"
+
+	ctx := context.Background()
+	c, err := storage.NewBigQueryWriteClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &storagepb.FlushRowsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.FlushRows(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
