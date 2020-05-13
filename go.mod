@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/bigquery v1.7.0
 	cloud.google.com/go/datastore v1.1.0
 	cloud.google.com/go/pubsub v1.3.1
-	cloud.google.com/go/storage v1.7.0
+	cloud.google.com/go/storage v1.8.0
 	github.com/golang/mock v1.4.3
 	github.com/golang/protobuf v1.4.1
 	github.com/google/go-cmp v0.4.0
@@ -18,11 +18,11 @@ require (
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
 	golang.org/x/net v0.0.0-20200506145744-7e3656a0809f
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200511232937-7e40ca221e25 // indirect
+	golang.org/x/sys v0.0.0-20200513112337-417ce2331b5c // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200512131952-2bc93b1c0c88
+	golang.org/x/tools v0.0.0-20200513122804-866d71a3170a
 	google.golang.org/api v0.24.0
-	google.golang.org/genproto v0.0.0-20200511104702-f5ebc3bea380
+	google.golang.org/genproto v0.0.0-20200513103714-09dca8ec2884
 	google.golang.org/grpc v1.29.1
 	honnef.co/go/tools v0.0.1-2020.1.3
 )
