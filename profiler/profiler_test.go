@@ -784,20 +784,19 @@ func (fs *fakeProfilerServer) CreateOfflineProfile(_ context.Context, _ *pb.Crea
 }
 
 func profileeLoop(quit chan bool) {
+	data := make([]byte, 10*1024*1024)
+	rand.Read(data)
 	for {
 		select {
 		case <-quit:
 			return
 		default:
-			profileeWork()
+			profileeWork(data)
 		}
 	}
 }
 
-func profileeWork() {
-	data := make([]byte, 10*1024*1024)
-	rand.Read(data)
-
+func profileeWork(data []byte) {
 	var b bytes.Buffer
 	gz := gzip.NewWriter(&b)
 	if _, err := gz.Write(data); err != nil {
@@ -955,6 +954,10 @@ func TestAgentWithServer(t *testing.T) {
 		}
 		return testConnPool{conn}, nil
 	}
+
+	quitProfilee := make(chan bool)
+	go profileeLoop(quitProfilee)
+
 	if err := Start(Config{
 		Service:     testService,
 		ProjectID:   testProjectID,
@@ -965,9 +968,6 @@ func TestAgentWithServer(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}
-
-	quitProfilee := make(chan bool)
-	go profileeLoop(quitProfilee)
 
 	select {
 	case <-profilingDone:
