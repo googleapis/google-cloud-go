@@ -25,7 +25,9 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
+	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
@@ -46,6 +48,8 @@ type CallOptions struct {
 	ListFeeds             []gax.CallOption
 	UpdateFeed            []gax.CallOption
 	DeleteFeed            []gax.CallOption
+	SearchAllResources    []gax.CallOption
+	SearchAllIamPolicies  []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -78,6 +82,30 @@ func defaultCallOptions() *CallOptions {
 		ListFeeds:  []gax.CallOption{},
 		UpdateFeed: []gax.CallOption{},
 		DeleteFeed: []gax.CallOption{},
+		SearchAllResources: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SearchAllIamPolicies: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -166,8 +194,9 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location. The output format is newline-delimited JSON.
-// This API implements the google.longrunning.Operation API allowing you
-// to keep track of the export.
+// This API implements the
+// google.longrunning.Operation API allowing
+// you to keep track of the export.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -291,6 +320,94 @@ func (c *Client) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequest,
 	return err
 }
 
+// SearchAllResources searches all the resources within the given accessible scope (e.g., a
+// project, a folder or an organization). Callers should have
+// cloud.assets.SearchAllResources permission upon the requested scope,
+// otherwise the request will be rejected.
+func (c *Client) SearchAllResources(ctx context.Context, req *assetpb.SearchAllResourcesRequest, opts ...gax.CallOption) *ResourceSearchResultIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.SearchAllResources[0:len(c.CallOptions.SearchAllResources):len(c.CallOptions.SearchAllResources)], opts...)
+	it := &ResourceSearchResultIterator{}
+	req = proto.Clone(req).(*assetpb.SearchAllResourcesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.ResourceSearchResult, string, error) {
+		var resp *assetpb.SearchAllResourcesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.SearchAllResources(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.Results, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
+// SearchAllIamPolicies searches all the IAM policies within the given accessible scope (e.g., a
+// project, a folder or an organization). Callers should have
+// cloud.assets.SearchAllIamPolicies permission upon the requested scope,
+// otherwise the request will be rejected.
+func (c *Client) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAllIamPoliciesRequest, opts ...gax.CallOption) *IamPolicySearchResultIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.SearchAllIamPolicies[0:len(c.CallOptions.SearchAllIamPolicies):len(c.CallOptions.SearchAllIamPolicies)], opts...)
+	it := &IamPolicySearchResultIterator{}
+	req = proto.Clone(req).(*assetpb.SearchAllIamPoliciesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.IamPolicySearchResult, string, error) {
+		var resp *assetpb.SearchAllIamPoliciesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.SearchAllIamPolicies(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.Results, resp.NextPageToken, nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.PageSize)
+	it.pageInfo.Token = req.PageToken
+	return it
+}
+
 // ExportAssetsOperation manages a long-running operation from ExportAssets.
 type ExportAssetsOperation struct {
 	lro *longrunning.Operation
@@ -358,4 +475,98 @@ func (op *ExportAssetsOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportAssetsOperation) Name() string {
 	return op.lro.Name()
+}
+
+// IamPolicySearchResultIterator manages a stream of *assetpb.IamPolicySearchResult.
+type IamPolicySearchResultIterator struct {
+	items    []*assetpb.IamPolicySearchResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.IamPolicySearchResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *IamPolicySearchResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *IamPolicySearchResultIterator) Next() (*assetpb.IamPolicySearchResult, error) {
+	var item *assetpb.IamPolicySearchResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *IamPolicySearchResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *IamPolicySearchResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// ResourceSearchResultIterator manages a stream of *assetpb.ResourceSearchResult.
+type ResourceSearchResultIterator struct {
+	items    []*assetpb.ResourceSearchResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.ResourceSearchResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ResourceSearchResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ResourceSearchResultIterator) Next() (*assetpb.ResourceSearchResult, error) {
+	var item *assetpb.ResourceSearchResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ResourceSearchResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ResourceSearchResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
