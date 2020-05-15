@@ -252,6 +252,15 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 			if strings.Contains(path.GoString(), "{*spanner.Error}.trailers") {
 				return true
 			}
+			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).state") {
+				return true
+			}
+			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).sizeCache") {
+				return true
+			}
+			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).unknownFields") {
+				return true
+			}
 			return false
 		}, cmp.Ignore())) {
 		t.Fatalf("Expect Apply to fail\nGot:  %v\nWant: %v\n", got, wantErr)
