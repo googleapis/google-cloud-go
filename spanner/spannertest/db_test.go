@@ -980,6 +980,19 @@ func TestKeyRange(t *testing.T) {
 				r("Doris", "1999-11-07"),
 			},
 		},
+		{
+			kr: closedClosed(r("A", "2020-01-02T00:03:04.000001Z"), r("A", "2020-01-02T00:03:04.100001Z")),
+			include: [][]interface{}{
+				r("A", "2020-01-02T00:03:04.000001Z"),
+				r("A", "2020-01-02T00:03:04.1Z"),
+				r("A", "2020-01-02T00:03:04.100001Z"),
+			},
+			exclude: [][]interface{}{
+				r("A", "2020-01-02T00:03:03Z"),
+				r("A", "2020-01-02T00:03:04.100002Z"),
+				r("A", "2020-01-02T00:03:04.2Z"),
+			},
+		},
 		// Exercise descending primary key ordering.
 		{
 			kr:   halfOpen(r("Alpha"), r("Charlie")),
