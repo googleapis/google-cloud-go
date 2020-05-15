@@ -628,12 +628,10 @@ var microgenGapicConfigs = []*microgenConfig{
 	{
 		inputDirectoryPath:    "google/monitoring/v3",
 		pkg:                   "monitoring",
-		importPath:            "cloud.google.com/go/monitoring/apiv3",
+		importPath:            "cloud.google.com/go/monitoring/apiv3/v2",
 		gRPCServiceConfigPath: "google/monitoring/v3/monitoring_grpc_service_config.json",
 		apiServiceConfigPath:  "google/monitoring/v3/monitoring.yaml",
 		releaseLevel:          "ga",
-		//TODO(codyoss): re-enable generation under v2 -- https://github.com/googleapis/google-cloud-go/issues/1930
-		stopGeneration: true,
 	},
 	{
 		inputDirectoryPath:    "google/cloud/vision/v1p1beta1",
