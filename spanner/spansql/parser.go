@@ -699,11 +699,13 @@ func (p *parser) skipSpace() bool {
 		if term == "" {
 			break
 		}
-		ti := strings.Index(p.s[i:], term)
+		// Search for the terminator, starting after the marker.
+		ti := strings.Index(p.s[i+len(marker):], term)
 		if ti < 0 {
 			p.errorf("unterminated comment")
 			return false
 		}
+		ti += len(marker) // make ti relative to p.s[i:]
 		if com != nil && (com.end.Line+1 < p.line || com.marker != marker) {
 			// There's a previous comment, but there's an
 			// intervening blank line, or the marker changed.
