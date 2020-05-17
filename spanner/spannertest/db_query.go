@@ -265,7 +265,7 @@ func (li *limitIter) Next() (row, error) {
 }
 
 type queryParam struct {
-	Value interface{}
+	Value interface{} // internal representation
 	Type  spansql.Type
 }
 

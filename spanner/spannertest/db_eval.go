@@ -24,7 +24,9 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -39,6 +41,17 @@ type evalContext struct {
 
 	params queryParams
 }
+
+// coercedValue represents a literal value that has been coerced to a different type.
+// This never leaves this package, nor is persisted.
+type coercedValue struct {
+	spansql.Expr             // not a real Expr
+	val          interface{} // internal representation
+	// TODO: type?
+	orig spansql.Expr
+}
+
+func (cv coercedValue) SQL() string { return cv.orig.SQL() }
 
 func (ec evalContext) evalExprList(list []spansql.Expr) ([]interface{}, error) {
 	var out []interface{}
@@ -95,8 +108,15 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 			return false, fmt.Errorf("unhandled LogicalOp %d", be.Op)
 		}
 	case spansql.ComparisonOp:
+		// Per https://cloud.google.com/spanner/docs/operators#comparison_operators,
+		// "Cloud Spanner SQL will generally coerce literals to the type of non-literals, where present".
+		// Before evaluating be.LHS and be.RHS, do any necessary coercion.
+		be, err := ec.coerceComparisonOpArgs(be)
+		if err != nil {
+			return false, err
+		}
+
 		var lhs, rhs interface{}
-		var err error
 		lhs, err = ec.evalExpr(be.LHS)
 		if err != nil {
 			return false, err
@@ -332,6 +352,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	switch e := e.(type) {
 	default:
 		return nil, fmt.Errorf("TODO: evalExpr(%s %T)", e.SQL(), e)
+	case coercedValue:
+		return e.val, nil
 	case spansql.ID:
 		return ec.evalID(e)
 	case spansql.Param:
@@ -447,6 +469,67 @@ func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
 	return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
 }
 
+func (ec evalContext) coerceComparisonOpArgs(co spansql.ComparisonOp) (spansql.ComparisonOp, error) {
+	// https://cloud.google.com/spanner/docs/operators#comparison_operators
+
+	if co.RHS2 != nil {
+		// TODO: Handle co.RHS2 for BETWEEN. The rules for that aren't clear.
+		return co, nil
+	}
+
+	// Look for a string literal on LHS or RHS.
+	var err error
+	if slit, ok := co.LHS.(spansql.StringLiteral); ok {
+		co.LHS, err = ec.coerceString(co.RHS, slit)
+		return co, err
+	}
+	if slit, ok := co.RHS.(spansql.StringLiteral); ok {
+		co.RHS, err = ec.coerceString(co.LHS, slit)
+		return co, err
+	}
+
+	// TODO: Other coercion literals. The int64/float64 code elsewhere may be able to be simplified.
+
+	return co, nil
+}
+
+// coerceString converts a string literal into something compatible with the target expression.
+func (ec evalContext) coerceString(target spansql.Expr, slit spansql.StringLiteral) (spansql.Expr, error) {
+	ci, err := ec.colInfo(target)
+	if err != nil {
+		return nil, err
+	}
+	if ci.Type.Array {
+		return nil, fmt.Errorf("unable to coerce string literal %q to match array type", slit)
+	}
+	switch ci.Type.Base {
+	case spansql.String:
+		return slit, nil
+	case spansql.Date:
+		d, err := parseAsDate(string(slit))
+		if err != nil {
+			return nil, fmt.Errorf("coercing string literal %q to DATE: %v", slit, err)
+		}
+		return coercedValue{
+			val:  d,
+			orig: slit,
+		}, nil
+	case spansql.Timestamp:
+		t, err := parseAsTimestamp(string(slit))
+		if err != nil {
+			return nil, fmt.Errorf("coercing string literal %q to TIMESTAMP: %v", slit, err)
+		}
+		return coercedValue{
+			val:  t,
+			orig: slit,
+		}, nil
+	}
+
+	// TODO: Any others?
+
+	return nil, fmt.Errorf("unable to coerce string literal %q to match %v", slit, ci.Type)
+}
+
 func evalLiteralOrParam(lop spansql.LiteralOrParam, params queryParams) (int64, error) {
 	switch v := lop.(type) {
 	case spansql.IntegerLiteral:
@@ -549,8 +632,23 @@ func compareVals(x, y interface{}) int {
 		}
 		return 0
 	case string:
-		// This handles DATE and TIMESTAMP too.
 		return strings.Compare(x, y.(string))
+	case civil.Date:
+		y := y.(civil.Date)
+		if x.Before(y) {
+			return -1
+		} else if x.After(y) {
+			return 1
+		}
+		return 0
+	case time.Time:
+		y := y.(time.Time)
+		if x.Before(y) {
+			return -1
+		} else if x.After(y) {
+			return 1
+		}
+		return 0
 	case []byte:
 		return bytes.Compare(x, y.([]byte))
 	}
@@ -568,7 +666,7 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	case spansql.IntegerLiteral:
 		return colInfo{Type: int64Type}, nil
 	case spansql.StringLiteral:
-		return colInfo{Type: spansql.Type{Base: spansql.String}}, nil
+		return colInfo{Type: stringType}, nil
 	case spansql.BytesLiteral:
 		return colInfo{Type: spansql.Type{Base: spansql.Bytes}}, nil
 	case spansql.ArithOp:

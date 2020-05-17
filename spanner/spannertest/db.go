@@ -36,6 +36,7 @@ import (
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -155,8 +156,8 @@ The mapping between Spanner types and Go types internal to this package are:
 	FLOAT64		float64
 	STRING		string
 	BYTES		[]byte
-	DATE		string (RFC 3339 date; "YYYY-MM-DD")
-	TIMESTAMP	string (RFC 3339 timestamp with zone; "YYYY-MM-DDTHH:MM:SSZ")
+	DATE		civil.Date
+	TIMESTAMP	time.Time (location set to UTC)
 	ARRAY<T>	[]interface{}
 	STRUCT		TODO
 */
@@ -383,8 +384,7 @@ func (d *database) writeValues(tx *transaction, tbl string, cols []string, value
 				return err
 			}
 			if x == commitTimestampSentinel {
-				// Cloud Spanner commit timestamps have microsecond granularity.
-				x = tx.commitTimestamp.Format("2006-01-02T15:04:05.999999Z")
+				x = tx.commitTimestamp
 			}
 
 			r[i] = x
@@ -785,6 +785,7 @@ func rowEqual(a, b []interface{}) bool {
 	return true
 }
 
+// valForType converts a value from its RPC form into its internal representation.
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
 		// TODO: enforce NOT NULL constraints?
@@ -843,12 +844,12 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		// The Spanner protocol encodes DATE in RFC 3339 date format.
 		sv, ok := v.Kind.(*structpb.Value_StringValue)
 		if ok {
-			// Store it internally as a string, but validate its value.
 			s := sv.StringValue
-			if _, err := time.Parse("2006-01-02", s); err != nil {
+			d, err := parseAsDate(s)
+			if err != nil {
 				return nil, fmt.Errorf("bad DATE string %q: %v", s, err)
 			}
-			return s, nil
+			return d, nil
 		}
 	case spansql.Timestamp:
 		// The Spanner protocol encodes TIMESTAMP in RFC 3339 timestamp format with zone Z.
@@ -858,11 +859,11 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			if strings.ToLower(s) == "spanner.commit_timestamp()" {
 				return commitTimestampSentinel, nil
 			}
-			// Store it internally as a string, but validate its value.
-			if _, err := time.Parse("2006-01-02T15:04:05.999999999Z", s); err != nil {
+			t, err := parseAsTimestamp(s)
+			if err != nil {
 				return nil, fmt.Errorf("bad TIMESTAMP string %q: %v", s, err)
 			}
-			return s, nil
+			return t, nil
 		}
 	}
 	return nil, fmt.Errorf("unsupported inserting value kind %T into column of type %s", v.Kind, t.SQL())
@@ -931,4 +932,9 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 		}
 		return n, nil
 	}
+}
+
+func parseAsDate(s string) (civil.Date, error) { return civil.ParseDate(s) }
+func parseAsTimestamp(s string) (time.Time, error) {
+	return time.Parse("2006-01-02T15:04:05.999999999Z", s)
 }
