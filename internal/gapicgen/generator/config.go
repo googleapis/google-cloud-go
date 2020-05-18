@@ -470,6 +470,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/datastore/admin/v1",
+		pkg:                   "admin",
+		importPath:            "cloud.google.com/go/datastore/admin/apiv1",
+		gRPCServiceConfigPath: "google/datastore/admin/v1/datastore_admin_grpc_service_config.json",
+		apiServiceConfigPath:  "google/datastore/admin/v1/datastore_admin_v1.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/spanner/admin/database/v1",
 		pkg:                   "database",
 		importPath:            "cloud.google.com/go/spanner/admin/database/apiv1",
