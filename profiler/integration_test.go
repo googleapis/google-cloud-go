@@ -115,6 +115,28 @@ func (tc *goGCETestCase) initializeStartupScript(template *template.Template, co
 	return nil
 }
 
+// gitCommit returns the Git commit of the current directory. The source
+// checkout in the test VM will run in the same commit. Note that any local
+// changes to the profiler agent won't be tested in the integration test. This
+// flow only works with code that has been committed and pushed to the public
+// repo (either to master or to a branch).
+func gitCommit() (string, error) {
+	output, err := exec.Command("git", "rev-parse", "HEAD").CombinedOutput()
+	if err != nil {
+		return "", err
+	}
+	return strings.Trim(string(output), "\n"), nil
+}
+
+// pstTimeStr returns a string representation of the time in the PST timezone.
+func pstTimeStr() (string, error) {
+	pst, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		return "", fmt.Errorf("failed to initialize PST location: %v", err)
+	}
+	return strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-0700"), ".", "-", -1), nil
+}
+
 func TestAgentIntegration(t *testing.T) {
 	// Testing against master requires building go code and may take up to 10 minutes.
 	// Allow this test to run in parallel with other top level tests to avoid timeouts.
@@ -131,23 +153,16 @@ func TestAgentIntegration(t *testing.T) {
 	// all us-west1 zones
 	zones := []string{"us-west1-a", "us-west1-b", "us-west1-c"}
 
-	// Figure out the Git commit of the current directory. The source checkout in
-	// the test VM will run in the same commit. Note that any local changes to
-	// the profiler agent won't be tested in the integration test. This flow only
-	// works with code that has been committed and pushed to the public repo
-	// (either to master or to a branch).
-	output, err := exec.Command("git", "rev-parse", "HEAD").CombinedOutput()
+	commit, err := gitCommit()
 	if err != nil {
 		t.Fatalf("failed to gather the Git revision of the current source: %v", err)
 	}
-	commit := strings.Trim(string(output), "\n")
 	t.Logf("using Git commit %q for the profiler integration test", commit)
 
-	pst, err := time.LoadLocation("America/Los_Angeles")
+	runID, err := pstTimeStr()
 	if err != nil {
-		t.Fatalf("failed to initiate PST location: %v", err)
+		t.Fatalf("failed to get current time to generate a run ID: %v", err)
 	}
-	runID := strings.Replace(time.Now().In(pst).Format("2006-01-02-15-04-05.000000-0700"), ".", "-", -1)
 
 	ctx := context.Background()
 
