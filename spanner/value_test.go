@@ -20,6 +20,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"math/big"
 	"reflect"
 	"testing"
 	"time"
@@ -187,6 +188,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomFloat64 float64
 	type CustomTime time.Time
 	type CustomDate civil.Date
+	type CustomNumeric *big.Rat
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -207,15 +209,18 @@ func TestEncodeValue(t *testing.T) {
 	var tNilPtr *time.Time
 	dValue := d1
 	var dNilPtr *civil.Date
+	numValuePtr := big.NewRat(12345, 1e3)
+	var numNilPtr *big.Rat
 
 	var (
-		tString = stringType()
-		tInt    = intType()
-		tBool   = boolType()
-		tFloat  = floatType()
-		tBytes  = bytesType()
-		tTime   = timeType()
-		tDate   = dateType()
+		tString  = stringType()
+		tInt     = intType()
+		tBool    = boolType()
+		tFloat   = floatType()
+		tBytes   = bytesType()
+		tTime    = timeType()
+		tDate    = dateType()
+		tNumeric = numericType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -271,6 +276,11 @@ func TestEncodeValue(t *testing.T) {
 		{[]float64{3.141, 0.618, math.Inf(-1)}, listProto(floatProto(3.141), floatProto(0.618), floatProto(math.Inf(-1))), listType(tFloat), "[]float64"},
 		{[]NullFloat64{{3.141, true}, {0.618, false}}, listProto(floatProto(3.141), nullProto()), listType(tFloat), "[]NullFloat64"},
 		{[]*float64{&fValue, fNilPtr}, listProto(floatProto(3.14), nullProto()), listType(tFloat), "[]NullFloat64"},
+		// NUMERIC / NUMERIC ARRAY
+		{numValuePtr, numericProto(numValuePtr), tNumeric, "numeric"},
+		{numNilPtr, nullProto(), tNumeric, "null numeric"},
+		{[]*big.Rat{nil, numValuePtr}, listProto(nullProto(), numericProto(numValuePtr)), listType(tNumeric), "[]*big.Rat"},
+		{[]*big.Rat(nil), nullProto(), listType(tNumeric), "null []*big.Rat"},
 		// TIMESTAMP / TIMESTAMP ARRAY
 		{t1, timeProto(t1), tTime, "time"},
 		{NullTime{t1, true}, timeProto(t1), tTime, "NullTime with value"},
@@ -366,6 +376,11 @@ func TestEncodeValue(t *testing.T) {
 		{customStructToBytes{[]byte("A"), []byte("B")}, bytesProto([]byte("AB")), tBytes, "a struct to bytes"},
 		{customStructToTime{"A", "B"}, timeProto(tValue), tTime, "a struct to time"},
 		{customStructToDate{"A", "B"}, dateProto(dValue), tDate, "a struct to date"},
+		// CUSTOM NUMERIC / CUSTOM NUMERIC ARRAY
+		{CustomNumeric(numValuePtr), numericProto(numValuePtr), tNumeric, "CustomNumeric with value"},
+		{CustomNumeric(nil), nullProto(), tNumeric, "null CustomNumeric"},
+		{[]CustomNumeric{nil, CustomNumeric(numValuePtr)}, listProto(nullProto(), numericProto(numValuePtr)), listType(tNumeric), "[]CustomNumeric"},
+		{[]CustomNumeric(nil), nullProto(), listType(tNumeric), "null []CustomNumeric"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1205,6 +1220,7 @@ func TestDecodeValue(t *testing.T) {
 	type CustomFloat64 float64
 	type CustomTime time.Time
 	type CustomDate civil.Date
+	type CustomNumeric *big.Rat
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -1230,6 +1246,10 @@ func TestDecodeValue(t *testing.T) {
 	fValue := 3.14
 	var fNilPtr *float64
 	f2Value := 6.626
+
+	numValuePtr := big.NewRat(12345, 1e3)
+	var numNilPtr *big.Rat
+	num2ValuePtr := big.NewRat(12345, 1e4)
 
 	tValue := t1
 	var tNilPtr *time.Time
@@ -1309,9 +1329,15 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to []NullFloat64", proto: nullProto(), protoType: listType(floatType()), want: []NullFloat64(nil)},
 		// FLOAT64 ARRAY with []float64
 		{desc: "decode ARRAY<FLOAT64> to []float64", proto: listProto(floatProto(math.Inf(1)), floatProto(math.Inf(-1)), floatProto(3.1)), protoType: listType(floatType()), want: []float64{math.Inf(1), math.Inf(-1), 3.1}},
-		// FLOAT64 ARRAY with []NullFloat64
+		// FLOAT64 ARRAY with []*float64
 		{desc: "decode ARRAY<FLOAT64> to []*float64", proto: listProto(floatProto(fValue), nullProto(), floatProto(f2Value)), protoType: listType(floatType()), want: []*float64{&fValue, nil, &f2Value}},
 		{desc: "decode NULL to []*float64", proto: nullProto(), protoType: listType(floatType()), want: []*float64(nil)},
+		// NUMERIC
+		{desc: "decode NUMERIC to *big.Rat", proto: numericProto(numValuePtr), protoType: numericType(), want: numValuePtr},
+		{desc: "decode NULL to *big.Rat", proto: nullProto(), protoType: numericType(), want: numNilPtr},
+		// NUMERIC ARRAY with []*big.Rat
+		{desc: "decode ARRAY<NUMERIC> to []*big.Rat", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []*big.Rat{numValuePtr, nil, num2ValuePtr}},
+		{desc: "decode NULL to []*big.Rat", proto: nullProto(), protoType: listType(numericType()), want: []*big.Rat(nil)},
 		// TIMESTAMP
 		{desc: "decode TIMESTAMP to time.Time", proto: timeProto(t1), protoType: timeType(), want: t1},
 		{desc: "decode TIMESTAMP to NullTime", proto: timeProto(t1), protoType: timeType(), want: NullTime{t1, true}},
@@ -1504,6 +1530,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode INT64 to CustomInt64", proto: intProto(-100), protoType: intType(), want: CustomInt64(-100)},
 		{desc: "decode BOOL to CustomBool", proto: boolProto(true), protoType: boolType(), want: CustomBool(true)},
 		{desc: "decode FLOAT64 to CustomFloat64", proto: floatProto(6.626), protoType: floatType(), want: CustomFloat64(6.626)},
+		{desc: "decode NUMERIC to CustomNumeric", proto: numericProto(numValuePtr), protoType: numericType(), want: CustomNumeric(numValuePtr)},
 		{desc: "decode TIMESTAMP to CustomTimestamp", proto: timeProto(t1), protoType: timeType(), want: CustomTime(t1)},
 		{desc: "decode DATE to CustomDate", proto: dateProto(d1), protoType: dateType(), want: CustomDate(d1)},
 
@@ -1512,6 +1539,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to CustomInt64", proto: nullProto(), protoType: intType(), want: CustomInt64(0), wantErr: true},
 		{desc: "decode NULL to CustomBool", proto: nullProto(), protoType: boolType(), want: CustomBool(false), wantErr: true},
 		{desc: "decode NULL to CustomFloat64", proto: nullProto(), protoType: floatType(), want: CustomFloat64(0), wantErr: true},
+		{desc: "decode NULL to CustomNumeric", proto: nullProto(), protoType: numericType(), want: CustomNumeric(nil)},
 		{desc: "decode NULL to CustomTime", proto: nullProto(), protoType: timeType(), want: CustomTime{}, wantErr: true},
 		{desc: "decode NULL to CustomDate", proto: nullProto(), protoType: dateType(), want: CustomDate{}, wantErr: true},
 
@@ -1556,6 +1584,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<FLOAT64> to []CustomFloat64", proto: listProto(floatProto(3.14), floatProto(6.626)), protoType: listType(floatType()), want: []CustomFloat64{3.14, 6.626}},
 		{desc: "decode NULL to []CustomNullFloat64", proto: nullProto(), protoType: listType(floatType()), want: []CustomNullFloat64(nil)},
 		{desc: "decode ARRAY<FLOAT64> to []CustomNullFloat64", proto: listProto(floatProto(3.14), nullProto(), floatProto(6.626)), protoType: listType(floatType()), want: []CustomNullFloat64{{3.14, true}, {}, {6.626, true}}},
+		// NUMERIC ARRAY
+		{desc: "decode NULL to []CustomNumeric", proto: nullProto(), protoType: listType(numericType()), want: []CustomNumeric(nil)},
+		{desc: "decode ARRAY<NUMERIC> to []CustomNumeric", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNumeric{CustomNumeric(numValuePtr), CustomNumeric(nil), CustomNumeric(num2ValuePtr)}},
 		// TIME ARRAY
 		{desc: "decode NULL to []CustomTime", proto: nullProto(), protoType: listType(timeType()), want: []CustomTime(nil)},
 		{desc: "decode ARRAY<TIMESTAMP> with NULL values to []CustomTime", proto: listProto(timeProto(t1), nullProto(), timeProto(t2)), protoType: listType(timeType()), want: []CustomTime{}, wantErr: true},
@@ -1590,7 +1621,7 @@ func TestDecodeValue(t *testing.T) {
 			continue
 		}
 		got := reflect.Indirect(gotp).Interface()
-		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomTime{}, CustomDate{}, Row{})) {
+		if !testutil.Equal(got, test.want, cmp.AllowUnexported(CustomTime{}, CustomDate{}, Row{}, big.Rat{}, big.Int{})) {
 			t.Errorf("%s: unexpected decoding result - got %v (%T), want %v (%T)", test.desc, got, got, test.want, test.want)
 		}
 	}
@@ -1622,6 +1653,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 	type CustomFloat64 float64
 	type CustomTime time.Time
 	type CustomDate civil.Date
+	type CustomNumeric *big.Rat
 
 	type CustomNullString NullString
 	type CustomNullInt64 NullInt64
@@ -1655,6 +1687,8 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{NullFloat64{}, spannerTypeNullFloat64},
 		{NullTime{}, spannerTypeNullTime},
 		{NullDate{}, spannerTypeNullDate},
+		{big.NewRat(1234, 1000), spannerTypeNumeric},
+		{&big.Rat{}, spannerTypeNumeric},
 
 		{[]string{"foo", "bar"}, spannerTypeArrayOfNonNullString},
 		{[][]byte{{1, 2, 3}, {3, 2, 1}}, spannerTypeArrayOfByteArray},
@@ -1670,6 +1704,8 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]NullFloat64{}, spannerTypeArrayOfNullFloat64},
 		{[]NullTime{}, spannerTypeArrayOfNullTime},
 		{[]NullDate{}, spannerTypeArrayOfNullDate},
+		{[]*big.Rat{}, spannerTypeArrayOfNumeric},
+		{[]*big.Rat{big.NewRat(1234, 1000), big.NewRat(1234, 100)}, spannerTypeArrayOfNumeric},
 
 		{CustomString("foo"), spannerTypeNonNullString},
 		{CustomInt64(-100), spannerTypeNonNullInt64},
@@ -1677,6 +1713,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{CustomFloat64(3.141592), spannerTypeNonNullFloat64},
 		{CustomTime(time.Now()), spannerTypeNonNullTime},
 		{CustomDate(civil.DateOf(time.Now())), spannerTypeNonNullDate},
+		{CustomNumeric(big.NewRat(1234, 1000)), spannerTypeNumeric},
 
 		{[]CustomString{}, spannerTypeArrayOfNonNullString},
 		{[]CustomInt64{}, spannerTypeArrayOfNonNullInt64},
@@ -1684,6 +1721,7 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{[]CustomFloat64{}, spannerTypeArrayOfNonNullFloat64},
 		{[]CustomTime{}, spannerTypeArrayOfNonNullTime},
 		{[]CustomDate{}, spannerTypeArrayOfNonNullDate},
+		{[]CustomNumeric{}, spannerTypeArrayOfNumeric},
 
 		{CustomNullString{}, spannerTypeNullString},
 		{CustomNullInt64{}, spannerTypeNullInt64},
@@ -1702,10 +1740,17 @@ func TestGetDecodableSpannerType(t *testing.T) {
 		{StringEmbedded{}, spannerTypeUnknown},
 		{NullStringEmbedded{}, spannerTypeUnknown},
 	} {
+		// Pass a pointer to the original value.
 		gotp := reflect.New(reflect.TypeOf(test.in))
-		got := getDecodableSpannerType(gotp.Interface())
+		got := getDecodableSpannerType(gotp.Interface(), true)
 		if got != test.want {
-			t.Errorf("%d: unexpected decodable type - got %v, want %v", i, got, test.want)
+			t.Errorf("%d: unexpected decodable type from a pointer - got %v, want %v", i, got, test.want)
+		}
+
+		// Pass the original value.
+		got = getDecodableSpannerType(test.in, false)
+		if got != test.want {
+			t.Errorf("%d: unexpected decodable type from a value - got %v, want %v", i, got, test.want)
 		}
 	}
 }

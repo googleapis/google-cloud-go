@@ -21,6 +21,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"math"
+	"math/big"
 	"reflect"
 	"strconv"
 	"time"
@@ -33,10 +34,27 @@ import (
 	"google.golang.org/grpc/codes"
 )
 
-// nullString is returned by the String methods of NullableValues when the
-// underlying database value is null.
-const nullString = "<null>"
-const commitTimestampPlaceholderString = "spanner.commit_timestamp()"
+const (
+	// nullString is returned by the String methods of NullableValues when the
+	// underlying database value is null.
+	nullString                       = "<null>"
+	commitTimestampPlaceholderString = "spanner.commit_timestamp()"
+
+	// NumericPrecisionDigits is the maximum number of digits in a NUMERIC
+	// value.
+	NumericPrecisionDigits = 38
+
+	// NumericScaleDigits is the maximum number of digits after the decimal
+	// point in a NUMERIC value.
+	NumericScaleDigits = 9
+)
+
+// NumericString returns a string representing a *big.Rat in a format compatible
+// with BigQuery SQL. It returns a floating-point literal with 9 digits
+// after the decimal point.
+func NumericString(r *big.Rat) string {
+	return r.FloatString(NumericScaleDigits)
+}
 
 var (
 	// CommitTimestamp is a special value used to tell Cloud Spanner to insert
@@ -950,6 +968,43 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return err
 		}
 		*p = y
+	case **big.Rat:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x := v.GetStringValue()
+		y, ok := (&big.Rat{}).SetString(x)
+		if !ok {
+			return errUnexpectedNumericStr(x)
+		}
+		*p = y
+	case *[]*big.Rat:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeNumericPointerArray(x)
+		if err != nil {
+			return err
+		}
+		*p = y
 	case *time.Time:
 		var nt NullTime
 		if isNull {
@@ -1168,7 +1223,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		}
 
 		// Check if the pointer is a variant of a base type.
-		decodableType := getDecodableSpannerType(ptr)
+		decodableType := getDecodableSpannerType(ptr, true)
 		if decodableType != spannerTypeUnknown {
 			if isNull && !decodableType.supportsNull() {
 				return errDstNotForNull(ptr)
@@ -1222,6 +1277,7 @@ const (
 	spannerTypeNonNullInt64
 	spannerTypeNonNullBool
 	spannerTypeNonNullFloat64
+	spannerTypeNumeric
 	spannerTypeNonNullTime
 	spannerTypeNonNullDate
 	spannerTypeNullString
@@ -1235,6 +1291,7 @@ const (
 	spannerTypeArrayOfNonNullInt64
 	spannerTypeArrayOfNonNullBool
 	spannerTypeArrayOfNonNullFloat64
+	spannerTypeArrayOfNumeric
 	spannerTypeArrayOfNonNullTime
 	spannerTypeArrayOfNonNullDate
 	spannerTypeArrayOfNullString
@@ -1271,11 +1328,19 @@ var typeOfNullBool = reflect.TypeOf(NullBool{})
 var typeOfNullFloat64 = reflect.TypeOf(NullFloat64{})
 var typeOfNullTime = reflect.TypeOf(NullTime{})
 var typeOfNullDate = reflect.TypeOf(NullDate{})
+var typeOfNumeric = reflect.TypeOf(&big.Rat{})
 
 // getDecodableSpannerType returns the corresponding decodableSpannerType of
 // the given pointer.
-func getDecodableSpannerType(ptr interface{}) decodableSpannerType {
-	kind := reflect.Indirect(reflect.ValueOf(ptr)).Kind()
+func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
+	var val reflect.Value
+	var kind reflect.Kind
+	if isPtr {
+		val = reflect.Indirect(reflect.ValueOf(ptr))
+	} else {
+		val = reflect.ValueOf(ptr)
+	}
+	kind = val.Kind()
 	if kind == reflect.Invalid {
 		return spannerTypeInvalid
 	}
@@ -1290,8 +1355,13 @@ func getDecodableSpannerType(ptr interface{}) decodableSpannerType {
 		return spannerTypeNonNullBool
 	case reflect.Float64:
 		return spannerTypeNonNullFloat64
+	case reflect.Ptr:
+		t := val.Type()
+		if t.ConvertibleTo(typeOfNumeric) {
+			return spannerTypeNumeric
+		}
 	case reflect.Struct:
-		t := reflect.Indirect(reflect.ValueOf(ptr)).Type()
+		t := val.Type()
 		if t.ConvertibleTo(typeOfNonNullTime) {
 			return spannerTypeNonNullTime
 		}
@@ -1317,7 +1387,7 @@ func getDecodableSpannerType(ptr interface{}) decodableSpannerType {
 			return spannerTypeNullDate
 		}
 	case reflect.Slice:
-		kind := reflect.Indirect(reflect.ValueOf(ptr)).Type().Elem().Kind()
+		kind := val.Type().Elem().Kind()
 		switch kind {
 		case reflect.Invalid:
 			return spannerTypeUnknown
@@ -1331,8 +1401,13 @@ func getDecodableSpannerType(ptr interface{}) decodableSpannerType {
 			return spannerTypeArrayOfNonNullBool
 		case reflect.Float64:
 			return spannerTypeArrayOfNonNullFloat64
+		case reflect.Ptr:
+			t := val.Type().Elem()
+			if t.ConvertibleTo(typeOfNumeric) {
+				return spannerTypeArrayOfNumeric
+			}
 		case reflect.Struct:
-			t := reflect.Indirect(reflect.ValueOf(ptr)).Type().Elem()
+			t := val.Type().Elem()
 			if t.ConvertibleTo(typeOfNonNullTime) {
 				return spannerTypeArrayOfNonNullTime
 			}
@@ -1359,7 +1434,7 @@ func getDecodableSpannerType(ptr interface{}) decodableSpannerType {
 			}
 		case reflect.Slice:
 			// The only array-of-array type that is supported is [][]byte.
-			kind := reflect.Indirect(reflect.ValueOf(ptr)).Type().Elem().Elem().Kind()
+			kind := val.Type().Elem().Elem().Kind()
 			switch kind {
 			case reflect.Uint8:
 				return spannerTypeArrayOfByteArray
@@ -1474,6 +1549,21 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		} else {
 			result = &NullFloat64{x, !isNull}
 		}
+	case spannerTypeNumeric:
+		if code != sppb.TypeCode_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			var y *big.Rat
+			result = &y
+			break
+		}
+		x := v.GetStringValue()
+		y, ok := (&big.Rat{}).SetString(x)
+		if !ok {
+			return errUnexpectedNumericStr(x)
+		}
+		result = &y
 	case spannerTypeNonNullTime, spannerTypeNullTime:
 		var nt NullTime
 		err := parseNullTime(v, &nt, code, isNull)
@@ -1591,6 +1681,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return err
 		}
 		result = y
+	case spannerTypeArrayOfNumeric:
+		if acode != sppb.TypeCode_NUMERIC {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			ptr = nil
+			return nil
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, numericType(), "NUMERIC")
+		if err != nil {
+			return err
+		}
+		result = y
 	case spannerTypeArrayOfNonNullTime, spannerTypeArrayOfNullTime:
 		if acode != sppb.TypeCode_TIMESTAMP {
 			return errTypeMismatch(code, acode, ptr)
@@ -1682,10 +1789,16 @@ func getGenericValue(v *proto3.Value) (interface{}, error) {
 	}
 }
 
-// errUnexpectedNumStr returns error for decoder getting a unexpected string for
-// representing special float values.
-func errUnexpectedNumStr(s string) error {
-	return spannerErrorf(codes.FailedPrecondition, "unexpected string value %q for number", s)
+// errUnexpectedNumericStr returns error for decoder getting an unexpected
+// string for representing special numeric values.
+func errUnexpectedNumericStr(s string) error {
+	return spannerErrorf(codes.FailedPrecondition, "unexpected string value %q for numeric number", s)
+}
+
+// errUnexpectedFloat64Str returns error for decoder getting an unexpected
+// string for representing special float values.
+func errUnexpectedFloat64Str(s string) error {
+	return spannerErrorf(codes.FailedPrecondition, "unexpected string value %q for float64 number", s)
 }
 
 // getFloat64Value returns the float64 value encoded in proto3.Value v whose
@@ -1710,7 +1823,7 @@ func getFloat64Value(v *proto3.Value) (float64, error) {
 		case "-Infinity":
 			return math.Inf(-1), nil
 		default:
-			return 0, errUnexpectedNumStr(x.StringValue)
+			return 0, errUnexpectedFloat64Str(x.StringValue)
 		}
 	}
 	return 0, errSrcVal(v, "Number")
@@ -1888,7 +2001,7 @@ func decodeNullFloat64Array(pb *proto3.ListValue) ([]NullFloat64, error) {
 	return a, nil
 }
 
-// decodeFloat64PointerArray decodes proto3.ListValue pb into a NullFloat64 slice.
+// decodeFloat64PointerArray decodes proto3.ListValue pb into a *float slice.
 func decodeFloat64PointerArray(pb *proto3.ListValue) ([]*float64, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT64")
@@ -1911,6 +2024,34 @@ func decodeFloat64Array(pb *proto3.ListValue) ([]float64, error) {
 	for i, v := range pb.Values {
 		if err := decodeValue(v, floatType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT64", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeNumericPointerArray decodes proto3.ListValue pb into a *big.Rat slice.
+func decodeNumericPointerArray(pb *proto3.ListValue) ([]*big.Rat, error) {
+	if pb == nil {
+		return nil, errNilListValue("NUMERIC")
+	}
+	a := make([]*big.Rat, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, numericType(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "NUMERIC", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeNumericArray decodes proto3.ListValue pb into a big.Rat slice.
+func decodeNumericArray(pb *proto3.ListValue) ([]big.Rat, error) {
+	if pb == nil {
+		return nil, errNilListValue("NUMERIC")
+	}
+	a := make([]big.Rat, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, numericType(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "NUMERIC", err)
 		}
 	}
 	return a, nil
@@ -2364,6 +2505,19 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(floatType())
+	case *big.Rat:
+		if v != nil {
+			pb.Kind = stringKind(NumericString(v))
+		}
+		pt = numericType()
+	case []*big.Rat:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(numericType())
 	case time.Time:
 		if v == commitTimestamp {
 			pb.Kind = stringKind(commitTimestampPlaceholderString)
@@ -2461,7 +2615,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 
 		// Check if the value is a variant of a base type.
-		decodableType := getDecodableSpannerType(v)
+		decodableType := getDecodableSpannerType(v, false)
 		if decodableType != spannerTypeUnknown && decodableType != spannerTypeInvalid {
 			converted, err := convertCustomTypeValue(decodableType, v)
 			if err != nil {
@@ -2527,6 +2681,8 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(civil.Date{})))
 	case spannerTypeNullDate:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullDate{})))
+	case spannerTypeNumeric:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(&big.Rat{})))
 	case spannerTypeArrayOfNonNullString:
 		if reflect.ValueOf(v).IsNil() {
 			return []string(nil), nil
@@ -2592,6 +2748,11 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 			return []NullDate(nil), nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]NullDate{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNumeric:
+		if reflect.ValueOf(v).IsNil() {
+			return []*big.Rat(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]*big.Rat{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
 	default:
 		// This should not be possible.
 		return nil, fmt.Errorf("unknown decodable type found: %v", sourceType)
@@ -2602,11 +2763,11 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 	if destination.Kind() == reflect.Slice || destination.Kind() == reflect.Array {
 		sourceSlice := reflect.ValueOf(v)
 		for i := 0; i < destination.Len(); i++ {
-			source := reflect.Indirect(sourceSlice.Index(i))
+			source := sourceSlice.Index(i)
 			destination.Index(i).Set(source.Convert(destination.Type().Elem()))
 		}
 	} else {
-		source := reflect.Indirect(reflect.ValueOf(v))
+		source := reflect.ValueOf(v)
 		destination.Set(source.Convert(destination.Type()))
 	}
 	// Return the converted value.
