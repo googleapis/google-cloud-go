@@ -1395,3 +1395,228 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 
 	return results, nil
 }
+
+// RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
+func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+
+	req := &btapb.RestoreTableRequest{
+		Parent:  prefix,
+		TableId: table,
+		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
+	}
+	op, err := ac.tClient.RestoreTable(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Table{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// CreateBackup creates a new backup in the specified cluster from the
+// specified source table with the user-provided expire time.
+func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+
+	parsedExpireTime, err := ptypes.TimestampProto(expireTime)
+	if err != nil {
+		return err
+	}
+
+	req := &btapb.CreateBackupRequest{
+		Parent:   prefix + "/clusters/" + cluster,
+		BackupId: backup,
+		Backup: &btapb.Backup{
+			ExpireTime:  parsedExpireTime,
+			SourceTable: prefix + "/tables/" + table,
+		},
+	}
+
+	op, err := ac.tClient.CreateBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// Backups returns a BackupIterator for iterating over the backups in a cluster.
+// To list backups across all of the clusters in the instance specify "-" as the cluster.
+func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupIterator {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+
+	it := &BackupIterator{}
+	req := &btapb.ListBackupsRequest{
+		Parent: clusterPath,
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+
+		var resp *btapb.ListBackupsResponse
+		err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+			var err error
+			resp, err = ac.tClient.ListBackups(ctx, req)
+			return err
+		}, retryOptions...)
+		if err != nil {
+			return "", err
+		}
+		for _, s := range resp.Backups {
+			backupInfo, err := newBackupInfo(s)
+			if err != nil {
+				return "", fmt.Errorf("failed to parse backup proto %v", err)
+			}
+			it.items = append(it.items, backupInfo)
+		}
+		return resp.NextPageToken, nil
+	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} { b := it.items; it.items = nil; return b }
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+
+	return it
+}
+
+// newBackupInfo creates a BackupInfo struct from a btapb.Backup protocol buffer.
+func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
+	nameParts := strings.Split(backup.Name, "/")
+	name := nameParts[len(nameParts)-1]
+	tablePathParts := strings.Split(backup.SourceTable, "/")
+	tableID := tablePathParts[len(tablePathParts)-1]
+
+	startTime, err := ptypes.Timestamp(backup.StartTime)
+	if err != nil {
+		return nil, fmt.Errorf("invalid startTime: %v", err)
+	}
+
+	endTime, err := ptypes.Timestamp(backup.EndTime)
+	if err != nil {
+		return nil, fmt.Errorf("invalid endTime: %v", err)
+	}
+
+	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
+	if err != nil {
+		return nil, fmt.Errorf("invalid expireTime: %v", err)
+	}
+
+	return &BackupInfo{
+		Name:        name,
+		SourceTable: tableID,
+		SizeBytes:   backup.SizeBytes,
+		StartTime:   startTime,
+		EndTime:     endTime,
+		ExpireTime:  expireTime,
+		State:       backup.State.String(),
+	}, nil
+}
+
+// BackupIterator is an EntryIterator that iterates over log entries.
+type BackupIterator struct {
+	items    []*BackupInfo
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
+func (it *BackupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done
+// (https://godoc.org/google.golang.org/api/iterator) if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BackupIterator) Next() (*BackupInfo, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+// BackupInfo contains backup metadata. This struct is read-only.
+type BackupInfo struct {
+	Name        string
+	SourceTable string
+	SizeBytes   int64
+	StartTime   time.Time
+	EndTime     time.Time
+	ExpireTime  time.Time
+	State       string
+}
+
+// BackupInfo gets backup metadata.
+func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+	backupPath := clusterPath + "/backups/" + backup
+
+	req := &btapb.GetBackupRequest{
+		Name: backupPath,
+	}
+
+	var resp *btapb.Backup
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		resp, err = ac.tClient.GetBackup(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	return newBackupInfo(resp)
+}
+
+// DeleteBackup deletes a backup in a cluster.
+func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+	backupPath := clusterPath + "/backups/" + backup
+
+	req := &btapb.DeleteBackupRequest{
+		Name: backupPath,
+	}
+	_, err := ac.tClient.DeleteBackup(ctx, req)
+	return err
+}
+
+// UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
+func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+	backupPath := clusterPath + "/backups/" + backup
+
+	expireTimestamp, err := ptypes.TimestampProto(expireTime)
+	if err != nil {
+		return err
+	}
+
+	updateMask := &field_mask.FieldMask{}
+	updateMask.Paths = append(updateMask.Paths, "expire_time")
+
+	req := &btapb.UpdateBackupRequest{
+		Backup: &btapb.Backup{
+			Name:       backupPath,
+			ExpireTime: expireTimestamp,
+		},
+		UpdateMask: updateMask,
+	}
+	_, err = ac.tClient.UpdateBackup(ctx, req)
+	return err
+}
