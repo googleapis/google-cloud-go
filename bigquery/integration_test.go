@@ -31,6 +31,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/httpreplay"
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
@@ -868,6 +869,66 @@ func TestIntegration_Tables(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIntegration_TableIAM(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Check to confirm some of our default permissions.
+	checkedPerms := []string{"bigquery.tables.get",
+		"bigquery.tables.getData", "bigquery.tables.update"}
+	perms, err := table.IAM().TestPermissions(ctx, checkedPerms)
+	if err != nil {
+		t.Fatalf("IAM().TestPermissions: %v", err)
+	}
+	if len(perms) != len(checkedPerms) {
+		t.Errorf("mismatch in permissions, got (%s) wanted (%s)", strings.Join(perms, " "), strings.Join(checkedPerms, " "))
+	}
+
+	// Get existing policy, add a binding for all authenticated users.
+	policy, err := table.IAM().Policy(ctx)
+	if err != nil {
+		t.Fatalf("IAM().Policy: %v", err)
+	}
+	wantedRole := iam.RoleName("roles/bigquery.dataViewer")
+	wantedMember := "allAuthenticatedUsers"
+	policy.Add(wantedMember, wantedRole)
+	if err := table.IAM().SetPolicy(ctx, policy); err != nil {
+		t.Fatalf("IAM().SetPolicy: %v", err)
+	}
+
+	// Verify policy mutations were persisted by refetching policy.
+	updatedPolicy, err := table.IAM().Policy(ctx)
+	if err != nil {
+		t.Fatalf("IAM.Policy (after update): %v", err)
+	}
+	foundRole := false
+	for _, r := range updatedPolicy.Roles() {
+		if r == wantedRole {
+			foundRole = true
+			break
+		}
+	}
+	if !foundRole {
+		t.Errorf("Did not find added role %s in the set of %d roles.",
+			wantedRole, len(updatedPolicy.Roles()))
+	}
+	members := updatedPolicy.Members(wantedRole)
+	foundMember := false
+	for _, m := range members {
+		if m == wantedMember {
+			foundMember = true
+			break
+		}
+	}
+	if !foundMember {
+		t.Errorf("Did not find member %s in role %s", wantedMember, wantedRole)
 	}
 }
 
