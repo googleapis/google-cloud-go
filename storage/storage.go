@@ -1350,7 +1350,7 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 	}
 
 	if len(fieldSet) > 0 {
-		var b strings.Builder
+		var b bytes.Buffer
 		b.WriteString("items(")
 		first := true
 		for field := range fieldSet {
