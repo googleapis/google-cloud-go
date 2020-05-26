@@ -1,5 +1,31 @@
 # Changes
 
+## v1.6.0
+* Sessions:
+  - Increase the number of sessions in batches instead of one by one when
+    additional sessions are needed. The step size is set to 25, which means
+    that whenever the session pool needs at least one more session, it will
+    create a batch of 25 sessions.
+* Emulator:
+  - Run integration tests against the emulator in Kokoro Presubmit.
+* RPC retrying:
+  - Retry CreateDatabase on retryable codes.
+* spannertest:
+  - Change internal representation of DATE/TIMESTAMP values.
+* spansql:
+  - Cleanly parse adjacent comment marker/terminator.
+  - Support FROM aliases in SELECT statements.
+* Misc:
+  - Fix comparing errors in tests.
+  - Fix flaky session pool test.
+  - Increase timeout in TestIntegration_ReadOnlyTransaction.
+  - Fix incorrect instance IDs when deleting instances in tests.
+  - Clean up test instances.
+  - Clearify docs on Aborted transaction.
+  - Fix timeout+staleness bound for test
+  - Remove the support for resource-based routing.
+  - Fix TestTransaction_SessionNotFound test.
+
 ## v1.5.1
 
 * Fix incorrect decreasing metrics, numReads and numWrites.
