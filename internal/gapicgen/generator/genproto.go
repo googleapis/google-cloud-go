@@ -68,7 +68,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	// Record and map all .proto files to their Go packages.
 	seenFiles := make(map[string]bool)
 	pkgFiles := make(map[string][]string)
-	for _, root := range []string{googleapisDir, protoDir} {
+	for _, root := range []string{googleapisDir} {
 		walkFn := func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
