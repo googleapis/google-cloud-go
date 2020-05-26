@@ -1431,6 +1431,7 @@ func TestStressSessionPool(t *testing.T) {
 			t.Fatalf("%v: number of pending session creations = %v, want 0", ti, sp.createReqs)
 		}
 		// Dump healthcheck queue.
+		sp.hc.mu.Lock()
 		for _, s := range sp.hc.queue.sessions {
 			if hcSessions[s.getID()] {
 				t.Fatalf("%v: found duplicated session in healthcheck queue: %v", ti, s.getID())
@@ -1438,6 +1439,7 @@ func TestStressSessionPool(t *testing.T) {
 			hcSessions[s.getID()] = true
 		}
 		sp.mu.Unlock()
+		sp.hc.mu.Unlock()
 
 		// Verify that idleSessions == hcSessions == mockSessions.
 		if !testEqual(idleSessions, hcSessions) {
