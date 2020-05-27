@@ -210,3 +210,23 @@ func ExamplePublisherClient_DeleteTopic() {
 		// TODO: Handle error.
 	}
 }
+
+func ExamplePublisherClient_DetachSubscription() {
+	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+
+	ctx := context.Background()
+	c, err := pubsub.NewPublisherClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &pubsubpb.DetachSubscriptionRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.DetachSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
