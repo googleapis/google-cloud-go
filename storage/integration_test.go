@@ -3150,14 +3150,10 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected deletion failure: %v", err)
 	}
 
-	hk, err := hkh.Get(ctx)
-	if err == nil {
-		// If the err == nil, then the returned HMACKey's state MUST be Deleted.
-		if hk == nil || hk.State != Deleted {
-			t.Fatalf("After deletion\nGot %#v\nWanted state %q", hk, Deleted)
-		}
-	} else if !strings.Contains(err.Error(), "404") {
+	_, err = hkh.Get(ctx)
+	if err != nil && !strings.Contains(err.Error(), "404") {
 		// If the deleted key has already been garbage collected, a 404 is expected.
+		// Other errors should cause a failure and are not expected.
 		t.Fatalf("Unexpected error: %v", err)
 	}
 }
