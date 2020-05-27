@@ -67,7 +67,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/billing/apiv1",
 		gRPCServiceConfigPath: "google/cloud/billing/v1/cloud_billing_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/billing/v1/cloudbilling.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/language/v1",
@@ -291,7 +291,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/secretmanager/apiv1",
 		gRPCServiceConfigPath: "google/cloud/secretmanager/v1/secretmanager_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/secretmanager/v1/secretmanager_v1.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/secrets/v1beta1",
@@ -307,7 +307,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/osconfig/apiv1",
 		gRPCServiceConfigPath: "google/cloud/osconfig/v1/osconfig_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/osconfig/v1/osconfig_v1.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/osconfig/v1beta",
@@ -599,7 +599,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/recommender/apiv1",
 		gRPCServiceConfigPath: "google/cloud/recommender/v1/recommender_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/recommender/v1/recommender_v1.yaml",
-		releaseLevel:          "alpha",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/videointelligence/v1beta2",
