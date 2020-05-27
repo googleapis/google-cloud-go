@@ -161,18 +161,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		UpdateBackup: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        32000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		UpdateBackup: []gax.CallOption{},
 		DeleteBackup: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -197,18 +186,7 @@ func defaultDatabaseAdminCallOptions() *DatabaseAdminCallOptions {
 				})
 			}),
 		},
-		RestoreDatabase: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        32000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		RestoreDatabase: []gax.CallOption{},
 		ListDatabaseOperations: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{

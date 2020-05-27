@@ -46,6 +46,7 @@ type PublisherCallOptions struct {
 	ListTopicSubscriptions []gax.CallOption
 	ListTopicSnapshots     []gax.CallOption
 	DeleteTopic            []gax.CallOption
+	DetachSubscription     []gax.CallOption
 }
 
 func defaultPublisherClientOptions() []option.ClientOption {
@@ -152,6 +153,17 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 			}),
 		},
 		DeleteTopic: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DetachSubscription: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -346,7 +358,7 @@ func (c *PublisherClient) ListTopics(ctx context.Context, req *pubsubpb.ListTopi
 	return it
 }
 
-// ListTopicSubscriptions lists the names of the subscriptions on this topic.
+// ListTopicSubscriptions lists the names of the attached subscriptions on this topic.
 func (c *PublisherClient) ListTopicSubscriptions(ctx context.Context, req *pubsubpb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -448,6 +460,26 @@ func (c *PublisherClient) DeleteTopic(ctx context.Context, req *pubsubpb.DeleteT
 		return err
 	}, opts...)
 	return err
+}
+
+// DetachSubscription detaches a subscription from this topic. All messages retained in the
+// subscription are dropped. Subsequent Pull and StreamingPull requests
+// will return FAILED_PRECONDITION. If the subscription is a push
+// subscription, pushes to the endpoint will stop.
+func (c *PublisherClient) DetachSubscription(ctx context.Context, req *pubsubpb.DetachSubscriptionRequest, opts ...gax.CallOption) (*pubsubpb.DetachSubscriptionResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DetachSubscription[0:len(c.CallOptions.DetachSubscription):len(c.CallOptions.DetachSubscription)], opts...)
+	var resp *pubsubpb.DetachSubscriptionResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.publisherClient.DetachSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // StringIterator manages a stream of string.
