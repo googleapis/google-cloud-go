@@ -26,7 +26,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
@@ -74,7 +74,7 @@ func defaultDataSourceCallOptions() *DataSourceCallOptions {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type DataSourceClient struct {
 	// The connection to the service.
-	conn *grpc.ClientConn
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	dataSourceClient datatransferpb.DataSourceServiceClient
@@ -92,15 +92,15 @@ type DataSourceClient struct {
 // configure transfer of their data from other Google Products into BigQuery.
 // This service exposes methods that should be used by data source backend.
 func NewDataSourceClient(ctx context.Context, opts ...option.ClientOption) (*DataSourceClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultDataSourceClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultDataSourceClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &DataSourceClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultDataSourceCallOptions(),
 
-		dataSourceClient: datatransferpb.NewDataSourceServiceClient(conn),
+		dataSourceClient: datatransferpb.NewDataSourceServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -109,13 +109,13 @@ func NewDataSourceClient(ctx context.Context, opts ...option.ClientOption) (*Dat
 
 // Connection returns the client's connection to the API service.
 func (c *DataSourceClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *DataSourceClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
