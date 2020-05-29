@@ -856,6 +856,7 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 	s.mu.Unlock()
 	resp := &spannerpb.ExecuteBatchDmlResponse{}
 	resp.ResultSets = make([]*spannerpb.ResultSet, len(req.Statements))
+	resp.Status = &status.Status{Code: int32(codes.OK)}
 	for idx, batchStatement := range req.Statements {
 		statementResult, err := s.getStatementResult(batchStatement.Sql)
 		if err != nil {
@@ -863,12 +864,13 @@ func (s *inMemSpannerServer) ExecuteBatchDml(ctx context.Context, req *spannerpb
 		}
 		switch statementResult.Type {
 		case StatementResultError:
-			resp.Status = &status.Status{Code: int32(codes.Unknown)}
+			resp.Status = &status.Status{Code: int32(gstatus.Code(statementResult.Err)), Message: statementResult.Err.Error()}
+			resp.ResultSets = resp.ResultSets[:idx]
+			return resp, nil
 		case StatementResultResultSet:
 			return nil, gstatus.Error(codes.InvalidArgument, fmt.Sprintf("Not an update statement: %v", batchStatement.Sql))
 		case StatementResultUpdateCount:
 			resp.ResultSets[idx] = statementResult.convertUpdateCountToResultSet(!isPartitionedDml)
-			resp.Status = &status.Status{Code: int32(codes.OK)}
 		}
 	}
 	return resp, nil
