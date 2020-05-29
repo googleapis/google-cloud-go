@@ -54,14 +54,14 @@ var (
 // of another message without regard to irrelevant fields.
 type messageData struct {
 	ID         string
-	Data       []byte
+	Data       string
 	Attributes map[string]string
 }
 
-func extractMessageData(m *Message) *messageData {
-	return &messageData{
+func extractMessageData(m *Message) messageData {
+	return messageData{
 		ID:         m.ID,
-		Data:       m.Data,
+		Data:       string(m.Data),
 		Attributes: m.Attributes,
 	}
 }
@@ -243,7 +243,7 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 		r := topic.Publish(ctx, m)
 		rs = append(rs, pubResult{m, r})
 	}
-	want := make(map[string]*messageData)
+	want := make(map[string]messageData)
 	for _, res := range rs {
 		id, err := res.r.Get(ctx)
 		if err != nil {
@@ -274,13 +274,13 @@ func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsg
 			t.Fatalf("Pull: %v", err)
 		}
 	}
-	got := make(map[string]*messageData)
+	got := make(map[string]messageData)
 	for _, m := range gotMsgs {
 		md := extractMessageData(m)
 		got[md.ID] = md
 	}
 	if !testutil.Equal(got, want) {
-		t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %v, messages want: %v",
+		t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
 			maxMsgs, synchronous, got, want)
 	}
 }
