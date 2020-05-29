@@ -146,6 +146,7 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 	}
 
 	args := []string{"-I", googleapisDir,
+		"--experimental_allow_proto3_optional",
 		"-I", protoDir,
 		"--go_gapic_out", gocloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
