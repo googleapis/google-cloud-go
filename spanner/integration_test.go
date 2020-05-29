@@ -2625,8 +2625,6 @@ func TestIntegration_BatchDML_TwoStatements(t *testing.T) {
 	}
 }
 
-// TODO(deklerk): this currently does not work because the transaction appears to
-// get rolled back after a single statement fails. b/120158761
 func TestIntegration_BatchDML_Error(t *testing.T) {
 	t.Parallel()
 
@@ -2659,11 +2657,20 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected err, got nil")
 		}
+		// The statement may also have been aborted by Spanner, and in that
+		// case we should just let the client library retry the transaction.
+		if status.Code(err) == codes.Aborted {
+			return err
+		}
 		if want := []int64{1}; !testEqual(counts, want) {
 			t.Fatalf("got %d, want %d", counts, want)
 		}
 
 		got, err := readAll(tx.Read(ctx, "Singers", AllKeys(), columns))
+		// Aborted error is ok, just retry the transaction.
+		if status.Code(err) == codes.Aborted {
+			return err
+		}
 		if err != nil {
 			t.Fatal(err)
 		}

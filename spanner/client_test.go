@@ -931,6 +931,52 @@ func TestClient_ReadWriteTransaction_BatchDMLAborted(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_BatchDMLAbortedHalfway(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	abortedStatement := "UPDATE FOO_ABORTED SET BAR=1 WHERE ID=2"
+	server.TestSpanner.PutStatementResult(
+		abortedStatement,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.Aborted, "Statement was aborted"),
+		},
+	)
+	ctx := context.Background()
+	var updateCounts []int64
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts > 1 {
+			// Replace the aborted result with a real result to prevent the
+			// transaction from aborting indefinitely.
+			server.TestSpanner.PutStatementResult(
+				abortedStatement,
+				&StatementResult{
+					Type:        StatementResultUpdateCount,
+					UpdateCount: 3,
+				},
+			)
+		}
+		var err error
+		updateCounts, err = tx.BatchUpdate(ctx, []Statement{{SQL: abortedStatement}, {SQL: UpdateBarSetFoo}})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempt count mismatch:\nWant: %v\nGot: %v", w, g)
+	}
+	if g, w := updateCounts, []int64{3, UpdateBarSetFooRowCount}; !testEqual(w, g) {
+		t.Fatalf("update count mismatch\nWant: %v\nGot: %v", w, g)
+	}
+}
+
 func TestClient_ReadWriteTransaction_QueryAborted(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
