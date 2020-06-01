@@ -1533,7 +1533,10 @@ func TestIntegration_BadEndpoint(t *testing.T) {
 func TestIntegration_Filter_CreateSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	// TODO(hongalex): Remove this once filtering is GA.
+	// https://github.com/googleapis/google-cloud-go/issues/2390
+	opts := withGRPCHeadersAssertion(t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	client := integrationTestClient(ctx, t, opts...)
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
