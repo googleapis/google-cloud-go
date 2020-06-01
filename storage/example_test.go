@@ -635,9 +635,16 @@ func ExampleComposer_Run() {
 	src1 := bkt.Object("o1")
 	src2 := bkt.Object("o2")
 	dst := bkt.Object("o3")
+
 	// Compose and modify metadata.
 	c := dst.ComposerFrom(src1, src2)
 	c.ContentType = "text/plain"
+
+	// Set the expected checksum for the destination object to be validated by
+	// the backend (if desired).
+	c.CRC32C = 42
+	c.SendCRC32C = true
+
 	attrs, err := c.Run(ctx)
 	if err != nil {
 		// TODO: Handle error.
