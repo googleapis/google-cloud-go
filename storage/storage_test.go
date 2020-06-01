@@ -774,13 +774,14 @@ func TestObjectCompose(t *testing.T) {
 	}
 
 	testCases := []struct {
-		desc    string
-		dst     *ObjectHandle
-		srcs    []*ObjectHandle
-		attrs   *ObjectAttrs
-		wantReq raw.ComposeRequest
-		wantURL string
-		wantErr bool
+		desc       string
+		dst        *ObjectHandle
+		srcs       []*ObjectHandle
+		attrs      *ObjectAttrs
+		sendCRC32C bool
+		wantReq    raw.ComposeRequest
+		wantURL    string
+		wantErr    bool
 	}{
 		{
 			desc: "basic case",
@@ -850,6 +851,26 @@ func TestObjectCompose(t *testing.T) {
 			},
 		},
 		{
+			desc: "with crc32c",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+				c.Bucket("foo").Object("quux"),
+			},
+			attrs: &ObjectAttrs{
+				CRC32C: 42,
+			},
+			sendCRC32C: true,
+			wantURL:    "/storage/v1/b/foo/o/bar/compose?alt=json&prettyPrint=false",
+			wantReq: raw.ComposeRequest{
+				Destination: &raw.Object{Bucket: "foo", Crc32c: "AAAAKg=="},
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{Name: "baz"},
+					{Name: "quux"},
+				},
+			},
+		},
+		{
 			desc:    "no sources",
 			dst:     c.Bucket("foo").Object("bar"),
 			wantErr: true,
@@ -909,6 +930,7 @@ func TestObjectCompose(t *testing.T) {
 		if tt.attrs != nil {
 			composer.ObjectAttrs = *tt.attrs
 		}
+		composer.SendCRC32C = tt.sendCRC32C
 		_, err := composer.Run(ctx)
 		if gotErr := err != nil; gotErr != tt.wantErr {
 			t.Errorf("%s: got error %v; want err %t", tt.desc, err, tt.wantErr)
