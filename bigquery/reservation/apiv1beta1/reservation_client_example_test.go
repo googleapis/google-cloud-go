@@ -137,6 +137,26 @@ func ExampleClient_UpdateReservation() {
 	_ = resp
 }
 
+func ExampleClient_CreateCapacityCommitment() {
+	// import reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1"
+
+	ctx := context.Background()
+	c, err := reservation.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &reservationpb.CreateCapacityCommitmentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateCapacityCommitment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_ListCapacityCommitments() {
 	// import reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1"
 	// import "google.golang.org/api/iterator"
