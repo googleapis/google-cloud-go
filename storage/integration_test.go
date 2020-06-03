@@ -589,14 +589,19 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 
 	objName := uidSpace.New()
 	obj := bkt.Object(objName)
-	w := obj.NewWriter(ctx)
-
 	contents := []byte("Hello, world this is a range request")
-	if _, err := w.Write(contents); err != nil {
-		t.Fatalf("Failed to write contents: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatalf("Failed to close writer: %v", err)
+
+	if err := retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			return fmt.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to close writer: %v", err)
+		}
+		return nil
+	}, nil); err != nil {
+		t.Fatal(err)
 	}
 
 	last5s := []struct {
