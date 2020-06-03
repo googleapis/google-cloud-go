@@ -3391,16 +3391,20 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.NewWriter(ctx)
-	w.ContentType = contentType
-	w.CacheControl = "public, max-age=60"
-	if contents != nil {
-		if _, err := w.Write(contents); err != nil {
-			_ = w.Close()
-			return err
+	// TODO: remove retry once retry logic in the client has been improved.
+	// https://github.com/googleapis/google-cloud-go/issues/2395
+	return retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		w.ContentType = contentType
+		w.CacheControl = "public, max-age=60"
+		if contents != nil {
+			if _, err := w.Write(contents); err != nil {
+				_ = w.Close()
+				return err
+			}
 		}
-	}
-	return w.Close()
+		return w.Close()
+	}, nil)
 }
 
 // loc returns a string describing the file and line of its caller's call site. In
