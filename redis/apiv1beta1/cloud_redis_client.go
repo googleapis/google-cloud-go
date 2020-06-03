@@ -247,7 +247,7 @@ func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInst
 // CreateInstance creates a Redis instance based on the specified tier and memory size.
 //
 // By default, the instance is accessible from the project’s
-// default network (at /compute/docs/networks-and-firewalls#networks).
+// default network (at https://cloud.google.com/vpc/docs/vpc).
 //
 // The creation is executed asynchronously and callers may check the returned
 // operation to track its progress. Once the operation is completed the Redis

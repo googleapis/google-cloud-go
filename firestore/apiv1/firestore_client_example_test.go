@@ -174,6 +174,33 @@ func ExampleClient_Rollback() {
 	}
 }
 
+func ExampleClient_PartitionQuery() {
+	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &firestorepb.PartitionQueryRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.PartitionQuery(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_Write() {
 	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 
@@ -271,6 +298,26 @@ func ExampleClient_ListCollectionIds() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleClient_BatchWrite() {
+	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+
+	ctx := context.Background()
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &firestorepb.BatchWriteRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.BatchWrite(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleClient_CreateDocument() {
