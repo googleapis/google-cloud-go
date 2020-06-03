@@ -14,7 +14,7 @@ require (
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
 	golang.org/x/tools v0.0.0-20200601175630-2caf76543d99 // indirect
 	google.golang.org/api v0.26.0
-	google.golang.org/genproto v0.0.0-20200602104108-2bb8d6132df6
+	google.golang.org/genproto v0.0.0-20200603110839-e855014d5736
 	google.golang.org/grpc v1.29.1
 	rsc.io/binaryregexp v0.2.0
 )
