@@ -2691,6 +2691,8 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/2393")
+
 	skipEmulatorTest(t)
 	t.Parallel()
 
