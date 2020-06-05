@@ -178,34 +178,7 @@ type AgentsClient struct {
 
 // NewAgentsClient creates a new agents client.
 //
-// Agents are best described as Natural Language Understanding (NLU) modules
-// that transform user requests into actionable data. You can include agents
-// in your app, product, or service to determine user intent and respond to the
-// user in a natural way.
-//
-// After you create an agent, you can add Intents, Contexts,
-// [Entity Types][google.cloud.dialogflow.v2.EntityTypes], Webhooks, and so on to
-// manage the flow of a conversation and match user input to predefined intents
-// and actions.
-//
-// You can create an agent using both Dialogflow Standard Edition and
-// Dialogflow Enterprise Edition. For details, see
-// Dialogflow
-// Editions (at https://cloud.google.com/dialogflow/docs/editions).
-//
-// You can save your agent for backup or versioning by exporting the agent by
-// using the ExportAgent method. You can import a saved
-// agent by using the ImportAgent method.
-//
-// Dialogflow provides several
-// prebuilt
-// agents (at https://cloud.google.com/dialogflow/docs/agents-prebuilt)
-// for common conversation scenarios such as determining a date and time,
-// converting currency, and so on.
-//
-// For more information about agents, see the
-// Dialogflow
-// documentation (at https://cloud.google.com/dialogflow/docs/agents-overview).
+// Service for managing Agents.
 func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsClient, error) {
 	clientOpts := defaultAgentsClientOptions()
 
