@@ -20,7 +20,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20200604042327-9b20fe4cabe8
+	golang.org/x/tools v0.0.0-20200604183345-4d5ea46c79fe
 	google.golang.org/api v0.26.0
 	google.golang.org/genproto v0.0.0-20200604104852-0b0486081ffb
 	google.golang.org/grpc v1.29.1
