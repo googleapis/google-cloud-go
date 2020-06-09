@@ -10,51 +10,11 @@
 1. Sign one of the
 [contributor license agreements](#contributor-license-agreements) below.
 
-1. Run `go get golang.org/x/review/git-codereview && go install golang.org/x/review/git-codereview`
-to install the code reviewing tool.
+1. Clone the repo:
+    `git clone https://github.com/googleapis/google-cloud-go`
 
-    1. Ensure it's working by running `git codereview` (check your `PATH` if
-    not).
-
-    1. If you would like, you may want to set up aliases for `git-codereview`,
-    such that `git codereview change` becomes `git change`. See the
-    [godoc](https://pkg.go.dev/golang.org/x/review/git-codereview) for details.
-
-        * Should you run into issues with the `git-codereview` tool, please note
-        that all error messages will assume that you have set up these aliases.
-
-1. Change to a directory of your choosing and clone the repo.
-
-    ```
-    cd ~/code
-    git clone https://code.googlesource.com/gocloud
-    ```
-
-    * If you have already checked out the source, make sure that the remote
-    `git` `origin` is https://code.googlesource.com/gocloud:
-
-        ```
-        git remote -v
-        # ...
-        git remote set-url origin https://code.googlesource.com/gocloud
-        ```
-
-    * The project uses [Go Modules](https://blog.golang.org/using-go-modules)
-    for dependency management See
-    [`gopls`](https://github.com/golang/go/wiki/gopls) for making your editor
-    work with modules.
-
-1. Change to the project directory and add the github remote:
-
-    ```
-    cd ~/code/gocloud
-    git remote add github https://github.com/googleapis/google-cloud-go
-    ```
-
-1. Make sure your `git` auth is configured correctly by visiting
-https://code.googlesource.com, clicking "Generate Password" at the top-right,
-and following the directions. Otherwise, `git codereview mail` in the next step
-will fail.
+1. Change into the checked out source:
+    `cd google-cloud-go`
 
 # Which module to release?
 
@@ -122,8 +82,7 @@ the failures have been resolved.
    c. Tag the repo with the next version: `git tag $NV`.
    d. Push the tag to both remotes:
       `git push origin $NV`
-      `git push github $NV`
-1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
+2. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `CHANGES.md`.
 
 # How to release a submodule
@@ -158,7 +117,6 @@ To release a submodule:
    c. Tag the repo with the next version: `git tag $NV`.
    d. Push the tag to both remotes:
       `git push origin $NV`
-      `git push github $NV`
 1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `datastore/CHANGES.md`.
 
