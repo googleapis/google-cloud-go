@@ -17,23 +17,18 @@ package spanner
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/version"
-	stestutil "cloud.google.com/go/spanner/internal/testutil"
-	"go.opencensus.io/plugin/ocgrpc"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 )
 
 // Check that stats are being exported.
 func TestOCStats(t *testing.T) {
-	// TestExporter is currently not thread safe, but that is being fixed.
-	t.Skip("TestExporter is not thread safe")
 	te := testutil.NewTestExporter()
 	defer te.Unregister()
 
@@ -47,24 +42,6 @@ func TestOCStats(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Fatal("no stats were exported before timeout")
 	}
-}
-
-// NewTestExporter creates a TestExporter and registers it with OpenCensus.
-// TODO(hengfeng): This can be deleted when v0.58.0 of cloud.google.com/go is
-// released.
-func NewTestExporter(views ...*view.View) *testutil.TestExporter {
-	te := &testutil.TestExporter{Stats: make(chan *view.Data)}
-
-	view.RegisterExporter(te)
-	view.SetReportingPeriod(time.Millisecond)
-	if len(views) == 0 {
-		views = ocgrpc.DefaultClientViews
-	}
-	if err := view.Register(views...); err != nil {
-		log.Fatal(err)
-	}
-
-	return te
 }
 
 func TestOCStats_SessionPool(t *testing.T) {
@@ -112,11 +89,8 @@ func TestOCStats_SessionPool(t *testing.T) {
 }
 
 func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
-	te := NewTestExporter(v)
+	te := testutil.NewTestExporter(v)
 	defer te.Unregister()
-	// TODO(hengfeng): This can be deleted when v0.58.0 of cloud.google.com/go
-	// is released.
-	defer view.Unregister(v)
 
 	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()
@@ -147,11 +121,8 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 }
 
 func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
-	te := NewTestExporter(SessionsCountView)
+	te := testutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()
-	// TODO(hengfeng): This can be deleted when v0.58.0 of cloud.google.com/go
-	// is released.
-	defer view.Unregister(SessionsCountView)
 
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig})
 	defer teardown()
@@ -202,19 +173,11 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 }
 
 func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
-	te := NewTestExporter(GetSessionTimeoutsCountView)
+	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
-	// TODO(hengfeng): This can be deleted when v0.58.0 of cloud.google.com/go
-	// is released.
-	defer view.Unregister(GetSessionTimeoutsCountView)
 
-	server, client, teardown := setupMockedTestServer(t)
+	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()
-
-	server.TestSpanner.PutExecutionTime(stestutil.MethodGetSession,
-		stestutil.SimulatedExecutionTime{
-			MinimumExecutionTime: 50 * time.Millisecond,
-		})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
