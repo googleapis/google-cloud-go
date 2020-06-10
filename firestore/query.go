@@ -43,7 +43,7 @@ type Query struct {
 	orders                 []order
 	offset                 int32
 	limit                  *wrappers.Int32Value
-	limitToLast            *wrappers.Int32Value
+	limitToLast            bool
 	startVals, endVals     []interface{}
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
@@ -167,15 +167,15 @@ func (q Query) Offset(n int) Query {
 // to return. It must not be negative.
 func (q Query) Limit(n int) Query {
 	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
-	q.limitToLast = nil
+	q.limitToLast = false
 	return q
 }
 
 // LimitToLast returns a new Query that specifies the maximum number of last
 // results to return. It must not be negative.
 func (q Query) LimitToLast(n int) Query {
-	q.limit = nil
-	q.limitToLast = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limitToLast = true
 	return q
 }
 
@@ -581,14 +581,10 @@ func trunc32(i int) int32 {
 
 // Get returns an array of query's resulting documents.
 func (q Query) Get(ctx context.Context) ([]*DocumentSnapshot, error) {
-	limitedToLast := false
+	limitedToLast := q.limitToLast
 
-	if q.limitToLast != nil {
-		// Flip Query order statements before posting a request.
-		limitedToLast = true
-		q.limit = q.limitToLast
-		q.limitToLast = nil
-
+	if q.limitToLast {
+		// Flip order statements before posting a request.
 		for i := range q.orders {
 			if q.orders[i].dir == Asc {
 				q.orders[i].dir = Desc
@@ -600,19 +596,16 @@ func (q Query) Get(ctx context.Context) ([]*DocumentSnapshot, error) {
 		q.startVals, q.endVals = q.endVals, q.startVals
 		q.startDoc, q.endDoc = q.endDoc, q.startDoc
 		q.startBefore, q.endBefore = q.endBefore, q.startBefore
+
+		q.limitToLast = false
 	}
-	docIterator := &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil),
-	}
-	docs, err := docIterator.GetAll()
+	docs, err := q.Documents(ctx).GetAll()
 	if err != nil {
 		return nil, err
 	}
 	if limitedToLast {
 		// Flip docs order before return.
-		i := 0
-		j := len(docs) - 1
-		for i < j {
+		for i, j := 0, len(docs)-1; i < j; {
 			docs[i], docs[j] = docs[j], docs[i]
 			i++
 			j--
@@ -623,7 +616,7 @@ func (q Query) Get(ctx context.Context) ([]*DocumentSnapshot, error) {
 
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
-	if q.limitToLast != nil {
+	if q.limitToLast {
 		return &DocumentIterator{
 			err: errors.New("Query results for queries that include limitToLast constraints cannot be streamed. Use Query.Get() instead."),
 		}
