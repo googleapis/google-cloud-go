@@ -681,7 +681,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	seen := map[int64]bool{} // "q" values we see
+	seen := map[int64]bool{} // "q" values we see.
 	for _, d := range allDocs {
 		data := d.Data()
 		q, ok := data["q"]
@@ -765,7 +765,7 @@ func TestIntegration_QueryGet(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	seen := map[int64]bool{} // "q" values we see
+	seen := map[int64]bool{} // "q" values we see.
 	for _, d := range allDocs {
 		data := d.Data()
 		q, ok := data["q"]
