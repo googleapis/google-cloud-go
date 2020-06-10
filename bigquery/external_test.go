@@ -72,6 +72,16 @@ func TestExternalDataConfig(t *testing.T) {
 				},
 			},
 		},
+		{
+			SourceFormat:        Avro,
+			SourceURIs:          []string{"uri"},
+			IgnoreUnknownValues: true,
+			MaxBadRecords:       17,
+			Options: &HivePartitioningOptions{
+				Mode:            Auto,
+				SourceUriPrefix: "uri",
+			},
+		},
 	} {
 		q := want.toBQ()
 		got, err := bqToExternalDataConfig(&q)

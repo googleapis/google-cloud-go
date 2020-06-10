@@ -24,6 +24,9 @@ import (
 // DataFormat describes the format of BigQuery table data.
 type DataFormat string
 
+// HivePartitioningMode describes the mode of Hive partitioning.
+type HivePartitioningMode string
+
 // Constants describing the format of BigQuery table data.
 const (
 	CSV             DataFormat = "CSV"
@@ -38,6 +41,10 @@ const (
 	TFSavedModel DataFormat = "ML_TF_SAVED_MODEL"
 	// For BQ ML Models, xgBoost Booster format.
 	XGBoostBooster DataFormat = "ML_XGBOOST_BOOSTER"
+
+	Auto    HivePartitioningMode = "AUTO"
+	Strings HivePartitioningMode = "STRINGS"
+	Custom  HivePartitioningMode = "CUSTOM"
 )
 
 // ExternalData is a table which is stored outside of BigQuery. It is implemented by
@@ -271,6 +278,23 @@ func (o *BigtableOptions) populateExternalDataConfig(c *bq.ExternalDataConfigura
 		q.ColumnFamilies = append(q.ColumnFamilies, f.toBQ())
 	}
 	c.BigtableOptions = q
+}
+
+// HivePartitioningOptions are additional options for GCS external data sources with Hive partitioning layout.
+type HivePartitioningOptions struct {
+	// A mode of hive partitioning to use when reading data.
+	Mode HivePartitioningMode
+
+	// A common prefix for all source uris should be supplied.
+	// The prefix must end immediately before the partition key encoding begins.
+	SourceUriPrefix string `json:"sourceUriPrefix,omitempty"`
+}
+
+func (o *HivePartitioningOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	c.HivePartitioningOptions = &bq.HivePartitioningOptions{
+		Mode:            string(o.Mode),
+		SourceUriPrefix: o.SourceUriPrefix,
+	}
 }
 
 func bqToBigtableOptions(q *bq.BigtableOptions) (*BigtableOptions, error) {
