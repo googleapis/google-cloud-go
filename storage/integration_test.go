@@ -2603,7 +2603,6 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -3335,9 +3334,17 @@ func (h testHelper) mustBucketAttrs(b *BucketHandle) *BucketAttrs {
 }
 
 func (h testHelper) mustUpdateBucket(b *BucketHandle, ua BucketAttrsToUpdate) *BucketAttrs {
-	attrs, err := b.Update(context.Background(), ua)
+	var attrs *BucketAttrs
+	var err error
+	err = retry(context.Background(), func() error {
+		attrs, err = b.Update(context.Background(), ua)
+		if err != nil {
+			return fmt.Errorf("update: %v", err)
+		}
+		return nil
+	}, nil)
 	if err != nil {
-		h.t.Fatalf("%s: update: %v", loc(), err)
+		h.t.Fatalf("%s: %v", loc(), err)
 	}
 	return attrs
 }
