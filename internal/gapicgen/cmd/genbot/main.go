@@ -96,12 +96,12 @@ func main() {
 	}
 
 	// Check current regen status.
-	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto"); err != nil {
+	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		log.Fatal(err)
 	} else if pr != nil {
 		return
 	}
-	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go"); err != nil {
+	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
 		log.Fatal(err)
 	} else if pr != nil {
 		if err := updateGocloudPR(ctx, githubClient, pr); err != nil {

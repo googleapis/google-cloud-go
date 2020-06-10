@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"time"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
 	"golang.org/x/sync/errgroup"
@@ -19,6 +20,18 @@ import (
 // generate downloads sources and generates pull requests for go-genproto and
 // google-cloud-go if needed.
 func generate(ctx context.Context, githubClient *GithubClient) error {
+	log.Println("checking if a pull request was already opened and merged today")
+	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "closed"); err != nil {
+		return err
+	} else if pr != nil {
+		now := time.Now()
+		today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Local().Location())
+		if pr.Created.After(today) {
+			log.Println("skipping generation, already ran today")
+			return nil
+		}
+	}
+
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {

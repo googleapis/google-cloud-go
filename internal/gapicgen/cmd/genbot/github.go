@@ -18,33 +18,32 @@ const (
 	gocloudCommitTitle = "all: auto-regenerate gapics"
 	gocloudCommitBody  = `
 This is an auto-generated regeneration of the gapic clients by
-cloud.google.com/go/internal/gapicgen. Once the corresponding gocloud PR is
-submitted, genmgr will update this CL with a newer dependency to the newer
-version of gocloud and assign reviewers to this CL.
+cloud.google.com/go/internal/gapicgen. Once the corresponding genproto PR is
+submitted, genbot will update this PR with a newer dependency to the newer
+version of genproto and assign reviewers to this PR.
 
-If you have been assigned to review this CL, please:
+If you have been assigned to review this PR, please:
 
-- Ensure that the version of gocloud in go.mod has been updated.
+- Ensure that the version of genproto in go.mod has been updated.
 - Ensure that CI is passing. If it's failing, it requires your manual attention.
-- +2 and submit this CL if you believe it's ready to ship.
+- Approve and submit this PR if you believe it's ready to ship.
 `
 
 	genprotoBranchName  = "regen_genproto"
 	genprotoCommitTitle = "auto-regenerate .pb.go files"
 	genprotoCommitBody  = `
 This is an auto-generated regeneration of the .pb.go files by
-cloud.google.com/go/internal/gapicgen. Once this PR is submitted, genmgr will
-update the corresponding CL at gocloud to depend on the newer version of
-go-genproto, and assign reviewers. Whilst this or any regen PR is open in
-go-genproto, gapicgen will not create any more regeneration PRs or CLs. If all
-regen PRs are closed, gapicgen will create a new set of regeneration PRs and
-CLs once per night.
+cloud.google.com/go/internal/gapicgen. Once this PR is submitted, genbot will
+update the corresponding PR to depend on the newer version of go-genproto, and
+assign reviewers. Whilst this or any regen PR is open in go-genproto, genbot
+will not create any more regeneration PRs. If all regen PRs are closed,
+gapicgen will create a new set of regeneration PRs once per night.
 
-If you have been assigned to review this CL, please:
+If you have been assigned to review this PR, please:
 
 - Ensure that CI is passing. If it's failing, it requires your manual attention.
 - Approve and submit this PR if you believe it's ready to ship. That will prompt
-genmgr to assign reviewers to the gocloud CL.
+genbot to assign reviewers to the google-cloud-go PR.
 `
 )
 
@@ -54,11 +53,13 @@ genmgr to assign reviewers to the gocloud CL.
 // TODO(ndietz): Can we use github teams?
 var githubReviewers = []string{"hongalex", "broady", "noahdietz", "tritone", "codyoss", "tbpg"}
 
+// PullRequest represents a GitHub pull request.
 type PullRequest struct {
 	Author  string
 	Title   string
 	URL     string
 	Created time.Time
+	IsOpen  bool
 	Number  int
 	Repo    string
 }
@@ -108,9 +109,10 @@ func setGitCreds(githubName, githubEmail string) error {
 	return c.Run()
 }
 
-// GetRegenPR finds the first open regen pull request for the provided repo.
-func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string) (*PullRequest, error) {
-	log.Printf("getting %v changes", repo)
+// GetRegenPR finds the first regen pull request with the given status. Accepted
+// statues are: open, closed, or all.
+func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status string) (*PullRequest, error) {
+	log.Printf("getting %v pull requests", repo)
 
 	// We don't bother paginating, because it hurts our requests quota and makes
 	// the page slower without a lot of value.
@@ -131,6 +133,7 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string) (*PullReque
 			Title:   pr.GetTitle(),
 			URL:     pr.GetHTMLURL(),
 			Created: pr.GetCreatedAt(),
+			IsOpen:  pr.GetState() == "open",
 			Number:  pr.GetNumber(),
 			Repo:    repo,
 		}, nil
@@ -261,20 +264,6 @@ git push origin $BRANCH_NAME
 		return 0, err
 	}
 
-	// Can't assign the submitter of the PR as a reviewer.
-	var reviewers []string
-	for _, r := range githubReviewers {
-		if r != *githubUsername {
-			reviewers = append(reviewers, r)
-		}
-	}
-
-	if _, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", "google-cloud-go", pr.GetNumber(), github.ReviewersRequest{
-		Reviewers: reviewers,
-	}); err != nil {
-		return 0, err
-	}
-
 	log.Printf("creating google-cloud-go PR... done %s\n", pr.GetHTMLURL())
 
 	return pr.GetNumber(), nil
@@ -291,8 +280,15 @@ func (gc *GithubClient) HasReviewers(ctx context.Context, repo string, number in
 
 // AddReviewers adds reviewers to the pull request.
 func (gc *GithubClient) AddReviewers(ctx context.Context, repo string, number int) error {
+	// Can't assign the submitter of the PR as a reviewer.
+	var reviewers []string
+	for _, r := range githubReviewers {
+		if r != *githubUsername {
+			reviewers = append(reviewers, r)
+		}
+	}
 	_, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", repo, number, github.ReviewersRequest{
-		Reviewers: githubReviewers,
+		Reviewers: reviewers,
 	})
 	return err
 }

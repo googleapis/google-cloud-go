@@ -70,6 +70,7 @@ git add -A
 filesUpdated=$( git status --short | wc -l )
 if [ $filesUpdated -gt 0 ];
 then
+    git config credential.helper store # cache creds from ~/.git-credentials
    	git commit --amend --no-edit
 	git push -f origin $BRANCH_NAME
 fi
