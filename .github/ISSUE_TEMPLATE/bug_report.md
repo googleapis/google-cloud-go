@@ -15,6 +15,11 @@ e.g. PubSub
 
 e.g. Alpine Docker on GKE
 
+**Go Environment**
+
+$ go version
+$ go env
+
 **Code**
 
 e.g.

@@ -32,7 +32,7 @@ set -eo pipefail
 set -x
 
 # cd to project dir on Kokoro instance
-cd git/gocloud
+cd github/google-cloud-go
 
 go version
 

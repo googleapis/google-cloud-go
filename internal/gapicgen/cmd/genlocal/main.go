@@ -62,7 +62,7 @@ func main() {
 	grp, _ := errgroup.WithContext(ctx)
 	gitClone(grp, "https://github.com/googleapis/googleapis.git", *googleapisDir, tmpDir)
 	gitClone(grp, "https://github.com/googleapis/go-genproto", *genprotoDir, tmpDir)
-	gitClone(grp, "https://code.googlesource.com/gocloud", *gocloudDir, tmpDir)
+	gitClone(grp, "https://github.com/googleapis/google-cloud-go", *gocloudDir, tmpDir)
 	gitClone(grp, "https://github.com/google/protobuf", *protoDir, tmpDir)
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
