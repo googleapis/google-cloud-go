@@ -278,6 +278,10 @@ git push origin $BRANCH_NAME
 		return 0, err
 	}
 
+	if _, _, err := gc.c.Issues.AddLabelsToIssue(ctx, "googleapis", "google-cloud-go", pr.GetNumber(), []string{"do not merge"}); err != nil {
+		return 0, err
+	}
+
 	log.Printf("creating google-cloud-go PR... done %s\n", pr.GetHTMLURL())
 
 	return pr.GetNumber(), nil
@@ -304,6 +308,12 @@ func (gc *GithubClient) AddReviewers(ctx context.Context, repo string, number in
 	_, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", repo, number, github.ReviewersRequest{
 		Reviewers: reviewers,
 	})
+	return err
+}
+
+// RemoveLabel removes a label for a pull request.
+func (gc *GithubClient) RemoveLabel(ctx context.Context, repo string, number int, label string) error {
+	_, err := gc.c.Issues.RemoveLabelForIssue(ctx, "googleapis", repo, number, label)
 	return err
 }
 

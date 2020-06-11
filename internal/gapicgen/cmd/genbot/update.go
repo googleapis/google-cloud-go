@@ -43,6 +43,9 @@ func updateGocloudPR(ctx context.Context, githubClient *GithubClient, pr *PullRe
 		if err := githubClient.AddReviewers(ctx, pr.Repo, pr.Number); err != nil {
 			return err
 		}
+		if err := githubClient.RemoveLabel(ctx, pr.Repo, pr.Number, "do not merge"); err != nil {
+			return err
+		}
 	}
 
 	// Done!
