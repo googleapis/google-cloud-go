@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"time"
 
 	"cloud.google.com/go/internal/gapicgen"
 )
@@ -108,6 +109,17 @@ func main() {
 			log.Fatal(err)
 		}
 		return
+	}
+	log.Println("checking if a pull request was already opened and merged today")
+	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "closed"); err != nil {
+		log.Fatal(err)
+	} else if pr != nil {
+		now := time.Now()
+		today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Local().Location())
+		if pr.Created.After(today) {
+			log.Println("skipping generation, already ran today")
+			return
+		}
 	}
 
 	if err := generate(ctx, githubClient); err != nil {
