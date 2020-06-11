@@ -1,0 +1,12 @@
+{
+    "simple-cacheable": {
+        "nycyellow-limit1k":"SELECT * FROM `nyc-tlc.yellow.trips` LIMIT 1000",
+        "nycyellow-limit10k":"SELECT * FROM `nyc-tlc.yellow.trips` LIMIT 10000",
+        "wikisamples-ordered-limit1k":"SELECT title FROM `bigquery-public-data.samples.wikipedia` ORDER BY title LIMIT 1000"
+    },
+    "simple-nondeterministic": {
+        "current-timestamp":"SELECT CURRENT_TIMESTAMP as ts",
+        "session-user": "SELECT SESSION_USER() as ts"
+    }
+}
+
