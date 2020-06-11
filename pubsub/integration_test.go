@@ -735,7 +735,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 }
 
 // NOTE: This test should be skipped by open source contributors. It requires
-// whitelisting, a (gsuite) organization project, and specific permissions.
+// allowlisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
