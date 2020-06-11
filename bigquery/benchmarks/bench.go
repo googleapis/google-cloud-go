@@ -29,7 +29,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/bigquery"
-	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 )
 
@@ -292,7 +291,7 @@ func main() {
 
 	// Setup context and client based on ADC.
 	ctx := context.Background()
-	client, err := bigquery.NewClient(ctx, testutil.ProjID())
+	client, err := bigquery.NewClient(ctx, projID)
 	if err != nil {
 		log.Fatalf("bigquery.NewClient: %v", err)
 	}
