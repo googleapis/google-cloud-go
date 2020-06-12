@@ -126,13 +126,13 @@ func setGitCreds(githubName, githubEmail string) error {
 // GetRegenPR finds the first regen pull request with the given status. Accepted
 // statues are: open, closed, or all.
 func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status string) (*PullRequest, error) {
-	log.Printf("getting %v pull requests", repo)
+	log.Printf("getting %v pull requests with status %q", repo, status)
 
 	// We don't bother paginating, because it hurts our requests quota and makes
 	// the page slower without a lot of value.
 	opt := &github.PullRequestListOptions{
 		ListOptions: github.ListOptions{PerPage: 50},
-		State:       "open",
+		State:       status,
 	}
 	prs, _, err := gc.c.PullRequests.List(ctx, "googleapis", repo, opt)
 	if err != nil {
