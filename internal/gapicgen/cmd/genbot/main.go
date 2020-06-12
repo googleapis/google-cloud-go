@@ -100,6 +100,7 @@ func main() {
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		log.Fatal(err)
 	} else if pr != nil {
+		log.Println("There is already a re-generation in progress")
 		return
 	}
 	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
@@ -116,6 +117,7 @@ func main() {
 	} else if pr != nil {
 		now := time.Now()
 		today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Local().Location())
+		log.Printf("Times -- Now: %v\tToday: %v\tPR: %v", now, today, pr)
 		if pr.Created.After(today) {
 			log.Println("skipping generation, already ran today")
 			return
