@@ -152,6 +152,7 @@ type Message struct {
 	Data        []byte
 	Attributes  map[string]string
 	PublishTime time.Time
+	Topic       string
 	Deliveries  int // number of times delivery of the message was attempted
 	Acks        int // number of acks received from clients
 	OrderingKey string
@@ -520,6 +521,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 			Attributes:  pm.Attributes,
 			PublishTime: pubTime,
 			OrderingKey: pm.OrderingKey,
+			Topic:       req.Topic,
 		}
 		top.publish(pm, m)
 		ids = append(ids, id)

@@ -185,9 +185,10 @@ func TestPublish(t *testing.T) {
 	s := NewServer()
 	defer s.Close()
 
+	const topicID = "projects/p/topics/t"
 	var ids []string
 	for i := 0; i < 3; i++ {
-		ids = append(ids, s.Publish("projects/p/topics/t", []byte("hello"), nil))
+		ids = append(ids, s.Publish(topicID, []byte("hello"), nil))
 	}
 	s.Wait()
 	ms := s.Messages()
@@ -196,6 +197,9 @@ func TestPublish(t *testing.T) {
 	}
 	for i, id := range ids {
 		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+		if got, want := ms[i].Topic, topicID; got != want {
 			t.Errorf("got %s, want %s", got, want)
 		}
 	}
