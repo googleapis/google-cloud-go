@@ -375,3 +375,14 @@ func TestRetryPolicy_toProto(t *testing.T) {
 		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
 	}
 }
+
+func TestDetachSubscription(t *testing.T) {
+	ctx := context.Background()
+	c := integrationTestClient(ctx, t)
+	defer c.Close()
+	_, err := c.DetachSubscription(ctx, "lmao")
+	if err != nil {
+		t.Errorf("DetachSubscription failed: %v", err)
+	}
+
+}

@@ -479,7 +479,20 @@ func (s *GServer) DeleteSubscription(_ context.Context, req *pb.DeleteSubscripti
 	sub.stop()
 	delete(s.subs, req.Subscription)
 	sub.topic.deleteSub(sub)
+	sub.topic = nil
+	sub.proto.Topic = ""
 	return &emptypb.Empty{}, nil
+}
+
+func (s *GServer) DetachSubscription(_ context.Context, req *pb.DetachSubscriptionRequest) (*pb.DetachSubscriptionResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	sub, err := s.findSubscription(req.Subscription)
+	if err != nil {
+		return nil, err
+	}
+	sub.topic.deleteSub(sub)
+	return &pb.DetachSubscriptionResponse{}, nil
 }
 
 func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.PublishResponse, error) {
