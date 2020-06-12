@@ -16,6 +16,9 @@
 1. Change into the checked out source:
     `cd google-cloud-go`
 
+1. Fork the repo and add your fork as a secondary remote (this is necessary in
+   order to create PRs).
+
 # Which module to release?
 
 The Go client libraries have several modules. Each module does not strictly
@@ -58,7 +61,7 @@ the failures have been resolved.
 # How to release `cloud.google.com/go`
 
 1. Check for failures in the
-   [continuous Kokoro build](go/google-cloud-go-continuous). If there are any
+   [continuous Kokoro build](http://go/google-cloud-go-continuous). If there are any
    failures in the most recent build, address them before proceeding with the
    release.
 1. Navigate to `~/code/gocloud/` and switch to master.
@@ -74,13 +77,13 @@ the failures have been resolved.
    to be part of your release).
 1. Edit `CHANGES.md` to include a summary of the changes.
 1. `cd internal/version && go generate && cd -`
-1. Mail the CL: `git add -A && git change <branch name> && git mail`
-1. Wait for the CL to be submitted. Once it's submitted, and without submitting
-   any other CLs in the meantime:
+1. Commit the changes, push to your fork, and create a PR.
+1. Wait for the PR to be reviewed and merged. Once it's merged, and without
+   merging any other PRs in the meantime:
    a. Switch to master.
    b. `git pull`
    c. Tag the repo with the next version: `git tag $NV`.
-   d. Push the tag to both remotes:
+   d. Push the tag to origin:
       `git push origin $NV`
 2. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `CHANGES.md`.
@@ -95,7 +98,7 @@ To release a submodule:
 (these instructions assume we're releasing `cloud.google.com/go/datastore` - adjust accordingly)
 
 1. Check for failures in the
-   [continuous Kokoro build](go/google-cloud-go-continuous). If there are any
+   [continuous Kokoro build](http://go/google-cloud-go-continuous). If there are any
    failures in the most recent build, address them before proceeding with the
    release. (This applies even if the failures are in a different submodule from the one
    being released.)
@@ -109,13 +112,13 @@ To release a submodule:
    submodule directory since the last release.
 1. Edit `datastore/CHANGES.md` to include a summary of the changes.
 1. `cd internal/version && go generate && cd -`
-1. Mail the CL: `git add -A && git change <branch name> && git mail`
-1. Wait for the CL to be submitted. Once it's submitted, and without submitting
-   any other CLs in the meantime:
+1. Commit the changes, push to your fork, and create a PR.
+1. Wait for the PR to be reviewed and merged. Once it's merged, and without
+   merging any other PRs in the meantime:
    a. Switch to master.
    b. `git pull`
    c. Tag the repo with the next version: `git tag $NV`.
-   d. Push the tag to both remotes:
+   d. Push the tag to origin:
       `git push origin $NV`
 1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `datastore/CHANGES.md`.
