@@ -1,8 +1,8 @@
 # Changes
 
 ## v1.2.0
-- Adds Datastore Admin API
-- Documentation updates
+- Adds Datastore Admin API.
+- Documentation updates.
 
 ## v1.1.0
 
