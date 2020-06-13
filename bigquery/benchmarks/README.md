@@ -8,7 +8,7 @@ This directory contains benchmarks for BigQuery client, used primarily by librar
 ### Flags
 `--reruns` can be used to override the default number of times a query is rerun.
 
-`--projectid` can be used to run benchmarks in a different project.  If unset, the PROJECT_ID
+`--projectid` can be used to run benchmarks in a different project.  If unset, the GOOGLE_CLOUD_PROJECT
  environment variable is used.
 
 `--queryfile` can be used to override the default file which contains queries to be instrumented.
@@ -36,10 +36,10 @@ go run bench.go \
 
 Or, a more realistic invocation using shell substitions:
 ```
-set -u
 go run bench.go \
   --reruns=5 \
   --table=$BENCHMARK_TABLE \
   --tag=origin:$(hostname) \
-  --tag=branch:$(git branch --show-current)
+  --tag=branch:$(git branch --show-current) \
+  --tag=latestcommit:$(git log --pretty=format:'%H' -n 1)
 ```

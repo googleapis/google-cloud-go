@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2017 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -111,21 +111,33 @@ type timingInfo struct {
 
 // Summary provides a human-readable string that summarizes the significant timing details.
 func (t *timingInfo) Summary() string {
-	if t.ErrorString != "" {
-		return fmt.Sprintf("query errored: %s", t.ErrorString)
-	}
+	noVal := "NODATA"
 	var buf bytes.Buffer
+	fmt.Fprintf(&buf, "QUERYTIME ")
 	if !t.QueryEndTime.IsZero() {
-		fmt.Fprintf(&buf, "QUERYTIME %v", t.QueryEndTime.Sub(t.StartTime))
+		fmt.Fprintf(&buf, "%v", t.QueryEndTime.Sub(t.StartTime))
+	} else {
+		fmt.Fprintf(&buf, noVal)
 	}
+
+	fmt.Fprintf(&buf, " FIRSTROW ")
 	if !t.FirstRowReturnedTime.IsZero() {
-		fmt.Fprintf(&buf, " FIRSTROW %v (+%v)", t.FirstRowReturnedTime.Sub(t.StartTime), t.FirstRowReturnedTime.Sub(t.QueryEndTime))
+		fmt.Fprintf(&buf, "%v (+%v)", t.FirstRowReturnedTime.Sub(t.StartTime), t.FirstRowReturnedTime.Sub(t.QueryEndTime))
+	} else {
+		fmt.Fprintf(&buf, noVal)
 	}
+
+	fmt.Fprintf(&buf, " ALLROWS ")
 	if !t.AllRowsReturnedTime.IsZero() {
-		fmt.Fprintf(&buf, " ALLROWS %v (+%v)", t.AllRowsReturnedTime.Sub(t.StartTime), t.AllRowsReturnedTime.Sub(t.FirstRowReturnedTime))
+		fmt.Fprintf(&buf, "%v (+%v)", t.AllRowsReturnedTime.Sub(t.StartTime), t.AllRowsReturnedTime.Sub(t.FirstRowReturnedTime))
+	} else {
+		fmt.Fprintf(&buf, noVal)
 	}
 	if t.TotalRows > 0 {
 		fmt.Fprintf(&buf, " ROWS %d", t.TotalRows)
+	}
+	if t.ErrorString != "" {
+		fmt.Fprintf(&buf, " ERRORED %s ", t.ErrorString)
 	}
 	return buf.String()
 }
@@ -164,7 +176,8 @@ func measureSelectQuery(ctx context.Context, q *bigquery.Query) *timingInfo {
 	return timing
 }
 
-// runBenchmarks
+// runBenchmarks processes the input file and instruments the queries.
+// It currently instruments queries serially to reduce variance due to concurrent execution on either the backend or in this client.
 func runBenchmarks(ctx context.Context, client *bigquery.Client, filename string, tags *tags, reruns int) (profiles []*profiledQuery, err error) {
 
 	queriesJSON, err := ioutil.ReadFile(filename)
@@ -253,8 +266,8 @@ func prepareTable(ctx context.Context, client *bigquery.Client, table string, cr
 	return tRef, nil
 }
 
+// reportResults streams results into the designated table.
 func reportResults(ctx context.Context, client *bigquery.Client, table *bigquery.Table, results []*profiledQuery) error {
-
 	inserter := table.Inserter()
 
 	// Set a timeout on our context to bound retries
@@ -269,7 +282,7 @@ func reportResults(ctx context.Context, client *bigquery.Client, table *bigquery
 func main() {
 	var reruns = flag.Int("reruns", 3, "number of reruns to issue for each query")
 	var queryfile = flag.String("queryfile", "benchmarked-queries.json", "path to file contain queries to be benchmarked.")
-	var projectID = flag.String("projectid", "", "project ID to use for running benchmarks.  Uses PROJECT_ID env if not set.")
+	var projectID = flag.String("projectid", "", "project ID to use for running benchmarks.  Uses GOOGLE_CLOUD_PROJECT env if not set.")
 	var reportTable = flag.String("table", "", "table to stream results into, specified in project.dataset.table format")
 	var createTable = flag.Bool("create_table", false, "create result table if it does not exist")
 
@@ -281,12 +294,12 @@ func main() {
 	if *reruns <= 0 {
 		log.Fatalf("--reruns should be a positive value")
 	}
-	projID := os.Getenv("PROJECT_ID")
+	projID := os.Getenv("GOOGLE_CLOUD_PROJECT")
 	if *projectID != "" {
 		projID = *projectID
 	}
 	if projID == "" {
-		log.Fatalf("must provide --projectid or set PROJECT_ID environment variable")
+		log.Fatalf("must provide --projectid or set GOOGLE_CLOUD_PROJECT environment variable")
 	}
 
 	// Setup context and client based on ADC.
