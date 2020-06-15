@@ -23,6 +23,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/version"
+	stestutil "cloud.google.com/go/spanner/internal/testutil"
 	"go.opencensus.io/stats/view"
 	"go.opencensus.io/tag"
 )
@@ -176,8 +177,13 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	te := testutil.NewTestExporter(GetSessionTimeoutsCountView)
 	defer te.Unregister()
 
-	_, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
+
+	server.TestSpanner.PutExecutionTime(stestutil.MethodBatchCreateSession,
+		stestutil.SimulatedExecutionTime{
+			MinimumExecutionTime: 2 * time.Millisecond,
+		})
 
 	ctx, cancel := context.WithTimeout(context.Background(), 1*time.Millisecond)
 	defer cancel()
