@@ -57,8 +57,8 @@ type Writer struct {
 	// If ChunkSize is set to zero, chunking will be disabled and the object will
 	// be uploaded in a single request without the use of a buffer. This will
 	// further reduce memory used during uploads, but will also prevent the writer
-	// from retrying in case of a transient error from GCS, since a buffer is
-	// required in order to retry the failed request.
+	// from retrying in case of a transient error from the server, since a buffer
+	// is required in order to retry the failed request.
 	//
 	// ChunkSize must be set before the first Write call.
 	ChunkSize int
@@ -183,8 +183,8 @@ func (w *Writer) open() error {
 // use the error returned from Writer.Close to determine if
 // the upload was successful.
 //
-// Writes will be retried on transient errors from GCS, unless Writer.ChunkSize
-// has been set to zero.
+// Writes will be retried on transient errors from the server, unless
+// Writer.ChunkSize has been set to zero.
 func (w *Writer) Write(p []byte) (n int, err error) {
 	w.mu.Lock()
 	werr := w.err
