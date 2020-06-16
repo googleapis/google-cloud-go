@@ -133,7 +133,7 @@ func main() {
 // hasCreatedPRToday checks if the created time of a PR is from today.
 func hasCreatedPRToday(created time.Time) bool {
 	now := time.Now()
-	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Local().Location())
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, time.UTC)
 	log.Printf("Times -- Now: %v\tToday: %v\tPR Created: %v", now, today, created)
 	return created.After(today)
 }
