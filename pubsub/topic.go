@@ -585,5 +585,12 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 // encountered while publishing, to prevent messages from being published
 // out of order.
 func (t *Topic) ResumePublish(orderingKey string) {
+	t.mu.RLock()
+	noop := t.scheduler == nil
+	t.mu.RUnlock()
+	if noop {
+		return
+	}
+
 	t.scheduler.Resume(orderingKey)
 }
