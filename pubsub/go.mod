@@ -15,7 +15,7 @@ require (
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
 	golang.org/x/time v0.0.0-20200416051211-89c76fbcd5d1
 	golang.org/x/tools v0.0.0-20200612220849-54c614fe050c // indirect
-	google.golang.org/api v0.26.0
+	google.golang.org/api v0.27.0
 	google.golang.org/genproto v0.0.0-20200612171551-7676ae05be11
 	google.golang.org/grpc v1.29.1
 )
