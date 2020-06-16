@@ -2691,13 +2691,11 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/2393")
-
 	skipEmulatorTest(t)
 	t.Parallel()
 
-	// Backups can be slow, so use a 15 minute timeout.
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	// Backups can be slow, so use a 30 minute timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, backuDBStatements)
 	defer cleanup()
@@ -2711,7 +2709,7 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = respLRO.Wait(context.Background())
+	_, err = respLRO.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

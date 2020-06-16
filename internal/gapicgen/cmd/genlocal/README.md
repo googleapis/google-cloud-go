@@ -19,7 +19,6 @@ run generators against googleapis-private, and various other local tasks.
         golang.org/x/lint/golint \
         golang.org/x/tools/cmd/goimports \
         honnef.co/go/tools/cmd/staticcheck \
-        golang.org/x/review/git-codereview \
         github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
     ```
 

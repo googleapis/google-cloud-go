@@ -520,6 +520,20 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
+			queryParams{"lim": stringParam("Teal'c")},
+			[][]interface{}{
+				{"Sam"},
+			},
+		},
+		{
+			`SELECT MIN(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel"},
+			},
+		},
+		{
 			`SELECT ARRAY_AGG(Cool) FROM Staff ORDER BY Name`,
 			nil,
 			[][]interface{}{

@@ -102,6 +102,15 @@ func TestIntegration_All(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
+	for _, sync := range []bool{false, true} {
+		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+			testPublishAndReceive(t, client, maxMsgs, sync, 10, 0)
+		}
+
+		// Tests for large messages (larger than the 4MB gRPC limit).
+		testPublishAndReceive(t, client, 0, sync, 1, 5*1024*1024)
+	}
+
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
 		t.Errorf("CreateTopic error: %v", err)
@@ -127,14 +136,6 @@ func TestIntegration_All(t *testing.T) {
 		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
 	}
 
-	for _, sync := range []bool{false, true} {
-		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-			testPublishAndReceive(t, topic, sub, maxMsgs, sync, 10, 0)
-		}
-
-		// Tests for large messages (larger than the 4MB gRPC limit).
-		testPublishAndReceive(t, topic, sub, 0, sync, 1, 5*1024*1024)
-	}
 	if msg, ok := testIAM(ctx, topic.IAM(), "pubsub.topics.get"); !ok {
 		t.Errorf("topic IAM: %s", msg)
 	}
@@ -220,8 +221,32 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
+func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	ctx := context.Background()
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Errorf("CreateTopic error: %v", err)
+	}
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatalf("TopicExists error: %v", err)
+	}
+	if !exists {
+		t.Errorf("topic %v should exist, but it doesn't", topic)
+	}
+
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+		t.Errorf("CreateSub error: %v", err)
+	}
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatalf("SubExists error: %v", err)
+	}
+	if !exists {
+		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+	}
 	var msgs []*Message
 	for i := 0; i < numMsgs; i++ {
 		text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
@@ -735,7 +760,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 }
 
 // NOTE: This test should be skipped by open source contributors. It requires
-// whitelisting, a (gsuite) organization project, and specific permissions.
+// allowlisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()

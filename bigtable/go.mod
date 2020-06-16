@@ -12,9 +12,9 @@ require (
 	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
-	golang.org/x/tools v0.0.0-20200609095342-308beac2836f // indirect
+	golang.org/x/tools v0.0.0-20200612220849-54c614fe050c // indirect
 	google.golang.org/api v0.26.0
-	google.golang.org/genproto v0.0.0-20200608115520-7c474a2e3482
+	google.golang.org/genproto v0.0.0-20200612171551-7676ae05be11
 	google.golang.org/grpc v1.29.1
 	rsc.io/binaryregexp v0.2.0
 )
