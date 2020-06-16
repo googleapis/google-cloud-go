@@ -618,7 +618,7 @@ func (q Query) Get(ctx context.Context) ([]*DocumentSnapshot, error) {
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	if q.limitToLast {
 		return &DocumentIterator{
-			err: errors.New("Query results for queries that include limitToLast constraints cannot be streamed. Use Query.Get() instead."),
+			err: errors.New("firestore: queries that include limitToLast constraints cannot be streamed. Use Query.Get() instead."),
 		}
 	}
 	return &DocumentIterator{
