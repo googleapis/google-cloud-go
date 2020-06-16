@@ -214,6 +214,35 @@ func TestPublish(t *testing.T) {
 	}
 }
 
+func TestPublishOrdered(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 3; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	s.Wait()
+	ms := s.Messages()
+	if got, want := len(ms), len(ids); got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	for i, id := range ids {
+		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+		if got, want := ms[i].OrderingKey, orderingKey; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	}
+
+	m := s.Message(ids[1])
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+}
+
 func TestClearMessages(t *testing.T) {
 	s := NewServer()
 	defer s.Close()

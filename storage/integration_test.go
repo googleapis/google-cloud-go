@@ -1382,15 +1382,15 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1", "acl2"}
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
 	err = retry(ctx, func() error {
+		for _, obj := range aclObjects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+		}
 		acl, err = o.ACL().List(ctx)
 		if err != nil {
 			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
