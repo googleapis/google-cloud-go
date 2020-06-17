@@ -98,7 +98,7 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 		&oauth2.Token{AccessToken: accessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	return &GithubClient{c: github.NewClient(tc), Username: username}, nil
+	return &GithubClient{c: github.NewClient(tc), cql: githubv4.NewClient(tc), Username: username}, nil
 }
 
 // SetGitCreds sets credentials for gerrit.
