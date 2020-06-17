@@ -227,7 +227,7 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 // Reserved for future use.
 type DetachSubscriptionResult struct{}
 
-// DetachSubscription detaches a subscription from a topic. All messages
+// DetachSubscription detaches a subscription from its topic. All messages
 // retained in the subscription are dropped. Subsequent `Pull` and `StreamingPull`
 // requests will return FAILED_PRECONDITION. If the subscription is a push
 // subscription, pushes to the endpoint will stop.
