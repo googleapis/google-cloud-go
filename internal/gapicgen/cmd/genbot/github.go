@@ -23,7 +23,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
+	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
 
@@ -76,11 +77,13 @@ type PullRequest struct {
 	IsOpen  bool
 	Number  int
 	Repo    string
+	IsDraft bool
 }
 
 // GithubClient is a convenience wrapper around a github.Client.
 type GithubClient struct {
-	c *github.Client
+	c   *github.Client
+	cql *githubv4.Client
 	// Username is the GitHub username. Read-only.
 	Username string
 }
@@ -150,6 +153,7 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 			IsOpen:  pr.GetState() == "open",
 			Number:  pr.GetNumber(),
 			Repo:    repo,
+			IsDraft: pr.GetDraft(),
 		}, nil
 	}
 	return nil, nil
@@ -265,14 +269,13 @@ git push origin $BRANCH_NAME
 		return 0, err
 	}
 
-	head := fmt.Sprintf("googleapis:" + gocloudBranchName)
-	base := "master"
 	t := gocloudCommitTitle // Because we have to take the address.
 	pr, _, err := gc.c.PullRequests.Create(ctx, "googleapis", "google-cloud-go", &github.NewPullRequest{
 		Title: &t,
 		Body:  &body,
-		Head:  &head,
-		Base:  &base,
+		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
+		Base:  github.String("master"),
+		Draft: github.Bool(true),
 	})
 	if err != nil {
 		return 0, err
@@ -281,30 +284,6 @@ git push origin $BRANCH_NAME
 	log.Printf("creating google-cloud-go PR... done %s\n", pr.GetHTMLURL())
 
 	return pr.GetNumber(), nil
-}
-
-// HasReviewers checks if a given pR has reviewers.
-func (gc *GithubClient) HasReviewers(ctx context.Context, repo string, number int) (bool, error) {
-	reviewers, _, err := gc.c.PullRequests.ListReviewers(ctx, "googleapis", repo, number, nil)
-	if err != nil {
-		return false, err
-	}
-	return len(reviewers.Users)+len(reviewers.Teams) > 0, nil
-}
-
-// AddReviewers adds reviewers to the pull request.
-func (gc *GithubClient) AddReviewers(ctx context.Context, repo string, number int) error {
-	// Can't assign the submitter of the PR as a reviewer.
-	var reviewers []string
-	for _, r := range githubReviewers {
-		if r != *githubUsername {
-			reviewers = append(reviewers, r)
-		}
-	}
-	_, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", repo, number, github.ReviewersRequest{
-		Reviewers: reviewers,
-	})
-	return err
 }
 
 // AmendWithPRURL amends the given genproto PR with a link to the given
@@ -339,4 +318,41 @@ git push -f origin $BRANCH_NAME
 		Body: &newBody,
 	})
 	return err
+}
+
+// MarkPRReadyForReview switches a draft pull request to a reviewable pull
+// request.
+func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, number int) error {
+	// Query to get the PR ID.
+	var q struct {
+		Repository struct {
+			PullRequest struct {
+				ID githubv4.ID
+			} `graphql:"pullRequest(number: $prNumber)"`
+		} `graphql:"repository(owner: $repositoryOwner, name: $repositoryName)"`
+	}
+	vars := map[string]interface{}{
+		"repositoryOwner": githubv4.String("googleapis"),
+		"repositoryName":  githubv4.String(repo),
+		"prNumber":        githubv4.Int(number),
+	}
+	if err := gc.cql.Query(ctx, &q, vars); err != nil {
+		return err
+	}
+
+	// Mark PR Ready for Review.
+	var m struct {
+		MarkPullRequestReadyForReview struct {
+			PullRequest struct {
+				ID githubv4.ID
+			}
+		} `graphql:"markPullRequestReadyForReview(input: $input)"`
+	}
+	input := githubv4.MarkPullRequestReadyForReviewInput{
+		PullRequestID: q.Repository.PullRequest.ID,
+	}
+	if err := gc.cql.Mutate(ctx, &m, input, nil); err != nil {
+		return err
+	}
+	return nil
 }
