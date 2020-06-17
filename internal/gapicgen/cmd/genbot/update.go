@@ -33,15 +33,9 @@ func updateGocloudPR(ctx context.Context, githubClient *GithubClient, pr *PullRe
 		return err
 	}
 
-	// If the PR has no reviewers, add them.
-	hasReviewers, err := githubClient.HasReviewers(ctx, pr.Repo, pr.Number)
-	if err != nil {
-		return err
-	}
-
-	if !hasReviewers {
-		if err := githubClient.AddReviewers(ctx, pr.Repo, pr.Number); err != nil {
-			return err
+	if pr.IsDraft {
+		if err := githubClient.MarkPRReadyForReview(ctx, pr.Repo, pr.NodeID); err != nil {
+			return fmt.Errorf("unable to mark PR %v ready for review: %v", pr.Number, err)
 		}
 	}
 
