@@ -333,7 +333,7 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 		} `graphql:"markPullRequestReadyForReview(input: $input)"`
 	}
 	input := githubv4.MarkPullRequestReadyForReviewInput{
-		PullRequestID: githubv4.NewID(nodeID),
+		PullRequestID: nodeID,
 	}
 	if err := gc.cV4.Mutate(ctx, &m, input, nil); err != nil {
 		return err
