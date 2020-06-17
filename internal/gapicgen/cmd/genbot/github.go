@@ -78,6 +78,7 @@ type PullRequest struct {
 	Number  int
 	Repo    string
 	IsDraft bool
+	NodeID  string
 }
 
 // GithubClient is a convenience wrapper around Github clients.
@@ -154,6 +155,7 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 			Number:  pr.GetNumber(),
 			Repo:    repo,
 			IsDraft: pr.GetDraft(),
+			NodeID:  pr.GetNodeID(),
 		}, nil
 	}
 	return nil, nil
@@ -322,25 +324,7 @@ git push -f origin $BRANCH_NAME
 
 // MarkPRReadyForReview switches a draft pull request to a reviewable pull
 // request.
-func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, number int) error {
-	// Query to get the PR ID.
-	var q struct {
-		Repository struct {
-			PullRequest struct {
-				ID githubv4.ID
-			} `graphql:"pullRequest(number: $prNumber)"`
-		} `graphql:"repository(owner: $repositoryOwner, name: $repositoryName)"`
-	}
-	vars := map[string]interface{}{
-		"repositoryOwner": githubv4.String("googleapis"),
-		"repositoryName":  githubv4.String(repo),
-		"prNumber":        githubv4.Int(number),
-	}
-	if err := gc.cV4.Query(ctx, &q, vars); err != nil {
-		return err
-	}
-
-	// Mark PR Ready for Review.
+func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, nodeID string) error {
 	var m struct {
 		MarkPullRequestReadyForReview struct {
 			PullRequest struct {
@@ -349,7 +333,7 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 		} `graphql:"markPullRequestReadyForReview(input: $input)"`
 	}
 	input := githubv4.MarkPullRequestReadyForReviewInput{
-		PullRequestID: q.Repository.PullRequest.ID,
+		PullRequestID: githubv4.NewID(nodeID),
 	}
 	if err := gc.cV4.Mutate(ctx, &m, input, nil); err != nil {
 		return err
