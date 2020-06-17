@@ -790,7 +790,8 @@ func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.Update
 	return resp, nil
 }
 
-// UpdateNotificationConfig updates a notification config.
+// UpdateNotificationConfig updates a notification config. The following update
+// fields are allowed: description, pubsub_topic, streaming_config.filter
 func (c *Client) UpdateNotificationConfig(ctx context.Context, req *securitycenterpb.UpdateNotificationConfigRequest, opts ...gax.CallOption) (*securitycenterpb.NotificationConfig, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notification_config.name", url.QueryEscape(req.GetNotificationConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

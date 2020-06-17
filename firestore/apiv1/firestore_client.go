@@ -93,7 +93,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateDocument: []gax.CallOption{},
+		UpdateDocument: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -133,7 +143,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		Commit: []gax.CallOption{},
+		Commit: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		Rollback: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -188,8 +208,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		BatchWrite:     []gax.CallOption{},
-		CreateDocument: []gax.CallOption{},
+		BatchWrite: []gax.CallOption{},
+		CreateDocument: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
