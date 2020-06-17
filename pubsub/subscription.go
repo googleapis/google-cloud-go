@@ -95,24 +95,6 @@ func (c *Client) Subscriptions(ctx context.Context) *SubscriptionIterator {
 	}
 }
 
-// DetachSubscriptionResult is the response for the DetachSubscription method.
-// Reserved for future use.
-type DetachSubscriptionResult struct{}
-
-// DetachSubscription detaches a subscription from this topic. All messages
-// retained in the subscription are dropped. Subsequent `Pull` and `StreamingPull`
-// requests will return FAILED_PRECONDITION. If the subscription is a push
-// subscription, pushes to the endpoint will stop.
-func (c *Client) DetachSubscription(ctx context.Context, sub string) (*DetachSubscriptionResult, error) {
-	_, err := c.pubc.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
-		Subscription: sub,
-	})
-	if err != nil {
-		return nil, err
-	}
-	return &DetachSubscriptionResult{}, nil
-}
-
 // SubscriptionIterator is an iterator that returns a series of subscriptions.
 type SubscriptionIterator struct {
 	c    *Client
