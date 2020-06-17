@@ -489,8 +489,6 @@ func (s *GServer) DeleteSubscription(_ context.Context, req *pb.DeleteSubscripti
 	sub.stop()
 	delete(s.subs, req.Subscription)
 	sub.topic.deleteSub(sub)
-	sub.topic = nil
-	sub.proto.Topic = ""
 	return &emptypb.Empty{}, nil
 }
 
@@ -502,6 +500,8 @@ func (s *GServer) DetachSubscription(_ context.Context, req *pb.DetachSubscripti
 		return nil, err
 	}
 	sub.topic.deleteSub(sub)
+	sub.topic = nil
+	sub.proto.Topic = ""
 	return &pb.DetachSubscriptionResponse{}, nil
 }
 
