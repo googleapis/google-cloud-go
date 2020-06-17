@@ -392,8 +392,10 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	r := &PublishResult{ready: make(chan struct{})}
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		return &PublishResult{err: errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")}
+		r.set("", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		return r
 	}
 
 	// Use a PublishRequest with only the Messages field to calculate the size
@@ -410,7 +412,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 			},
 		},
 	})
-	r := &PublishResult{ready: make(chan struct{})}
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
