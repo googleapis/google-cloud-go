@@ -285,6 +285,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		DeadLetterPolicy:         pbDeadLetter,
 		Filter:                   cfg.Filter,
 		RetryPolicy:              pbRetryPolicy,
+		Detached:                 cfg.Detached,
 	}
 }
 
@@ -316,6 +317,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		DeadLetterPolicy:    dlp,
 		Filter:              pbSub.Filter,
 		RetryPolicy:         rp,
+		Detached:            pbSub.Detached,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
