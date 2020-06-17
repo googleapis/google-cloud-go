@@ -80,10 +80,10 @@ type PullRequest struct {
 	IsDraft bool
 }
 
-// GithubClient is a convenience wrapper around a github.Client.
+// GithubClient is a convenience wrapper around Github clients.
 type GithubClient struct {
-	c   *github.Client
-	cql *githubv4.Client
+	cV3 *github.Client
+	cV4 *githubv4.Client
 	// Username is the GitHub username. Read-only.
 	Username string
 }
@@ -98,7 +98,7 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 		&oauth2.Token{AccessToken: accessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	return &GithubClient{c: github.NewClient(tc), cql: githubv4.NewClient(tc), Username: username}, nil
+	return &GithubClient{cV3: github.NewClient(tc), cV4: githubv4.NewClient(tc), Username: username}, nil
 }
 
 // SetGitCreds sets credentials for gerrit.
@@ -137,7 +137,7 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 		ListOptions: github.ListOptions{PerPage: 50},
 		State:       status,
 	}
-	prs, _, err := gc.c.PullRequests.List(ctx, "googleapis", repo, opt)
+	prs, _, err := gc.cV3.PullRequests.List(ctx, "googleapis", repo, opt)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +201,7 @@ git push origin $BRANCH_NAME
 	head := fmt.Sprintf("googleapis:" + genprotoBranchName)
 	base := "master"
 	t := genprotoCommitTitle // Because we have to take the address.
-	pr, _, err := gc.c.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
+	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
 		Title: &t,
 		Body:  &body,
 		Head:  &head,
@@ -219,7 +219,7 @@ git push origin $BRANCH_NAME
 		}
 	}
 
-	if _, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", "go-genproto", pr.GetNumber(), github.ReviewersRequest{
+	if _, _, err := gc.cV3.PullRequests.RequestReviewers(ctx, "googleapis", "go-genproto", pr.GetNumber(), github.ReviewersRequest{
 		Reviewers: reviewers,
 	}); err != nil {
 		return 0, err
@@ -270,7 +270,7 @@ git push origin $BRANCH_NAME
 	}
 
 	t := gocloudCommitTitle // Because we have to take the address.
-	pr, _, err := gc.c.PullRequests.Create(ctx, "googleapis", "google-cloud-go", &github.NewPullRequest{
+	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "google-cloud-go", &github.NewPullRequest{
 		Title: &t,
 		Body:  &body,
 		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
@@ -314,7 +314,7 @@ git push -f origin $BRANCH_NAME
 	if err := c.Run(); err != nil {
 		return err
 	}
-	_, _, err := gc.c.PullRequests.Edit(ctx, "googleapis", "go-genproto", genprotoPRNum, &github.PullRequest{
+	_, _, err := gc.cV3.PullRequests.Edit(ctx, "googleapis", "go-genproto", genprotoPRNum, &github.PullRequest{
 		Body: &newBody,
 	})
 	return err
@@ -336,7 +336,7 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 		"repositoryName":  githubv4.String(repo),
 		"prNumber":        githubv4.Int(number),
 	}
-	if err := gc.cql.Query(ctx, &q, vars); err != nil {
+	if err := gc.cV4.Query(ctx, &q, vars); err != nil {
 		return err
 	}
 
@@ -351,7 +351,7 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 	input := githubv4.MarkPullRequestReadyForReviewInput{
 		PullRequestID: q.Repository.PullRequest.ID,
 	}
-	if err := gc.cql.Mutate(ctx, &m, input, nil); err != nil {
+	if err := gc.cV4.Mutate(ctx, &m, input, nil); err != nil {
 		return err
 	}
 	return nil
