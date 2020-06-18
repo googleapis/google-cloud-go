@@ -750,7 +750,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	}
 	if ua.Lifecycle != nil {
 		rb.Lifecycle = toRawLifecycle(*ua.Lifecycle)
-		rb.ForceSendFields = append(rb.ForceSendFields, "lifecycle")
+		rb.ForceSendFields = append(rb.ForceSendFields, "Lifecycle")
 	}
 	if ua.Logging != nil {
 		if *ua.Logging == (BucketLogging{}) {
