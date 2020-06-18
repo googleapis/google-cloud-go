@@ -750,6 +750,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 	}
 	if ua.Lifecycle != nil {
 		rb.Lifecycle = toRawLifecycle(*ua.Lifecycle)
+		rb.ForceSendFields = append(rb.ForceSendFields, "lifecycle")
 	}
 	if ua.Logging != nil {
 		if *ua.Logging == (BucketLogging{}) {
@@ -935,9 +936,6 @@ func toCORS(rc []*raw.BucketCors) []CORS {
 
 func toRawLifecycle(l Lifecycle) *raw.BucketLifecycle {
 	var rl raw.BucketLifecycle
-	if len(l.Rules) == 0 {
-		return nil
-	}
 	for _, r := range l.Rules {
 		rr := &raw.BucketLifecycleRule{
 			Action: &raw.BucketLifecycleRuleAction{
