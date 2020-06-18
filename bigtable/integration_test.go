@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -1259,6 +1260,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
@@ -1274,12 +1276,16 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if iInfo.InstanceType != DEVELOPMENT {
 		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
 	}
+	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
+	}
 
 	// Update everything we can about the instance in one call.
 	confWithClusters := &InstanceWithClustersConfig{
 		InstanceID:   instanceToCreate,
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
+		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5, StorageType: HDD}},
 	}
@@ -1295,6 +1301,9 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	if iInfo.InstanceType != PRODUCTION {
 		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+	}
+	if got, want := iInfo.Labels, confWithClusters.Labels; !reflect.DeepEqual(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
 		t.Fatalf("Display name: %q, want: %q", got, want)
@@ -1347,6 +1356,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
@@ -1362,12 +1372,16 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	if iInfo.InstanceType != DEVELOPMENT {
 		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
 	}
+	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
+	}
 
 	// Update everything we can about the instance in one call.
 	confWithClusters := &InstanceWithClustersConfig{
 		InstanceID:   instanceToCreate,
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
+		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5}},
 	}
@@ -1392,6 +1406,9 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	if iInfo.InstanceType != PRODUCTION {
 		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+	}
+	if got, want := iInfo.Labels, confWithClusters.Labels; !reflect.DeepEqual(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
 		t.Fatalf("Display name: %q, want: %q", got, want)
