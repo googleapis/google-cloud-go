@@ -500,8 +500,6 @@ func (s *GServer) DetachSubscription(_ context.Context, req *pb.DetachSubscripti
 		return nil, err
 	}
 	sub.topic.deleteSub(sub)
-	sub.topic = nil
-	sub.proto.Topic = ""
 	return &pb.DetachSubscriptionResponse{}, nil
 }
 
