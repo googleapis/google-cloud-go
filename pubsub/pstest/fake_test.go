@@ -123,6 +123,14 @@ func TestSubscriptions(t *testing.T) {
 		}
 	}
 
+	subToDetach := "projects/P/subscriptions/S0"
+	_, err = pclient.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: subToDetach,
+	})
+	if err != nil {
+		t.Fatalf("attempted to detach sub %s, got error: %v", subToDetach, err)
+	}
+
 	for _, s := range subs {
 		if _, err := sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.Name}); err != nil {
 			t.Fatal(err)
@@ -196,6 +204,35 @@ func TestPublish(t *testing.T) {
 	}
 	for i, id := range ids {
 		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	}
+
+	m := s.Message(ids[1])
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+}
+
+func TestPublishOrdered(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 3; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	s.Wait()
+	ms := s.Messages()
+	if got, want := len(ms), len(ids); got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	for i, id := range ids {
+		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+		if got, want := ms[i].OrderingKey, orderingKey; got != want {
 			t.Errorf("got %s, want %s", got, want)
 		}
 	}
