@@ -284,7 +284,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		ForceSendFields: []string{"DefaultEventBasedHold", "lifecycle"},
+		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -421,7 +421,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		Lifecycle: &raw.BucketLifecycle{
 			ForceSendFields: []string{"Rule"},
 		},
-		ForceSendFields: []string{"lifecycle"},
+		ForceSendFields: []string{"Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
