@@ -703,4 +703,12 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/servicedirectory/v1beta1/servicedirectory_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/gaming/v1beta",
+		pkg:                   "gaming",
+		importPath:            "cloud.google.com/go/gaming/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/gaming/v1beta/gaming_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gaming/v1beta/gaming_gapic.yaml",
+		releaseLevel:          "beta",
+	},
 }
