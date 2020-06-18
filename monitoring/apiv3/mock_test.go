@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,13 +17,6 @@
 package monitoring
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	metricpb "google.golang.org/genproto/googleapis/api/metric"
-	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
-	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -36,11 +29,17 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	metricpb "google.golang.org/genproto/googleapis/api/metric"
+	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
+	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -420,6 +419,177 @@ func (s *mockNotificationChannelServer) DeleteNotificationChannel(ctx context.Co
 	return s.resps[0].(*emptypb.Empty), nil
 }
 
+func (s *mockNotificationChannelServer) SendNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.SendNotificationChannelVerificationCodeRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockNotificationChannelServer) GetNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.GetNotificationChannelVerificationCodeRequest) (*monitoringpb.GetNotificationChannelVerificationCodeResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.GetNotificationChannelVerificationCodeResponse), nil
+}
+
+func (s *mockNotificationChannelServer) VerifyNotificationChannel(ctx context.Context, req *monitoringpb.VerifyNotificationChannelRequest) (*monitoringpb.NotificationChannel, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.NotificationChannel), nil
+}
+
+type mockServiceMonitoringServer struct {
+	// Embed for forward compatibility.
+	// Tests will keep working if more methods are added
+	// in the future.
+	monitoringpb.ServiceMonitoringServiceServer
+
+	reqs []proto.Message
+
+	// If set, all calls return this error.
+	err error
+
+	// responses to return if err == nil
+	resps []proto.Message
+}
+
+func (s *mockServiceMonitoringServer) CreateService(ctx context.Context, req *monitoringpb.CreateServiceRequest) (*monitoringpb.Service, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.Service), nil
+}
+
+func (s *mockServiceMonitoringServer) GetService(ctx context.Context, req *monitoringpb.GetServiceRequest) (*monitoringpb.Service, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.Service), nil
+}
+
+func (s *mockServiceMonitoringServer) ListServices(ctx context.Context, req *monitoringpb.ListServicesRequest) (*monitoringpb.ListServicesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ListServicesResponse), nil
+}
+
+func (s *mockServiceMonitoringServer) UpdateService(ctx context.Context, req *monitoringpb.UpdateServiceRequest) (*monitoringpb.Service, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.Service), nil
+}
+
+func (s *mockServiceMonitoringServer) DeleteService(ctx context.Context, req *monitoringpb.DeleteServiceRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
+func (s *mockServiceMonitoringServer) CreateServiceLevelObjective(ctx context.Context, req *monitoringpb.CreateServiceLevelObjectiveRequest) (*monitoringpb.ServiceLevelObjective, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ServiceLevelObjective), nil
+}
+
+func (s *mockServiceMonitoringServer) GetServiceLevelObjective(ctx context.Context, req *monitoringpb.GetServiceLevelObjectiveRequest) (*monitoringpb.ServiceLevelObjective, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ServiceLevelObjective), nil
+}
+
+func (s *mockServiceMonitoringServer) ListServiceLevelObjectives(ctx context.Context, req *monitoringpb.ListServiceLevelObjectivesRequest) (*monitoringpb.ListServiceLevelObjectivesResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ListServiceLevelObjectivesResponse), nil
+}
+
+func (s *mockServiceMonitoringServer) UpdateServiceLevelObjective(ctx context.Context, req *monitoringpb.UpdateServiceLevelObjectiveRequest) (*monitoringpb.ServiceLevelObjective, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*monitoringpb.ServiceLevelObjective), nil
+}
+
+func (s *mockServiceMonitoringServer) DeleteServiceLevelObjective(ctx context.Context, req *monitoringpb.DeleteServiceLevelObjectiveRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
 type mockUptimeCheckServer struct {
 	// Embed for forward compatibility.
 	// Tests will keep working if more methods are added
@@ -516,6 +686,7 @@ var (
 	mockGroup               mockGroupServer
 	mockMetric              mockMetricServer
 	mockNotificationChannel mockNotificationChannelServer
+	mockServiceMonitoring   mockServiceMonitoringServer
 	mockUptimeCheck         mockUptimeCheckServer
 )
 
@@ -527,6 +698,7 @@ func TestMain(m *testing.M) {
 	monitoringpb.RegisterGroupServiceServer(serv, &mockGroup)
 	monitoringpb.RegisterMetricServiceServer(serv, &mockMetric)
 	monitoringpb.RegisterNotificationChannelServiceServer(serv, &mockNotificationChannel)
+	monitoringpb.RegisterServiceMonitoringServiceServer(serv, &mockServiceMonitoring)
 	monitoringpb.RegisterUptimeCheckServiceServer(serv, &mockUptimeCheck)
 
 	lis, err := net.Listen("tcp", "localhost:0")
@@ -2250,6 +2422,814 @@ func TestNotificationChannelServiceDeleteNotificationChannelError(t *testing.T) 
 	}
 
 	err = c.DeleteNotificationChannel(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestNotificationChannelServiceSendNotificationChannelVerificationCode(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockNotificationChannel.err = nil
+	mockNotificationChannel.reqs = nil
+
+	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.SendNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.SendNotificationChannelVerificationCode(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockNotificationChannel.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestNotificationChannelServiceSendNotificationChannelVerificationCodeError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.SendNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.SendNotificationChannelVerificationCode(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestNotificationChannelServiceGetNotificationChannelVerificationCode(t *testing.T) {
+	var code string = "code3059181"
+	var expectedResponse = &monitoringpb.GetNotificationChannelVerificationCodeResponse{
+		Code: code,
+	}
+
+	mockNotificationChannel.err = nil
+	mockNotificationChannel.reqs = nil
+
+	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.GetNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetNotificationChannelVerificationCode(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockNotificationChannel.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestNotificationChannelServiceGetNotificationChannelVerificationCodeError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var request = &monitoringpb.GetNotificationChannelVerificationCodeRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetNotificationChannelVerificationCode(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestNotificationChannelServiceVerifyNotificationChannel(t *testing.T) {
+	var type_ string = "type3575610"
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var description string = "description-1724546052"
+	var expectedResponse = &monitoringpb.NotificationChannel{
+		Type:        type_,
+		Name:        name2,
+		DisplayName: displayName,
+		Description: description,
+	}
+
+	mockNotificationChannel.err = nil
+	mockNotificationChannel.reqs = nil
+
+	mockNotificationChannel.resps = append(mockNotificationChannel.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var code string = "code3059181"
+	var request = &monitoringpb.VerifyNotificationChannelRequest{
+		Name: formattedName,
+		Code: code,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.VerifyNotificationChannel(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockNotificationChannel.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestNotificationChannelServiceVerifyNotificationChannelError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockNotificationChannel.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/notificationChannels/%s", "[PROJECT]", "[NOTIFICATION_CHANNEL]")
+	var code string = "code3059181"
+	var request = &monitoringpb.VerifyNotificationChannelRequest{
+		Name: formattedName,
+		Code: code,
+	}
+
+	c, err := NewNotificationChannelClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.VerifyNotificationChannel(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceCreateService(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &monitoringpb.Service{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var service *monitoringpb.Service = &monitoringpb.Service{}
+	var request = &monitoringpb.CreateServiceRequest{
+		Parent:  formattedParent,
+		Service: service,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateService(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceCreateServiceError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var service *monitoringpb.Service = &monitoringpb.Service{}
+	var request = &monitoringpb.CreateServiceRequest{
+		Parent:  formattedParent,
+		Service: service,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateService(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceGetService(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &monitoringpb.Service{
+		Name:        name2,
+		DisplayName: displayName,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var request = &monitoringpb.GetServiceRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetService(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceGetServiceError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var request = &monitoringpb.GetServiceRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetService(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceListServices(t *testing.T) {
+	var nextPageToken string = ""
+	var servicesElement *monitoringpb.Service = &monitoringpb.Service{}
+	var services = []*monitoringpb.Service{servicesElement}
+	var expectedResponse = &monitoringpb.ListServicesResponse{
+		NextPageToken: nextPageToken,
+		Services:      services,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &monitoringpb.ListServicesRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListServices(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Services[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceListServicesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &monitoringpb.ListServicesRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListServices(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceUpdateService(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &monitoringpb.Service{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var service *monitoringpb.Service = &monitoringpb.Service{}
+	var request = &monitoringpb.UpdateServiceRequest{
+		Service: service,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateService(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceUpdateServiceError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var service *monitoringpb.Service = &monitoringpb.Service{}
+	var request = &monitoringpb.UpdateServiceRequest{
+		Service: service,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateService(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceDeleteService(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var request = &monitoringpb.DeleteServiceRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteService(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestServiceMonitoringServiceDeleteServiceError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var request = &monitoringpb.DeleteServiceRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteService(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+}
+func TestServiceMonitoringServiceCreateServiceLevelObjective(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var goal float64 = 317825.0
+	var expectedResponse = &monitoringpb.ServiceLevelObjective{
+		Name:        name,
+		DisplayName: displayName,
+		Goal:        goal,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var serviceLevelObjective *monitoringpb.ServiceLevelObjective = &monitoringpb.ServiceLevelObjective{}
+	var request = &monitoringpb.CreateServiceLevelObjectiveRequest{
+		Parent:                formattedParent,
+		ServiceLevelObjective: serviceLevelObjective,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateServiceLevelObjective(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceCreateServiceLevelObjectiveError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var serviceLevelObjective *monitoringpb.ServiceLevelObjective = &monitoringpb.ServiceLevelObjective{}
+	var request = &monitoringpb.CreateServiceLevelObjectiveRequest{
+		Parent:                formattedParent,
+		ServiceLevelObjective: serviceLevelObjective,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateServiceLevelObjective(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceGetServiceLevelObjective(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var goal float64 = 317825.0
+	var expectedResponse = &monitoringpb.ServiceLevelObjective{
+		Name:        name2,
+		DisplayName: displayName,
+		Goal:        goal,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s/serviceLevelObjectives/%s", "[PROJECT]", "[SERVICE]", "[SERVICE_LEVEL_OBJECTIVE]")
+	var request = &monitoringpb.GetServiceLevelObjectiveRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetServiceLevelObjective(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceGetServiceLevelObjectiveError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s/serviceLevelObjectives/%s", "[PROJECT]", "[SERVICE]", "[SERVICE_LEVEL_OBJECTIVE]")
+	var request = &monitoringpb.GetServiceLevelObjectiveRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetServiceLevelObjective(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceListServiceLevelObjectives(t *testing.T) {
+	var nextPageToken string = ""
+	var serviceLevelObjectivesElement *monitoringpb.ServiceLevelObjective = &monitoringpb.ServiceLevelObjective{}
+	var serviceLevelObjectives = []*monitoringpb.ServiceLevelObjective{serviceLevelObjectivesElement}
+	var expectedResponse = &monitoringpb.ListServiceLevelObjectivesResponse{
+		NextPageToken:          nextPageToken,
+		ServiceLevelObjectives: serviceLevelObjectives,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var request = &monitoringpb.ListServiceLevelObjectivesRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListServiceLevelObjectives(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.ServiceLevelObjectives[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceListServiceLevelObjectivesError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s/services/%s", "[PROJECT]", "[SERVICE]")
+	var request = &monitoringpb.ListServiceLevelObjectivesRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListServiceLevelObjectives(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceUpdateServiceLevelObjective(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var goal float64 = 317825.0
+	var expectedResponse = &monitoringpb.ServiceLevelObjective{
+		Name:        name,
+		DisplayName: displayName,
+		Goal:        goal,
+	}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var serviceLevelObjective *monitoringpb.ServiceLevelObjective = &monitoringpb.ServiceLevelObjective{}
+	var request = &monitoringpb.UpdateServiceLevelObjectiveRequest{
+		ServiceLevelObjective: serviceLevelObjective,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateServiceLevelObjective(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestServiceMonitoringServiceUpdateServiceLevelObjectiveError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var serviceLevelObjective *monitoringpb.ServiceLevelObjective = &monitoringpb.ServiceLevelObjective{}
+	var request = &monitoringpb.UpdateServiceLevelObjectiveRequest{
+		ServiceLevelObjective: serviceLevelObjective,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateServiceLevelObjective(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestServiceMonitoringServiceDeleteServiceLevelObjective(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockServiceMonitoring.err = nil
+	mockServiceMonitoring.reqs = nil
+
+	mockServiceMonitoring.resps = append(mockServiceMonitoring.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s/serviceLevelObjectives/%s", "[PROJECT]", "[SERVICE]", "[SERVICE_LEVEL_OBJECTIVE]")
+	var request = &monitoringpb.DeleteServiceLevelObjectiveRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteServiceLevelObjective(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockServiceMonitoring.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestServiceMonitoringServiceDeleteServiceLevelObjectiveError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockServiceMonitoring.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/services/%s/serviceLevelObjectives/%s", "[PROJECT]", "[SERVICE]", "[SERVICE_LEVEL_OBJECTIVE]")
+	var request = &monitoringpb.DeleteServiceLevelObjectiveRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewServiceMonitoringClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteServiceLevelObjective(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

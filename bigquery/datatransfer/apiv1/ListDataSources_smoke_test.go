@@ -17,10 +17,6 @@
 package datatransfer
 
 import (
-	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-)
-
-import (
 	"context"
 	"fmt"
 	"strconv"
@@ -30,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 
 var _ = fmt.Sprintf
@@ -55,7 +52,7 @@ func TestDataTransferServiceSmoke(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	var formattedParent string = fmt.Sprintf("projects/%s", projectId)
+	var formattedParent string = fmt.Sprintf("projects/%s/locations/%s", projectId, "us-central1")
 	var request = &datatransferpb.ListDataSourcesRequest{
 		Parent: formattedParent,
 	}

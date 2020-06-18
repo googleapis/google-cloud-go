@@ -98,7 +98,10 @@ func Example_credentialsFile() {
 // The google package in this example is at golang.org/x/oauth2/google.
 //
 // This example uses the PubSub client, but the same steps apply to
-// the other client libraries underneath this package.
+// the other client libraries underneath this package. Note that scopes can be
+// found at https://developers.google.com/identity/protocols/googlescopes, and
+// are also provided in all auto-generated libraries: for example,
+// cloud.google.com/go/pubsub/apiv1 provides DefaultAuthScopes.
 func Example_credentialsFromJSON() {
 	ctx := context.Background()
 	creds, err := google.CredentialsFromJSON(ctx, []byte("JSON creds"), pubsub.ScopePubSub)

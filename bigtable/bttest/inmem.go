@@ -53,6 +53,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"rsc.io/binaryregexp"
 )
 
 const (
@@ -142,7 +143,15 @@ func (s *server) CreateTable(ctx context.Context, req *btapb.CreateTableRequest)
 	s.tables[tbl] = newTable(req)
 	s.mu.Unlock()
 
-	return &btapb.Table{Name: tbl}, nil
+	ct := &btapb.Table{
+		Name:           tbl,
+		ColumnFamilies: req.GetTable().GetColumnFamilies(),
+		Granularity:    req.GetTable().GetGranularity(),
+	}
+	if ct.Granularity == 0 {
+		ct.Granularity = btapb.Table_MILLIS
+	}
+	return ct, nil
 }
 
 func (s *server) CreateTableFromSnapshot(context.Context, *btapb.CreateTableFromSnapshotRequest) (*longrunning.Operation, error) {
@@ -677,7 +686,7 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 		if err != nil {
 			return false, status.Errorf(codes.InvalidArgument, "Error in field 'column_qualifier_regex_filter' : %v", err)
 		}
-		return rx.MatchString(toUTF8([]byte(col))), nil
+		return rx.MatchString(col), nil
 	case *btpb.RowFilter_ValueRegexFilter:
 		rx, err := newRegexp(f.ValueRegexFilter)
 		if err != nil {
@@ -706,6 +715,10 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 		}
 		return inRangeStart() && inRangeEnd(), nil
 	case *btpb.RowFilter_TimestampRangeFilter:
+		// Server should only support millisecond precision.
+		if f.TimestampRangeFilter.StartTimestampMicros%int64(time.Millisecond/time.Microsecond) != 0 || f.TimestampRangeFilter.EndTimestampMicros%int64(time.Millisecond/time.Microsecond) != 0 {
+			return false, status.Errorf(codes.InvalidArgument, "Error in field 'timestamp_range_filter'. Maximum precision allowed in filter is millisecond.\nGot:\nStart: %v\nEnd: %v", f.TimestampRangeFilter.StartTimestampMicros, f.TimestampRangeFilter.EndTimestampMicros)
+		}
 		// Lower bound is inclusive and defaults to 0, upper bound is exclusive and defaults to infinity.
 		return cell.ts >= f.TimestampRangeFilter.StartTimestampMicros &&
 			(f.TimestampRangeFilter.EndTimestampMicros == 0 || cell.ts < f.TimestampRangeFilter.EndTimestampMicros), nil
@@ -731,17 +744,8 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 	}
 }
 
-func toUTF8(bs []byte) string {
-	var rs []rune
-	for _, b := range bs {
-		rs = append(rs, rune(b))
-	}
-	return string(rs)
-}
-
-func newRegexp(patBytes []byte) (*regexp.Regexp, error) {
-	pat := toUTF8(patBytes)
-	re, err := regexp.Compile("^" + pat + "$") // match entire target
+func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
+	re, err := binaryregexp.Compile("^(?:" + string(pat) + ")$") // match entire target
 	if err != nil {
 		log.Printf("Bad pattern %q: %v", pat, err)
 	}
@@ -818,10 +822,11 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 		// TODO(dsymonds): This could be cheaper.
 		nr := r.copy()
 
-		// TODO(dsymonds, odeke-em): examine if filterRow here should be checked:
-		// with: match, err := filterRow(req.PredicateFilter, nr)
-		filterRow(req.PredicateFilter, nr)
-		whichMut = !nr.isEmpty()
+		match, err := filterRow(req.PredicateFilter, nr)
+		if err != nil {
+			return nil, err
+		}
+		whichMut = match && !nr.isEmpty()
 	}
 	res.PredicateMatched = whichMut
 	muts := req.FalseMutations

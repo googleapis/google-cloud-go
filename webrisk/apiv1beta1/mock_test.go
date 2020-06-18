@@ -17,10 +17,6 @@
 package webrisk
 
 import (
-	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,10 +30,13 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/option"
+	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -256,7 +255,10 @@ func TestWebRiskServiceV1Beta1SearchHashes(t *testing.T) {
 
 	mockWebRiskServiceV1Beta1.resps = append(mockWebRiskServiceV1Beta1.resps[:0], expectedResponse)
 
-	var request *webriskpb.SearchHashesRequest = &webriskpb.SearchHashesRequest{}
+	var threatTypes []webriskpb.ThreatType = nil
+	var request = &webriskpb.SearchHashesRequest{
+		ThreatTypes: threatTypes,
+	}
 
 	c, err := NewWebRiskServiceV1Beta1Client(context.Background(), clientOpt)
 	if err != nil {
@@ -282,7 +284,10 @@ func TestWebRiskServiceV1Beta1SearchHashesError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockWebRiskServiceV1Beta1.err = gstatus.Error(errCode, "test error")
 
-	var request *webriskpb.SearchHashesRequest = &webriskpb.SearchHashesRequest{}
+	var threatTypes []webriskpb.ThreatType = nil
+	var request = &webriskpb.SearchHashesRequest{
+		ThreatTypes: threatTypes,
+	}
 
 	c, err := NewWebRiskServiceV1Beta1Client(context.Background(), clientOpt)
 	if err != nil {

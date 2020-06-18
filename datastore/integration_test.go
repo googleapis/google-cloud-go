@@ -30,6 +30,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/rpcreplay"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -122,8 +123,17 @@ func initReplay() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	newTestClient = func(ctx context.Context, t *testing.T) *Client {
-		client, err := NewClient(ctx, ri.ProjectID, option.WithGRPCConn(conn))
+		grpcHeadersEnforcer := &testutil.HeadersEnforcer{
+			OnFailure: t.Fatalf,
+			Checkers: []*testutil.HeaderChecker{
+				testutil.XGoogClientHeaderChecker,
+			},
+		}
+
+		opts := append(grpcHeadersEnforcer.CallOptions(), option.WithGRPCConn(conn))
+		client, err := NewClient(ctx, ri.ProjectID, opts...)
 		if err != nil {
 			t.Fatalf("NewClient: %v", err)
 		}
@@ -140,7 +150,14 @@ func newClient(ctx context.Context, t *testing.T, dialOpts []grpc.DialOption) *C
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	opts := []option.ClientOption{option.WithTokenSource(ts)}
+
+	grpcHeadersEnforcer := &testutil.HeadersEnforcer{
+		OnFailure: t.Fatalf,
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+		},
+	}
+	opts := append(grpcHeadersEnforcer.CallOptions(), option.WithTokenSource(ts))
 	for _, opt := range dialOpts {
 		opts = append(opts, option.WithGRPCDialOption(opt))
 	}
@@ -160,9 +177,10 @@ func TestIntegration_Basics(t *testing.T) {
 		I int
 		S string
 		T time.Time
+		U interface{}
 	}
 
-	x0 := X{66, "99", timeNow.Truncate(time.Millisecond)}
+	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
 	k, err := client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
 	if err != nil {
 		t.Fatalf("client.Put: %v", err)
@@ -1274,5 +1292,43 @@ func TestIntegration_DetectProjectID(t *testing.T) {
 	_, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(ts))
 	if err == nil || err.Error() != "datastore: see the docs on DetectProjectID" {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
+	}
+}
+
+var genKeyName = uid.NewSpace("datastore-integration", nil)
+
+func TestIntegration_Project_TimestampStoreAndRetrieve(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type T struct{ Created time.Time }
+
+	keyName := genKeyName.New()
+
+	now := time.Now()
+	k, err := client.Put(ctx, IncompleteKey(keyName, nil), &T{Created: now})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := client.Delete(ctx, k); err != nil {
+			log.Println(err)
+		}
+	}()
+
+	// Without .Ancestor, this query is eventually consistent (so this test
+	// would be flakey). Ancestor queries, however, are strongly consistent.
+	// See more at https://cloud.google.com/datastore/docs/articles/balancing-strong-and-eventual-consistency-with-google-cloud-datastore/.
+	q := NewQuery(k.Kind).Ancestor(k)
+	res := []T{}
+	if _, err := client.GetAll(ctx, q, &res); err != nil {
+		t.Fatal(err)
+	}
+	if len(res) != 1 {
+		t.Fatalf("expected 1 result, got %d", len(res))
+	}
+	if got, want := res[0].Created.Unix(), now.Unix(); got != want {
+		t.Fatalf("got %v, want %v", got, want)
 	}
 }

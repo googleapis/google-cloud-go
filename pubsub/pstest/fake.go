@@ -107,6 +107,15 @@ func NewServer() *Server {
 //
 // Publish panics if there is an error, which is appropriate for testing.
 func (s *Server) Publish(topic string, data []byte, attrs map[string]string) string {
+	return s.PublishOrdered(topic, data, attrs, "")
+}
+
+// PublishOrdered behaves as if the Publish RPC was called with a message with the given
+// data, attrs and ordering key. It returns the ID of the message.
+// The topic will be created if it doesn't exist.
+//
+// PublishOrdered panics if there is an error, which is appropriate for testing.
+func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]string, orderingKey string) string {
 	const topicPattern = "projects/*/topics/*"
 	ok, err := path.Match(topicPattern, topic)
 	if err != nil {
@@ -118,7 +127,7 @@ func (s *Server) Publish(topic string, data []byte, attrs map[string]string) str
 	_, _ = s.GServer.CreateTopic(context.TODO(), &pb.Topic{Name: topic})
 	req := &pb.PublishRequest{
 		Topic:    topic,
-		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs}},
+		Messages: []*pb.PubsubMessage{{Data: data, Attributes: attrs, OrderingKey: orderingKey}},
 	}
 	res, err := s.GServer.Publish(context.TODO(), req)
 	if err != nil {
@@ -145,6 +154,7 @@ type Message struct {
 	PublishTime time.Time
 	Deliveries  int // number of times delivery of the message was attempted
 	Acks        int // number of acks received from clients
+	OrderingKey string
 
 	// protected by server mutex
 	deliveries int
@@ -193,6 +203,15 @@ func (s *Server) Wait() {
 	s.GServer.wg.Wait()
 }
 
+// ClearMessages removes all published messages
+// from internal containers.
+func (s *Server) ClearMessages() {
+	s.GServer.mu.Lock()
+	s.GServer.msgs = nil
+	s.GServer.msgsByID = make(map[string]*Message)
+	s.GServer.mu.Unlock()
+}
+
 // Close shuts down the server and releases all resources.
 func (s *Server) Close() error {
 	s.srv.Close()
@@ -238,8 +257,8 @@ func (s *GServer) UpdateTopic(_ context.Context, req *pb.UpdateTopicRequest) (*p
 		switch path {
 		case "labels":
 			t.proto.Labels = req.Topic.Labels
-		case "message_storage_policy": // "fetch" the policy
-			t.proto.MessageStoragePolicy = &pb.MessageStoragePolicy{AllowedPersistenceRegions: []string{"US"}}
+		case "message_storage_policy":
+			t.proto.MessageStoragePolicy = req.Topic.MessageStoragePolicy
 		default:
 			return nil, status.Errorf(codes.InvalidArgument, "unknown field name %q", path)
 		}
@@ -500,6 +519,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 			Data:        pm.Data,
 			Attributes:  pm.Attributes,
 			PublishTime: pubTime,
+			OrderingKey: pm.OrderingKey,
 		}
 		top.publish(pm, m)
 		ids = append(ids, id)
@@ -524,7 +544,6 @@ func newTopic(pt *pb.Topic) *topic {
 func (t *topic) stop() {
 	for _, sub := range t.subs {
 		sub.proto.Topic = "_deleted-topic_"
-		sub.stop()
 	}
 }
 

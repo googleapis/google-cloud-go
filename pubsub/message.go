@@ -23,28 +23,38 @@ import (
 
 // Message represents a Pub/Sub message.
 type Message struct {
-	// ID identifies this message.
-	// This ID is assigned by the server and is populated for Messages obtained from a subscription.
+	// ID identifies this message. This ID is assigned by the server and is
+	// populated for Messages obtained from a subscription.
+	//
 	// This field is read-only.
 	ID string
 
 	// Data is the actual data in the message.
 	Data []byte
 
-	// Attributes represents the key-value pairs the current message
-	// is labelled with.
+	// Attributes represents the key-value pairs the current message is
+	// labelled with.
 	Attributes map[string]string
 
 	// ackID is the identifier to acknowledge this message.
 	ackID string
 
-	// The time at which the message was published.
-	// This is populated by the server for Messages obtained from a subscription.
+	// PublishTime is the time at which the message was published. This is
+	// populated by the server for Messages obtained from a subscription.
+	//
 	// This field is read-only.
 	PublishTime time.Time
 
 	// receiveTime is the time the message was received by the client.
 	receiveTime time.Time
+
+	// DeliveryAttempt is the number of times a message has been delivered.
+	// This is part of the dead lettering feature that forwards messages that
+	// fail to be processed (from nack/ack deadline timeout) to a dead letter topic.
+	// If dead lettering is enabled, this will be set on all attempts, starting
+	// with value 1. Otherwise, the value will be nil.
+	// This field is read-only.
+	DeliveryAttempt *int
 
 	// size is the approximate size of the message's data and attributes.
 	size int
@@ -53,6 +63,10 @@ type Message struct {
 
 	// The done method of the iterator that created this Message.
 	doneFunc func(string, bool, time.Time)
+
+	// OrderingKey identifies related messages for which publish order should
+	// be respected. If empty string is used, message will be sent unordered.
+	OrderingKey string
 }
 
 func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
@@ -64,12 +78,21 @@ func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 	if err != nil {
 		return nil, err
 	}
+
+	var deliveryAttempt *int
+	if resp.DeliveryAttempt > 0 {
+		da := int(resp.DeliveryAttempt)
+		deliveryAttempt = &da
+	}
+
 	return &Message{
-		ackID:       resp.AckId,
-		Data:        resp.Message.Data,
-		Attributes:  resp.Message.Attributes,
-		ID:          resp.Message.MessageId,
-		PublishTime: pubTime,
+		ackID:           resp.AckId,
+		Data:            resp.Message.Data,
+		Attributes:      resp.Message.Attributes,
+		ID:              resp.Message.MessageId,
+		PublishTime:     pubTime,
+		DeliveryAttempt: deliveryAttempt,
+		OrderingKey:     resp.Message.OrderingKey,
 	}, nil
 }
 

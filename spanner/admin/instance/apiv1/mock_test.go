@@ -17,14 +17,6 @@
 package instance
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -37,11 +29,18 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
+	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
+	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -742,10 +741,10 @@ func TestInstanceAdminSetIamPolicy(t *testing.T) {
 
 	mockInstanceAdmin.resps = append(mockInstanceAdmin.resps[:0], expectedResponse)
 
-	var formattedResource string = fmt.Sprintf("projects/%s/instances/%s", "[PROJECT]", "[INSTANCE]")
+	var resource string = "resource-341064690"
 	var policy *iampb.Policy = &iampb.Policy{}
 	var request = &iampb.SetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 		Policy:   policy,
 	}
 
@@ -773,10 +772,10 @@ func TestInstanceAdminSetIamPolicyError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = gstatus.Error(errCode, "test error")
 
-	var formattedResource string = fmt.Sprintf("projects/%s/instances/%s", "[PROJECT]", "[INSTANCE]")
+	var resource string = "resource-341064690"
 	var policy *iampb.Policy = &iampb.Policy{}
 	var request = &iampb.SetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 		Policy:   policy,
 	}
 
@@ -807,9 +806,9 @@ func TestInstanceAdminGetIamPolicy(t *testing.T) {
 
 	mockInstanceAdmin.resps = append(mockInstanceAdmin.resps[:0], expectedResponse)
 
-	var formattedResource string = fmt.Sprintf("projects/%s/instances/%s", "[PROJECT]", "[INSTANCE]")
+	var resource string = "resource-341064690"
 	var request = &iampb.GetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 	}
 
 	c, err := NewInstanceAdminClient(context.Background(), clientOpt)
@@ -836,9 +835,9 @@ func TestInstanceAdminGetIamPolicyError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = gstatus.Error(errCode, "test error")
 
-	var formattedResource string = fmt.Sprintf("projects/%s/instances/%s", "[PROJECT]", "[INSTANCE]")
+	var resource string = "resource-341064690"
 	var request = &iampb.GetIamPolicyRequest{
-		Resource: formattedResource,
+		Resource: resource,
 	}
 
 	c, err := NewInstanceAdminClient(context.Background(), clientOpt)
@@ -863,10 +862,10 @@ func TestInstanceAdminTestIamPermissions(t *testing.T) {
 
 	mockInstanceAdmin.resps = append(mockInstanceAdmin.resps[:0], expectedResponse)
 
-	var formattedResource string = fmt.Sprintf("projects/%s/instances/%s", "[PROJECT]", "[INSTANCE]")
+	var resource string = "resource-341064690"
 	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource:    formattedResource,
+		Resource:    resource,
 		Permissions: permissions,
 	}
 
@@ -894,10 +893,10 @@ func TestInstanceAdminTestIamPermissionsError(t *testing.T) {
 	errCode := codes.PermissionDenied
 	mockInstanceAdmin.err = gstatus.Error(errCode, "test error")
 
-	var formattedResource string = fmt.Sprintf("projects/%s/instances/%s", "[PROJECT]", "[INSTANCE]")
+	var resource string = "resource-341064690"
 	var permissions []string = nil
 	var request = &iampb.TestIamPermissionsRequest{
-		Resource:    formattedResource,
+		Resource:    resource,
 		Permissions: permissions,
 	}
 

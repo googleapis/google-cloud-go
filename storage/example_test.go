@@ -15,16 +15,20 @@
 package storage_test
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"hash/crc32"
 	"io"
 	"io/ioutil"
 	"log"
+	"mime/multipart"
+	"net/http"
 	"os"
 	"time"
 
 	"cloud.google.com/go/storage"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 )
@@ -365,12 +369,53 @@ func ExampleObjectHandle_NewRangeReader() {
 	if err != nil {
 		// TODO: handle error.
 	}
+	defer rc.Close()
+
 	slurp, err := ioutil.ReadAll(rc)
-	rc.Close()
 	if err != nil {
 		// TODO: handle error.
 	}
-	fmt.Println("first 64K of file contents:", slurp)
+	fmt.Printf("first 64K of file contents:\n%s\n", slurp)
+}
+
+func ExampleObjectHandle_NewRangeReader_lastNBytes() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read only the last 10 bytes until the end of the file.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, -10, -1)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("Last 10 bytes from the end of the file:\n%s\n", slurp)
+}
+
+func ExampleObjectHandle_NewRangeReader_untilEnd() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Read from the 101st byte until the end of the file.
+	rc, err := client.Bucket("bucketname").Object("filename1").NewRangeReader(ctx, 100, -1)
+	if err != nil {
+		// TODO: handle error.
+	}
+	defer rc.Close()
+
+	slurp, err := ioutil.ReadAll(rc)
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("From 101st byte until the end:\n%s\n", slurp)
 }
 
 func ExampleObjectHandle_NewWriter() {
@@ -590,9 +635,16 @@ func ExampleComposer_Run() {
 	src1 := bkt.Object("o1")
 	src2 := bkt.Object("o2")
 	dst := bkt.Object("o3")
+
 	// Compose and modify metadata.
 	c := dst.ComposerFrom(src1, src2)
 	c.ContentType = "text/plain"
+
+	// Set the expected checksum for the destination object to be validated by
+	// the backend (if desired).
+	c.CRC32C = 42
+	c.SendCRC32C = true
+
 	attrs, err := c.Run(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -639,9 +691,23 @@ func ExampleObjectHandle_If() {
 	if err != nil {
 		// TODO: handle error.
 	}
-	defer rc.Close()
+
 	if _, err := io.Copy(os.Stdout, rc); err != nil {
 		// TODO: handle error.
+	}
+	if err := rc.Close(); err != nil {
+		switch ee := err.(type) {
+		case *googleapi.Error:
+			if ee.Code == http.StatusPreconditionFailed {
+				// The condition presented in the If failed.
+				// TODO: handle error.
+			}
+
+			// TODO: handle other status codes here.
+
+		default:
+			// TODO: handle error.
+		}
 	}
 }
 
@@ -662,4 +728,221 @@ func ExampleObjectHandle_Key() {
 	if err := w.Close(); err != nil {
 		// TODO: handle error.
 	}
+}
+
+func ExampleClient_CreateHMACKey() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkey, err := client.CreateHMACKey(ctx, "project-id", "service-account-email")
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = hkey // TODO: Use the HMAC Key.
+}
+
+func ExampleHMACKeyHandle_Delete() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkh := client.HMACKeyHandle("project-id", "access-key-id")
+	// Make sure that the HMACKey being deleted has a status of inactive.
+	if err := hkh.Delete(ctx); err != nil {
+		// TODO: handle error.
+	}
+}
+
+func ExampleHMACKeyHandle_Get() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkh := client.HMACKeyHandle("project-id", "access-key-id")
+	hkey, err := hkh.Get(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = hkey // TODO: Use the HMAC Key.
+}
+
+func ExampleHMACKeyHandle_Update() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	hkh := client.HMACKeyHandle("project-id", "access-key-id")
+	ukey, err := hkh.Update(ctx, storage.HMACKeyAttrsToUpdate{
+		State: storage.Inactive,
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = ukey // TODO: Use the HMAC Key.
+}
+
+func ExampleClient_ListHMACKeys() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id")
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
+
+func ExampleClient_ListHMACKeys_showDeletedKeys() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id", storage.ShowDeletedHMACKeys())
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
+
+func ExampleClient_ListHMACKeys_forServiceAccountEmail() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	iter := client.ListHMACKeys(ctx, "project-id", storage.ForHMACKeyServiceAccountEmail("service@account.email"))
+	for {
+		key, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: handle error.
+		}
+		_ = key // TODO: Use the key.
+	}
+}
+
+func ExampleBucketHandle_exists() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	attrs, err := client.Bucket("my-bucket").Attrs(ctx)
+	if err == storage.ErrBucketNotExist {
+		fmt.Println("The bucket does not exist")
+		return
+	}
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("The bucket exists and has attributes: %#v\n", attrs)
+}
+
+func ExampleObjectHandle_exists() {
+	ctx := context.Background()
+	client, err := storage.NewClient(ctx)
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	attrs, err := client.Bucket("my-bucket").Object("my-object").Attrs(ctx)
+	if err == storage.ErrObjectNotExist {
+		fmt.Println("The object does not exist")
+		return
+	}
+	if err != nil {
+		// TODO: handle error.
+	}
+	fmt.Printf("The object exists and has attributes: %#v\n", attrs)
+}
+
+func ExampleGenerateSignedPostPolicyV4() {
+	pv4, err := storage.GenerateSignedPostPolicyV4("my-bucket", "my-object.txt", &storage.PostPolicyV4Options{
+		GoogleAccessID: "my-access-id",
+		PrivateKey:     []byte("my-private-key"),
+
+		// The upload expires in 2hours.
+		Expires: time.Now().Add(2 * time.Hour),
+
+		Fields: &storage.PolicyV4Fields{
+			StatusCodeOnSuccess:    200,
+			RedirectToURLOnSuccess: "https://example.org/",
+			// It MUST only be a text file.
+			ContentType: "text/plain",
+		},
+
+		// The conditions that the uploaded file will be expected to conform to.
+		Conditions: []storage.PostPolicyV4Condition{
+			// Make the file a maximum of 10mB.
+			storage.ConditionContentLengthRange(0, 10<<20),
+		},
+	})
+	if err != nil {
+		// TODO: handle error.
+	}
+
+	// Now you can upload your file using the generated post policy
+	// with a plain HTTP client or even the browser.
+	formBuf := new(bytes.Buffer)
+	mw := multipart.NewWriter(formBuf)
+	for fieldName, value := range pv4.Fields {
+		if err := mw.WriteField(fieldName, value); err != nil {
+			// TODO: handle error.
+		}
+	}
+	file := bytes.NewReader(bytes.Repeat([]byte("a"), 100))
+
+	mf, err := mw.CreateFormFile("file", "myfile.txt")
+	if err != nil {
+		// TODO: handle error.
+	}
+	if _, err := io.Copy(mf, file); err != nil {
+		// TODO: handle error.
+	}
+	if err := mw.Close(); err != nil {
+		// TODO: handle error.
+	}
+
+	// Compose the request.
+	req, err := http.NewRequest("POST", pv4.URL, formBuf)
+	if err != nil {
+		// TODO: handle error.
+	}
+	// Ensure the Content-Type is derived from the multipart writer.
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		// TODO: handle error.
+	}
+	_ = res
 }

@@ -144,9 +144,19 @@ func TestQueryToProto(t *testing.T) {
 			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
 		},
 		{
+			desc: `q.Where("a", "in", []int{7, 8})`,
+			in:   q.Where("a", "in", []int{7, 8}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "in", []int{7, 8})},
+		},
+		{
 			desc: `q.Where("c", "array-contains", 1)`,
 			in:   q.Where("c", "array-contains", 1),
 			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
+		},
+		{
+			desc: `q.Where("c", "array-contains-any", []int{1, 2})`,
+			in:   q.Where("c", "array-contains-any", []int{1, 2}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
 		},
 		{
 			desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,
@@ -565,7 +575,9 @@ func TestQueryGetAll(t *testing.T) {
 	// This implicitly tests DocumentIterator as well.
 	const dbPath = "projects/projectID/databases/(default)"
 	ctx := context.Background()
-	c, srv := newMock(t)
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
 	docNames := []string{"C/a", "C/b"}
 	wantPBDocs := []*pb.Document{
 		{
@@ -731,22 +743,25 @@ func TestQuerySubCollections(t *testing.T) {
 	subDoc := subColl.Doc("sub-doc")
 	subSubColl := subDoc.Collection("sub-sub-collection")
 	subSubDoc := subSubColl.Doc("sub-sub-doc")
+	collGroup := c.CollectionGroup("collection-group")
 
 	testCases := []struct {
-		queryColl      *CollectionRef
+		queryColl      *Query
 		queryFilterDoc *DocumentRef // startAt or endBefore
 		wantColl       string
 		wantRef        string
 		wantErr        bool
 	}{
 		// Queries are allowed at depth 0.
-		{parentColl, parentDoc, "parent-collection", "projects/P/databases/DB/documents/parent-collection/parent-doc", false},
+		{parentColl.query(), parentDoc, "parent-collection", "projects/P/databases/DB/documents/parent-collection/parent-doc", false},
 		// Queries are allowed at any depth.
-		{subColl, subDoc, "sub-collection", "projects/P/databases/DB/documents/parent-collection/parent-doc/sub-collection/sub-doc", false},
-		// Queries must be on immediate children (not allowed on grandchildren).
-		{subColl, someOtherParentDoc, "", "", true},
+		{subColl.query(), subDoc, "sub-collection", "projects/P/databases/DB/documents/parent-collection/parent-doc/sub-collection/sub-doc", false},
+		// Queries must be on immediate children (not allowed on grandchildren),
+		// except for CollectionGroup queries.
+		{subColl.query(), someOtherParentDoc, "", "", true},
+		{collGroup.query(), someOtherParentDoc, "collection-group", "projects/P/databases/DB/documents/parent-collection/some-other-parent-doc", false},
 		// Queries must be on immediate children (not allowed on siblings).
-		{subColl, subSubDoc, "", "", true},
+		{subColl.query(), subSubDoc, "", "", true},
 	}
 
 	// startAt
@@ -771,7 +786,7 @@ func TestQuerySubCollections(t *testing.T) {
 		}
 		want := &pb.StructuredQuery{
 			From: []*pb.StructuredQuery_CollectionSelector{
-				{CollectionId: testCase.wantColl},
+				{CollectionId: testCase.wantColl, AllDescendants: testCase.queryColl.allDescendants},
 			},
 			OrderBy: []*pb.StructuredQuery_Order{
 				{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
@@ -813,7 +828,7 @@ func TestQuerySubCollections(t *testing.T) {
 		}
 		want := &pb.StructuredQuery{
 			From: []*pb.StructuredQuery_CollectionSelector{
-				{CollectionId: testCase.wantColl},
+				{CollectionId: testCase.wantColl, AllDescendants: testCase.queryColl.allDescendants},
 			},
 			OrderBy: []*pb.StructuredQuery_Order{
 				{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},

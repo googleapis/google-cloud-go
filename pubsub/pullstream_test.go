@@ -87,15 +87,16 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 	ps := pstest.NewServer()
 	defer ps.Close()
 
-	s := ExhaustedServer{ps.GServer}
+	s := ExhaustedServer{&ps.GServer}
 	pb.RegisterPublisherServer(srv.Gsrv, &s)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s)
 	srv.Start()
 
-	client, err := NewClient(ctx, "P",
+	opts := withGRPCHeadersAssertion(t,
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithInsecure()))
+	client, err := NewClient(ctx, "P", opts...)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -123,7 +124,7 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 }
 
 type ExhaustedServer struct {
-	pstest.GServer
+	*pstest.GServer
 }
 
 func (*ExhaustedServer) StreamingPull(_ pb.Subscriber_StreamingPullServer) error {

@@ -24,7 +24,12 @@ import (
 // ExtractConfig holds the configuration for an extract job.
 type ExtractConfig struct {
 	// Src is the table from which data will be extracted.
+	// Only one of Src or SrcModel should be specified.
 	Src *Table
+
+	// SrcModel is the ML model from which the data will be extracted.
+	// Only one of Src or SrcModel should be specified.
+	SrcModel *Model
 
 	// Dst is the destination into which the data will be extracted.
 	Dst *GCSReference
@@ -34,6 +39,13 @@ type ExtractConfig struct {
 
 	// The labels associated with this job.
 	Labels map[string]string
+
+	// For Avro-based extracts, controls whether logical type annotations are generated.
+	//
+	// Example:  With this enabled, writing a BigQuery TIMESTAMP column will result in
+	// an integer column annotated with the appropriate timestamp-micros/millis annotation
+	// in the resulting Avro files.
+	UseAvroLogicalTypes bool
 }
 
 func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
@@ -42,17 +54,25 @@ func (e *ExtractConfig) toBQ() *bq.JobConfiguration {
 		f := false
 		printHeader = &f
 	}
-	return &bq.JobConfiguration{
+	cfg := &bq.JobConfiguration{
 		Labels: e.Labels,
 		Extract: &bq.JobConfigurationExtract{
 			DestinationUris:   append([]string{}, e.Dst.URIs...),
 			Compression:       string(e.Dst.Compression),
 			DestinationFormat: string(e.Dst.DestinationFormat),
 			FieldDelimiter:    e.Dst.FieldDelimiter,
-			SourceTable:       e.Src.toBQ(),
-			PrintHeader:       printHeader,
+
+			PrintHeader:         printHeader,
+			UseAvroLogicalTypes: e.UseAvroLogicalTypes,
 		},
 	}
+	if e.Src != nil {
+		cfg.Extract.SourceTable = e.Src.toBQ()
+	}
+	if e.SrcModel != nil {
+		cfg.Extract.SourceModel = e.SrcModel.toBQ()
+	}
+	return cfg
 }
 
 func bqToExtractConfig(q *bq.JobConfiguration, c *Client) *ExtractConfig {
@@ -69,8 +89,10 @@ func bqToExtractConfig(q *bq.JobConfiguration, c *Client) *ExtractConfig {
 				},
 			},
 		},
-		DisableHeader: qe.PrintHeader != nil && !*qe.PrintHeader,
-		Src:           bqToTable(qe.SourceTable, c),
+		DisableHeader:       qe.PrintHeader != nil && !*qe.PrintHeader,
+		Src:                 bqToTable(qe.SourceTable, c),
+		SrcModel:            bqToModel(qe.SourceModel, c),
+		UseAvroLogicalTypes: qe.UseAvroLogicalTypes,
 	}
 }
 
@@ -90,6 +112,19 @@ func (t *Table) ExtractorTo(dst *GCSReference) *Extractor {
 		ExtractConfig: ExtractConfig{
 			Src: t,
 			Dst: dst,
+		},
+	}
+}
+
+// ExtractorTo returns an Extractor which can be persist a BigQuery Model into
+// Google Cloud Storage.
+// The returned Extractor may be further configured before its Run method is called.
+func (m *Model) ExtractorTo(dst *GCSReference) *Extractor {
+	return &Extractor{
+		c: m.c,
+		ExtractConfig: ExtractConfig{
+			SrcModel: m,
+			Dst:      dst,
 		},
 	}
 }

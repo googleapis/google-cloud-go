@@ -17,10 +17,6 @@
 package recaptchaenterprise
 
 import (
-	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -33,11 +29,15 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -84,6 +84,66 @@ func (s *mockRecaptchaEnterpriseServiceV1Beta1Server) AnnotateAssessment(ctx con
 	return s.resps[0].(*recaptchaenterprisepb.AnnotateAssessmentResponse), nil
 }
 
+func (s *mockRecaptchaEnterpriseServiceV1Beta1Server) CreateKey(ctx context.Context, req *recaptchaenterprisepb.CreateKeyRequest) (*recaptchaenterprisepb.Key, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*recaptchaenterprisepb.Key), nil
+}
+
+func (s *mockRecaptchaEnterpriseServiceV1Beta1Server) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKeysRequest) (*recaptchaenterprisepb.ListKeysResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*recaptchaenterprisepb.ListKeysResponse), nil
+}
+
+func (s *mockRecaptchaEnterpriseServiceV1Beta1Server) GetKey(ctx context.Context, req *recaptchaenterprisepb.GetKeyRequest) (*recaptchaenterprisepb.Key, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*recaptchaenterprisepb.Key), nil
+}
+
+func (s *mockRecaptchaEnterpriseServiceV1Beta1Server) UpdateKey(ctx context.Context, req *recaptchaenterprisepb.UpdateKeyRequest) (*recaptchaenterprisepb.Key, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*recaptchaenterprisepb.Key), nil
+}
+
+func (s *mockRecaptchaEnterpriseServiceV1Beta1Server) DeleteKey(ctx context.Context, req *recaptchaenterprisepb.DeleteKeyRequest) (*emptypb.Empty, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*emptypb.Empty), nil
+}
+
 // clientOpt is the option tests should use to connect to the test server.
 // It is initialized by TestMain.
 var clientOpt option.ClientOption
@@ -115,7 +175,7 @@ func TestMain(m *testing.M) {
 
 func TestRecaptchaEnterpriseServiceV1Beta1CreateAssessment(t *testing.T) {
 	var name string = "name3373707"
-	var score float32 = 1.0926453E7
+	var score float32 = 1.0926453e7
 	var expectedResponse = &recaptchaenterprisepb.Assessment{
 		Name:  name,
 		Score: score,
@@ -237,4 +297,315 @@ func TestRecaptchaEnterpriseServiceV1Beta1AnnotateAssessmentError(t *testing.T) 
 		t.Errorf("got error code %q, want %q", c, errCode)
 	}
 	_ = resp
+}
+func TestRecaptchaEnterpriseServiceV1Beta1CreateKey(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &recaptchaenterprisepb.Key{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockRecaptchaEnterpriseServiceV1Beta1.err = nil
+	mockRecaptchaEnterpriseServiceV1Beta1.reqs = nil
+
+	mockRecaptchaEnterpriseServiceV1Beta1.resps = append(mockRecaptchaEnterpriseServiceV1Beta1.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var key *recaptchaenterprisepb.Key = &recaptchaenterprisepb.Key{}
+	var request = &recaptchaenterprisepb.CreateKeyRequest{
+		Parent: formattedParent,
+		Key:    key,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateKey(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockRecaptchaEnterpriseServiceV1Beta1.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestRecaptchaEnterpriseServiceV1Beta1CreateKeyError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockRecaptchaEnterpriseServiceV1Beta1.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var key *recaptchaenterprisepb.Key = &recaptchaenterprisepb.Key{}
+	var request = &recaptchaenterprisepb.CreateKeyRequest{
+		Parent: formattedParent,
+		Key:    key,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.CreateKey(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestRecaptchaEnterpriseServiceV1Beta1ListKeys(t *testing.T) {
+	var nextPageToken string = ""
+	var keysElement *recaptchaenterprisepb.Key = &recaptchaenterprisepb.Key{}
+	var keys = []*recaptchaenterprisepb.Key{keysElement}
+	var expectedResponse = &recaptchaenterprisepb.ListKeysResponse{
+		NextPageToken: nextPageToken,
+		Keys:          keys,
+	}
+
+	mockRecaptchaEnterpriseServiceV1Beta1.err = nil
+	mockRecaptchaEnterpriseServiceV1Beta1.reqs = nil
+
+	mockRecaptchaEnterpriseServiceV1Beta1.resps = append(mockRecaptchaEnterpriseServiceV1Beta1.resps[:0], expectedResponse)
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &recaptchaenterprisepb.ListKeysRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListKeys(context.Background(), request).Next()
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockRecaptchaEnterpriseServiceV1Beta1.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	want := (interface{})(expectedResponse.Keys[0])
+	got := (interface{})(resp)
+	var ok bool
+
+	switch want := (want).(type) {
+	case proto.Message:
+		ok = proto.Equal(want, got.(proto.Message))
+	default:
+		ok = want == got
+	}
+	if !ok {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestRecaptchaEnterpriseServiceV1Beta1ListKeysError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockRecaptchaEnterpriseServiceV1Beta1.err = gstatus.Error(errCode, "test error")
+
+	var formattedParent string = fmt.Sprintf("projects/%s", "[PROJECT]")
+	var request = &recaptchaenterprisepb.ListKeysRequest{
+		Parent: formattedParent,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.ListKeys(context.Background(), request).Next()
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestRecaptchaEnterpriseServiceV1Beta1GetKey(t *testing.T) {
+	var name2 string = "name2-1052831874"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &recaptchaenterprisepb.Key{
+		Name:        name2,
+		DisplayName: displayName,
+	}
+
+	mockRecaptchaEnterpriseServiceV1Beta1.err = nil
+	mockRecaptchaEnterpriseServiceV1Beta1.reqs = nil
+
+	mockRecaptchaEnterpriseServiceV1Beta1.resps = append(mockRecaptchaEnterpriseServiceV1Beta1.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/keys/%s", "[PROJECT]", "[KEY]")
+	var request = &recaptchaenterprisepb.GetKeyRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetKey(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockRecaptchaEnterpriseServiceV1Beta1.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestRecaptchaEnterpriseServiceV1Beta1GetKeyError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockRecaptchaEnterpriseServiceV1Beta1.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/keys/%s", "[PROJECT]", "[KEY]")
+	var request = &recaptchaenterprisepb.GetKeyRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.GetKey(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestRecaptchaEnterpriseServiceV1Beta1UpdateKey(t *testing.T) {
+	var name string = "name3373707"
+	var displayName string = "displayName1615086568"
+	var expectedResponse = &recaptchaenterprisepb.Key{
+		Name:        name,
+		DisplayName: displayName,
+	}
+
+	mockRecaptchaEnterpriseServiceV1Beta1.err = nil
+	mockRecaptchaEnterpriseServiceV1Beta1.reqs = nil
+
+	mockRecaptchaEnterpriseServiceV1Beta1.resps = append(mockRecaptchaEnterpriseServiceV1Beta1.resps[:0], expectedResponse)
+
+	var key *recaptchaenterprisepb.Key = &recaptchaenterprisepb.Key{}
+	var request = &recaptchaenterprisepb.UpdateKeyRequest{
+		Key: key,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateKey(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockRecaptchaEnterpriseServiceV1Beta1.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestRecaptchaEnterpriseServiceV1Beta1UpdateKeyError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockRecaptchaEnterpriseServiceV1Beta1.err = gstatus.Error(errCode, "test error")
+
+	var key *recaptchaenterprisepb.Key = &recaptchaenterprisepb.Key{}
+	var request = &recaptchaenterprisepb.UpdateKeyRequest{
+		Key: key,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.UpdateKey(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestRecaptchaEnterpriseServiceV1Beta1DeleteKey(t *testing.T) {
+	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+
+	mockRecaptchaEnterpriseServiceV1Beta1.err = nil
+	mockRecaptchaEnterpriseServiceV1Beta1.reqs = nil
+
+	mockRecaptchaEnterpriseServiceV1Beta1.resps = append(mockRecaptchaEnterpriseServiceV1Beta1.resps[:0], expectedResponse)
+
+	var formattedName string = fmt.Sprintf("projects/%s/keys/%s", "[PROJECT]", "[KEY]")
+	var request = &recaptchaenterprisepb.DeleteKeyRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteKey(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockRecaptchaEnterpriseServiceV1Beta1.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+}
+
+func TestRecaptchaEnterpriseServiceV1Beta1DeleteKeyError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockRecaptchaEnterpriseServiceV1Beta1.err = gstatus.Error(errCode, "test error")
+
+	var formattedName string = fmt.Sprintf("projects/%s/keys/%s", "[PROJECT]", "[KEY]")
+	var request = &recaptchaenterprisepb.DeleteKeyRequest{
+		Name: formattedName,
+	}
+
+	c, err := NewRecaptchaEnterpriseServiceV1Beta1Client(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	err = c.DeleteKey(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
 }

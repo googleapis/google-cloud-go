@@ -21,14 +21,18 @@ It has these top-level messages:
 */
 package google_pubsub_loadtest
 
-import proto "github.com/golang/protobuf/proto"
-import fmt "fmt"
-import math "math"
-import google_protobuf "github.com/golang/protobuf/ptypes/duration"
-import google_protobuf1 "github.com/golang/protobuf/ptypes/timestamp"
-
 import (
+	fmt "fmt"
+
+	proto "github.com/golang/protobuf/proto"
+
+	math "math"
+
+	google_protobuf "github.com/golang/protobuf/ptypes/duration"
+
 	"context"
+
+	google_protobuf1 "github.com/golang/protobuf/ptypes/timestamp"
 
 	grpc "google.golang.org/grpc"
 )

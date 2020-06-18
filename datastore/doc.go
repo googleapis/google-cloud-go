@@ -88,9 +88,11 @@ GetMulti, PutMulti and DeleteMulti are batch versions of the Get, Put and
 Delete functions. They take a []*Key instead of a *Key, and may return a
 datastore.MultiError when encountering partial failure.
 
-Mutate generalizes PutMulti and DeleteMulti to a sequence of any Datastore mutations.
-It takes a series of mutations created with NewInsert, NewUpdate, NewUpsert and
-NewDelete and applies them atomically.
+Mutate generalizes PutMulti and DeleteMulti to a sequence of any Datastore
+mutations. It takes a series of mutations created with NewInsert, NewUpdate,
+NewUpsert and NewDelete and applies them. Datastore.Mutate uses
+non-transactional mode; if atomicity is required, use Transaction.Mutate
+instead.
 
 
 Properties
@@ -245,6 +247,15 @@ structs are themselves saved as Entity values. For example, given these definiti
 	}
 
 then an Outer would have one property, Inner, encoded as an Entity value.
+
+Note: embedded struct fields must be named to be encoded as an Entity. For
+example, in case of a type Outer with an embedded field Inner:
+
+	type Outer struct {
+		Inner
+	}
+
+all the Inner struct fields will be treated as fields of Outer itself.
 
 If an outer struct is tagged "noindex" then all of its implicit flattened
 fields are effectively "noindex".

@@ -20,13 +20,14 @@ import (
 	"context"
 	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
@@ -64,6 +65,8 @@ func defaultIamClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		option.WithEndpoint("iam.googleapis.com:443"),
 		option.WithScopes(DefaultAuthScopes()...),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -72,6 +75,7 @@ func defaultIamCallOptions() *IamCallOptions {
 		{"default", "idempotent"}: {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
 					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
@@ -112,7 +116,7 @@ func defaultIamCallOptions() *IamCallOptions {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type IamClient struct {
 	// The connection to the service.
-	conn *grpc.ClientConn
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	iamClient adminpb.IAMClient
@@ -143,15 +147,15 @@ type IamClient struct {
 // the account. The account value can be the email address or the
 // unique_id of the service account.
 func NewIamClient(ctx context.Context, opts ...option.ClientOption) (*IamClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultIamClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultIamClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IamClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultIamCallOptions(),
 
-		iamClient: adminpb.NewIAMClient(conn),
+		iamClient: adminpb.NewIAMClient(connPool),
 	}
 	c.setGoogleClientInfo()
 	return c, nil
@@ -159,13 +163,13 @@ func NewIamClient(ctx context.Context, opts ...option.ClientOption) (*IamClient,
 
 // Connection returns the client's connection to the API service.
 func (c *IamClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *IamClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
@@ -179,7 +183,7 @@ func (c *IamClient) setGoogleClientInfo(keyval ...string) {
 
 // ListServiceAccounts lists [ServiceAccounts][google.iam.admin.v1.ServiceAccount] for a project.
 func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListServiceAccountsRequest, opts ...gax.CallOption) *ServiceAccountIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListServiceAccounts[0:len(c.CallOptions.ListServiceAccounts):len(c.CallOptions.ListServiceAccounts)], opts...)
 	it := &ServiceAccountIterator{}
@@ -218,7 +222,7 @@ func (c *IamClient) ListServiceAccounts(ctx context.Context, req *adminpb.ListSe
 
 // GetServiceAccount gets a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) GetServiceAccount(ctx context.Context, req *adminpb.GetServiceAccountRequest, opts ...gax.CallOption) (*adminpb.ServiceAccount, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetServiceAccount[0:len(c.CallOptions.GetServiceAccount):len(c.CallOptions.GetServiceAccount)], opts...)
 	var resp *adminpb.ServiceAccount
@@ -236,7 +240,7 @@ func (c *IamClient) GetServiceAccount(ctx context.Context, req *adminpb.GetServi
 // CreateServiceAccount creates a [ServiceAccount][google.iam.admin.v1.ServiceAccount]
 // and returns it.
 func (c *IamClient) CreateServiceAccount(ctx context.Context, req *adminpb.CreateServiceAccountRequest, opts ...gax.CallOption) (*adminpb.ServiceAccount, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateServiceAccount[0:len(c.CallOptions.CreateServiceAccount):len(c.CallOptions.CreateServiceAccount)], opts...)
 	var resp *adminpb.ServiceAccount
@@ -257,7 +261,7 @@ func (c *IamClient) CreateServiceAccount(ctx context.Context, req *adminpb.Creat
 // display_name .
 // The etag is mandatory.
 func (c *IamClient) UpdateServiceAccount(ctx context.Context, req *adminpb.ServiceAccount, opts ...gax.CallOption) (*adminpb.ServiceAccount, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateServiceAccount[0:len(c.CallOptions.UpdateServiceAccount):len(c.CallOptions.UpdateServiceAccount)], opts...)
 	var resp *adminpb.ServiceAccount
@@ -274,7 +278,7 @@ func (c *IamClient) UpdateServiceAccount(ctx context.Context, req *adminpb.Servi
 
 // DeleteServiceAccount deletes a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) DeleteServiceAccount(ctx context.Context, req *adminpb.DeleteServiceAccountRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteServiceAccount[0:len(c.CallOptions.DeleteServiceAccount):len(c.CallOptions.DeleteServiceAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -287,7 +291,7 @@ func (c *IamClient) DeleteServiceAccount(ctx context.Context, req *adminpb.Delet
 
 // ListServiceAccountKeys lists [ServiceAccountKeys][google.iam.admin.v1.ServiceAccountKey].
 func (c *IamClient) ListServiceAccountKeys(ctx context.Context, req *adminpb.ListServiceAccountKeysRequest, opts ...gax.CallOption) (*adminpb.ListServiceAccountKeysResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListServiceAccountKeys[0:len(c.CallOptions.ListServiceAccountKeys):len(c.CallOptions.ListServiceAccountKeys)], opts...)
 	var resp *adminpb.ListServiceAccountKeysResponse
@@ -305,7 +309,7 @@ func (c *IamClient) ListServiceAccountKeys(ctx context.Context, req *adminpb.Lis
 // GetServiceAccountKey gets the [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey]
 // by key id.
 func (c *IamClient) GetServiceAccountKey(ctx context.Context, req *adminpb.GetServiceAccountKeyRequest, opts ...gax.CallOption) (*adminpb.ServiceAccountKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetServiceAccountKey[0:len(c.CallOptions.GetServiceAccountKey):len(c.CallOptions.GetServiceAccountKey)], opts...)
 	var resp *adminpb.ServiceAccountKey
@@ -323,7 +327,7 @@ func (c *IamClient) GetServiceAccountKey(ctx context.Context, req *adminpb.GetSe
 // CreateServiceAccountKey creates a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey]
 // and returns it.
 func (c *IamClient) CreateServiceAccountKey(ctx context.Context, req *adminpb.CreateServiceAccountKeyRequest, opts ...gax.CallOption) (*adminpb.ServiceAccountKey, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateServiceAccountKey[0:len(c.CallOptions.CreateServiceAccountKey):len(c.CallOptions.CreateServiceAccountKey)], opts...)
 	var resp *adminpb.ServiceAccountKey
@@ -340,7 +344,7 @@ func (c *IamClient) CreateServiceAccountKey(ctx context.Context, req *adminpb.Cr
 
 // DeleteServiceAccountKey deletes a [ServiceAccountKey][google.iam.admin.v1.ServiceAccountKey].
 func (c *IamClient) DeleteServiceAccountKey(ctx context.Context, req *adminpb.DeleteServiceAccountKeyRequest, opts ...gax.CallOption) error {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteServiceAccountKey[0:len(c.CallOptions.DeleteServiceAccountKey):len(c.CallOptions.DeleteServiceAccountKey)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -353,7 +357,7 @@ func (c *IamClient) DeleteServiceAccountKey(ctx context.Context, req *adminpb.De
 
 // SignBlob signs a blob using a service account's system-managed private key.
 func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest, opts ...gax.CallOption) (*adminpb.SignBlobResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SignBlob[0:len(c.CallOptions.SignBlob):len(c.CallOptions.SignBlob)], opts...)
 	var resp *adminpb.SignBlobResponse
@@ -371,7 +375,7 @@ func (c *IamClient) SignBlob(ctx context.Context, req *adminpb.SignBlobRequest, 
 // getIamPolicy returns the IAM access control policy for a
 // [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) getIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", req.GetResource()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -389,7 +393,7 @@ func (c *IamClient) getIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReq
 // setIamPolicy sets the IAM access control policy for a
 // [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) setIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", req.GetResource()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
 	var resp *iampb.Policy
@@ -407,7 +411,7 @@ func (c *IamClient) setIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReq
 // TestIamPermissions tests the specified permissions against the IAM access control policy
 // for a [ServiceAccount][google.iam.admin.v1.ServiceAccount].
 func (c *IamClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", req.GetResource()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
@@ -446,7 +450,7 @@ func (c *IamClient) QueryGrantableRoles(ctx context.Context, req *adminpb.QueryG
 // an expiry time of one hour by default. If you request an expiry time of
 // more than one hour, the request will fail.
 func (c *IamClient) SignJwt(ctx context.Context, req *adminpb.SignJwtRequest, opts ...gax.CallOption) (*adminpb.SignJwtResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SignJwt[0:len(c.CallOptions.SignJwt):len(c.CallOptions.SignJwt)], opts...)
 	var resp *adminpb.SignJwtResponse
@@ -479,7 +483,7 @@ func (c *IamClient) ListRoles(ctx context.Context, req *adminpb.ListRolesRequest
 
 // GetRole gets a Role definition.
 func (c *IamClient) GetRole(ctx context.Context, req *adminpb.GetRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetRole[0:len(c.CallOptions.GetRole):len(c.CallOptions.GetRole)], opts...)
 	var resp *adminpb.Role
@@ -496,7 +500,7 @@ func (c *IamClient) GetRole(ctx context.Context, req *adminpb.GetRoleRequest, op
 
 // CreateRole creates a new Role.
 func (c *IamClient) CreateRole(ctx context.Context, req *adminpb.CreateRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", req.GetParent()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateRole[0:len(c.CallOptions.CreateRole):len(c.CallOptions.CreateRole)], opts...)
 	var resp *adminpb.Role
@@ -513,7 +517,7 @@ func (c *IamClient) CreateRole(ctx context.Context, req *adminpb.CreateRoleReque
 
 // UpdateRole updates a Role definition.
 func (c *IamClient) UpdateRole(ctx context.Context, req *adminpb.UpdateRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateRole[0:len(c.CallOptions.UpdateRole):len(c.CallOptions.UpdateRole)], opts...)
 	var resp *adminpb.Role
@@ -536,7 +540,7 @@ func (c *IamClient) UpdateRole(ctx context.Context, req *adminpb.UpdateRoleReque
 // within 7 days. After 7 days the Role is deleted and all Bindings associated
 // with the role are removed.
 func (c *IamClient) DeleteRole(ctx context.Context, req *adminpb.DeleteRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteRole[0:len(c.CallOptions.DeleteRole):len(c.CallOptions.DeleteRole)], opts...)
 	var resp *adminpb.Role
@@ -553,7 +557,7 @@ func (c *IamClient) DeleteRole(ctx context.Context, req *adminpb.DeleteRoleReque
 
 // UndeleteRole undelete a Role, bringing it back in its previous state.
 func (c *IamClient) UndeleteRole(ctx context.Context, req *adminpb.UndeleteRoleRequest, opts ...gax.CallOption) (*adminpb.Role, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", req.GetName()))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UndeleteRole[0:len(c.CallOptions.UndeleteRole):len(c.CallOptions.UndeleteRole)], opts...)
 	var resp *adminpb.Role

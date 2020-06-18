@@ -120,6 +120,7 @@ func f1() {
 	q := states.Where("pop", ">", 10).OrderBy("pop", firestore.Desc)
 	//]
 	//[ Documents
+	// import "google.golang.org/api/iterator"
 	iter := q.Documents(ctx)
 	for {
 		doc, err := iter.Next()

@@ -18,19 +18,24 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"log"
 	"runtime"
 	"strings"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/iam"
+	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opencensus.io/stats"
+	"go.opencensus.io/tag"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -58,9 +63,12 @@ type Topic struct {
 	// first call to Publish. The default is DefaultPublishSettings.
 	PublishSettings PublishSettings
 
-	mu      sync.RWMutex
-	stopped bool
-	bundler *bundler.Bundler
+	mu        sync.RWMutex
+	stopped   bool
+	scheduler *scheduler.PublishScheduler
+
+	// EnableMessageOrdering enables delivery of ordered keys.
+	EnableMessageOrdering bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -76,31 +84,70 @@ type PublishSettings struct {
 	// Publish a batch when its size in bytes reaches this value.
 	ByteThreshold int
 
-	// The number of goroutines that invoke the Publish RPC concurrently.
+	// The number of goroutines used in each of the data structures that are
+	// involved along the the Publish path. Adjusting this value adjusts
+	// concurrency along the publish path.
+	//
 	// Defaults to a multiple of GOMAXPROCS.
 	NumGoroutines int
 
 	// The maximum time that the client will attempt to publish a bundle of messages.
 	Timeout time.Duration
+
+	// The maximum number of bytes that the Bundler will keep in memory before
+	// returning ErrOverflow.
+	//
+	// Defaults to DefaultPublishSettings.BufferedByteLimit.
+	BufferedByteLimit int
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
 var DefaultPublishSettings = PublishSettings{
-	DelayThreshold: 1 * time.Millisecond,
+	DelayThreshold: 10 * time.Millisecond,
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
 	Timeout:        60 * time.Second,
+	// By default, limit the bundler to 10 times the max message size. The number 10 is
+	// chosen as a reasonable amount of messages in the worst case whilst still
+	// capping the number to a low enough value to not OOM users.
+	BufferedByteLimit: 10 * MaxPublishRequestBytes,
 }
 
 // CreateTopic creates a new topic.
+//
 // The specified topic ID must start with a letter, and contain only letters
 // ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods (.),
 // tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
-// characters in length, and must not start with "goog".
+// characters in length, and must not start with "goog". For more information,
+// see: https://cloud.google.com/pubsub/docs/admin#resource_names
+//
 // If the topic already exists an error will be returned.
-func (c *Client) CreateTopic(ctx context.Context, id string) (*Topic, error) {
-	t := c.Topic(id)
+func (c *Client) CreateTopic(ctx context.Context, topicID string) (*Topic, error) {
+	t := c.Topic(topicID)
 	_, err := c.pubc.CreateTopic(ctx, &pb.Topic{Name: t.name})
+	if err != nil {
+		return nil, err
+	}
+	return t, nil
+}
+
+// CreateTopicWithConfig creates a topic from TopicConfig.
+//
+// The specified topic ID must start with a letter, and contain only letters
+// ([A-Za-z]), numbers ([0-9]), dashes (-), underscores (_), periods (.),
+// tildes (~), plus (+) or percent signs (%). It must be between 3 and 255
+// characters in length, and must not start with "goog". For more information,
+// see: https://cloud.google.com/pubsub/docs/admin#resource_names.
+//
+// If the topic already exists, an error will be returned.
+func (c *Client) CreateTopicWithConfig(ctx context.Context, topicID string, tc *TopicConfig) (*Topic, error) {
+	t := c.Topic(topicID)
+	_, err := c.pubc.CreateTopic(ctx, &pb.Topic{
+		Name:                 t.name,
+		Labels:               tc.Labels,
+		MessageStoragePolicy: messageStoragePolicyToProto(&tc.MessageStoragePolicy),
+		KmsKeyName:           tc.KMSKeyName,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -139,23 +186,40 @@ func newTopic(c *Client, name string) *Topic {
 type TopicConfig struct {
 	// The set of labels for the topic.
 	Labels map[string]string
+
 	// The topic's message storage policy.
 	MessageStoragePolicy MessageStoragePolicy
+
+	// The name of the Cloud KMS key to be used to protect access to messages
+	// published to this topic, in the format
+	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
+	KMSKeyName string
 }
 
 // TopicConfigToUpdate describes how to update a topic.
 type TopicConfigToUpdate struct {
 	// If non-nil, the current set of labels is completely
 	// replaced by the new set.
+	Labels map[string]string
+
+	// If non-nil, the existing policy (containing the list of regions)
+	// is completely replaced by the new policy.
+	//
+	// Use the zero value &MessageStoragePolicy{} to reset the topic back to
+	// using the organization's Resource Location Restriction policy.
+	//
+	// If nil, the policy remains unchanged.
+	//
 	// This field has beta status. It is not subject to the stability guarantee
 	// and may change.
-	Labels map[string]string
+	MessageStoragePolicy *MessageStoragePolicy
 }
 
 func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 	return TopicConfig{
 		Labels:               pbt.Labels,
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
+		KMSKeyName:           pbt.KmsKeyName,
 	}
 }
 
@@ -163,12 +227,19 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 // is determined when the topic is created based on the policy configured at
 // the project level.
 type MessageStoragePolicy struct {
-	// The list of GCP regions where messages that are published to the topic may
-	// be persisted in storage. Messages published by publishers running in
+	// AllowedPersistenceRegions is the list of GCP regions where messages that are published
+	// to the topic may be persisted in storage. Messages published by publishers running in
 	// non-allowed GCP regions (or running outside of GCP altogether) will be
-	// routed for storage in one of the allowed regions. An empty list indicates a
-	// misconfiguration at the project or organization level, which will result in
-	// all Publish operations failing.
+	// routed for storage in one of the allowed regions.
+	//
+	// If empty, it indicates a misconfiguration at the project or organization level, which
+	// will result in all Publish operations failing. This field cannot be empty in updates.
+	//
+	// If nil, then the policy is not defined on a topic level. When used in updates, it resets
+	// the regions back to the organization level Resource Location Restriction policy.
+	//
+	// For more information, see
+	// https://cloud.google.com/pubsub/docs/resource-location-restriction#pubsub-storage-locations.
 	AllowedPersistenceRegions []string
 }
 
@@ -177,6 +248,13 @@ func protoToMessageStoragePolicy(msp *pb.MessageStoragePolicy) MessageStoragePol
 		return MessageStoragePolicy{}
 	}
 	return MessageStoragePolicy{AllowedPersistenceRegions: msp.AllowedPersistenceRegions}
+}
+
+func messageStoragePolicyToProto(msp *MessageStoragePolicy) *pb.MessageStoragePolicy {
+	if msp == nil || msp.AllowedPersistenceRegions == nil {
+		return nil
+	}
+	return &pb.MessageStoragePolicy{AllowedPersistenceRegions: msp.AllowedPersistenceRegions}
 }
 
 // Config returns the TopicConfig for the topic.
@@ -190,9 +268,6 @@ func (t *Topic) Config(ctx context.Context) (TopicConfig, error) {
 
 // Update changes an existing topic according to the fields set in cfg. It returns
 // the new TopicConfig.
-//
-// Any call to Update (even with an empty TopicConfigToUpdate) will update the
-// MessageStoragePolicy for the topic from the organization's settings.
 func (t *Topic) Update(ctx context.Context, cfg TopicConfigToUpdate) (TopicConfig, error) {
 	req := t.updateRequest(cfg)
 	if len(req.UpdateMask.Paths) == 0 {
@@ -207,10 +282,14 @@ func (t *Topic) Update(ctx context.Context, cfg TopicConfigToUpdate) (TopicConfi
 
 func (t *Topic) updateRequest(cfg TopicConfigToUpdate) *pb.UpdateTopicRequest {
 	pt := &pb.Topic{Name: t.name}
-	paths := []string{"message_storage_policy"} // always fetch
+	var paths []string
 	if cfg.Labels != nil {
 		pt.Labels = cfg.Labels
 		paths = append(paths, "labels")
+	}
+	if cfg.MessageStoragePolicy != nil {
+		pt.MessageStoragePolicy = messageStoragePolicyToProto(cfg.MessageStoragePolicy)
+		paths = append(paths, "message_storage_policy")
 	}
 	return &pb.UpdateTopicRequest{
 		Topic:      pt,
@@ -277,7 +356,7 @@ func (t *Topic) Exists(ctx context.Context) (bool, error) {
 	if err == nil {
 		return true, nil
 	}
-	if grpc.Code(err) == codes.NotFound {
+	if status.Code(err) == codes.NotFound {
 		return false, nil
 	}
 	return false, err
@@ -313,13 +392,26 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	// TODO(jba): if this turns out to take significant time, try to approximate it.
-	// Or, convert the messages to protos in Publish, instead of in the service.
-	msg.size = proto.Size(&pb.PubsubMessage{
-		Data:       msg.Data,
-		Attributes: msg.Attributes,
-	})
 	r := &PublishResult{ready: make(chan struct{})}
+	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
+		r.set("", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		return r
+	}
+
+	// Use a PublishRequest with only the Messages field to calculate the size
+	// of an individual message. This accurately calculates the size of the
+	// encoded proto message by accounting for the length of an individual
+	// PubSubMessage and Data/Attributes field.
+	// TODO(hongalex): if this turns out to take significant time, try to approximate it.
+	msg.size = proto.Size(&pb.PublishRequest{
+		Messages: []*pb.PubsubMessage{
+			{
+				Data:        msg.Data,
+				Attributes:  msg.Attributes,
+				OrderingKey: msg.OrderingKey,
+			},
+		},
+	})
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -331,11 +423,9 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
-	// The call to Add should never return an error because the bundler's
-	// BufferedByteLimit is set to maxInt; we do not perform any flow
-	// control in the client.
-	err := t.bundler.Add(&bundledMessage{msg, r}, msg.size)
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msg.size)
 	if err != nil {
+		t.scheduler.Pause(msg.OrderingKey)
 		r.set("", err)
 	}
 	return r
@@ -346,13 +436,13 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 // failed to be sent.
 func (t *Topic) Stop() {
 	t.mu.Lock()
-	noop := t.stopped || t.bundler == nil
+	noop := t.stopped || t.scheduler == nil
 	t.stopped = true
 	t.mu.Unlock()
 	if noop {
 		return
 	}
-	t.bundler.Flush()
+	t.scheduler.FlushAndStop()
 }
 
 // A PublishResult holds the result from a call to Publish.
@@ -396,7 +486,7 @@ type bundledMessage struct {
 
 func (t *Topic) initBundler() {
 	t.mu.RLock()
-	noop := t.stopped || t.bundler != nil
+	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
 	if noop {
 		return
@@ -404,12 +494,21 @@ func (t *Topic) initBundler() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	// Must re-check, since we released the lock.
-	if t.stopped || t.bundler != nil {
+	if t.stopped || t.scheduler != nil {
 		return
 	}
 
 	timeout := t.PublishSettings.Timeout
-	t.bundler = bundler.NewBundler(&bundledMessage{}, func(items interface{}) {
+
+	workers := t.PublishSettings.NumGoroutines
+	// Unless overridden, allow many goroutines per CPU to call the Publish RPC
+	// concurrently. The default value was determined via extensive load
+	// testing (see the loadtest subdirectory).
+	if t.PublishSettings.NumGoroutines == 0 {
+		workers = 25 * runtime.GOMAXPROCS(0)
+	}
+
+	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
 		ctx := context.TODO()
 		if timeout != 0 {
@@ -417,42 +516,61 @@ func (t *Topic) initBundler() {
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
-		t.publishMessageBundle(ctx, items.([]*bundledMessage))
+		t.publishMessageBundle(ctx, bundle.([]*bundledMessage))
 	})
-	t.bundler.DelayThreshold = t.PublishSettings.DelayThreshold
-	t.bundler.BundleCountThreshold = t.PublishSettings.CountThreshold
-	if t.bundler.BundleCountThreshold > MaxPublishRequestCount {
-		t.bundler.BundleCountThreshold = MaxPublishRequestCount
+	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
+	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
+	if t.scheduler.BundleCountThreshold > MaxPublishRequestCount {
+		t.scheduler.BundleCountThreshold = MaxPublishRequestCount
 	}
-	t.bundler.BundleByteThreshold = t.PublishSettings.ByteThreshold
+	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
-	// Limit the bundler to 10 times the max message size. The number 10 is
-	// chosen as a reasonable amount of messages in the worst case whilst still
-	// capping the number to a low enough value to not OOM users.
-	t.bundler.BufferedByteLimit = 10 * MaxPublishRequestBytes
-	t.bundler.BundleByteLimit = MaxPublishRequestBytes
-	// Unless overridden, allow many goroutines per CPU to call the Publish RPC concurrently.
-	// The default value was determined via extensive load testing (see the loadtest subdirectory).
-	if t.PublishSettings.NumGoroutines > 0 {
-		t.bundler.HandlerLimit = t.PublishSettings.NumGoroutines
-	} else {
-		t.bundler.HandlerLimit = 25 * runtime.GOMAXPROCS(0)
+	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
+	if t.PublishSettings.BufferedByteLimit > 0 {
+		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
 	}
+	t.scheduler.BufferedByteLimit = bufferedByteLimit
+
+	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
+	ctx, err := tag.New(ctx, tag.Insert(keyStatus, "OK"), tag.Upsert(keyTopic, t.name))
+	if err != nil {
+		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
+	}
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
+	var orderingKey string
 	for i, bm := range bms {
+		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
-			Data:       bm.msg.Data,
-			Attributes: bm.msg.Attributes,
+			Data:        bm.msg.Data,
+			Attributes:  bm.msg.Attributes,
+			OrderingKey: bm.msg.OrderingKey,
 		}
 		bm.msg = nil // release bm.msg for GC
 	}
-	res, err := t.c.pubc.Publish(ctx, &pb.PublishRequest{
-		Topic:    t.name,
-		Messages: pbMsgs,
-	}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+	var res *pb.PublishResponse
+	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
+		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
+	} else {
+		start := time.Now()
+		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+			Topic:    t.name,
+			Messages: pbMsgs,
+		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+		end := time.Now()
+		stats.Record(ctx,
+			PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
+			PublishedMessages.M(int64(len(bms))))
+	}
+	if err != nil {
+		t.scheduler.Pause(orderingKey)
+		// Update context with error tag for OpenCensus,
+		// using same stats.Record() call as success case.
+		ctx, _ = tag.New(ctx, tag.Upsert(keyStatus, "ERROR"),
+			tag.Upsert(keyError, err.Error()))
+	}
 	for i, bm := range bms {
 		if err != nil {
 			bm.res.set("", err)
@@ -460,4 +578,19 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			bm.res.set(res.MessageIds[i], nil)
 		}
 	}
+}
+
+// ResumePublish resumes accepting messages for the provided ordering key.
+// Publishing using an ordering key might be paused if an error is
+// encountered while publishing, to prevent messages from being published
+// out of order.
+func (t *Topic) ResumePublish(orderingKey string) {
+	t.mu.RLock()
+	noop := t.scheduler == nil
+	t.mu.RUnlock()
+	if noop {
+		return
+	}
+
+	t.scheduler.Resume(orderingKey)
 }

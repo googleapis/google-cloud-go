@@ -49,6 +49,27 @@ func ExampleClient_CreateTopic() {
 	_ = topic // TODO: use the topic.
 }
 
+func ExampleClient_CreateTopicWithConfig() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Create a new topic with the given name and config.
+	topicConfig := &pubsub.TopicConfig{
+		KMSKeyName: "projects/project-id/locations/global/keyRings/my-key-ring/cryptoKeys/my-key",
+		MessageStoragePolicy: pubsub.MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{"us-east1"},
+		},
+	}
+	topic, err := client.CreateTopicWithConfig(ctx, "topicName", topicConfig)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = topic // TODO: use the topic.
+}
+
 // Use TopicInProject to refer to a topic that is not in the client's project, such
 // as a public topic.
 func ExampleClient_TopicInProject() {
@@ -86,6 +107,32 @@ func ExampleClient_CreateSubscription() {
 	}
 
 	_ = sub // TODO: use the subscription.
+}
+
+func ExampleClient_CreateSubscription_neverExpire() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Create a new topic with the given name.
+	topic, err := client.CreateTopic(ctx, "topicName")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Create a new subscription to the previously
+	// created topic and ensure it never expires.
+	sub, err := client.CreateSubscription(ctx, "subName", pubsub.SubscriptionConfig{
+		Topic:            topic,
+		AckDeadline:      10 * time.Second,
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = sub // TODO: Use the subscription
 }
 
 func ExampleTopic_Delete() {
@@ -160,6 +207,44 @@ func ExampleTopic_Subscriptions() {
 		}
 		_ = sub // TODO: use the subscription.
 	}
+}
+
+func ExampleTopic_Update() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.V
+	}
+	topic := client.Topic("topic-name")
+	topicConfig, err := topic.Update(ctx, pubsub.TopicConfigToUpdate{
+		MessageStoragePolicy: &pubsub.MessageStoragePolicy{
+			AllowedPersistenceRegions: []string{
+				"asia-east1", "asia-northeast1", "asia-southeast1", "australia-southeast1",
+				"europe-north1", "europe-west1", "europe-west2", "europe-west3", "europe-west4",
+				"us-central1", "us-central2", "us-east1", "us-east4", "us-west1", "us-west2"},
+		},
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = topicConfig // TODO: Use TopicConfig
+}
+
+func ExampleTopic_Update_resetMessageStoragePolicy() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.V
+	}
+	topic := client.Topic("topic-name")
+	topicConfig, err := topic.Update(ctx, pubsub.TopicConfigToUpdate{
+		// Just use a non-nil MessageStoragePolicy without any fields.
+		MessageStoragePolicy: &pubsub.MessageStoragePolicy{},
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = topicConfig // TODO: Use TopicConfig
 }
 
 func ExampleSubscription_Delete() {
@@ -274,6 +359,30 @@ func ExampleSubscription_Update() {
 	sub := client.Subscription("subName")
 	subConfig, err := sub.Update(ctx, pubsub.SubscriptionConfigToUpdate{
 		PushConfig: &pubsub.PushConfig{Endpoint: "https://example.com/push"},
+		// Make the subscription never expire.
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+	_ = subConfig // TODO: Use SubscriptionConfig.
+}
+
+func ExampleSubscription_Update_pushConfigAuthenticationMethod() {
+	ctx := context.Background()
+	client, err := pubsub.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	sub := client.Subscription("subName")
+	subConfig, err := sub.Update(ctx, pubsub.SubscriptionConfigToUpdate{
+		PushConfig: &pubsub.PushConfig{
+			Endpoint: "https://example.com/push",
+			AuthenticationMethod: &pubsub.OIDCToken{
+				ServiceAccountEmail: "service-account-email",
+				Audience:            "client-12345",
+			},
+		},
 	})
 	if err != nil {
 		// TODO: Handle error.

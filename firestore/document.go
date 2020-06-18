@@ -238,6 +238,12 @@ func extractTransformsFromMap(v reflect.Value, prefix FieldPath) ([]*pb.Document
 				return nil, err
 			}
 			transforms = append(transforms, t)
+		} else if ar, ok := mi.Interface().(transform); ok {
+			t, err := fieldTransform(ar, path)
+			if err != nil {
+				return nil, err
+			}
+			transforms = append(transforms, t)
 		} else {
 			ps, err := extractTransforms(mi, path)
 			if err != nil {

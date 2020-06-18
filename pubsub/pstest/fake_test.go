@@ -206,6 +206,54 @@ func TestPublish(t *testing.T) {
 	}
 }
 
+func TestPublishOrdered(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 3; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	s.Wait()
+	ms := s.Messages()
+	if got, want := len(ms), len(ids); got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	for i, id := range ids {
+		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+		if got, want := ms[i].OrderingKey, orderingKey; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	}
+
+	m := s.Message(ids[1])
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+}
+
+func TestClearMessages(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	for i := 0; i < 3; i++ {
+		s.Publish("projects/p/topics/t", []byte("hello"), nil)
+	}
+	s.Wait()
+	msgs := s.Messages()
+	if got, want := len(msgs), 3; got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	s.ClearMessages()
+	msgs = s.Messages()
+	if got, want := len(msgs), 0; got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+}
+
 // Note: this sets the fake's "now" time, so it is sensitive to concurrent changes to "now".
 func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages []*pb.PubsubMessage) map[string]*pb.PubsubMessage {
 	pubTime := time.Now()

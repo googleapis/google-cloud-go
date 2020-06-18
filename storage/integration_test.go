@@ -29,7 +29,9 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"mime/multipart"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -45,6 +47,7 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -54,6 +57,9 @@ import (
 const (
 	testPrefix     = "go-integration-test"
 	replayFilename = "storage.replay"
+	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
+	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
+	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
 )
 
 var (
@@ -230,6 +236,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	if attrs.VersioningEnabled {
 		t.Error("got versioning enabled, wanted it disabled")
 	}
+	if attrs.LocationType == "" {
+		t.Error("got an empty LocationType")
+	}
 	h.mustDeleteBucket(b)
 
 	// Test Create and Delete with attributes.
@@ -251,7 +260,7 @@ func TestIntegration_BucketMethods(t *testing.T) {
 					AgeInDays:             10,
 					Liveness:              Archived,
 					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"MULTI_REGIONAL", "STANDARD"},
+					MatchesStorageClasses: []string{"STANDARD"},
 					NumNewerVersions:      3,
 				},
 			}, {
@@ -282,6 +291,9 @@ func TestIntegration_BucketMethods(t *testing.T) {
 	if got, want := attrs.Labels, labels; !testutil.Equal(got, want) {
 		t.Errorf("labels: got %v, want %v", got, want)
 	}
+	if attrs.LocationType == "" {
+		t.Error("got an empty LocationType")
+	}
 	h.mustDeleteBucket(b)
 }
 
@@ -291,7 +303,10 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	defer client.Close()
 	h := testHelper{t}
 
-	b := client.Bucket(bucketName)
+	b := client.Bucket(uidSpace.New())
+	h.mustCreate(b, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(b)
+
 	attrs := h.mustBucketAttrs(b)
 	if attrs.VersioningEnabled {
 		t.Fatal("bucket should not have versioning by default")
@@ -394,15 +409,31 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Confirm BucketAccessControl returns error.
-	_, err = bkt.ACL().List(ctx)
-	if err == nil {
-		t.Fatal("expected Bucket ACL list to fail")
+	err = retry(ctx, func() error {
+		_, err = bkt.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// Confirm ObjectAccessControl returns error.
-	_, err = o.ACL().List(ctx)
-	if err == nil {
-		t.Fatal("expected Object ACL list to fail")
+	err = retry(ctx, func() error {
+		_, err = o.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected object ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 
 	// Disable BucketPolicyOnly.
@@ -413,24 +444,112 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 	}
 
 	// Check that the object ACLs are the same.
-	acls, err := o.ACL().List(ctx)
+	var acls []ACLRule
+	err = retry(ctx, func() error {
+		acls, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
+		return nil
+	}, func() error {
+		if !containsACL(acls, aclEntity, RoleReader) {
+			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Fatalf("object ACL list failed: %v", err)
-	}
-
-	// Check that ACL rules contain custom ACL from above.
-	if !containsACL(acls, aclEntity, RoleReader) {
-		t.Fatalf("expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		t.Fatal(err)
 	}
 }
 
-func containsACL(acls []ACLRule, e ACLEntity, r ACLRole) bool {
-	for _, a := range acls {
-		if a.Entity == e && a.Role == r {
-			return true
+func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(bkt)
+
+	// Insert an object with custom ACL.
+	o := bkt.Object("uniformBucketLevelAccess")
+	defer func() {
+		if err := o.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
 		}
+	}()
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("test"))
+	a := o.ACL()
+	aclEntity := ACLEntity("user-test@example.com")
+	err := a.Set(ctx, aclEntity, RoleReader)
+	if err != nil {
+		t.Fatalf("set ACL failed: %v", err)
 	}
-	return false
+
+	// Enable UniformBucketLevelAccess.
+	ua := BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}}
+	attrs := h.mustUpdateBucket(bkt, ua)
+	if got, want := attrs.UniformBucketLevelAccess.Enabled, true; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got := attrs.UniformBucketLevelAccess.LockedTime; got.IsZero() {
+		t.Fatal("got a zero time value, want a populated value")
+	}
+
+	// Confirm BucketAccessControl returns error.
+	err = retry(ctx, func() error {
+		_, err = bkt.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected bucket ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Confirm ObjectAccessControl returns error.
+	err = retry(ctx, func() error {
+		_, err = o.ACL().List(ctx)
+		return nil
+	}, func() error {
+		if err == nil {
+			return fmt.Errorf("ACL.List: expected object ACL list to fail")
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Disable UniformBucketLevelAccess.
+	ua = BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: false}}
+	attrs = h.mustUpdateBucket(bkt, ua)
+	if got, want := attrs.UniformBucketLevelAccess.Enabled, false; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	// Check that the object ACLs are the same.
+	var acls []ACLRule
+	err = retry(ctx, func() error {
+		acls, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: object ACL list failed: %v", err)
+		}
+		return nil
+	}, func() error {
+		if !containsACL(acls, aclEntity, RoleReader) {
+			return fmt.Errorf("containsACL: expected ACLs %v to include custom ACL entity %v", acls, aclEntity)
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {
@@ -462,14 +581,77 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 	}
 }
 
+func TestIntegration_ObjectsRangeReader(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	bkt := client.Bucket(bucketName)
+
+	objName := uidSpace.New()
+	obj := bkt.Object(objName)
+	contents := []byte("Hello, world this is a range request")
+
+	if err := retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			return fmt.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to close writer: %v", err)
+		}
+		return nil
+	}, nil); err != nil {
+		t.Fatal(err)
+	}
+
+	last5s := []struct {
+		name   string
+		start  int64
+		length int64
+	}{
+		{name: "negative offset", start: -5, length: -1},
+		{name: "offset with specified length", start: int64(len(contents)) - 5, length: 5},
+		{name: "offset and read till end", start: int64(len(contents)) - 5, length: -1},
+	}
+
+	for _, last5 := range last5s {
+		t.Run(last5.name, func(t *testing.T) {
+			r, err := obj.NewRangeReader(ctx, last5.start, last5.length)
+			if err != nil {
+				t.Fatalf("Failed to make range read: %v", err)
+			}
+			defer r.Close()
+
+			if got, want := r.Attrs.StartOffset, int64(len(contents))-5; got != want {
+				t.Fatalf("StartOffset mismatch, got %d want %d", got, want)
+			}
+
+			nr, _ := io.Copy(ioutil.Discard, r)
+			if got, want := nr, int64(5); got != want {
+				t.Fatalf("Body length mismatch, got %d want %d", got, want)
+			}
+		})
+	}
+}
+
 func TestIntegration_Objects(t *testing.T) {
 	// TODO(jba): Use subtests (Go 1.7).
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
+	// Reset testTime, 'cause object last modification time should be within 5 min
+	// from test (test iteration if -count passed) start time.
+	testTime = time.Now().UTC()
+	newBucketName := uidSpace.New()
 	h := testHelper{t}
-	bkt := client.Bucket(bucketName)
+	bkt := client.Bucket(newBucketName)
 
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer func() {
+		if err := killBucket(ctx, client, newBucketName); err != nil {
+			log.Printf("deleting %q: %v", newBucketName, err)
+		}
+	}()
 	const defaultType = "text/plain"
 
 	// Populate object names and make a map for their contents.
@@ -490,6 +672,8 @@ func TestIntegration_Objects(t *testing.T) {
 	}
 
 	testObjectIterator(t, bkt, objects)
+	testObjectsIterateSelectedAttrs(t, bkt, objects)
+	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -560,6 +744,9 @@ func TestIntegration_Objects(t *testing.T) {
 		{objlen / 2, 0, 0},
 		{objlen / 2, -1, objlen / 2},
 		{0, objlen * 2, objlen},
+		{-2, -1, 2},
+		{-objlen, -1, objlen},
+		{-(objlen / 2), -1, objlen / 2},
 	} {
 		rc, err := bkt.Object(obj).NewRangeReader(ctx, r.offset, r.length)
 		if err != nil {
@@ -581,8 +768,18 @@ func TestIntegration_Objects(t *testing.T) {
 			t.Errorf("%+v: RangeReader (%d, %d): Read %d bytes, wanted %d bytes", i, r.offset, r.length, len(slurp), r.want)
 			continue
 		}
-		if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
-			t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+
+		switch {
+		case r.offset < 0: // The case of reading the last N bytes.
+			start := objlen + r.offset
+			if got, want := slurp, contents[obj][start:]; !bytes.Equal(got, want) {
+				t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			}
+
+		default:
+			if got, want := slurp, contents[obj][r.offset:r.offset+r.want]; !bytes.Equal(got, want) {
+				t.Errorf("RangeReader (%d, %d) = %q; want %q", r.offset, r.length, got, want)
+			}
 		}
 		rc.Close()
 	}
@@ -627,9 +824,9 @@ func TestIntegration_Objects(t *testing.T) {
 	copyObj, err := bkt.Object(copyName).CopierFrom(bkt.Object(objName)).Run(ctx)
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
-	} else if !namesEqual(copyObj, bucketName, copyName) {
+	} else if !namesEqual(copyObj, newBucketName, copyName) {
 		t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-			copyObj.Bucket, copyObj.Name, bucketName, copyName)
+			copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 	}
 
 	// Copying with attributes.
@@ -640,9 +837,9 @@ func TestIntegration_Objects(t *testing.T) {
 	if err != nil {
 		t.Errorf("Copier.Run failed with %v", err)
 	} else {
-		if !namesEqual(copyObj, bucketName, copyName) {
+		if !namesEqual(copyObj, newBucketName, copyName) {
 			t.Errorf("Copy object bucket, name: got %q.%q, want %q.%q",
-				copyObj.Bucket, copyObj.Name, bucketName, copyName)
+				copyObj.Bucket, copyObj.Name, newBucketName, copyName)
 		}
 		if copyObj.ContentEncoding != contentEncoding {
 			t.Errorf("Copy ContentEncoding: got %q, want %q", copyObj.ContentEncoding, contentEncoding)
@@ -750,13 +947,13 @@ func TestIntegration_Objects(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	slurp := h.mustRead(publicClient.Bucket(bucketName).Object(publicObj))
+	slurp := h.mustRead(publicClient.Bucket(newBucketName).Object(publicObj))
 	if !bytes.Equal(slurp, contents[publicObj]) {
 		t.Errorf("Public object's content: got %q, want %q", slurp, contents[publicObj])
 	}
 
 	// Test writer error handling.
-	wc := publicClient.Bucket(bucketName).Object(publicObj).NewWriter(ctx)
+	wc := publicClient.Bucket(newBucketName).Object(publicObj).NewWriter(ctx)
 	if _, err := wc.Write([]byte("hello")); err != nil {
 		t.Errorf("Write unexpectedly failed with %v", err)
 	}
@@ -855,10 +1052,6 @@ func TestIntegration_Encoding(t *testing.T) {
 	}
 }
 
-func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
-	return obj.Bucket == bucketName && obj.Name == objectName
-}
-
 func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	ctx := context.Background()
 	h := testHelper{t}
@@ -877,6 +1070,67 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
+}
+
+func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Create a query that will only select the "Name" attr of objects, and
+	// invoke object listing.
+	query := &Query{Prefix: ""}
+	query.SetAttrSelection([]string{"Name"})
+
+	var gotNames []string
+	it := bkt.Objects(context.Background(), query)
+	for {
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		gotNames = append(gotNames, attrs.Name)
+
+		if len(attrs.Bucket) > 0 {
+			t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+		}
+	}
+
+	sortedNames := make([]string, len(objects))
+	copy(sortedNames, objects)
+	sort.Strings(sortedNames)
+	sort.Strings(gotNames)
+
+	if !cmp.Equal(sortedNames, gotNames) {
+		t.Errorf("names = %v, want %v", gotNames, sortedNames)
+	}
+}
+
+func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Tests that all selected attributes work - query succeeds (without actually
+	// verifying the returned results).
+	query := &Query{Prefix: ""}
+	var selectedAttrs []string
+	for k := range attrToFieldMap {
+		selectedAttrs = append(selectedAttrs, k)
+	}
+	query.SetAttrSelection(selectedAttrs)
+
+	count := 0
+	it := bkt.Objects(context.Background(), query)
+	for {
+		_, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		count++
+	}
+
+	if count != len(objects) {
+		t.Errorf("count = %v, want %v", count, len(objects))
+	}
 }
 
 func TestIntegration_SignedURL(t *testing.T) {
@@ -1108,50 +1362,6 @@ func TestIntegration_SignedURL_EmptyStringObjectName(t *testing.T) {
 	}
 }
 
-// Make a GET request to a URL using an unauthenticated client, and return its contents.
-func getURL(url string, headers map[string][]string) ([]byte, error) {
-	req, err := http.NewRequest("GET", url, nil)
-	if err != nil {
-		return nil, err
-	}
-	req.Header = headers
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
-	}
-	return bytes, nil
-}
-
-// Make a PUT request to a URL using an unauthenticated client, and return its contents.
-func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte, error) {
-	req, err := http.NewRequest("PUT", url, payload)
-	if err != nil {
-		return nil, err
-	}
-	req.Header = headers
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, err
-	}
-	defer res.Body.Close()
-	bytes, err := ioutil.ReadAll(res.Body)
-	if err != nil {
-		return nil, err
-	}
-	if res.StatusCode != 200 {
-		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
-	}
-	return bytes, nil
-}
-
 func TestIntegration_ACL(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -1172,19 +1382,28 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1", "acl2"}
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
-	acl, err = o.ACL().List(ctx)
+	err = retry(ctx, func() error {
+		for _, obj := range aclObjects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+		}
+		acl, err = o.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
+		}
+		return nil
+	}, func() error {
+		if !hasRule(acl, rule) {
+			return fmt.Errorf("hasRule: object ACL missing %+v", rule)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("Can't retrieve ACL of %v", name)
-	} else if !hasRule(acl, rule) {
-		t.Errorf("object ACL missing %+v", rule)
+		t.Error(err)
 	}
 	if err := o.ACL().Delete(ctx, entity); err != nil {
 		t.Errorf("object ACL: could not delete entity %s", entity)
@@ -1201,25 +1420,26 @@ func TestIntegration_ACL(t *testing.T) {
 	if err := bkt.ACL().Set(ctx, entity2, RoleReader); err != nil {
 		t.Errorf("Error while putting bucket ACL rule: %v", err)
 	}
-	bACL, err := bkt.ACL().List(ctx)
+	var bACL []ACLRule
+	err = retry(ctx, func() error {
+		bACL, err = bkt.ACL().List(ctx)
+		if err != nil {
+			return fmt.Errorf("ACL.List: error while getting the ACL of the bucket: %v", err)
+		}
+		return nil
+	}, func() error {
+		if !hasRule(bACL, rule2) {
+			return fmt.Errorf("hasRule: bucket ACL missing %+v", rule2)
+		}
+		return nil
+	})
 	if err != nil {
-		t.Errorf("Error while getting the ACL of the bucket: %v", err)
-	} else if !hasRule(bACL, rule2) {
-		t.Errorf("bucket ACL missing %+v", rule2)
+		t.Error(err)
 	}
 	if err := bkt.ACL().Delete(ctx, entity2); err != nil {
 		t.Errorf("Error while deleting bucket ACL rule: %v", err)
 	}
 
-}
-
-func hasRule(acl []ACLRule, rule ACLRule) bool {
-	for _, r := range acl {
-		if cmp.Equal(r, rule) {
-			return true
-		}
-	}
-	return false
 }
 
 func TestIntegration_ValidObjectNames(t *testing.T) {
@@ -1492,7 +1712,7 @@ func TestIntegration_NonexistentBucket(t *testing.T) {
 func TestIntegration_PerObjectStorageClass(t *testing.T) {
 	const (
 		defaultStorageClass = "STANDARD"
-		newStorageClass     = "MULTI_REGIONAL"
+		newStorageClass     = "NEARLINE"
 	)
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -1647,9 +1867,10 @@ func TestIntegration_BucketIAM(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-
-	bkt := client.Bucket(bucketName)
-
+	h := testHelper{t}
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), nil)
+	defer h.mustDeleteBucket(bkt)
 	// This bucket is unique to this test run. So we don't have
 	// to worry about other runs interfering with our IAM policy
 	// changes.
@@ -1718,6 +1939,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// - (1b) must have serviceusage.services.use permission (Editor role) on (3b).
 	// - (1b) must NOT have that permission on (3a).
 	// - (1a) must NOT have that permission on (3b).
+
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1753")
 	const wantErrorCode = 400
 
 	ctx := context.Background()
@@ -1770,10 +1993,10 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	}
 
 	// Call f under various conditions.
-	// Here b and ob refer to the same bucket, but b is bound to client,
-	// while ob is bound to otherClient. The clients differ in their credentials,
-	// i.e. the identity of the user making the RPC: b's user is an Owner on the
-	// bucket's containing project, ob's is not.
+	// Here b1 and b2 refer to the same bucket, but b1 is bound to client,
+	// while b2 is bound to otherClient. The clients differ in their credentials,
+	// i.e. the identity of the user making the RPC: b1's user is an Owner on the
+	// bucket's containing project, b2's is not.
 	call := func(msg string, f func(*BucketHandle) error) {
 		// user: an Owner on the containing project
 		// userProject: absent
@@ -1920,26 +2143,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	}
 
 	h.mustDeleteBucket(b1)
-}
-
-// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
-const (
-	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
-	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-)
-
-func keyFileEmail(filename string) (string, error) {
-	bytes, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return "", err
-	}
-	var v struct {
-		ClientEmail string `json:"client_email"`
-	}
-	if err := json.Unmarshal(bytes, &v); err != nil {
-		return "", err
-	}
-	return v.ClientEmail, nil
 }
 
 func TestIntegration_Notifications(t *testing.T) {
@@ -2400,6 +2603,7 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2448,6 +2652,7 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1565")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2754,6 +2959,357 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	}
 }
 
+// Ensures that a file stored with a:
+// * Content-Encoding of "gzip"
+// * Content-Type of "text/plain"
+// will be properly served back.
+// See:
+//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//  * https://github.com/googleapis/google-cloud-go/issues/1800
+func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	h := testHelper{t}
+
+	projectID := testutil.ProjID()
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, projectID, nil)
+	defer h.mustDeleteBucket(bkt)
+	obj := bkt.Object("decompressive-transcoding")
+	original := bytes.Repeat([]byte("a"), 4<<10)
+
+	// Wrap the file upload in a retry.
+	// TODO: Investigate removing retry after resolving
+	// https://github.com/googleapis/google-api-go-client/issues/392.
+	err := retry(ctx, func() error {
+		// Firstly upload the gzip compressed file.
+		w := obj.NewWriter(ctx)
+		// Compress and upload the content.
+		gzw := gzip.NewWriter(w)
+		if _, err := gzw.Write(original); err != nil {
+			return fmt.Errorf("Failed to compress content: %v", err)
+		}
+		if err := gzw.Close(); err != nil {
+			return fmt.Errorf("Failed to compress content: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to finish uploading the file: %v", err)
+		}
+		return nil
+	},
+		nil)
+
+	defer h.mustDeleteObject(obj)
+
+	// Now update the Content-Encoding and Content-Type to enable
+	// decompressive transcoding.
+	updatedAttrs, err := obj.Update(ctx, ObjectAttrsToUpdate{
+		ContentEncoding: "gzip",
+		ContentType:     "text/plain",
+	})
+	if err != nil {
+		t.Fatalf("Attribute update failure: %v", err)
+	}
+	if g, w := updatedAttrs.ContentEncoding, "gzip"; g != w {
+		t.Fatalf("ContentEncoding mismtach:\nGot:  %q\nWant: %q", g, w)
+	}
+	if g, w := updatedAttrs.ContentType, "text/plain"; g != w {
+		t.Fatalf("ContentType mismtach:\nGot:  %q\nWant: %q", g, w)
+	}
+
+	rWhole, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("Failed to create wholesome reader: %v", err)
+	}
+	blobWhole, err := ioutil.ReadAll(rWhole)
+	rWhole.Close()
+	if err != nil {
+		t.Fatalf("Failed to read the whole body: %v", err)
+	}
+	if g, w := blobWhole, original; !bytes.Equal(g, w) {
+		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+	}
+
+	// Now try a range read, which should return the whole body anyways since
+	// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
+	r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
+	if err != nil {
+		t.Fatalf("Failed to create range reader: %v", err)
+	}
+	blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
+	r2kBTo3kB.Close()
+	if err != nil {
+		t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
+	}
+	// The ENTIRE body MUST be served back regardless of the requested range.
+	if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
+		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+	}
+}
+
+func TestIntegration_HMACKey(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	projectID := testutil.ProjID()
+
+	// Use the service account email from the user's credentials. Requires that the
+	// credentials are set via a JSON credentials file.
+	// Note that a service account may only have up to 5 active HMAC keys at once; if
+	// we see flakes because of this, we should consider switching to using a project
+	// pool.
+	credentials := testutil.CredentialsEnv(ctx, "GCLOUD_TESTS_GOLANG_KEY")
+	if credentials == nil {
+		t.Fatal("credentials could not be determined, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
+	}
+	if credentials.JSON == nil {
+		t.Fatal("could not read the JSON key file, is GCLOUD_TESTS_GOLANG_KEY set correctly?")
+	}
+	conf, err := google.JWTConfigFromJSON(credentials.JSON)
+	if err != nil {
+		t.Fatal(err)
+	}
+	serviceAccountEmail := conf.Email
+
+	hmacKey, err := client.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+	if err != nil {
+		t.Fatalf("Failed to create HMACKey: %v", err)
+	}
+	if hmacKey == nil {
+		t.Fatal("Unexpectedly got back a nil HMAC key")
+	}
+
+	if hmacKey.State != Active {
+		t.Fatalf("Unexpected state %q, expected %q", hmacKey.State, Active)
+	}
+
+	hkh := client.HMACKeyHandle(projectID, hmacKey.AccessID)
+	// 1. Ensure that we CANNOT delete an ACTIVE key.
+	if err := hkh.Delete(ctx); err == nil {
+		t.Fatal("Unexpectedly deleted key whose state is ACTIVE: No error from Delete.")
+	}
+
+	invalidStates := []HMACState{"", Deleted, "active", "inactive", "foo_bar"}
+	for _, invalidState := range invalidStates {
+		t.Run("invalid-"+string(invalidState), func(t *testing.T) {
+			_, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+				State: invalidState,
+			})
+			if err == nil {
+				t.Fatal("Unexpectedly succeeded")
+			}
+			invalidStateMsg := fmt.Sprintf(`storage: invalid state %q for update, must be either "ACTIVE" or "INACTIVE"`, invalidState)
+			if err.Error() != invalidStateMsg {
+				t.Fatalf("Mismatched error: got:  %q\nwant: %q", err, invalidStateMsg)
+			}
+		})
+	}
+
+	// 2.1. Setting the State to Inactive should succeed.
+	hu, err := hkh.Update(ctx, HMACKeyAttrsToUpdate{
+		State: Inactive,
+	})
+	if err != nil {
+		t.Fatalf("Unexpected Update failure: %v", err)
+	}
+	if got, want := hu.State, Inactive; got != want {
+		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+	}
+
+	// 2.2. Setting the State back to Active should succeed.
+	hu, err = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+		State: Active,
+	})
+	if err != nil {
+		t.Fatalf("Unexpected Update failure: %v", err)
+	}
+	if got, want := hu.State, Active; got != want {
+		t.Fatalf("Unexpected updated state %q, expected %q", got, want)
+	}
+
+	// 3. Verify that keys are listed as expected.
+	iter := client.ListHMACKeys(ctx, projectID)
+	count := 0
+	for ; ; count++ {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Failed to ListHMACKeys: %v", err)
+		}
+	}
+	if count == 0 {
+		t.Fatal("Failed to list any HMACKeys")
+	}
+
+	// 4. Finally set it to back to Inactive and
+	// then retry the deletion which should now succeed.
+	_, _ = hkh.Update(ctx, HMACKeyAttrsToUpdate{
+		State: Inactive,
+	})
+	if err := hkh.Delete(ctx); err != nil {
+		t.Fatalf("Unexpected deletion failure: %v", err)
+	}
+
+	_, err = hkh.Get(ctx)
+	if err != nil && !strings.Contains(err.Error(), "404") {
+		// If the deleted key has already been garbage collected, a 404 is expected.
+		// Other errors should cause a failure and are not expected.
+		t.Fatalf("Unexpected error: %v", err)
+	}
+}
+
+func TestIntegration_PostPolicyV4(t *testing.T) {
+	jwtConf, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jwtConf == nil {
+		t.Skip("JSON key file is not present")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	projectID := testutil.ProjID()
+	newBucketName := uidSpace.New()
+	b := client.Bucket(newBucketName)
+	h := testHelper{t}
+	h.mustCreate(b, projectID, nil)
+	defer h.mustDeleteBucket(b)
+
+	statusCodeToRespond := 200
+	opts := &PostPolicyV4Options{
+		GoogleAccessID: jwtConf.Email,
+		PrivateKey:     jwtConf.PrivateKey,
+
+		Expires: time.Now().Add(30 * time.Minute),
+
+		Fields: &PolicyV4Fields{
+			StatusCodeOnSuccess: statusCodeToRespond,
+			ContentType:         "text/plain",
+			ACL:                 "public-read",
+		},
+
+		// The conditions that the uploaded file will be expected to conform to.
+		Conditions: []PostPolicyV4Condition{
+			// Make the file a maximum of 10mB.
+			ConditionContentLengthRange(0, 10<<20),
+			ConditionStartsWith("$acl", "public"),
+		},
+	}
+
+	objectName := "my-object.txt"
+	pv4, err := GenerateSignedPostPolicyV4(newBucketName, objectName, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	formBuf := new(bytes.Buffer)
+	mw := multipart.NewWriter(formBuf)
+	for fieldName, value := range pv4.Fields {
+		if err := mw.WriteField(fieldName, value); err != nil {
+			t.Fatalf("Failed to write form field: %q: %v", fieldName, err)
+		}
+	}
+
+	// Now let's perform the upload.
+	fileBody := bytes.Repeat([]byte("a"), 25)
+	mf, err := mw.CreateFormFile("file", "myfile.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mf.Write(fileBody); err != nil {
+		t.Fatal(err)
+	}
+	if err := mw.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Compose the HTTP request.
+	req, err := http.NewRequest("POST", pv4.URL, formBuf)
+	if err != nil {
+		t.Fatalf("Failed to compose HTTP request: %v", err)
+	}
+	// Ensure the Content-Type is derived from the writer.
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := res.StatusCode, statusCodeToRespond; g != w {
+		blob, _ := httputil.DumpResponse(res, true)
+		t.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+	}
+	io.Copy(ioutil.Discard, res.Body)
+
+	// Verify that the file was properly uploaded, by
+	// reading back its attributes and content!
+	obj := b.Object(objectName)
+	defer h.mustDeleteObject(obj)
+
+	attrs, err := obj.Attrs(ctx)
+	if err != nil {
+		t.Fatalf("Failed to retrieve attributes: %v", err)
+	}
+	if g, w := attrs.Size, int64(len(fileBody)); g != w {
+		t.Errorf("ContentLength mismatch: got %d want %d", g, w)
+	}
+	if g, w := attrs.MD5, md5.Sum(fileBody); !bytes.Equal(g, w[:]) {
+		t.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
+	}
+
+	// Compare the uploaded body with the expected.
+	rd, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("Failed to create a reader: %v", err)
+	}
+	gotBody, err := ioutil.ReadAll(rd)
+	if err != nil {
+		t.Fatalf("Failed to read the body: %v", err)
+	}
+	if diff := testutil.Diff(string(gotBody), string(fileBody)); diff != "" {
+		t.Fatalf("Body mismatch: got - want +\n%s", diff)
+	}
+}
+
+// Verify that custom scopes passed in by the user are applied correctly.
+func TestIntegration_Scopes(t *testing.T) {
+	// A default client should be able to write objects since it has scope of
+	// FullControl
+	ctx := context.Background()
+	clientFullControl := testConfig(ctx, t)
+	defer clientFullControl.Close()
+
+	bkt := clientFullControl.Bucket(bucketName)
+	obj := "FakeObj1"
+	contents := []byte("This object should be written successfully\n")
+	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err != nil {
+		t.Fatalf("writing: %v", err)
+	}
+
+	// A client with ReadOnly scope should not be able to write successfully.
+	clientReadOnly, err := NewClient(ctx, option.WithScopes(ScopeReadOnly))
+	defer clientReadOnly.Close()
+	if err != nil {
+		t.Fatalf("error creating client: %v", err)
+	}
+
+	bkt = clientReadOnly.Bucket(bucketName)
+	obj = "FakeObj2"
+	contents = []byte("This object should not be written.\n")
+
+	if err := writeObject(ctx, bkt.Object(obj), "text/plain", contents); err == nil {
+		t.Fatal("client with ScopeReadOnly was able to write an object unexpectedly.")
+	}
+
+}
+
 type testHelper struct {
 	t *testing.T
 }
@@ -2835,16 +3391,20 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	w := obj.NewWriter(ctx)
-	w.ContentType = contentType
-	w.CacheControl = "public, max-age=60"
-	if contents != nil {
-		if _, err := w.Write(contents); err != nil {
-			_ = w.Close()
-			return err
+	// TODO: remove retry once retry logic in the client has been improved.
+	// https://github.com/googleapis/google-cloud-go/issues/2395
+	return retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		w.ContentType = contentType
+		w.CacheControl = "public, max-age=60"
+		if contents != nil {
+			if _, err := w.Write(contents); err != nil {
+				_ = w.Close()
+				return err
+			}
 		}
-	}
-	return w.Close()
+		return w.Close()
+	}, nil)
 }
 
 // loc returns a string describing the file and line of its caller's call site. In
@@ -2922,6 +3482,13 @@ func killBucket(ctx context.Context, client *Client, bucketName string) error {
 		if err != nil {
 			return err
 		}
+		// Objects with a hold must have the hold released.
+		if objAttrs.EventBasedHold || objAttrs.TemporaryHold {
+			obj := bkt.Object(objAttrs.Name)
+			if _, err := obj.Update(ctx, ObjectAttrsToUpdate{EventBasedHold: false, TemporaryHold: false}); err != nil {
+				return fmt.Errorf("removing hold from %q: %v", bucketName+"/"+objAttrs.Name, err)
+			}
+		}
 		if err := bkt.Object(objAttrs.Name).Delete(ctx); err != nil {
 			return fmt.Errorf("deleting %q: %v", bucketName+"/"+objAttrs.Name, err)
 		}
@@ -2944,3 +3511,108 @@ func randomContents() []byte {
 type zeros struct{}
 
 func (zeros) Read(p []byte) (int, error) { return len(p), nil }
+
+// Make a GET request to a URL using an unauthenticated client, and return its contents.
+func getURL(url string, headers map[string][]string) ([]byte, error) {
+	req, err := http.NewRequest("GET", url, nil)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = headers
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
+	}
+	return bytes, nil
+}
+
+// Make a PUT request to a URL using an unauthenticated client, and return its contents.
+func putURL(url string, headers map[string][]string, payload io.Reader) ([]byte, error) {
+	req, err := http.NewRequest("PUT", url, payload)
+	if err != nil {
+		return nil, err
+	}
+	req.Header = headers
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return nil, err
+	}
+	defer res.Body.Close()
+	bytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return nil, err
+	}
+	if res.StatusCode != 200 {
+		return nil, fmt.Errorf("code=%d, body=%s", res.StatusCode, string(bytes))
+	}
+	return bytes, nil
+}
+
+func namesEqual(obj *ObjectAttrs, bucketName, objectName string) bool {
+	return obj.Bucket == bucketName && obj.Name == objectName
+}
+
+func keyFileEmail(filename string) (string, error) {
+	bytes, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return "", err
+	}
+	var v struct {
+		ClientEmail string `json:"client_email"`
+	}
+	if err := json.Unmarshal(bytes, &v); err != nil {
+		return "", err
+	}
+	return v.ClientEmail, nil
+}
+
+func containsACL(acls []ACLRule, e ACLEntity, r ACLRole) bool {
+	for _, a := range acls {
+		if a.Entity == e && a.Role == r {
+			return true
+		}
+	}
+	return false
+}
+
+func hasRule(acl []ACLRule, rule ACLRule) bool {
+	for _, r := range acl {
+		if cmp.Equal(r, rule) {
+			return true
+		}
+	}
+	return false
+}
+
+// retry retries a function call as well as an (optional) correctness check for up
+// to 11 seconds. Both call and check must run without error in order to succeed.
+// If the timeout is hit, the most recent error from call or check will be returned.
+// This function should be used to wrap calls that might cause integration test
+// flakes due to delays in propagation (for example, metadata updates).
+func retry(ctx context.Context, call func() error, check func() error) error {
+	timeout := time.After(11 * time.Second)
+	var err error
+	for {
+		select {
+		case <-timeout:
+			return err
+		default:
+		}
+		err = call()
+		if err == nil {
+			if check == nil || check() == nil {
+				return nil
+			}
+			err = check()
+		}
+		time.Sleep(200 * time.Millisecond)
+	}
+}

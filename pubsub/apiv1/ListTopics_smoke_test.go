@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,10 +17,6 @@
 package pubsub
 
 import (
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-)
-
-import (
 	"context"
 	"fmt"
 	"strconv"
@@ -30,6 +26,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 var _ = fmt.Sprintf

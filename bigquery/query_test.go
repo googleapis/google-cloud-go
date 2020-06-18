@@ -275,6 +275,53 @@ func TestQuery(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				TimePartitioning: &TimePartitioning{Type: DayPartitioningType},
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.ForceSendFields = nil
+				j.Configuration.Query.TimePartitioning = &bq.TimePartitioning{
+					Type: "DAY",
+				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: &QueryConfig{
+				Q:                "query string",
+				DefaultProjectID: "def-project-id",
+				DefaultDatasetID: "def-dataset-id",
+				RangePartitioning: &RangePartitioning{
+					Field: "foo",
+					Range: &RangePartitioningRange{
+						Start:    1,
+						End:      2,
+						Interval: 3,
+					},
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultQueryJob()
+				j.Configuration.Query.ForceSendFields = nil
+				j.Configuration.Query.RangePartitioning = &bq.RangePartitioning{
+					Field: "foo",
+					Range: &bq.RangePartitioningRange{
+						Start:           1,
+						End:             2,
+						Interval:        3,
+						ForceSendFields: []string{"Start", "End", "Interval"},
+					},
+				}
+				return j
+			}(),
+		},
 	}
 	for i, tc := range testCases {
 		query := c.Query("")

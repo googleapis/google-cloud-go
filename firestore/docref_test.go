@@ -23,8 +23,8 @@ import (
 
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
 	"google.golang.org/genproto/googleapis/type/latlng"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -36,7 +36,9 @@ var (
 
 func TestDocGet(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newMock(t)
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
 	path := "projects/projectID/databases/(default)/documents/C/a"
 	pdoc := &pb.Document{
 		Name:       path,
@@ -82,7 +84,7 @@ func TestDocGet(t *testing.T) {
 			},
 		})
 	_, err = c.Collection("C").Doc("b").Get(ctx)
-	if grpc.Code(err) != codes.NotFound {
+	if status.Code(err) != codes.NotFound {
 		t.Errorf("got %v, want NotFound", err)
 	}
 }
@@ -90,7 +92,8 @@ func TestDocGet(t *testing.T) {
 func TestDocSet(t *testing.T) {
 	// Most tests for Set are in the conformance tests.
 	ctx := context.Background()
-	c, srv := newMock(t)
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
 
 	doc := c.Collection("C").Doc("d")
 	// Merge with a struct and FieldPaths.
@@ -135,7 +138,8 @@ func TestDocCreate(t *testing.T) {
 	// are handled well.
 	// Other tests for Create are handled by the conformance tests.
 	ctx := context.Background()
-	c, srv := newMock(t)
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
 
 	type create struct {
 		Time  time.Time
@@ -173,7 +177,9 @@ func TestDocCreate(t *testing.T) {
 
 func TestDocDelete(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newMock(t)
+	c, srv, cleanup := newMock(t)
+	defer cleanup()
+
 	srv.addRPC(
 		&pb.CommitRequest{
 			Database: "projects/projectID/databases/(default)",

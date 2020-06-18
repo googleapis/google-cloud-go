@@ -23,6 +23,7 @@ import (
 	"math"
 	"os"
 	"path/filepath"
+	"reflect"
 	"runtime"
 	"sort"
 	"testing"
@@ -35,9 +36,8 @@ import (
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/type/latlng"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 func TestMain(m *testing.M) {
@@ -75,12 +75,28 @@ func initIntegrationTest() {
 	if ts == nil {
 		log.Fatal("The project key must be set. See CONTRIBUTING.md for details")
 	}
-	ti := &testInterceptor{dbPath: "projects/" + testProjectID + "/databases/(default)"}
-	c, err := NewClient(ctx, testProjectID,
-		option.WithTokenSource(ts),
-		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(ti.interceptUnary)),
-		option.WithGRPCDialOption(grpc.WithStreamInterceptor(ti.interceptStream)),
-	)
+	wantDBPath := "projects/" + testProjectID + "/databases/(default)"
+
+	ti := &testutil.HeadersEnforcer{
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+
+			{
+				Key: "google-cloud-resource-prefix",
+				ValuesValidator: func(values ...string) error {
+					if len(values) == 0 {
+						return errors.New("expected non-blank header")
+					}
+					if values[0] != wantDBPath {
+						return fmt.Errorf("resource prefix mismatch; got %q want %q", values[0], wantDBPath)
+					}
+					return nil
+				},
+			},
+		},
+	}
+	copts := append(ti.CallOptions(), option.WithTokenSource(ts))
+	c, err := NewClient(ctx, testProjectID, copts...)
 	if err != nil {
 		log.Fatalf("NewClient: %v", err)
 	}
@@ -90,40 +106,6 @@ func initIntegrationTest() {
 	integrationTestMap["ref"] = refDoc
 	wantIntegrationTestMap["ref"] = refDoc
 	integrationTestStruct.Ref = refDoc
-}
-
-type testInterceptor struct {
-	dbPath string
-}
-
-func (ti *testInterceptor) interceptUnary(ctx context.Context, method string, req, res interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-	ti.checkMetadata(ctx, method)
-	return invoker(ctx, method, req, res, cc, opts...)
-}
-
-func (ti *testInterceptor) interceptStream(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-	ti.checkMetadata(ctx, method)
-	return streamer(ctx, desc, cc, method, opts...)
-}
-
-func (ti *testInterceptor) checkMetadata(ctx context.Context, method string) {
-	md, ok := metadata.FromOutgoingContext(ctx)
-	if !ok {
-		log.Fatalf("method %s: bad metadata", method)
-	}
-	for _, h := range []string{"google-cloud-resource-prefix", "x-goog-api-client"} {
-		v, ok := md[h]
-		if !ok {
-			log.Fatalf("method %s, header %s missing", method, h)
-		}
-		if len(v) != 1 {
-			log.Fatalf("method %s, header %s: bad value %v", method, h, v)
-		}
-	}
-	v := md["google-cloud-resource-prefix"][0]
-	if v != ti.dbPath {
-		log.Fatalf("method %s: bad resource prefix header:  %q", method, v)
-	}
 }
 
 func cleanupIntegrationTest() {
@@ -173,30 +155,44 @@ var (
 
 	// Use this when writing a doc.
 	integrationTestMap = map[string]interface{}{
-		"int":   1,
-		"str":   "two",
-		"bool":  true,
-		"float": 3.14,
-		"null":  nil,
-		"bytes": []byte("bytes"),
-		"*":     map[string]interface{}{"`": 4},
-		"time":  integrationTime,
-		"geo":   integrationGeo,
-		"ref":   nil, // populated by initIntegrationTest
+		"int":    1,
+		"int8":   int8(2),
+		"int16":  int16(3),
+		"int32":  int32(4),
+		"int64":  int64(5),
+		"uint8":  uint8(6),
+		"uint16": uint16(7),
+		"uint32": uint32(8),
+		"str":    "two",
+		"bool":   true,
+		"float":  3.14,
+		"null":   nil,
+		"bytes":  []byte("bytes"),
+		"*":      map[string]interface{}{"`": 4},
+		"time":   integrationTime,
+		"geo":    integrationGeo,
+		"ref":    nil, // populated by initIntegrationTest
 	}
 
 	// The returned data is slightly different.
 	wantIntegrationTestMap = map[string]interface{}{
-		"int":   int64(1),
-		"str":   "two",
-		"bool":  true,
-		"float": 3.14,
-		"null":  nil,
-		"bytes": []byte("bytes"),
-		"*":     map[string]interface{}{"`": int64(4)},
-		"time":  wantIntegrationTime,
-		"geo":   integrationGeo,
-		"ref":   nil, // populated by initIntegrationTest
+		"int":    int64(1),
+		"int8":   int64(2),
+		"int16":  int64(3),
+		"int32":  int64(4),
+		"int64":  int64(5),
+		"uint8":  int64(6),
+		"uint16": int64(7),
+		"uint32": int64(8),
+		"str":    "two",
+		"bool":   true,
+		"float":  3.14,
+		"null":   nil,
+		"bytes":  []byte("bytes"),
+		"*":      map[string]interface{}{"`": int64(4)},
+		"time":   wantIntegrationTime,
+		"geo":    integrationGeo,
+		"ref":    nil, // populated by initIntegrationTest
 	}
 
 	integrationTestStruct = integrationTestStructType{
@@ -256,7 +252,7 @@ func TestIntegration_Get(t *testing.T) {
 	ds, err := integrationColl(t).NewDoc().Get(ctx)
 	codeEq(t, "Get on a missing doc", codes.NotFound, err)
 	if ds == nil || ds.Exists() {
-		t.Fatal("got nil or existing doc snapshot, want !ds.Exists")
+		t.Error("got nil or existing doc snapshot, want !ds.Exists")
 	}
 	if ds.ReadTime.IsZero() {
 		t.Error("got zero read time")
@@ -416,7 +412,7 @@ func TestIntegration_Delete(t *testing.T) {
 	h.mustCreate(doc, integrationTestMap)
 	h.mustDelete(doc)
 	// Confirm that doc doesn't exist.
-	if _, err := doc.Get(ctx); grpc.Code(err) != codes.NotFound {
+	if _, err := doc.Get(ctx); status.Code(err) != codes.NotFound {
 		t.Fatalf("got error <%v>, want NotFound", err)
 	}
 
@@ -959,7 +955,7 @@ func TestIntegration_WatchDocument(t *testing.T) {
 }
 
 func TestIntegration_ArrayUnion_Create(t *testing.T) {
-	path := "somepath"
+	path := "somePath"
 	data := map[string]interface{}{
 		path: ArrayUnion("a", "b"),
 	}
@@ -987,7 +983,7 @@ func TestIntegration_ArrayUnion_Create(t *testing.T) {
 func TestIntegration_ArrayUnion_Update(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	h.mustCreate(doc, map[string]interface{}{
 		path: []string{"a", "b"},
@@ -1001,8 +997,7 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 	h.mustUpdate(doc, fpus)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err := ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1020,7 +1015,7 @@ func TestIntegration_ArrayUnion_Update(t *testing.T) {
 func TestIntegration_ArrayUnion_Set(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	doc := coll.NewDoc()
 	newData := map[string]interface{}{
@@ -1047,7 +1042,7 @@ func TestIntegration_ArrayUnion_Set(t *testing.T) {
 func TestIntegration_ArrayRemove_Create(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	h.mustCreate(doc, map[string]interface{}{
 		path: ArrayRemove("a", "b"),
@@ -1055,8 +1050,7 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err := ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1073,7 +1067,7 @@ func TestIntegration_ArrayRemove_Create(t *testing.T) {
 func TestIntegration_ArrayRemove_Update(t *testing.T) {
 	doc := integrationColl(t).NewDoc()
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	h.mustCreate(doc, map[string]interface{}{
 		path: []string{"a", "this should be removed", "c"},
@@ -1087,8 +1081,7 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 	h.mustUpdate(doc, fpus)
 	ds := h.mustGet(doc)
 	var gotMap map[string][]string
-	err := ds.DataTo(&gotMap)
-	if err != nil {
+	if err := ds.DataTo(&gotMap); err != nil {
 		t.Fatal(err)
 	}
 	if _, ok := gotMap[path]; !ok {
@@ -1106,7 +1099,7 @@ func TestIntegration_ArrayRemove_Update(t *testing.T) {
 func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	coll := integrationColl(t)
 	h := testHelper{t}
-	path := "somepath"
+	path := "somePath"
 
 	doc := coll.NewDoc()
 	newData := map[string]interface{}{
@@ -1125,6 +1118,180 @@ func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	want := []string(nil)
 	if !testEqual(gotMap[path], want) {
 		t.Fatalf("got\n%#v\nwant\n%#v", gotMap[path], want)
+	}
+}
+
+func makeFieldTransform(transform string, value interface{}) interface{} {
+	switch transform {
+	case "inc":
+		return FieldTransformIncrement(value)
+	case "max":
+		return FieldTransformMaximum(value)
+	case "min":
+		return FieldTransformMinimum(value)
+	}
+	panic(fmt.Sprintf("Invalid transform %v", transform))
+}
+
+func TestIntegration_FieldTransforms_Create(t *testing.T) {
+	for _, transform := range []string{"inc", "max", "min"} {
+		t.Run(transform, func(t *testing.T) {
+			doc := integrationColl(t).NewDoc()
+			h := testHelper{t}
+			path := "somePath"
+			want := 7
+
+			h.mustCreate(doc, map[string]interface{}{
+				path: makeFieldTransform(transform, want),
+			})
+
+			ds := h.mustGet(doc)
+			var gotMap map[string]int
+			if err := ds.DataTo(&gotMap); err != nil {
+				t.Fatal(err)
+			}
+			if _, ok := gotMap[path]; !ok {
+				t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+			}
+
+			if gotMap[path] != want {
+				t.Fatalf("want %d, got %d", want, gotMap[path])
+			}
+		})
+	}
+}
+
+// Also checks that all appropriate types are supported.
+func TestIntegration_FieldTransforms_Update(t *testing.T) {
+	type MyInt = int // Test a custom type.
+	for _, tc := range []struct {
+		// All three should be same type.
+		start interface{}
+		val   interface{}
+		inc   interface{}
+		max   interface{}
+		min   interface{}
+
+		wantErr bool
+	}{
+		{start: int(7), val: int(4), inc: int(11), max: int(7), min: int(4)},
+		{start: int8(2), val: int8(4), inc: int8(6), max: int8(4), min: int8(2)},
+		{start: int16(7), val: int16(4), inc: int16(11), max: int16(7), min: int16(4)},
+		{start: int32(7), val: int32(4), inc: int32(11), max: int32(7), min: int32(4)},
+		{start: int64(7), val: int64(4), inc: int64(11), max: int64(7), min: int64(4)},
+		{start: uint8(7), val: uint8(4), inc: uint8(11), max: uint8(7), min: uint8(4)},
+		{start: uint16(7), val: uint16(4), inc: uint16(11), max: int16(7), min: int16(4)},
+		{start: uint32(7), val: uint32(4), inc: uint32(11), max: int32(7), min: int32(4)},
+		{start: float32(7.7), val: float32(4.1), inc: float32(11.8), max: float32(7.7), min: float32(4.1)},
+		{start: float64(2.2), val: float64(4.1), inc: float64(6.3), max: float64(4.1), min: float64(2.2)},
+		{start: MyInt(7), val: MyInt(4), inc: MyInt(11), max: MyInt(7), min: MyInt(4)},
+		{start: 7, val: "strings are not allowed", wantErr: true},
+		{start: 7, val: uint(3), wantErr: true},
+		{start: 7, val: uint64(3), wantErr: true},
+	} {
+		for _, transform := range []string{"inc", "max", "min"} {
+			t.Run(transform, func(t *testing.T) {
+				typeStr := reflect.TypeOf(tc.val).String()
+				t.Run(typeStr, func(t *testing.T) {
+					doc := integrationColl(t).NewDoc()
+					h := testHelper{t}
+					path := "somePath"
+
+					h.mustCreate(doc, map[string]interface{}{
+						path: tc.start,
+					})
+					fpus := []Update{
+						{
+							Path:  path,
+							Value: makeFieldTransform(transform, tc.val),
+						},
+					}
+					_, err := doc.Update(context.Background(), fpus)
+					if err != nil {
+						if tc.wantErr {
+							return
+						}
+						h.t.Fatalf("%s: updating: %v", loc(), err)
+					}
+					ds := h.mustGet(doc)
+					var gotMap map[string]interface{}
+					if err := ds.DataTo(&gotMap); err != nil {
+						t.Fatal(err)
+					}
+
+					var want interface{}
+					switch transform {
+					case "inc":
+						want = tc.inc
+					case "max":
+						want = tc.max
+					case "min":
+						want = tc.min
+					default:
+						t.Fatalf("unsupported transform type %s", transform)
+					}
+
+					switch want.(type) {
+					case int, int8, int16, int32, int64:
+						if _, ok := gotMap[path]; !ok {
+							t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+						}
+						if got, want := reflect.ValueOf(gotMap[path]).Int(), reflect.ValueOf(want).Int(); got != want {
+							t.Fatalf("want %v, got %v", want, got)
+						}
+					case uint8, uint16, uint32:
+						if _, ok := gotMap[path]; !ok {
+							t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+						}
+						if got, want := uint64(reflect.ValueOf(gotMap[path]).Int()), reflect.ValueOf(want).Uint(); got != want {
+							t.Fatalf("want %v, got %v", want, got)
+						}
+					case float32, float64:
+						if _, ok := gotMap[path]; !ok {
+							t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+						}
+						const precision = 1e-6 // Floats are never precisely comparable.
+						if got, want := reflect.ValueOf(gotMap[path]).Float(), reflect.ValueOf(want).Float(); math.Abs(got-want) > precision {
+							t.Fatalf("want %v, got %v", want, got)
+						}
+					default:
+						// Either some unsupported type was added without specifying
+						// wantErr, or a supported type needs to be added to this
+						// switch statement.
+						t.Fatalf("unsupported type %T", want)
+					}
+				})
+			})
+		}
+	}
+}
+
+func TestIntegration_FieldTransforms_Set(t *testing.T) {
+	for _, transform := range []string{"inc", "max", "min"} {
+		t.Run(transform, func(t *testing.T) {
+			coll := integrationColl(t)
+			h := testHelper{t}
+			path := "somePath"
+			want := 9
+
+			doc := coll.NewDoc()
+			newData := map[string]interface{}{
+				path: makeFieldTransform(transform, want),
+			}
+			h.mustSet(doc, newData)
+			ds := h.mustGet(doc)
+			var gotMap map[string]int
+			if err := ds.DataTo(&gotMap); err != nil {
+				t.Fatal(err)
+			}
+			if _, ok := gotMap[path]; !ok {
+				t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+			}
+
+			if gotMap[path] != want {
+				t.Fatalf("want %d, got %d", want, gotMap[path])
+			}
+		})
 	}
 }
 
@@ -1301,7 +1468,7 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 }
 
 func codeEq(t *testing.T, msg string, code codes.Code, err error) {
-	if grpc.Code(err) != code {
+	if status.Code(err) != code {
 		t.Fatalf("%s:\ngot <%v>\nwant code %s", msg, err, code)
 	}
 }

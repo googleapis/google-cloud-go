@@ -103,6 +103,21 @@ func (m *MockCloudSpanner) Done() {
 	close(m.msgs)
 }
 
+// BatchCreateSessions is a placeholder for SpannerServer.BatchCreateSessions.
+func (m *MockCloudSpanner) BatchCreateSessions(c context.Context, r *sppb.BatchCreateSessionsRequest) (*sppb.BatchCreateSessionsResponse, error) {
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	sessions := make([]*sppb.Session, r.SessionCount)
+	var i int32
+	for i = 0; i < r.SessionCount; i++ {
+		name := fmt.Sprintf("session-%d", m.nextSession)
+		m.nextSession++
+		sessions[i] = &sppb.Session{Name: name}
+		m.sessions[name] = sessions[i]
+	}
+	return &sppb.BatchCreateSessionsResponse{Session: sessions}, nil
+}
+
 // CreateSession is a placeholder for SpannerServer.CreateSession.
 func (m *MockCloudSpanner) CreateSession(c context.Context, r *sppb.CreateSessionRequest) (*sppb.Session, error) {
 	m.mu.Lock()

@@ -42,25 +42,129 @@ func (fs *FieldSchema) GoString() string {
 	)
 }
 
-func bqTableFieldSchema(desc, name, typ, mode string) *bq.TableFieldSchema {
+func bqTableFieldSchema(desc, name, typ, mode string, tags []string) *bq.TableFieldSchema {
+	var policy *bq.TableFieldSchemaPolicyTags
+	if tags != nil {
+		policy = &bq.TableFieldSchemaPolicyTags{
+			Names: tags,
+		}
+	}
 	return &bq.TableFieldSchema{
 		Description: desc,
 		Name:        name,
 		Mode:        mode,
 		Type:        typ,
+		PolicyTags:  policy,
 	}
 }
 
-func fieldSchema(desc, name, typ string, repeated, required bool) *FieldSchema {
+func fieldSchema(desc, name, typ string, repeated, required bool, tags []string) *FieldSchema {
+	var policy *PolicyTagList
+	if tags != nil {
+		policy = &PolicyTagList{
+			Names: tags,
+		}
+	}
 	return &FieldSchema{
 		Description: desc,
 		Name:        name,
 		Repeated:    repeated,
 		Required:    required,
 		Type:        FieldType(typ),
+		PolicyTags:  policy,
 	}
 }
 
+func TestRelaxSchema(t *testing.T) {
+	testCases := []struct {
+		in       Schema
+		expected Schema
+	}{
+		{
+			Schema{
+				&FieldSchema{
+					Description: "a relaxed schema",
+					Required:    false,
+					Type:        StringFieldType,
+				},
+			},
+			Schema{
+				&FieldSchema{
+					Description: "a relaxed schema",
+					Required:    false,
+					Type:        StringFieldType,
+				},
+			},
+		},
+		{
+			Schema{
+				&FieldSchema{
+					Description: "a required string",
+					Required:    true,
+					Type:        StringFieldType,
+				},
+				&FieldSchema{
+					Description: "a required integer",
+					Required:    true,
+					Type:        IntegerFieldType,
+				},
+			},
+			Schema{
+				&FieldSchema{
+					Description: "a required string",
+					Required:    false,
+					Type:        StringFieldType,
+				},
+				&FieldSchema{
+					Description: "a required integer",
+					Required:    false,
+					Type:        IntegerFieldType,
+				},
+			},
+		},
+		{
+			Schema{
+				&FieldSchema{
+					Description: "An outer schema wrapping a nested schema",
+					Name:        "outer",
+					Required:    true,
+					Type:        RecordFieldType,
+					Schema: Schema{
+						{
+							Description: "inner field",
+							Name:        "inner",
+							Type:        StringFieldType,
+							Required:    true,
+						},
+					},
+				},
+			},
+			Schema{
+				&FieldSchema{
+					Description: "An outer schema wrapping a nested schema",
+					Name:        "outer",
+					Required:    false,
+					Type:        "RECORD",
+					Schema: Schema{
+						{
+							Description: "inner field",
+							Name:        "inner",
+							Type:        "STRING",
+							Required:    false,
+						},
+					},
+				},
+			},
+		},
+	}
+	for _, tc := range testCases {
+		converted := tc.in.Relax()
+		if !testutil.Equal(converted, tc.expected) {
+			t.Errorf("relaxing schema: got:\n%v\nwant:\n%v",
+				pretty.Value(converted), pretty.Value(tc.expected))
+		}
+	}
+}
 func TestSchemaConversion(t *testing.T) {
 	testCases := []struct {
 		schema   Schema
@@ -70,113 +174,125 @@ func TestSchemaConversion(t *testing.T) {
 			// required
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "STRING", "REQUIRED"),
+					bqTableFieldSchema("desc", "name", "STRING", "REQUIRED", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "STRING", false, true),
+				fieldSchema("desc", "name", "STRING", false, true, nil),
 			},
 		},
 		{
 			// repeated
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "STRING", "REPEATED"),
+					bqTableFieldSchema("desc", "name", "STRING", "REPEATED", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "STRING", true, false),
+				fieldSchema("desc", "name", "STRING", true, false, nil),
 			},
 		},
 		{
 			// nullable, string
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "STRING", ""),
+					bqTableFieldSchema("desc", "name", "STRING", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "STRING", false, false),
+				fieldSchema("desc", "name", "STRING", false, false, nil),
 			},
 		},
 		{
 			// integer
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "INTEGER", ""),
+					bqTableFieldSchema("desc", "name", "INTEGER", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "INTEGER", false, false),
+				fieldSchema("desc", "name", "INTEGER", false, false, nil),
 			},
 		},
 		{
 			// float
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "FLOAT", ""),
+					bqTableFieldSchema("desc", "name", "FLOAT", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "FLOAT", false, false),
+				fieldSchema("desc", "name", "FLOAT", false, false, nil),
 			},
 		},
 		{
 			// boolean
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "BOOLEAN", ""),
+					bqTableFieldSchema("desc", "name", "BOOLEAN", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "BOOLEAN", false, false),
+				fieldSchema("desc", "name", "BOOLEAN", false, false, nil),
 			},
 		},
 		{
 			// timestamp
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "name", "TIMESTAMP", ""),
+					bqTableFieldSchema("desc", "name", "TIMESTAMP", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "name", "TIMESTAMP", false, false),
+				fieldSchema("desc", "name", "TIMESTAMP", false, false, nil),
 			},
 		},
 		{
 			// civil times
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "f1", "TIME", ""),
-					bqTableFieldSchema("desc", "f2", "DATE", ""),
-					bqTableFieldSchema("desc", "f3", "DATETIME", ""),
+					bqTableFieldSchema("desc", "f1", "TIME", "", nil),
+					bqTableFieldSchema("desc", "f2", "DATE", "", nil),
+					bqTableFieldSchema("desc", "f3", "DATETIME", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "f1", "TIME", false, false),
-				fieldSchema("desc", "f2", "DATE", false, false),
-				fieldSchema("desc", "f3", "DATETIME", false, false),
+				fieldSchema("desc", "f1", "TIME", false, false, nil),
+				fieldSchema("desc", "f2", "DATE", false, false, nil),
+				fieldSchema("desc", "f3", "DATETIME", false, false, nil),
 			},
 		},
 		{
 			// numeric
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("desc", "n", "NUMERIC", ""),
+					bqTableFieldSchema("desc", "n", "NUMERIC", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("desc", "n", "NUMERIC", false, false),
+				fieldSchema("desc", "n", "NUMERIC", false, false, nil),
 			},
 		},
 		{
+			// geography
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{
-					bqTableFieldSchema("geo", "g", "GEOGRAPHY", ""),
+					bqTableFieldSchema("geo", "g", "GEOGRAPHY", "", nil),
 				},
 			},
 			schema: Schema{
-				fieldSchema("geo", "g", "GEOGRAPHY", false, false),
+				fieldSchema("geo", "g", "GEOGRAPHY", false, false, nil),
+			},
+		},
+		{
+			// policy tags
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					bqTableFieldSchema("some pii", "restrictedfield", "STRING", "", []string{"tag1"}),
+				},
+			},
+			schema: Schema{
+				fieldSchema("some pii", "restrictedfield", "STRING", false, false, []string{"tag1"}),
 			},
 		},
 		{
@@ -189,7 +305,7 @@ func TestSchemaConversion(t *testing.T) {
 						Mode:        "REQUIRED",
 						Type:        "RECORD",
 						Fields: []*bq.TableFieldSchema{
-							bqTableFieldSchema("inner field", "inner", "STRING", ""),
+							bqTableFieldSchema("inner field", "inner", "STRING", "", nil),
 						},
 					},
 				},
@@ -929,17 +1045,17 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"flat_geography","type":"GEOGRAPHY","mode":"REQUIRED","description":"Flat required GEOGRAPHY"}
 ]`),
 			expectedSchema: Schema{
-				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false),
-				fieldSchema("Flat required BYTES", "flat_bytes", "BYTES", false, true),
-				fieldSchema("Flat nullable INTEGER", "flat_integer", "INTEGER", false, false),
-				fieldSchema("Flat required FLOAT", "flat_float", "FLOAT", false, true),
-				fieldSchema("Flat nullable BOOLEAN", "flat_boolean", "BOOLEAN", false, false),
-				fieldSchema("Flat required TIMESTAMP", "flat_timestamp", "TIMESTAMP", false, true),
-				fieldSchema("Flat required DATE", "flat_date", "DATE", false, false),
-				fieldSchema("Flat nullable TIME", "flat_time", "TIME", false, true),
-				fieldSchema("Flat required DATETIME", "flat_datetime", "DATETIME", false, false),
-				fieldSchema("Flat nullable NUMERIC", "flat_numeric", "NUMERIC", false, true),
-				fieldSchema("Flat required GEOGRAPHY", "flat_geography", "GEOGRAPHY", false, true),
+				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false, nil),
+				fieldSchema("Flat required BYTES", "flat_bytes", "BYTES", false, true, nil),
+				fieldSchema("Flat nullable INTEGER", "flat_integer", "INTEGER", false, false, nil),
+				fieldSchema("Flat required FLOAT", "flat_float", "FLOAT", false, true, nil),
+				fieldSchema("Flat nullable BOOLEAN", "flat_boolean", "BOOLEAN", false, false, nil),
+				fieldSchema("Flat required TIMESTAMP", "flat_timestamp", "TIMESTAMP", false, true, nil),
+				fieldSchema("Flat required DATE", "flat_date", "DATE", false, false, nil),
+				fieldSchema("Flat nullable TIME", "flat_time", "TIME", false, true, nil),
+				fieldSchema("Flat required DATETIME", "flat_datetime", "DATETIME", false, false, nil),
+				fieldSchema("Flat nullable NUMERIC", "flat_numeric", "NUMERIC", false, true, nil),
+				fieldSchema("Flat required GEOGRAPHY", "flat_geography", "GEOGRAPHY", false, true, nil),
 			},
 		},
 		{
@@ -950,7 +1066,7 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"nested_record","type":"RECORD","mode":"NULLABLE","description":"Nested nullable RECORD","fields":[{"name":"record_field_1","type":"STRING","mode":"NULLABLE","description":"First nested record field"},{"name":"record_field_2","type":"INTEGER","mode":"REQUIRED","description":"Second nested record field"}]}
 ]`),
 			expectedSchema: Schema{
-				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false),
+				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false, nil),
 				&FieldSchema{
 					Description: "Nested nullable RECORD",
 					Name:        "nested_record",
@@ -981,7 +1097,7 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"nested_record","type":"RECORD","mode":"REPEATED","description":"Nested nullable RECORD","fields":[{"name":"record_field_1","type":"STRING","mode":"NULLABLE","description":"First nested record field"},{"name":"record_field_2","type":"INTEGER","mode":"REQUIRED","description":"Second nested record field"}]}
 ]`),
 			expectedSchema: Schema{
-				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false),
+				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false, nil),
 				&FieldSchema{
 					Description: "Nested nullable RECORD",
 					Name:        "nested_record",

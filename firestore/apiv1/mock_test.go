@@ -1,4 +1,4 @@
-// Copyright 2018 Google LLC
+// Copyright 2019 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,11 +17,6 @@
 package firestore
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,11 +29,15 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

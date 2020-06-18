@@ -17,6 +17,7 @@ package datastore
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/version"
@@ -39,7 +40,7 @@ type datastoreClient struct {
 	md metadata.MD
 }
 
-func newDatastoreClient(conn *grpc.ClientConn, projectID string) pb.DatastoreClient {
+func newDatastoreClient(conn grpc.ClientConnInterface, projectID string) pb.DatastoreClient {
 	return &datastoreClient{
 		c: pb.NewDatastoreClient(conn),
 		md: metadata.Pairs(
@@ -98,7 +99,7 @@ func (dc *datastoreClient) AllocateIds(ctx context.Context, in *pb.AllocateIdsRe
 
 func (dc *datastoreClient) invoke(ctx context.Context, f func(ctx context.Context) error) error {
 	ctx = metadata.NewOutgoingContext(ctx, dc.md)
-	return internal.Retry(ctx, gax.Backoff{}, func() (stop bool, err error) {
+	return internal.Retry(ctx, gax.Backoff{Initial: 100 * time.Millisecond}, func() (stop bool, err error) {
 		err = f(ctx)
 		return !shouldRetry(err), err
 	})
@@ -112,6 +113,8 @@ func shouldRetry(err error) bool {
 	if !ok {
 		return false
 	}
-	// See https://cloud.google.com/datastore/docs/concepts/errors.
-	return s.Code() == codes.Unavailable || s.Code() == codes.DeadlineExceeded
+	// Only retry on UNAVAILABLE as per https://aip.dev/194. Other errors from
+	// https://cloud.google.com/datastore/docs/concepts/errors may be retried
+	// by the user if desired, but are not retried by the clientg.
+	return s.Code() == codes.Unavailable
 }

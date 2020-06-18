@@ -27,6 +27,24 @@ import (
 // Schema describes the fields in a table or query result.
 type Schema []*FieldSchema
 
+// Relax returns a version of the schema where no fields are marked
+// as Required.
+func (s Schema) Relax() Schema {
+	var out Schema
+	for _, v := range s {
+		relaxed := &FieldSchema{
+			Name:        v.Name,
+			Description: v.Description,
+			Repeated:    v.Repeated,
+			Required:    false,
+			Type:        v.Type,
+			Schema:      v.Schema.Relax(),
+		}
+		out = append(out, relaxed)
+	}
+	return out
+}
+
 // FieldSchema describes a single field.
 type FieldSchema struct {
 	// The field name.
@@ -46,6 +64,10 @@ type FieldSchema struct {
 	// The field data type.  If Type is Record, then this field contains a nested schema,
 	// which is described by Schema.
 	Type FieldType
+
+	// Annotations for enforcing column-level security constraints.
+	PolicyTags *PolicyTagList
+
 	// Describes the nested schema if Type is set to Record.
 	Schema Schema
 }
@@ -55,6 +77,7 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 		Description: fs.Description,
 		Name:        fs.Name,
 		Type:        string(fs.Type),
+		PolicyTags:  fs.PolicyTags.toBQ(),
 	}
 
 	if fs.Repeated {
@@ -68,6 +91,30 @@ func (fs *FieldSchema) toBQ() *bq.TableFieldSchema {
 	}
 
 	return tfs
+}
+
+// PolicyTagList represents the annotations on a schema column for enforcing column-level security.
+// For more information, see https://cloud.google.com/bigquery/docs/column-level-security-intro
+type PolicyTagList struct {
+	Names []string
+}
+
+func (ptl *PolicyTagList) toBQ() *bq.TableFieldSchemaPolicyTags {
+	if ptl == nil {
+		return nil
+	}
+	return &bq.TableFieldSchemaPolicyTags{
+		Names: ptl.Names,
+	}
+}
+
+func bqToPolicyTagList(pt *bq.TableFieldSchemaPolicyTags) *PolicyTagList {
+	if pt == nil {
+		return nil
+	}
+	return &PolicyTagList{
+		Names: pt.Names,
+	}
 }
 
 func (s Schema) toBQ() *bq.TableSchema {
@@ -85,6 +132,7 @@ func bqToFieldSchema(tfs *bq.TableFieldSchema) *FieldSchema {
 		Repeated:    tfs.Mode == "REPEATED",
 		Required:    tfs.Mode == "REQUIRED",
 		Type:        FieldType(tfs.Type),
+		PolicyTags:  bqToPolicyTagList(tfs.PolicyTags),
 	}
 
 	for _, f := range tfs.Fields {

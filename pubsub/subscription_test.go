@@ -22,8 +22,10 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
+	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -132,6 +134,13 @@ func TestUpdateSubscription(t *testing.T) {
 	sub, err := client.CreateSubscription(ctx, "s", SubscriptionConfig{
 		Topic:            topic,
 		ExpirationPolicy: 30 * time.Hour,
+		PushConfig: PushConfig{
+			Endpoint: "https://example.com/push",
+			AuthenticationMethod: &OIDCToken{
+				ServiceAccountEmail: "foo@example.com",
+				Audience:            "client-12345",
+			},
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -146,6 +155,13 @@ func TestUpdateSubscription(t *testing.T) {
 		RetainAckedMessages: false,
 		RetentionDuration:   defaultRetentionDuration,
 		ExpirationPolicy:    30 * time.Hour,
+		PushConfig: PushConfig{
+			Endpoint: "https://example.com/push",
+			AuthenticationMethod: &OIDCToken{
+				ServiceAccountEmail: "foo@example.com",
+				Audience:            "client-12345",
+			},
+		},
 	}
 	if !testutil.Equal(cfg, want) {
 		t.Fatalf("\ngot  %+v\nwant %+v", cfg, want)
@@ -156,6 +172,13 @@ func TestUpdateSubscription(t *testing.T) {
 		RetainAckedMessages: true,
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
+		PushConfig: &PushConfig{
+			Endpoint: "https://example.com/push",
+			AuthenticationMethod: &OIDCToken{
+				ServiceAccountEmail: "foo@example.com",
+				Audience:            "client-12345",
+			},
+		},
 	})
 	if err != nil {
 		t.Fatal(err)
@@ -167,6 +190,13 @@ func TestUpdateSubscription(t *testing.T) {
 		RetentionDuration:   defaultRetentionDuration,
 		Labels:              map[string]string{"label": "value"},
 		ExpirationPolicy:    72 * time.Hour,
+		PushConfig: PushConfig{
+			Endpoint: "https://example.com/push",
+			AuthenticationMethod: &OIDCToken{
+				ServiceAccountEmail: "foo@example.com",
+				Audience:            "client-12345",
+			},
+		},
 	}
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant %+v", got, want)
@@ -188,6 +218,18 @@ func TestUpdateSubscription(t *testing.T) {
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
 	if err == nil {
 		t.Fatal("got nil, want error")
+	}
+
+	// Check ExpirationPolicy when set to never expire.
+	got, err = sub.Update(ctx, SubscriptionConfigToUpdate{
+		ExpirationPolicy: time.Duration(0),
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	want.ExpirationPolicy = time.Duration(0)
+	if !testutil.Equal(got, want) {
+		t.Fatalf("\ngot %+v\nwant %+v", got, want)
 	}
 }
 
@@ -248,4 +290,88 @@ func newFake(t *testing.T) (*Client, *pstest.Server) {
 		t.Fatal(err)
 	}
 	return client, srv
+}
+
+func TestPushConfigAuthenticationMethod_toProto(t *testing.T) {
+	in := &PushConfig{
+		Endpoint: "https://example.com/push",
+		AuthenticationMethod: &OIDCToken{
+			ServiceAccountEmail: "foo@example.com",
+			Audience:            "client-12345",
+		},
+	}
+	got := in.toProto()
+	want := &pb.PushConfig{
+		PushEndpoint: "https://example.com/push",
+		AuthenticationMethod: &pb.PushConfig_OidcToken_{
+			OidcToken: &pb.PushConfig_OidcToken{
+				ServiceAccountEmail: "foo@example.com",
+				Audience:            "client-12345",
+			},
+		},
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestDeadLettering_toProto(t *testing.T) {
+	in := &DeadLetterPolicy{
+		MaxDeliveryAttempts: 10,
+		DeadLetterTopic:     "projects/p/topics/t",
+	}
+	got := in.toProto()
+	want := &pb.DeadLetterPolicy{
+		DeadLetterTopic:     "projects/p/topics/t",
+		MaxDeliveryAttempts: 10,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
+
+// Check if incoming ReceivedMessages are properly converted to Message structs
+// that expose the DeliveryAttempt field when dead lettering is enabled/disabled.
+func TestDeadLettering_toMessage(t *testing.T) {
+	// If dead lettering is disabled, DeliveryAttempt should default to 0.
+	receivedMsg := &pb.ReceivedMessage{
+		AckId: "1234",
+		Message: &pb.PubsubMessage{
+			Data:        []byte("some message"),
+			MessageId:   "id-1234",
+			PublishTime: ptypes.TimestampNow(),
+		},
+	}
+	got, err := toMessage(receivedMsg)
+	if err != nil {
+		t.Errorf("toMessage failed: %v", err)
+	}
+	if got.DeliveryAttempt != nil {
+		t.Errorf("toMessage with dead-lettering disabled failed\ngot: %d, want nil", *got.DeliveryAttempt)
+	}
+
+	// If dead lettering is enabled, toMessage should properly pass through the DeliveryAttempt field.
+	receivedMsg.DeliveryAttempt = 10
+	got, err = toMessage(receivedMsg)
+	if err != nil {
+		t.Errorf("toMessage failed: %v", err)
+	}
+	if *got.DeliveryAttempt != int(receivedMsg.DeliveryAttempt) {
+		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", *got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
+	}
+}
+
+func TestRetryPolicy_toProto(t *testing.T) {
+	in := &RetryPolicy{
+		MinimumBackoff: 20 * time.Second,
+		MaximumBackoff: 300 * time.Second,
+	}
+	got := in.toProto()
+	want := &pb.RetryPolicy{
+		MinimumBackoff: ptypes.DurationProto(20 * time.Second),
+		MaximumBackoff: ptypes.DurationProto(300 * time.Second),
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
 }

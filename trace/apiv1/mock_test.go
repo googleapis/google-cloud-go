@@ -17,11 +17,6 @@
 package trace
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,11 +29,15 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 

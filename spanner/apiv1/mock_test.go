@@ -17,11 +17,6 @@
 package spanner
 
 import (
-	emptypb "github.com/golang/protobuf/ptypes/empty"
-	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-)
-
-import (
 	"context"
 	"flag"
 	"fmt"
@@ -34,11 +29,15 @@ import (
 
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
+	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
+
 	status "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -71,6 +70,18 @@ func (s *mockSpannerServer) CreateSession(ctx context.Context, req *spannerpb.Cr
 		return nil, s.err
 	}
 	return s.resps[0].(*spannerpb.Session), nil
+}
+
+func (s *mockSpannerServer) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest) (*spannerpb.BatchCreateSessionsResponse, error) {
+	md, _ := metadata.FromIncomingContext(ctx)
+	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
+		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
+	}
+	s.reqs = append(s.reqs, req)
+	if s.err != nil {
+		return nil, s.err
+	}
+	return s.resps[0].(*spannerpb.BatchCreateSessionsResponse), nil
 }
 
 func (s *mockSpannerServer) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest) (*spannerpb.Session, error) {
@@ -319,6 +330,66 @@ func TestSpannerCreateSessionError(t *testing.T) {
 	}
 
 	resp, err := c.CreateSession(context.Background(), request)
+
+	if st, ok := gstatus.FromError(err); !ok {
+		t.Errorf("got error %v, expected grpc error", err)
+	} else if c := st.Code(); c != errCode {
+		t.Errorf("got error code %q, want %q", c, errCode)
+	}
+	_ = resp
+}
+func TestSpannerBatchCreateSessions(t *testing.T) {
+	var expectedResponse *spannerpb.BatchCreateSessionsResponse = &spannerpb.BatchCreateSessionsResponse{}
+
+	mockSpanner.err = nil
+	mockSpanner.reqs = nil
+
+	mockSpanner.resps = append(mockSpanner.resps[:0], expectedResponse)
+
+	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var sessionCount int32 = 185691686
+	var request = &spannerpb.BatchCreateSessionsRequest{
+		Database:     formattedDatabase,
+		SessionCount: sessionCount,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchCreateSessions(context.Background(), request)
+
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if want, got := request, mockSpanner.reqs[0]; !proto.Equal(want, got) {
+		t.Errorf("wrong request %q, want %q", got, want)
+	}
+
+	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
+		t.Errorf("wrong response %q, want %q)", got, want)
+	}
+}
+
+func TestSpannerBatchCreateSessionsError(t *testing.T) {
+	errCode := codes.PermissionDenied
+	mockSpanner.err = gstatus.Error(errCode, "test error")
+
+	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var sessionCount int32 = 185691686
+	var request = &spannerpb.BatchCreateSessionsRequest{
+		Database:     formattedDatabase,
+		SessionCount: sessionCount,
+	}
+
+	c, err := NewClient(context.Background(), clientOpt)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	resp, err := c.BatchCreateSessions(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
@@ -932,10 +1003,8 @@ func TestSpannerCommit(t *testing.T) {
 	mockSpanner.resps = append(mockSpanner.resps[:0], expectedResponse)
 
 	var formattedSession string = fmt.Sprintf("projects/%s/instances/%s/databases/%s/sessions/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]", "[SESSION]")
-	var mutations []*spannerpb.Mutation = nil
 	var request = &spannerpb.CommitRequest{
-		Session:   formattedSession,
-		Mutations: mutations,
+		Session: formattedSession,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)
@@ -963,10 +1032,8 @@ func TestSpannerCommitError(t *testing.T) {
 	mockSpanner.err = gstatus.Error(errCode, "test error")
 
 	var formattedSession string = fmt.Sprintf("projects/%s/instances/%s/databases/%s/sessions/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]", "[SESSION]")
-	var mutations []*spannerpb.Mutation = nil
 	var request = &spannerpb.CommitRequest{
-		Session:   formattedSession,
-		Mutations: mutations,
+		Session: formattedSession,
 	}
 
 	c, err := NewClient(context.Background(), clientOpt)

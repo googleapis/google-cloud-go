@@ -44,6 +44,9 @@ type LoadConfig struct {
 	// If non-nil, the destination table is partitioned by time.
 	TimePartitioning *TimePartitioning
 
+	// If non-nil, the destination table is partitioned by integer range.
+	RangePartitioning *RangePartitioning
+
 	// Clustering specifies the data clustering configuration for the destination table.
 	Clustering *Clustering
 
@@ -58,6 +61,10 @@ type LoadConfig struct {
 	// See https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-avro#logical_types
 	// for additional information.
 	UseAvroLogicalTypes bool
+
+	// For ingestion from datastore backups, ProjectionFields governs which fields
+	// are projected from the backup.  The default behavior projects all fields.
+	ProjectionFields []string
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -68,10 +75,12 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			WriteDisposition:                   string(l.WriteDisposition),
 			DestinationTable:                   l.Dst.toBQ(),
 			TimePartitioning:                   l.TimePartitioning.toBQ(),
+			RangePartitioning:                  l.RangePartitioning.toBQ(),
 			Clustering:                         l.Clustering.toBQ(),
 			DestinationEncryptionConfiguration: l.DestinationEncryptionConfig.toBQ(),
 			SchemaUpdateOptions:                l.SchemaUpdateOptions,
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
+			ProjectionFields:                   l.ProjectionFields,
 		},
 	}
 	media := l.Src.populateLoadConfig(config.Load)
@@ -85,10 +94,12 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		WriteDisposition:            TableWriteDisposition(q.Load.WriteDisposition),
 		Dst:                         bqToTable(q.Load.DestinationTable, c),
 		TimePartitioning:            bqToTimePartitioning(q.Load.TimePartitioning),
+		RangePartitioning:           bqToRangePartitioning(q.Load.RangePartitioning),
 		Clustering:                  bqToClustering(q.Load.Clustering),
 		DestinationEncryptionConfig: bqToEncryptionConfig(q.Load.DestinationEncryptionConfiguration),
 		SchemaUpdateOptions:         q.Load.SchemaUpdateOptions,
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
+		ProjectionFields:            q.Load.ProjectionFields,
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {
