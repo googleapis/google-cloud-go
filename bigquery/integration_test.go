@@ -954,12 +954,12 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			want:        [][]Value{},
 		},
 		{
-			// Note: currently CTAS returns the rows due to the destination table reference,
-			// but it's not clear that it should.
-			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			// Previously this would return rows due to the destination reference being present
+			// in the job config, but switching to relying on jobs.getQueryResults allows the
+			// service to decide the behavior.
 			description: "ctas ddl",
 			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
-			want:        [][]Value{{int64(17)}},
+			want:        nil,
 		},
 	}
 	for _, tc := range testCases {

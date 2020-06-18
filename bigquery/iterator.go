@@ -270,7 +270,7 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	// TODO: consider if we want to set projection fields on this call?
 	// could skip schema projections if it's already present
 	// in the rowsource, etc.
-	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID)
+	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
