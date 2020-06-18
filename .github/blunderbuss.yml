@@ -18,5 +18,3 @@ assign_issues_by:
   - 'api: spanner'
   to:
   - skuruppu
-assign_issues:
-- codyoss
