@@ -418,7 +418,9 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 	got = au9.toRawBucket()
 	want = &raw.Bucket{
-		Lifecycle: &raw.BucketLifecycle{},
+		Lifecycle: &raw.BucketLifecycle{
+			ForceSendFields: []string{"Rule"},
+		},
 		ForceSendFields: []string{"lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
