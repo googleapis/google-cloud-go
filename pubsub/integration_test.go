@@ -1688,3 +1688,50 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }
+
+func TestIntegration_DetachSubscription(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	// TODO(hongalex): Remove this once subscription detachment is GA.
+	// https://github.com/googleapis/google-cloud-go/issues/2470
+	opts := withGRPCHeadersAssertion(t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	client := integrationTestClient(ctx, t, opts...)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg := SubscriptionConfig{
+		Topic: topic,
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	if _, err := client.DetachSubscription(ctx, sub.String()); err != nil {
+		t.Fatalf("DetachSubscription error: %v", err)
+	}
+
+	newSub := client.Subscription(sub.ID())
+	got, err := newSub.Config(ctx)
+	if err != nil {
+		t.Fatalf("GetSubscription error: %v", err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		Detached:            true,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("SubscriptionConfig for detached sub; got: - want: +\n%s", diff)
+	}
+}
