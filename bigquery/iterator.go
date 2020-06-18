@@ -21,6 +21,7 @@ import (
 	"reflect"
 
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 )
 
@@ -267,10 +268,14 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 }
 
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
-	// TODO: consider if we want to set projection fields on this call?
-	// could skip schema projections if it's already present
-	// in the rowsource, etc.
+	// reduce data transfered by leveraging api projections
+	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location)
+	call = call.Fields(projectedFields...)
+	if schema == nil {
+		// only project schema if we weren't supplied one.
+		call = call.Fields("schema")
+	}
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
