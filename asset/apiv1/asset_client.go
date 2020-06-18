@@ -193,10 +193,16 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 }
 
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
-// location. The output format is newline-delimited JSON.
-// This API implements the
-// google.longrunning.Operation API allowing
-// you to keep track of the export.
+// location/BigQuery table. For Cloud Storage location destinations, the
+// output format is newline-delimited JSON. Each line represents a
+// google.cloud.asset.v1.Asset in the JSON
+// format; for BigQuery table destinations, the output table stores the fields
+// in asset proto as columns. This API implements the
+// google.longrunning.Operation API , which
+// allows you to keep track of the export. We recommend intervals of at least
+// 2 seconds with exponential retry to poll the export operation result. For
+// regular-size resource parent, the export operation usually finishes within
+// 5 minutes.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -216,10 +222,10 @@ func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequ
 }
 
 // BatchGetAssetsHistory batch gets the update history of assets that overlap a time window.
-// For RESOURCE content, this API outputs history with asset in both
-// non-delete or deleted status.
 // For IAM_POLICY content, this API outputs history when the asset and its
 // attached IAM POLICY both exist. This can create gaps in the output history.
+// Otherwise, this API outputs history with asset in both non-delete or
+// deleted status.
 // If a specified asset does not exist, this API returns an INVALID_ARGUMENT
 // error.
 func (c *Client) BatchGetAssetsHistory(ctx context.Context, req *assetpb.BatchGetAssetsHistoryRequest, opts ...gax.CallOption) (*assetpb.BatchGetAssetsHistoryResponse, error) {
