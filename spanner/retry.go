@@ -48,7 +48,8 @@ type spannerRetryer struct {
 }
 
 // onCodes returns a spannerRetryer that will retry on the specified error
-// codes.
+// codes. For Internal errors, only errors that have one of a list of known
+// descriptions should be retried.
 func onCodes(bo gax.Backoff, cc ...codes.Code) gax.Retryer {
 	return &spannerRetryer{
 		Retryer: gax.OnCodes(cc, bo),
