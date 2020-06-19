@@ -155,7 +155,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/bigquery/connection/apiv1",
 		gRPCServiceConfigPath: "google/cloud/bigquery/connection/v1/bigqueryconnection_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/bigquery/connection/v1/bigqueryconnection_v1.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/bigquery/datatransfer/v1",
