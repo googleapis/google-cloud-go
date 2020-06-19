@@ -11,9 +11,9 @@ require (
 	golang.org/x/mod v0.3.0 // indirect
 	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2 // indirect
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
-	golang.org/x/tools v0.0.0-20200617212913-87be026d3888 // indirect
-	google.golang.org/api v0.27.0
-	google.golang.org/genproto v0.0.0-20200617032506-f1bdc9086088
+	golang.org/x/tools v0.0.0-20200618155944-c7475b9d7fb2 // indirect
+	google.golang.org/api v0.28.0
+	google.golang.org/genproto v0.0.0-20200619004808-3e7fca5c55db
 	google.golang.org/grpc v1.29.1
 	honnef.co/go/tools v0.0.1-2020.1.4 // indirect
 )

@@ -246,6 +246,13 @@ type SubscriptionConfig struct {
 
 	// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
 	RetryPolicy *RetryPolicy
+
+	// Detached indicates whether the subscription is detached from its topic.
+	// Detached subscriptions don't receive messages from their topic and don't
+	// retain any backlog. `Pull` and `StreamingPull` requests will return
+	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+	// the endpoint will not be made.
+	Detached bool
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -278,6 +285,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		DeadLetterPolicy:         pbDeadLetter,
 		Filter:                   cfg.Filter,
 		RetryPolicy:              pbRetryPolicy,
+		Detached:                 cfg.Detached,
 	}
 }
 
@@ -309,6 +317,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		DeadLetterPolicy:    dlp,
 		Filter:              pbSub.Filter,
 		RetryPolicy:         rp,
+		Detached:            pbSub.Detached,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {

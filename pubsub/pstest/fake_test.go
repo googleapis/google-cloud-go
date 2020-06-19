@@ -123,6 +123,14 @@ func TestSubscriptions(t *testing.T) {
 		}
 	}
 
+	subToDetach := "projects/P/subscriptions/S0"
+	_, err = pclient.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: subToDetach,
+	})
+	if err != nil {
+		t.Fatalf("attempted to detach sub %s, got error: %v", subToDetach, err)
+	}
+
 	for _, s := range subs {
 		if _, err := sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.Name}); err != nil {
 			t.Fatal(err)
