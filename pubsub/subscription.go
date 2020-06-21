@@ -817,6 +817,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxExtension: maxExt,
 		maxPrefetch:  trunc32(int64(maxCount)),
 		synchronous:  s.ReceiveSettings.Synchronous,
+		maxOutstandingMessages: maxCount,
+		maxOutstandingBytes: maxBytes,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -945,4 +947,6 @@ type pullOptions struct {
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous bool
+	maxOutstandingMessages int
+	maxOutstandingBytes int
 }
