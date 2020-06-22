@@ -32,8 +32,8 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 		// Skip generation if generating all of the gapics and the associated
 		// config has a block on it. Or if generating a single gapic and it does
 		// not match the specified import path.
-		if (c.stopGeneration && gapicToGenerate == "*") ||
-			(gapicToGenerate != "*" && gapicToGenerate != c.importPath) {
+		if (c.stopGeneration && gapicToGenerate == "") ||
+			(gapicToGenerate != "" && gapicToGenerate != c.importPath) {
 			continue
 		}
 		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {

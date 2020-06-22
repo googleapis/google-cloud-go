@@ -53,7 +53,7 @@ func main() {
 	gocloudDir := flag.String("gocloud-dir", filepath.Join(tmpDir, "gocloud"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	genprotoDir := flag.String("genproto-dir", filepath.Join(tmpDir, "genproto"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", filepath.Join(tmpDir, "proto"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
-	gapicToGenerate := flag.String("gapic", "*", "Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default * generates all gapics.")
+	gapicToGenerate := flag.String("gapic", "", "Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default \"\" generates all gapics.")
 	flag.Parse()
 
 	ctx := context.Background()
