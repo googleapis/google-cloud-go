@@ -174,9 +174,6 @@ func (it *RowIterator) fetch(pageSize int, pageToken string) (string, error) {
 //   want to retain the data unnecessarily, and we expect that the backend
 //   can always provide them if needed.
 type rowSource struct {
-	// TODO: figure out if job is too heavyweight, since it can carry a lot of state.
-	// What we need is a reference to the client, and a jobreference.
-	// However, we control construction so it shouldn't have query stats, etc.
 	j *Job
 	t *Table
 

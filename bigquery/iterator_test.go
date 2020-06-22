@@ -144,9 +144,7 @@ func TestRowIteratorCacheBehavior(t *testing.T) {
 		gotResp, gotErr := fetchCachedPage(context.Background(), tc.inSource, tc.inSchema, tc.inStartIndex, tc.inPageSize, tc.inPageToken)
 		if gotErr != tc.wantErr {
 			t.Errorf("err mismatch.  got %v, want %v", gotErr, tc.wantErr)
-
 		} else {
-
 			if diff := testutil.Diff(gotResp, tc.wantResult,
 				cmp.AllowUnexported(fetchPageResult{}, rowSource{}, Job{}, Client{}, Table{})); diff != "" {
 				t.Errorf("response diff (got=-, want=+):\n%s", diff)
