@@ -155,7 +155,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/bigquery/connection/apiv1",
 		gRPCServiceConfigPath: "google/cloud/bigquery/connection/v1/bigqueryconnection_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/bigquery/connection/v1/bigqueryconnection_v1.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/bigquery/datatransfer/v1",
@@ -275,7 +275,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/webrisk/apiv1",
 		gRPCServiceConfigPath: "google/cloud/webrisk/v1/webrisk_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/webrisk/v1/webrisk_v1.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/webrisk/v1beta1",
@@ -323,7 +323,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/osconfig/agentendpoint/apiv1",
 		gRPCServiceConfigPath: "google/cloud/osconfig/agentendpoint/v1/agentendpoint_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/osconfig/agentendpoint/v1/osconfig_v1.yaml",
-		releaseLevel:          "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/osconfig/agentendpoint/v1beta",
