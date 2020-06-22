@@ -228,6 +228,25 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 	}
 }
 
+func TestClient_Single_NonRetryableInternalErrors(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Internal, "grpc: error while marshaling: string field contains invalid UTF-8"),
+		},
+	)
+	ctx := context.Background()
+	err := executeSingerQuery(ctx, client.Single())
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("Error mismatch:\ngot: %v\nwant: %v", err, codes.Internal)
+	}
+}
+
 func TestClient_Single_DeadlineExceeded_NoErrors(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
