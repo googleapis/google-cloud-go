@@ -25,12 +25,12 @@ import (
 )
 
 // Generate generates genproto and gapics.
-func Generate(ctx context.Context, googleapisDir, genprotoDir, gocloudDir, protoDir string) error {
+func Generate(ctx context.Context, googleapisDir, genprotoDir, gocloudDir, protoDir string, gapicToGenerate string) error {
 	if err := regenGenproto(ctx, genprotoDir, googleapisDir, protoDir); err != nil {
 		return fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
 	}
 
-	if err := generateGapics(ctx, googleapisDir, protoDir, gocloudDir, genprotoDir); err != nil {
+	if err := generateGapics(ctx, googleapisDir, protoDir, gocloudDir, genprotoDir, gapicToGenerate); err != nil {
 		return fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
 	}
 
