@@ -67,7 +67,7 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 	}
 
 	// Regen.
-	if err := generator.Generate(ctx, googleapisDir, genprotoDir, gocloudDir, protoDir); err != nil {
+	if err := generator.Generate(ctx, googleapisDir, genprotoDir, gocloudDir, protoDir, ""); err != nil {
 		return err
 	}
 

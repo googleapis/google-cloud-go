@@ -13,8 +13,8 @@ require (
 	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2 // indirect
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
-	golang.org/x/tools v0.0.0-20200618155944-c7475b9d7fb2 // indirect
+	golang.org/x/tools v0.0.0-20200622203043-20e05c1c8ffa // indirect
 	google.golang.org/api v0.28.0
-	google.golang.org/genproto v0.0.0-20200619004808-3e7fca5c55db
+	google.golang.org/genproto v0.0.0-20200623002339-fbb79eadd5eb
 	google.golang.org/grpc v1.29.1
 )
