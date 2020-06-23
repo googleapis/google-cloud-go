@@ -24,5 +24,4 @@ require (
 	google.golang.org/api v0.28.0
 	google.golang.org/genproto v0.0.0-20200623002339-fbb79eadd5eb
 	google.golang.org/grpc v1.29.1
-	honnef.co/go/tools v0.0.1-2020.1.4
 )
