@@ -25,13 +25,14 @@
 1. Set your fork as a remote:
     `git remote add fork git@github.com:GITHUB_USERNAME/google-cloud-go.git`
 
-1. Make changes (see [Formatting](#formatting) and [Style](#style)), commit to
-   your fork.
+1. Make changes, commit to your fork.
 
    Commit messages should follow the
-   [Go project style](https://github.com/golang/go/wiki/CommitMessage). For example:
+   [Conventional Commits Style](https://www.conventionalcommits.org). The scope
+   portion should always be filled with the name of the package affected by the
+   changes being made. For example:
    ```
-   functions: add gophers codelab
+   feat(functions): add gophers codelab
    ```
 
 1. Send a pull request with your changes.
