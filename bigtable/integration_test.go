@@ -1274,7 +1274,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	// Basic return values are tested elsewhere, check instance type
 	if iInfo.InstanceType != DEVELOPMENT {
-		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
 	}
 	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
@@ -1287,7 +1287,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5, StorageType: HDD}},
+			{ClusterID: clusterID, NumNodes: 5}},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1300,7 +1300,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	if iInfo.InstanceType != PRODUCTION {
-		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
 	}
 	if got, want := iInfo.Labels, confWithClusters.Labels; !reflect.DeepEqual(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
@@ -1316,10 +1316,6 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
-	}
-
-	if cInfo.StorageType != HDD {
-		t.Fatalf("StorageType: %v, want: %v", cInfo.StorageType, HDD)
 	}
 }
 
@@ -1370,7 +1366,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Basic return values are tested elsewhere, check instance type
 	if iInfo.InstanceType != DEVELOPMENT {
-		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
 	}
 	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
@@ -1405,7 +1401,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	if iInfo.InstanceType != PRODUCTION {
-		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
 	}
 	if got, want := iInfo.Labels, confWithClusters.Labels; !reflect.DeepEqual(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
