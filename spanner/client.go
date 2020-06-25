@@ -39,6 +39,9 @@ const (
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
 	resourcePrefixHeader = "google-cloud-resource-prefix"
+
+	// numChannels is the default value for NumChannels of client.
+	numChannels = 4
 )
 
 const (
