@@ -38,7 +38,7 @@ func Example_timeout() {
 	tctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel() // Always call cancel.
 
-	req := &secretmanagerpb.DeleteSecretRequest{Name: "projects/proj/secrets/name"}
+	req := &secretmanagerpb.DeleteSecretRequest{Name: "projects/project-id/secrets/name"}
 	if err := client.DeleteSecret(tctx, req); err != nil {
 		// TODO: handle error.
 	}
