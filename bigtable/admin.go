@@ -671,13 +671,16 @@ func storageTypeFromProto(st btapb.StorageType) StorageType {
 	return SSD
 }
 
-// InstanceState is the state of the instance
+// InstanceState is the state of the instance. This is output-only.
 type InstanceState int32
 
 const (
+	// NOT_KNOWN is state of the instance could not be determined
 	NOT_KNOWN InstanceState = InstanceState(btapb.Instance_STATE_NOT_KNOWN)
-	READY                   = InstanceState(btapb.Instance_READY)
-	CREATING                = InstanceState(btapb.Instance_CREATING)
+	// READY is state of the instance has been successfully created
+	READY = InstanceState(btapb.Instance_READY)
+	// CREATING is state of the instance is currently being created
+	CREATING = InstanceState(btapb.Instance_CREATING)
 )
 
 // InstanceType is the type of the instance
