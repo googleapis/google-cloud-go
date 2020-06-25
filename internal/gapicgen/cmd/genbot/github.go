@@ -143,7 +143,10 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 		return nil, err
 	}
 	for _, pr := range prs {
-		if !strings.Contains(pr.GetTitle(), "regen") {
+		if !strings.Contains(pr.GetTitle(), "auto-regenerate") {
+			continue
+		}
+		if pr.GetUser().GetLogin() != gc.Username {
 			continue
 		}
 		return &PullRequest{
