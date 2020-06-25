@@ -200,6 +200,12 @@ var (
 		NumericFieldType:   true,
 		GeographyFieldType: true,
 	}
+	// The API will accept alias names for the types based on the Standard SQL type names.
+	fieldAliases = map[FieldType]FieldType{
+		"INT64":  IntegerFieldType,
+		"BOOL":   BooleanFieldType,
+		"STRUCT": RecordFieldType,
+	}
 )
 
 var typeOfByteSlice = reflect.TypeOf([]byte{})
@@ -491,6 +497,18 @@ type bigQueryJSONField struct {
 	Type        string              `json:"type"`
 }
 
+// validateKnownType ensures a type is known (or alias of a known type).
+func validateKnownType(in FieldType) (FieldType, error) {
+	if _, ok := fieldTypes[in]; !ok {
+		// not a defined type, check aliases.
+		if resolved, ok := fieldAliases[in]; ok {
+			return resolved, nil
+		}
+		return "", fmt.Errorf("unknown field type (%v)", in)
+	}
+	return in, nil
+}
+
 // convertSchemaFromJSON generates a Schema:
 func convertSchemaFromJSON(fs []bigQueryJSONField) (Schema, error) {
 	convertedSchema := Schema{}
@@ -510,11 +528,11 @@ func convertSchemaFromJSON(fs []bigQueryJSONField) (Schema, error) {
 		}
 
 		// Check that the field-type (string) maps to a known FieldType:
-		if _, ok := fieldTypes[FieldType(f.Type)]; !ok {
-			return nil, fmt.Errorf("unknown field type (%v)", f.Type)
+		validType, err := validateKnownType(FieldType(f.Type))
+		if err != nil {
+			return nil, err
 		}
-		convertedFieldSchema.Type = FieldType(f.Type)
-
+		convertedFieldSchema.Type = validType
 		convertedSchema = append(convertedSchema, convertedFieldSchema)
 	}
 	return convertedSchema, nil
