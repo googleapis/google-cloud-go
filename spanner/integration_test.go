@@ -2181,7 +2181,7 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
 		})
 		if err != nil {
-			t.Fatal(err)
+			return err
 		}
 		if count != 1 {
 			t.Errorf("row count: got %d, want 1", count)
