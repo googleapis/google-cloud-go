@@ -1042,7 +1042,11 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"flat_time","type":"TIME","mode":"REQUIRED","description":"Flat nullable TIME"},
 	{"name":"flat_datetime","type":"DATETIME","mode":"NULLABLE","description":"Flat required DATETIME"},
 	{"name":"flat_numeric","type":"NUMERIC","mode":"REQUIRED","description":"Flat nullable NUMERIC"},
-	{"name":"flat_geography","type":"GEOGRAPHY","mode":"REQUIRED","description":"Flat required GEOGRAPHY"}
+	{"name":"flat_geography","type":"GEOGRAPHY","mode":"REQUIRED","description":"Flat required GEOGRAPHY"},
+	{"name":"aliased_integer","type":"INT64","mode":"REQUIRED","description":"Aliased required integer"},
+	{"name":"aliased_boolean","type":"BOOL","mode":"NULLABLE","description":"Aliased nullable boolean"},
+	{"name":"aliased_float","type":"FLOAT64","mode":"REQUIRED","description":"Aliased required float"},
+	{"name":"aliased_record","type":"STRUCT","mode":"NULLABLE","description":"Aliased nullable record"}
 ]`),
 			expectedSchema: Schema{
 				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false, nil),
@@ -1056,6 +1060,10 @@ func TestSchemaFromJSON(t *testing.T) {
 				fieldSchema("Flat required DATETIME", "flat_datetime", "DATETIME", false, false, nil),
 				fieldSchema("Flat nullable NUMERIC", "flat_numeric", "NUMERIC", false, true, nil),
 				fieldSchema("Flat required GEOGRAPHY", "flat_geography", "GEOGRAPHY", false, true, nil),
+				fieldSchema("Aliased required integer", "aliased_integer", "INTEGER", false, true, nil),
+				fieldSchema("Aliased nullable boolean", "aliased_boolean", "BOOLEAN", false, false, nil),
+				fieldSchema("Aliased required float", "aliased_float", "FLOAT", false, true, nil),
+				fieldSchema("Aliased nullable record", "aliased_record", "RECORD", false, false, nil),
 			},
 		},
 		{
