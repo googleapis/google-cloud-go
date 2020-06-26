@@ -202,9 +202,10 @@ var (
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{
-		"INT64":  IntegerFieldType,
-		"BOOL":   BooleanFieldType,
-		"STRUCT": RecordFieldType,
+		"BOOL":    BooleanFieldType,
+		"FLOAT64": FloatFieldType,
+		"INT64":   IntegerFieldType,
+		"STRUCT":  RecordFieldType,
 	}
 )
 
