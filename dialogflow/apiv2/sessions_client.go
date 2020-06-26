@@ -21,12 +21,14 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -50,7 +52,17 @@ func defaultSessionsClientOptions() []option.ClientOption {
 
 func defaultSessionsCallOptions() *SessionsCallOptions {
 	return &SessionsCallOptions{
-		DetectIntent:          []gax.CallOption{},
+		DetectIntent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		StreamingDetectIntent: []gax.CallOption{},
 	}
 }

@@ -30,7 +30,7 @@ import (
 
 const (
 	gocloudBranchName  = "regen_gocloud"
-	gocloudCommitTitle = "all: auto-regenerate gapics"
+	gocloudCommitTitle = "feat(all): auto-regenerate gapics"
 	gocloudCommitBody  = `
 This is an auto-generated regeneration of the gapic clients by
 cloud.google.com/go/internal/gapicgen. Once the corresponding genproto PR is
@@ -45,7 +45,7 @@ If you have been assigned to review this PR, please:
 `
 
 	genprotoBranchName  = "regen_genproto"
-	genprotoCommitTitle = "auto-regenerate .pb.go files"
+	genprotoCommitTitle = "feat(all): auto-regenerate .pb.go files"
 	genprotoCommitBody  = `
 This is an auto-generated regeneration of the .pb.go files by
 cloud.google.com/go/internal/gapicgen. Once this PR is submitted, genbot will
@@ -143,7 +143,10 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 		return nil, err
 	}
 	for _, pr := range prs {
-		if !strings.Contains(pr.GetTitle(), "regen") {
+		if !strings.Contains(pr.GetTitle(), "auto-regenerate") {
+			continue
+		}
+		if pr.GetUser().GetLogin() != gc.Username {
 			continue
 		}
 		return &PullRequest{
