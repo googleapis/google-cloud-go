@@ -814,11 +814,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
-		maxExtension: maxExt,
-		maxPrefetch:  trunc32(int64(maxCount)),
-		synchronous:  s.ReceiveSettings.Synchronous,
+		maxExtension:           maxExt,
+		maxPrefetch:            trunc32(int64(maxCount)),
+		synchronous:            s.ReceiveSettings.Synchronous,
 		maxOutstandingMessages: maxCount,
-		maxOutstandingBytes: maxBytes,
+		maxOutstandingBytes:    maxBytes,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -946,7 +946,7 @@ type pullOptions struct {
 	maxPrefetch  int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
-	synchronous bool
+	synchronous            bool
 	maxOutstandingMessages int
-	maxOutstandingBytes int
+	maxOutstandingBytes    int
 }

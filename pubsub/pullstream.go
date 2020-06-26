@@ -51,8 +51,8 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 					Subscription: subName,
 					// We modack messages when we receive them, so this value doesn't matter too much.
 					StreamAckDeadlineSeconds: 60,
-					MaxOutstandingMessages: maxOutstandingMessages,
-					MaxOutstandingBytes: maxOutstandingBytes,
+					MaxOutstandingMessages:   int64(maxOutstandingMessages),
+					MaxOutstandingBytes:      int64(maxOutstandingBytes),
 				})
 			}
 			if err != nil {
