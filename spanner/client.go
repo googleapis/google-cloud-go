@@ -150,7 +150,6 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 
 	// Prepare gRPC channels.
-	configuredNumChannels := config.NumChannels
 	if config.NumChannels == 0 {
 		config.NumChannels = numChannels
 	}
@@ -173,7 +172,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	if err != nil {
 		return nil, err
 	}
-	if configuredNumChannels > 0 && pool.Num() != config.NumChannels {
+	if pool.Num() != config.NumChannels {
 		pool.Close()
 		return nil, spannerErrorf(codes.InvalidArgument, "Connection pool mismatch: NumChannels=%v, WithGRPCConnectionPool=%v. Only set one of these options, or set both to the same value.", config.NumChannels, pool.Num())
 	}
