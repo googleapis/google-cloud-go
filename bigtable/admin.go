@@ -675,15 +675,15 @@ func storageTypeFromProto(st btapb.StorageType) StorageType {
 type InstanceState int32
 
 const (
-	// NOT_KNOWN is state of the instance could not be determined
-	NOT_KNOWN InstanceState = InstanceState(btapb.Instance_STATE_NOT_KNOWN)
-	// READY is state of the instance has been successfully created
-	READY = InstanceState(btapb.Instance_READY)
-	// CREATING is state of the instance is currently being created
-	CREATING = InstanceState(btapb.Instance_CREATING)
+	// NotKnown represents the state of an instance that could not be determined.
+	NotKnown InstanceState = InstanceState(btapb.Instance_STATE_NOT_KNOWN)
+	// Ready represents the state of an instance that has been successfully created.
+	Ready = InstanceState(btapb.Instance_READY)
+	// Creating represents the state of an instance that is currently being created.
+	Creating = InstanceState(btapb.Instance_CREATING)
 )
 
-// InstanceType is the type of the instance
+// InstanceType is the type of the instance.
 type InstanceType int32
 
 const (
