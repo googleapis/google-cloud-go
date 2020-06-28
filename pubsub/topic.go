@@ -223,6 +223,24 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 	}
 }
 
+// DetachSubscriptionResult is the response for the DetachSubscription method.
+// Reserved for future use.
+type DetachSubscriptionResult struct{}
+
+// DetachSubscription detaches a subscription from its topic. All messages
+// retained in the subscription are dropped. Subsequent `Pull` and `StreamingPull`
+// requests will return FAILED_PRECONDITION. If the subscription is a push
+// subscription, pushes to the endpoint will stop.
+func (c *Client) DetachSubscription(ctx context.Context, sub string) (*DetachSubscriptionResult, error) {
+	_, err := c.pubc.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: sub,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &DetachSubscriptionResult{}, nil
+}
+
 // MessageStoragePolicy constrains how messages published to the topic may be stored. It
 // is determined when the topic is created based on the policy configured at
 // the project level.
