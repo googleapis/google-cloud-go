@@ -22,7 +22,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -32,6 +31,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
@@ -1276,7 +1276,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if iInfo.InstanceType != DEVELOPMENT {
 		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
 	}
-	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
@@ -1302,7 +1302,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if iInfo.InstanceType != PRODUCTION {
 		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
 	}
-	if got, want := iInfo.Labels, confWithClusters.Labels; !reflect.DeepEqual(got, want) {
+	if got, want := iInfo.Labels, confWithClusters.Labels; !cmp.Equal(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
@@ -1361,7 +1361,7 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 	if err != nil {
 		t.Fatalf("InstanceInfo: %v", err)
 	}
-	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
@@ -1405,7 +1405,7 @@ func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
 			if err != nil {
 				t.Fatalf("InstanceInfo: %v", err)
 			}
-			if got, want := iInfo.Labels, tt.out; !reflect.DeepEqual(got, want) {
+			if got, want := iInfo.Labels, tt.out; !cmp.Equal(got, want) {
 				t.Fatalf("Labels: %v, want: %v", got, want)
 			}
 		})
@@ -1461,7 +1461,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	if iInfo.InstanceType != DEVELOPMENT {
 		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
 	}
-	if got, want := iInfo.Labels, conf.Labels; !reflect.DeepEqual(got, want) {
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
@@ -1496,7 +1496,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	if iInfo.InstanceType != PRODUCTION {
 		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
 	}
-	if got, want := iInfo.Labels, confWithClusters.Labels; !reflect.DeepEqual(got, want) {
+	if got, want := iInfo.Labels, confWithClusters.Labels; !cmp.Equal(got, want) {
 		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
