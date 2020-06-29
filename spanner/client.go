@@ -422,37 +422,62 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		sh *sessionHandle
 	)
 	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
-		var (
-			err error
-			t   *ReadWriteTransaction
-		)
-		if sh == nil || sh.getID() == "" || sh.getClient() == nil {
-			// Session handle hasn't been allocated or has been destroyed.
-			sh, err = c.idleSessions.takeWriteSession(ctx)
-			if err != nil {
-				// If session retrieval fails, just fail the transaction.
-				return err
-			}
-			t = &ReadWriteTransaction{
-				tx: sh.getTransactionID(),
-			}
-		} else {
-			t = &ReadWriteTransaction{}
-		}
-		t.txReadOnly.sh = sh
-		t.txReadOnly.txReadEnv = t
-		t.txReadOnly.qo = c.qo
-		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
-			"Starting transaction attempt")
-		if err = t.begin(ctx); err != nil {
-			return err
-		}
-		ts, err = t.runInTransaction(ctx, f)
+		ts, err = c.runReadWriteTransaction(ctx, sh, f)
 		return err
 	})
 	if sh != nil {
 		sh.recycle()
 	}
+	return ts, err
+}
+
+// ReadWriteTransactionRetryDisabled executes a read-write transaction without
+// any retries. The function f will be called only once.
+//
+// See https://godoc.org/cloud.google.com/go/spanner#ReadWriteTransaction for
+// more details.
+func (c *Client) ReadWriteTransactionRetryDisabled(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (commitTimestamp time.Time, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransactionRetryDisabled")
+	defer func() { trace.EndSpan(ctx, err) }()
+	if err := checkNestedTxn(ctx); err != nil {
+		return time.Time{}, err
+	}
+	var sh *sessionHandle
+	ts, err := c.runReadWriteTransaction(ctx, sh, f)
+	if sh != nil {
+		sh.recycle()
+	}
+	return ts, err
+}
+
+// runReadWriteTransaction executes a read-write transaction without any
+// retries.
+func (c *Client) runReadWriteTransaction(ctx context.Context, sh *sessionHandle, f func(context.Context, *ReadWriteTransaction) error) (ts time.Time, err error) {
+	var (
+		t *ReadWriteTransaction
+	)
+	if sh == nil || sh.getID() == "" || sh.getClient() == nil {
+		// Session handle hasn't been allocated or has been destroyed.
+		sh, err = c.idleSessions.takeWriteSession(ctx)
+		if err != nil {
+			// If session retrieval fails, just fail the transaction.
+			return time.Time{}, err
+		}
+		t = &ReadWriteTransaction{
+			tx: sh.getTransactionID(),
+		}
+	} else {
+		t = &ReadWriteTransaction{}
+	}
+	t.txReadOnly.sh = sh
+	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
+	trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
+		"Starting transaction attempt")
+	if err = t.begin(ctx); err != nil {
+		return time.Time{}, err
+	}
+	ts, err = t.runInTransaction(ctx, f)
 	return ts, err
 }
 
