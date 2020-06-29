@@ -226,7 +226,12 @@ func TestReadQueryOptions(t *testing.T) {
 
 	want := []pageFetcherArgs{{
 		src: &rowSource{
-			j: queryJob,
+			j: &Job{
+				c:         queryJob.c,
+				jobID:     queryJob.jobID,
+				projectID: queryJob.projectID,
+				location:  queryJob.location,
+			},
 		},
 		pageSize:  5,
 		pageToken: "",

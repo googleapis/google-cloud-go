@@ -288,7 +288,14 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if err != nil {
 		return nil, err
 	}
-	it := newRowIterator(ctx, &rowSource{j: j}, pf)
+	// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
+	itJob := &Job{
+		c:         j.c,
+		projectID: j.projectID,
+		jobID:     j.jobID,
+		location:  j.location,
+	}
+	it := newRowIterator(ctx, &rowSource{j: itJob}, pf)
 	it.Schema = schema
 	it.TotalRows = totalRows
 	return it, nil
