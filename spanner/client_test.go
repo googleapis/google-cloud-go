@@ -591,6 +591,31 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 	return executeSingerQuery(ctx, tx)
 }
 
+func TestClient_ReadWriteTransactionRetryDisabled(t *testing.T) {
+	t.Parallel()
+	if err := testReadWriteTransactionRetryDisabled(t, make(map[string]SimulatedExecutionTime), 1); err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadWriteTransactionRetryDisabled_CommitAborted(t *testing.T) {
+	t.Parallel()
+	if err := testReadWriteTransactionRetryDisabled(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	}, 1); status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_ReadWriteTransactionRetryDisabled_SessionNotFoundOnCommit(t *testing.T) {
+	t.Parallel()
+	if err := testReadWriteTransactionRetryDisabled(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	}, 1); status.Code(err) != codes.NotFound || !strings.Contains(err.Error(), fmt.Sprintf("Session not found: Session with id %s not found", "projects/p/instances/i/databases/d/sessions/s")) {
+		t.Fatal(err)
+	}
+}
+
 func TestClient_ReadWriteTransaction(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, make(map[string]SimulatedExecutionTime), 1); err != nil {
@@ -1075,9 +1100,22 @@ func testReadWriteTransactionWithConfig(t *testing.T, config ClientConfig, execu
 	for method, exec := range executionTimes {
 		server.TestSpanner.PutExecutionTime(method, exec)
 	}
+	return testRWTxnWithConfig(t, client.ReadWriteTransaction, config, expectedAttempts)
+}
+
+func testReadWriteTransactionRetryDisabled(t *testing.T, executionTimes map[string]SimulatedExecutionTime, expectedAttempts int) error {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for method, exec := range executionTimes {
+		server.TestSpanner.PutExecutionTime(method, exec)
+	}
+	return testRWTxnWithConfig(t, client.ReadWriteTransactionRetryDisabled, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig}, expectedAttempts)
+}
+
+func testRWTxnWithConfig(t *testing.T, f func(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (time.Time, error), config ClientConfig, expectedAttempts int) error {
 	ctx := context.Background()
 	var attempts int
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+	_, err := f(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		attempts++
 		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 		defer iter.Stop()
