@@ -366,14 +366,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/irm/v1alpha2",
-		pkg:                   "irm",
-		importPath:            "cloud.google.com/go/irm/apiv1alpha2",
-		gRPCServiceConfigPath: "google/cloud/irm/v1alpha2/irm_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/irm/irm_v1alpha2.yaml",
-		releaseLevel:          "alpha",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/kms/v1",
 		pkg:                   "kms",
 		importPath:            "cloud.google.com/go/kms/apiv1",
@@ -709,6 +701,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/servicedirectory/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/servicedirectory/v1beta1/servicedirectory_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/servicedirectory/v1beta1/servicedirectory_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/gaming/v1beta",
+		pkg:                   "gaming",
+		importPath:            "cloud.google.com/go/gaming/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/gaming/v1beta/gaming_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gaming/v1beta/gaming_gapic.yaml",
 		releaseLevel:          "beta",
 	},
 }
