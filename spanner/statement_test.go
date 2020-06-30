@@ -46,10 +46,15 @@ func TestConvertParams(t *testing.T) {
 	type staticStruct struct {
 		Field int `spanner:"field"`
 	}
+	type CustomInt int64
+	type staticStructWithCustomType struct {
+		Field CustomInt `spanner:"field"`
+	}
 
 	var (
 		s1 = staticStruct{10}
 		s2 = staticStruct{20}
+		s3 = staticStructWithCustomType{30}
 	)
 
 	for _, test := range []struct {
@@ -131,6 +136,11 @@ func TestConvertParams(t *testing.T) {
 		{
 			s1,
 			listProto(intProto(10)),
+			structType(mkField("field", intType())),
+		},
+		{
+			s3,
+			listProto(intProto(30)),
 			structType(mkField("field", intType())),
 		},
 		{
