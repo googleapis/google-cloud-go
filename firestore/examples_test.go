@@ -445,7 +445,10 @@ func ExampleQuery_GetAll() {
 		OrderBy("pop", firestore.Desc).
 		Limit(10)
 
-	docs := q.GetAll(ctx)
+	docs, err := q.GetAll(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
 	// docs is a slice with DocumentSnapshots.
 	fmt.Println(docs)
 }
