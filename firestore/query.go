@@ -579,8 +579,8 @@ func trunc32(i int) int32 {
 	return int32(i)
 }
 
-// Get returns an array of query's resulting documents.
-func (q Query) Get(ctx context.Context) ([]*DocumentSnapshot, error) {
+// GetAll returns an array of query's resulting documents.
+func (q Query) GetAll(ctx context.Context) ([]*DocumentSnapshot, error) {
 	limitedToLast := q.limitToLast
 
 	if q.limitToLast {
@@ -618,7 +618,7 @@ func (q Query) Get(ctx context.Context) ([]*DocumentSnapshot, error) {
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	if q.limitToLast {
 		return &DocumentIterator{
-			err: errors.New("firestore: queries that include limitToLast constraints cannot be streamed. Use Query.Get() instead"),
+			err: errors.New("firestore: queries that include limitToLast constraints cannot be streamed. Use Query.GetAll() instead"),
 		}
 	}
 	return &DocumentIterator{

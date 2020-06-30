@@ -715,7 +715,7 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 	}
 }
 
-func TestIntegration_QueryGet(t *testing.T) {
+func TestIntegration_QueryGetAll(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -742,7 +742,7 @@ func TestIntegration_QueryGet(t *testing.T) {
 		{q.EndBefore(1), wants[:1]},
 		{q.LimitToLast(2), wants[1:]},
 	} {
-		gotDocs, err := test.q.Get(ctx)
+		gotDocs, err := test.q.GetAll(ctx)
 		if err != nil {
 			t.Errorf("#%d: %+v: %v", i, test.q, err)
 			continue
@@ -757,11 +757,11 @@ func TestIntegration_QueryGet(t *testing.T) {
 			}
 		}
 	}
-	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).Get(ctx)
+	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).GetAll(ctx)
 	codeEq(t, "Where and OrderBy on different fields without an index", codes.FailedPrecondition, err)
 
 	// Using the collection itself as the query should return the full documents.
-	allDocs, err := coll.Get(ctx)
+	allDocs, err := coll.GetAll(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
