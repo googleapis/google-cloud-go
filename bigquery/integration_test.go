@@ -954,12 +954,12 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			want:        [][]Value{},
 		},
 		{
-			// Note: currently CTAS returns the rows due to the destination table reference,
-			// but it's not clear that it should.
-			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			// Previously this would return rows due to the destination reference being present
+			// in the job config, but switching to relying on jobs.getQueryResults allows the
+			// service to decide the behavior.
 			description: "ctas ddl",
 			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
-			want:        [][]Value{{int64(17)}},
+			want:        nil,
 		},
 	}
 	for _, tc := range testCases {
@@ -974,6 +974,48 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
 		})
 	}
+}
+
+func TestIntegration_RoutineStoredProcedure(t *testing.T) {
+	// Verifies we're exhibiting documented behavior, where we're expected
+	// to return the last resultset in a script as the response from a script
+	// job.
+	// https://github.com/googleapis/google-cloud-go/issues/1974
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Define a simple stored procedure via DDL.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	sql := fmt.Sprintf(`
+		CREATE OR REPLACE PROCEDURE `+"`%s`"+`(val INT64)
+		BEGIN
+			SELECT CURRENT_TIMESTAMP() as ts;
+			SELECT val * 2 as f2;
+		END`,
+		routine.FullyQualifiedName())
+
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	// Invoke the stored procedure.
+	sql = fmt.Sprintf(`
+	CALL `+"`%s`"+`(5)`,
+		routine.FullyQualifiedName())
+
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("query.Read: %v", err)
+	}
+
+	checkReadAndTotalRows(t,
+		"expect result set from procedure",
+		it, [][]Value{{int64(10)}})
 }
 
 func TestIntegration_InsertAndRead(t *testing.T) {
