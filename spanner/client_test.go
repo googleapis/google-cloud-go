@@ -1480,6 +1480,116 @@ func TestClient_WriteStructWithPointers(t *testing.T) {
 	}
 }
 
+func TestClient_WriteStructWithCustomTypes(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	type CustomString string
+	type CustomBool bool
+	type CustomInt64 int64
+	type CustomFloat64 float64
+	type CustomTime time.Time
+	type CustomDate civil.Date
+	type T struct {
+		ID    int64
+		Col1  CustomString
+		Col2  []CustomString
+		Col3  CustomBool
+		Col4  []CustomBool
+		Col5  CustomInt64
+		Col6  []CustomInt64
+		Col7  CustomFloat64
+		Col8  []CustomFloat64
+		Col9  CustomTime
+		Col10 []CustomTime
+		Col11 CustomDate
+		Col12 []CustomDate
+	}
+	t1 := T{
+		ID:    1,
+		Col2:  []CustomString{},
+		Col4:  []CustomBool{},
+		Col6:  []CustomInt64{},
+		Col8:  []CustomFloat64{},
+		Col10: []CustomTime{},
+		Col12: []CustomDate{},
+	}
+	t2 := T{
+		ID:    2,
+		Col1:  "foo",
+		Col2:  []CustomString{"foo"},
+		Col3:  true,
+		Col4:  []CustomBool{true},
+		Col5:  100,
+		Col6:  []CustomInt64{100},
+		Col7:  3.14,
+		Col8:  []CustomFloat64{3.14},
+		Col9:  CustomTime(time.Now()),
+		Col10: []CustomTime{CustomTime(time.Now())},
+		Col11: CustomDate(civil.DateOf(time.Now())),
+		Col12: []CustomDate{CustomDate(civil.DateOf(time.Now()))},
+	}
+	m1, err := InsertStruct("Tab", &t1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m2, err := InsertStruct("Tab", &t2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Apply(context.Background(), []*Mutation{m1, m2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if commit, ok := req.(*sppb.CommitRequest); ok {
+			if g, w := len(commit.Mutations), 2; w != g {
+				t.Fatalf("mutation count mismatch\nGot: %v\nWant: %v", g, w)
+			}
+			insert1 := commit.Mutations[0].GetInsert()
+			row1 := insert1.Values[0]
+			// The first insert should contain empty values and empty arrays
+			for i := 1; i < len(row1.Values); i += 2 {
+				// The non-array columns should contain empty values.
+				g := row1.Values[i].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+				// The array columns should not be NULL.
+				g, wList := row1.Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				if _, ok := g.(*structpb.Value_ListValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
+				}
+			}
+
+			// The second insert should contain all non-NULL values.
+			insert2 := commit.Mutations[1].GetInsert()
+			row2 := insert2.Values[0]
+			for i := 1; i < len(row2.Values); i += 2 {
+				// The non-array columns should contain non-NULL values.
+				g := row2.Values[i].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+				// The array columns should also be non-NULL.
+				g, wList := row2.Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				if _, ok := g.(*structpb.Value_ListValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
+				}
+				// The array should contain exactly 1 non-NULL value.
+				if gLength, wLength := len(row2.Values[i+1].GetListValue().Values), 1; gLength != wLength {
+					t.Fatalf("list value length mismatch\nGot: %v\nWant: %v", gLength, wLength)
+				}
+				g = row2.Values[i+1].GetListValue().Values[0].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+			}
+		}
+	}
+}
+
 func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
