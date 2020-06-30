@@ -55,8 +55,6 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
-	"go.opencensus.io/plugin/ocgrpc"
-	"go.opencensus.io/trace"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
@@ -153,9 +151,9 @@ type Config struct {
 	// When true, collecting the goroutine profiles is disabled.
 	NoGoroutineProfiling bool
 
-	// OpenCensusTraceFromProfiler is the option to send traces from profiler to Cloud Trace.
-	// When true, Profiler agent send data to Cloud Trace. Default is false.
-	OpenCensusTraceFromProfiler bool
+	// When true, the agent sends all telemetries via OpenCensus exporter.
+	// Default is false.
+	EnableTelemetry bool
 
 	// ProjectID is the Cloud Console project ID to use instead of the one set by
 	// GOOGLE_CLOUD_PROJECT environment variable or read from the VM metadata
@@ -242,17 +240,10 @@ func start(cfg Config, options ...option.ClientOption) error {
 		option.WithScopes(scope),
 		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
 	}
-	opts = append(opts, options...)
-
-	if !cfg.OpenCensusTraceFromProfiler {
-		opts = append(opts, option.WithGRPCDialOption(
-			grpc.WithStatsHandler(&ocgrpc.ClientHandler{
-				StartOptions: trace.StartOptions{
-					Sampler: trace.NeverSample(),
-				},
-			}),
-		))
+	if !config.EnableTelemetry {
+		opts = append(opts, option.WithTelemetryDisabled())
 	}
+	opts = append(opts, options...)
 
 	connPool, err := dialGRPC(ctx, opts...)
 	if err != nil {
