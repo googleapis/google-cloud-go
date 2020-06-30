@@ -1382,15 +1382,15 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1", "acl2"}
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
 	err = retry(ctx, func() error {
+		for _, obj := range aclObjects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+		}
 		acl, err = o.ACL().List(ctx)
 		if err != nil {
 			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
@@ -3391,20 +3391,16 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	// TODO: remove retry once retry logic in the client has been improved.
-	// https://github.com/googleapis/google-cloud-go/issues/2395
-	return retry(ctx, func() error {
-		w := obj.NewWriter(ctx)
-		w.ContentType = contentType
-		w.CacheControl = "public, max-age=60"
-		if contents != nil {
-			if _, err := w.Write(contents); err != nil {
-				_ = w.Close()
-				return err
-			}
+	w := obj.NewWriter(ctx)
+	w.ContentType = contentType
+	w.CacheControl = "public, max-age=60"
+	if contents != nil {
+		if _, err := w.Write(contents); err != nil {
+			_ = w.Close()
+			return err
 		}
-		return w.Close()
-	}, nil)
+	}
+	return w.Close()
 }
 
 // loc returns a string describing the file and line of its caller's call site. In

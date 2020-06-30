@@ -419,7 +419,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 					return nil, fmt.Errorf("UNNEST argument evaluated as %T, want array", rhs)
 				}
 				for _, rhs := range arr {
-					if lhs == rhs {
+					// == isn't okay here.
+					if compareVals(lhs, rhs) == 0 {
 						b = true
 					}
 				}

@@ -1828,7 +1828,6 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
 func TestIntegration_BatchQuery(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -1915,7 +1914,6 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -2183,7 +2181,7 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
 		})
 		if err != nil {
-			t.Fatal(err)
+			return err
 		}
 		if count != 1 {
 			t.Errorf("row count: got %d, want 1", count)
@@ -2445,7 +2443,6 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2691,13 +2688,11 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/2393")
-
 	skipEmulatorTest(t)
 	t.Parallel()
 
-	// Backups can be slow, so use a 15 minute timeout.
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	// Backups can be slow, so use a 30 minute timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, backuDBStatements)
 	defer cleanup()
@@ -2711,7 +2706,7 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = respLRO.Wait(context.Background())
+	_, err = respLRO.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
