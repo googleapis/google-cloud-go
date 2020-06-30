@@ -614,7 +614,7 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
-	return newRowIterator(ctx, t, pf)
+	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
