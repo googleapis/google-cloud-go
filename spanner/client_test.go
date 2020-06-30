@@ -1625,12 +1625,12 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	// Deliberately misconfigure NumChannels and ConnPool.
 	configuredNumChannels := 8
 	configuredConnPool := 16
-	_, err := NewClientWithConfig(
-		context.Background(),
-		"projects/p/instances/i/databases/d",
-		ClientConfig{NumChannels: configuredNumChannels},
-		option.WithGRPCConnectionPool(configuredConnPool),
-	)
+
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+	opts = append(opts, option.WithGRPCConnectionPool(configuredConnPool))
+
+	_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{NumChannels: configuredNumChannels}, opts...)
 	msg := "Connection pool mismatch:"
 	if err == nil {
 		t.Fatalf("Error mismatch\nGot: nil\nWant: %s", msg)
