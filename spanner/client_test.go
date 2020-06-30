@@ -1547,39 +1547,41 @@ func TestClient_WriteStructWithCustomTypes(t *testing.T) {
 			if g, w := len(commit.Mutations), 2; w != g {
 				t.Fatalf("mutation count mismatch\nGot: %v\nWant: %v", g, w)
 			}
-			insert := commit.Mutations[0].GetInsert()
+			insert1 := commit.Mutations[0].GetInsert()
+			row1 := insert1.Values[0]
 			// The first insert should contain empty values and empty arrays
-			for i := 1; i < len(insert.Values[0].Values); i += 2 {
+			for i := 1; i < len(row1.Values); i += 2 {
 				// The non-array columns should contain empty values.
-				g := insert.Values[0].Values[i].GetKind()
+				g := row1.Values[i].GetKind()
 				if _, ok := g.(*structpb.Value_NullValue); ok {
 					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
 				}
 				// The array columns should not be NULL.
-				g, wList := insert.Values[0].Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				g, wList := row1.Values[i+1].GetKind(), &structpb.Value_ListValue{}
 				if _, ok := g.(*structpb.Value_ListValue); !ok {
 					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
 				}
 			}
 
 			// The second insert should contain all non-NULL values.
-			insert = commit.Mutations[1].GetInsert()
-			for i := 1; i < len(insert.Values[0].Values); i += 2 {
+			insert2 := commit.Mutations[1].GetInsert()
+			row2 := insert2.Values[0]
+			for i := 1; i < len(row2.Values); i += 2 {
 				// The non-array columns should contain non-NULL values.
-				g := insert.Values[0].Values[i].GetKind()
+				g := row2.Values[i].GetKind()
 				if _, ok := g.(*structpb.Value_NullValue); ok {
 					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
 				}
 				// The array columns should also be non-NULL.
-				g, wList := insert.Values[0].Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				g, wList := row2.Values[i+1].GetKind(), &structpb.Value_ListValue{}
 				if _, ok := g.(*structpb.Value_ListValue); !ok {
 					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
 				}
 				// The array should contain exactly 1 non-NULL value.
-				if gLength, wLength := len(insert.Values[0].Values[i+1].GetListValue().Values), 1; gLength != wLength {
+				if gLength, wLength := len(row2.Values[i+1].GetListValue().Values), 1; gLength != wLength {
 					t.Fatalf("list value length mismatch\nGot: %v\nWant: %v", gLength, wLength)
 				}
-				g = insert.Values[0].Values[i+1].GetListValue().Values[0].GetKind()
+				g = row2.Values[i+1].GetListValue().Values[0].GetKind()
 				if _, ok := g.(*structpb.Value_NullValue); ok {
 					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
 				}
