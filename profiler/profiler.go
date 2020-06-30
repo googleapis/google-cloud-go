@@ -153,7 +153,7 @@ type Config struct {
 
 	// When true, the agent sends all telemetries via OpenCensus exporter.
 	// Default is false.
-	EnableTelemetry bool
+	EnableOCTelemetry bool
 
 	// ProjectID is the Cloud Console project ID to use instead of the one set by
 	// GOOGLE_CLOUD_PROJECT environment variable or read from the VM metadata
@@ -240,7 +240,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 		option.WithScopes(scope),
 		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
 	}
-	if !config.EnableTelemetry {
+	if !config.EnableOCTelemetry {
 		opts = append(opts, option.WithTelemetryDisabled())
 	}
 	opts = append(opts, options...)
