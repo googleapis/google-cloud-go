@@ -33,6 +33,7 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
+	octrace "go.opencensus.io/trace"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -227,6 +228,11 @@ func (s *session) String() string {
 func (s *session) ping() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
+	// Start parent span that doesn't record.
+	_, span := octrace.StartSpan(ctx, "cloud.google.com/go/spanner.ping", octrace.WithSampler(octrace.NeverSample()))
+	defer span.End()
+
 	// s.getID is safe even when s is invalid.
 	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md), &sppb.ExecuteSqlRequest{
 		Session: s.getID(),
