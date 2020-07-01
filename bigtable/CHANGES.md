@@ -1,5 +1,10 @@
 # Changes
 
+## v1.4.0
+- Add support for instance state and labels to the admin API.
+- Add metadata header to all data requests.
+- Fix bug in timestamp to time conversion.
+
 ## v1.3.0
 
 - Clients now use transport/grpc.DialPool rather than Dial.
