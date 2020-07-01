@@ -143,12 +143,10 @@ func ExampleGameServerClustersClient_DeleteGameServerCluster() {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleGameServerClustersClient_PreviewDeleteGameServerCluster() {
