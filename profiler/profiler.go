@@ -151,7 +151,8 @@ type Config struct {
 	// When true, collecting the goroutine profiles is disabled.
 	NoGoroutineProfiling bool
 
-	// When true, the agent sends all telemetries via OpenCensus exporter.
+	// When true, the agent sends all telemetries via OpenCensus exporter
+	// via OpenCensus exporter, which can be viewed in Cloud Trace and Cloud Monitoring.
 	// Default is false.
 	EnableOCTelemetry bool
 
