@@ -152,7 +152,8 @@ type Config struct {
 	NoGoroutineProfiling bool
 
 	// When true, the agent sends all telemetries via OpenCensus exporter, which
-	// can be viewed in Cloud Trace and Cloud Monitoring. Default is false.
+	// can be viewed in Cloud Trace and Cloud Monitoring.
+	// Default is false.
 	EnableOCTelemetry bool
 
 	// ProjectID is the Cloud Console project ID to use instead of the one set by
