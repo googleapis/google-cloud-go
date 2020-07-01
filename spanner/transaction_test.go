@@ -32,6 +32,7 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -322,6 +323,104 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 		_, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}})
 		return err
 	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.CommitRequest{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+}
+
+// When an error happens during a commit, it kicks off a rollback.
+func TestReadWriteTransaction_StatementBased_CommitErrorReturned(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
+		})
+
+	txn, err := client.BeginReadWriteTransaction(ctx)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.RollbackRequest{}}, requests); err != nil {
+		// TODO: remove this once the session pool maintainer has been changed
+		// so that is doesn't delete sessions already during the first
+		// maintenance window.
+		// If we failed to get 4, it might have because - due to timing - we got
+		// a fourth request. If this request is DeleteSession, that's OK and
+		// expected.
+		if err := compareRequests([]interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.RollbackRequest{},
+			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	tx, err := client.BeginReadWriteTransaction(ctx)
+	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}, {SQL: UpdateBarSetFoo}}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	_, err = tx.Commit(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}

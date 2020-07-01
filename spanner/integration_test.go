@@ -964,6 +964,164 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	}
 }
 
+func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	txn, err := client.BeginReadWriteTransaction(ctx)
+	if err != nil {
+		t.Fatalf("failed to begin a read-write transaction: %v", err)
+	}
+
+	outBalance, err := getBalance(txn, Key{1})
+	if err != nil {
+		txn.Rollback(ctx)
+		t.Fatalf("failed to get Foo's balance: %v", err)
+	}
+	const transferAmt = 20
+	if outBalance >= transferAmt {
+		inBalance, err := getBalance(txn, Key{2})
+		if err != nil {
+			txn.Rollback(ctx)
+			t.Fatalf("failed to get Bar's balance: %v", err)
+		}
+		inBalance += transferAmt
+		outBalance -= transferAmt
+		cols := []string{"AccountId", "Balance"}
+		txn.BufferWrite([]*Mutation{
+			Update("Accounts", cols, []interface{}{1, outBalance}),
+			Update("Accounts", cols, []interface{}{2, inBalance}),
+		})
+	}
+	_, err = txn.Commit(ctx)
+	if err != nil {
+		t.Fatalf("failed to commit a read-write transaction: %v", err)
+	}
+
+	// Query the updated values.
+	txn, err = client.BeginReadWriteTransaction(ctx)
+	if err != nil {
+		t.Fatalf("failed to begin a read-write transaction: %v", err)
+	}
+	fooBalance, err := getBalance(txn, Key{1})
+	if err != nil {
+		txn.Rollback(ctx)
+		t.Fatalf("failed to get Foo's balance: %v", err)
+	}
+	if got, want := fooBalance, int64(30); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	barBalance, err := getBalance(txn, Key{2})
+	if err != nil {
+		txn.Rollback(ctx)
+		t.Fatalf("failed to get Bar's balance: %v", err)
+	}
+	if got, want := barBalance, int64(21); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	_, err = txn.Commit(ctx)
+	if err != nil {
+		t.Fatalf("failed to commit a read-write transaction: %v", err)
+	}
+}
+
+func TestIntegration_ReadWriteTransaction_StatementBased_Rollback(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	txn, err := client.BeginReadWriteTransaction(ctx)
+	if err != nil {
+		t.Fatalf("failed to begin a read-write transaction: %v", err)
+	}
+
+	cols := []string{"AccountId", "Balance"}
+	txn.BufferWrite([]*Mutation{
+		Update("Accounts", cols, []interface{}{1, 2}),
+		Update("Accounts", cols, []interface{}{2, 3}),
+	})
+	txn.Rollback(ctx)
+
+	getBalance := func(txn *ReadWriteTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	// Query the values.
+	txn, err = client.BeginReadWriteTransaction(ctx)
+	if err != nil {
+		t.Fatalf("failed to begin a read-write transaction: %v", err)
+	}
+	fooBalance, err := getBalance(txn, Key{1})
+	if err != nil {
+		txn.Rollback(ctx)
+		t.Fatalf("failed to get Foo's balance: %v", err)
+	}
+	if got, want := fooBalance, int64(50); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	barBalance, err := getBalance(txn, Key{2})
+	if err != nil {
+		txn.Rollback(ctx)
+		t.Fatalf("failed to get Bar's balance: %v", err)
+	}
+	if got, want := barBalance, int64(1); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+
+	_, err = txn.Commit(ctx)
+	if err != nil {
+		t.Fatalf("failed to commit a read-write transaction: %v", err)
+	}
+}
+
 func TestIntegration_Reads(t *testing.T) {
 	t.Parallel()
 

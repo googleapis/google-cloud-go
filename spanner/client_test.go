@@ -591,6 +591,62 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 	return executeSingerQuery(ctx, tx)
 }
 
+func TestClient_ReadWriteTransaction_StatementBased(t *testing.T) {
+	t.Parallel()
+
+	rowCount, err := testReadWriteTransactionStatementBased(t, make(map[string]SimulatedExecutionTime))
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_ReadWriteTransaction_StatementBased_CommitAborted(t *testing.T) {
+	t.Parallel()
+	_, err := testReadWriteTransactionStatementBased(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	})
+	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatalf("got an unexpected error: %v", err)
+	}
+}
+
+func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (int64, error) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for method, exec := range executionTimes {
+		server.TestSpanner.PutExecutionTime(method, exec)
+	}
+	ctx := context.Background()
+
+	tx, err := client.BeginReadWriteTransaction(ctx)
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			tx.Rollback(ctx)
+			return 0, fmt.Errorf("failed to iterate: %v", err)
+		}
+		var singerID, albumID int64
+		var albumTitle string
+		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+			tx.Rollback(ctx)
+			return 0, fmt.Errorf("failed to parse columns: %v", err)
+		}
+		rowCount++
+	}
+	_, err = tx.Commit(ctx)
+	return rowCount, err
+}
+
 func TestClient_ReadWriteTransaction(t *testing.T) {
 	t.Parallel()
 	if err := testReadWriteTransaction(t, make(map[string]SimulatedExecutionTime), 1); err != nil {

@@ -456,6 +456,38 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 	return ts, err
 }
 
+// BeginReadWriteTransaction starts a read-write transaction. Commit() or
+// Rollback() should be called when ending a transaction. If Commit() or
+// Rollback() is not called properly, then it can cause an leaked session that
+// is borrowed from the pool but is not returned.
+//
+// This method should only be used if a custom error handling is needed. For
+// normal use cases, client.ReadWriteTransaction should be used because it has
+// robust error handlings and retries.
+func (c *Client) BeginReadWriteTransaction(ctx context.Context) (*ReadWriteTransaction, error) {
+	var (
+		sh  *sessionHandle
+		err error
+		t   *ReadWriteTransaction
+	)
+	sh, err = c.idleSessions.takeWriteSession(ctx)
+	if err != nil {
+		// If session retrieval fails, just fail the transaction.
+		return nil, err
+	}
+	t = &ReadWriteTransaction{
+		tx: sh.getTransactionID(),
+	}
+	t.txReadOnly.sh = sh
+	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
+
+	if err = t.begin(ctx); err != nil {
+		return nil, err
+	}
+	return t, err
+}
+
 // applyOption controls the behavior of Client.Apply.
 type applyOption struct {
 	// If atLeastOnce == true, Client.Apply will execute the mutations on Cloud
