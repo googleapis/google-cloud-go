@@ -28,6 +28,7 @@ import (
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // transactionID stores a transaction ID which uniquely identifies a transaction
@@ -1072,7 +1073,8 @@ func (t *ReadWriteTransactionStmtBased) Commit(ctx context.Context) (time.Time, 
 		err error
 	)
 	ts, err = t.commit(ctx)
-	if err != nil {
+	// Rolling back an aborted transaction is not necessary.
+	if err != nil && status.Code(err) != codes.Aborted {
 		t.rollback(ctx)
 	}
 	if t.sh != nil {

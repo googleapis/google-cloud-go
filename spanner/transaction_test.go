@@ -354,8 +354,9 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 	}
 }
 
-// When an error happens during a commit, it kicks off a rollback.
-func TestReadWriteTransaction_StatementBased_CommitErrorReturned(t *testing.T) {
+// When an Aborted error happens during a commit, it does not kick off a
+// rollback.
+func TestReadWriteTransaction_StatementBased_CommitAbortedErrorReturned(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
@@ -371,6 +372,47 @@ func TestReadWriteTransaction_StatementBased_CommitErrorReturned(t *testing.T) {
 	}
 	_, err = txn.Commit(ctx)
 	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		// TODO: remove this once the session pool maintainer has been changed
+		// so that is doesn't delete sessions already during the first
+		// maintenance window.
+		// If we failed to get 4, it might have because - due to timing - we got
+		// a fourth request. If this request is DeleteSession, that's OK and
+		// expected.
+		if err := compareRequests([]interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// When a non-aborted error happens during a commit, it kicks off a rollback.
+func TestReadWriteTransaction_StatementBased_CommitNonAbortedErrorReturned(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
+		})
+
+	txn, err := client.BeginReadWriteTransaction(ctx)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.NotFound || !strings.Contains(err.Error(), "Session not found") {
 		t.Fatalf("got an incorrect error: %v", err)
 	}
 
