@@ -649,8 +649,7 @@ func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[str
 			}
 			rowCount++
 		}
-		_, err := tx.Commit(ctx)
-		return rowCount, err
+		return rowCount, nil
 	}
 
 	var (
@@ -666,11 +665,16 @@ func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[str
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
 		rowCount, err = f(tx)
-		if err == nil {
-			break
-		}
-		if status.Code(err) != codes.Aborted {
+		if err != nil && status.Code(err) != codes.Aborted {
 			tx.Rollback(ctx)
+			return 0, attempts, err
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				return 0, attempts, err
+			}
 		}
 		time.Sleep(10 * time.Millisecond)
 	}
