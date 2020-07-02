@@ -457,13 +457,17 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 }
 
 // BeginReadWriteTransaction starts a read-write transaction. Commit() or
-// Rollback() should be called when ending a transaction. If Commit() or
-// Rollback() is not called properly, then it can cause an leaked session that
-// is borrowed from the pool but is not returned.
+// Rollback() must be called to end a transaction. If Commit() or Rollback() is
+// not called, the session that is used by the transaction will not be returned
+// to the pool and cause a session leak.
 //
-// This method should only be used if a custom error handling is needed. For
-// normal use cases, client.ReadWriteTransaction should be used because it has
-// robust error handlings and retries.
+// This method should only be used when manual error handling and retry
+// management is needed. Cloud Spanner may abort a read/write transaction at any
+// moment, and each statement that is executed on the transaction should be
+// checked for an Aborted error, including queries and read operations.
+//
+// For most use cases, client.ReadWriteTransaction should be used, as it will
+// handle all Aborted and 'Session not found' errors automatically.
 func (c *Client) BeginReadWriteTransaction(ctx context.Context) (*ReadWriteTransaction, error) {
 	var (
 		sh  *sessionHandle
@@ -483,6 +487,9 @@ func (c *Client) BeginReadWriteTransaction(ctx context.Context) (*ReadWriteTrans
 	t.txReadOnly.qo = c.qo
 
 	if err = t.begin(ctx); err != nil {
+		if sh != nil {
+			sh.recycle()
+		}
 		return nil, err
 	}
 	return t, err
