@@ -594,26 +594,35 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 func TestClient_ReadWriteTransaction_StatementBased(t *testing.T) {
 	t.Parallel()
 
-	rowCount, err := testReadWriteTransactionStatementBased(t, make(map[string]SimulatedExecutionTime))
+	rowCount, attempts, err := testReadWriteTransactionStatementBased(t, make(map[string]SimulatedExecutionTime))
 	if err != nil {
 		t.Fatalf("transaction failed to commit: %v", err)
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
 		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
 }
 
 func TestClient_ReadWriteTransaction_StatementBased_CommitAborted(t *testing.T) {
 	t.Parallel()
-	_, err := testReadWriteTransactionStatementBased(t, map[string]SimulatedExecutionTime{
+	rowCount, attempts, err := testReadWriteTransactionStatementBased(t, map[string]SimulatedExecutionTime{
 		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
 	})
-	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
-		t.Fatalf("got an unexpected error: %v", err)
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
 	}
 }
 
-func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (int64, error) {
+func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (int64, int, error) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	for method, exec := range executionTimes {
@@ -621,30 +630,52 @@ func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[str
 	}
 	ctx := context.Background()
 
-	tx, err := client.BeginReadWriteTransaction(ctx)
+	f := func(tx *ReadWriteTransactionStmtBased) (int64, error) {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return 0, err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return 0, err
+			}
+			rowCount++
+		}
+		_, err := tx.Commit(ctx)
+		return rowCount, err
+	}
 
-	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
-	defer iter.Stop()
-	rowCount := int64(0)
-	for {
-		row, err := iter.Next()
-		if err == iterator.Done {
+	var (
+		rowCount int64
+		err      error
+		attempts int
+	)
+	// Retry with fixed time intervals.
+	for i, max := 0, 3; i < max; i++ {
+		attempts = i + 1
+		tx, err := client.BeginReadWriteTransaction(ctx)
+		if err != nil {
+			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
+		}
+		rowCount, err = f(tx)
+		if err == nil {
 			break
 		}
-		if err != nil {
+		if status.Code(err) != codes.Aborted {
 			tx.Rollback(ctx)
-			return 0, fmt.Errorf("failed to iterate: %v", err)
 		}
-		var singerID, albumID int64
-		var albumTitle string
-		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
-			tx.Rollback(ctx)
-			return 0, fmt.Errorf("failed to parse columns: %v", err)
-		}
-		rowCount++
+		time.Sleep(10 * time.Millisecond)
 	}
-	_, err = tx.Commit(ctx)
-	return rowCount, err
+
+	return rowCount, attempts, err
 }
 
 func TestClient_ReadWriteTransaction(t *testing.T) {
