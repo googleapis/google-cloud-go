@@ -981,7 +981,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	getBalance := func(txn *ReadWriteTransaction, key Key) (int64, error) {
+	getBalance := func(txn *ReadWriteTransactionStmtBased, key Key) (int64, error) {
 		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
 		if err != nil {
 			return 0, err
@@ -1081,7 +1081,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased_Rollback(t *testing.T) 
 	})
 	txn.Rollback(ctx)
 
-	getBalance := func(txn *ReadWriteTransaction, key Key) (int64, error) {
+	getBalance := func(txn *ReadWriteTransactionStmtBased, key Key) (int64, error) {
 		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
 		if err != nil {
 			return 0, err

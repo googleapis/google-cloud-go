@@ -468,19 +468,21 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 //
 // For most use cases, client.ReadWriteTransaction should be used, as it will
 // handle all Aborted and 'Session not found' errors automatically.
-func (c *Client) BeginReadWriteTransaction(ctx context.Context) (*ReadWriteTransaction, error) {
+func (c *Client) BeginReadWriteTransaction(ctx context.Context) (*ReadWriteTransactionStmtBased, error) {
 	var (
 		sh  *sessionHandle
 		err error
-		t   *ReadWriteTransaction
+		t   *ReadWriteTransactionStmtBased
 	)
 	sh, err = c.idleSessions.takeWriteSession(ctx)
 	if err != nil {
 		// If session retrieval fails, just fail the transaction.
 		return nil, err
 	}
-	t = &ReadWriteTransaction{
-		tx: sh.getTransactionID(),
+	t = &ReadWriteTransactionStmtBased{
+		ReadWriteTransaction: ReadWriteTransaction{
+			tx: sh.getTransactionID(),
+		},
 	}
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
