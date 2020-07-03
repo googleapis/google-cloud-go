@@ -456,47 +456,6 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 	return ts, err
 }
 
-// BeginReadWriteTransaction starts a read-write transaction. Commit() or
-// Rollback() must be called to end a transaction. If Commit() or Rollback() is
-// not called, the session that is used by the transaction will not be returned
-// to the pool and cause a session leak.
-//
-// This method should only be used when manual error handling and retry
-// management is needed. Cloud Spanner may abort a read/write transaction at any
-// moment, and each statement that is executed on the transaction should be
-// checked for an Aborted error, including queries and read operations.
-//
-// For most use cases, client.ReadWriteTransaction should be used, as it will
-// handle all Aborted and 'Session not found' errors automatically.
-func (c *Client) BeginReadWriteTransaction(ctx context.Context) (*ReadWriteTransactionStmtBased, error) {
-	var (
-		sh  *sessionHandle
-		err error
-		t   *ReadWriteTransactionStmtBased
-	)
-	sh, err = c.idleSessions.takeWriteSession(ctx)
-	if err != nil {
-		// If session retrieval fails, just fail the transaction.
-		return nil, err
-	}
-	t = &ReadWriteTransactionStmtBased{
-		ReadWriteTransaction: ReadWriteTransaction{
-			tx: sh.getTransactionID(),
-		},
-	}
-	t.txReadOnly.sh = sh
-	t.txReadOnly.txReadEnv = t
-	t.txReadOnly.qo = c.qo
-
-	if err = t.begin(ctx); err != nil {
-		if sh != nil {
-			sh.recycle()
-		}
-		return nil, err
-	}
-	return t, err
-}
-
 // applyOption controls the behavior of Client.Apply.
 type applyOption struct {
 	// If atLeastOnce == true, Client.Apply will execute the mutations on Cloud

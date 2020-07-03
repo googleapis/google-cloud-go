@@ -1050,14 +1050,55 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 	return ts, nil
 }
 
-// ReadWriteTransactionStmtBased provides a wrapper of ReadWriteTransaction in
+// ReadWriteStmtBasedTransaction provides a wrapper of ReadWriteTransaction in
 // order to run a read-write transaction in a statement-based way.
 //
 // This struct is returned by client.BeginReadWriteTransaction and contains
 // Commit() and Rollback() methods to end a transaction.
-type ReadWriteTransactionStmtBased struct {
+type ReadWriteStmtBasedTransaction struct {
 	// ReadWriteTransaction contains methods for performing transactional reads.
 	ReadWriteTransaction
+}
+
+// NewReadWriteStmtBasedTransaction starts a read-write transaction. Commit() or
+// Rollback() must be called to end a transaction. If Commit() or Rollback() is
+// not called, the session that is used by the transaction will not be returned
+// to the pool and cause a session leak.
+//
+// This method should only be used when manual error handling and retry
+// management is needed. Cloud Spanner may abort a read/write transaction at any
+// moment, and each statement that is executed on the transaction should be
+// checked for an Aborted error, including queries and read operations.
+//
+// For most use cases, client.ReadWriteTransaction should be used, as it will
+// handle all Aborted and 'Session not found' errors automatically.
+func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWriteStmtBasedTransaction, error) {
+	var (
+		sh  *sessionHandle
+		err error
+		t   *ReadWriteStmtBasedTransaction
+	)
+	sh, err = c.idleSessions.takeWriteSession(ctx)
+	if err != nil {
+		// If session retrieval fails, just fail the transaction.
+		return nil, err
+	}
+	t = &ReadWriteStmtBasedTransaction{
+		ReadWriteTransaction: ReadWriteTransaction{
+			tx: sh.getTransactionID(),
+		},
+	}
+	t.txReadOnly.sh = sh
+	t.txReadOnly.txReadEnv = t
+	t.txReadOnly.qo = c.qo
+
+	if err = t.begin(ctx); err != nil {
+		if sh != nil {
+			sh.recycle()
+		}
+		return nil, err
+	}
+	return t, err
 }
 
 // Commit tries to commit a readwrite transaction to Cloud Spanner. It also
@@ -1067,7 +1108,7 @@ type ReadWriteTransactionStmtBased struct {
 // used if a custom error handling is needed. For normal use cases,
 // client.ReadWriteTransaction should be used because it has robust error
 // handlings and retries.
-func (t *ReadWriteTransactionStmtBased) Commit(ctx context.Context) (time.Time, error) {
+func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, error) {
 	var (
 		ts  time.Time
 		err error
@@ -1090,7 +1131,7 @@ func (t *ReadWriteTransactionStmtBased) Commit(ctx context.Context) (time.Time, 
 // used if a custom error handling is needed. For normal use cases,
 // client.ReadWriteTransaction should be used because it has robust error
 // handlings and retries.
-func (t *ReadWriteTransactionStmtBased) Rollback(ctx context.Context) {
+func (t *ReadWriteStmtBasedTransaction) Rollback(ctx context.Context) {
 	t.rollback(ctx)
 	if t.sh != nil {
 		t.sh.recycle()

@@ -981,7 +981,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	getBalance := func(txn *ReadWriteTransactionStmtBased, key Key) (int64, error) {
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
 		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
 		if err != nil {
 			return 0, err
@@ -993,7 +993,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		return balance, nil
 	}
 
-	statements := func(txn *ReadWriteTransactionStmtBased) error {
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
 		outBalance, err := getBalance(txn, Key{1})
 		if err != nil {
 			return err
@@ -1015,9 +1015,8 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		return nil
 	}
 
-	// Retry with fixed time intervals.
-	for i, max := 0, 3; i < max; i++ {
-		tx, err := client.BeginReadWriteTransaction(ctx)
+	for {
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
 		if err != nil {
 			t.Fatalf("failed to begin a transaction: %v", err)
 		}
@@ -1033,7 +1032,12 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 				t.Fatalf("failed to commit a transaction: %v", err)
 			}
 		}
-		time.Sleep(10 * time.Millisecond)
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := extractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
 	}
 
 	// Query the updated values.

@@ -366,7 +366,7 @@ func TestReadWriteTransaction_StatementBased_CommitAbortedErrorReturned(t *testi
 			Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
 		})
 
-	txn, err := client.BeginReadWriteTransaction(ctx)
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
 	if err != nil {
 		t.Fatalf("got an error: %v", err)
 	}
@@ -407,7 +407,7 @@ func TestReadWriteTransaction_StatementBased_CommitNonAbortedErrorReturned(t *te
 			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
 		})
 
-	txn, err := client.BeginReadWriteTransaction(ctx)
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
 	if err != nil {
 		t.Fatalf("got an error: %v", err)
 	}
@@ -445,7 +445,7 @@ func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 
-	tx, err := client.BeginReadWriteTransaction(ctx)
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
 	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
 		tx.Rollback(ctx)
 		t.Fatal(err)

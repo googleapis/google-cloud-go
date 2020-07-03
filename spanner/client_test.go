@@ -594,7 +594,7 @@ func testReadOnlyTransaction(t *testing.T, executionTimes map[string]SimulatedEx
 func TestClient_ReadWriteTransaction_StatementBased(t *testing.T) {
 	t.Parallel()
 
-	rowCount, attempts, err := testReadWriteTransactionStatementBased(t, make(map[string]SimulatedExecutionTime))
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, make(map[string]SimulatedExecutionTime))
 	if err != nil {
 		t.Fatalf("transaction failed to commit: %v", err)
 	}
@@ -608,7 +608,7 @@ func TestClient_ReadWriteTransaction_StatementBased(t *testing.T) {
 
 func TestClient_ReadWriteTransaction_StatementBased_CommitAborted(t *testing.T) {
 	t.Parallel()
-	rowCount, attempts, err := testReadWriteTransactionStatementBased(t, map[string]SimulatedExecutionTime{
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
 		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
 	})
 	if err != nil {
@@ -622,7 +622,7 @@ func TestClient_ReadWriteTransaction_StatementBased_CommitAborted(t *testing.T) 
 	}
 }
 
-func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (int64, int, error) {
+func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	for method, exec := range executionTimes {
@@ -630,7 +630,7 @@ func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[str
 	}
 	ctx := context.Background()
 
-	f := func(tx *ReadWriteTransactionStmtBased) (int64, error) {
+	f := func(tx *ReadWriteStmtBasedTransaction) (int64, error) {
 		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 		defer iter.Stop()
 		rowCount := int64(0)
@@ -652,15 +652,9 @@ func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[str
 		return rowCount, nil
 	}
 
-	var (
-		rowCount int64
-		err      error
-		attempts int
-	)
-	// Retry with fixed time intervals.
-	for i, max := 0, 3; i < max; i++ {
-		attempts = i + 1
-		tx, err := client.BeginReadWriteTransaction(ctx)
+	for {
+		attempts++
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
 		if err != nil {
 			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
 		}
@@ -676,7 +670,12 @@ func testReadWriteTransactionStatementBased(t *testing.T, executionTimes map[str
 				return 0, attempts, err
 			}
 		}
-		time.Sleep(10 * time.Millisecond)
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := extractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
 	}
 
 	return rowCount, attempts, err
