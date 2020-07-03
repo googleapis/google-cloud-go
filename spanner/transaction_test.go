@@ -29,6 +29,7 @@ import (
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
@@ -356,7 +357,7 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 
 // When an Aborted error happens during a commit, it does not kick off a
 // rollback.
-func TestReadWriteTransaction_StatementBased_CommitAbortedErrorReturned(t *testing.T) {
+func TestReadWriteStmtBasedTransaction_CommitAbortedErrorReturned(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
@@ -397,7 +398,7 @@ func TestReadWriteTransaction_StatementBased_CommitAbortedErrorReturned(t *testi
 }
 
 // When a non-aborted error happens during a commit, it kicks off a rollback.
-func TestReadWriteTransaction_StatementBased_CommitNonAbortedErrorReturned(t *testing.T) {
+func TestReadWriteStmtBasedTransaction_CommitNonAbortedErrorReturned(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
@@ -437,6 +438,96 @@ func TestReadWriteTransaction_StatementBased_CommitNonAbortedErrorReturned(t *te
 			t.Fatal(err)
 		}
 	}
+}
+
+func TestReadWriteStmtBasedTransaction(t *testing.T) {
+	t.Parallel()
+
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, make(map[string]SimulatedExecutionTime))
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestReadWriteStmtBasedTransaction_CommitAborted(t *testing.T) {
+	t.Parallel()
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	})
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for method, exec := range executionTimes {
+		server.TestSpanner.PutExecutionTime(method, exec)
+	}
+	ctx := context.Background()
+
+	f := func(tx *ReadWriteStmtBasedTransaction) (int64, error) {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return 0, err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return 0, err
+			}
+			rowCount++
+		}
+		return rowCount, nil
+	}
+
+	for {
+		attempts++
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
+		}
+		rowCount, err = f(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			return 0, attempts, err
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				return 0, attempts, err
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+
+	return rowCount, attempts, err
 }
 
 func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {

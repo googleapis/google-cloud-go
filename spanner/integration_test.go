@@ -1034,7 +1034,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 		}
 		// Set a default sleep time if the server delay is absent.
 		delay := 10 * time.Millisecond
-		if serverDelay, hasServerDelay := extractRetryDelay(err); hasServerDelay {
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
 			delay = serverDelay
 		}
 		time.Sleep(delay)
@@ -1834,7 +1834,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			}
 			// Verify that we received and are able to extract retry info from
 			// the aborted error.
-			if _, hasRetryInfo := extractRetryDelay(e); !hasRetryInfo {
+			if _, hasRetryInfo := ExtractRetryDelay(e); !hasRetryInfo {
 				t.Errorf("Got Abort error without RetryInfo\nGot: %v", e)
 			}
 			return b, e
