@@ -1053,7 +1053,7 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 // ReadWriteStmtBasedTransaction provides a wrapper of ReadWriteTransaction in
 // order to run a read-write transaction in a statement-based way.
 //
-// This struct is returned by client.BeginReadWriteTransaction and contains
+// This struct is returned by NewReadWriteStmtBasedTransaction and contains
 // Commit() and Rollback() methods to end a transaction.
 type ReadWriteStmtBasedTransaction struct {
 	// ReadWriteTransaction contains methods for performing transactional reads.
@@ -1103,11 +1103,6 @@ func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWrit
 
 // Commit tries to commit a readwrite transaction to Cloud Spanner. It also
 // returns the commit timestamp for the transactions.
-//
-// This method should be used with client.BeginReadWriteTransaction and only be
-// used if a custom error handling is needed. For normal use cases,
-// client.ReadWriteTransaction should be used because it has robust error
-// handlings and retries.
 func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, error) {
 	var (
 		ts  time.Time
@@ -1126,11 +1121,6 @@ func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, 
 
 // Rollback is called to cancel the ongoing transaction that has not been
 // committed yet.
-//
-// This method should be used with client.BeginReadWriteTransaction and only be
-// used if a custom error handling is needed. For normal use cases,
-// client.ReadWriteTransaction should be used because it has robust error
-// handlings and retries.
 func (t *ReadWriteStmtBasedTransaction) Rollback(ctx context.Context) {
 	t.rollback(ctx)
 	if t.sh != nil {
