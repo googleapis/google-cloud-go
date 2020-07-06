@@ -455,6 +455,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/phishingprotection/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/policytroubleshooter/apiv1": {
+    "distribution_name": "cloud.google.com/go/policytroubleshooter/apiv1",
+    "description": "Policy Troubleshooter API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/policytroubleshooter/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/pubsub": {
     "distribution_name": "cloud.google.com/go/pubsub",
     "description": "Cloud PubSub",
