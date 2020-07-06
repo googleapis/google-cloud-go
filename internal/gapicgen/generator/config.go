@@ -366,14 +366,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/irm/v1alpha2",
-		pkg:                   "irm",
-		importPath:            "cloud.google.com/go/irm/apiv1alpha2",
-		gRPCServiceConfigPath: "google/cloud/irm/v1alpha2/irm_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/irm/irm_v1alpha2.yaml",
-		releaseLevel:          "alpha",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/kms/v1",
 		pkg:                   "kms",
 		importPath:            "cloud.google.com/go/kms/apiv1",

@@ -123,12 +123,10 @@ func ExampleRealmsClient_DeleteRealm() {
 		// TODO: Handle error.
 	}
 
-	resp, err := op.Wait(ctx)
+	err = op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleRealmsClient_UpdateRealm() {
