@@ -1,5 +1,13 @@
 # Changes
 
+## v1.5.0
+
+- Add support for subscription detachment.
+- Add support for message filtering in subscriptions.
+- Add support for RetryPolicy (server-side feature).
+- Fix publish error path when ordering key is disabled.
+- Fix panic on Topic.ResumePublish method.
+
 ## v1.4.0
 
 - Add support for upcoming ordering keys feature.
