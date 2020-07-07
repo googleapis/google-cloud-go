@@ -366,7 +366,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	}
 	// We're on the fastPath, but we need to poll because the job is incomplete.
 	// Fallback to job-based Read().
-	return partialJob.Read(ctx)
+	return minimalJob.Read(ctx)
 }
 
 // probeFastPath is used to attempt configuring a jobs.Query request based on a
@@ -376,12 +376,14 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 	// TODO: spend more time looking at this, there may be some defaults we're not considering
 	// This is essentially the denylist of settings which prevent us from composing an equivalent
 	// bq.QueryRequest due to differences in the available settings
+	// TODO: should we fail if someone specifies jobidconfig (sets job id construction behavior?)
 	if q.QueryConfig.Dst != nil ||
 		q.QueryConfig.TableDefinitions != nil ||
 		q.QueryConfig.CreateDisposition != "" ||
 		q.QueryConfig.WriteDisposition != "" ||
-		(q.QueryConfig.Priority != "" || q.QueryConfig.Priority != InteractivePriority) ||
+		!(q.QueryConfig.Priority == "" || q.QueryConfig.Priority == InteractivePriority) ||
 		q.QueryConfig.UseLegacySQL ||
+		q.QueryConfig.MaxBillingTier != 0 ||
 		q.QueryConfig.TimePartitioning != nil ||
 		q.QueryConfig.RangePartitioning != nil ||
 		q.QueryConfig.Clustering != nil ||
@@ -392,16 +394,19 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 	pfalse := false
 	qRequest := &bq.QueryRequest{
 		Query:              q.QueryConfig.Q,
-		UseLegacySql:       &pfalse,
 		Location:           q.Location,
-		MaximumBytesBilled: q.QueryConfig.MaximumBytesBilled,
-		MaxBillingTier:     q.QueryConfig.MaximumBillingTier,
-
+		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		// TODO: set the request_id to something appropriate here when we're allowed.
 		// RequestId := something based on uuid?
-		// TODO: figure out what else we should copy (max bytes, default datasets, etc)
+		// TODO: labels,
 	}
-	// Convert query params
+	if q.Labels != nil {
+		qRequest.Labels = q.Labels
+	}
+	if q.QueryConfig.DisableQueryCache {
+		qRequest.UseQueryCache = &pfalse
+	}
+	// Convert query parameters
 	for _, p := range q.QueryConfig.Parameters {
 		qp, err := p.toBQ()
 		if err != nil {

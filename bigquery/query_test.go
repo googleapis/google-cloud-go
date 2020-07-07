@@ -386,6 +386,96 @@ func TestQuery(t *testing.T) {
 	}
 }
 
+func TestProbeFastPath(t *testing.T) {
+	c := &Client{
+		projectID: "client-project-id",
+	}
+	pfalse := false
+	testCases := []struct {
+		inCfg    QueryConfig
+		inJobCfg JobIDConfig
+		wantReq  *bq.QueryRequest
+		wantErr  bool
+	}{
+		{
+			inCfg: QueryConfig{
+				Q: "foo",
+			},
+			wantReq: &bq.QueryRequest{
+				Query: "foo",
+			},
+		},
+		{
+			// All things you can set and still get a successful QueryRequest
+			inCfg: QueryConfig{
+				Q:                 "foo",
+				DefaultProjectID:  "defproject",
+				DefaultDatasetID:  "defdataset",
+				DisableQueryCache: true,
+				Priority:          InteractivePriority,
+				MaxBytesBilled:    123,
+				Parameters: []QueryParameter{
+					{Name: "user", Value: "bob"},
+				},
+				Labels: map[string]string{
+					"key": "val",
+				},
+			},
+			wantReq: &bq.QueryRequest{
+				Query:          "foo",
+				DefaultDataset: &bq.DatasetReference{ProjectId: "defproject", DatasetId: "defdataset"},
+				Labels: map[string]string{
+					"key": "val",
+				},
+				MaximumBytesBilled: 123,
+				QueryParameters: []*bq.QueryParameter{
+					{
+						Name:           "user",
+						ParameterType:  &bq.QueryParameterType{Type: "STRING"},
+						ParameterValue: &bq.QueryParameterValue{Value: "bob"},
+					},
+				},
+				UseQueryCache: &pfalse,
+			},
+		},
+		{
+			// fail, sets destination via API
+			inCfg: QueryConfig{
+				Q:   "foo",
+				Dst: &Table{},
+			},
+			wantErr: true,
+		},
+		{
+			// fail, sets specifies destination partitioning
+			inCfg: QueryConfig{
+				Q:                 "foo",
+				TimePartitioning:  &TimePartitioning{},
+				RangePartitioning: &RangePartitioning{},
+			},
+			wantErr: true,
+		},
+		{
+			// fail, sets specifies schema update options
+			inCfg: QueryConfig{
+				Q:                   "foo",
+				SchemaUpdateOptions: []string{"bar"},
+			},
+			wantErr: true,
+		},
+	}
+	for i, tc := range testCases {
+		in := &Query{tc.inJobCfg, tc.inCfg, c}
+		gotReq, err := in.probeFastPath()
+		if tc.wantErr && err == nil {
+			t.Errorf("case %d wanted error, got nil", i)
+		}
+		if diff := testutil.Diff(gotReq, tc.wantReq); diff != "" {
+			t.Errorf("QueryRequest case %d: -got +want:\n%s", i, diff)
+		}
+	}
+}
+
 func TestConfiguringQuery(t *testing.T) {
 	c := &Client{
 		projectID: "project-id",
