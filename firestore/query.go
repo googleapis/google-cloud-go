@@ -611,7 +611,7 @@ func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 		return nil, it.err
 	}
 	if it.q.limitToLast {
-		return nil, errors.New("firestore: queries that include limitToLast constraints cannot be streamed. DocumentIterator.GetAll() instead")
+		return nil, errors.New("firestore: queries that include limitToLast constraints cannot be streamed. Use DocumentIterator.GetAll() instead")
 	}
 	ds, err := it.iter.next()
 	if err != nil {
