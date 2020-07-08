@@ -1310,6 +1310,7 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
+	rat2 := big.NewRat(66, 100)
 	geo := "POINT(-122.198939 47.669865)"
 
 	// Nil fields in the struct.
@@ -1331,18 +1332,19 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 
 	// Populate the struct with values.
 	testInsertAndReadNullable(t, testStructNullable{
-		String:    NullString{"x", true},
-		Bytes:     []byte{1, 2, 3},
-		Integer:   NullInt64{1, true},
-		Float:     NullFloat64{2.3, true},
-		Boolean:   NullBool{true, true},
-		Timestamp: NullTimestamp{testTimestamp, true},
-		Date:      NullDate{testDate, true},
-		Time:      NullTime{ctm, true},
-		DateTime:  NullDateTime{cdt, true},
-		Numeric:   rat,
-		Geography: NullGeography{geo, true},
-		Record:    &subNullable{X: NullInt64{4, true}},
+		String:     NullString{"x", true},
+		Bytes:      []byte{1, 2, 3},
+		Integer:    NullInt64{1, true},
+		Float:      NullFloat64{2.3, true},
+		Boolean:    NullBool{true, true},
+		Timestamp:  NullTimestamp{testTimestamp, true},
+		Date:       NullDate{testDate, true},
+		Time:       NullTime{ctm, true},
+		DateTime:   NullDateTime{cdt, true},
+		Numeric:    rat,
+		BigNumeric: rat2,
+		Geography:  NullGeography{geo, true},
+		Record:     &subNullable{X: NullInt64{4, true}},
 	},
 		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, geo, []Value{int64(4)}})
 }
