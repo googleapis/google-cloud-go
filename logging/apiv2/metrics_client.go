@@ -60,8 +60,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		ListLogMetrics: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -72,8 +73,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		GetLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -85,8 +87,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		UpdateLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -97,8 +100,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		DeleteLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -109,7 +113,7 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 	}
 }
 
-// MetricsClient is a client for interacting with Stackdriver Logging API.
+// MetricsClient is a client for interacting with Cloud Logging API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type MetricsClient struct {
