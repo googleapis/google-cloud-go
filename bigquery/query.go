@@ -355,9 +355,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	if resp.JobComplete {
 		rowSource := &rowSource{
 			j: minimalJob,
-			// While we're only concerned about the rowSource in the iterator construction,
-			// we get the first page of results at the same time.  Add references to the
-			// rowSource as the iterator knows how to consume them.
+			// RowIterator can precache results from the iterator to save a lookup.
 			cachedRows:      resp.Rows,
 			cachedSchema:    resp.Schema,
 			cachedNextToken: resp.PageToken,
@@ -373,7 +371,6 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // user's Query configuration.  If all the options set on the job are supported on the
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
-	// TODO: spend more time looking at this, there may be some defaults we're not considering
 	// This is essentially the denylist of settings which prevent us from composing an equivalent
 	// bq.QueryRequest due to differences in the available settings
 	// TODO: should we fail if someone specifies jobidconfig (sets job id construction behavior?)
@@ -391,19 +388,16 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.QueryConfig.SchemaUpdateOptions != nil {
 		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")
 	}
-	pfalse := false
 	qRequest := &bq.QueryRequest{
 		Query:              q.QueryConfig.Q,
 		Location:           q.Location,
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
-		// TODO: set the request_id to something appropriate here when we're allowed.
-		// RequestId := something based on uuid?
-		// TODO: labels,
-	}
-	if q.Labels != nil {
-		qRequest.Labels = q.Labels
+		// TODO: uncomment once request ID is enabled
+		// RequestId: uid.NewSpace("request", nil).New(),
+		Labels: q.Labels,
 	}
 	if q.QueryConfig.DisableQueryCache {
+		pfalse := false
 		qRequest.UseQueryCache = &pfalse
 	}
 	// Convert query parameters
@@ -414,7 +408,6 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		}
 		qRequest.QueryParameters = append(qRequest.QueryParameters, qp)
 	}
-
 	if q.QueryConfig.DefaultDatasetID != "" {
 		qRequest.DefaultDataset = &bq.DatasetReference{
 			ProjectId: q.QueryConfig.DefaultProjectID,
