@@ -657,6 +657,7 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		{q.StartAfter(1), wants[2:]},
 		{q.EndAt(1), wants[:2]},
 		{q.EndBefore(1), wants[:1]},
+		{q.LimitToLast(2), wants[1:]},
 	} {
 		gotDocs, err := test.q.Documents(ctx).GetAll()
 		if err != nil {
@@ -709,83 +710,9 @@ func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	q := coll.Select("q").OrderBy("q", Asc).LimitToLast(1)
-	gotDocs, err := q.Documents(ctx).GetAll()
+	got, err := q.Documents(ctx).Next()
 	if err == nil {
-		t.Errorf("got %v docs, want error", len(gotDocs))
-	}
-}
-
-func TestIntegration_QueryGetAll(t *testing.T) {
-	ctx := context.Background()
-	coll := integrationColl(t)
-	h := testHelper{t}
-	var wants []map[string]interface{}
-	for i := 0; i < 3; i++ {
-		doc := coll.NewDoc()
-		// To support running this test in parallel with the others, use a field name
-		// that we don't use anywhere else.
-		h.mustCreate(doc, map[string]interface{}{"q": i, "x": 1})
-		wants = append(wants, map[string]interface{}{"q": int64(i)})
-	}
-	q := coll.Select("q").OrderBy("q", Asc)
-	for i, test := range []struct {
-		q    Query
-		want []map[string]interface{}
-	}{
-		{q, wants},
-		{q.Where("q", ">", 1), wants[2:]},
-		{q.WherePath([]string{"q"}, ">", 1), wants[2:]},
-		{q.Offset(1).Limit(1), wants[1:2]},
-		{q.StartAt(1), wants[1:]},
-		{q.StartAfter(1), wants[2:]},
-		{q.EndAt(1), wants[:2]},
-		{q.EndBefore(1), wants[:1]},
-		{q.LimitToLast(2), wants[1:]},
-	} {
-		gotDocs, err := test.q.GetAll(ctx)
-		if err != nil {
-			t.Errorf("#%d: %+v: %v", i, test.q, err)
-			continue
-		}
-		if len(gotDocs) != len(test.want) {
-			t.Errorf("#%d: %+v: got %d docs, want %d", i, test.q, len(gotDocs), len(test.want))
-			continue
-		}
-		for j, g := range gotDocs {
-			if got, want := g.Data(), test.want[j]; !testEqual(got, want) {
-				t.Errorf("#%d: %+v, #%d: got\n%+v\nwant\n%+v", i, test.q, j, got, want)
-			}
-		}
-	}
-	_, err := coll.Select("q").Where("x", "==", 1).OrderBy("q", Asc).GetAll(ctx)
-	codeEq(t, "Where and OrderBy on different fields without an index", codes.FailedPrecondition, err)
-
-	// Using the collection itself as the query should return the full documents.
-	allDocs, err := coll.GetAll(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	seen := map[int64]bool{} // "q" values we see.
-	for _, d := range allDocs {
-		data := d.Data()
-		q, ok := data["q"]
-		if !ok {
-			// A document from another test.
-			continue
-		}
-		if seen[q.(int64)] {
-			t.Errorf("%v: duplicate doc", data)
-		}
-		seen[q.(int64)] = true
-		if data["x"] != int64(1) {
-			t.Errorf("%v: wrong or missing 'x'", data)
-		}
-		if len(data) != 2 {
-			t.Errorf("%v: want two keys", data)
-		}
-	}
-	if got, want := len(seen), len(wants); got != want {
-		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
+		t.Errorf("got %v doc, want error", got)
 	}
 }
 

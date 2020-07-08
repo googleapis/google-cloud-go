@@ -432,27 +432,6 @@ func ExampleQuery_Documents() {
 	_ = iter2 // TODO: Use iter2.
 }
 
-func ExampleQuery_GetAll() {
-	ctx := context.Background()
-	client, err := firestore.NewClient(ctx, "project-id")
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer client.Close()
-
-	q := client.Collection("States").Select("pop").
-		Where("pop", ">", 10).
-		OrderBy("pop", firestore.Desc).
-		Limit(10)
-
-	docs, err := q.GetAll(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// docs is a slice with DocumentSnapshots.
-	fmt.Println(docs)
-}
-
 // This example is just like the one above, but illustrates
 // how to use the XXXPath methods of Query for field paths
 // that can't be expressed as a dot-separated string.
