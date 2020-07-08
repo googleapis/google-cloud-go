@@ -73,8 +73,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListSinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -85,8 +86,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		GetSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -98,8 +100,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		UpdateSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -110,8 +113,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		DeleteSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -122,8 +126,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListExclusions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -134,8 +139,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		GetExclusion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -148,8 +154,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		DeleteExclusion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -162,7 +169,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 	}
 }
 
-// ConfigClient is a client for interacting with Stackdriver Logging API.
+// ConfigClient is a client for interacting with Cloud Logging API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ConfigClient struct {
@@ -542,7 +549,8 @@ func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.Delet
 // the GCP organization.
 //
 // See Enabling CMEK for Logs
-// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
 func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -572,7 +580,8 @@ func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCm
 // 3) access to the key is disabled.
 //
 // See Enabling CMEK for Logs
-// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
 func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
