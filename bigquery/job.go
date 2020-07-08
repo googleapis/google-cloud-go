@@ -284,21 +284,18 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if !j.isQuery() {
 		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
-	destTable := j.config.Query.DestinationTable
-	// The destination table should only be nil if there was a query error.
-	projectID := j.projectID
-	if destTable != nil && projectID != destTable.ProjectId {
-		return nil, fmt.Errorf("bigquery: job project ID is %q, but destination table's is %q", projectID, destTable.ProjectId)
-	}
-	schema, totalRows, err := waitForQuery(ctx, projectID)
+	schema, totalRows, err := waitForQuery(ctx, j.projectID)
 	if err != nil {
 		return nil, err
 	}
-	if destTable == nil {
-		return nil, errors.New("bigquery: query job missing destination table")
+	// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
+	itJob := &Job{
+		c:         j.c,
+		projectID: j.projectID,
+		jobID:     j.jobID,
+		location:  j.location,
 	}
-	dt := bqToTable(destTable, j.c)
-	it := newRowIterator(ctx, dt, pf)
+	it := newRowIterator(ctx, &rowSource{j: itJob}, pf)
 	it.Schema = schema
 	it.TotalRows = totalRows
 	return it, nil

@@ -354,12 +354,8 @@ func (c *GameServerConfigsClient) DeleteGameServerConfigOperation(name string) *
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *DeleteGameServerConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
-	var resp gamingpb.GameServerConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
+func (op *DeleteGameServerConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
 }
 
 // Poll fetches the latest state of the long-running operation.
@@ -371,15 +367,8 @@ func (op *DeleteGameServerConfigOperation) Wait(ctx context.Context, opts ...gax
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteGameServerConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
-	var resp gamingpb.GameServerConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
+func (op *DeleteGameServerConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
 }
 
 // Metadata returns metadata associated with the long-running operation.

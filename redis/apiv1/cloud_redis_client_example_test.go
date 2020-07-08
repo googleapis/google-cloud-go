@@ -131,6 +131,31 @@ func ExampleCloudRedisClient_UpdateInstance() {
 	_ = resp
 }
 
+func ExampleCloudRedisClient_UpgradeInstance() {
+	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1"
+
+	ctx := context.Background()
+	c, err := redis.NewCloudRedisClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &redispb.UpgradeInstanceRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.UpgradeInstance(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudRedisClient_ImportInstance() {
 	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1"
 
