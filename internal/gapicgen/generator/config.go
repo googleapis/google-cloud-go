@@ -711,4 +711,20 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/gaming/v1beta/gaming_gapic.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/policytroubleshooter/v1",
+		pkg:                   "policytroubleshooter",
+		importPath:            "cloud.google.com/go/policytroubleshooter/apiv1",
+		gRPCServiceConfigPath: "google/cloud/policytroubleshooter/v1/checker_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/policytroubleshooter/v1/policytroubleshooter_v1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/monitoring/dashboard/v1",
+		pkg:                   "dashboard",
+		importPath:            "cloud.google.com/go/monitoring/dashboard/apiv1",
+		gRPCServiceConfigPath: "google/monitoring/dashboard/v1/dashboards_grpc_service_config.json",
+		apiServiceConfigPath:  "google/monitoring/dashboard/v1/monitoring_gapic.yaml",
+		releaseLevel:          "beta",
+	},
 }

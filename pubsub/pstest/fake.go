@@ -78,6 +78,7 @@ type GServer struct {
 	wg            sync.WaitGroup
 	nextID        int
 	streamTimeout time.Duration
+	timeNowFunc   func() time.Time
 }
 
 // NewServer creates a new fake server running in the current process.
@@ -90,15 +91,22 @@ func NewServer() *Server {
 		srv:  srv,
 		Addr: srv.Addr,
 		GServer: GServer{
-			topics:   map[string]*topic{},
-			subs:     map[string]*subscription{},
-			msgsByID: map[string]*Message{},
+			topics:      map[string]*topic{},
+			subs:        map[string]*subscription{},
+			msgsByID:    map[string]*Message{},
+			timeNowFunc: timeNow,
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
 	srv.Start()
 	return s
+}
+
+// SetTimeNowFunc registers f as a function to
+// be used instead of time.Now for this server.
+func (s *Server) SetTimeNowFunc(f func() time.Time) {
+	s.GServer.timeNowFunc = f
 }
 
 // Publish behaves as if the Publish RPC was called with a message with the given
@@ -352,7 +360,7 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 		ps.PushConfig = &pb.PushConfig{}
 	}
 
-	sub := newSubscription(top, &s.mu, ps)
+	sub := newSubscription(top, &s.mu, s.timeNowFunc, ps)
 	top.subs[ps.Name] = sub
 	s.subs[ps.Name] = sub
 	sub.start(&s.wg)
@@ -519,7 +527,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 		id := fmt.Sprintf("m%d", s.nextID)
 		s.nextID++
 		pm.MessageId = id
-		pubTime := timeNow()
+		pubTime := s.timeNowFunc()
 		tsPubTime, err := ptypes.TimestampProto(pubTime)
 		if err != nil {
 			return nil, status.Errorf(codes.Internal, err.Error())
@@ -578,27 +586,29 @@ func (t *topic) publish(pm *pb.PubsubMessage, m *Message) {
 }
 
 type subscription struct {
-	topic      *topic
-	mu         *sync.Mutex // the server mutex, here for convenience
-	proto      *pb.Subscription
-	ackTimeout time.Duration
-	msgs       map[string]*message // unacked messages by message ID
-	streams    []*stream
-	done       chan struct{}
+	topic       *topic
+	mu          *sync.Mutex // the server mutex, here for convenience
+	proto       *pb.Subscription
+	ackTimeout  time.Duration
+	msgs        map[string]*message // unacked messages by message ID
+	streams     []*stream
+	done        chan struct{}
+	timeNowFunc func() time.Time
 }
 
-func newSubscription(t *topic, mu *sync.Mutex, ps *pb.Subscription) *subscription {
+func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, ps *pb.Subscription) *subscription {
 	at := time.Duration(ps.AckDeadlineSeconds) * time.Second
 	if at == 0 {
 		at = 10 * time.Second
 	}
 	return &subscription{
-		topic:      t,
-		mu:         mu,
-		proto:      ps,
-		ackTimeout: at,
-		msgs:       map[string]*message{},
-		done:       make(chan struct{}),
+		topic:       t,
+		mu:          mu,
+		proto:       ps,
+		ackTimeout:  at,
+		msgs:        map[string]*message{},
+		done:        make(chan struct{}),
+		timeNowFunc: timeNowFunc,
 	}
 }
 
@@ -777,7 +787,7 @@ func (s *GServer) findSubscription(name string) (*subscription, error) {
 
 // Must be called with the lock held.
 func (s *subscription) pull(max int) []*pb.ReceivedMessage {
-	now := timeNow()
+	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	var msgs []*pb.ReceivedMessage
 	for _, m := range s.msgs {
@@ -798,7 +808,7 @@ func (s *subscription) deliver() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	now := timeNow()
+	now := s.timeNowFunc()
 	s.maintainMessages(now)
 	// Try to deliver each remaining message.
 	curIndex := 0
@@ -1022,7 +1032,7 @@ func (s *subscription) modifyAckDeadline(id string, d time.Duration) {
 	if d == 0 { // nack
 		m.makeAvailable()
 	} else { // extend the deadline by d
-		m.ackDeadline = timeNow().Add(d)
+		m.ackDeadline = s.timeNowFunc().Add(d)
 	}
 }
 
