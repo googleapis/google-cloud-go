@@ -1346,7 +1346,7 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 		Geography:  NullGeography{geo, true},
 		Record:     &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, geo, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, rat2, geo, []Value{int64(4)}})
 }
 
 func testInsertAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
