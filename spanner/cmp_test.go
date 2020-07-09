@@ -39,6 +39,9 @@ func testEqual(a, b interface{}) bool {
 			if strings.HasSuffix(path.GoString(), ".err.(*status.Error).unknownFields") {
 				return true
 			}
+			if strings.HasSuffix(path.GoString(), ".err.(*status.Error).e") {
+				return true
+			}
 			if strings.Contains(path.GoString(), "{*status.Error}.state") {
 				return true
 			}
