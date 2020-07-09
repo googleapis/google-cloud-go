@@ -399,6 +399,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/monitoring/apiv3/v2",
     "release_level": "ga"
   },
+  "cloud.google.com/go/monitoring/dashboard/apiv1": {
+    "distribution_name": "cloud.google.com/go/monitoring/dashboard/apiv1",
+    "description": "",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/osconfig/agentendpoint/apiv1": {
     "distribution_name": "cloud.google.com/go/osconfig/agentendpoint/apiv1",
     "description": "Cloud OS Config API",
@@ -453,6 +461,14 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/phishingprotection/apiv1beta1",
+    "release_level": "beta"
+  },
+  "cloud.google.com/go/policytroubleshooter/apiv1": {
+    "distribution_name": "cloud.google.com/go/policytroubleshooter/apiv1",
+    "description": "Policy Troubleshooter API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/policytroubleshooter/apiv1",
     "release_level": "beta"
   },
   "cloud.google.com/go/pubsub": {
