@@ -1,12 +1,11 @@
-  
 {
     "extends": [
-      "config:base",
-      "schedule:weekly"
+        "config:base",
+        "schedule:weekly"
     ],
     "semanticCommits": false,
     "postUpdateOptions": [
-      "gomodTidy"
+        "gomodTidy"
     ],
     "commitMessagePrefix": "chore(all): ",
     "commitMessageAction": "update",
@@ -14,4 +13,4 @@
     "ignoreDeps": [
         "google.golang.org/genproto"
     ]
-  }
+}
