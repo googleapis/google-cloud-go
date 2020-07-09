@@ -719,4 +719,12 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/policytroubleshooter/v1/policytroubleshooter_v1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/monitoring/dashboard/v1",
+		pkg:                   "dashboard",
+		importPath:            "cloud.google.com/go/monitoring/dashboard/apiv1",
+		gRPCServiceConfigPath: "google/monitoring/dashboard/v1/dashboards_grpc_service_config.json",
+		apiServiceConfigPath:  "google/monitoring/dashboard/v1/monitoring_gapic.yaml",
+		releaseLevel:          "beta",
+	},
 }
