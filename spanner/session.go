@@ -344,7 +344,7 @@ func (s *session) destroy(isExpire bool) bool {
 func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
-	err := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
+	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
 	if err != nil {
 		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
