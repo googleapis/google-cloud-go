@@ -119,7 +119,7 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 	req.Transaction = &sppb.TransactionSelector{
 		Selector: &sppb.TransactionSelector_Id{Id: res.Id},
 	}
-	resultSet, err := sh.getClient().ExecuteSql(ctx, req)
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
 	if err != nil {
 		return 0, err
 	}
