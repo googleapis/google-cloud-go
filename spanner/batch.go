@@ -233,7 +233,7 @@ func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	}
 	t.sh = nil
 	sid, client := sh.getID(), sh.getClient()
-	err := client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: sid})
+	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid})
 	if err != nil {
 		var logger *log.Logger
 		if sh.session != nil {
