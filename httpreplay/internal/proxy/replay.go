@@ -25,7 +25,7 @@ import (
 	"reflect"
 	"sync"
 
-	"github.com/google/martian/martianlog"
+	"github.com/google/martian/v3/martianlog"
 )
 
 // ForReplaying returns a Proxy configured to replay.
