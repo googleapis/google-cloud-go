@@ -1298,16 +1298,15 @@ type Query struct {
 	// calling Query.SetAttrSelection
 	fieldSelection string
 
-	// StartOffset sets the optional parameter "startOffset": Filter results
-	// to objects whose names are lexicographically equal to or after
-	// startOffset. If endOffset is also set, the objects listed will have
-	// names between startOffset (inclusive) and endOffset (exclusive).
+	// StartOffset is used to filter results to objects whose names are
+	// lexicographically equal to or after startOffset. If endOffset is also set,
+	// the objects listed will have names between startOffset (inclusive) and
+	// endOffset (exclusive).
 	StartOffset string
 
-	// EndOffset sets the optional parameter "endOffset": Filter results to
-	// objects whose names are lexicographically before endOffset. If
-	// startOffset is also set, the objects listed will have names between
-	// startOffset (inclusive) and endOffset (exclusive).
+	// EndOffset is used to filter results to objects whose names are
+	// lexicographically before endOffset. If startOffset is also set, the objects
+	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
 	EndOffset string
 }
 
