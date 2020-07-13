@@ -9,9 +9,9 @@ require (
 	github.com/google/go-cmp v0.5.0
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/tools v0.0.0-20200708183856-df98bc6d456c // indirect
+	golang.org/x/tools v0.0.0-20200711155855-7342f9734a7d // indirect
 	google.golang.org/api v0.29.0
-	google.golang.org/genproto v0.0.0-20200709005830-7a2ca40e9dc3
+	google.golang.org/genproto v0.0.0-20200711021454-869866162049
 	google.golang.org/grpc v1.30.0
 	rsc.io/binaryregexp v0.2.0
 )
