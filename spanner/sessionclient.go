@@ -284,6 +284,8 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	return client, nil
 }
 
+// mergeCallOptions merges two CallOptions into one and the first argument has
+// a lower order of precedence than the second one.
 func mergeCallOptions(low *vkit.CallOptions, high *vkit.CallOptions) *vkit.CallOptions {
 	res := &vkit.CallOptions{}
 
