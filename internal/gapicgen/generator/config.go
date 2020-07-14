@@ -727,4 +727,12 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/monitoring/dashboard/v1/monitoring_gapic.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/analytics/admin/v1alpha",
+		pkg:                   "admin",
+		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/admin/v1alpha/admin_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
+		releaseLevel:          "alpha",
+	},
 }
