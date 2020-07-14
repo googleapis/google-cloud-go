@@ -674,7 +674,6 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectIterator(t, bkt, objects)
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
-	testObjectIteratorOffset(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1070,24 +1069,11 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	if !ok {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
-	// TODO(jba): test query.Delimiter != ""
-}
-
-func testObjectIteratorOffset(t *testing.T, bkt *BucketHandle, objects []string) {
-	ctx := context.Background()
-	h := testHelper{t}
-	var attrs []*ObjectAttrs
-	names := make([]string, len(objects))
-	copy(names, objects)
-	sort.Strings(names)
-	m := make(map[string][]*ObjectAttrs)
-	for i := 0; i < len(names); i++ {
-		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(names[i])))
-	}
 	// StartOffset takes the value of object names, the result must be for:
 	// ― obj/with/slashes: obj/with/slashes, obj1, obj2
 	// ― obj1: obj1, obj2
 	// ― obj2: obj2.
+	m := make(map[string][]*ObjectAttrs)
 	for i, name := range names {
 		m[name] = attrs[i:]
 		msg, ok := itesting.TestIterator(m[name],
@@ -1097,6 +1083,7 @@ func testObjectIteratorOffset(t *testing.T, bkt *BucketHandle, objects []string)
 			t.Errorf("ObjectIterator.Next: %s", msg)
 		}
 	}
+	// TODO(jba): test query.Delimiter != ""
 }
 
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
