@@ -17,6 +17,7 @@ package testutil
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"fmt"
 	"math/rand"
 	"sort"
@@ -33,6 +34,24 @@ import (
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	gstatus "google.golang.org/grpc/status"
+)
+
+var (
+	// KvMeta is the Metadata for mocked KV table.
+	KvMeta = spannerpb.ResultSetMetadata{
+		RowType: &spannerpb.StructType{
+			Fields: []*spannerpb.StructType_Field{
+				{
+					Name: "Key",
+					Type: &spannerpb.Type{Code: spannerpb.TypeCode_STRING},
+				},
+				{
+					Name: "Value",
+					Type: &spannerpb.Type{Code: spannerpb.TypeCode_STRING},
+				},
+			},
+		},
+	}
 )
 
 // StatementResultType indicates the type of result returned by a SQL
@@ -70,10 +89,11 @@ const (
 // StatementResult represents a mocked result on the test server. The result is
 // either of: a ResultSet, an update count or an error.
 type StatementResult struct {
-	Type        StatementResultType
-	Err         error
-	ResultSet   *spannerpb.ResultSet
-	UpdateCount int64
+	Type         StatementResultType
+	Err          error
+	ResultSet    *spannerpb.ResultSet
+	UpdateCount  int64
+	ResumeTokens [][]byte
 }
 
 // PartialResultSetExecutionTime represents execution times and errors that
@@ -85,10 +105,10 @@ type PartialResultSetExecutionTime struct {
 	Err           error
 }
 
-// Converts a ResultSet to a PartialResultSet. This method is used to convert
-// a mocked result to a PartialResultSet when one of the streaming methods are
-// called.
-func (s *StatementResult) toPartialResultSets(resumeToken []byte) (result []*spannerpb.PartialResultSet, err error) {
+// ToPartialResultSets converts a ResultSet to a PartialResultSet. This method
+// is used to convert a mocked result to a PartialResultSet when one of the
+// streaming methods are called.
+func (s *StatementResult) ToPartialResultSets(resumeToken []byte) (result []*spannerpb.PartialResultSet, err error) {
 	var startIndex uint64
 	if len(resumeToken) > 0 {
 		if startIndex, err = DecodeResumeToken(resumeToken); err != nil {
@@ -109,11 +129,18 @@ func (s *StatementResult) toPartialResultSets(resumeToken []byte) (result []*spa
 				idx++
 			}
 		}
+		var rt []byte
+		if len(s.ResumeTokens) == 0 {
+			rt = EncodeResumeToken(startIndex + rowCount)
+		} else {
+			rt = s.ResumeTokens[startIndex]
+		}
 		result = append(result, &spannerpb.PartialResultSet{
 			Metadata:    s.ResultSet.Metadata,
 			Values:      values,
-			ResumeToken: EncodeResumeToken(startIndex + rowCount),
+			ResumeToken: rt,
 		})
+
 		startIndex += rowCount
 		if startIndex == totalRows {
 			break
@@ -796,7 +823,7 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 	case StatementResultError:
 		return statementResult.Err
 	case StatementResultResultSet:
-		parts, err := statementResult.toPartialResultSets(req.ResumeToken)
+		parts, err := statementResult.ToPartialResultSets(req.ResumeToken)
 		if err != nil {
 			return err
 		}
@@ -1013,4 +1040,20 @@ func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.P
 	s.receivedRequests <- req
 	s.mu.Unlock()
 	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+}
+
+// EncodeResumeToken return mock resume token encoding for an uint64 integer.
+func EncodeResumeToken(t uint64) []byte {
+	rt := make([]byte, 16)
+	binary.PutUvarint(rt, t)
+	return rt
+}
+
+// DecodeResumeToken decodes a mock resume token into an uint64 integer.
+func DecodeResumeToken(t []byte) (uint64, error) {
+	s, n := binary.Uvarint(t)
+	if n <= 0 {
+		return 0, fmt.Errorf("invalid resume token: %v", t)
+	}
+	return s, nil
 }
