@@ -1069,12 +1069,12 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	if !ok {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
-	// StartOffset takes the value of object names, the result must be for:
-	// ― obj/with/slashes: obj/with/slashes, obj1, obj2
-	// ― obj1: obj1, obj2
-	// ― obj2: obj2.
 	m := make(map[string][]*ObjectAttrs)
 	for i, name := range names {
+		// StartOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: obj/with/slashes, obj1, obj2
+		// ― obj1: obj1, obj2
+		// ― obj2: obj2.
 		m[name] = attrs[i:]
 		msg, ok := itesting.TestIterator(m[name],
 			func() interface{} { return bkt.Objects(ctx, &Query{StartOffset: name}) },
@@ -1082,14 +1082,12 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		if !ok {
 			t.Errorf("ObjectIterator.Next: %s", msg)
 		}
-	}
-	// EndOffset takes the value of object names, the result must be for:
-	// ― obj/with/slashes: ""
-	// ― obj1: obj/with/slashes
-	// ― obj2: obj/with/slashes, obj1.
-	for i, name := range names {
+		// EndOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: ""
+		// ― obj1: obj/with/slashes
+		// ― obj2: obj/with/slashes, obj1.
 		m[name] = attrs[:i]
-		msg, ok := itesting.TestIterator(m[name],
+		msg, ok = itesting.TestIterator(m[name],
 			func() interface{} { return bkt.Objects(ctx, &Query{EndOffset: name}) },
 			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
 		if !ok {
