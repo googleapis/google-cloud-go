@@ -1083,6 +1083,19 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 			t.Errorf("ObjectIterator.Next: %s", msg)
 		}
 	}
+	// EndOffset takes the value of object names, the result must be for:
+	// ― obj/with/slashes: ""
+	// ― obj1: obj/with/slashes
+	// ― obj2: obj/with/slashes, obj1.
+	for i, name := range names {
+		m[name] = attrs[:i]
+		msg, ok := itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{EndOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+	}
 	// TODO(jba): test query.Delimiter != ""
 }
 
