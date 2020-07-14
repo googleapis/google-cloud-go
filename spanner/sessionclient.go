@@ -298,13 +298,10 @@ func mergeCallOptions(low *vkit.CallOptions, high *vkit.CallOptions) *vkit.CallO
 	for i := 0; i < lowVal.NumField(); i++ {
 		fieldName := t.Field(i).Name
 
-		lowFieldVal := lowVal.Field(i)
-		highFieldVal := highVal.Field(i)
+		lowFieldVal := lowVal.Field(i).Interface().([]gax.CallOption)
+		highFieldVal := highVal.Field(i).Interface().([]gax.CallOption)
 
-		h := highFieldVal.Interface().([]gax.CallOption)
-		l := lowFieldVal.Interface().([]gax.CallOption)
-
-		merged := append(l, h...)
+		merged := append(lowFieldVal, highFieldVal...)
 		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
 	}
 	return res
