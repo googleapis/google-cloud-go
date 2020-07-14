@@ -20,6 +20,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -1140,6 +1141,7 @@ func TestRsdBlockingStates(t *testing.T) {
 			if err != nil {
 				t.Fatalf("failed to set up a result for a statement: %v", err)
 			}
+			var mutex = &sync.Mutex{}
 			var rs []*sppb.PartialResultSet
 			go func() {
 				for {
@@ -1147,7 +1149,9 @@ func TestRsdBlockingStates(t *testing.T) {
 						// Note that r.Next also exits on context cancel/timeout.
 						return
 					}
+					mutex.Lock()
 					rs = append(rs, r.get())
+					mutex.Unlock()
 				}
 			}()
 			// Verify that resumableStreamDecoder reaches expected state.
@@ -1160,6 +1164,8 @@ func TestRsdBlockingStates(t *testing.T) {
 				}
 				// Check if resumableStreamDecoder returns expected array of
 				// PartialResultSets.
+				mutex.Lock()
+				defer mutex.Unlock()
 				if !testEqual(rs, test.want) {
 					t.Fatalf("received PartialResultSets: \n%v\n, want \n%v\n", rs, test.want)
 				}
