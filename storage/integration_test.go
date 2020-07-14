@@ -1094,10 +1094,9 @@ func testObjectIteratorOffset(t *testing.T, bkt *BucketHandle, objects []string)
 			func() interface{} { return bkt.Objects(ctx, &Query{StartOffset: name}) },
 			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
 		if !ok {
-			t.Errorf("ObjectIterator.Next: object(%v) %s", msg, name)
+			t.Errorf("ObjectIterator.Next: %s", msg)
 		}
 	}
-	// TODO(jba): test query.Delimiter != ""
 }
 
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
