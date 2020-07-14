@@ -20,18 +20,19 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/proto"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -641,10 +642,11 @@ func TestRsdNonblockingStates(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
 	tests := []struct {
-		name string
-		msgs []MockCtlMsg
-		rpc  func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
-		sql  string
+		name         string
+		resumeTokens [][]byte
+		prsErrors    []PartialResultSetExecutionTime
+		rpc          func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		sql          string
 		// Expected values
 		want         []*sppb.PartialResultSet      // PartialResultSets that should be returned to caller
 		queue        []*sppb.PartialResultSet      // PartialResultSets that should be buffered
@@ -654,13 +656,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 	}{
 		{
 			// unConnected->queueingRetryable->finished
-			name: "unConnected->queueingRetryable->finished",
-			msgs: []MockCtlMsg{
-				{},
-				{},
-				{Err: io.EOF, ResumeToken: false},
-			},
-			sql: "SELECT t.key key, t.value value FROM t_mock t",
+			name:         "unConnected->queueingRetryable->finished",
+			resumeTokens: make([][]byte, 2),
+			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			want: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
@@ -688,13 +686,12 @@ func TestRsdNonblockingStates(t *testing.T) {
 		},
 		{
 			// unConnected->queueingRetryable->aborted
-			name: "unConnected->queueingRetryable->aborted",
-			msgs: []MockCtlMsg{
-				{},
-				{Err: nil, ResumeToken: true},
-				{},
-				{Err: errors.New("I quit"), ResumeToken: false},
-			},
+			name:         "unConnected->queueingRetryable->aborted",
+			resumeTokens: [][]byte{{}, EncodeResumeToken(1), {}, EncodeResumeToken(2)},
+			prsErrors: []PartialResultSetExecutionTime{{
+				ResumeToken: EncodeResumeToken(2),
+				Err:         status.Error(codes.Unknown, "I quit"),
+			}},
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
 			want: []*sppb.PartialResultSet{
 				{
@@ -725,14 +722,9 @@ func TestRsdNonblockingStates(t *testing.T) {
 		},
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable
-			name: "unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable",
-			msgs: func() (m []MockCtlMsg) {
-				for i := 0; i < maxBuffers+1; i++ {
-					m = append(m, MockCtlMsg{})
-				}
-				return m
-			}(),
-			sql: "SELECT t.key key, t.value value FROM t_mock t",
+			name:         "unConnected->queueingRetryable->queueingUnretryable->queueingUnretryable",
+			resumeTokens: make([][]byte, maxBuffers+1),
+			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
 				for i := 0; i < maxBuffers+1; i++ {
 					s = append(s, &sppb.PartialResultSet{
@@ -760,13 +752,15 @@ func TestRsdNonblockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->aborted
 			name: "unConnected->queueingRetryable->queueingUnretryable->aborted",
-			msgs: func() (m []MockCtlMsg) {
-				for i := 0; i < maxBuffers; i++ {
-					m = append(m, MockCtlMsg{})
-				}
-				m = append(m, MockCtlMsg{Err: errors.New("Just Abort It"), ResumeToken: false})
-				return m
+			resumeTokens: func() (rts [][]byte) {
+				rts = make([][]byte, maxBuffers+1)
+				rts[maxBuffers] = EncodeResumeToken(1)
+				return rts
 			}(),
+			prsErrors: []PartialResultSetExecutionTime{{
+				ResumeToken: EncodeResumeToken(1),
+				Err:         status.Error(codes.Unknown, "Just Abort It"),
+			}},
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
 				for i := 0; i < maxBuffers; i++ {
@@ -794,12 +788,22 @@ func TestRsdNonblockingStates(t *testing.T) {
 	}
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			ms := NewMockCloudSpanner(t, trxTs)
-			ms.Serve()
-			mc := sppb.NewSpannerClient(dialMock(t, ms))
+			server, c, teardown := setupMockedTestServer(t)
+			defer teardown()
+			mc, err := c.sc.nextClient()
+			if err != nil {
+				t.Fatalf("failed to create a grpc client")
+			}
+
+			session, err := createSession(mc)
+			if err != nil {
+				t.Fatalf("failed to create a session")
+			}
+
 			if test.rpc == nil {
 				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+						Session:     session.Name,
 						Sql:         test.sql,
 						ResumeToken: resumeToken,
 					})
@@ -831,8 +835,16 @@ func TestRsdNonblockingStates(t *testing.T) {
 				}
 			}
 			// Let mock server stream given messages to resumableStreamDecoder.
-			for _, m := range test.msgs {
-				ms.AddMsg(m.Err, m.ResumeToken)
+			err = setupStatementResult(t, server, test.sql, len(test.resumeTokens), test.resumeTokens)
+			if err != nil {
+				t.Fatalf("failed to set up a result for a statement: %v", err)
+			}
+
+			for _, et := range test.prsErrors {
+				server.TestSpanner.AddPartialResultSetError(
+					test.sql,
+					et,
+				)
 			}
 			var rs []*sppb.PartialResultSet
 			for {
@@ -891,10 +903,10 @@ func TestRsdBlockingStates(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
 	for _, test := range []struct {
-		name string
-		msgs []MockCtlMsg
-		rpc  func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
-		sql  string
+		name         string
+		resumeTokens [][]byte
+		rpc          func(ct context.Context, resumeToken []byte) (streamingReceiver, error)
+		sql          string
 		// Expected values
 		want         []*sppb.PartialResultSet      // PartialResultSets that should be returned to caller
 		queue        []*sppb.PartialResultSet      // PartialResultSets that should be buffered
@@ -920,14 +932,9 @@ func TestRsdBlockingStates(t *testing.T) {
 		},
 		{
 			// unConnected->queueingRetryable->queueingRetryable
-			name: "unConnected->queueingRetryable->queueingRetryable",
-			msgs: []MockCtlMsg{
-				{},
-				{Err: nil, ResumeToken: true},
-				{Err: nil, ResumeToken: true},
-				{},
-			},
-			sql: "SELECT t.key key, t.value value FROM t_mock t",
+			name:         "unConnected->queueingRetryable->queueingRetryable",
+			resumeTokens: [][]byte{{}, EncodeResumeToken(1), EncodeResumeToken(2), {}},
+			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			want: []*sppb.PartialResultSet{
 				{
 					Metadata: kvMeta,
@@ -951,6 +958,15 @@ func TestRsdBlockingStates(t *testing.T) {
 						{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
 					},
 					ResumeToken: EncodeResumeToken(2),
+				},
+				// The server sends an io.EOF at last and the decoder will
+				// flush out all messages in the internal queue.
+				{
+					Metadata: kvMeta,
+					Values: []*proto3.Value{
+						{Kind: &proto3.Value_StringValue{StringValue: keyStr(3)}},
+						{Kind: &proto3.Value_StringValue{StringValue: valStr(3)}},
+					},
 				},
 			},
 			queue: []*sppb.PartialResultSet{
@@ -976,17 +992,20 @@ func TestRsdBlockingStates(t *testing.T) {
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->queueingRetryable->queueingRetryable
 			name: "unConnected->queueingRetryable->queueingUnretryable->queueingRetryable->queueingRetryable",
-			msgs: func() (m []MockCtlMsg) {
-				for i := 0; i < maxBuffers+1; i++ {
-					m = append(m, MockCtlMsg{})
-				}
-				m = append(m, MockCtlMsg{Err: nil, ResumeToken: true})
-				m = append(m, MockCtlMsg{})
-				return m
+			resumeTokens: func() (rts [][]byte) {
+				rts = make([][]byte, maxBuffers+3)
+				rts[maxBuffers+1] = EncodeResumeToken(maxBuffers + 1)
+				return rts
 			}(),
 			sql: "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
-				for i := 0; i < maxBuffers+2; i++ {
+				// The server sends an io.EOF at last and the decoder will
+				// flush out all messages in the internal queue. Although the
+				// last message is supposed to be queued and the decoder waits
+				// for the next resume token, an io.EOF leads to a `finished`
+				// state that the last message will be removed from the queue
+				// and be read by the client side.
+				for i := 0; i < maxBuffers+3; i++ {
 					s = append(s, &sppb.PartialResultSet{
 						Metadata: kvMeta,
 						Values: []*proto3.Value{
@@ -1027,15 +1046,9 @@ func TestRsdBlockingStates(t *testing.T) {
 		},
 		{
 			// unConnected->queueingRetryable->queueingUnretryable->finished
-			name: "unConnected->queueingRetryable->queueingUnretryable->finished",
-			msgs: func() (m []MockCtlMsg) {
-				for i := 0; i < maxBuffers; i++ {
-					m = append(m, MockCtlMsg{})
-				}
-				m = append(m, MockCtlMsg{Err: io.EOF, ResumeToken: false})
-				return m
-			}(),
-			sql: "SELECT t.key key, t.value value FROM t_mock t",
+			name:         "unConnected->queueingRetryable->queueingUnretryable->finished",
+			resumeTokens: make([][]byte, maxBuffers),
+			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			want: func() (s []*sppb.PartialResultSet) {
 				for i := 0; i < maxBuffers; i++ {
 					s = append(s, &sppb.PartialResultSet{
@@ -1060,16 +1073,25 @@ func TestRsdBlockingStates(t *testing.T) {
 		},
 	} {
 		t.Run(test.name, func(t *testing.T) {
-			ms := NewMockCloudSpanner(t, trxTs)
-			ms.Serve()
-			cc := dialMock(t, ms)
-			mc := sppb.NewSpannerClient(cc)
+			server, c, teardown := setupMockedTestServer(t)
+			defer teardown()
+			mc, err := c.sc.nextClient()
+			if err != nil {
+				t.Fatalf("failed to create a grpc client")
+			}
+
+			session, err := createSession(mc)
+			if err != nil {
+				t.Fatalf("failed to create a session")
+			}
+
 			if test.rpc == nil {
 				// Avoid using test.sql directly in closure because for loop changes
 				// test.
 				sql := test.sql
 				test.rpc = func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 					return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+						Session:     session.Name,
 						Sql:         sql,
 						ResumeToken: resumeToken,
 					})
@@ -1115,9 +1137,11 @@ func TestRsdBlockingStates(t *testing.T) {
 				}
 			}
 			// Let mock server stream given messages to resumableStreamDecoder.
-			for _, m := range test.msgs {
-				ms.AddMsg(m.Err, m.ResumeToken)
+			err = setupStatementResult(t, server, test.sql, len(test.resumeTokens), test.resumeTokens)
+			if err != nil {
+				t.Fatalf("failed to set up a result for a statement: %v", err)
 			}
+			var mutex = &sync.Mutex{}
 			var rs []*sppb.PartialResultSet
 			go func() {
 				for {
@@ -1125,7 +1149,9 @@ func TestRsdBlockingStates(t *testing.T) {
 						// Note that r.Next also exits on context cancel/timeout.
 						return
 					}
+					mutex.Lock()
 					rs = append(rs, r.get())
+					mutex.Unlock()
 				}
 			}()
 			// Verify that resumableStreamDecoder reaches expected state.
@@ -1138,6 +1164,8 @@ func TestRsdBlockingStates(t *testing.T) {
 				}
 				// Check if resumableStreamDecoder returns expected array of
 				// PartialResultSets.
+				mutex.Lock()
+				defer mutex.Unlock()
 				if !testEqual(rs, test.want) {
 					t.Fatalf("received PartialResultSets: \n%v\n, want \n%v\n", rs, test.want)
 				}
@@ -1156,10 +1184,6 @@ func TestRsdBlockingStates(t *testing.T) {
 				}
 			case <-time.After(1 * time.Second):
 				t.Fatal("Timeout in waiting for state change")
-			}
-			ms.Stop()
-			if err := cc.Close(); err != nil {
-				t.Fatal(err)
 			}
 		})
 	}
@@ -1199,23 +1223,39 @@ func (sr *sReceiver) waitn(n int) error {
 func TestQueueBytes(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
+
+	server, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
+	}
+
+	rt1 := EncodeResumeToken(1)
+	rt2 := EncodeResumeToken(2)
+	rt3 := EncodeResumeToken(3)
+	resumeTokens := [][]byte{rt1, rt1, rt1, rt2, rt2, rt3}
+	err = setupStatementResult(t, server, "SELECT t.key key, t.value value FROM t_mock t", len(resumeTokens), resumeTokens)
+	if err != nil {
+		t.Fatalf("failed to set up a result for a statement: %v", err)
+	}
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
 	sr := &sReceiver{
 		c: make(chan int, 1000), // will never block in this test
 	}
-	wantQueueBytes := 0
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	r := newResumableStreamDecoder(
+	decoder := newResumableStreamDecoder(
 		ctx,
 		nil,
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+				Session:     session.Name,
 				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
 				ResumeToken: resumeToken,
 			})
@@ -1224,61 +1264,36 @@ func TestQueueBytes(t *testing.T) {
 		},
 		nil,
 	)
-	go func() {
-		for r.next() {
-		}
-	}()
-	// Let server send maxBuffers / 2 rows.
-	for i := 0; i < maxBuffers/2; i++ {
-		wantQueueBytes += proto.Size(&sppb.PartialResultSet{
-			Metadata: kvMeta,
-			Values: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
-			},
-		})
-		ms.AddMsg(nil, false)
+
+	sizeOfPRS := proto.Size(&sppb.PartialResultSet{
+		Metadata: kvMeta,
+		Values: []*proto3.Value{
+			{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
+			{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+		},
+		ResumeToken: rt1,
+	})
+
+	decoder.next()
+	decoder.next()
+	decoder.next()
+	if got, want := decoder.bytesBetweenResumeTokens, int32(2*sizeOfPRS); got != want {
+		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
-	if err := sr.waitn(maxBuffers/2 + 1); err != nil {
-		t.Fatalf("failed to wait for the first %v recv() calls: %v", maxBuffers, err)
+
+	decoder.next()
+	if decoder.bytesBetweenResumeTokens != 0 {
+		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
-	if int32(wantQueueBytes) != r.bytesBetweenResumeTokens {
-		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", r.bytesBetweenResumeTokens, wantQueueBytes)
+
+	decoder.next()
+	if got, want := decoder.bytesBetweenResumeTokens, int32(sizeOfPRS); got != want {
+		t.Errorf("r.bytesBetweenResumeTokens = %v, want %v", got, want)
 	}
-	// Now send a resume token to drain the queue.
-	ms.AddMsg(nil, true)
-	// Wait for all rows to be processes.
-	if err := sr.waitn(1); err != nil {
-		t.Fatalf("failed to wait for rows to be processed: %v", err)
-	}
-	if r.bytesBetweenResumeTokens != 0 {
-		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", r.bytesBetweenResumeTokens)
-	}
-	// Let server send maxBuffers - 1 rows.
-	wantQueueBytes = 0
-	for i := 0; i < maxBuffers-1; i++ {
-		wantQueueBytes += proto.Size(&sppb.PartialResultSet{
-			Metadata: kvMeta,
-			Values: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
-			},
-		})
-		ms.AddMsg(nil, false)
-	}
-	if err := sr.waitn(maxBuffers - 1); err != nil {
-		t.Fatalf("failed to wait for %v rows to be processed: %v", maxBuffers-1, err)
-	}
-	if int32(wantQueueBytes) != r.bytesBetweenResumeTokens {
-		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", r.bytesBetweenResumeTokens)
-	}
-	// Trigger a state transition: queueingRetryable -> queueingUnretryable.
-	ms.AddMsg(nil, false)
-	if err := sr.waitn(1); err != nil {
-		t.Fatalf("failed to wait for state transition: %v", err)
-	}
-	if r.bytesBetweenResumeTokens != 0 {
-		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", r.bytesBetweenResumeTokens)
+
+	decoder.next()
+	if decoder.bytesBetweenResumeTokens != 0 {
+		t.Errorf("r.bytesBetweenResumeTokens = %v, want 0", decoder.bytesBetweenResumeTokens)
 	}
 }
 
@@ -1286,23 +1301,59 @@ func TestQueueBytes(t *testing.T) {
 func TestResumeToken(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
+	query := "SELECT t.key key, t.value value FROM t_mock t"
+	server, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
+	}
+
+	rt1 := EncodeResumeToken(1)
+	rt2 := EncodeResumeToken(2)
+	resumeTokens := make([][]byte, 3+maxBuffers)
+	resumeTokens[1] = rt1
+	resumeTokens[3+maxBuffers-1] = rt2
+	err = setupStatementResult(t, server, query, len(resumeTokens), resumeTokens)
+	if err != nil {
+		t.Fatalf("failed to set up a result for a statement: %v", err)
+	}
+
+	// The first error will be retried.
+	server.TestSpanner.AddPartialResultSetError(
+		query,
+		PartialResultSetExecutionTime{
+			ResumeToken: rt1,
+			Err:         status.Error(codes.Unavailable, "mock server unavailable"),
+		},
+	)
+	// The second error will not be retried because maxBytesBetweenResumeTokens
+	// is reached and the state of resumableStreamDecoder:
+	// queueingRetryable -> queueingUnretryable. The query will just fail.
+	server.TestSpanner.AddPartialResultSetError(
+		query,
+		PartialResultSetExecutionTime{
+			ResumeToken: rt2,
+			Err:         status.Error(codes.Unavailable, "mock server wants some sleep"),
+		},
+	)
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
 	sr := &sReceiver{
 		c: make(chan int, 1000), // will never block in this test
 	}
 	rows := []*Row{}
-	done := make(chan error)
-	streaming := func() {
-		// Establish a stream to mock cloud spanner server.
-		iter := stream(context.Background(), nil,
+
+	streaming := func() *RowIterator {
+		return stream(context.Background(), nil,
 			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				r, err := mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-					Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+					Session:     session.Name,
+					Sql:         query,
 					ResumeToken: resumeToken,
 				})
 				sr.rpcReceiver = r
@@ -1310,39 +1361,88 @@ func TestResumeToken(t *testing.T) {
 			},
 			nil,
 			func(error) {})
-		defer iter.Stop()
-		var err error
-		for {
-			var row *Row
-			row, err = iter.Next()
-			if err == iterator.Done {
-				err = nil
-				break
-			}
-			if err != nil {
-				break
-			}
-			rows = append(rows, row)
-		}
-		done <- err
 	}
-	go streaming()
-	// Server streaming row 0 - 2, only row 1 has resume token.
-	// Client will receive row 0 - 2, so it will try receiving for
-	// 4 times (the last recv will block), and only row 0 - 1 will
-	// be yielded.
+
+	// Establish a stream to mock cloud spanner server.
+	iter := streaming()
+	defer iter.Stop()
+	var row *Row
+
+	// Read first two rows.
 	for i := 0; i < 3; i++ {
-		if i == 1 {
-			ms.AddMsg(nil, true)
-		} else {
-			ms.AddMsg(nil, false)
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("failed to get next value: %v", err)
 		}
+		rows = append(rows, row)
 	}
-	// Wait for 4 receive attempts, as explained above.
-	if err := sr.waitn(4); err != nil {
-		t.Fatalf("failed to wait for row 0 - 2: %v", err)
-	}
+
 	want := []*Row{
+		{
+			fields: kvMeta.RowType.Fields,
+			vals: []*proto3.Value{
+				{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
+				{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
+			},
+		},
+		{
+			fields: kvMeta.RowType.Fields,
+			vals: []*proto3.Value{
+				{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
+				{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
+			},
+		},
+		{
+			fields: kvMeta.RowType.Fields,
+			vals: []*proto3.Value{
+				{Kind: &proto3.Value_StringValue{StringValue: keyStr(2)}},
+				{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
+			},
+		},
+	}
+	if !testEqual(rows, want) {
+		t.Errorf("received rows: \n%v\n; but want\n%v\n", rows, want)
+	}
+
+	// Trigger state change of resumableStreamDecoder:
+	// queueingRetryable -> queueingUnretryable
+	for i := 0; i < maxBuffers-1; i++ {
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("failed to get next value: %v", err)
+		}
+		rows = append(rows, row)
+	}
+
+	// Since resumableStreamDecoder is already at queueingUnretryable state,
+	// query will just fail.
+	_, err = iter.Next()
+	if wantErr := spannerErrorf(codes.Unavailable, "mock server wants some sleep"); !testEqual(err, wantErr) {
+		t.Fatalf("stream() returns error: %v, but want error: %v", err, wantErr)
+	}
+
+	// Let server send two rows without resume token.
+	resumeTokens = make([][]byte, 2)
+	err = setupStatementResult(t, server, query, len(resumeTokens), resumeTokens)
+	if err != nil {
+		t.Fatalf("failed to set up a result for a statement: %v", err)
+	}
+
+	// Reconnect to mock Cloud Spanner.
+	rows = []*Row{}
+	iter = streaming()
+	defer iter.Stop()
+
+	for i := 0; i < 2; i++ {
+		row, err = iter.Next()
+		if err != nil {
+			t.Fatalf("failed to get next value: %v", err)
+		}
+		rows = append(rows, row)
+	}
+
+	// Verify if a normal server side EOF flushes all queued rows.
+	want = []*Row{
 		{
 			fields: kvMeta.RowType.Fields,
 			vals: []*proto3.Value{
@@ -1361,121 +1461,6 @@ func TestResumeToken(t *testing.T) {
 	if !testEqual(rows, want) {
 		t.Errorf("received rows: \n%v\n; but want\n%v\n", rows, want)
 	}
-	// Inject resumable failure.
-	ms.AddMsg(
-		status.Errorf(codes.Unavailable, "mock server unavailable"),
-		false,
-	)
-	// Test if client detects the resumable failure and retries.
-	if err := sr.waitn(1); err != nil {
-		t.Fatalf("failed to wait for client to retry: %v", err)
-	}
-	// Client has resumed the query, now server resend row 2.
-	ms.AddMsg(nil, true)
-	if err := sr.waitn(1); err != nil {
-		t.Fatalf("failed to wait for resending row 2: %v", err)
-	}
-	// Now client should have received row 0 - 2.
-	want = append(want, &Row{
-		fields: kvMeta.RowType.Fields,
-		vals: []*proto3.Value{
-			{Kind: &proto3.Value_StringValue{StringValue: keyStr(2)}},
-			{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
-		},
-	})
-	if !testEqual(rows, want) {
-		t.Errorf("received rows: \n%v\n, want\n%v\n", rows, want)
-	}
-	// Sending 3rd - (maxBuffers+1)th rows without resume tokens, client should buffer them.
-	for i := 3; i < maxBuffers+2; i++ {
-		ms.AddMsg(nil, false)
-	}
-	if err := sr.waitn(maxBuffers - 1); err != nil {
-		t.Fatalf("failed to wait for row 3-%v: %v", maxBuffers+1, err)
-	}
-	// Received rows should be unchanged.
-	if !testEqual(rows, want) {
-		t.Errorf("receive rows: \n%v\n, want\n%v\n", rows, want)
-	}
-	// Send (maxBuffers+2)th row to trigger state change of resumableStreamDecoder:
-	// queueingRetryable -> queueingUnretryable
-	ms.AddMsg(nil, false)
-	if err := sr.waitn(1); err != nil {
-		t.Fatalf("failed to wait for row %v: %v", maxBuffers+2, err)
-	}
-	// Client should yield row 3rd - (maxBuffers+2)th to application. Therefore,
-	// application should see row 0 - (maxBuffers+2)th so far.
-	for i := 3; i < maxBuffers+3; i++ {
-		want = append(want, &Row{
-			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(i)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(i)}},
-			},
-		})
-	}
-	if !testEqual(rows, want) {
-		t.Errorf("received rows: \n%v\n; want\n%v\n", rows, want)
-	}
-	// Inject resumable error, but since resumableStreamDecoder is already at
-	// queueingUnretryable state, query will just fail.
-	ms.AddMsg(
-		status.Errorf(codes.Unavailable, "mock server wants some sleep"),
-		false,
-	)
-	var gotErr error
-	select {
-	case gotErr = <-done:
-	case <-time.After(10 * time.Second):
-		t.Fatalf("timeout in waiting for failed query to return.")
-	}
-	if wantErr := spannerErrorf(codes.Unavailable, "mock server wants some sleep"); !testEqual(gotErr, wantErr) {
-		t.Fatalf("stream() returns error: %v, but want error: %v", gotErr, wantErr)
-	}
-
-	// Reconnect to mock Cloud Spanner.
-	rows = []*Row{}
-	go streaming()
-	// Let server send two rows without resume token.
-	for i := maxBuffers + 3; i < maxBuffers+5; i++ {
-		ms.AddMsg(nil, false)
-	}
-	if err := sr.waitn(3); err != nil {
-		t.Fatalf("failed to wait for row %v - %v: %v", maxBuffers+3, maxBuffers+5, err)
-	}
-	if len(rows) > 0 {
-		t.Errorf("client received some rows unexpectedly: %v, want nothing", rows)
-	}
-	// Let server end the query.
-	ms.AddMsg(io.EOF, false)
-	select {
-	case gotErr = <-done:
-	case <-time.After(10 * time.Second):
-		t.Fatalf("timeout in waiting for failed query to return")
-	}
-	if gotErr != nil {
-		t.Fatalf("stream() returns unexpected error: %v, but want no error", gotErr)
-	}
-	// Verify if a normal server side EOF flushes all queued rows.
-	want = []*Row{
-		{
-			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(maxBuffers + 3)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(maxBuffers + 3)}},
-			},
-		},
-		{
-			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
-				{Kind: &proto3.Value_StringValue{StringValue: keyStr(maxBuffers + 4)}},
-				{Kind: &proto3.Value_StringValue{StringValue: valStr(maxBuffers + 4)}},
-			},
-		},
-	}
-	if !testEqual(rows, want) {
-		t.Errorf("received rows: \n%v\n; but want\n%v\n", rows, want)
-	}
 }
 
 // Verify that streaming query get retried upon real gRPC server transport
@@ -1483,66 +1468,57 @@ func TestResumeToken(t *testing.T) {
 func TestGrpcReconnect(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
-	retry := make(chan int)
-	row := make(chan int)
-	var err error
-	go func() {
-		r := 0
-		// Establish a stream to mock cloud spanner server.
-		iter := stream(context.Background(), nil,
-			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
-				if r > 0 {
-					// This RPC attempt is a retry, signal it.
-					retry <- r
-				}
-				r++
-				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-					Sql:         "SELECT t.key key, t.value value FROM t_mock t",
-					ResumeToken: resumeToken,
-				})
 
-			},
-			nil,
-			func(error) {})
-		defer iter.Stop()
-		for {
-			_, err = iter.Next()
-			if err == iterator.Done {
-				err = nil
-				break
-			}
-			if err != nil {
-				break
-			}
-			row <- 0
-		}
-	}()
-	// Add a message and wait for the receipt.
-	ms.AddMsg(nil, true)
-	select {
-	case <-row:
-	case <-time.After(10 * time.Second):
-		t.Fatalf("expect stream to be established within 10 seconds, but it didn't")
+	server, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
 	}
-	// Error injection: force server to close all connections.
-	ms.Stop()
-	// Test to see if client respond to the real RPC failure correctly by
-	// retrying RPC.
-	select {
-	case r, ok := <-retry:
-		if ok && r == 1 {
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
+	// Simulate an unavailable error to interrupt the stream of PartialResultSet
+	// in order to test the grpc retrying mechanism.
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Unavailable, "server is unavailable"),
+		},
+	)
+
+	// The retry is counted from the second call.
+	r := -1
+	// Establish a stream to mock cloud spanner server.
+	iter := stream(context.Background(), nil,
+		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
+			r++
+			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
+				Session:     session.Name,
+				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+				ResumeToken: resumeToken,
+			})
+
+		},
+		nil,
+		func(error) {})
+	defer iter.Stop()
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			err = nil
 			break
 		}
+		if err != nil {
+			break
+		}
+	}
+	if r != 1 {
 		t.Errorf("retry count = %v, want 1", r)
-	case <-time.After(10 * time.Second):
-		t.Errorf("client library failed to respond after 10 seconds, aborting")
-		return
 	}
 }
 
@@ -1550,27 +1526,32 @@ func TestGrpcReconnect(t *testing.T) {
 func TestCancelTimeout(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
+	server, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodExecuteStreamingSql,
+		SimulatedExecutionTime{MinimumExecutionTime: 1 * time.Second},
+	)
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
+	}
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
 	done := make(chan int)
-	go func() {
-		for {
-			ms.AddMsg(nil, true)
-		}
-	}()
+
 	// Test cancelling query.
 	ctx, cancel := context.WithCancel(context.Background())
-	var err error
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil,
 			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-					Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+					Session:     session.Name,
+					Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 					ResumeToken: resumeToken,
 				})
 			},
@@ -1597,15 +1578,17 @@ func TestCancelTimeout(t *testing.T) {
 	case <-time.After(1 * time.Second):
 		t.Errorf("query doesn't exit timely after being cancelled")
 	}
+
 	// Test query timeout.
-	ctx, cancel = context.WithTimeout(context.Background(), 1*time.Second)
+	ctx, cancel = context.WithTimeout(context.Background(), 100*time.Millisecond)
 	defer cancel()
 	go func() {
 		// Establish a stream to mock cloud spanner server.
 		iter := stream(ctx, nil,
 			func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 				return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-					Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+					Session:     session.Name,
+					Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 					ResumeToken: resumeToken,
 				})
 			},
@@ -1634,31 +1617,64 @@ func TestCancelTimeout(t *testing.T) {
 	}
 }
 
+func setupStatementResult(t *testing.T, server *MockedSpannerInMemTestServer, stmt string, rowCount int, resumeTokens [][]byte) error {
+	selectValues := make([][]string, rowCount)
+	for i := 0; i < rowCount; i++ {
+		selectValues[i] = []string{keyStr(i), valStr(i)}
+	}
+
+	rows := make([]*structpb.ListValue, len(selectValues))
+	for i, values := range selectValues {
+		rowValues := make([]*structpb.Value, len(kvMeta.RowType.Fields))
+		for j, value := range values {
+			rowValues[j] = &structpb.Value{
+				Kind: &structpb.Value_StringValue{StringValue: value},
+			}
+		}
+		rows[i] = &structpb.ListValue{
+			Values: rowValues,
+		}
+	}
+	resultSet := &sppb.ResultSet{
+		Metadata: kvMeta,
+		Rows:     rows,
+	}
+	result := &StatementResult{
+		Type:         StatementResultResultSet,
+		ResultSet:    resultSet,
+		ResumeTokens: resumeTokens,
+	}
+	return server.TestSpanner.PutStatementResult(stmt, result)
+}
+
 func TestRowIteratorDo(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
 
-	for i := 0; i < 3; i++ {
-		ms.AddMsg(nil, false)
+	_, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
 	}
-	ms.AddMsg(io.EOF, true)
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
 	nRows := 0
 	iter := stream(context.Background(), nil,
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+				Session:     session.Name,
+				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
 			})
 		},
 		nil,
 		func(error) {})
-	err := iter.Do(func(r *Row) error { nRows++; return nil })
+	err = iter.Do(func(r *Row) error { nRows++; return nil })
 	if err != nil {
 		t.Errorf("Using Do: %v", err)
 	}
@@ -1670,28 +1686,31 @@ func TestRowIteratorDo(t *testing.T) {
 func TestRowIteratorDoWithError(t *testing.T) {
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
 
-	for i := 0; i < 3; i++ {
-		ms.AddMsg(nil, false)
+	_, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
 	}
-	ms.AddMsg(io.EOF, true)
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
+
 	iter := stream(context.Background(), nil,
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+				Session:     session.Name,
+				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
 			})
 		},
 		nil,
 		func(error) {})
 	injected := errors.New("Failed iterator")
-	err := iter.Do(func(r *Row) error { return injected })
+	err = iter.Do(func(r *Row) error { return injected })
 	if err != injected {
 		t.Errorf("got <%v>, want <%v>", err, injected)
 	}
@@ -1701,27 +1720,30 @@ func TestIteratorStopEarly(t *testing.T) {
 	ctx := context.Background()
 	restore := setMaxBytesBetweenResumeTokens()
 	defer restore()
-	ms := NewMockCloudSpanner(t, trxTs)
-	ms.Serve()
-	defer ms.Stop()
-	cc := dialMock(t, ms)
-	defer cc.Close()
-	mc := sppb.NewSpannerClient(cc)
 
-	ms.AddMsg(nil, false)
-	ms.AddMsg(nil, false)
-	ms.AddMsg(io.EOF, true)
+	_, c, teardown := setupMockedTestServer(t)
+	defer teardown()
+	mc, err := c.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to create a grpc client")
+	}
+
+	session, err := createSession(mc)
+	if err != nil {
+		t.Fatalf("failed to create a session")
+	}
 
 	iter := stream(ctx, nil,
 		func(ct context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return mc.ExecuteStreamingSql(ct, &sppb.ExecuteSqlRequest{
-				Sql:         "SELECT t.key key, t.value value FROM t_mock t",
+				Session:     session.Name,
+				Sql:         SelectSingerIDAlbumIDAlbumTitleFromAlbums,
 				ResumeToken: resumeToken,
 			})
 		},
 		nil,
 		func(error) {})
-	_, err := iter.Next()
+	_, err = iter.Next()
 	if err != nil {
 		t.Fatalf("before Stop: %v", err)
 	}
@@ -1742,10 +1764,10 @@ func TestIteratorWithError(t *testing.T) {
 	}
 }
 
-func dialMock(t *testing.T, ms *MockCloudSpanner) *grpc.ClientConn {
-	cc, err := grpc.Dial(ms.Addr(), grpc.WithInsecure(), grpc.WithBlock())
-	if err != nil {
-		t.Fatalf("Dial(%q) = %v", ms.Addr(), err)
+func createSession(client *vkit.Client) (*sppb.Session, error) {
+	var formattedDatabase string = fmt.Sprintf("projects/%s/instances/%s/databases/%s", "[PROJECT]", "[INSTANCE]", "[DATABASE]")
+	var request = &sppb.CreateSessionRequest{
+		Database: formattedDatabase,
 	}
-	return cc
+	return client.CreateSession(context.Background(), request)
 }
