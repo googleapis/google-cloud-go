@@ -1100,7 +1100,11 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Create a query that will only select the "Name" attr of objects, and
 	// invoke object listing.
-	query := &Query{Prefix: ""}
+	query := &Query{
+		Prefix:      "",
+		StartOffset: "obj/with/slashes",
+		EndOffset:   "obj2",
+	}
 	query.SetAttrSelection([]string{"Name"})
 
 	var gotNames []string
@@ -1125,7 +1129,7 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 	sort.Strings(sortedNames)
 	sort.Strings(gotNames)
 
-	if !cmp.Equal(sortedNames, gotNames) {
+	if !cmp.Equal(sortedNames[:len(objects)-1], gotNames) {
 		t.Errorf("names = %v, want %v", gotNames, sortedNames)
 	}
 }
