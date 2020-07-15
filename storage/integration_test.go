@@ -1099,7 +1099,7 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Create a query that will only select the "Name" attr of objects, and
-	// invoke object listing.
+	// invoke object listing, with given offsets. The last object will be excluded.
 	query := &Query{
 		Prefix:      "",
 		StartOffset: "obj/with/slashes",
@@ -1130,14 +1130,18 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 	sort.Strings(gotNames)
 
 	if !cmp.Equal(sortedNames[:len(objects)-1], gotNames) {
-		t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		t.Errorf("names = %v, want %v", gotNames, sortedNames[:len(objects)-1])
 	}
 }
 
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Tests that all selected attributes work - query succeeds (without actually
 	// verifying the returned results).
-	query := &Query{Prefix: ""}
+	query := &Query{
+		Prefix:      "",
+		StartOffset: "obj/with/slashes",
+		EndOffset:   "obj2",
+	}
 	var selectedAttrs []string
 	for k := range attrToFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
@@ -1157,8 +1161,8 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 		count++
 	}
 
-	if count != len(objects) {
-		t.Errorf("count = %v, want %v", count, len(objects))
+	if count != len(objects)-1 {
+		t.Errorf("count = %v, want %v", count, len(objects)-1)
 	}
 }
 
