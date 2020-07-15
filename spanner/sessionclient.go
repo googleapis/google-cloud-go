@@ -286,22 +286,21 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 
 // mergeCallOptions merges two CallOptions into one and the first argument has
 // a lower order of precedence than the second one.
-func mergeCallOptions(low *vkit.CallOptions, high *vkit.CallOptions) *vkit.CallOptions {
+func mergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOptions {
 	res := &vkit.CallOptions{}
-
 	resVal := reflect.ValueOf(res).Elem()
-	lowVal := reflect.ValueOf(low).Elem()
-	highVal := reflect.ValueOf(high).Elem()
+	aVal := reflect.ValueOf(a).Elem()
+	bVal := reflect.ValueOf(b).Elem()
 
-	t := lowVal.Type()
+	t := aVal.Type()
 
-	for i := 0; i < lowVal.NumField(); i++ {
+	for i := 0; i < aVal.NumField(); i++ {
 		fieldName := t.Field(i).Name
 
-		lowFieldVal := lowVal.Field(i).Interface().([]gax.CallOption)
-		highFieldVal := highVal.Field(i).Interface().([]gax.CallOption)
+		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
+		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
 
-		merged := append(lowFieldVal, highFieldVal...)
+		merged := append(aFieldVal, bFieldVal...)
 		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
 	}
 	return res
