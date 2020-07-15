@@ -112,7 +112,7 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	resp, err = client.PartitionRead(ctx, &sppb.PartitionReadRequest{
+	resp, err = client.PartitionRead(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.PartitionReadRequest{
 		Session:          sid,
 		Transaction:      ts,
 		Table:            table,
@@ -173,7 +173,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:           params,
 		ParamTypes:       paramTypes,
 	}
-	resp, err := client.PartitionQuery(ctx, req)
+	resp, err := client.PartitionQuery(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
