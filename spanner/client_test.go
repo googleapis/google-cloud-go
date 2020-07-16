@@ -1762,7 +1762,8 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 }
 
-func TestClient_WithCallOptions(t *testing.T) {
+func TestClient_CallOptions(t *testing.T) {
+	t.Parallel()
 	co := &vkit.CallOptions{
 		CreateSession: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -1796,6 +1797,39 @@ func TestClient_WithCallOptions(t *testing.T) {
 	c.CallOptions.CreateSession[1].Resolve(cs)
 	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
 		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+}
+
+func TestClient_QueryWithCallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		ExecuteSql: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.DeadlineExceeded, "Deadline exceeded")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
