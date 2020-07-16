@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -272,5 +273,6 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	client.SetGoogleClientInfo("gccl", version.Repo)
 	return client, nil
 }
