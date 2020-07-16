@@ -57,6 +57,9 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 					if !strings.HasPrefix(token[0], "gl-go/") {
 						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
+					if !strings.Contains(token[0], "gccl/") {
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
+					}
 					return nil
 				},
 			},
