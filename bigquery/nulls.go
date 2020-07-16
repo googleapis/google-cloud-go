@@ -26,6 +26,16 @@ import (
 	"cloud.google.com/go/civil"
 )
 
+var (
+	jsonNull      = []byte("null")
+	posInf        = []byte(`"+Inf"`)
+	inf           = []byte(`"Inf"`)
+	minusInf      = []byte(`"-Inf"`)
+	infinity      = []byte(`"Infinity"`)
+	minusInfinity = []byte(`"-Infinity"`)
+	nan           = []byte(`"NaN"`)
+)
+
 // NullInt64 represents a BigQuery INT64 that may be NULL.
 type NullInt64 struct {
 	Int64 int64
@@ -113,13 +123,19 @@ func (n NullInt64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.In
 
 // MarshalJSON converts the NullFloat64 to JSON.
 func (n NullFloat64) MarshalJSON() (b []byte, err error) {
-	if n.Valid && (math.IsInf(n.Float64, 0) || math.IsNaN(n.Float64)) {
-		b = append(b, '"')
-		b = strconv.AppendFloat(b, n.Float64, 'g', -1, 64)
-		b = append(b, '"')
-		return b, nil
+	if n.Valid {
+		switch {
+		case math.IsInf(n.Float64, 1):
+			return infinity, nil
+		case math.IsInf(n.Float64, -1):
+			return minusInfinity, nil
+		case math.IsNaN(n.Float64):
+			return nan, nil
+		default:
+			return json.Marshal(n.Float64)
+		}
 	}
-	return nulljson(n.Valid, n.Float64)
+	return jsonNull, nil
 }
 
 // MarshalJSON converts the NullBool to JSON.
@@ -160,14 +176,6 @@ func nullstr(valid bool, v interface{}) string {
 	return fmt.Sprint(v)
 }
 
-var (
-	jsonNull = []byte("null")
-	posInf   = []byte(`"+Inf"`)
-	posInf2   = []byte(`"Inf"`)
-	negInf   = []byte(`"-Inf"`)
-	nan      = []byte(`"NaN"`)
-)
-
 func nulljson(valid bool, v interface{}) ([]byte, error) {
 	if !valid {
 		return jsonNull, nil
@@ -196,14 +204,19 @@ func (n *NullFloat64) UnmarshalJSON(b []byte) error {
 	n.Float64 = 0
 	if bytes.Equal(b, jsonNull) {
 		return nil
-	} else if bytes.HasPrefix(b, posInf) || bytes.HasPrefix(b, posInf2) {
+	} else if bytes.Equal(b, posInf) || bytes.Equal(b, inf) || bytes.Equal(b, infinity) {
 		n.Float64 = math.Inf(1)
-	} else if bytes.HasPrefix(b, negInf) {
+		n.Valid = true
+		return nil
+	} else if bytes.Equal(b, minusInf) || bytes.Equal(b, minusInfinity) {
 		n.Float64 = math.Inf(-1)
+		n.Valid = true
+		return nil
 	} else if bytes.Equal(b, nan) {
 		n.Float64 = math.NaN()
+		n.Valid = true
+		return nil
 	}
-
 	if err := json.Unmarshal(b, &n.Float64); err != nil {
 		return err
 	}
