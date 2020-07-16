@@ -582,7 +582,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: q,
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: &q,
 	}
 }
 
@@ -590,7 +590,7 @@ func (q Query) Documents(ctx context.Context) *DocumentIterator {
 type DocumentIterator struct {
 	iter docIterator
 	err  error
-	q    Query
+	q    *Query
 }
 
 // Unexported interface so we can have two different kinds of DocumentIterator: one
@@ -637,7 +637,7 @@ func (it *DocumentIterator) Stop() {
 func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 	defer it.Stop()
 
-	q := &it.q
+	q := it.q
 	limitedToLast := q.limitToLast
 	if q.limitToLast {
 		// Flip order statements before posting a request.
@@ -788,7 +788,7 @@ func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	}
 	return &QuerySnapshot{
 		Documents: &DocumentIterator{
-			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)),
+			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)), q: &it.Query,
 		},
 		Size:     btree.Len(),
 		Changes:  changes,
