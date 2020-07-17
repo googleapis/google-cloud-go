@@ -67,8 +67,13 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		case reflect.Interface:
 			// Extract the interface's underlying value and then retry the save.
 			// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
-			v = v.Elem()
-			return reflectFieldSave(props, p, name, opts, v)
+			if v.IsNil() {
+				// Nil pointer becomes a nil property value (unless omitempty, handled above).
+				p.Value = nil
+				*props = append(*props, p)
+				return nil
+			}
+			return reflectFieldSave(props, p, name, opts, v.Elem())
 
 		case reflect.Slice:
 			if v.Type().Elem().Kind() == reflect.Uint8 {
