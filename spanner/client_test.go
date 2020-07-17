@@ -27,8 +27,10 @@ import (
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
+	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -1757,6 +1759,77 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 	if !strings.Contains(se.Error(), msg) {
 		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}
+
+func TestClient_CallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		CreateSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable, codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	defer teardown()
+
+	c, err := client.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to get a session client: %v", err)
+	}
+
+	cs := &gax.CallSettings{}
+	// This is the default retry setting.
+	c.CallOptions.CreateSession[0].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+
+	// This is the custom retry setting.
+	c.CallOptions.CreateSession[1].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+}
+
+func TestClient_QueryWithCallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		ExecuteSql: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.DeadlineExceeded, "Deadline exceeded")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
 	}
 }
 
