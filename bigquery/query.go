@@ -20,6 +20,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/internal/uid"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -393,8 +394,8 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		Location:           q.Location,
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		// TODO: uncomment once request ID is enabled
-		// RequestId: uid.NewSpace("request", nil).New(),
-		Labels: q.Labels,
+		RequestId: uid.NewSpace("request", nil).New(),
+		Labels:    q.Labels,
 	}
 	if q.QueryConfig.DisableQueryCache {
 		pfalse := false

@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	bq "google.golang.org/api/bigquery/v2"
 )
 
@@ -470,7 +471,7 @@ func TestProbeFastPath(t *testing.T) {
 		if tc.wantErr && err == nil {
 			t.Errorf("case %d wanted error, got nil", i)
 		}
-		if diff := testutil.Diff(gotReq, tc.wantReq); diff != "" {
+		if diff := testutil.Diff(gotReq, tc.wantReq, cmpopts.IgnoreFields(bq.QueryRequest{}, "RequestId")); diff != "" {
 			t.Errorf("QueryRequest case %d: -got +want:\n%s", i, diff)
 		}
 	}
