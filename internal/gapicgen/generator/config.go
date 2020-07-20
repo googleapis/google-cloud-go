@@ -741,6 +741,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/notebooks/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/notebooks/v1beta1/notebooks_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/notebooks/v1beta1/notebooks_v1beta1.yaml",
+    releaseLevel:          "beta",
+  },
+  {
+    inputDirectoryPath:    "google/cloud/billing/budgets/v1beta1",
+		pkg:                   "budgets",
+		importPath:            "cloud.google.com/go/billing/budgets/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1beta1/billingbudgets_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets_gapic.yaml",
 		releaseLevel:          "beta",
 	},
 }
