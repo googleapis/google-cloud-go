@@ -50,6 +50,18 @@ var (
 	jsonNullBytes = []byte("null")
 )
 
+// Encoder is the interface implemented by a custom type that can be encoded to
+// a supported type by Spanner.
+type Encoder interface {
+	EncodeSpanner() (interface{}, error)
+}
+
+// Decoder is the interface implemented by a custom type that can be decoded
+// from a supported type by Spanner.
+type Decoder interface {
+	DecodeSpanner(input interface{}) error
+}
+
 // NullableValue is the interface implemented by all null value wrapper types.
 type NullableValue interface {
 	// IsNull returns true if the underlying database value is null.
@@ -1112,6 +1124,16 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 	case *GenericColumnValue:
 		*p = GenericColumnValue{Type: t, Value: v}
 	default:
+		// Check if the pointer is a custom type that implements spanner.Decoder
+		// interface.
+		if decodedVal, ok := ptr.(Decoder); ok {
+			x, err := getGenericValue(v)
+			if err != nil {
+				return err
+			}
+			return decodedVal.DecodeSpanner(x)
+		}
+
 		// Check if the pointer is a variant of a base type.
 		decodableType := getDecodableSpannerType(ptr)
 		if decodableType != spannerTypeUnknown {
@@ -1611,6 +1633,20 @@ func getListValue(v *proto3.Value) (*proto3.ListValue, error) {
 		return x.ListValue, nil
 	}
 	return nil, errSrcVal(v, "List")
+}
+
+// getGenericValue returns the interface{} value encoded in proto3.Value.
+func getGenericValue(v *proto3.Value) (interface{}, error) {
+	switch x := v.GetKind().(type) {
+	case *proto3.Value_NumberValue:
+		return x.NumberValue, nil
+	case *proto3.Value_BoolValue:
+		return x.BoolValue, nil
+	case *proto3.Value_StringValue:
+		return x.StringValue, nil
+	default:
+		return 0, errSrcVal(v, "Number, Bool, String")
+	}
 }
 
 // errUnexpectedNumStr returns error for decoder getting a unexpected string for
@@ -2381,6 +2417,16 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case []GenericColumnValue:
 		return nil, nil, errEncoderUnsupportedType(v)
 	default:
+		// Check if the value is a custom type that implements spanner.Encoder
+		// interface.
+		if encodedVal, ok := v.(Encoder); ok {
+			nv, err := encodedVal.EncodeSpanner()
+			if err != nil {
+				return nil, nil, err
+			}
+			return encodeValue(nv)
+		}
+
 		// Check if the value is a variant of a base type.
 		decodableType := getDecodableSpannerType(v)
 		if decodableType != spannerTypeUnknown && decodableType != spannerTypeInvalid {
@@ -2652,6 +2698,11 @@ func isSupportedMutationType(v interface{}) bool {
 		GenericColumnValue:
 		return true
 	default:
+		// Check if the custom type implements spanner.Encoder interface.
+		if _, ok := v.(Encoder); ok {
+			return true
+		}
+
 		decodableType := getDecodableSpannerType(v)
 		return decodableType != spannerTypeUnknown && decodableType != spannerTypeInvalid
 	}
