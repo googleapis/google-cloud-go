@@ -222,20 +222,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateJobTrigger: []gax.CallOption{},
-		UpdateJobTrigger: []gax.CallOption{},
-		HybridInspectJobTrigger: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		CreateJobTrigger:        []gax.CallOption{},
+		UpdateJobTrigger:        []gax.CallOption{},
+		HybridInspectJobTrigger: []gax.CallOption{},
 		GetJobTrigger: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -349,30 +338,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		HybridInspectDlpJob: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		FinishDlpJob: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		HybridInspectDlpJob: []gax.CallOption{},
+		FinishDlpJob:        []gax.CallOption{},
 	}
 }
 

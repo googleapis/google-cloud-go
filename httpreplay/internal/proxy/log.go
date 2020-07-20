@@ -22,7 +22,7 @@ import (
 	"strconv"
 	"sync"
 
-	"github.com/google/martian"
+	"github.com/google/martian/v3"
 )
 
 // Replacement for the HAR logging that comes with martian. HAR is not designed for
