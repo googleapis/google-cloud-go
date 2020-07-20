@@ -123,6 +123,14 @@ func TestSubscriptions(t *testing.T) {
 		}
 	}
 
+	subToDetach := "projects/P/subscriptions/S0"
+	_, err = pclient.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: subToDetach,
+	})
+	if err != nil {
+		t.Fatalf("attempted to detach sub %s, got error: %v", subToDetach, err)
+	}
+
 	for _, s := range subs {
 		if _, err := sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.Name}); err != nil {
 			t.Fatal(err)
@@ -196,6 +204,35 @@ func TestPublish(t *testing.T) {
 	}
 	for i, id := range ids {
 		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	}
+
+	m := s.Message(ids[1])
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+}
+
+func TestPublishOrdered(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 3; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	s.Wait()
+	ms := s.Messages()
+	if got, want := len(ms), len(ids); got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	for i, id := range ids {
+		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+		if got, want := ms[i].OrderingKey, orderingKey; got != want {
 			t.Errorf("got %s, want %s", got, want)
 		}
 	}
@@ -620,7 +657,7 @@ func TestTryDeliverMessage(t *testing.T) {
 		{availStreamIdx: 3, expectedOutIdx: 2}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=2.
 	} {
 		top := newTopic(&pb.Topic{Name: "some-topic"})
-		sub := newSubscription(top, &sync.Mutex{}, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
+		sub := newSubscription(top, &sync.Mutex{}, time.Now, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
 
 		done := make(chan struct{}, 1)
 		done <- struct{}{}
@@ -642,6 +679,28 @@ func TestTryDeliverMessage(t *testing.T) {
 		default:
 			t.Fatalf("[avail=%d]: expected msg to be put on stream %d's channel, but it was not", test.availStreamIdx, idx)
 		}
+	}
+}
+
+func TestTimeNowFunc(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	timeFunc := func() time.Time {
+		t, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
+		return t
+	}
+	s.SetTimeNowFunc(timeFunc)
+
+	id := s.Publish("projects/p/topics/t", []byte("hello"), nil)
+	s.Wait()
+
+	m := s.Message(id)
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+	if got, want := m.PublishTime, timeFunc(); got != want {
+		t.Fatalf("got %v, want %v", got, want)
 	}
 }
 

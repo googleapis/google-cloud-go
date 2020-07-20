@@ -70,6 +70,7 @@ import (
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -738,8 +739,10 @@ func parseQueryParams(p *structpb.Struct, types map[string]*spannerpb.Type) (que
 }
 
 func parseQueryParam(v *structpb.Value, typ *spannerpb.Type) (queryParam, error) {
-	// TODO: Use typeFromSpannerType in here?
+	// TODO: Use valForType and typeFromSpannerType more comprehensively here?
+	// They are only used for StringValue vs, since that's what mostly needs parsing.
 
+	rawv := v
 	switch v := v.Kind.(type) {
 	default:
 		return queryParam{}, fmt.Errorf("unsupported well-known type value kind %T", v)
@@ -748,24 +751,15 @@ func parseQueryParam(v *structpb.Value, typ *spannerpb.Type) (queryParam, error)
 	case *structpb.Value_NumberValue:
 		return queryParam{Value: v.NumberValue, Type: float64Type}, nil
 	case *structpb.Value_StringValue:
-		switch typ.Code {
-		case spannerpb.TypeCode_INT64:
-			return queryParam{Value: v.StringValue, Type: int64Type}, nil
-		case spannerpb.TypeCode_TIMESTAMP:
-			return queryParam{Value: v.StringValue, Type: spansql.Type{Base: spansql.Timestamp}}, nil
-		case spannerpb.TypeCode_DATE:
-			return queryParam{Value: v.StringValue, Type: spansql.Type{Base: spansql.Date}}, nil
-		case spannerpb.TypeCode_BYTES:
-			b, err := base64.StdEncoding.DecodeString(v.StringValue)
-			if err != nil {
-				return queryParam{}, err
-			}
-			return queryParam{Value: b, Type: spansql.Type{Base: spansql.Bytes, Len: spansql.MaxLen}}, nil
-		default:
-			// All other types represented on the wire as a string are stored internally as strings.
-			// We don't often get a type hint unfortunately, so ths type code here may be wrong.
-			return queryParam{Value: v.StringValue, Type: stringType}, nil
+		t, err := typeFromSpannerType(typ)
+		if err != nil {
+			return queryParam{}, err
 		}
+		val, err := valForType(rawv, t)
+		if err != nil {
+			return queryParam{}, err
+		}
+		return queryParam{Value: val, Type: t}, nil
 	case *structpb.Value_ListValue:
 		var list []interface{}
 		for _, elem := range v.ListValue.Values {
@@ -858,6 +852,13 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
 	case []byte:
 		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
+	case civil.Date:
+		// RFC 3339 date format.
+		return &structpb.Value{Kind: &structpb.Value_StringValue{x.String()}}, nil
+	case time.Time:
+		// RFC 3339 timestamp format with zone Z.
+		s := x.Format("2006-01-02T15:04:05.999999999Z")
+		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
 	case []interface{}:

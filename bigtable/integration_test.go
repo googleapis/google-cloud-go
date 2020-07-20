@@ -31,6 +31,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
@@ -1259,6 +1260,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
@@ -1272,7 +1274,10 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	// Basic return values are tested elsewhere, check instance type
 	if iInfo.InstanceType != DEVELOPMENT {
-		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
 	// Update everything we can about the instance in one call.
@@ -1280,8 +1285,9 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceID:   instanceToCreate,
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
+		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5, StorageType: HDD}},
+			{ClusterID: clusterID, NumNodes: 5}},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1294,7 +1300,10 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	if iInfo.InstanceType != PRODUCTION {
-		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, confWithClusters.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
 		t.Fatalf("Display name: %q, want: %q", got, want)
@@ -1308,9 +1317,98 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
 	}
+}
 
-	if cInfo.StorageType != HDD {
-		t.Fatalf("StorageType: %v, want: %v", cInfo.StorageType, HDD)
+func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
+
+	// Check the environments
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	// Create an instance admin client
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	// Create a test instance
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    instanceToCreate + "-cluster",
+		DisplayName:  "test instance",
+		InstanceType: DEVELOPMENT,
+		Zone:         instanceToCreateZone,
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	// Check the created test instances
+	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
+	}
+
+	// Test patterns to update instance labels
+	tests := []struct {
+		name string
+		in   map[string]string
+		out  map[string]string
+	}{
+		{
+			name: "update labels",
+			in:   map[string]string{"test-label-key": "test-label-value"},
+			out:  map[string]string{"test-label-key": "test-label-value"},
+		},
+		{
+			name: "update multiple labels",
+			in:   map[string]string{"update-label-key-a": "update-label-value-a", "update-label-key-b": "update-label-value-b"},
+			out:  map[string]string{"update-label-key-a": "update-label-value-a", "update-label-key-b": "update-label-value-b"},
+		},
+		{
+			name: "not update existing labels",
+			in:   nil, // nil map
+			out:  map[string]string{"update-label-key-a": "update-label-value-a", "update-label-key-b": "update-label-value-b"},
+		},
+		{
+			name: "delete labels",
+			in:   map[string]string{}, // empty map
+			out:  nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			confWithClusters := &InstanceWithClustersConfig{
+				InstanceID: instanceToCreate,
+				Labels:     tt.in,
+			}
+			if err := iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
+				t.Fatalf("UpdateInstanceWithClusters: %v", err)
+			}
+			iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+			if err != nil {
+				t.Fatalf("InstanceInfo: %v", err)
+			}
+			if got, want := iInfo.Labels, tt.out; !cmp.Equal(got, want) {
+				t.Fatalf("Labels: %v, want: %v", got, want)
+			}
+		})
 	}
 }
 
@@ -1347,6 +1445,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
@@ -1360,7 +1459,10 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Basic return values are tested elsewhere, check instance type
 	if iInfo.InstanceType != DEVELOPMENT {
-		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
 	// Update everything we can about the instance in one call.
@@ -1368,6 +1470,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		InstanceID:   instanceToCreate,
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
+		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5}},
 	}
@@ -1391,7 +1494,10 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	if iInfo.InstanceType != PRODUCTION {
-		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, confWithClusters.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
 		t.Fatalf("Display name: %q, want: %q", got, want)

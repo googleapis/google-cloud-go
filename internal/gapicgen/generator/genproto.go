@@ -68,7 +68,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	// Record and map all .proto files to their Go packages.
 	seenFiles := make(map[string]bool)
 	pkgFiles := make(map[string][]string)
-	for _, root := range []string{googleapisDir, protoDir} {
+	for _, root := range []string{googleapisDir} {
 		walkFn := func(path string, info os.FileInfo, err error) error {
 			if err != nil {
 				return err
@@ -195,7 +195,7 @@ func goPkg(fname string) (string, error) {
 // protoc executes the "protoc" command on files named in fnames, and outputs
 // to "<genprotoDir>/generated".
 func protoc(genprotoDir, googleapisDir, protoDir string, fnames []string) error {
-	args := []string{fmt.Sprintf("--go_out=plugins=grpc:%s/generated", genprotoDir), "-I", googleapisDir, "-I", protoDir}
+	args := []string{"--experimental_allow_proto3_optional", fmt.Sprintf("--go_out=plugins=grpc:%s/generated", genprotoDir), "-I", googleapisDir, "-I", protoDir}
 	args = append(args, fnames...)
 	c := command("protoc", args...)
 	c.Stdout = os.Stdout

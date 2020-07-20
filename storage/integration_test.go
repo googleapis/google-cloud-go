@@ -589,14 +589,19 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 
 	objName := uidSpace.New()
 	obj := bkt.Object(objName)
-	w := obj.NewWriter(ctx)
-
 	contents := []byte("Hello, world this is a range request")
-	if _, err := w.Write(contents); err != nil {
-		t.Fatalf("Failed to write contents: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatalf("Failed to close writer: %v", err)
+
+	if err := retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			return fmt.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to close writer: %v", err)
+		}
+		return nil
+	}, nil); err != nil {
+		t.Fatal(err)
 	}
 
 	last5s := []struct {
@@ -1377,15 +1382,15 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1", "acl2"}
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
 	err = retry(ctx, func() error {
+		for _, obj := range aclObjects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+		}
 		acl, err = o.ACL().List(ctx)
 		if err != nil {
 			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
@@ -3150,14 +3155,10 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected deletion failure: %v", err)
 	}
 
-	hk, err := hkh.Get(ctx)
-	if err == nil {
-		// If the err == nil, then the returned HMACKey's state MUST be Deleted.
-		if hk == nil || hk.State != Deleted {
-			t.Fatalf("After deletion\nGot %#v\nWanted state %q", hk, Deleted)
-		}
-	} else if !strings.Contains(err.Error(), "404") {
+	_, err = hkh.Get(ctx)
+	if err != nil && !strings.Contains(err.Error(), "404") {
 		// If the deleted key has already been garbage collected, a 404 is expected.
+		// Other errors should cause a failure and are not expected.
 		t.Fatalf("Unexpected error: %v", err)
 	}
 }

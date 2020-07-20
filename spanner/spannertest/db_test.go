@@ -17,6 +17,7 @@ limitations under the License.
 package spannertest
 
 import (
+	"fmt"
 	"io"
 	"reflect"
 	"sync"
@@ -26,6 +27,7 @@ import (
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -451,7 +453,7 @@ func TestTableData(t *testing.T) {
 		},
 		{
 			`SELECT Name FROM Staff WHERE FirstSeen >= @min`,
-			queryParams{"min": queryParam{Value: "1996-01-01", Type: spansql.Type{Base: spansql.Date}}},
+			queryParams{"min": dateParam("1996-01-01")},
 			[][]interface{}{
 				{"George"},
 			},
@@ -465,7 +467,8 @@ func TestTableData(t *testing.T) {
 		},
 		{
 			// The keyword "To" needs quoting in queries.
-			"SELECT COUNT(*) FROM Staff WHERE `To` IS NOT NULL",
+			// Check coercion of comparison operator literal args too.
+			"SELECT COUNT(*) FROM Staff WHERE `To` > '2000-01-01T00:00:00Z'",
 			nil,
 			[][]interface{}{
 				{int64(1)},
@@ -517,11 +520,40 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
+			queryParams{"lim": stringParam("Teal'c")},
+			[][]interface{}{
+				{"Sam"},
+			},
+		},
+		{
+			`SELECT MIN(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel"},
+			},
+		},
+		{
 			`SELECT ARRAY_AGG(Cool) FROM Staff ORDER BY Name`,
 			nil,
 			[][]interface{}{
 				// Daniel, George (NULL), Jack (NULL), Sam, Teal'c
 				{[]interface{}{false, nil, nil, false, true}},
+			},
+		},
+		// Regression test for evaluating `IN` incorrectly using ==.
+		// https://github.com/googleapis/google-cloud-go/issues/2458
+		{
+			`SELECT COUNT(*) FROM Staff WHERE RawBytes IN UNNEST(@arg)`,
+			queryParams{"arg": queryParam{
+				Type: spansql.Type{Array: true, Base: spansql.Bytes},
+				Value: []interface{}{
+					[]byte{0x02},
+					[]byte{0x01, 0x00, 0x01}, // only one present
+				},
+			}},
+			[][]interface{}{
+				{int64(1)},
 			},
 		},
 	}
@@ -844,6 +876,14 @@ func stringParam(s string) queryParam { return queryParam{Value: s, Type: string
 func intParam(i int64) queryParam     { return queryParam{Value: i, Type: int64Type} }
 func floatParam(f float64) queryParam { return queryParam{Value: f, Type: float64Type} }
 func nullParam() queryParam           { return queryParam{Value: nil} }
+
+func dateParam(s string) queryParam {
+	d, err := civil.ParseDate(s)
+	if err != nil {
+		panic(fmt.Sprintf("bad test date %q: %v", s, err))
+	}
+	return queryParam{Value: d, Type: spansql.Type{Base: spansql.Date}}
+}
 
 func TestRowCmp(t *testing.T) {
 	r := func(x ...interface{}) []interface{} { return x }

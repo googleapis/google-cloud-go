@@ -27,9 +27,13 @@ import (
 )
 
 // generateGapics generates gapics.
-func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
+func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string, gapicToGenerate string) error {
 	for _, c := range microgenGapicConfigs {
-		if c.stopGeneration {
+		// Skip generation if generating all of the gapics and the associated
+		// config has a block on it. Or if generating a single gapic and it does
+		// not match the specified import path.
+		if (c.stopGeneration && gapicToGenerate == "") ||
+			(gapicToGenerate != "" && gapicToGenerate != c.importPath) {
 			continue
 		}
 		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
@@ -146,6 +150,7 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 	}
 
 	args := []string{"-I", googleapisDir,
+		"--experimental_allow_proto3_optional",
 		"-I", protoDir,
 		"--go_gapic_out", gocloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),

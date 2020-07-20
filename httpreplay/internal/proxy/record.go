@@ -32,11 +32,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/google/martian"
-	"github.com/google/martian/fifo"
-	"github.com/google/martian/httpspec"
-	"github.com/google/martian/martianlog"
-	"github.com/google/martian/mitm"
+	"github.com/google/martian/v3"
+	"github.com/google/martian/v3/fifo"
+	"github.com/google/martian/v3/httpspec"
+	"github.com/google/martian/v3/martianlog"
+	"github.com/google/martian/v3/mitm"
 )
 
 // A Proxy is an HTTP proxy that supports recording or replaying requests.

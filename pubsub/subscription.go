@@ -233,6 +233,26 @@ type SubscriptionConfig struct {
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in
 	// a subscription. If not set, dead lettering is disabled.
 	DeadLetterPolicy *DeadLetterPolicy
+
+	// Filter is an expression written in the Cloud Pub/Sub filter language. If
+	// non-empty, then only `PubsubMessage`s whose `attributes` field matches the
+	// filter are delivered on this subscription. If empty, then no messages are
+	// filtered out. Cannot be changed after the subscription is created.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users. This field is subject to change or removal
+	// without notice.
+	Filter string
+
+	// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
+	RetryPolicy *RetryPolicy
+
+	// Detached indicates whether the subscription is detached from its topic.
+	// Detached subscriptions don't receive messages from their topic and don't
+	// retain any backlog. `Pull` and `StreamingPull` requests will return
+	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+	// the endpoint will not be made.
+	Detached bool
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -248,6 +268,10 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	if cfg.DeadLetterPolicy != nil {
 		pbDeadLetter = cfg.DeadLetterPolicy.toProto()
 	}
+	var pbRetryPolicy *pb.RetryPolicy
+	if cfg.RetryPolicy != nil {
+		pbRetryPolicy = cfg.RetryPolicy.toProto()
+	}
 	return &pb.Subscription{
 		Name:                     name,
 		Topic:                    cfg.Topic.name,
@@ -259,6 +283,9 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		ExpirationPolicy:         expirationPolicyToProto(cfg.ExpirationPolicy),
 		EnableMessageOrdering:    cfg.EnableMessageOrdering,
 		DeadLetterPolicy:         pbDeadLetter,
+		Filter:                   cfg.Filter,
+		RetryPolicy:              pbRetryPolicy,
+		Detached:                 cfg.Detached,
 	}
 }
 
@@ -279,6 +306,7 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		}
 	}
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
+	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
 		Topic:               newTopic(c, pbSub.Topic),
 		AckDeadline:         time.Second * time.Duration(pbSub.AckDeadlineSeconds),
@@ -287,6 +315,9 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 		Labels:              pbSub.Labels,
 		ExpirationPolicy:    expirationPolicy,
 		DeadLetterPolicy:    dlp,
+		Filter:              pbSub.Filter,
+		RetryPolicy:         rp,
+		Detached:            pbSub.Detached,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -338,6 +369,87 @@ func protoToDLP(pbDLP *pb.DeadLetterPolicy) *DeadLetterPolicy {
 		DeadLetterTopic:     pbDLP.GetDeadLetterTopic(),
 		MaxDeliveryAttempts: int(pbDLP.MaxDeliveryAttempts),
 	}
+}
+
+// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
+//
+// Retry delay will be exponential based on provided minimum and maximum
+// backoffs. https://en.wikipedia.org/wiki/Exponential_backoff.
+//
+// RetryPolicy will be triggered on NACKs or acknowledgement deadline exceeded
+// events for a given message.
+//
+// Retry Policy is implemented on a best effort basis. At times, the delay
+// between consecutive deliveries may not match the configuration. That is,
+// delay can be more or less than configured backoff.
+type RetryPolicy struct {
+	// MinimumBackoff is the minimum delay between consecutive deliveries of a
+	// given message. Value should be between 0 and 600 seconds. Defaults to 10 seconds.
+	MinimumBackoff optional.Duration
+	// MaximumBackoff is the maximum delay between consecutive deliveries of a
+	// given message. Value should be between 0 and 600 seconds. Defaults to 10 seconds.
+	MaximumBackoff optional.Duration
+}
+
+func (rp *RetryPolicy) toProto() *pb.RetryPolicy {
+	if rp == nil {
+		return nil
+	}
+	// If RetryPolicy is the empty struct, take this as an instruction
+	// to remove RetryPolicy from the subscription.
+	if rp.MinimumBackoff == nil && rp.MaximumBackoff == nil {
+		return nil
+	}
+
+	// Initialize minDur and maxDur to be negative, such that if the conversion from an
+	// optional fails, RetryPolicy won't be updated in the proto as it will remain nil.
+	var minDur time.Duration = -1
+	var maxDur time.Duration = -1
+	if rp.MinimumBackoff != nil {
+		minDur = optional.ToDuration(rp.MinimumBackoff)
+	}
+	if rp.MaximumBackoff != nil {
+		maxDur = optional.ToDuration(rp.MaximumBackoff)
+	}
+
+	var minDurPB, maxDurPB *durpb.Duration
+	if minDur > 0 {
+		minDurPB = ptypes.DurationProto(minDur)
+	}
+	if maxDur > 0 {
+		maxDurPB = ptypes.DurationProto(maxDur)
+	}
+
+	return &pb.RetryPolicy{
+		MinimumBackoff: minDurPB,
+		MaximumBackoff: maxDurPB,
+	}
+}
+
+func protoToRetryPolicy(rp *pb.RetryPolicy) *RetryPolicy {
+	if rp == nil {
+		return nil
+	}
+	var minBackoff, maxBackoff time.Duration
+	var err error
+	if rp.MinimumBackoff != nil {
+		minBackoff, err = ptypes.Duration(rp.MinimumBackoff)
+		if err != nil {
+			return nil
+		}
+	}
+	if rp.MaximumBackoff != nil {
+		maxBackoff, err = ptypes.Duration(rp.MaximumBackoff)
+		if err != nil {
+			return nil
+		}
+	}
+
+	retryPolicy := &RetryPolicy{
+		MinimumBackoff: minBackoff,
+		MaximumBackoff: maxBackoff,
+	}
+	return retryPolicy
 }
 
 // ReceiveSettings configure the Receive method.
@@ -485,6 +597,11 @@ type SubscriptionConfigToUpdate struct {
 	// This field has beta status. It is not subject to the stability guarantee
 	// and may change.
 	Labels map[string]string
+
+	// If non-nil, RetryPolicy is changed. To remove an existing retry policy
+	// (to redeliver messages as soon as possible) use a pointer to the zero value
+	// for this struct.
+	RetryPolicy *RetryPolicy
 }
 
 // Update changes an existing subscription according to the fields set in cfg.
@@ -537,6 +654,10 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 		psub.Labels = cfg.Labels
 		paths = append(paths, "labels")
 	}
+	if cfg.RetryPolicy != nil {
+		psub.RetryPolicy = cfg.RetryPolicy.toProto()
+		paths = append(paths, "retry_policy")
+	}
 	return &pb.UpdateSubscriptionRequest{
 		Subscription: psub,
 		UpdateMask:   &fmpb.FieldMask{Paths: paths},
@@ -557,11 +678,11 @@ func (cfg *SubscriptionConfigToUpdate) validate() error {
 	if cfg == nil || cfg.ExpirationPolicy == nil {
 		return nil
 	}
-	policy, min := optional.ToDuration(cfg.ExpirationPolicy), minExpirationPolicy
-	if policy == 0 || policy >= min {
-		return nil
+	expPolicy, min := optional.ToDuration(cfg.ExpirationPolicy), minExpirationPolicy
+	if expPolicy != 0 && expPolicy < min {
+		return fmt.Errorf("invalid expiration policy(%q) < minimum(%q)", expPolicy, min)
 	}
-	return fmt.Errorf("invalid expiration policy(%q) < minimum(%q)", policy, min)
+	return nil
 }
 
 func expirationPolicyToProto(expirationPolicy optional.Duration) *pb.ExpirationPolicy {
@@ -693,9 +814,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
-		maxExtension: maxExt,
-		maxPrefetch:  trunc32(int64(maxCount)),
-		synchronous:  s.ReceiveSettings.Synchronous,
+		maxExtension:           maxExt,
+		maxPrefetch:            trunc32(int64(maxCount)),
+		synchronous:            s.ReceiveSettings.Synchronous,
+		maxOutstandingMessages: maxCount,
+		maxOutstandingBytes:    maxBytes,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -823,5 +946,7 @@ type pullOptions struct {
 	maxPrefetch  int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
-	synchronous bool
+	synchronous            bool
+	maxOutstandingMessages int
+	maxOutstandingBytes    int
 }

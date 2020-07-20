@@ -526,6 +526,10 @@ func TestParseFailures(t *testing.T) {
 		_, err := p.parseExpr()
 		return err
 	}
+	query := func(p *parser) error {
+		_, err := p.parseQuery()
+		return err
+	}
 
 	tests := []struct {
 		f    func(p *parser) error
@@ -559,6 +563,9 @@ func TestParseFailures(t *testing.T) {
 		{expr, `"""\"""`, "unterminated triple-quoted string by last backslash (double quote)"},
 		{expr, `'''\'''`, "unterminated triple-quoted string by last backslash (single quote)"},
 		{expr, `"foo" AND "bar"`, "logical operation on string literals"},
+		// Found by fuzzing.
+		// https://github.com/googleapis/google-cloud-go/issues/2196
+		{query, `/*/*/`, "invalid comment termination"},
 	}
 	for _, test := range tests {
 		p := newParser("f", test.in)

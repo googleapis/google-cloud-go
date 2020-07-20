@@ -1,5 +1,9 @@
 # Changes
 
+## v1.2.0
+- Adds Datastore Admin API.
+- Documentation updates.
+
 ## v1.1.0
 
 - DEADLINE_EXCEEDED is now not retried.

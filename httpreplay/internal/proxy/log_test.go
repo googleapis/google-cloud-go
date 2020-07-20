@@ -23,7 +23,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp/cmpopts"
-	"github.com/google/martian"
+	"github.com/google/martian/v3"
 )
 
 func TestLogger(t *testing.T) {

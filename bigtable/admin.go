@@ -671,7 +671,19 @@ func storageTypeFromProto(st btapb.StorageType) StorageType {
 	return SSD
 }
 
-// InstanceType is the type of the instance
+// InstanceState is the state of the instance. This is output-only.
+type InstanceState int32
+
+const (
+	// NotKnown represents the state of an instance that could not be determined.
+	NotKnown InstanceState = InstanceState(btapb.Instance_STATE_NOT_KNOWN)
+	// Ready represents the state of an instance that has been successfully created.
+	Ready = InstanceState(btapb.Instance_READY)
+	// Creating represents the state of an instance that is currently being created.
+	Creating = InstanceState(btapb.Instance_CREATING)
+)
+
+// InstanceType is the type of the instance.
 type InstanceType int32
 
 const (
@@ -683,9 +695,11 @@ const (
 
 // InstanceInfo represents information about an instance
 type InstanceInfo struct {
-	Name         string // name of the instance
-	DisplayName  string // display name for UIs
-	InstanceType InstanceType
+	Name          string // name of the instance
+	DisplayName   string // display name for UIs
+	InstanceState InstanceState
+	InstanceType  InstanceType
+	Labels        map[string]string
 }
 
 // InstanceConf contains the information necessary to create an Instance
@@ -695,6 +709,7 @@ type InstanceConf struct {
 	NumNodes     int32
 	StorageType  StorageType
 	InstanceType InstanceType
+	Labels       map[string]string
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -702,6 +717,7 @@ type InstanceWithClustersConfig struct {
 	InstanceID, DisplayName string
 	Clusters                []ClusterConfig
 	InstanceType            InstanceType
+	Labels                  map[string]string
 }
 
 var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][-a-z0-9]*)$`)
@@ -714,6 +730,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 		InstanceID:   conf.InstanceId,
 		DisplayName:  conf.DisplayName,
 		InstanceType: conf.InstanceType,
+		Labels:       conf.Labels,
 		Clusters: []ClusterConfig{
 			{
 				InstanceID:  conf.InstanceId,
@@ -739,8 +756,12 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 	req := &btapb.CreateInstanceRequest{
 		Parent:     "projects/" + iac.project,
 		InstanceId: conf.InstanceID,
-		Instance:   &btapb.Instance{DisplayName: conf.DisplayName, Type: btapb.Instance_Type(conf.InstanceType)},
-		Clusters:   clusters,
+		Instance: &btapb.Instance{
+			DisplayName: conf.DisplayName,
+			Type:        btapb.Instance_Type(conf.InstanceType),
+			Labels:      conf.Labels,
+		},
+		Clusters: clusters,
 	}
 
 	lro, err := iac.iClient.CreateInstance(ctx, req)
@@ -773,6 +794,10 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 	if btapb.Instance_Type(conf.InstanceType) != btapb.Instance_TYPE_UNSPECIFIED {
 		ireq.Instance.Type = btapb.Instance_Type(conf.InstanceType)
 		mask.Paths = append(mask.Paths, "type")
+	}
+	if conf.Labels != nil {
+		ireq.Instance.Labels = conf.Labels
+		mask.Paths = append(mask.Paths, "labels")
 	}
 
 	if len(mask.Paths) == 0 {
@@ -868,9 +893,11 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 			return nil, fmt.Errorf("malformed instance name %q", i.Name)
 		}
 		is = append(is, &InstanceInfo{
-			Name:         m[2],
-			DisplayName:  i.DisplayName,
-			InstanceType: InstanceType(i.Type),
+			Name:          m[2],
+			DisplayName:   i.DisplayName,
+			InstanceState: InstanceState(i.State),
+			InstanceType:  InstanceType(i.Type),
+			Labels:        i.Labels,
 		})
 	}
 	return is, nil
@@ -897,9 +924,11 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 		return nil, fmt.Errorf("malformed instance name %q", res.Name)
 	}
 	return &InstanceInfo{
-		Name:         m[2],
-		DisplayName:  res.DisplayName,
-		InstanceType: InstanceType(res.Type),
+		Name:          m[2],
+		DisplayName:   res.DisplayName,
+		InstanceState: InstanceState(res.State),
+		InstanceType:  InstanceType(res.Type),
+		Labels:        res.Labels,
 	}, nil
 }
 

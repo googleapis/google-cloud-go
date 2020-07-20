@@ -7,11 +7,18 @@ RUN apk update && \
 # Install bash and ssh tools (needed to run regen.sh etc).
 RUN apk add bash openssh openssh-client
 RUN which bash
+
+# Install libc compatibility (required by protoc and go)
+RUN apk add libc6-compat
+
+# Use edge for protoc 3.12.x
+# Remove when main upgrades from 3.11.x
+RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
+RUN apk update
+
 # Install protoc and protobuf-dev (common protos).
 RUN apk add protoc protobuf-dev
 RUN protoc --version
-# Install libc compatibility (required by protoc and go)
-RUN apk add libc6-compat
 
 # Install Go.
 RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz && \
@@ -26,8 +33,7 @@ RUN GO111MODULE=on go get \
     golang.org/x/lint/golint@latest \
     golang.org/x/tools/cmd/goimports@latest \
     honnef.co/go/tools/cmd/staticcheck@latest \
-    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.13.3 \
-    golang.org/x/review/git-codereview@latest
+    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.13.3
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3
@@ -42,7 +48,6 @@ RUN echo -e '#!/bin/bash\n\
     --githubUsername=$GITHUB_USERNAME \
     --githubName="$GITHUB_NAME" \
     --githubEmail=$GITHUB_EMAIL \
-    --gerritCookieValue=$GERRIT_COOKIE_VALUE \n\
     ' >> /run.sh
 RUN chmod a+x /run.sh
 
