@@ -68,7 +68,8 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 			// Extract the interface's underlying value and then retry the save.
 			// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
 			if v.IsNil() {
-				// Nil pointer becomes a nil property value (unless omitempty, handled above).
+				// Nil interface becomes a nil property value (unless omitempty,
+				// handled by the embracing saveStructProperty call).
 				p.Value = nil
 				*props = append(*props, p)
 				return nil
