@@ -541,6 +541,21 @@ func TestTableData(t *testing.T) {
 				{[]interface{}{false, nil, nil, false, true}},
 			},
 		},
+		// Regression test for evaluating `IN` incorrectly using ==.
+		// https://github.com/googleapis/google-cloud-go/issues/2458
+		{
+			`SELECT COUNT(*) FROM Staff WHERE RawBytes IN UNNEST(@arg)`,
+			queryParams{"arg": queryParam{
+				Type: spansql.Type{Array: true, Base: spansql.Bytes},
+				Value: []interface{}{
+					[]byte{0x02},
+					[]byte{0x01, 0x00, 0x01}, // only one present
+				},
+			}},
+			[][]interface{}{
+				{int64(1)},
+			},
+		},
 	}
 	for _, test := range tests {
 		q, err := spansql.ParseQuery(test.q)

@@ -1,5 +1,46 @@
 # Changes
 
+## v1.8.0
+
+* Features:
+  - feat(spanner): support of client-level custom retry settings (#2599)
+  - feat(spanner): add a statement-based way to run read-write transaction. (#2545)
+* Bugfixes:
+  - fix(spanner): set 'gccl' to the request header. (#2609)
+  - fix(spanner): add the missing resource prefix (#2605)
+  - fix(spanner): fix the upgrade of protobuf. (#2583)
+  - fix(spanner): do not copy protobuf messages by value. (#2581)
+  - fix(spanner): fix the required resource prefix. (#2580)
+  - fix(spanner): add extra field to ignore with cmp (#2577)
+  - fix(spanner): remove appengine-specific numChannels. (#2513)
+* Misc:
+  - test(spanner): log warning instead of fail for stress test (#2559)
+  - test(spanner): fix failed TestRsdBlockingStates test (#2597)
+  - chore(spanner): cleanup mockserver and mockclient (#2414)
+
+## v1.7.0
+* Retry:
+  - Only retry certain types of internal errors. (#2460)
+* Tracing/metrics:
+  - Never sample `ping()` trace spans (#2520)
+  - Add oc tests for session pool metrics. (#2416)
+* Encoding:
+  - Allow encoding struct with custom types to mutation (#2529)
+* spannertest:
+  - Fix evaluation on IN (#2479)
+  - Support MIN/MAX aggregation functions (#2411)
+* Misc:
+  - Fix TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured test (#2539)
+  - Cleanup backoff files and rename a variable (#2526)
+  - Fix TestIntegration_DML test to return err from tx (#2509)
+  - Unskip tests for emulator 0.8.0. (#2494)
+  - Fix TestIntegration_StartBackupOperation test. (#2418)
+  - Fix flakiness in TestIntegration_BatchDML_Error
+  - Unskip TestIntegration_BatchDML and TestIntegration_BatchDML_TwoStatements
+    for emulator by checking the existence of status.
+  - Fix TestStressSessionPool test by taking lock while getting sessions from
+    hc.
+
 ## v1.6.0
 * Sessions:
   - Increase the number of sessions in batches instead of one by one when

@@ -3,14 +3,14 @@ module cloud.google.com/go/spanner
 go 1.11
 
 require (
-	cloud.google.com/go v0.58.0
+	cloud.google.com/go v0.60.0
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.4.1
+	github.com/google/go-cmp v0.5.0
 	github.com/googleapis/gax-go/v2 v2.0.5
-	go.opencensus.io v0.22.3
-	golang.org/x/tools v0.0.0-20200616215726-b7b89dcb8101 // indirect
+	go.opencensus.io v0.22.4
+	golang.org/x/tools v0.0.0-20200717024301-6ddee64345a6 // indirect
 	golang.org/x/xerrors v0.0.0-20191204190536-9bdfabe68543
-	google.golang.org/api v0.27.0
-	google.golang.org/genproto v0.0.0-20200616192300-fc83d8c00726
-	google.golang.org/grpc v1.29.1
+	google.golang.org/api v0.29.0
+	google.golang.org/genproto v0.0.0-20200720141249-1244ee217b7e
+	google.golang.org/grpc v1.30.0
 )

@@ -23,13 +23,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/github"
+	"github.com/google/go-github/v32/github"
+	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
 
 const (
 	gocloudBranchName  = "regen_gocloud"
-	gocloudCommitTitle = "all: auto-regenerate gapics"
+	gocloudCommitTitle = "feat(all): auto-regenerate gapics"
 	gocloudCommitBody  = `
 This is an auto-generated regeneration of the gapic clients by
 cloud.google.com/go/internal/gapicgen. Once the corresponding genproto PR is
@@ -44,7 +45,7 @@ If you have been assigned to review this PR, please:
 `
 
 	genprotoBranchName  = "regen_genproto"
-	genprotoCommitTitle = "auto-regenerate .pb.go files"
+	genprotoCommitTitle = "feat(all): auto-regenerate .pb.go files"
 	genprotoCommitBody  = `
 This is an auto-generated regeneration of the .pb.go files by
 cloud.google.com/go/internal/gapicgen. Once this PR is submitted, genbot will
@@ -76,11 +77,14 @@ type PullRequest struct {
 	IsOpen  bool
 	Number  int
 	Repo    string
+	IsDraft bool
+	NodeID  string
 }
 
-// GithubClient is a convenience wrapper around a github.Client.
+// GithubClient is a convenience wrapper around Github clients.
 type GithubClient struct {
-	c *github.Client
+	cV3 *github.Client
+	cV4 *githubv4.Client
 	// Username is the GitHub username. Read-only.
 	Username string
 }
@@ -95,7 +99,7 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 		&oauth2.Token{AccessToken: accessToken},
 	)
 	tc := oauth2.NewClient(ctx, ts)
-	return &GithubClient{c: github.NewClient(tc), Username: username}, nil
+	return &GithubClient{cV3: github.NewClient(tc), cV4: githubv4.NewClient(tc), Username: username}, nil
 }
 
 // SetGitCreds sets credentials for gerrit.
@@ -134,12 +138,15 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 		ListOptions: github.ListOptions{PerPage: 50},
 		State:       status,
 	}
-	prs, _, err := gc.c.PullRequests.List(ctx, "googleapis", repo, opt)
+	prs, _, err := gc.cV3.PullRequests.List(ctx, "googleapis", repo, opt)
 	if err != nil {
 		return nil, err
 	}
 	for _, pr := range prs {
-		if !strings.Contains(pr.GetTitle(), "regen") {
+		if !strings.Contains(pr.GetTitle(), "auto-regenerate") {
+			continue
+		}
+		if pr.GetUser().GetLogin() != gc.Username {
 			continue
 		}
 		return &PullRequest{
@@ -150,6 +157,8 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 			IsOpen:  pr.GetState() == "open",
 			Number:  pr.GetNumber(),
 			Repo:    repo,
+			IsDraft: pr.GetDraft(),
+			NodeID:  pr.GetNodeID(),
 		}, nil
 	}
 	return nil, nil
@@ -197,7 +206,7 @@ git push origin $BRANCH_NAME
 	head := fmt.Sprintf("googleapis:" + genprotoBranchName)
 	base := "master"
 	t := genprotoCommitTitle // Because we have to take the address.
-	pr, _, err := gc.c.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
+	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
 		Title: &t,
 		Body:  &body,
 		Head:  &head,
@@ -215,7 +224,7 @@ git push origin $BRANCH_NAME
 		}
 	}
 
-	if _, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", "go-genproto", pr.GetNumber(), github.ReviewersRequest{
+	if _, _, err := gc.cV3.PullRequests.RequestReviewers(ctx, "googleapis", "go-genproto", pr.GetNumber(), github.ReviewersRequest{
 		Reviewers: reviewers,
 	}); err != nil {
 		return 0, err
@@ -265,14 +274,13 @@ git push origin $BRANCH_NAME
 		return 0, err
 	}
 
-	head := fmt.Sprintf("googleapis:" + gocloudBranchName)
-	base := "master"
 	t := gocloudCommitTitle // Because we have to take the address.
-	pr, _, err := gc.c.PullRequests.Create(ctx, "googleapis", "google-cloud-go", &github.NewPullRequest{
+	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "google-cloud-go", &github.NewPullRequest{
 		Title: &t,
 		Body:  &body,
-		Head:  &head,
-		Base:  &base,
+		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
+		Base:  github.String("master"),
+		Draft: github.Bool(true),
 	})
 	if err != nil {
 		return 0, err
@@ -281,30 +289,6 @@ git push origin $BRANCH_NAME
 	log.Printf("creating google-cloud-go PR... done %s\n", pr.GetHTMLURL())
 
 	return pr.GetNumber(), nil
-}
-
-// HasReviewers checks if a given pR has reviewers.
-func (gc *GithubClient) HasReviewers(ctx context.Context, repo string, number int) (bool, error) {
-	reviewers, _, err := gc.c.PullRequests.ListReviewers(ctx, "googleapis", repo, number, nil)
-	if err != nil {
-		return false, err
-	}
-	return len(reviewers.Users)+len(reviewers.Teams) > 0, nil
-}
-
-// AddReviewers adds reviewers to the pull request.
-func (gc *GithubClient) AddReviewers(ctx context.Context, repo string, number int) error {
-	// Can't assign the submitter of the PR as a reviewer.
-	var reviewers []string
-	for _, r := range githubReviewers {
-		if r != *githubUsername {
-			reviewers = append(reviewers, r)
-		}
-	}
-	_, _, err := gc.c.PullRequests.RequestReviewers(ctx, "googleapis", repo, number, github.ReviewersRequest{
-		Reviewers: reviewers,
-	})
-	return err
 }
 
 // AmendWithPRURL amends the given genproto PR with a link to the given
@@ -335,8 +319,27 @@ git push -f origin $BRANCH_NAME
 	if err := c.Run(); err != nil {
 		return err
 	}
-	_, _, err := gc.c.PullRequests.Edit(ctx, "googleapis", "go-genproto", genprotoPRNum, &github.PullRequest{
+	_, _, err := gc.cV3.PullRequests.Edit(ctx, "googleapis", "go-genproto", genprotoPRNum, &github.PullRequest{
 		Body: &newBody,
 	})
 	return err
+}
+
+// MarkPRReadyForReview switches a draft pull request to a reviewable pull
+// request.
+func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, nodeID string) error {
+	var m struct {
+		MarkPullRequestReadyForReview struct {
+			PullRequest struct {
+				ID githubv4.ID
+			}
+		} `graphql:"markPullRequestReadyForReview(input: $input)"`
+	}
+	input := githubv4.MarkPullRequestReadyForReviewInput{
+		PullRequestID: nodeID,
+	}
+	if err := gc.cV4.Mutate(ctx, &m, input, nil); err != nil {
+		return err
+	}
+	return nil
 }
