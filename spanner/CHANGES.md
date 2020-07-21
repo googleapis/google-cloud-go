@@ -1,5 +1,23 @@
 # Changes
 
+## v1.8.0
+
+* Features:
+  - feat(spanner): support of client-level custom retry settings (#2599)
+  - feat(spanner): add a statement-based way to run read-write transaction. (#2545)
+* Bugfixes:
+  - fix(spanner): set 'gccl' to the request header. (#2609)
+  - fix(spanner): add the missing resource prefix (#2605)
+  - fix(spanner): fix the upgrade of protobuf. (#2583)
+  - fix(spanner): do not copy protobuf messages by value. (#2581)
+  - fix(spanner): fix the required resource prefix. (#2580)
+  - fix(spanner): add extra field to ignore with cmp (#2577)
+  - fix(spanner): remove appengine-specific numChannels. (#2513)
+* Misc:
+  - test(spanner): log warning instead of fail for stress test (#2559)
+  - test(spanner): fix failed TestRsdBlockingStates test (#2597)
+  - chore(spanner): cleanup mockserver and mockclient (#2414)
+
 ## v1.7.0
 * Retry:
   - Only retry certain types of internal errors. (#2460)
