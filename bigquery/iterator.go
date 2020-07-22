@@ -351,6 +351,7 @@ func fetchCachedPage(ctx context.Context, src *rowSource, schema Schema, startIn
 		}
 		// clear cache references and return response.
 		src.cachedRows = nil
+		src.cachedSchema = nil
 		src.cachedNextToken = ""
 		return result, nil
 	}

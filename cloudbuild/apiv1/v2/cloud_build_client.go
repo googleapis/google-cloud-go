@@ -136,10 +136,32 @@ func defaultCallOptions() *CallOptions {
 		UpdateBuildTrigger: []gax.CallOption{},
 		RunBuildTrigger:    []gax.CallOption{},
 		CreateWorkerPool:   []gax.CallOption{},
-		GetWorkerPool:      []gax.CallOption{},
-		DeleteWorkerPool:   []gax.CallOption{},
-		UpdateWorkerPool:   []gax.CallOption{},
-		ListWorkerPools:    []gax.CallOption{},
+		GetWorkerPool: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteWorkerPool: []gax.CallOption{},
+		UpdateWorkerPool: []gax.CallOption{},
+		ListWorkerPools: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 

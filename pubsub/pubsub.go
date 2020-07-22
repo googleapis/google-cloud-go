@@ -80,7 +80,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, fmt.Errorf("pubsub: %v", err)
 	}
-	subc, err := vkit.NewSubscriberClient(ctx, option.WithGRPCConn(pubc.Connection()))
+	subc, err := vkit.NewSubscriberClient(ctx, o...)
 	if err != nil {
 		// Should never happen, since we are passing in the connection.
 		// If it does, we cannot close, because the user may have passed in their

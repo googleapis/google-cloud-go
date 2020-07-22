@@ -28,7 +28,6 @@ import (
 
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -245,26 +244,7 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
 	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
-	if !cmp.Equal(wantErr, got,
-		cmp.AllowUnexported(Error{}), cmp.FilterPath(func(path cmp.Path) bool {
-			// Ignore Error Details and Error.trailers.
-			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).Details") {
-				return true
-			}
-			if strings.Contains(path.GoString(), "{*spanner.Error}.trailers") {
-				return true
-			}
-			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).state") {
-				return true
-			}
-			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).sizeCache") {
-				return true
-			}
-			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.Error).unknownFields") {
-				return true
-			}
-			return false
-		}, cmp.Ignore())) {
+	if !testEqual(wantErr, got) {
 		t.Fatalf("Expect Apply to fail\nGot:  %v\nWant: %v\n", got, wantErr)
 	}
 }

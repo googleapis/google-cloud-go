@@ -18,12 +18,14 @@ package spanner
 
 import (
 	"context"
+	"fmt"
 	"sync"
 	"testing"
 	"time"
 
 	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -371,5 +373,79 @@ func TestClientIDGenerator(t *testing.T) {
 		if got, want := cidGen.nextID(tt.database), tt.clientID; got != want {
 			t.Fatalf("Generate wrong client ID: got %v, want %v", got, want)
 		}
+	}
+}
+
+func TestMergeCallOptions(t *testing.T) {
+	a := &vkit.CallOptions{
+		CreateSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable, codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        16000 * time.Millisecond,
+					Multiplier: 1.0,
+				})
+			}),
+		},
+		GetSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable, codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    250 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+	}
+	b := &vkit.CallOptions{
+		CreateSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    250 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchCreateSessions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    250 * time.Millisecond,
+					Max:        32000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		}}
+
+	merged := mergeCallOptions(b, a)
+	cs := &gax.CallSettings{}
+	// We can't access the fields of Retryer so we have test the result by
+	// comparing strings.
+	merged.CreateSession[0].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+
+	merged.CreateSession[1].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{100000000 16000000000 1 0} [14 4]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+
+	merged.GetSession[0].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14 4]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+
+	merged.BatchCreateSessions[0].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
 	}
 }
