@@ -134,6 +134,11 @@ func TestParseBackoffDuration(t *testing.T) {
 			line:    "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 32..0.s",
 			wantErr: true,
 		},
+		{
+			desc:           "a backoff duration specifying hours, minutes, seconds, milliseconds and microseconds is parsed correctly.",
+			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 1h1m1s1ms1us",
+			wantBackoffDur: time.Hour + time.Minute + time.Second + time.Millisecond + time.Microsecond,
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			backoffDur, err := parseBackoffDuration(tc.line)
