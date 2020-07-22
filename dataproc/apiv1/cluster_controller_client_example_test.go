@@ -171,8 +171,10 @@ func ExampleClusterControllerClient_DiagnoseCluster() {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
