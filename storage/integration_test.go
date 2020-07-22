@@ -2673,10 +2673,9 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}})
 	// Deleting with retry, as bucket metadata changes
 	// can take some time to propagate.
-	err := runWithRetry(ctx, func() error {
-		time.Sleep(time.Second * 10)
-		return oh.Delete(context.Background())
-	})
+	err := retry(ctx, func() error {
+		return oh.Delete(ctx)
+	}, nil)
 	if err != nil {
 		h.t.Fatalf("%s: object delete: %v", loc(), err)
 	}
