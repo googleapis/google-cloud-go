@@ -1,5 +1,12 @@
 # Changes
 
+## v1.6.0
+
+- Fix issue where subscriber streams were limited because it was using a single grpc conn (#2624).
+	- As a side effect, publisher and subscriber grpc conns are no longer shared.
+- Add fake time function in pstest (#2558).
+- Add support for server side flow control.
+
 ## v1.5.0
 
 - Add support for subscription detachment.
