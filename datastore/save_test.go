@@ -334,6 +334,19 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			want: nil,
 		},
 		{
+			name: "Nil interface",
+			in: &struct {
+				Value interface{}
+				key   interface{}
+			}{
+				Value: nil,
+				key:   "key1",
+			},
+			want: []Property{
+				{Name: "Value", Value: nil},
+			},
+		},
+		{
 			name: "Nested",
 			in: &n3{
 				N2: &n2{
