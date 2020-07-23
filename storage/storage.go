@@ -1297,6 +1297,17 @@ type Query struct {
 	// the query. It's used internally and is populated for the user by
 	// calling Query.SetAttrSelection
 	fieldSelection string
+
+	// StartOffset is used to filter results to objects whose names are
+	// lexicographically equal to or after startOffset. If endOffset is also set,
+	// the objects listed will have names between startOffset (inclusive) and
+	// endOffset (exclusive).
+	StartOffset string
+
+	// EndOffset is used to filter results to objects whose names are
+	// lexicographically before endOffset. If startOffset is also set, the objects
+	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
+	EndOffset string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
