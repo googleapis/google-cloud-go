@@ -240,12 +240,12 @@ func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, 
 	log.Println("creating google-cloud-go PR")
 
 	var body string
-	draft := github.Bool(true)
+	var draft bool
 	if genprotoPRNum > 0 {
 		body = gocloudCommitBody + fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum)
+		draft = true
 	} else {
 		body = gocloudCommitBody + "\n\nThere is no corresponding genproto PR.\n"
-		draft = github.Bool(false)
 	}
 
 	c := exec.Command("/bin/bash", "-c", `
@@ -282,7 +282,7 @@ git push origin $BRANCH_NAME
 		Body:  &body,
 		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
 		Base:  github.String("master"),
-		Draft: draft,
+		Draft: github.Bool(draft),
 	})
 	if err != nil {
 		return 0, err
