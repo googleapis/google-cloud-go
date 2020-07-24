@@ -44,7 +44,10 @@ const (
 )
 
 var (
-	logtimeRE     = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
+	logtimeRE = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
+
+	// "ms" must be specified before "m" in the regexp, to ensure "ms" is fully
+	// matched.
 	backoffTimeRE = regexp.MustCompile(`(\d+(\.\d+)?(ms|h|m|s|us))+`)
 )
 
