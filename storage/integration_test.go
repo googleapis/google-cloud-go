@@ -2695,7 +2695,6 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1565")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2714,8 +2713,15 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	}
 
 	// Remove the retention period
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
-	h.mustDeleteObject(oh)
+	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}})
+	// Deleting with retry, as bucket metadata changes
+	// can take some time to propagate.
+	err := retry(ctx, func() error {
+		return oh.Delete(ctx)
+	}, nil)
+	if err != nil {
+		h.t.Fatalf("%s: object delete: %v", loc(), err)
+	}
 	h.mustDeleteBucket(bkt)
 }
 
