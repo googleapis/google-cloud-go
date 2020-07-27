@@ -44,8 +44,11 @@ const (
 )
 
 var (
-	logtimeRE     = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
-	backoffTimeRE = regexp.MustCompile(`(\d+(\.\d+)?(h|m|s|ms|us))+`)
+	logtimeRE = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
+
+	// "ms" must be specified before "m" in the regexp, to ensure "ms" is fully
+	// matched.
+	backoffTimeRE = regexp.MustCompile(`(\d+(\.\d+)?(ms|h|m|s|us))+`)
 )
 
 // BaseStartupTmpl is the common part of the startup script that

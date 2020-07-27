@@ -86,7 +86,7 @@ type EnvironmentsClient struct {
 
 // NewEnvironmentsClient creates a new environments client.
 //
-// Manages agent environments.
+// Service for managing Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := defaultEnvironmentsClientOptions()
 
