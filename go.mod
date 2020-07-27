@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.10.0
 	github.com/golang/mock v1.4.3
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.5.0
+	github.com/google/go-cmp v0.5.1
 	github.com/google/martian/v3 v3.0.0
 	github.com/google/pprof v0.0.0-20200708004538-1a94d8640e99
 	github.com/googleapis/gax-go/v2 v2.0.5
