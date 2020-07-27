@@ -375,3 +375,27 @@ func TestRetryPolicy_toProto(t *testing.T) {
 		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
 	}
 }
+
+func TestOrdering_CreateSubscription(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}
+	orderSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := orderSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !cfg.EnableMessageOrdering {
+		t.Fatalf("Expected EnableMessageOrdering to be true in %s", orderSub.String())
+	}
+}
