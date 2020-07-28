@@ -7,8 +7,9 @@
 - There was a breaking change to `cloud.google.com/go/dataproc/apiv1` that was
   merged in [this PR](https://github.com/googleapis/google-cloud-go/pull/2606).
   This fixed a broken API response for `DiagnoseCluster`. When polling on the
-  LRO, the API now returns `(*dataprocpb.DiagnoseClusterResults, error)` whereas
-  it only returned an `error` before.
+  Long Running Operation(LRO), the API now returns
+  `(*dataprocpb.DiagnoseClusterResults, error)` whereas it only returned an
+  `error` before.
 
 ### Changes
 
