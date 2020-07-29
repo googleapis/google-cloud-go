@@ -85,7 +85,6 @@ func (cr *chunkReader) Process(cc *btpb.ReadRowsResponse_CellChunk) (Row, error)
 		}
 
 		cr.curRow = make(Row)
-		cr.curLabels = cc.Labels
 		cr.curKey = cc.RowKey
 		cr.curFam = cc.FamilyName.Value
 		cr.curQual = cc.Qualifier.Value
@@ -141,6 +140,7 @@ func (cr *chunkReader) handleCellValue(cc *btpb.ReadRowsResponse_CellChunk) Row 
 		// ValueSize is specified so expect a split value of ValueSize bytes
 		if cr.curVal == nil {
 			cr.curVal = make([]byte, 0, cc.ValueSize)
+			cr.curLabels = cc.Labels
 		}
 		cr.curVal = append(cr.curVal, cc.Value...)
 		cr.state = cellInProgress
@@ -148,6 +148,7 @@ func (cr *chunkReader) handleCellValue(cc *btpb.ReadRowsResponse_CellChunk) Row 
 		// This cell is either the complete value or the last chunk of a split
 		if cr.curVal == nil {
 			cr.curVal = cc.Value
+			cr.curLabels = cc.Labels
 		} else {
 			cr.curVal = append(cr.curVal, cc.Value...)
 		}
