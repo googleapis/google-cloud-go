@@ -499,8 +499,12 @@ func (c *ClusterControllerClient) DiagnoseClusterOperation(name string) *Diagnos
 // Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
 //
 // See documentation of Poll for error-handling information.
-func (op *DiagnoseClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+func (op *DiagnoseClusterOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.DiagnoseClusterResults, error) {
+	var resp dataprocpb.DiagnoseClusterResults
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
 }
 
 // Poll fetches the latest state of the long-running operation.
@@ -512,16 +516,23 @@ func (op *DiagnoseClusterOperation) Wait(ctx context.Context, opts ...gax.CallOp
 // If Poll succeeds and the operation has completed successfully,
 // op.Done will return true, and the response of the operation is returned.
 // If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DiagnoseClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
+func (op *DiagnoseClusterOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*dataprocpb.DiagnoseClusterResults, error) {
+	var resp dataprocpb.DiagnoseClusterResults
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
 }
 
 // Metadata returns metadata associated with the long-running operation.
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *DiagnoseClusterOperation) Metadata() (*dataprocpb.DiagnoseClusterResults, error) {
-	var meta dataprocpb.DiagnoseClusterResults
+func (op *DiagnoseClusterOperation) Metadata() (*dataprocpb.ClusterOperationMetadata, error) {
+	var meta dataprocpb.ClusterOperationMetadata
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {

@@ -117,33 +117,35 @@ func (s *StatementResult) ToPartialResultSets(resumeToken []byte) (result []*spa
 	}
 
 	totalRows := uint64(len(s.ResultSet.Rows))
-	for {
-		rowCount := min(totalRows-startIndex, uint64(MaxRowsPerPartialResultSet))
-		rows := s.ResultSet.Rows[startIndex : startIndex+rowCount]
-		values := make([]*structpb.Value,
-			len(rows)*len(s.ResultSet.Metadata.RowType.Fields))
-		var idx int
-		for _, row := range rows {
-			for colIdx := range s.ResultSet.Metadata.RowType.Fields {
-				values[idx] = row.Values[colIdx]
-				idx++
+	if totalRows > 0 {
+		for {
+			rowCount := min(totalRows-startIndex, uint64(MaxRowsPerPartialResultSet))
+			rows := s.ResultSet.Rows[startIndex : startIndex+rowCount]
+			values := make([]*structpb.Value,
+				len(rows)*len(s.ResultSet.Metadata.RowType.Fields))
+			var idx int
+			for _, row := range rows {
+				for colIdx := range s.ResultSet.Metadata.RowType.Fields {
+					values[idx] = row.Values[colIdx]
+					idx++
+				}
 			}
-		}
-		var rt []byte
-		if len(s.ResumeTokens) == 0 {
-			rt = EncodeResumeToken(startIndex + rowCount)
-		} else {
-			rt = s.ResumeTokens[startIndex]
-		}
-		result = append(result, &spannerpb.PartialResultSet{
-			Metadata:    s.ResultSet.Metadata,
-			Values:      values,
-			ResumeToken: rt,
-		})
+			var rt []byte
+			if len(s.ResumeTokens) == 0 {
+				rt = EncodeResumeToken(startIndex + rowCount)
+			} else {
+				rt = s.ResumeTokens[startIndex]
+			}
+			result = append(result, &spannerpb.PartialResultSet{
+				Metadata:    s.ResultSet.Metadata,
+				Values:      values,
+				ResumeToken: rt,
+			})
 
-		startIndex += rowCount
-		if startIndex == totalRows {
-			break
+			startIndex += rowCount
+			if startIndex == totalRows {
+				break
+			}
 		}
 	}
 	return result, nil

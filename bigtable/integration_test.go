@@ -1971,6 +1971,138 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminBackup(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	cluster := testEnv.Config().Cluster
+
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer adminClient.DeleteTable(ctx, table)
+
+	list := func(cluster string) ([]*BackupInfo, error) {
+		infos := []*BackupInfo(nil)
+
+		it := adminClient.Backups(ctx, cluster)
+		for {
+			s, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return nil, err
+			}
+			infos = append(infos, s)
+		}
+		return infos, err
+	}
+
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Precondition: no backups
+	backups, err := list(cluster)
+	if err != nil {
+		t.Fatalf("Initial backup list: %v", err)
+	}
+	if got, want := len(backups), 0; got != want {
+		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
+	}
+
+	// Create backup
+	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
+
+	if err = adminClient.CreateBackup(ctx, table, cluster, "mybackup", time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+
+	// List backup
+	backups, err = list(cluster)
+	if err != nil {
+		t.Fatalf("Listing backups: %v", err)
+	}
+	if got, want := len(backups), 1; got != want {
+		t.Fatalf("Listing backup count: %d, want: %d", got, want)
+	}
+	if got, want := backups[0].Name, "mybackup"; got != want {
+		t.Fatalf("Backup name: %s, want: %s", got, want)
+	}
+	if got, want := backups[0].SourceTable, table; got != want {
+		t.Fatalf("Backup SourceTable: %s, want: %s", got, want)
+	}
+	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+		t.Fatalf("Backup ExpireTime: %s, want: %s", got, want)
+	}
+
+	// Get backup
+	backup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", backup)
+	}
+	if got, want := *backup, *backups[0]; got != want {
+		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	}
+
+	// Update backup
+	newExpireTime := time.Now().Add(10 * time.Hour)
+	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
+	if err != nil {
+		t.Fatalf("UpdateBackup failed: %v", err)
+	}
+
+	// Check that updated backup has the correct expire time
+	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", err)
+	}
+	backup.ExpireTime = newExpireTime
+	// Server clock and local clock may not be perfectly sync'ed.
+	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
+		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	}
+
+	// Restore backup
+	restoredTable := table + "-restored"
+	defer adminClient.DeleteTable(ctx, restoredTable)
+	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
+		t.Fatalf("RestoreTable: %v", err)
+	}
+	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
+		t.Fatalf("Restored TableInfo: %v", err)
+	}
+
+	// Delete backup
+	if err = adminClient.DeleteBackup(ctx, cluster, "mybackup"); err != nil {
+		t.Fatalf("DeleteBackup: %v", err)
+	}
+	backups, err = list(cluster)
+	if err != nil {
+		t.Fatalf("List after Delete: %v", err)
+	}
+	if got, want := len(backups), 0; got != want {
+		t.Fatalf("List after delete len: %d, want: %d", got, want)
+	}
+}
+
 func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {

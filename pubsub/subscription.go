@@ -308,16 +308,17 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:               newTopic(c, pbSub.Topic),
-		AckDeadline:         time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages: pbSub.RetainAckedMessages,
-		RetentionDuration:   rd,
-		Labels:              pbSub.Labels,
-		ExpirationPolicy:    expirationPolicy,
-		DeadLetterPolicy:    dlp,
-		Filter:              pbSub.Filter,
-		RetryPolicy:         rp,
-		Detached:            pbSub.Detached,
+		Topic:                 newTopic(c, pbSub.Topic),
+		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:   pbSub.RetainAckedMessages,
+		RetentionDuration:     rd,
+		Labels:                pbSub.Labels,
+		ExpirationPolicy:      expirationPolicy,
+		EnableMessageOrdering: pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:      dlp,
+		Filter:                pbSub.Filter,
+		RetryPolicy:           rp,
+		Detached:              pbSub.Detached,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
