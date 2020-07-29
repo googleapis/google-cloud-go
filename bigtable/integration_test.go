@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -792,7 +793,8 @@ func TestIntegration_Read(t *testing.T) {
 
 		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",
 		// and join with a comma.
-		want string
+		want       string
+		wantLabels []string
 	}{
 		{
 			desc: "read all, unfiltered",
@@ -879,6 +881,14 @@ func TestIntegration_Read(t *testing.T) {
 			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
 			limit:  LimitRows(2),
 			want:   "gwashington-jadams-1,jadams-tjefferson-1",
+		},
+		{
+			desc:       "apply labels to the result rows",
+			rr:         RowRange{},
+			filter:     ApplyLabelFilter("test-label"),
+			limit:      LimitRows(2),
+			want:       "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			wantLabels: []string{"test-label"},
 		},
 		{
 			desc:   "read all, strip values",
@@ -968,10 +978,11 @@ func TestIntegration_Read(t *testing.T) {
 			if test.limit != nil {
 				opts = append(opts, test.limit)
 			}
-			var elt []string
+			var elt, labels []string
 			err := table.ReadRows(ctx, test.rr, func(r Row) bool {
 				for _, ris := range r {
 					for _, ri := range ris {
+						labels = ri.Labels
 						elt = append(elt, formatReadItem(ri))
 					}
 				}
@@ -982,6 +993,11 @@ func TestIntegration_Read(t *testing.T) {
 			}
 			if got := strings.Join(elt, ","); got != test.want {
 				t.Fatalf("got %q\nwant %q", got, test.want)
+			}
+			if test.wantLabels != nil {
+				if !reflect.DeepEqual(labels, test.wantLabels) {
+					t.Fatalf("got %q\nwant %q", labels, test.wantLabels)
+				}
 			}
 		})
 	}

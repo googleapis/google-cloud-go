@@ -43,6 +43,7 @@ type ReadItem struct {
 	Row, Column string
 	Timestamp   Timestamp
 	Value       []byte
+	Labels      []string
 }
 
 // The current state of the read rows state machine.
@@ -57,14 +58,15 @@ const (
 // chunkReader handles cell chunks from the read rows response and combines
 // them into full Rows.
 type chunkReader struct {
-	state   rrState
-	curKey  []byte
-	curFam  string
-	curQual []byte
-	curTS   int64
-	curVal  []byte
-	curRow  Row
-	lastKey string
+	state     rrState
+	curKey    []byte
+	curLabels []string
+	curFam    string
+	curQual   []byte
+	curTS     int64
+	curVal    []byte
+	curRow    Row
+	lastKey   string
 }
 
 // newChunkReader returns a new chunkReader for handling read rows responses.
@@ -83,6 +85,7 @@ func (cr *chunkReader) Process(cc *btpb.ReadRowsResponse_CellChunk) (Row, error)
 		}
 
 		cr.curRow = make(Row)
+		cr.curLabels = cc.Labels
 		cr.curKey = cc.RowKey
 		cr.curFam = cc.FamilyName.Value
 		cr.curQual = cc.Qualifier.Value
@@ -165,6 +168,7 @@ func (cr *chunkReader) finishCell() {
 		Column:    string(cr.curFam) + ":" + string(cr.curQual),
 		Timestamp: Timestamp(cr.curTS),
 		Value:     cr.curVal,
+		Labels:    cr.curLabels,
 	}
 	cr.curRow[cr.curFam] = append(cr.curRow[cr.curFam], ri)
 	cr.curVal = nil
@@ -183,6 +187,7 @@ func (cr *chunkReader) resetToNewRow() {
 	cr.curQual = nil
 	cr.curVal = nil
 	cr.curRow = nil
+	cr.curLabels = nil
 	cr.curTS = 0
 	cr.state = newRow
 }
