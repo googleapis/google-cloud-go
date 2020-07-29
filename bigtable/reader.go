@@ -173,6 +173,7 @@ func (cr *chunkReader) finishCell() {
 	}
 	cr.curRow[cr.curFam] = append(cr.curRow[cr.curFam], ri)
 	cr.curVal = nil
+	cr.curLabels = nil
 }
 
 func (cr *chunkReader) commitRow() Row {
@@ -188,7 +189,6 @@ func (cr *chunkReader) resetToNewRow() {
 	cr.curQual = nil
 	cr.curVal = nil
 	cr.curRow = nil
-	cr.curLabels = nil
 	cr.curTS = 0
 	cr.state = newRow
 }
