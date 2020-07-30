@@ -24,16 +24,32 @@ gcwd=$PWD/github/google-cloud-go
 
 cd github/golang-samples
 
+# Returns 0 if the test should be skipped because the current Go
+# version is too old for the current module.
+goVersionShouldSkip() {
+  echo "Downloading modules and checking versions"
+  modVersion="$(go list -m -f '{{.GoVersion}}')"
+  if [ -z "$modVersion" ]; then
+    # Not in a module or minimum Go version not specified, don't skip.
+    return 1
+  fi
+
+  go list -f "{{context.ReleaseTags}}" | grep -q -v "go$modVersion\b"
+}
+
 # For each module, build the code with local google-cloud-go changes.
 for i in $(find . -name go.mod); do
-  set +x
   # internal: this does not need to be built to test compatibility
   # run/events_pubsub: module requires go1.13 for cloudevents
-  if [[ $i == *"/internal/"* ]] || [[ $i == *"/run/events_pubsub/"* ]]; then
+  if [[ $i == *"/internal/"* ]]; then
     continue
   fi
 
   pushd $(dirname $i)
+  if goVersionShouldSkip; then
+    popd
+    continue
+  fi
   # TODO(codyoss): if we spilt out modules someday we should make this programmatic.
   go mod edit -replace cloud.google.com/go=$gcwd
   go mod edit -replace cloud.google.com/go/bigtable=$gcwd/bigtable
@@ -44,7 +60,6 @@ for i in $(find . -name go.mod); do
   go mod edit -replace cloud.google.com/go/pubsub=$gcwd/pubsub
   go mod edit -replace cloud.google.com/go/spanner=$gcwd/spanner
   go mod edit -replace cloud.google.com/go/storage=$gcwd/storage
-  set -x
   echo "Building module $i"
   go build ./...
   popd
