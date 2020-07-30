@@ -978,11 +978,15 @@ func TestIntegration_Read(t *testing.T) {
 			if test.limit != nil {
 				opts = append(opts, test.limit)
 			}
-			var elt, labels []string
+			var elt []string
 			err := table.ReadRows(ctx, test.rr, func(r Row) bool {
 				for _, ris := range r {
 					for _, ri := range ris {
-						labels = ri.Labels
+						if test.wantLabels != nil {
+							if got, want := ri.Labels, test.wantLabels; !reflect.DeepEqual(got, want) {
+								t.Fatalf("got %q\nwant %q", got, want)
+							}
+						}
 						elt = append(elt, formatReadItem(ri))
 					}
 				}
@@ -993,11 +997,6 @@ func TestIntegration_Read(t *testing.T) {
 			}
 			if got := strings.Join(elt, ","); got != test.want {
 				t.Fatalf("got %q\nwant %q", got, test.want)
-			}
-			if test.wantLabels != nil {
-				if !reflect.DeepEqual(labels, test.wantLabels) {
-					t.Fatalf("got %q\nwant %q", labels, test.wantLabels)
-				}
 			}
 		})
 	}
