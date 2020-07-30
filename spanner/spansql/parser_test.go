@@ -301,7 +301,7 @@ func TestParseDDL(t *testing.T) {
 					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
 					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(3)},
 					{Name: "Count", Type: Type{Base: Int64}, Position: line(4)},
-					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true), Position: line(6)},
+					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(true)}, Position: line(6)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "System"},
@@ -394,12 +394,13 @@ func TestParseDDL(t *testing.T) {
 			},
 			&AlterTable{
 				Name: "FooBar",
-				Alteration: AlterColumn{Def: ColumnDef{
-					Name:     "Author",
-					Type:     Type{Base: String, Len: MaxLen},
-					NotNull:  true,
-					Position: line(26),
-				}},
+				Alteration: AlterColumn{
+					Name: "Author",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						NotNull: true,
+					},
+				},
 				Position: line(26),
 			},
 			&DropIndex{Name: "MyFirstIndex", Position: line(28)},
