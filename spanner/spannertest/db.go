@@ -320,7 +320,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			}
 			return nil
 		case spansql.AlterColumn:
-			if st := t.alterColumn(alt.Def); st.Code() != codes.OK {
+			if st := t.alterColumn(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -626,7 +626,7 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	return nil
 }
 
-func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
+func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 	// Supported changes here are:
 	//	Add NOT NULL to a non-key column, excluding ARRAY columns.
 	//	Remove NOT NULL from a non-key column.
@@ -635,17 +635,22 @@ func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
 	//	Enable or disable commit timestamps in value and primary key columns.
 	// https://cloud.google.com/spanner/docs/schema-updates#supported-updates
 
+	sct, ok := alt.Alteration.(spansql.SetColumnType)
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
+	}
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	ci, ok := t.colIndex[cd.Name]
+	ci, ok := t.colIndex[alt.Name]
 	if !ok {
 		// TODO: What's the right response code?
-		return status.Newf(codes.InvalidArgument, "unknown column %q", cd.Name)
+		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
 	// Check and make type transformations.
-	oldT, newT := t.cols[ci].Type, cd.Type
+	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
 	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
@@ -675,7 +680,7 @@ func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
 
 	// TODO: Support other alterations.
 
-	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", cd.SQL())
+	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
 }
 
 func (t *table) insertRow(rowNum int, r row) {
