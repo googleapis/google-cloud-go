@@ -20,6 +20,8 @@
   - Start generating client for apiv1beta1.
 - functions:
   - Start generating client for apiv1.
+- notebooks:
+  - Start generating client apiv1beta1.
 - profiler:
   - update proftest to support parsing floating-point backoff durations.
   - Fix the regexp used to parse backoff duration.
