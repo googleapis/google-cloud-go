@@ -687,6 +687,15 @@ type HTTPRequest struct {
 	// validated with the origin server before being served from cache. This
 	// field is only meaningful if CacheHit is true.
 	CacheValidatedWithOriginServer bool
+
+	// The number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.
+	CacheFillBytes int64
+
+	// Whether or not a cache lookup was attempted.
+	CacheLookup bool
+
+	// Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2", "websocket"
+	Protocol string
 }
 
 func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
@@ -710,6 +719,9 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		Referer:                        r.Request.Referer(),
 		CacheHit:                       r.CacheHit,
 		CacheValidatedWithOriginServer: r.CacheValidatedWithOriginServer,
+		Protocol:                       r.Request.Proto,
+		CacheFillBytes:                 r.CacheFillBytes,
+		CacheLookup:                    r.CacheLookup,
 	}
 	if r.Latency != 0 {
 		pb.Latency = ptypes.DurationProto(r.Latency)
