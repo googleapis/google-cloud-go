@@ -21,7 +21,7 @@
     `cd google-cloud-go`
 
 1. Fork the repo.
-   
+
 1. Set your fork as a remote:
     `git remote add fork git@github.com:GITHUB_USERNAME/google-cloud-go.git`
 
@@ -36,6 +36,9 @@
    ```
 
 1. Send a pull request with your changes.
+
+   To minimize friction, consider setting `Allow edits from maintainers` on the
+   PR, which will enable project committers and automation to update your PR.
 
 1. A maintainer will review the pull request and make comments.
 

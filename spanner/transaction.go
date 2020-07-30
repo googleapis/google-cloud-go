@@ -820,7 +820,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	if err != nil {
 		return 0, err
 	}
-	resultSet, err := sh.getClient().ExecuteSql(ctx, req)
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
 	if err != nil {
 		return 0, toSpannerError(err)
 	}
@@ -864,7 +864,7 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 		})
 	}
 
-	resp, err := sh.getClient().ExecuteBatchDml(ctx, &sppb.ExecuteBatchDmlRequest{
+	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
 		Session:     sh.getID(),
 		Transaction: ts,
 		Statements:  sppbStmts,

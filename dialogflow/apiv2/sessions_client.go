@@ -86,10 +86,10 @@ type SessionsClient struct {
 
 // NewSessionsClient creates a new sessions client.
 //
-// A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent (or
-// StreamingDetectIntent) method to determine
-// user intent and respond.
+// A service used for session interactions.
+//
+// For more information, see the API interactions
+// guide (at https://cloud.google.com/dialogflow/docs/api-overview).
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := defaultSessionsClientOptions()
 

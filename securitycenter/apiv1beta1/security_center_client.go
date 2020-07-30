@@ -195,7 +195,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// Client is a client for interacting with Cloud Security Command Center API.
+// Client is a client for interacting with Security Command Center API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {

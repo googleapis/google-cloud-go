@@ -666,7 +666,8 @@ func TestTableSchemaConvertNull(t *testing.T) {
 	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Songwriters",
 		Alteration: spansql.AlterColumn{
-			Def: spansql.ColumnDef{Name: "Nickname", Type: spansql.Type{Base: spansql.Bytes}},
+			Name:       "Nickname",
+			Alteration: spansql.SetColumnType{Type: spansql.Type{Base: spansql.Bytes}},
 		},
 	})
 	if err := st.Err(); err != nil {
@@ -675,7 +676,8 @@ func TestTableSchemaConvertNull(t *testing.T) {
 	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Songwriters",
 		Alteration: spansql.AlterColumn{
-			Def: spansql.ColumnDef{Name: "Nickname", Type: spansql.Type{Base: spansql.String}},
+			Name:       "Nickname",
+			Alteration: spansql.SetColumnType{Type: spansql.Type{Base: spansql.String}},
 		},
 	})
 	if err := st.Err(); err != nil {

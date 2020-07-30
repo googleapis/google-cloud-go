@@ -27,8 +27,10 @@ import (
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
+	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -55,6 +57,9 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
 					if !strings.HasPrefix(token[0], "gl-go/") {
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
+					}
+					if !strings.Contains(token[0], "gccl/") {
 						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					return nil
@@ -1754,6 +1759,234 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 	if !strings.Contains(se.Error(), msg) {
 		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}
+
+func TestClient_CallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		CreateSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable, codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	defer teardown()
+
+	c, err := client.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to get a session client: %v", err)
+	}
+
+	cs := &gax.CallSettings{}
+	// This is the default retry setting.
+	c.CallOptions.CreateSession[0].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+
+	// This is the custom retry setting.
+	c.CallOptions.CreateSession[1].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+}
+
+func TestClient_QueryWithCallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		ExecuteSql: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.DeadlineExceeded, "Deadline exceeded")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_EncodeCustomFieldType(t *testing.T) {
+	t.Parallel()
+
+	type typesTable struct {
+		Int    customStructToInt    `spanner:"Int"`
+		String customStructToString `spanner:"String"`
+		Float  customStructToFloat  `spanner:"Float"`
+		Bool   customStructToBool   `spanner:"Bool"`
+		Time   customStructToTime   `spanner:"Time"`
+		Date   customStructToDate   `spanner:"Date"`
+	}
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	d := typesTable{
+		Int:    customStructToInt{1, 23},
+		String: customStructToString{"A", "B"},
+		Float:  customStructToFloat{1.23, 12.3},
+		Bool:   customStructToBool{true, false},
+		Time:   customStructToTime{"A", "B"},
+		Date:   customStructToDate{"A", "B"},
+	}
+
+	m, err := InsertStruct("Types", &d)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	ms := []*Mutation{m}
+	_, err = client.Apply(ctx, ms)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+
+	for _, req := range reqs {
+		if commitReq, ok := req.(*sppb.CommitRequest); ok {
+			val := commitReq.Mutations[0].GetInsert().Values[0]
+
+			if got, want := val.Values[0].GetStringValue(), "123"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[0].GetKind(), want)
+			}
+			if got, want := val.Values[1].GetStringValue(), "A-B"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[1].GetKind(), want)
+			}
+			if got, want := val.Values[2].GetNumberValue(), float64(123.123); got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[2].GetKind(), want)
+			}
+			if got, want := val.Values[3].GetBoolValue(), true; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[3].GetKind(), want)
+			}
+			if got, want := val.Values[4].GetStringValue(), "2016-11-15T15:04:05.999999999Z"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[4].GetKind(), want)
+			}
+			if got, want := val.Values[5].GetStringValue(), "2016-11-15"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[5].GetKind(), want)
+			}
+		}
+	}
+}
+
+func setupDecodeCustomFieldResult(server *MockedSpannerInMemTestServer, stmt string) error {
+	metadata := &sppb.ResultSetMetadata{
+		RowType: &sppb.StructType{
+			Fields: []*sppb.StructType_Field{
+				{Name: "Int", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+				{Name: "String", Type: &sppb.Type{Code: sppb.TypeCode_STRING}},
+				{Name: "Float", Type: &sppb.Type{Code: sppb.TypeCode_FLOAT64}},
+				{Name: "Bool", Type: &sppb.Type{Code: sppb.TypeCode_BOOL}},
+				{Name: "Time", Type: &sppb.Type{Code: sppb.TypeCode_TIMESTAMP}},
+				{Name: "Date", Type: &sppb.Type{Code: sppb.TypeCode_DATE}},
+			},
+		},
+	}
+	rowValues := []*structpb.Value{
+		{Kind: &structpb.Value_StringValue{StringValue: "123"}},
+		{Kind: &structpb.Value_StringValue{StringValue: "A-B"}},
+		{Kind: &structpb.Value_NumberValue{NumberValue: float64(123.123)}},
+		{Kind: &structpb.Value_BoolValue{BoolValue: true}},
+		{Kind: &structpb.Value_StringValue{StringValue: "2016-11-15T15:04:05.999999999Z"}},
+		{Kind: &structpb.Value_StringValue{StringValue: "2016-11-15"}},
+	}
+	rows := []*structpb.ListValue{
+		{Values: rowValues},
+	}
+	resultSet := &sppb.ResultSet{
+		Metadata: metadata,
+		Rows:     rows,
+	}
+	result := &StatementResult{
+		Type:      StatementResultResultSet,
+		ResultSet: resultSet,
+	}
+	return server.TestSpanner.PutStatementResult(stmt, result)
+}
+
+func TestClient_DecodeCustomFieldType(t *testing.T) {
+	t.Parallel()
+
+	type typesTable struct {
+		Int    customStructToInt    `spanner:"Int"`
+		String customStructToString `spanner:"String"`
+		Float  customStructToFloat  `spanner:"Float"`
+		Bool   customStructToBool   `spanner:"Bool"`
+		Time   customStructToTime   `spanner:"Time"`
+		Date   customStructToDate   `spanner:"Date"`
+	}
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	query := "SELECT * FROM Types"
+	setupDecodeCustomFieldResult(server, query)
+
+	ctx := context.Background()
+	stmt := Statement{SQL: query}
+	iter := client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	var results []typesTable
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to get next: %v", err)
+		}
+
+		var d typesTable
+		if err := row.ToStruct(&d); err != nil {
+			t.Fatalf("failed to convert a row to a struct: %v", err)
+		}
+		results = append(results, d)
+	}
+
+	if len(results) > 1 {
+		t.Fatalf("mismatch length of array: got %v, want 1", results)
+	}
+
+	want := typesTable{
+		Int:    customStructToInt{1, 23},
+		String: customStructToString{"A", "B"},
+		Float:  customStructToFloat{1.23, 12.3},
+		Bool:   customStructToBool{true, false},
+		Time:   customStructToTime{"A", "B"},
+		Date:   customStructToDate{"A", "B"},
+	}
+	got := results[0]
+	if !testEqual(got, want) {
+		t.Fatalf("mismatch result: got %v, want %v", got, want)
 	}
 }
 
