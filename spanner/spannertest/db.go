@@ -524,6 +524,13 @@ func (d *database) readTable(table string, cols []string, f func(*table, *rawIte
 }
 
 func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
+	// The real Cloud Spanner returns an error if the key set is empty by definition.
+	// That doesn't seem to be well-defined, but it is a common error to attempt a read with no keys,
+	// so catch that here and return a representative error.
+	if len(keys) == 0 && len(keyRanges) == 0 {
+		return nil, status.Error(codes.Unimplemented, "Cloud Spanner does not support reading no keys")
+	}
+
 	return d.readTable(tbl, cols, func(t *table, ri *rawIter, colIndexes []int) error {
 		// "If the same key is specified multiple times in the set (for
 		// example if two ranges, two keys, or a key and a range
