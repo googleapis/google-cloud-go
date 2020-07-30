@@ -632,7 +632,7 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	// TODO(jba): test verify when it is supported.
 }
 
-func TestIntegration_Query(t *testing.T) {
+func TestIntegration_QueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -657,6 +657,7 @@ func TestIntegration_Query(t *testing.T) {
 		{q.StartAfter(1), wants[2:]},
 		{q.EndAt(1), wants[:2]},
 		{q.EndBefore(1), wants[:1]},
+		{q.LimitToLast(2), wants[1:]},
 	} {
 		gotDocs, err := test.q.Documents(ctx).GetAll()
 		if err != nil {
@@ -681,7 +682,7 @@ func TestIntegration_Query(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	seen := map[int64]bool{} // "q" values we see
+	seen := map[int64]bool{} // "q" values we see.
 	for _, d := range allDocs {
 		data := d.Data()
 		q, ok := data["q"]
@@ -702,6 +703,16 @@ func TestIntegration_Query(t *testing.T) {
 	}
 	if got, want := len(seen), len(wants); got != want {
 		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
+	}
+}
+
+func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	q := coll.Select("q").OrderBy("q", Asc).LimitToLast(1)
+	got, err := q.Documents(ctx).Next()
+	if err == nil {
+		t.Errorf("got %v doc, want error", got)
 	}
 }
 
