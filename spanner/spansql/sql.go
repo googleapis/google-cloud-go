@@ -114,7 +114,33 @@ func (od OnDelete) SQL() string {
 }
 
 func (ac AlterColumn) SQL() string {
-	return "ALTER COLUMN " + ac.Def.SQL()
+	return "ALTER COLUMN " + ID(ac.Name).SQL() + " " + ac.Alteration.SQL()
+}
+
+func (sct SetColumnType) SQL() string {
+	str := sct.Type.SQL()
+	if sct.NotNull {
+		str += " NOT NULL"
+	}
+	return str
+}
+
+func (sco SetColumnOptions) SQL() string {
+	// TODO: not clear what to do for no options.
+	return "SET " + sco.Options.SQL()
+}
+
+func (co ColumnOptions) SQL() string {
+	str := "OPTIONS ("
+	if co.AllowCommitTimestamp != nil {
+		if *co.AllowCommitTimestamp {
+			str += "allow_commit_timestamp = true"
+		} else {
+			str += "allow_commit_timestamp = null"
+		}
+	}
+	str += ")"
+	return str
 }
 
 func (d *Delete) SQL() string {
@@ -126,12 +152,8 @@ func (cd ColumnDef) SQL() string {
 	if cd.NotNull {
 		str += " NOT NULL"
 	}
-	if cd.Type.Base == Timestamp && cd.AllowCommitTimestamp != nil {
-		if *cd.AllowCommitTimestamp {
-			str += " OPTIONS (allow_commit_timestamp = true)"
-		} else {
-			str += " OPTIONS (allow_commit_timestamp = null)"
-		}
+	if cd.Options != (ColumnOptions{}) {
+		str += " " + cd.Options.SQL()
 	}
 	return str
 }
