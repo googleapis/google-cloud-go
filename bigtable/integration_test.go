@@ -982,10 +982,8 @@ func TestIntegration_Read(t *testing.T) {
 			err := table.ReadRows(ctx, test.rr, func(r Row) bool {
 				for _, ris := range r {
 					for _, ri := range ris {
-						if test.wantLabels != nil {
-							if got, want := ri.Labels, test.wantLabels; !reflect.DeepEqual(got, want) {
-								t.Fatalf("got %q\nwant %q", got, want)
-							}
+						if got, want := ri.Labels, test.wantLabels; !reflect.DeepEqual(got, want) {
+							t.Fatalf("got %q\nwant %q", got, want)
 						}
 						elt = append(elt, formatReadItem(ri))
 					}
