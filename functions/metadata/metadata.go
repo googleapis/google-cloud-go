@@ -87,8 +87,6 @@ func (r *Resource) MarshalJSON() ([]byte, error) {
 	}
 
 	// Otherwise, accept whatever the result of the normal marshal would be.
-	// Need to define a new type, otherwise it infinitely recurses and panics.
-	type resource Resource
 	res := *r
 	b, err := json.Marshal(res)
 	if err != nil {
