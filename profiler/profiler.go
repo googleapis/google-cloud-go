@@ -14,8 +14,6 @@
 
 // Package profiler is a client for the Stackdriver Profiler service.
 //
-// This package is still experimental and subject to change.
-//
 // Usage example:
 //
 //   import "cloud.google.com/go/profiler"
