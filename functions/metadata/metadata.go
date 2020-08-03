@@ -81,7 +81,7 @@ func (r *Resource) UnmarshalJSON(data []byte) error {
 // value is a string instead of a map. See the comment above on RawPath for why this
 // needs to be handled.
 func (r *Resource) MarshalJSON() ([]byte, error) {
-	// If RawPath is set, use that as the value.
+	// If RawPath is set, use that as the whole value.
 	if r.RawPath != "" {
 		return []byte(fmt.Sprintf("%q", r.RawPath)), nil
 	}
