@@ -4,7 +4,7 @@ go 1.11
 
 require (
 	cloud.google.com/go/storage v1.10.0
-	github.com/golang/mock v1.4.3
+	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.5.1
 	github.com/google/martian/v3 v3.0.0
@@ -16,9 +16,9 @@ require (
 	golang.org/x/net v0.0.0-20200707034311-ab3426394381
 	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
 	golang.org/x/text v0.3.3
-	golang.org/x/tools v0.0.0-20200729041821-df70183b1872
+	golang.org/x/tools v0.0.0-20200804011535-6c149bb5ef0d
 	google.golang.org/api v0.29.0
-	google.golang.org/genproto v0.0.0-20200729003335-053ba62fc06f
-	google.golang.org/grpc v1.30.0
+	google.golang.org/genproto v0.0.0-20200731012542-8145dea6a485
+	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0 // indirect
 )
