@@ -18,7 +18,7 @@ require (
 	golang.org/x/text v0.3.3
 	golang.org/x/tools v0.0.0-20200804011535-6c149bb5ef0d
 	google.golang.org/api v0.29.0
-	google.golang.org/genproto v0.0.0-20200731012542-8145dea6a485
+	google.golang.org/genproto v0.0.0-20200804131852-c06518451d9c
 	google.golang.org/grpc v1.31.0
 	google.golang.org/protobuf v1.25.0 // indirect
 )
