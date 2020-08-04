@@ -143,7 +143,6 @@ func TestMarshalJSON(t *testing.T) {
 					Type:    "type.googleapis.com/google.pubsub.v1.PubsubMessage",
 				},
 			},
-			want: []byte(`{"eventId":"1234567","timestamp":"2019-11-04T23:01:10.112Z","eventType":"google.pubsub.topic.publish","resource":{"service":"pubsub.googleapis.com","name":"mytopic","type":"type.googleapis.com/google.pubsub.v1.PubsubMessage"}}`),
 		},
 		{
 			name: "MetadataWithString",
@@ -155,7 +154,6 @@ func TestMarshalJSON(t *testing.T) {
 					RawPath: "projects/myproject/mytopic",
 				},
 			},
-			want: []byte(`{"eventId":"1234567","timestamp":"2019-11-04T23:01:10.112Z","eventType":"google.pubsub.topic.publish","resource":"projects/myproject/mytopic"}`),
 		},
 	}
 
@@ -164,8 +162,13 @@ func TestMarshalJSON(t *testing.T) {
 		if err != nil {
 			t.Errorf("MarshalJSON(%s) error: %v", tc.name, err)
 		}
-		if !cmp.Equal(b, tc.want) {
-			t.Errorf("MarshalJSON(%s) error: got %v, want %v", tc.name, string(b), string(tc.want))
+
+		var m Metadata
+		if err := json.Unmarshal(b, &m); err != nil {
+			t.Errorf("MarshalJSON(%s) error: %v", tc.name, err)
+		}
+		if !cmp.Equal(m, tc.metadata) {
+			t.Errorf("MarshalJSON(%s) error: got %v, want %v", tc.name, m, tc.metadata)
 		}
 	}
 }
