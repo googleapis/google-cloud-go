@@ -132,6 +132,8 @@ var funcs = map[string]bool{
 	"ARRAY_AGG": true,
 	"BIT_XOR":   true,
 	"COUNT":     true,
+	"MAX":       true,
+	"MIN":       true,
 	"SUM":       true,
 
 	// Mathematical functions.

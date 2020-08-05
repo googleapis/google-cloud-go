@@ -246,6 +246,13 @@ type SubscriptionConfig struct {
 
 	// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
 	RetryPolicy *RetryPolicy
+
+	// Detached indicates whether the subscription is detached from its topic.
+	// Detached subscriptions don't receive messages from their topic and don't
+	// retain any backlog. `Pull` and `StreamingPull` requests will return
+	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+	// the endpoint will not be made.
+	Detached bool
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -278,6 +285,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		DeadLetterPolicy:         pbDeadLetter,
 		Filter:                   cfg.Filter,
 		RetryPolicy:              pbRetryPolicy,
+		Detached:                 cfg.Detached,
 	}
 }
 
@@ -300,15 +308,17 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:               newTopic(c, pbSub.Topic),
-		AckDeadline:         time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages: pbSub.RetainAckedMessages,
-		RetentionDuration:   rd,
-		Labels:              pbSub.Labels,
-		ExpirationPolicy:    expirationPolicy,
-		DeadLetterPolicy:    dlp,
-		Filter:              pbSub.Filter,
-		RetryPolicy:         rp,
+		Topic:                 newTopic(c, pbSub.Topic),
+		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:   pbSub.RetainAckedMessages,
+		RetentionDuration:     rd,
+		Labels:                pbSub.Labels,
+		ExpirationPolicy:      expirationPolicy,
+		EnableMessageOrdering: pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:      dlp,
+		Filter:                pbSub.Filter,
+		RetryPolicy:           rp,
+		Detached:              pbSub.Detached,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -805,9 +815,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
-		maxExtension: maxExt,
-		maxPrefetch:  trunc32(int64(maxCount)),
-		synchronous:  s.ReceiveSettings.Synchronous,
+		maxExtension:           maxExt,
+		maxPrefetch:            trunc32(int64(maxCount)),
+		synchronous:            s.ReceiveSettings.Synchronous,
+		maxOutstandingMessages: maxCount,
+		maxOutstandingBytes:    maxBytes,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -935,5 +947,7 @@ type pullOptions struct {
 	maxPrefetch  int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
-	synchronous bool
+	synchronous            bool
+	maxOutstandingMessages int
+	maxOutstandingBytes    int
 }

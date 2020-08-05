@@ -59,6 +59,125 @@ func mustParseDate(s string) civil.Date {
 	return d
 }
 
+type customStructToString struct {
+	A string
+	B string
+}
+
+// Convert the customStructToString
+func (c customStructToString) EncodeSpanner() (interface{}, error) {
+	return "A-B", nil
+}
+
+// Convert to customStructToString
+func (c *customStructToString) DecodeSpanner(val interface{}) (err error) {
+	c.A = "A"
+	c.B = "B"
+	return nil
+}
+
+type customStructToInt struct {
+	A int64
+	B int64
+}
+
+// Convert the customStructToInt
+func (c customStructToInt) EncodeSpanner() (interface{}, error) {
+	return 123, nil
+}
+
+// Convert to customStructToInt
+func (c *customStructToInt) DecodeSpanner(val interface{}) (err error) {
+	c.A = 1
+	c.B = 23
+	return nil
+}
+
+type customStructToFloat struct {
+	A float64
+	B float64
+}
+
+// Convert the customStructToFloat
+func (c customStructToFloat) EncodeSpanner() (interface{}, error) {
+	return 123.123, nil
+}
+
+// Convert to customStructToFloat
+func (c *customStructToFloat) DecodeSpanner(val interface{}) (err error) {
+	c.A = 1.23
+	c.B = 12.3
+	return nil
+}
+
+type customStructToBool struct {
+	A bool
+	B bool
+}
+
+// Convert the customStructToBool
+func (c customStructToBool) EncodeSpanner() (interface{}, error) {
+	return true, nil
+}
+
+// Convert to customStructToBool
+func (c *customStructToBool) DecodeSpanner(val interface{}) (err error) {
+	c.A = true
+	c.B = false
+	return nil
+}
+
+type customStructToBytes struct {
+	A []byte
+	B []byte
+}
+
+// Convert the customStructToBytes
+func (c customStructToBytes) EncodeSpanner() (interface{}, error) {
+	return []byte("AB"), nil
+}
+
+// Convert to customStructToBytes
+func (c *customStructToBytes) DecodeSpanner(val interface{}) (err error) {
+	c.A = []byte("A")
+	c.B = []byte("B")
+	return nil
+}
+
+type customStructToTime struct {
+	A string
+	B string
+}
+
+// Convert the customStructToTime
+func (c customStructToTime) EncodeSpanner() (interface{}, error) {
+	return t1, nil
+}
+
+// Convert to customStructToTime
+func (c *customStructToTime) DecodeSpanner(val interface{}) (err error) {
+	c.A = "A"
+	c.B = "B"
+	return nil
+}
+
+type customStructToDate struct {
+	A string
+	B string
+}
+
+// Convert the customStructToDate
+func (c customStructToDate) EncodeSpanner() (interface{}, error) {
+	return d1, nil
+}
+
+// Convert to customStructToDate
+func (c *customStructToDate) DecodeSpanner(val interface{}) (err error) {
+	c.A = "A"
+	c.B = "B"
+	return nil
+}
+
 // Test encoding Values.
 func TestEncodeValue(t *testing.T) {
 	type CustomString string
@@ -239,6 +358,14 @@ func TestEncodeValue(t *testing.T) {
 		{[]CustomDate{CustomDate(d1), CustomDate(d2)}, listProto(dateProto(d1), dateProto(d2)), listType(tDate), "[]CustomDate"},
 		{[]CustomNullDate(nil), nullProto(), listType(tDate), "null []CustomNullDate"},
 		{[]CustomNullDate{{d1, true}, {civil.Date{}, false}}, listProto(dateProto(d1), nullProto()), listType(tDate), "[]NullDate"},
+		// CUSTOM STRUCT
+		{customStructToString{"A", "B"}, stringProto("A-B"), tString, "a struct to string"},
+		{customStructToInt{1, 23}, intProto(123), tInt, "a struct to int"},
+		{customStructToFloat{1.23, 12.3}, floatProto(123.123), tFloat, "a struct to float"},
+		{customStructToBool{true, false}, boolProto(true), tBool, "a struct to bool"},
+		{customStructToBytes{[]byte("A"), []byte("B")}, bytesProto([]byte("AB")), tBytes, "a struct to bytes"},
+		{customStructToTime{"A", "B"}, timeProto(tValue), tTime, "a struct to time"},
+		{customStructToDate{"A", "B"}, dateProto(dValue), tDate, "a struct to date"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1441,6 +1568,14 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<DATE> to []CustomDate", proto: listProto(dateProto(d1), dateProto(d2)), protoType: listType(dateType()), want: []CustomDate{CustomDate(d1), CustomDate(d2)}},
 		{desc: "decode NULL to []CustomNullDate", proto: nullProto(), protoType: listType(dateType()), want: []CustomNullDate(nil)},
 		{desc: "decode ARRAY<DATE> to []CustomNullDate", proto: listProto(dateProto(d1), nullProto(), dateProto(d2)), protoType: listType(dateType()), want: []CustomNullDate{{d1, true}, {}, {d2, true}}},
+		// CUSTOM STRUCT
+		{desc: "decode STRING to CustomStructToString", proto: stringProto("A-B"), protoType: stringType(), want: customStructToString{"A", "B"}},
+		{desc: "decode INT64 to CustomStructToInt", proto: intProto(123), protoType: intType(), want: customStructToInt{1, 23}},
+		{desc: "decode FLOAT64 to CustomStructToFloat", proto: floatProto(123.123), protoType: floatType(), want: customStructToFloat{1.23, 12.3}},
+		{desc: "decode BOOL to CustomStructToBool", proto: boolProto(true), protoType: boolType(), want: customStructToBool{true, false}},
+		{desc: "decode BYTES to CustomStructToBytes", proto: bytesProto([]byte("AB")), protoType: bytesType(), want: customStructToBytes{[]byte("A"), []byte("B")}},
+		{desc: "decode TIMESTAMP to CustomStructToTime", proto: timeProto(t1), protoType: timeType(), want: customStructToTime{"A", "B"}},
+		{desc: "decode DATE to CustomStructToDate", proto: dateProto(d1), protoType: dateType(), want: customStructToDate{"A", "B"}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
 		err := decodeValue(test.proto, test.protoType, gotp.Interface())

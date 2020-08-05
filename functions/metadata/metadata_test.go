@@ -120,3 +120,55 @@ func TestUnmarshalJSON(t *testing.T) {
 		}
 	}
 }
+
+func TestMarshalJSON(t *testing.T) {
+	ts, err := time.Parse("2006-01-02T15:04:05Z07:00", "2019-11-04T23:01:10.112Z")
+	if err != nil {
+		t.Fatalf("Error parsing time: %v.", err)
+	}
+	var tests = []struct {
+		name     string
+		metadata Metadata
+		want     []byte
+	}{
+		{
+			name: "MetadataWithResource",
+			metadata: Metadata{
+				EventID:   "1234567",
+				Timestamp: ts,
+				EventType: "google.pubsub.topic.publish",
+				Resource: &Resource{
+					Service: "pubsub.googleapis.com",
+					Name:    "mytopic",
+					Type:    "type.googleapis.com/google.pubsub.v1.PubsubMessage",
+				},
+			},
+		},
+		{
+			name: "MetadataWithString",
+			metadata: Metadata{
+				EventID:   "1234567",
+				Timestamp: ts,
+				EventType: "google.pubsub.topic.publish",
+				Resource: &Resource{
+					RawPath: "projects/myproject/mytopic",
+				},
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		b, err := json.Marshal(&tc.metadata)
+		if err != nil {
+			t.Errorf("MarshalJSON(%s) error: %v", tc.name, err)
+		}
+
+		var m Metadata
+		if err := json.Unmarshal(b, &m); err != nil {
+			t.Errorf("MarshalJSON(%s) error: %v", tc.name, err)
+		}
+		if !cmp.Equal(m, tc.metadata) {
+			t.Errorf("MarshalJSON(%s) error: got %v, want %v", tc.name, m, tc.metadata)
+		}
+	}
+}

@@ -223,6 +223,24 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 	}
 }
 
+// DetachSubscriptionResult is the response for the DetachSubscription method.
+// Reserved for future use.
+type DetachSubscriptionResult struct{}
+
+// DetachSubscription detaches a subscription from its topic. All messages
+// retained in the subscription are dropped. Subsequent `Pull` and `StreamingPull`
+// requests will return FAILED_PRECONDITION. If the subscription is a push
+// subscription, pushes to the endpoint will stop.
+func (c *Client) DetachSubscription(ctx context.Context, sub string) (*DetachSubscriptionResult, error) {
+	_, err := c.pubc.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: sub,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &DetachSubscriptionResult{}, nil
+}
+
 // MessageStoragePolicy constrains how messages published to the topic may be stored. It
 // is determined when the topic is created based on the policy configured at
 // the project level.
@@ -392,8 +410,10 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	r := &PublishResult{ready: make(chan struct{})}
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		return &PublishResult{err: errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")}
+		r.set("", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		return r
 	}
 
 	// Use a PublishRequest with only the Messages field to calculate the size
@@ -410,7 +430,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 			},
 		},
 	})
-	r := &PublishResult{ready: make(chan struct{})}
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -584,5 +603,12 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 // encountered while publishing, to prevent messages from being published
 // out of order.
 func (t *Topic) ResumePublish(orderingKey string) {
+	t.mu.RLock()
+	noop := t.scheduler == nil
+	t.mu.RUnlock()
+	if noop {
+		return
+	}
+
 	t.scheduler.Resume(orderingKey)
 }

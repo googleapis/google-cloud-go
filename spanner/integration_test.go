@@ -255,7 +255,6 @@ func initIntegrationTests() (cleanup func()) {
 }
 
 func TestIntegration_InitSessionPool(t *testing.T) {
-	skipEmulatorTest(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up an empty testing environment.
@@ -961,6 +960,98 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	})
 	if err != nil {
 		t.Errorf("failed to check balances: %v", err)
+	}
+}
+
+func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
+		outBalance, err := getBalance(txn, Key{1})
+		if err != nil {
+			return err
+		}
+		const transferAmt = 20
+		if outBalance >= transferAmt {
+			inBalance, err := getBalance(txn, Key{2})
+			if err != nil {
+				return err
+			}
+			inBalance += transferAmt
+			outBalance -= transferAmt
+			cols := []string{"AccountId", "Balance"}
+			txn.BufferWrite([]*Mutation{
+				Update("Accounts", cols, []interface{}{1, outBalance}),
+				Update("Accounts", cols, []interface{}{2, inBalance}),
+			})
+		}
+		return nil
+	}
+
+	for {
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			t.Fatalf("failed to begin a transaction: %v", err)
+		}
+		err = statements(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			t.Fatalf("failed to execute statements: %v", err)
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				t.Fatalf("failed to commit a transaction: %v", err)
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+
+	// Query the updated values.
+	stmt := Statement{SQL: `SELECT AccountId, Nickname, Balance FROM Accounts ORDER BY AccountId`}
+	iter := client.Single().Query(ctx, stmt)
+	got, err := readAllAccountsTable(iter)
+	if err != nil {
+		t.Fatalf("failed to read data: %v", err)
+	}
+	want := [][]interface{}{
+		{int64(1), "Foo", int64(30)},
+		{int64(2), "Bar", int64(21)},
+	}
+	if !testEqual(got, want) {
+		t.Errorf("\ngot %v\nwant%v", got, want)
 	}
 }
 
@@ -1742,7 +1833,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			}
 			// Verify that we received and are able to extract retry info from
 			// the aborted error.
-			if _, hasRetryInfo := extractRetryDelay(e); !hasRetryInfo {
+			if _, hasRetryInfo := ExtractRetryDelay(e); !hasRetryInfo {
 				t.Errorf("Got Abort error without RetryInfo\nGot: %v", e)
 			}
 			return b, e
@@ -1828,7 +1919,6 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
 func TestIntegration_BatchQuery(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -1915,7 +2005,6 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -2001,7 +2090,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment and create txn.
@@ -2183,7 +2271,7 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
 		})
 		if err != nil {
-			t.Fatal(err)
+			return err
 		}
 		if count != 1 {
 			t.Errorf("row count: got %d, want 1", count)
@@ -2445,7 +2533,6 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2691,13 +2778,11 @@ func TestIntegration_BatchDML_Error(t *testing.T) {
 }
 
 func TestIntegration_StartBackupOperation(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/2393")
-
 	skipEmulatorTest(t)
 	t.Parallel()
 
-	// Backups can be slow, so use a 15 minute timeout.
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Minute)
+	// Backups can be slow, so use a 30 minute timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
 	defer cancel()
 	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, backuDBStatements)
 	defer cleanup()
@@ -2711,7 +2796,7 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	_, err = respLRO.Wait(context.Background())
+	_, err = respLRO.Wait(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -3008,6 +3093,27 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 			return nil, err
 		}
 		vals = append(vals, ttr)
+	}
+}
+
+func readAllAccountsTable(iter *RowIterator) ([][]interface{}, error) {
+	defer iter.Stop()
+	var vals [][]interface{}
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var id, balance int64
+		var nickname string
+		err = row.Columns(&id, &nickname, &balance)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, []interface{}{id, nickname, balance})
 	}
 }
 

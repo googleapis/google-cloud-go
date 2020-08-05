@@ -520,11 +520,40 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
+			queryParams{"lim": stringParam("Teal'c")},
+			[][]interface{}{
+				{"Sam"},
+			},
+		},
+		{
+			`SELECT MIN(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel"},
+			},
+		},
+		{
 			`SELECT ARRAY_AGG(Cool) FROM Staff ORDER BY Name`,
 			nil,
 			[][]interface{}{
 				// Daniel, George (NULL), Jack (NULL), Sam, Teal'c
 				{[]interface{}{false, nil, nil, false, true}},
+			},
+		},
+		// Regression test for evaluating `IN` incorrectly using ==.
+		// https://github.com/googleapis/google-cloud-go/issues/2458
+		{
+			`SELECT COUNT(*) FROM Staff WHERE RawBytes IN UNNEST(@arg)`,
+			queryParams{"arg": queryParam{
+				Type: spansql.Type{Array: true, Base: spansql.Bytes},
+				Value: []interface{}{
+					[]byte{0x02},
+					[]byte{0x01, 0x00, 0x01}, // only one present
+				},
+			}},
+			[][]interface{}{
+				{int64(1)},
 			},
 		},
 	}
@@ -637,7 +666,8 @@ func TestTableSchemaConvertNull(t *testing.T) {
 	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Songwriters",
 		Alteration: spansql.AlterColumn{
-			Def: spansql.ColumnDef{Name: "Nickname", Type: spansql.Type{Base: spansql.Bytes}},
+			Name:       "Nickname",
+			Alteration: spansql.SetColumnType{Type: spansql.Type{Base: spansql.Bytes}},
 		},
 	})
 	if err := st.Err(); err != nil {
@@ -646,7 +676,8 @@ func TestTableSchemaConvertNull(t *testing.T) {
 	st = db.ApplyDDL(&spansql.AlterTable{
 		Name: "Songwriters",
 		Alteration: spansql.AlterColumn{
-			Def: spansql.ColumnDef{Name: "Nickname", Type: spansql.Type{Base: spansql.String}},
+			Name:       "Nickname",
+			Alteration: spansql.SetColumnType{Type: spansql.Type{Base: spansql.String}},
 		},
 	})
 	if err := st.Err(); err != nil {

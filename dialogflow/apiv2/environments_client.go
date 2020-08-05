@@ -57,7 +57,6 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.Internal,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -87,7 +86,7 @@ type EnvironmentsClient struct {
 
 // NewEnvironmentsClient creates a new environments client.
 //
-// Manages agent environments.
+// Service for managing Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
 	clientOpts := defaultEnvironmentsClientOptions()
 

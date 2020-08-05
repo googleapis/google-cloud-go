@@ -53,6 +53,7 @@ func main() {
 	gocloudDir := flag.String("gocloud-dir", filepath.Join(tmpDir, "gocloud"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	genprotoDir := flag.String("genproto-dir", filepath.Join(tmpDir, "genproto"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", filepath.Join(tmpDir, "proto"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	gapicToGenerate := flag.String("gapic", "", `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
 	flag.Parse()
 
 	ctx := context.Background()
@@ -62,7 +63,7 @@ func main() {
 	grp, _ := errgroup.WithContext(ctx)
 	gitClone(grp, "https://github.com/googleapis/googleapis.git", *googleapisDir, tmpDir)
 	gitClone(grp, "https://github.com/googleapis/go-genproto", *genprotoDir, tmpDir)
-	gitClone(grp, "https://code.googlesource.com/gocloud", *gocloudDir, tmpDir)
+	gitClone(grp, "https://github.com/googleapis/google-cloud-go", *gocloudDir, tmpDir)
 	gitClone(grp, "https://github.com/google/protobuf", *protoDir, tmpDir)
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
@@ -70,7 +71,7 @@ func main() {
 
 	// Regen.
 
-	if err := generator.Generate(ctx, *googleapisDir, *genprotoDir, *gocloudDir, *protoDir); err != nil {
+	if err := generator.Generate(ctx, *googleapisDir, *genprotoDir, *gocloudDir, *protoDir, *gapicToGenerate); err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
 		log.Fatal(err)
 	}

@@ -320,7 +320,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			}
 			return nil
 		case spansql.AlterColumn:
-			if st := t.alterColumn(alt.Def); st.Code() != codes.OK {
+			if st := t.alterColumn(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -524,6 +524,13 @@ func (d *database) readTable(table string, cols []string, f func(*table, *rawIte
 }
 
 func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
+	// The real Cloud Spanner returns an error if the key set is empty by definition.
+	// That doesn't seem to be well-defined, but it is a common error to attempt a read with no keys,
+	// so catch that here and return a representative error.
+	if len(keys) == 0 && len(keyRanges) == 0 {
+		return nil, status.Error(codes.Unimplemented, "Cloud Spanner does not support reading no keys")
+	}
+
 	return d.readTable(tbl, cols, func(t *table, ri *rawIter, colIndexes []int) error {
 		// "If the same key is specified multiple times in the set (for
 		// example if two ranges, two keys, or a key and a range
@@ -619,7 +626,7 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	return nil
 }
 
-func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
+func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 	// Supported changes here are:
 	//	Add NOT NULL to a non-key column, excluding ARRAY columns.
 	//	Remove NOT NULL from a non-key column.
@@ -628,17 +635,22 @@ func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
 	//	Enable or disable commit timestamps in value and primary key columns.
 	// https://cloud.google.com/spanner/docs/schema-updates#supported-updates
 
+	sct, ok := alt.Alteration.(spansql.SetColumnType)
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
+	}
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	ci, ok := t.colIndex[cd.Name]
+	ci, ok := t.colIndex[alt.Name]
 	if !ok {
 		// TODO: What's the right response code?
-		return status.Newf(codes.InvalidArgument, "unknown column %q", cd.Name)
+		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
 	// Check and make type transformations.
-	oldT, newT := t.cols[ci].Type, cd.Type
+	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
 	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
@@ -668,7 +680,7 @@ func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
 
 	// TODO: Support other alterations.
 
-	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", cd.SQL())
+	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
 }
 
 func (t *table) insertRow(rowNum int, r row) {

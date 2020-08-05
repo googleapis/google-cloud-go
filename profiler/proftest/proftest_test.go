@@ -125,9 +125,19 @@ func TestParseBackoffDuration(t *testing.T) {
 			wantBackoffDur: 32 * time.Minute,
 		},
 		{
+			desc:           "a floating-point backoff duration is parsed correctly",
+			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 2000.000s",
+			wantBackoffDur: 2000 * time.Second,
+		},
+		{
 			desc:    "an error is returned when the backoff duration is invalid",
 			line:    "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 32..0.s",
 			wantErr: true,
+		},
+		{
+			desc:           "a backoff duration specifying hours, minutes, seconds, milliseconds and microseconds is parsed correctly.",
+			line:           "Fri May 15 22:05:01 UTC 2020: benchmark 0: failed to create profile, will retry: rpc error: code = Aborted desc = generic::aborted: action throttled, backoff for 1h1m1s1ms1us",
+			wantBackoffDur: time.Hour + time.Minute + time.Second + time.Millisecond + time.Microsecond,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
@@ -139,7 +149,7 @@ func TestParseBackoffDuration(t *testing.T) {
 				return
 			}
 			if backoffDur != tc.wantBackoffDur {
-				t.Errorf("got log time = %v, want %v", backoffDur, tc.wantBackoffDur)
+				t.Errorf("backoff duration: got %v, want %v", backoffDur, tc.wantBackoffDur)
 			}
 		})
 	}
