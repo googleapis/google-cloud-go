@@ -1,5 +1,9 @@
 # Changes
 
+## v1.6.1
+
+- Fix issue where EnableMessageOrdering wasn't being parsed properly to `SubscriptionConfig`.
+
 ## v1.6.0
 
 - Fix issue where subscriber streams were limited because it was using a single grpc conn.

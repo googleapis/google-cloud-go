@@ -226,6 +226,14 @@ var manualEntries = []manifestEntry{
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
 		ReleaseLevel:      "ga",
 	},
+	{
+		DistributionName:  "cloud.google.com/go/profiler",
+		Description:       "Cloud Profiler",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
+		ReleaseLevel:      "ga",
+	},
 	// Manuals with a GAPIC.
 	{
 		DistributionName:  "cloud.google.com/go/errorreporting",
