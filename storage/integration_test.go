@@ -1271,8 +1271,6 @@ func TestIntegration_SignedURL(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
-	t.Skip("Internal bug 128647687")
-
 	if testing.Short() { // do not test during replay
 		t.Skip("Integration tests skipped in short mode")
 	}

@@ -45,6 +45,7 @@ type microgenConfig struct {
 }
 
 var microgenGapicConfigs = []*microgenConfig{
+	// Cloud APIs
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
 		pkg:                   "texttospeech",
@@ -704,6 +705,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/gaming/v1",
+		pkg:                   "gaming",
+		importPath:            "cloud.google.com/go/gaming/apiv1",
+		gRPCServiceConfigPath: "google/cloud/gaming/v1/gaming_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gaming/v1/gaming_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/gaming/v1beta",
 		pkg:                   "gaming",
 		importPath:            "cloud.google.com/go/gaming/apiv1beta",
@@ -750,5 +759,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1beta1/billingbudgets_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets_gapic.yaml",
 		releaseLevel:          "beta",
+	},
+
+	// Non-Cloud APIs
+	{
+		inputDirectoryPath:    "google/analytics/admin/v1alpha",
+		pkg:                   "admin",
+		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/admin/v1alpha/admin_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
+		releaseLevel:          "alpha",
 	},
 }

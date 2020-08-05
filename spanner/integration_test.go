@@ -255,7 +255,6 @@ func initIntegrationTests() (cleanup func()) {
 }
 
 func TestIntegration_InitSessionPool(t *testing.T) {
-	skipEmulatorTest(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up an empty testing environment.
@@ -2091,7 +2090,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment and create txn.
