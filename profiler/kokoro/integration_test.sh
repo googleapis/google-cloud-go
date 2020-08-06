@@ -35,4 +35,4 @@ export GCLOUD_TESTS_GOLANG_PROJECT_ID="cloud-profiler-e2e"
 
 # Run test.
 retry go mod download
-go test -run TestAgentIntegration -run_only_profiler_backoff_test
+go test -run TestAgentIntegration -run_only_profiler_backoff_test -timeout 1h
