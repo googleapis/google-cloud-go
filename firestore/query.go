@@ -43,6 +43,7 @@ type Query struct {
 	orders                 []order
 	offset                 int32
 	limit                  *wrappers.Int32Value
+	limitToLast            bool
 	startVals, endVals     []interface{}
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
@@ -162,10 +163,19 @@ func (q Query) Offset(n int) Query {
 	return q
 }
 
-// Limit returns a new Query that specifies the maximum number of results to return.
-// It must not be negative.
+// Limit returns a new Query that specifies the maximum number of first results
+// to return. It must not be negative.
 func (q Query) Limit(n int) Query {
 	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limitToLast = false
+	return q
+}
+
+// LimitToLast returns a new Query that specifies the maximum number of last
+// results to return. It must not be negative.
+func (q Query) LimitToLast(n int) Query {
+	q.limit = &wrappers.Int32Value{Value: trunc32(n)}
+	q.limitToLast = true
 	return q
 }
 
@@ -572,7 +582,7 @@ func trunc32(i int) int32 {
 // Documents returns an iterator over the query's resulting documents.
 func (q Query) Documents(ctx context.Context) *DocumentIterator {
 	return &DocumentIterator{
-		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil),
+		iter: newQueryDocumentIterator(withResourceHeader(ctx, q.c.path()), &q, nil), q: &q,
 	}
 }
 
@@ -580,6 +590,7 @@ func (q Query) Documents(ctx context.Context) *DocumentIterator {
 type DocumentIterator struct {
 	iter docIterator
 	err  error
+	q    *Query
 }
 
 // Unexported interface so we can have two different kinds of DocumentIterator: one
@@ -598,6 +609,9 @@ type docIterator interface {
 func (it *DocumentIterator) Next() (*DocumentSnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
+	}
+	if it.q.limitToLast {
+		return nil, errors.New("firestore: queries that include limitToLast constraints cannot be streamed. Use DocumentIterator.GetAll() instead")
 	}
 	ds, err := it.iter.next()
 	if err != nil {
@@ -622,6 +636,25 @@ func (it *DocumentIterator) Stop() {
 // It is not necessary to call Stop on the iterator after calling GetAll.
 func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 	defer it.Stop()
+
+	q := it.q
+	limitedToLast := q.limitToLast
+	if q.limitToLast {
+		// Flip order statements before posting a request.
+		for i := range q.orders {
+			if q.orders[i].dir == Asc {
+				q.orders[i].dir = Desc
+			} else {
+				q.orders[i].dir = Asc
+			}
+		}
+		// Swap cursors.
+		q.startVals, q.endVals = q.endVals, q.startVals
+		q.startDoc, q.endDoc = q.endDoc, q.startDoc
+		q.startBefore, q.endBefore = q.endBefore, q.startBefore
+
+		q.limitToLast = false
+	}
 	var docs []*DocumentSnapshot
 	for {
 		doc, err := it.Next()
@@ -632,6 +665,14 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 			return nil, err
 		}
 		docs = append(docs, doc)
+	}
+	if limitedToLast {
+		// Flip docs order before return.
+		for i, j := 0, len(docs)-1; i < j; {
+			docs[i], docs[j] = docs[j], docs[i]
+			i++
+			j--
+		}
 	}
 	return docs, nil
 }
@@ -732,7 +773,8 @@ type QuerySnapshotIterator struct {
 // Next blocks until the query's results change, then returns a QuerySnapshot for
 // the current results.
 //
-// Next never returns iterator.Done unless it is called after Stop.
+// Next is not expected to return iterator.Done unless it is called after Stop.
+// Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
@@ -747,7 +789,7 @@ func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	}
 	return &QuerySnapshot{
 		Documents: &DocumentIterator{
-			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)),
+			iter: (*btreeDocumentIterator)(btree.BeforeIndex(0)), q: &it.Query,
 		},
 		Size:     btree.Len(),
 		Changes:  changes,

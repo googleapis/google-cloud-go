@@ -246,8 +246,7 @@ func (c *PublisherClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateTopic creates the given topic with the given name. See the
-// resource name rules (at https://cloud.google.com/pubsub/docs/admin#resource_names).
+// CreateTopic creates the given topic with the given name. See the resource name rules (at https://cloud.google.com/pubsub/docs/admin#resource_names).
 func (c *PublisherClient) CreateTopic(ctx context.Context, req *pubsubpb.Topic, opts ...gax.CallOption) (*pubsubpb.Topic, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -400,11 +399,10 @@ func (c *PublisherClient) ListTopicSubscriptions(ctx context.Context, req *pubsu
 }
 
 // ListTopicSnapshots lists the names of the snapshots on this topic. Snapshots are used in
-// Seek (at https://cloud.google.com/pubsub/docs/replay-overview)
-// operations, which allow
-// you to manage message acknowledgments in bulk. That is, you can set the
-// acknowledgment state of messages in an existing subscription to the state
-// captured by a snapshot.
+// Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations,
+// which allow you to manage message acknowledgments in bulk. That is, you can
+// set the acknowledgment state of messages in an existing subscription to the
+// state captured by a snapshot.
 func (c *PublisherClient) ListTopicSnapshots(ctx context.Context, req *pubsubpb.ListTopicSnapshotsRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

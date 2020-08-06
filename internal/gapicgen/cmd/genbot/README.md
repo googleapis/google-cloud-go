@@ -28,7 +28,6 @@ go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
     --githubUsername=$GITHUB_USERNAME \
     --githubName="Jean de Klerk" \
     --githubEmail=deklerk@google.com \
-    --gerritCookieValue=<cookie>
 ```
 
 ## Run with docker
