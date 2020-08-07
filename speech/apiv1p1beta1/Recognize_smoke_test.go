@@ -35,6 +35,7 @@ var _ = strconv.FormatUint
 var _ = time.Now
 
 func TestSpeechSmoke(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/2702")
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
