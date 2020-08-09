@@ -1990,6 +1990,24 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 	}
 }
 
+func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
+	old := os.Getenv("SPANNER_EMULATOR_HOST")
+	defer os.Setenv("SPANNER_EMULATOR_HOST", old)
+
+	os.Setenv("SPANNER_EMULATOR_HOST", "localhost:1234")
+
+	client, err := NewClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{},
+		option.WithCredentialsFile("/path/to/key.json"),
+	)
+	defer client.Close()
+	if err != nil {
+		t.Fatalf("Failed to create a client with credentials file when running against an emulator: %v", err)
+	}
+}
+
 func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
 	ctx := context.Background()
 	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
