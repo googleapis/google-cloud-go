@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/trace"
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
@@ -153,6 +154,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			option.WithEndpoint(emulatorAddr),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 			option.WithoutAuthentication(),
+			internaloption.SkipDialSettingsValidation(),
 		}
 		opts = append(emulatorOpts, opts...)
 	}
