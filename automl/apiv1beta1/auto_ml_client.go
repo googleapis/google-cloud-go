@@ -336,6 +336,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // CreateDataset creates a dataset.
 func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateDataset[0:len(c.CallOptions.CreateDataset):len(c.CallOptions.CreateDataset)], opts...)
@@ -353,6 +358,11 @@ func (c *Client) CreateDataset(ctx context.Context, req *automlpb.CreateDatasetR
 
 // GetDataset gets a dataset.
 func (c *Client) GetDataset(ctx context.Context, req *automlpb.GetDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetDataset[0:len(c.CallOptions.GetDataset):len(c.CallOptions.GetDataset)], opts...)
@@ -393,7 +403,7 @@ func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsReq
 		}
 
 		it.Response = resp
-		return resp.Datasets, resp.NextPageToken, nil
+		return resp.GetDatasets(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -404,13 +414,18 @@ func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsReq
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // UpdateDataset updates a dataset.
 func (c *Client) UpdateDataset(ctx context.Context, req *automlpb.UpdateDatasetRequest, opts ...gax.CallOption) (*automlpb.Dataset, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dataset.name", url.QueryEscape(req.GetDataset().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateDataset[0:len(c.CallOptions.UpdateDataset):len(c.CallOptions.UpdateDataset)], opts...)
@@ -432,6 +447,11 @@ func (c *Client) UpdateDataset(ctx context.Context, req *automlpb.UpdateDatasetR
 // and delete_details in the
 // metadata field.
 func (c *Client) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetRequest, opts ...gax.CallOption) (*DeleteDatasetOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteDataset[0:len(c.CallOptions.DeleteDataset):len(c.CallOptions.DeleteDataset)], opts...)
@@ -460,6 +480,11 @@ func (c *Client) DeleteDataset(ctx context.Context, req *automlpb.DeleteDatasetR
 //   Returns an empty response in the
 //   response field when it completes.
 func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest, opts ...gax.CallOption) (*ImportDataOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportData[0:len(c.CallOptions.ImportData):len(c.CallOptions.ImportData)], opts...)
@@ -481,6 +506,11 @@ func (c *Client) ImportData(ctx context.Context, req *automlpb.ImportDataRequest
 // Returns an empty response in the
 // response field when it completes.
 func (c *Client) ExportData(ctx context.Context, req *automlpb.ExportDataRequest, opts ...gax.CallOption) (*ExportDataOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportData[0:len(c.CallOptions.ExportData):len(c.CallOptions.ExportData)], opts...)
@@ -500,6 +530,11 @@ func (c *Client) ExportData(ctx context.Context, req *automlpb.ExportDataRequest
 
 // GetAnnotationSpec gets an annotation spec.
 func (c *Client) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotationSpecRequest, opts ...gax.CallOption) (*automlpb.AnnotationSpec, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAnnotationSpec[0:len(c.CallOptions.GetAnnotationSpec):len(c.CallOptions.GetAnnotationSpec)], opts...)
@@ -517,6 +552,11 @@ func (c *Client) GetAnnotationSpec(ctx context.Context, req *automlpb.GetAnnotat
 
 // GetTableSpec gets a table spec.
 func (c *Client) GetTableSpec(ctx context.Context, req *automlpb.GetTableSpecRequest, opts ...gax.CallOption) (*automlpb.TableSpec, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTableSpec[0:len(c.CallOptions.GetTableSpec):len(c.CallOptions.GetTableSpec)], opts...)
@@ -557,7 +597,7 @@ func (c *Client) ListTableSpecs(ctx context.Context, req *automlpb.ListTableSpec
 		}
 
 		it.Response = resp
-		return resp.TableSpecs, resp.NextPageToken, nil
+		return resp.GetTableSpecs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -568,13 +608,18 @@ func (c *Client) ListTableSpecs(ctx context.Context, req *automlpb.ListTableSpec
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // UpdateTableSpec updates a table spec.
 func (c *Client) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTableSpecRequest, opts ...gax.CallOption) (*automlpb.TableSpec, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "table_spec.name", url.QueryEscape(req.GetTableSpec().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTableSpec[0:len(c.CallOptions.UpdateTableSpec):len(c.CallOptions.UpdateTableSpec)], opts...)
@@ -592,6 +637,11 @@ func (c *Client) UpdateTableSpec(ctx context.Context, req *automlpb.UpdateTableS
 
 // GetColumnSpec gets a column spec.
 func (c *Client) GetColumnSpec(ctx context.Context, req *automlpb.GetColumnSpecRequest, opts ...gax.CallOption) (*automlpb.ColumnSpec, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetColumnSpec[0:len(c.CallOptions.GetColumnSpec):len(c.CallOptions.GetColumnSpec)], opts...)
@@ -632,7 +682,7 @@ func (c *Client) ListColumnSpecs(ctx context.Context, req *automlpb.ListColumnSp
 		}
 
 		it.Response = resp
-		return resp.ColumnSpecs, resp.NextPageToken, nil
+		return resp.GetColumnSpecs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -643,13 +693,18 @@ func (c *Client) ListColumnSpecs(ctx context.Context, req *automlpb.ListColumnSp
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // UpdateColumnSpec updates a column spec.
 func (c *Client) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateColumnSpecRequest, opts ...gax.CallOption) (*automlpb.ColumnSpec, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "column_spec.name", url.QueryEscape(req.GetColumnSpec().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateColumnSpec[0:len(c.CallOptions.UpdateColumnSpec):len(c.CallOptions.UpdateColumnSpec)], opts...)
@@ -671,6 +726,11 @@ func (c *Client) UpdateColumnSpec(ctx context.Context, req *automlpb.UpdateColum
 // When you create a model, several model evaluations are created for it:
 // a global evaluation, and one evaluation for each annotation spec.
 func (c *Client) CreateModel(ctx context.Context, req *automlpb.CreateModelRequest, opts ...gax.CallOption) (*CreateModelOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateModel[0:len(c.CallOptions.CreateModel):len(c.CallOptions.CreateModel)], opts...)
@@ -690,6 +750,11 @@ func (c *Client) CreateModel(ctx context.Context, req *automlpb.CreateModelReque
 
 // GetModel gets a model.
 func (c *Client) GetModel(ctx context.Context, req *automlpb.GetModelRequest, opts ...gax.CallOption) (*automlpb.Model, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetModel[0:len(c.CallOptions.GetModel):len(c.CallOptions.GetModel)], opts...)
@@ -730,7 +795,7 @@ func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest
 		}
 
 		it.Response = resp
-		return resp.Model, resp.NextPageToken, nil
+		return resp.GetModel(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -741,8 +806,8 @@ func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -752,6 +817,11 @@ func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest
 // and delete_details in the
 // metadata field.
 func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelRequest, opts ...gax.CallOption) (*DeleteModelOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteModel[0:len(c.CallOptions.DeleteModel):len(c.CallOptions.DeleteModel)], opts...)
@@ -782,6 +852,11 @@ func (c *Client) DeleteModel(ctx context.Context, req *automlpb.DeleteModelReque
 // Returns an empty response in the
 // response field when it completes.
 func (c *Client) DeployModel(ctx context.Context, req *automlpb.DeployModelRequest, opts ...gax.CallOption) (*DeployModelOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeployModel[0:len(c.CallOptions.DeployModel):len(c.CallOptions.DeployModel)], opts...)
@@ -807,6 +882,11 @@ func (c *Client) DeployModel(ctx context.Context, req *automlpb.DeployModelReque
 // Returns an empty response in the
 // response field when it completes.
 func (c *Client) UndeployModel(ctx context.Context, req *automlpb.UndeployModelRequest, opts ...gax.CallOption) (*UndeployModelOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UndeployModel[0:len(c.CallOptions.UndeployModel):len(c.CallOptions.UndeployModel)], opts...)
@@ -833,6 +913,11 @@ func (c *Client) UndeployModel(ctx context.Context, req *automlpb.UndeployModelR
 // Returns an empty response in the
 // response field when it completes.
 func (c *Client) ExportModel(ctx context.Context, req *automlpb.ExportModelRequest, opts ...gax.CallOption) (*ExportModelOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportModel[0:len(c.CallOptions.ExportModel):len(c.CallOptions.ExportModel)], opts...)
@@ -865,6 +950,11 @@ func (c *Client) ExportModel(ctx context.Context, req *automlpb.ExportModelReque
 // Returns an empty response in the
 // response field when it completes.
 func (c *Client) ExportEvaluatedExamples(ctx context.Context, req *automlpb.ExportEvaluatedExamplesRequest, opts ...gax.CallOption) (*ExportEvaluatedExamplesOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportEvaluatedExamples[0:len(c.CallOptions.ExportEvaluatedExamples):len(c.CallOptions.ExportEvaluatedExamples)], opts...)
@@ -884,6 +974,11 @@ func (c *Client) ExportEvaluatedExamples(ctx context.Context, req *automlpb.Expo
 
 // GetModelEvaluation gets a model evaluation.
 func (c *Client) GetModelEvaluation(ctx context.Context, req *automlpb.GetModelEvaluationRequest, opts ...gax.CallOption) (*automlpb.ModelEvaluation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetModelEvaluation[0:len(c.CallOptions.GetModelEvaluation):len(c.CallOptions.GetModelEvaluation)], opts...)
@@ -924,7 +1019,7 @@ func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListMod
 		}
 
 		it.Response = resp
-		return resp.ModelEvaluation, resp.NextPageToken, nil
+		return resp.GetModelEvaluation(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -935,8 +1030,8 @@ func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListMod
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

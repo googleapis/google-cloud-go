@@ -197,7 +197,7 @@ func (c *CloudMemcacheClient) ListInstances(ctx context.Context, req *memcachepb
 		}
 
 		it.Response = resp
-		return resp.Resources, resp.NextPageToken, nil
+		return resp.GetResources(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -208,13 +208,18 @@ func (c *CloudMemcacheClient) ListInstances(ctx context.Context, req *memcachepb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetInstance gets details of a single Instance.
 func (c *CloudMemcacheClient) GetInstance(ctx context.Context, req *memcachepb.GetInstanceRequest, opts ...gax.CallOption) (*memcachepb.Instance, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetInstance[0:len(c.CallOptions.GetInstance):len(c.CallOptions.GetInstance)], opts...)
@@ -232,6 +237,11 @@ func (c *CloudMemcacheClient) GetInstance(ctx context.Context, req *memcachepb.G
 
 // CreateInstance creates a new Instance in a given project and location.
 func (c *CloudMemcacheClient) CreateInstance(ctx context.Context, req *memcachepb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateInstance[0:len(c.CallOptions.CreateInstance):len(c.CallOptions.CreateInstance)], opts...)
@@ -251,6 +261,11 @@ func (c *CloudMemcacheClient) CreateInstance(ctx context.Context, req *memcachep
 
 // UpdateInstance updates an existing Instance in a given project and location.
 func (c *CloudMemcacheClient) UpdateInstance(ctx context.Context, req *memcachepb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource.name", url.QueryEscape(req.GetResource().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateInstance[0:len(c.CallOptions.UpdateInstance):len(c.CallOptions.UpdateInstance)], opts...)
@@ -272,6 +287,11 @@ func (c *CloudMemcacheClient) UpdateInstance(ctx context.Context, req *memcachep
 // This method only stages the parameters, it must be followed by
 // ApplyParameters to apply the parameters to nodes of the Memcached Instance.
 func (c *CloudMemcacheClient) UpdateParameters(ctx context.Context, req *memcachepb.UpdateParametersRequest, opts ...gax.CallOption) (*UpdateParametersOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateParameters[0:len(c.CallOptions.UpdateParameters):len(c.CallOptions.UpdateParameters)], opts...)
@@ -291,6 +311,11 @@ func (c *CloudMemcacheClient) UpdateParameters(ctx context.Context, req *memcach
 
 // DeleteInstance deletes a single Instance.
 func (c *CloudMemcacheClient) DeleteInstance(ctx context.Context, req *memcachepb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteInstance[0:len(c.CallOptions.DeleteInstance):len(c.CallOptions.DeleteInstance)], opts...)
@@ -311,6 +336,11 @@ func (c *CloudMemcacheClient) DeleteInstance(ctx context.Context, req *memcachep
 // ApplyParameters applyParameters will update current set of Parameters to the set of
 // specified nodes of the Memcached Instance.
 func (c *CloudMemcacheClient) ApplyParameters(ctx context.Context, req *memcachepb.ApplyParametersRequest, opts ...gax.CallOption) (*ApplyParametersOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 1200000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ApplyParameters[0:len(c.CallOptions.ApplyParameters):len(c.CallOptions.ApplyParameters)], opts...)

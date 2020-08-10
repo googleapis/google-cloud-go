@@ -18,7 +18,9 @@ package speech
 
 import (
 	"context"
+	"io"
 	"math"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -168,6 +170,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // Recognize performs synchronous speech recognition: receive results after all audio
 // has been sent and processed.
 func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, opts ...gax.CallOption) (*speechpb.RecognizeResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.Recognize[0:len(c.CallOptions.Recognize):len(c.CallOptions.Recognize)], opts...)
 	var resp *speechpb.RecognizeResponse
@@ -189,6 +196,11 @@ func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, 
 // For more information on asynchronous speech recognition, see the
 // how-to (at https://cloud.google.com/speech-to-text/docs/async-recognize).
 func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRunningRecognizeRequest, opts ...gax.CallOption) (*LongRunningRecognizeOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.LongRunningRecognize[0:len(c.CallOptions.LongRunningRecognize):len(c.CallOptions.LongRunningRecognize)], opts...)
 	var resp *longrunningpb.Operation
@@ -208,18 +220,74 @@ func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRun
 // StreamingRecognize performs bidirectional streaming speech recognition: receive results while
 // sending audio. This method is only available via the gRPC API (not REST).
 func (c *Client) StreamingRecognize(ctx context.Context, opts ...gax.CallOption) (speechpb.Speech_StreamingRecognizeClient, error) {
+	var cancel context.CancelFunc
+	if _, set := ctx.Deadline(); !set {
+		ctx, cancel = context.WithTimeout(ctx, 5000000*time.Millisecond)
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.StreamingRecognize[0:len(c.CallOptions.StreamingRecognize):len(c.CallOptions.StreamingRecognize)], opts...)
-	var resp speechpb.Speech_StreamingRecognizeClient
+	var resp *speechStreamingRecognizeClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.StreamingRecognize(ctx, settings.GRPC...)
-		return err
+		stub, err := c.client.StreamingRecognize(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &speechStreamingRecognizeClient{
+			Speech_StreamingRecognizeClient: stub,
+			cancel:                          cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
+}
+
+type speechStreamingRecognizeClient struct {
+	speechpb.Speech_StreamingRecognizeClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *speechStreamingRecognizeClient) Recv() (*speechpb.StreamingRecognizeResponse, error) {
+	res, err := x.Speech_StreamingRecognizeClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *speechStreamingRecognizeClient) Send(m *speechpb.StreamingRecognizeRequest) error {
+	err := x.Speech_StreamingRecognizeClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *speechStreamingRecognizeClient) CloseSend() error {
+	err := x.Speech_StreamingRecognizeClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
 }
 
 // LongRunningRecognizeOperation manages a long-running operation from LongRunningRecognize.

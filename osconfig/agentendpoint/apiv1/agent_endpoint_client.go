@@ -185,22 +185,53 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // ReceiveTaskNotification stream established by client to receive Task notifications.
 func (c *Client) ReceiveTaskNotification(ctx context.Context, req *agentendpointpb.ReceiveTaskNotificationRequest, opts ...gax.CallOption) (agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient, error) {
+	var cancel context.CancelFunc
+	if _, set := ctx.Deadline(); !set {
+		ctx, cancel = context.WithTimeout(ctx, 3600000*time.Millisecond)
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ReceiveTaskNotification[0:len(c.CallOptions.ReceiveTaskNotification):len(c.CallOptions.ReceiveTaskNotification)], opts...)
-	var resp agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient
+	var resp *agentEndpointServiceReceiveTaskNotificationClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ReceiveTaskNotification(ctx, req, settings.GRPC...)
-		return err
+		stub, err := c.client.ReceiveTaskNotification(ctx, req, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &agentEndpointServiceReceiveTaskNotificationClient{
+			AgentEndpointService_ReceiveTaskNotificationClient: stub,
+			cancel: cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
 }
 
+type agentEndpointServiceReceiveTaskNotificationClient struct {
+	agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient
+	cancel context.CancelFunc
+}
+
+func (x *agentEndpointServiceReceiveTaskNotificationClient) Recv() (*agentendpointpb.ReceiveTaskNotificationResponse, error) {
+	res, err := x.AgentEndpointService_ReceiveTaskNotificationClient.Recv()
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return res, err
+}
+
 // StartNextTask signals the start of a task execution and returns the task info.
 func (c *Client) StartNextTask(ctx context.Context, req *agentendpointpb.StartNextTaskRequest, opts ...gax.CallOption) (*agentendpointpb.StartNextTaskResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.StartNextTask[0:len(c.CallOptions.StartNextTask):len(c.CallOptions.StartNextTask)], opts...)
 	var resp *agentendpointpb.StartNextTaskResponse
@@ -217,6 +248,11 @@ func (c *Client) StartNextTask(ctx context.Context, req *agentendpointpb.StartNe
 
 // ReportTaskProgress signals an intermediary progress checkpoint in task execution.
 func (c *Client) ReportTaskProgress(ctx context.Context, req *agentendpointpb.ReportTaskProgressRequest, opts ...gax.CallOption) (*agentendpointpb.ReportTaskProgressResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ReportTaskProgress[0:len(c.CallOptions.ReportTaskProgress):len(c.CallOptions.ReportTaskProgress)], opts...)
 	var resp *agentendpointpb.ReportTaskProgressResponse
@@ -234,6 +270,11 @@ func (c *Client) ReportTaskProgress(ctx context.Context, req *agentendpointpb.Re
 // ReportTaskComplete signals that the task execution is complete and optionally returns the next
 // task.
 func (c *Client) ReportTaskComplete(ctx context.Context, req *agentendpointpb.ReportTaskCompleteRequest, opts ...gax.CallOption) (*agentendpointpb.ReportTaskCompleteResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ReportTaskComplete[0:len(c.CallOptions.ReportTaskComplete):len(c.CallOptions.ReportTaskComplete)], opts...)
 	var resp *agentendpointpb.ReportTaskCompleteResponse
@@ -250,6 +291,11 @@ func (c *Client) ReportTaskComplete(ctx context.Context, req *agentendpointpb.Re
 
 // RegisterAgent registers the agent running on the VM.
 func (c *Client) RegisterAgent(ctx context.Context, req *agentendpointpb.RegisterAgentRequest, opts ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.RegisterAgent[0:len(c.CallOptions.RegisterAgent):len(c.CallOptions.RegisterAgent)], opts...)
 	var resp *agentendpointpb.RegisterAgentResponse

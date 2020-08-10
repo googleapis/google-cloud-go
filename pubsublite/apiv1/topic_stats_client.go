@@ -137,6 +137,11 @@ func (c *TopicStatsClient) setGoogleClientInfo(keyval ...string) {
 // ComputeMessageStats compute statistics about a range of messages in a given topic and
 // partition.
 func (c *TopicStatsClient) ComputeMessageStats(ctx context.Context, req *pubsublitepb.ComputeMessageStatsRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeMessageStatsResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ComputeMessageStats[0:len(c.CallOptions.ComputeMessageStats):len(c.CallOptions.ComputeMessageStats)], opts...)

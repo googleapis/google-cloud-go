@@ -212,7 +212,7 @@ func (c *UptimeCheckClient) ListUptimeCheckConfigs(ctx context.Context, req *mon
 		}
 
 		it.Response = resp
-		return resp.UptimeCheckConfigs, resp.NextPageToken, nil
+		return resp.GetUptimeCheckConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -223,13 +223,18 @@ func (c *UptimeCheckClient) ListUptimeCheckConfigs(ctx context.Context, req *mon
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetUptimeCheckConfig gets a single Uptime check configuration.
 func (c *UptimeCheckClient) GetUptimeCheckConfig(ctx context.Context, req *monitoringpb.GetUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetUptimeCheckConfig[0:len(c.CallOptions.GetUptimeCheckConfig):len(c.CallOptions.GetUptimeCheckConfig)], opts...)
@@ -247,6 +252,11 @@ func (c *UptimeCheckClient) GetUptimeCheckConfig(ctx context.Context, req *monit
 
 // CreateUptimeCheckConfig creates a new Uptime check configuration.
 func (c *UptimeCheckClient) CreateUptimeCheckConfig(ctx context.Context, req *monitoringpb.CreateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateUptimeCheckConfig[0:len(c.CallOptions.CreateUptimeCheckConfig):len(c.CallOptions.CreateUptimeCheckConfig)], opts...)
@@ -267,6 +277,11 @@ func (c *UptimeCheckClient) CreateUptimeCheckConfig(ctx context.Context, req *mo
 // configuration by specifying the fields to be updated via updateMask.
 // Returns the updated configuration.
 func (c *UptimeCheckClient) UpdateUptimeCheckConfig(ctx context.Context, req *monitoringpb.UpdateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "uptime_check_config.name", url.QueryEscape(req.GetUptimeCheckConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateUptimeCheckConfig[0:len(c.CallOptions.UpdateUptimeCheckConfig):len(c.CallOptions.UpdateUptimeCheckConfig)], opts...)
@@ -286,6 +301,11 @@ func (c *UptimeCheckClient) UpdateUptimeCheckConfig(ctx context.Context, req *mo
 // if the Uptime check configuration is referenced by an alert policy or
 // other dependent configs that would be rendered invalid by the deletion.
 func (c *UptimeCheckClient) DeleteUptimeCheckConfig(ctx context.Context, req *monitoringpb.DeleteUptimeCheckConfigRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteUptimeCheckConfig[0:len(c.CallOptions.DeleteUptimeCheckConfig):len(c.CallOptions.DeleteUptimeCheckConfig)], opts...)
@@ -321,7 +341,7 @@ func (c *UptimeCheckClient) ListUptimeCheckIps(ctx context.Context, req *monitor
 		}
 
 		it.Response = resp
-		return resp.UptimeCheckIps, resp.NextPageToken, nil
+		return resp.GetUptimeCheckIps(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -332,8 +352,8 @@ func (c *UptimeCheckClient) ListUptimeCheckIps(ctx context.Context, req *monitor
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

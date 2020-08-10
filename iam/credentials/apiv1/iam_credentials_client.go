@@ -183,6 +183,11 @@ func (c *IamCredentialsClient) setGoogleClientInfo(keyval ...string) {
 
 // GenerateAccessToken generates an OAuth 2.0 access token for a service account.
 func (c *IamCredentialsClient) GenerateAccessToken(ctx context.Context, req *credentialspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateAccessTokenResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GenerateAccessToken[0:len(c.CallOptions.GenerateAccessToken):len(c.CallOptions.GenerateAccessToken)], opts...)
@@ -200,6 +205,11 @@ func (c *IamCredentialsClient) GenerateAccessToken(ctx context.Context, req *cre
 
 // GenerateIdToken generates an OpenID Connect ID token for a service account.
 func (c *IamCredentialsClient) GenerateIdToken(ctx context.Context, req *credentialspb.GenerateIdTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateIdTokenResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GenerateIdToken[0:len(c.CallOptions.GenerateIdToken):len(c.CallOptions.GenerateIdToken)], opts...)
@@ -217,6 +227,11 @@ func (c *IamCredentialsClient) GenerateIdToken(ctx context.Context, req *credent
 
 // SignBlob signs a blob using a service account’s system-managed private key.
 func (c *IamCredentialsClient) SignBlob(ctx context.Context, req *credentialspb.SignBlobRequest, opts ...gax.CallOption) (*credentialspb.SignBlobResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SignBlob[0:len(c.CallOptions.SignBlob):len(c.CallOptions.SignBlob)], opts...)
@@ -234,6 +249,11 @@ func (c *IamCredentialsClient) SignBlob(ctx context.Context, req *credentialspb.
 
 // SignJwt signs a JWT using a service account’s system-managed private key.
 func (c *IamCredentialsClient) SignJwt(ctx context.Context, req *credentialspb.SignJwtRequest, opts ...gax.CallOption) (*credentialspb.SignJwtResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SignJwt[0:len(c.CallOptions.SignJwt):len(c.CallOptions.SignJwt)], opts...)

@@ -306,6 +306,11 @@ func (c *SecurityCenterSettingsClient) setGoogleClientInfo(keyval ...string) {
 // with APIs enabled on a project. This API will be called by the UX
 // onboarding workflow.
 func (c *SecurityCenterSettingsClient) GetServiceAccount(ctx context.Context, req *settingspb.GetServiceAccountRequest, opts ...gax.CallOption) (*settingspb.ServiceAccount, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetServiceAccount[0:len(c.CallOptions.GetServiceAccount):len(c.CallOptions.GetServiceAccount)], opts...)
@@ -323,6 +328,11 @@ func (c *SecurityCenterSettingsClient) GetServiceAccount(ctx context.Context, re
 
 // GetSettings gets the Settings.
 func (c *SecurityCenterSettingsClient) GetSettings(ctx context.Context, req *settingspb.GetSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSettings[0:len(c.CallOptions.GetSettings):len(c.CallOptions.GetSettings)], opts...)
@@ -340,6 +350,11 @@ func (c *SecurityCenterSettingsClient) GetSettings(ctx context.Context, req *set
 
 // UpdateSettings updates the Settings.
 func (c *SecurityCenterSettingsClient) UpdateSettings(ctx context.Context, req *settingspb.UpdateSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "settings.name", url.QueryEscape(req.GetSettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateSettings[0:len(c.CallOptions.UpdateSettings):len(c.CallOptions.UpdateSettings)], opts...)
@@ -366,6 +381,11 @@ func (c *SecurityCenterSettingsClient) UpdateSettings(ctx context.Context, req *
 // Using Reset on organization will remove the override that was set and
 // result in default settings being used.
 func (c *SecurityCenterSettingsClient) ResetSettings(ctx context.Context, req *settingspb.ResetSettingsRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResetSettings[0:len(c.CallOptions.ResetSettings):len(c.CallOptions.ResetSettings)], opts...)
@@ -379,6 +399,11 @@ func (c *SecurityCenterSettingsClient) ResetSettings(ctx context.Context, req *s
 
 // BatchGetSettings gets a list of settings.
 func (c *SecurityCenterSettingsClient) BatchGetSettings(ctx context.Context, req *settingspb.BatchGetSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchGetSettingsResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchGetSettings[0:len(c.CallOptions.BatchGetSettings):len(c.CallOptions.BatchGetSettings)], opts...)
@@ -409,6 +434,11 @@ func (c *SecurityCenterSettingsClient) BatchGetSettings(ctx context.Context, req
 //   customer
 //   has not configured.
 func (c *SecurityCenterSettingsClient) CalculateEffectiveSettings(ctx context.Context, req *settingspb.CalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.Settings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CalculateEffectiveSettings[0:len(c.CallOptions.CalculateEffectiveSettings):len(c.CallOptions.CalculateEffectiveSettings)], opts...)
@@ -426,6 +456,11 @@ func (c *SecurityCenterSettingsClient) CalculateEffectiveSettings(ctx context.Co
 
 // BatchCalculateEffectiveSettings gets a list of effective settings.
 func (c *SecurityCenterSettingsClient) BatchCalculateEffectiveSettings(ctx context.Context, req *settingspb.BatchCalculateEffectiveSettingsRequest, opts ...gax.CallOption) (*settingspb.BatchCalculateEffectiveSettingsResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCalculateEffectiveSettings[0:len(c.CallOptions.BatchCalculateEffectiveSettings):len(c.CallOptions.BatchCalculateEffectiveSettings)], opts...)
@@ -443,6 +478,11 @@ func (c *SecurityCenterSettingsClient) BatchCalculateEffectiveSettings(ctx conte
 
 // GetComponentSettings gets the Component Settings.
 func (c *SecurityCenterSettingsClient) GetComponentSettings(ctx context.Context, req *settingspb.GetComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetComponentSettings[0:len(c.CallOptions.GetComponentSettings):len(c.CallOptions.GetComponentSettings)], opts...)
@@ -460,6 +500,11 @@ func (c *SecurityCenterSettingsClient) GetComponentSettings(ctx context.Context,
 
 // UpdateComponentSettings updates the Component Settings.
 func (c *SecurityCenterSettingsClient) UpdateComponentSettings(ctx context.Context, req *settingspb.UpdateComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "component_settings.name", url.QueryEscape(req.GetComponentSettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateComponentSettings[0:len(c.CallOptions.UpdateComponentSettings):len(c.CallOptions.UpdateComponentSettings)], opts...)
@@ -481,6 +526,11 @@ func (c *SecurityCenterSettingsClient) UpdateComponentSettings(ctx context.Conte
 // project will remove the override that was set and result in the
 // organization-level settings being used.
 func (c *SecurityCenterSettingsClient) ResetComponentSettings(ctx context.Context, req *settingspb.ResetComponentSettingsRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResetComponentSettings[0:len(c.CallOptions.ResetComponentSettings):len(c.CallOptions.ResetComponentSettings)], opts...)
@@ -494,6 +544,11 @@ func (c *SecurityCenterSettingsClient) ResetComponentSettings(ctx context.Contex
 
 // CalculateEffectiveComponentSettings gets the Effective Component Settings.
 func (c *SecurityCenterSettingsClient) CalculateEffectiveComponentSettings(ctx context.Context, req *settingspb.CalculateEffectiveComponentSettingsRequest, opts ...gax.CallOption) (*settingspb.ComponentSettings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CalculateEffectiveComponentSettings[0:len(c.CallOptions.CalculateEffectiveComponentSettings):len(c.CallOptions.CalculateEffectiveComponentSettings)], opts...)
@@ -534,7 +589,7 @@ func (c *SecurityCenterSettingsClient) ListDetectors(ctx context.Context, req *s
 		}
 
 		it.Response = resp
-		return resp.Detectors, resp.NextPageToken, nil
+		return resp.GetDetectors(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -545,8 +600,8 @@ func (c *SecurityCenterSettingsClient) ListDetectors(ctx context.Context, req *s
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -575,7 +630,7 @@ func (c *SecurityCenterSettingsClient) ListComponents(ctx context.Context, req *
 		}
 
 		it.Response = resp
-		return resp.Components, resp.NextPageToken, nil
+		return resp.GetComponents(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -586,8 +641,8 @@ func (c *SecurityCenterSettingsClient) ListComponents(ctx context.Context, req *
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

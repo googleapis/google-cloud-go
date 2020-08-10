@@ -19,8 +19,10 @@ package storage
 import (
 	"context"
 	"fmt"
+	"io"
 	"math"
 	"net/url"
+	"sync"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -191,6 +193,11 @@ func (c *BigQueryWriteClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateWriteStream creates a write stream to the given table.
 func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateWriteStream[0:len(c.CallOptions.CreateWriteStream):len(c.CallOptions.CreateWriteStream)], opts...)
@@ -226,22 +233,83 @@ func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storag
 // If the stream is of PENDING type, data will only be available for read
 // operations after the stream is committed.
 func (c *BigQueryWriteClient) AppendRows(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	var cancel context.CancelFunc
+	if _, set := ctx.Deadline(); !set {
+		ctx, cancel = context.WithTimeout(ctx, 86400000*time.Millisecond)
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AppendRows[0:len(c.CallOptions.AppendRows):len(c.CallOptions.AppendRows)], opts...)
-	var resp storagepb.BigQueryWrite_AppendRowsClient
+	var resp *bigQueryWriteAppendRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.bigQueryWriteClient.AppendRows(ctx, settings.GRPC...)
-		return err
+		stub, err := c.bigQueryWriteClient.AppendRows(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &bigQueryWriteAppendRowsClient{
+			BigQueryWrite_AppendRowsClient: stub,
+			cancel:                         cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
 }
 
+type bigQueryWriteAppendRowsClient struct {
+	storagepb.BigQueryWrite_AppendRowsClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *bigQueryWriteAppendRowsClient) Recv() (*storagepb.AppendRowsResponse, error) {
+	res, err := x.BigQueryWrite_AppendRowsClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *bigQueryWriteAppendRowsClient) Send(m *storagepb.AppendRowsRequest) error {
+	err := x.BigQueryWrite_AppendRowsClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *bigQueryWriteAppendRowsClient) CloseSend() error {
+	err := x.BigQueryWrite_AppendRowsClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
+}
+
 // GetWriteStream gets a write stream.
 func (c *BigQueryWriteClient) GetWriteStream(ctx context.Context, req *storagepb.GetWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetWriteStream[0:len(c.CallOptions.GetWriteStream):len(c.CallOptions.GetWriteStream)], opts...)
@@ -260,6 +328,11 @@ func (c *BigQueryWriteClient) GetWriteStream(ctx context.Context, req *storagepb
 // FinalizeWriteStream finalize a write stream so that no new data can be appended to the
 // stream.
 func (c *BigQueryWriteClient) FinalizeWriteStream(ctx context.Context, req *storagepb.FinalizeWriteStreamRequest, opts ...gax.CallOption) (*storagepb.FinalizeWriteStreamResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.FinalizeWriteStream[0:len(c.CallOptions.FinalizeWriteStream):len(c.CallOptions.FinalizeWriteStream)], opts...)
@@ -281,6 +354,11 @@ func (c *BigQueryWriteClient) FinalizeWriteStream(ctx context.Context, req *stor
 // times. Once a stream is committed, data in the stream becomes available
 // for read operations.
 func (c *BigQueryWriteClient) BatchCommitWriteStreams(ctx context.Context, req *storagepb.BatchCommitWriteStreamsRequest, opts ...gax.CallOption) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCommitWriteStreams[0:len(c.CallOptions.BatchCommitWriteStreams):len(c.CallOptions.BatchCommitWriteStreams)], opts...)

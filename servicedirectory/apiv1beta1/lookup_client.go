@@ -138,6 +138,11 @@ func (c *LookupClient) setGoogleClientInfo(keyval ...string) {
 // associated endpoints.
 // Resolving a service is not considered an active developer method.
 func (c *LookupClient) ResolveService(ctx context.Context, req *servicedirectorypb.ResolveServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.ResolveServiceResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResolveService[0:len(c.CallOptions.ResolveService):len(c.CallOptions.ResolveService)], opts...)

@@ -179,6 +179,11 @@ func (c *ContainerAnalysisV1Beta1Client) setGoogleClientInfo(keyval ...string) {
 // notes and projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID] for
 // occurrences.
 func (c *ContainerAnalysisV1Beta1Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
@@ -203,6 +208,11 @@ func (c *ContainerAnalysisV1Beta1Client) SetIamPolicy(ctx context.Context, req *
 // notes and projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID] for
 // occurrences.
 func (c *ContainerAnalysisV1Beta1Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
@@ -226,6 +236,11 @@ func (c *ContainerAnalysisV1Beta1Client) GetIamPolicy(ctx context.Context, req *
 // notes and projects/[PROJECT_ID]/occurrences/[OCCURRENCE_ID] for
 // occurrences.
 func (c *ContainerAnalysisV1Beta1Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
@@ -243,6 +258,11 @@ func (c *ContainerAnalysisV1Beta1Client) TestIamPermissions(ctx context.Context,
 
 // GetScanConfig gets the specified scan configuration.
 func (c *ContainerAnalysisV1Beta1Client) GetScanConfig(ctx context.Context, req *containeranalysispb.GetScanConfigRequest, opts ...gax.CallOption) (*containeranalysispb.ScanConfig, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetScanConfig[0:len(c.CallOptions.GetScanConfig):len(c.CallOptions.GetScanConfig)], opts...)
@@ -283,7 +303,7 @@ func (c *ContainerAnalysisV1Beta1Client) ListScanConfigs(ctx context.Context, re
 		}
 
 		it.Response = resp
-		return resp.ScanConfigs, resp.NextPageToken, nil
+		return resp.GetScanConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -294,13 +314,18 @@ func (c *ContainerAnalysisV1Beta1Client) ListScanConfigs(ctx context.Context, re
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // UpdateScanConfig updates the specified scan configuration.
 func (c *ContainerAnalysisV1Beta1Client) UpdateScanConfig(ctx context.Context, req *containeranalysispb.UpdateScanConfigRequest, opts ...gax.CallOption) (*containeranalysispb.ScanConfig, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateScanConfig[0:len(c.CallOptions.UpdateScanConfig):len(c.CallOptions.UpdateScanConfig)], opts...)

@@ -19,6 +19,7 @@ package policytroubleshooter
 import (
 	"context"
 	"math"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -124,6 +125,11 @@ func (c *IamCheckerClient) setGoogleClientInfo(keyval ...string) {
 // TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,
 // and explains why the member does or does not have that permission.
 func (c *IamCheckerClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.TroubleshootIamPolicy[0:len(c.CallOptions.TroubleshootIamPolicy):len(c.CallOptions.TroubleshootIamPolicy)], opts...)
 	var resp *policytroubleshooterpb.TroubleshootIamPolicyResponse

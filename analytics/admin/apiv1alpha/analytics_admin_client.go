@@ -243,6 +243,11 @@ func (c *AnalyticsAdminClient) setGoogleClientInfo(keyval ...string) {
 // Throws “Target not found” if no such account found, or if caller does not
 // have permissions to access it.
 func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAccount[0:len(c.CallOptions.GetAccount):len(c.CallOptions.GetAccount)], opts...)
@@ -286,7 +291,7 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 		}
 
 		it.Response = resp
-		return resp.Accounts, resp.NextPageToken, nil
+		return resp.GetAccounts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -297,8 +302,8 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -314,6 +319,11 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 //
 // Returns an error if the target is not found.
 func (c *AnalyticsAdminClient) DeleteAccount(ctx context.Context, req *adminpb.DeleteAccountRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAccount[0:len(c.CallOptions.DeleteAccount):len(c.CallOptions.DeleteAccount)], opts...)
@@ -327,6 +337,11 @@ func (c *AnalyticsAdminClient) DeleteAccount(ctx context.Context, req *adminpb.D
 
 // UpdateAccount updates an account.
 func (c *AnalyticsAdminClient) UpdateAccount(ctx context.Context, req *adminpb.UpdateAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account.name", url.QueryEscape(req.GetAccount().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateAccount[0:len(c.CallOptions.UpdateAccount):len(c.CallOptions.UpdateAccount)], opts...)
@@ -344,6 +359,11 @@ func (c *AnalyticsAdminClient) UpdateAccount(ctx context.Context, req *adminpb.U
 
 // ProvisionAccountTicket requests a ticket for creating an account.
 func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *adminpb.ProvisionAccountTicketRequest, opts ...gax.CallOption) (*adminpb.ProvisionAccountTicketResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ProvisionAccountTicket[0:len(c.CallOptions.ProvisionAccountTicket):len(c.CallOptions.ProvisionAccountTicket)], opts...)
 	var resp *adminpb.ProvisionAccountTicketResponse
@@ -363,6 +383,11 @@ func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *
 // Throws “Target not found” if no such property found, if property is not
 // of the type “App+Web”, or if caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetProperty[0:len(c.CallOptions.GetProperty):len(c.CallOptions.GetProperty)], opts...)
@@ -407,7 +432,7 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 		}
 
 		it.Response = resp
-		return resp.Properties, resp.NextPageToken, nil
+		return resp.GetProperties(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -418,13 +443,18 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // CreateProperty creates an “App+Web” property with the specified location and attributes.
 func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateProperty[0:len(c.CallOptions.CreateProperty):len(c.CallOptions.CreateProperty)], opts...)
 	var resp *adminpb.Property
@@ -451,6 +481,11 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 //
 // Returns an error if the target is not found, or is not an App+Web Property.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteProperty[0:len(c.CallOptions.DeleteProperty):len(c.CallOptions.DeleteProperty)], opts...)
@@ -464,6 +499,11 @@ func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.
 
 // UpdateProperty updates a property.
 func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.UpdatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "property.name", url.QueryEscape(req.GetProperty().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateProperty[0:len(c.CallOptions.UpdateProperty):len(c.CallOptions.UpdateProperty)], opts...)
@@ -481,6 +521,11 @@ func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.
 
 // GetUserLink gets information about a user’s link to an account or property.
 func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetUserLink[0:len(c.CallOptions.GetUserLink):len(c.CallOptions.GetUserLink)], opts...)
@@ -498,6 +543,11 @@ func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.Get
 
 // BatchGetUserLinks gets information about multiple users’ links to an account or property.
 func (c *AnalyticsAdminClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchGetUserLinks[0:len(c.CallOptions.BatchGetUserLinks):len(c.CallOptions.BatchGetUserLinks)], opts...)
@@ -538,7 +588,7 @@ func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.L
 		}
 
 		it.Response = resp
-		return resp.UserLinks, resp.NextPageToken, nil
+		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -549,8 +599,8 @@ func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.L
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -587,7 +637,7 @@ func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.
 		}
 
 		it.Response = resp
-		return resp.UserLinks, resp.NextPageToken, nil
+		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -598,8 +648,8 @@ func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -609,6 +659,11 @@ func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.
 // account or property, then the user’s existing permissions will be unioned
 // with the permissions specified in the new UserLink.
 func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateUserLink[0:len(c.CallOptions.CreateUserLink):len(c.CallOptions.CreateUserLink)], opts...)
@@ -629,6 +684,11 @@ func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.
 // This method is transactional. If any UserLink cannot be created, none of
 // the UserLinks will be created.
 func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCreateUserLinks[0:len(c.CallOptions.BatchCreateUserLinks):len(c.CallOptions.BatchCreateUserLinks)], opts...)
@@ -646,6 +706,11 @@ func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *ad
 
 // UpdateUserLink updates a user link on an account or property.
 func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "user_link.name", url.QueryEscape(req.GetUserLink().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateUserLink[0:len(c.CallOptions.UpdateUserLink):len(c.CallOptions.UpdateUserLink)], opts...)
@@ -663,6 +728,11 @@ func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.
 
 // BatchUpdateUserLinks updates information about multiple users’ links to an account or property.
 func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchUpdateUserLinks[0:len(c.CallOptions.BatchUpdateUserLinks):len(c.CallOptions.BatchUpdateUserLinks)], opts...)
@@ -680,6 +750,11 @@ func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *ad
 
 // DeleteUserLink deletes a user link on an account or property.
 func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteUserLink[0:len(c.CallOptions.DeleteUserLink):len(c.CallOptions.DeleteUserLink)], opts...)
@@ -693,6 +768,11 @@ func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.
 
 // BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.
 func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchDeleteUserLinks[0:len(c.CallOptions.BatchDeleteUserLinks):len(c.CallOptions.BatchDeleteUserLinks)], opts...)
@@ -709,6 +789,11 @@ func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *ad
 // Throws “Target not found” if no such web data stream found, or if the
 // caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetWebDataStream[0:len(c.CallOptions.GetWebDataStream):len(c.CallOptions.GetWebDataStream)], opts...)
@@ -726,6 +811,11 @@ func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminp
 
 // DeleteWebDataStream deletes a web stream on a property.
 func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adminpb.DeleteWebDataStreamRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteWebDataStream[0:len(c.CallOptions.DeleteWebDataStream):len(c.CallOptions.DeleteWebDataStream)], opts...)
@@ -739,6 +829,11 @@ func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adm
 
 // UpdateWebDataStream updates a web stream on a property.
 func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adminpb.UpdateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "web_data_stream.name", url.QueryEscape(req.GetWebDataStream().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateWebDataStream[0:len(c.CallOptions.UpdateWebDataStream):len(c.CallOptions.UpdateWebDataStream)], opts...)
@@ -756,6 +851,11 @@ func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adm
 
 // CreateWebDataStream creates a web stream with the specified location and attributes.
 func (c *AnalyticsAdminClient) CreateWebDataStream(ctx context.Context, req *adminpb.CreateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateWebDataStream[0:len(c.CallOptions.CreateWebDataStream):len(c.CallOptions.CreateWebDataStream)], opts...)
@@ -799,7 +899,7 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 		}
 
 		it.Response = resp
-		return resp.WebDataStreams, resp.NextPageToken, nil
+		return resp.GetWebDataStreams(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -810,8 +910,8 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -820,6 +920,11 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 // Throws “Target not found” if no such iOS app data stream found, or if the
 // caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIosAppDataStream[0:len(c.CallOptions.GetIosAppDataStream):len(c.CallOptions.GetIosAppDataStream)], opts...)
@@ -837,6 +942,11 @@ func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adm
 
 // DeleteIosAppDataStream deletes an iOS app stream on a property.
 func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *adminpb.DeleteIosAppDataStreamRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteIosAppDataStream[0:len(c.CallOptions.DeleteIosAppDataStream):len(c.CallOptions.DeleteIosAppDataStream)], opts...)
@@ -850,6 +960,11 @@ func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *
 
 // UpdateIosAppDataStream updates an iOS app stream on a property.
 func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *adminpb.UpdateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ios_app_data_stream.name", url.QueryEscape(req.GetIosAppDataStream().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateIosAppDataStream[0:len(c.CallOptions.UpdateIosAppDataStream):len(c.CallOptions.UpdateIosAppDataStream)], opts...)
@@ -867,6 +982,11 @@ func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *
 
 // CreateIosAppDataStream creates an iOS app data stream with the specified location and attributes.
 func (c *AnalyticsAdminClient) CreateIosAppDataStream(ctx context.Context, req *adminpb.CreateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateIosAppDataStream[0:len(c.CallOptions.CreateIosAppDataStream):len(c.CallOptions.CreateIosAppDataStream)], opts...)
@@ -910,7 +1030,7 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 		}
 
 		it.Response = resp
-		return resp.IosAppDataStreams, resp.NextPageToken, nil
+		return resp.GetIosAppDataStreams(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -921,8 +1041,8 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -931,6 +1051,11 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 // Throws “Target not found” if no such android app data stream found, or if
 // the caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAndroidAppDataStream[0:len(c.CallOptions.GetAndroidAppDataStream):len(c.CallOptions.GetAndroidAppDataStream)], opts...)
@@ -948,6 +1073,11 @@ func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req 
 
 // DeleteAndroidAppDataStream deletes an android app stream on a property.
 func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, req *adminpb.DeleteAndroidAppDataStreamRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAndroidAppDataStream[0:len(c.CallOptions.DeleteAndroidAppDataStream):len(c.CallOptions.DeleteAndroidAppDataStream)], opts...)
@@ -961,6 +1091,11 @@ func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, r
 
 // UpdateAndroidAppDataStream updates an android app stream on a property.
 func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, req *adminpb.UpdateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "android_app_data_stream.name", url.QueryEscape(req.GetAndroidAppDataStream().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateAndroidAppDataStream[0:len(c.CallOptions.UpdateAndroidAppDataStream):len(c.CallOptions.UpdateAndroidAppDataStream)], opts...)
@@ -978,6 +1113,11 @@ func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, r
 
 // CreateAndroidAppDataStream creates an android app stream with the specified location and attributes.
 func (c *AnalyticsAdminClient) CreateAndroidAppDataStream(ctx context.Context, req *adminpb.CreateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateAndroidAppDataStream[0:len(c.CallOptions.CreateAndroidAppDataStream):len(c.CallOptions.CreateAndroidAppDataStream)], opts...)
@@ -1021,7 +1161,7 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 		}
 
 		it.Response = resp
-		return resp.AndroidAppDataStreams, resp.NextPageToken, nil
+		return resp.GetAndroidAppDataStreams(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1032,8 +1172,8 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -1041,6 +1181,11 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 // Note that the stream must enable enhanced measurement for these settings to
 // take effect.
 func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEnhancedMeasurementSettings[0:len(c.CallOptions.GetEnhancedMeasurementSettings):len(c.CallOptions.GetEnhancedMeasurementSettings)], opts...)
@@ -1060,6 +1205,11 @@ func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Contex
 // Note that the stream must enable enhanced measurement for these settings to
 // take effect.
 func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "enhanced_measurement_settings.name", url.QueryEscape(req.GetEnhancedMeasurementSettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEnhancedMeasurementSettings[0:len(c.CallOptions.UpdateEnhancedMeasurementSettings):len(c.CallOptions.UpdateEnhancedMeasurementSettings)], opts...)
@@ -1079,6 +1229,11 @@ func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Con
 //
 // Properties can have at most one FirebaseLink.
 func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateFirebaseLink[0:len(c.CallOptions.CreateFirebaseLink):len(c.CallOptions.CreateFirebaseLink)], opts...)
@@ -1096,6 +1251,11 @@ func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *admi
 
 // UpdateFirebaseLink updates a FirebaseLink on a property
 func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *adminpb.UpdateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firebase_link.name", url.QueryEscape(req.GetFirebaseLink().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateFirebaseLink[0:len(c.CallOptions.UpdateFirebaseLink):len(c.CallOptions.UpdateFirebaseLink)], opts...)
@@ -1113,6 +1273,11 @@ func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *admi
 
 // DeleteFirebaseLink deletes a FirebaseLink on a property
 func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *adminpb.DeleteFirebaseLinkRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteFirebaseLink[0:len(c.CallOptions.DeleteFirebaseLink):len(c.CallOptions.DeleteFirebaseLink)], opts...)
@@ -1127,6 +1292,11 @@ func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *admi
 // ListFirebaseLinks lists FirebaseLinks on a property.
 // Properties can have at most one FirebaseLink.
 func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) (*adminpb.ListFirebaseLinksResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListFirebaseLinks[0:len(c.CallOptions.ListFirebaseLinks):len(c.CallOptions.ListFirebaseLinks)], opts...)
@@ -1145,6 +1315,11 @@ func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *admin
 // GetGlobalSiteTag returns the Site Tag for the specified web stream.
 // Site Tags are immutable singletons.
 func (c *AnalyticsAdminClient) GetGlobalSiteTag(ctx context.Context, req *adminpb.GetGlobalSiteTagRequest, opts ...gax.CallOption) (*adminpb.GlobalSiteTag, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGlobalSiteTag[0:len(c.CallOptions.GetGlobalSiteTag):len(c.CallOptions.GetGlobalSiteTag)], opts...)
@@ -1162,6 +1337,11 @@ func (c *AnalyticsAdminClient) GetGlobalSiteTag(ctx context.Context, req *adminp
 
 // CreateGoogleAdsLink creates a GoogleAdsLink.
 func (c *AnalyticsAdminClient) CreateGoogleAdsLink(ctx context.Context, req *adminpb.CreateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateGoogleAdsLink[0:len(c.CallOptions.CreateGoogleAdsLink):len(c.CallOptions.CreateGoogleAdsLink)], opts...)
@@ -1179,6 +1359,11 @@ func (c *AnalyticsAdminClient) CreateGoogleAdsLink(ctx context.Context, req *adm
 
 // UpdateGoogleAdsLink updates a GoogleAdsLink on a property
 func (c *AnalyticsAdminClient) UpdateGoogleAdsLink(ctx context.Context, req *adminpb.UpdateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "google_ads_link.name", url.QueryEscape(req.GetGoogleAdsLink().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateGoogleAdsLink[0:len(c.CallOptions.UpdateGoogleAdsLink):len(c.CallOptions.UpdateGoogleAdsLink)], opts...)
@@ -1196,6 +1381,11 @@ func (c *AnalyticsAdminClient) UpdateGoogleAdsLink(ctx context.Context, req *adm
 
 // DeleteGoogleAdsLink deletes a GoogleAdsLink on a property
 func (c *AnalyticsAdminClient) DeleteGoogleAdsLink(ctx context.Context, req *adminpb.DeleteGoogleAdsLinkRequest, opts ...gax.CallOption) error {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteGoogleAdsLink[0:len(c.CallOptions.DeleteGoogleAdsLink):len(c.CallOptions.DeleteGoogleAdsLink)], opts...)
@@ -1232,7 +1422,7 @@ func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *admi
 		}
 
 		it.Response = resp
-		return resp.GoogleAdsLinks, resp.NextPageToken, nil
+		return resp.GetGoogleAdsLinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1243,14 +1433,19 @@ func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *admi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetDataSharingSettings get data sharing settings on an account.
 // Data sharing settings are singletons.
 func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *adminpb.GetDataSharingSettingsRequest, opts ...gax.CallOption) (*adminpb.DataSharingSettings, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetDataSharingSettings[0:len(c.CallOptions.GetDataSharingSettings):len(c.CallOptions.GetDataSharingSettings)], opts...)

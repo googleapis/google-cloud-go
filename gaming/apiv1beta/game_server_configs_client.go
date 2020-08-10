@@ -195,7 +195,7 @@ func (c *GameServerConfigsClient) ListGameServerConfigs(ctx context.Context, req
 		}
 
 		it.Response = resp
-		return resp.GameServerConfigs, resp.NextPageToken, nil
+		return resp.GetGameServerConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -206,13 +206,18 @@ func (c *GameServerConfigsClient) ListGameServerConfigs(ctx context.Context, req
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetGameServerConfig gets details of a single game server config.
 func (c *GameServerConfigsClient) GetGameServerConfig(ctx context.Context, req *gamingpb.GetGameServerConfigRequest, opts ...gax.CallOption) (*gamingpb.GameServerConfig, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGameServerConfig[0:len(c.CallOptions.GetGameServerConfig):len(c.CallOptions.GetGameServerConfig)], opts...)
@@ -232,6 +237,11 @@ func (c *GameServerConfigsClient) GetGameServerConfig(ctx context.Context, req *
 // server deployment. Game server configs are immutable, and are not applied
 // until referenced in the game server deployment rollout resource.
 func (c *GameServerConfigsClient) CreateGameServerConfig(ctx context.Context, req *gamingpb.CreateGameServerConfigRequest, opts ...gax.CallOption) (*CreateGameServerConfigOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateGameServerConfig[0:len(c.CallOptions.CreateGameServerConfig):len(c.CallOptions.CreateGameServerConfig)], opts...)
@@ -252,6 +262,11 @@ func (c *GameServerConfigsClient) CreateGameServerConfig(ctx context.Context, re
 // DeleteGameServerConfig deletes a single game server config. The deletion will fail if the game
 // server config is referenced in a game server deployment rollout.
 func (c *GameServerConfigsClient) DeleteGameServerConfig(ctx context.Context, req *gamingpb.DeleteGameServerConfigRequest, opts ...gax.CallOption) (*DeleteGameServerConfigOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteGameServerConfig[0:len(c.CallOptions.DeleteGameServerConfig):len(c.CallOptions.DeleteGameServerConfig)], opts...)

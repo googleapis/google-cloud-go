@@ -19,8 +19,10 @@ package dialogflow
 import (
 	"context"
 	"fmt"
+	"io"
 	"math"
 	"net/url"
+	"sync"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -143,6 +145,11 @@ func (c *SessionsClient) setGoogleClientInfo(keyval ...string) {
 // and session entity types to be updated, which in turn might affect
 // results of future queries.
 func (c *SessionsClient) DetectIntent(ctx context.Context, req *dialogflowpb.DetectIntentRequest, opts ...gax.CallOption) (*dialogflowpb.DetectIntentResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetectIntent[0:len(c.CallOptions.DetectIntent):len(c.CallOptions.DetectIntent)], opts...)
@@ -162,16 +169,72 @@ func (c *SessionsClient) DetectIntent(ctx context.Context, req *dialogflowpb.Det
 // and returns structured, actionable data as a result. This method is only
 // available via the gRPC API (not REST).
 func (c *SessionsClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Sessions_StreamingDetectIntentClient, error) {
+	var cancel context.CancelFunc
+	if _, set := ctx.Deadline(); !set {
+		ctx, cancel = context.WithTimeout(ctx, 220000*time.Millisecond)
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.StreamingDetectIntent[0:len(c.CallOptions.StreamingDetectIntent):len(c.CallOptions.StreamingDetectIntent)], opts...)
-	var resp dialogflowpb.Sessions_StreamingDetectIntentClient
+	var resp *sessionsStreamingDetectIntentClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.sessionsClient.StreamingDetectIntent(ctx, settings.GRPC...)
-		return err
+		stub, err := c.sessionsClient.StreamingDetectIntent(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &sessionsStreamingDetectIntentClient{
+			Sessions_StreamingDetectIntentClient: stub,
+			cancel:                               cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
+}
+
+type sessionsStreamingDetectIntentClient struct {
+	dialogflowpb.Sessions_StreamingDetectIntentClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *sessionsStreamingDetectIntentClient) Recv() (*dialogflowpb.StreamingDetectIntentResponse, error) {
+	res, err := x.Sessions_StreamingDetectIntentClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *sessionsStreamingDetectIntentClient) Send(m *dialogflowpb.StreamingDetectIntentRequest) error {
+	err := x.Sessions_StreamingDetectIntentClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *sessionsStreamingDetectIntentClient) CloseSend() error {
+	err := x.Sessions_StreamingDetectIntentClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
 }

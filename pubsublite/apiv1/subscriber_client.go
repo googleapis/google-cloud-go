@@ -18,7 +18,9 @@ package pubsublite
 
 import (
 	"context"
+	"io"
 	"math"
+	"sync"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -122,16 +124,69 @@ func (c *SubscriberClient) setGoogleClientInfo(keyval ...string) {
 
 // Subscribe establishes a stream with the server for receiving messages.
 func (c *SubscriberClient) Subscribe(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.SubscriberService_SubscribeClient, error) {
+	var cancel context.CancelFunc
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.Subscribe[0:len(c.CallOptions.Subscribe):len(c.CallOptions.Subscribe)], opts...)
-	var resp pubsublitepb.SubscriberService_SubscribeClient
+	var resp *subscriberServiceSubscribeClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.subscriberClient.Subscribe(ctx, settings.GRPC...)
-		return err
+		stub, err := c.subscriberClient.Subscribe(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &subscriberServiceSubscribeClient{
+			SubscriberService_SubscribeClient: stub,
+			cancel:                            cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
+}
+
+type subscriberServiceSubscribeClient struct {
+	pubsublitepb.SubscriberService_SubscribeClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *subscriberServiceSubscribeClient) Recv() (*pubsublitepb.SubscribeResponse, error) {
+	res, err := x.SubscriberService_SubscribeClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *subscriberServiceSubscribeClient) Send(m *pubsublitepb.SubscribeRequest) error {
+	err := x.SubscriberService_SubscribeClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *subscriberServiceSubscribeClient) CloseSend() error {
+	err := x.SubscriberService_SubscribeClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
 }

@@ -19,8 +19,10 @@ package pubsublite
 import (
 	"context"
 	"fmt"
+	"io"
 	"math"
 	"net/url"
+	"sync"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -155,22 +157,80 @@ func (c *CursorClient) setGoogleClientInfo(keyval ...string) {
 
 // StreamingCommitCursor establishes a stream with the server for managing committed cursors.
 func (c *CursorClient) StreamingCommitCursor(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.CursorService_StreamingCommitCursorClient, error) {
+	var cancel context.CancelFunc
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.StreamingCommitCursor[0:len(c.CallOptions.StreamingCommitCursor):len(c.CallOptions.StreamingCommitCursor)], opts...)
-	var resp pubsublitepb.CursorService_StreamingCommitCursorClient
+	var resp *cursorServiceStreamingCommitCursorClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.cursorClient.StreamingCommitCursor(ctx, settings.GRPC...)
-		return err
+		stub, err := c.cursorClient.StreamingCommitCursor(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &cursorServiceStreamingCommitCursorClient{
+			CursorService_StreamingCommitCursorClient: stub,
+			cancel: cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
 }
 
+type cursorServiceStreamingCommitCursorClient struct {
+	pubsublitepb.CursorService_StreamingCommitCursorClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *cursorServiceStreamingCommitCursorClient) Recv() (*pubsublitepb.StreamingCommitCursorResponse, error) {
+	res, err := x.CursorService_StreamingCommitCursorClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *cursorServiceStreamingCommitCursorClient) Send(m *pubsublitepb.StreamingCommitCursorRequest) error {
+	err := x.CursorService_StreamingCommitCursorClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *cursorServiceStreamingCommitCursorClient) CloseSend() error {
+	err := x.CursorService_StreamingCommitCursorClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
+}
+
 // CommitCursor updates the committed cursor.
 func (c *CursorClient) CommitCursor(ctx context.Context, req *pubsublitepb.CommitCursorRequest, opts ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CommitCursor[0:len(c.CallOptions.CommitCursor):len(c.CallOptions.CommitCursor)], opts...)
 	var resp *pubsublitepb.CommitCursorResponse
@@ -210,7 +270,7 @@ func (c *CursorClient) ListPartitionCursors(ctx context.Context, req *pubsublite
 		}
 
 		it.Response = resp
-		return resp.PartitionCursors, resp.NextPageToken, nil
+		return resp.GetPartitionCursors(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -221,8 +281,8 @@ func (c *CursorClient) ListPartitionCursors(ctx context.Context, req *pubsublite
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

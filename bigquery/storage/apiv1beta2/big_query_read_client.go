@@ -181,6 +181,11 @@ func (c *BigQueryReadClient) setGoogleClientInfo(keyval ...string) {
 // Read sessions automatically expire 24 hours after they are created and do
 // not require manual clean-up by the caller.
 func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storagepb.CreateReadSessionRequest, opts ...gax.CallOption) (*storagepb.ReadSession, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_session.table", url.QueryEscape(req.GetReadSession().GetTable())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateReadSession[0:len(c.CallOptions.CreateReadSession):len(c.CallOptions.CreateReadSession)], opts...)
@@ -204,19 +209,45 @@ func (c *BigQueryReadClient) CreateReadSession(ctx context.Context, req *storage
 // Each request also returns a set of stream statistics reflecting the current
 // state of the stream.
 func (c *BigQueryReadClient) ReadRows(ctx context.Context, req *storagepb.ReadRowsRequest, opts ...gax.CallOption) (storagepb.BigQueryRead_ReadRowsClient, error) {
+	var cancel context.CancelFunc
+	if _, set := ctx.Deadline(); !set {
+		ctx, cancel = context.WithTimeout(ctx, 86400000*time.Millisecond)
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "read_stream", url.QueryEscape(req.GetReadStream())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ReadRows[0:len(c.CallOptions.ReadRows):len(c.CallOptions.ReadRows)], opts...)
-	var resp storagepb.BigQueryRead_ReadRowsClient
+	var resp *bigQueryReadReadRowsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.bigQueryReadClient.ReadRows(ctx, req, settings.GRPC...)
-		return err
+		stub, err := c.bigQueryReadClient.ReadRows(ctx, req, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &bigQueryReadReadRowsClient{
+			BigQueryRead_ReadRowsClient: stub,
+			cancel:                      cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
+}
+
+type bigQueryReadReadRowsClient struct {
+	storagepb.BigQueryRead_ReadRowsClient
+	cancel context.CancelFunc
+}
+
+func (x *bigQueryReadReadRowsClient) Recv() (*storagepb.ReadRowsResponse, error) {
+	res, err := x.BigQueryRead_ReadRowsClient.Recv()
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return res, err
 }
 
 // SplitReadStream splits a given ReadStream into two ReadStream objects. These
@@ -232,6 +263,11 @@ func (c *BigQueryReadClient) ReadRows(ctx context.Context, req *storagepb.ReadRo
 // original[j-n] = residual[0-m] once the streams have been read to
 // completion.
 func (c *BigQueryReadClient) SplitReadStream(ctx context.Context, req *storagepb.SplitReadStreamRequest, opts ...gax.CallOption) (*storagepb.SplitReadStreamResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SplitReadStream[0:len(c.CallOptions.SplitReadStream):len(c.CallOptions.SplitReadStream)], opts...)

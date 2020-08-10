@@ -203,6 +203,11 @@ func (c *TranslationClient) setGoogleClientInfo(keyval ...string) {
 
 // TranslateText translates input text and returns translated text.
 func (c *TranslationClient) TranslateText(ctx context.Context, req *translatepb.TranslateTextRequest, opts ...gax.CallOption) (*translatepb.TranslateTextResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TranslateText[0:len(c.CallOptions.TranslateText):len(c.CallOptions.TranslateText)], opts...)
@@ -220,6 +225,11 @@ func (c *TranslationClient) TranslateText(ctx context.Context, req *translatepb.
 
 // DetectLanguage detects the language of text within a request.
 func (c *TranslationClient) DetectLanguage(ctx context.Context, req *translatepb.DetectLanguageRequest, opts ...gax.CallOption) (*translatepb.DetectLanguageResponse, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetectLanguage[0:len(c.CallOptions.DetectLanguage):len(c.CallOptions.DetectLanguage)], opts...)
@@ -237,6 +247,11 @@ func (c *TranslationClient) DetectLanguage(ctx context.Context, req *translatepb
 
 // GetSupportedLanguages returns a list of supported languages for translation.
 func (c *TranslationClient) GetSupportedLanguages(ctx context.Context, req *translatepb.GetSupportedLanguagesRequest, opts ...gax.CallOption) (*translatepb.SupportedLanguages, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSupportedLanguages[0:len(c.CallOptions.GetSupportedLanguages):len(c.CallOptions.GetSupportedLanguages)], opts...)
@@ -260,6 +275,11 @@ func (c *TranslationClient) GetSupportedLanguages(ctx context.Context, req *tran
 // This call returns immediately and you can
 // use google.longrunning.Operation.name (at http://google.longrunning.Operation.name) to poll the status of the call.
 func (c *TranslationClient) BatchTranslateText(ctx context.Context, req *translatepb.BatchTranslateTextRequest, opts ...gax.CallOption) (*BatchTranslateTextOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchTranslateText[0:len(c.CallOptions.BatchTranslateText):len(c.CallOptions.BatchTranslateText)], opts...)
@@ -280,6 +300,11 @@ func (c *TranslationClient) BatchTranslateText(ctx context.Context, req *transla
 // CreateGlossary creates a glossary and returns the long-running operation. Returns
 // NOT_FOUND, if the project doesn’t exist.
 func (c *TranslationClient) CreateGlossary(ctx context.Context, req *translatepb.CreateGlossaryRequest, opts ...gax.CallOption) (*CreateGlossaryOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateGlossary[0:len(c.CallOptions.CreateGlossary):len(c.CallOptions.CreateGlossary)], opts...)
@@ -323,7 +348,7 @@ func (c *TranslationClient) ListGlossaries(ctx context.Context, req *translatepb
 		}
 
 		it.Response = resp
-		return resp.Glossaries, resp.NextPageToken, nil
+		return resp.GetGlossaries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -334,14 +359,19 @@ func (c *TranslationClient) ListGlossaries(ctx context.Context, req *translatepb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetGlossary gets a glossary. Returns NOT_FOUND, if the glossary doesn’t
 // exist.
 func (c *TranslationClient) GetGlossary(ctx context.Context, req *translatepb.GetGlossaryRequest, opts ...gax.CallOption) (*translatepb.Glossary, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGlossary[0:len(c.CallOptions.GetGlossary):len(c.CallOptions.GetGlossary)], opts...)
@@ -361,6 +391,11 @@ func (c *TranslationClient) GetGlossary(ctx context.Context, req *translatepb.Ge
 // if the glossary isn’t created yet.
 // Returns NOT_FOUND, if the glossary doesn’t exist.
 func (c *TranslationClient) DeleteGlossary(ctx context.Context, req *translatepb.DeleteGlossaryRequest, opts ...gax.CallOption) (*DeleteGlossaryOperation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteGlossary[0:len(c.CallOptions.DeleteGlossary):len(c.CallOptions.DeleteGlossary)], opts...)

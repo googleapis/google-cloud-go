@@ -18,7 +18,9 @@ package pubsublite
 
 import (
 	"context"
+	"io"
 	"math"
+	"sync"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -128,16 +130,69 @@ func (c *PartitionAssignmentClient) setGoogleClientInfo(keyval ...string) {
 // The client should send a PartitionAssignmentAck after updating the
 // partitions it is connected to to reflect the new assignment.
 func (c *PartitionAssignmentClient) AssignPartitions(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.PartitionAssignmentService_AssignPartitionsClient, error) {
+	var cancel context.CancelFunc
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AssignPartitions[0:len(c.CallOptions.AssignPartitions):len(c.CallOptions.AssignPartitions)], opts...)
-	var resp pubsublitepb.PartitionAssignmentService_AssignPartitionsClient
+	var resp *partitionAssignmentServiceAssignPartitionsClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.partitionAssignmentClient.AssignPartitions(ctx, settings.GRPC...)
-		return err
+		stub, err := c.partitionAssignmentClient.AssignPartitions(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &partitionAssignmentServiceAssignPartitionsClient{
+			PartitionAssignmentService_AssignPartitionsClient: stub,
+			cancel: cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
+}
+
+type partitionAssignmentServiceAssignPartitionsClient struct {
+	pubsublitepb.PartitionAssignmentService_AssignPartitionsClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *partitionAssignmentServiceAssignPartitionsClient) Recv() (*pubsublitepb.PartitionAssignment, error) {
+	res, err := x.PartitionAssignmentService_AssignPartitionsClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *partitionAssignmentServiceAssignPartitionsClient) Send(m *pubsublitepb.PartitionAssignmentRequest) error {
+	err := x.PartitionAssignmentService_AssignPartitionsClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *partitionAssignmentServiceAssignPartitionsClient) CloseSend() error {
+	err := x.PartitionAssignmentService_AssignPartitionsClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
 }

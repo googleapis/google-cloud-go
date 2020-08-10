@@ -212,7 +212,7 @@ func (c *Client) ListInsights(ctx context.Context, req *recommenderpb.ListInsigh
 		}
 
 		it.Response = resp
-		return resp.Insights, resp.NextPageToken, nil
+		return resp.GetInsights(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -223,14 +223,19 @@ func (c *Client) ListInsights(ctx context.Context, req *recommenderpb.ListInsigh
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetInsight gets the requested insight. Requires the recommender.*.get IAM permission
 // for the specified insight type.
 func (c *Client) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetInsight[0:len(c.CallOptions.GetInsight):len(c.CallOptions.GetInsight)], opts...)
@@ -253,6 +258,11 @@ func (c *Client) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRe
 // MarkInsightAccepted can be applied to insights in ACTIVE state. Requires
 // the recommender.*.update IAM permission for the specified insight.
 func (c *Client) MarkInsightAccepted(ctx context.Context, req *recommenderpb.MarkInsightAcceptedRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MarkInsightAccepted[0:len(c.CallOptions.MarkInsightAccepted):len(c.CallOptions.MarkInsightAccepted)], opts...)
@@ -294,7 +304,7 @@ func (c *Client) ListRecommendations(ctx context.Context, req *recommenderpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Recommendations, resp.NextPageToken, nil
+		return resp.GetRecommendations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -305,14 +315,19 @@ func (c *Client) ListRecommendations(ctx context.Context, req *recommenderpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetRecommendation gets the requested recommendation. Requires the recommender.*.get
 // IAM permission for the specified recommender.
 func (c *Client) GetRecommendation(ctx context.Context, req *recommenderpb.GetRecommendationRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetRecommendation[0:len(c.CallOptions.GetRecommendation):len(c.CallOptions.GetRecommendation)], opts...)
@@ -339,6 +354,11 @@ func (c *Client) GetRecommendation(ctx context.Context, req *recommenderpb.GetRe
 // Requires the recommender.*.update IAM permission for the specified
 // recommender.
 func (c *Client) MarkRecommendationClaimed(ctx context.Context, req *recommenderpb.MarkRecommendationClaimedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MarkRecommendationClaimed[0:len(c.CallOptions.MarkRecommendationClaimed):len(c.CallOptions.MarkRecommendationClaimed)], opts...)
@@ -366,6 +386,11 @@ func (c *Client) MarkRecommendationClaimed(ctx context.Context, req *recommender
 // Requires the recommender.*.update IAM permission for the specified
 // recommender.
 func (c *Client) MarkRecommendationSucceeded(ctx context.Context, req *recommenderpb.MarkRecommendationSucceededRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MarkRecommendationSucceeded[0:len(c.CallOptions.MarkRecommendationSucceeded):len(c.CallOptions.MarkRecommendationSucceeded)], opts...)
@@ -393,6 +418,11 @@ func (c *Client) MarkRecommendationSucceeded(ctx context.Context, req *recommend
 // Requires the recommender.*.update IAM permission for the specified
 // recommender.
 func (c *Client) MarkRecommendationFailed(ctx context.Context, req *recommenderpb.MarkRecommendationFailedRequest, opts ...gax.CallOption) (*recommenderpb.Recommendation, error) {
+	if _, set := ctx.Deadline(); !set {
+		cc, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cc
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MarkRecommendationFailed[0:len(c.CallOptions.MarkRecommendationFailed):len(c.CallOptions.MarkRecommendationFailed)], opts...)

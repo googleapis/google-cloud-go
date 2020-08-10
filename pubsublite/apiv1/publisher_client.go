@@ -18,7 +18,9 @@ package pubsublite
 
 import (
 	"context"
+	"io"
 	"math"
+	"sync"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -130,16 +132,69 @@ func (c *PublisherClient) setGoogleClientInfo(keyval ...string) {
 // simultaneously, but they will be processed by the server in the order that
 // they are sent by the client on a given stream.
 func (c *PublisherClient) Publish(ctx context.Context, opts ...gax.CallOption) (pubsublitepb.PublisherService_PublishClient, error) {
+	var cancel context.CancelFunc
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.Publish[0:len(c.CallOptions.Publish):len(c.CallOptions.Publish)], opts...)
-	var resp pubsublitepb.PublisherService_PublishClient
+	var resp *publisherServicePublishClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.publisherClient.Publish(ctx, settings.GRPC...)
-		return err
+		stub, err := c.publisherClient.Publish(ctx, settings.GRPC...)
+		if err != nil {
+			return err
+		}
+		resp = &publisherServicePublishClient{
+			PublisherService_PublishClient: stub,
+			cancel:                         cancel,
+		}
+		return nil
 	}, opts...)
 	if err != nil {
+		if cancel != nil {
+			cancel()
+		}
 		return nil, err
 	}
 	return resp, nil
+}
+
+type publisherServicePublishClient struct {
+	pubsublitepb.PublisherService_PublishClient
+	cancel context.CancelFunc
+	cDone  bool
+	sDone  bool
+	mu     sync.Mutex
+}
+
+func (x *publisherServicePublishClient) Recv() (*pubsublitepb.PublishResponse, error) {
+	res, err := x.PublisherService_PublishClient.Recv()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err == io.EOF && !x.cDone {
+			x.sDone = true
+		} else if err != nil {
+			x.cancel()
+		}
+	}
+	return res, err
+}
+
+func (x *publisherServicePublishClient) Send(m *pubsublitepb.PublishRequest) error {
+	err := x.PublisherService_PublishClient.Send(m)
+	if err != nil && x.cancel != nil {
+		x.cancel()
+	}
+	return err
+}
+
+func (x *publisherServicePublishClient) CloseSend() error {
+	err := x.PublisherService_PublishClient.CloseSend()
+	if x.cancel != nil {
+		x.mu.Lock()
+		defer x.mu.Unlock()
+		if err != nil || x.sDone {
+			x.cancel()
+		}
+		x.cDone = true
+	}
+	return err
 }
