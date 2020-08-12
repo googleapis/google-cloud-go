@@ -150,10 +150,10 @@ func LabelFilter(label string) Filter { return labelFilter(label) }
 
 type labelFilter string
 
-func (alf labelFilter) String() string { return fmt.Sprintf("apply_label(%s)", string(alf)) }
+func (lf labelFilter) String() string { return fmt.Sprintf("apply_label(%s)", string(lf)) }
 
-func (alf labelFilter) proto() *btpb.RowFilter {
-	return &btpb.RowFilter{Filter: &btpb.RowFilter_ApplyLabelTransformer{ApplyLabelTransformer: string(alf)}}
+func (lf labelFilter) proto() *btpb.RowFilter {
+	return &btpb.RowFilter{Filter: &btpb.RowFilter_ApplyLabelTransformer{ApplyLabelTransformer: string(lf)}}
 }
 
 // StripValueFilter returns a filter that replaces each value with the empty string.
