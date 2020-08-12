@@ -795,10 +795,10 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 	if err := s.simulateExecutionTime(MethodExecuteStreamingSql, req); err != nil {
 		return err
 	}
-	return s.executeStreamingSql(req, stream)
+	return s.executeStreamingSQL(req, stream)
 }
 
-func (s *inMemSpannerServer) executeStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
+func (s *inMemSpannerServer) executeStreamingSQL(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
 	if req.Session == "" {
 		return gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -937,7 +937,7 @@ func (s *inMemSpannerServer) StreamingRead(req *spannerpb.ReadRequest, stream sp
 			req.Table,
 		),
 	}
-	return s.executeStreamingSql(sqlReq, stream)
+	return s.executeStreamingSQL(sqlReq, stream)
 }
 
 func (s *inMemSpannerServer) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest) (*spannerpb.Transaction, error) {
