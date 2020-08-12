@@ -363,7 +363,7 @@ func (c *DeviceManagerClient) ListDeviceRegistries(ctx context.Context, req *iot
 		}
 
 		it.Response = resp
-		return resp.DeviceRegistries, resp.NextPageToken, nil
+		return resp.GetDeviceRegistries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -374,8 +374,8 @@ func (c *DeviceManagerClient) ListDeviceRegistries(ctx context.Context, req *iot
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -468,7 +468,7 @@ func (c *DeviceManagerClient) ListDevices(ctx context.Context, req *iotpb.ListDe
 		}
 
 		it.Response = resp
-		return resp.Devices, resp.NextPageToken, nil
+		return resp.GetDevices(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -479,8 +479,8 @@ func (c *DeviceManagerClient) ListDevices(ctx context.Context, req *iotpb.ListDe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
