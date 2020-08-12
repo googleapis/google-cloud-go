@@ -84,6 +84,7 @@ const (
 	MethodExecuteSql          string = "EXECUTE_SQL"
 	MethodExecuteStreamingSql string = "EXECUTE_STREAMING_SQL"
 	MethodExecuteBatchDml     string = "EXECUTE_BATCH_DML"
+	MethodStreamingRead       string = "EXECUTE_STREAMING_READ"
 )
 
 // StatementResult represents a mocked result on the test server. The result is
@@ -794,6 +795,10 @@ func (s *inMemSpannerServer) ExecuteStreamingSql(req *spannerpb.ExecuteSqlReques
 	if err := s.simulateExecutionTime(MethodExecuteStreamingSql, req); err != nil {
 		return err
 	}
+	return s.executeStreamingSql(req, stream)
+}
+
+func (s *inMemSpannerServer) executeStreamingSql(req *spannerpb.ExecuteSqlRequest, stream spannerpb.Spanner_ExecuteStreamingSqlServer) error {
 	if req.Session == "" {
 		return gstatus.Error(codes.InvalidArgument, "Missing session name")
 	}
@@ -917,14 +922,22 @@ func (s *inMemSpannerServer) Read(ctx context.Context, req *spannerpb.ReadReques
 }
 
 func (s *inMemSpannerServer) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Spanner_StreamingReadServer) error {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return gstatus.Error(codes.Unavailable, "server has been stopped")
+	if err := s.simulateExecutionTime(MethodStreamingRead, req); err != nil {
+		return err
 	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
-	return gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	sqlReq := &spannerpb.ExecuteSqlRequest{
+		Session:        req.Session,
+		Transaction:    req.Transaction,
+		PartitionToken: req.PartitionToken,
+		ResumeToken:    req.ResumeToken,
+		// KeySet is currently ignored.
+		Sql: fmt.Sprintf(
+			"SELECT %s FROM %s",
+			strings.Join(req.Columns, ", "),
+			req.Table,
+		),
+	}
+	return s.executeStreamingSql(sqlReq, stream)
 }
 
 func (s *inMemSpannerServer) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest) (*spannerpb.Transaction, error) {
