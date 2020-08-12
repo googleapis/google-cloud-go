@@ -885,7 +885,7 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc:       "apply labels to the result rows",
 			rr:         RowRange{},
-			filter:     ApplyLabelFilter("test-label"),
+			filter:     LabelFilter("test-label"),
 			limit:      LimitRows(2),
 			want:       "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
 			wantLabels: []string{"test-label", "test-label", "test-label"},

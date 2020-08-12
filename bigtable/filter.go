@@ -144,15 +144,15 @@ func (lnf latestNFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_CellsPerColumnLimitFilter{CellsPerColumnLimitFilter: int32(lnf)}}
 }
 
-// ApplyLabelFilter returns a filter that applies the
+// LabelFilter returns a filter that applies the
 // given label to all cells in the output row.
-func ApplyLabelFilter(label string) Filter { return applyLabelFilter(label) }
+func LabelFilter(label string) Filter { return labelFilter(label) }
 
-type applyLabelFilter string
+type labelFilter string
 
-func (alf applyLabelFilter) String() string { return fmt.Sprintf("apply_label(%s)", string(alf)) }
+func (alf labelFilter) String() string { return fmt.Sprintf("apply_label(%s)", string(alf)) }
 
-func (alf applyLabelFilter) proto() *btpb.RowFilter {
+func (alf labelFilter) proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_ApplyLabelTransformer{ApplyLabelTransformer: string(alf)}}
 }
 
