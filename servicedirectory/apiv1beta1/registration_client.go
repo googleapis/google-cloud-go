@@ -414,7 +414,7 @@ func (c *RegistrationClient) ListNamespaces(ctx context.Context, req *servicedir
 		}
 
 		it.Response = resp
-		return resp.Namespaces, resp.NextPageToken, nil
+		return resp.GetNamespaces(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -425,8 +425,8 @@ func (c *RegistrationClient) ListNamespaces(ctx context.Context, req *servicedir
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -520,7 +520,7 @@ func (c *RegistrationClient) ListServices(ctx context.Context, req *servicedirec
 		}
 
 		it.Response = resp
-		return resp.Services, resp.NextPageToken, nil
+		return resp.GetServices(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -531,8 +531,8 @@ func (c *RegistrationClient) ListServices(ctx context.Context, req *servicedirec
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -626,7 +626,7 @@ func (c *RegistrationClient) ListEndpoints(ctx context.Context, req *servicedire
 		}
 
 		it.Response = resp
-		return resp.Endpoints, resp.NextPageToken, nil
+		return resp.GetEndpoints(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -637,8 +637,8 @@ func (c *RegistrationClient) ListEndpoints(ctx context.Context, req *servicedire
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

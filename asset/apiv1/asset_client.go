@@ -387,7 +387,7 @@ func (c *Client) SearchAllResources(ctx context.Context, req *assetpb.SearchAllR
 		}
 
 		it.Response = resp
-		return resp.Results, resp.NextPageToken, nil
+		return resp.GetResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -398,8 +398,8 @@ func (c *Client) SearchAllResources(ctx context.Context, req *assetpb.SearchAllR
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -431,7 +431,7 @@ func (c *Client) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAl
 		}
 
 		it.Response = resp
-		return resp.Results, resp.NextPageToken, nil
+		return resp.GetResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -442,8 +442,8 @@ func (c *Client) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAl
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

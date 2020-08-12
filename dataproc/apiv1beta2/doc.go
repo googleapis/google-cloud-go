@@ -30,7 +30,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit godoc.org/cloud.google.com/go.
+// please visit pkg.go.dev/cloud.google.com/go.
 package dataproc // import "cloud.google.com/go/dataproc/apiv1beta2"
 
 import (
@@ -48,7 +48,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200808"
+const versionClient = "20200812"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
