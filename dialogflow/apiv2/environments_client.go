@@ -160,7 +160,7 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogfl
 		}
 
 		it.Response = resp
-		return resp.Environments, resp.NextPageToken, nil
+		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -171,8 +171,8 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogfl
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

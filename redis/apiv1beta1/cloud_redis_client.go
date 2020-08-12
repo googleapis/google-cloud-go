@@ -211,7 +211,7 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		}
 
 		it.Response = resp
-		return resp.Instances, resp.NextPageToken, nil
+		return resp.GetInstances(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -222,8 +222,8 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

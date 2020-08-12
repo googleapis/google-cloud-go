@@ -271,7 +271,7 @@ func (c *ServiceMonitoringClient) ListServices(ctx context.Context, req *monitor
 		}
 
 		it.Response = resp
-		return resp.Services, resp.NextPageToken, nil
+		return resp.GetServices(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -282,8 +282,8 @@ func (c *ServiceMonitoringClient) ListServices(ctx context.Context, req *monitor
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -376,7 +376,7 @@ func (c *ServiceMonitoringClient) ListServiceLevelObjectives(ctx context.Context
 		}
 
 		it.Response = resp
-		return resp.ServiceLevelObjectives, resp.NextPageToken, nil
+		return resp.GetServiceLevelObjectives(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -387,8 +387,8 @@ func (c *ServiceMonitoringClient) ListServiceLevelObjectives(ctx context.Context
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

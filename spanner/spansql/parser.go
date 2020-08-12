@@ -1230,11 +1230,18 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
-		cd, err := p.parseColumnDef()
+		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
-		a.Alteration = AlterColumn{Def: cd}
+		ca, err := p.parseColumnAlteration()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AlterColumn{
+			Name:       name,
+			Alteration: ca,
+		}
 		return a, nil
 	}
 }
@@ -1296,8 +1303,9 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		cd.NotNull = true
 	}
 
-	if p.eat("OPTIONS") {
-		if cd.AllowCommitTimestamp, err = p.parseColumnOptions(); err != nil {
+	if p.sniff("OPTIONS") {
+		cd.Options, err = p.parseColumnOptions()
+		if err != nil {
 			return ColumnDef{}, err
 		}
 	}
@@ -1305,39 +1313,70 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 	return cd, nil
 }
 
-// parseColumnOptions returns allow_commit_timestamp.
-func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err *parseError) {
+func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
+	debugf("parseColumnAlteration: %v", p)
+	/*
+		{ data_type } [ NOT NULL ] | SET [ options_def ]
+	*/
+
+	if p.eat("SET") {
+		co, err := p.parseColumnOptions()
+		if err != nil {
+			return nil, err
+		}
+		return SetColumnOptions{Options: co}, nil
+	}
+
+	typ, err := p.parseType()
+	if err != nil {
+		return nil, err
+	}
+	sct := SetColumnType{Type: typ}
+
+	if p.eat("NOT", "NULL") {
+		sct.NotNull = true
+	}
+
+	return sct, nil
+}
+
+func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 	debugf("parseColumnOptions: %v", p)
 	/*
 		options_def:
 			OPTIONS (allow_commit_timestamp = { true | null })
 	*/
 
-	if err = p.expect("("); err != nil {
-		return nil, err
+	if err := p.expect("OPTIONS"); err != nil {
+		return ColumnOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return ColumnOptions{}, err
 	}
 
+	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
 		if tok.err != nil {
-			return nil, tok.err
+			return ColumnOptions{}, tok.err
 		}
-		allowCommitTimestamp = new(bool)
+		allowCommitTimestamp := new(bool)
 		switch tok.value {
 		case "true":
 			*allowCommitTimestamp = true
 		case "null":
 			*allowCommitTimestamp = false
 		default:
-			return nil, p.errorf("got %q, want true or null", tok.value)
+			return ColumnOptions{}, p.errorf("got %q, want true or null", tok.value)
 		}
+		co.AllowCommitTimestamp = allowCommitTimestamp
 	}
 
 	if err := p.expect(")"); err != nil {
-		return nil, err
+		return ColumnOptions{}, err
 	}
 
-	return
+	return co, nil
 }
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {

@@ -612,7 +612,7 @@ func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspec
 		}
 
 		it.Response = resp
-		return resp.InspectTemplates, resp.NextPageToken, nil
+		return resp.GetInspectTemplates(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -623,8 +623,8 @@ func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspec
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -727,7 +727,7 @@ func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDei
 		}
 
 		it.Response = resp
-		return resp.DeidentifyTemplates, resp.NextPageToken, nil
+		return resp.GetDeidentifyTemplates(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -738,8 +738,8 @@ func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDei
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -861,7 +861,7 @@ func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggers
 		}
 
 		it.Response = resp
-		return resp.JobTriggers, resp.NextPageToken, nil
+		return resp.GetJobTriggers(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -872,8 +872,8 @@ func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggers
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -959,7 +959,7 @@ func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest,
 		}
 
 		it.Response = resp
-		return resp.Jobs, resp.NextPageToken, nil
+		return resp.GetJobs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -970,8 +970,8 @@ func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest,
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -1113,7 +1113,7 @@ func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredI
 		}
 
 		it.Response = resp
-		return resp.StoredInfoTypes, resp.NextPageToken, nil
+		return resp.GetStoredInfoTypes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1124,8 +1124,8 @@ func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredI
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

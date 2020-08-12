@@ -247,7 +247,7 @@ func (c *NotificationChannelClient) ListNotificationChannelDescriptors(ctx conte
 		}
 
 		it.Response = resp
-		return resp.ChannelDescriptors, resp.NextPageToken, nil
+		return resp.GetChannelDescriptors(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -258,8 +258,8 @@ func (c *NotificationChannelClient) ListNotificationChannelDescriptors(ctx conte
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -306,7 +306,7 @@ func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context
 		}
 
 		it.Response = resp
-		return resp.NotificationChannels, resp.NextPageToken, nil
+		return resp.GetNotificationChannels(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -317,8 +317,8 @@ func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
