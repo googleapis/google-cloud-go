@@ -312,7 +312,7 @@ func (c *Client) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJob
 		}
 
 		it.Response = resp
-		return resp.PatchJobs, resp.NextPageToken, nil
+		return resp.GetPatchJobs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -323,8 +323,8 @@ func (c *Client) ListPatchJobs(ctx context.Context, req *osconfigpb.ListPatchJob
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -353,7 +353,7 @@ func (c *Client) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigp
 		}
 
 		it.Response = resp
-		return resp.PatchJobInstanceDetails, resp.NextPageToken, nil
+		return resp.GetPatchJobInstanceDetails(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -364,8 +364,8 @@ func (c *Client) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigp
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -428,7 +428,7 @@ func (c *Client) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListP
 		}
 
 		it.Response = resp
-		return resp.PatchDeployments, resp.NextPageToken, nil
+		return resp.GetPatchDeployments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -439,8 +439,8 @@ func (c *Client) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListP
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

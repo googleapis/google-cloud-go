@@ -151,7 +151,7 @@ func (c *CloudCatalogClient) ListServices(ctx context.Context, req *billingpb.Li
 		}
 
 		it.Response = resp
-		return resp.Services, resp.NextPageToken, nil
+		return resp.GetServices(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -162,8 +162,8 @@ func (c *CloudCatalogClient) ListServices(ctx context.Context, req *billingpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -192,7 +192,7 @@ func (c *CloudCatalogClient) ListSkus(ctx context.Context, req *billingpb.ListSk
 		}
 
 		it.Response = resp
-		return resp.Skus, resp.NextPageToken, nil
+		return resp.GetSkus(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -203,8 +203,8 @@ func (c *CloudCatalogClient) ListSkus(ctx context.Context, req *billingpb.ListSk
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

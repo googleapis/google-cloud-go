@@ -390,7 +390,7 @@ func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAss
 		}
 
 		it.Response = resp
-		return resp.GroupByResults, resp.NextPageToken, nil
+		return resp.GetGroupByResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -401,8 +401,8 @@ func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAss
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -435,7 +435,7 @@ func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupF
 		}
 
 		it.Response = resp
-		return resp.GroupByResults, resp.NextPageToken, nil
+		return resp.GetGroupByResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -446,8 +446,8 @@ func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupF
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -476,7 +476,7 @@ func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAsset
 		}
 
 		it.Response = resp
-		return resp.ListAssetsResults, resp.NextPageToken, nil
+		return resp.GetListAssetsResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -487,8 +487,8 @@ func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAsset
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -520,7 +520,7 @@ func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFin
 		}
 
 		it.Response = resp
-		return resp.Findings, resp.NextPageToken, nil
+		return resp.GetFindings(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -531,8 +531,8 @@ func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFin
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -561,7 +561,7 @@ func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSour
 		}
 
 		it.Response = resp
-		return resp.Sources, resp.NextPageToken, nil
+		return resp.GetSources(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -572,8 +572,8 @@ func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSour
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
