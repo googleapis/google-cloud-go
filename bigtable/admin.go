@@ -880,11 +880,6 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 	if err != nil {
 		return nil, err
 	}
-	if len(res.FailedLocations) > 0 {
-		// We don't have a good way to return a partial result in the face of some zones being unavailable.
-		// Fail the entire request.
-		return nil, status.Errorf(codes.Unavailable, "Failed locations: %v", res.FailedLocations)
-	}
 
 	var is []*InstanceInfo
 	for _, i := range res.Instances {
@@ -899,6 +894,9 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 			InstanceType:  InstanceType(i.Type),
 			Labels:        i.Labels,
 		})
+	}
+	if len(res.FailedLocations) > 0 {
+		return is, status.Errorf(codes.Unavailable, "Failed locations: %v", res.FailedLocations)
 	}
 	return is, nil
 }
