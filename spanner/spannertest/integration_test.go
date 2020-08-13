@@ -398,55 +398,6 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	if !reflect.DeepEqual(ages, wantAges) {
 		t.Errorf("Query with IN UNNEST gave wrong ages: got %+v, want %+v", ages, wantAges)
 	}
-
-	// Verify boolean query parameters
-	err = updateDDL(t, adminClient, `ALTER TABLE `+tableName+` ADD COLUMN SuperPower BOOL`)
-	if err != nil {
-		t.Fatalf("Adding new bool column: %v", err)
-	}
-	cts, err = client.Apply(ctx, []*spanner.Mutation{
-		// Set up super-power registry
-		spanner.Update(tableName,
-			[]string{"FirstName", "LastName", "SuperPower", "Updated"},
-			[]interface{}{"Tony", "Stark", false, spanner.CommitTimestamp}),
-		spanner.Update(tableName,
-			[]string{"FirstName", "LastName", "SuperPower", "Updated"},
-			[]interface{}{"Steve", "Rogers", true, spanner.CommitTimestamp}),
-		spanner.Update(tableName,
-			[]string{"FirstName", "LastName", "SuperPower", "Updated"},
-			[]interface{}{"Natasha", "Romanoff", false, spanner.CommitTimestamp}),
-		spanner.Update(tableName,
-			[]string{"FirstName", "LastName", "SuperPower", "Updated"},
-			[]interface{}{"Peter", "Quill", false, spanner.CommitTimestamp}),
-		spanner.Update(tableName,
-			[]string{"FirstName", "LastName", "SuperPower", "Updated"},
-			[]interface{}{"Peter", "Parker", true, spanner.CommitTimestamp}),
-	})
-	if err != nil {
-		t.Fatalf("Applying mutations: %v", err)
-	}
-
-	// Do a query to find the aliases of the two super-powered characters.
-	stmt = spanner.NewStatement(`SELECT Alias FROM ` + tableName + ` WHERE SuperPower = @p1 AND Alias IS NOT NULL`)
-	stmt.Params = map[string]interface{}{
-		"p1": true,
-	}
-	rows = client.Single().Query(ctx, stmt)
-	var registry []string
-	err = rows.Do(func(row *spanner.Row) error {
-		var alias string
-		if err := row.Columns(&alias); err != nil {
-			return err
-		}
-		registry = append(registry, alias)
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("Iterating over query with boolean parameter: %v", err)
-	}
-	if want := []string{"Spider-Man", "Captain America"}; !reflect.DeepEqual(registry, want) {
-		t.Errorf("Query results = %v, want %v", registry, want)
-	}
 }
 
 func updateDDL(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, statements ...string) error {
