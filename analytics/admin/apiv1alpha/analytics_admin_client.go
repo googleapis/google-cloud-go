@@ -286,7 +286,7 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 		}
 
 		it.Response = resp
-		return resp.Accounts, resp.NextPageToken, nil
+		return resp.GetAccounts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -297,8 +297,8 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -407,7 +407,7 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 		}
 
 		it.Response = resp
-		return resp.Properties, resp.NextPageToken, nil
+		return resp.GetProperties(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -418,8 +418,8 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -538,7 +538,7 @@ func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.L
 		}
 
 		it.Response = resp
-		return resp.UserLinks, resp.NextPageToken, nil
+		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -549,8 +549,8 @@ func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.L
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -587,7 +587,7 @@ func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.
 		}
 
 		it.Response = resp
-		return resp.UserLinks, resp.NextPageToken, nil
+		return resp.GetUserLinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -598,8 +598,8 @@ func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -799,7 +799,7 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 		}
 
 		it.Response = resp
-		return resp.WebDataStreams, resp.NextPageToken, nil
+		return resp.GetWebDataStreams(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -810,8 +810,8 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -910,7 +910,7 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 		}
 
 		it.Response = resp
-		return resp.IosAppDataStreams, resp.NextPageToken, nil
+		return resp.GetIosAppDataStreams(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -921,8 +921,8 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -1021,7 +1021,7 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 		}
 
 		it.Response = resp
-		return resp.AndroidAppDataStreams, resp.NextPageToken, nil
+		return resp.GetAndroidAppDataStreams(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1032,8 +1032,8 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -1232,7 +1232,7 @@ func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *admi
 		}
 
 		it.Response = resp
-		return resp.GoogleAdsLinks, resp.NextPageToken, nil
+		return resp.GetGoogleAdsLinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1243,8 +1243,8 @@ func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *admi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

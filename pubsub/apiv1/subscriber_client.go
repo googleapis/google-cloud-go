@@ -422,7 +422,7 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 		}
 
 		it.Response = resp
-		return resp.Subscriptions, resp.NextPageToken, nil
+		return resp.GetSubscriptions(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -433,8 +433,8 @@ func (c *SubscriberClient) ListSubscriptions(ctx context.Context, req *pubsubpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -599,7 +599,7 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 		}
 
 		it.Response = resp
-		return resp.Snapshots, resp.NextPageToken, nil
+		return resp.GetSnapshots(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -610,8 +610,8 @@ func (c *SubscriberClient) ListSnapshots(ctx context.Context, req *pubsubpb.List
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

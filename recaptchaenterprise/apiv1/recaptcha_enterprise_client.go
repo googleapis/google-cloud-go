@@ -212,7 +212,7 @@ func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKe
 		}
 
 		it.Response = resp
-		return resp.Keys, resp.NextPageToken, nil
+		return resp.GetKeys(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -223,8 +223,8 @@ func (c *Client) ListKeys(ctx context.Context, req *recaptchaenterprisepb.ListKe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

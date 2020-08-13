@@ -393,7 +393,7 @@ func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsReq
 		}
 
 		it.Response = resp
-		return resp.Datasets, resp.NextPageToken, nil
+		return resp.GetDatasets(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -404,8 +404,8 @@ func (c *Client) ListDatasets(ctx context.Context, req *automlpb.ListDatasetsReq
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -557,7 +557,7 @@ func (c *Client) ListTableSpecs(ctx context.Context, req *automlpb.ListTableSpec
 		}
 
 		it.Response = resp
-		return resp.TableSpecs, resp.NextPageToken, nil
+		return resp.GetTableSpecs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -568,8 +568,8 @@ func (c *Client) ListTableSpecs(ctx context.Context, req *automlpb.ListTableSpec
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -632,7 +632,7 @@ func (c *Client) ListColumnSpecs(ctx context.Context, req *automlpb.ListColumnSp
 		}
 
 		it.Response = resp
-		return resp.ColumnSpecs, resp.NextPageToken, nil
+		return resp.GetColumnSpecs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -643,8 +643,8 @@ func (c *Client) ListColumnSpecs(ctx context.Context, req *automlpb.ListColumnSp
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -730,7 +730,7 @@ func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest
 		}
 
 		it.Response = resp
-		return resp.Model, resp.NextPageToken, nil
+		return resp.GetModel(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -741,8 +741,8 @@ func (c *Client) ListModels(ctx context.Context, req *automlpb.ListModelsRequest
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -924,7 +924,7 @@ func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListMod
 		}
 
 		it.Response = resp
-		return resp.ModelEvaluation, resp.NextPageToken, nil
+		return resp.GetModelEvaluation(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -935,8 +935,8 @@ func (c *Client) ListModelEvaluations(ctx context.Context, req *automlpb.ListMod
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

@@ -227,7 +227,7 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 		}
 
 		it.Response = resp
-		return resp.Group, resp.NextPageToken, nil
+		return resp.GetGroup(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -238,8 +238,8 @@ func (c *GroupClient) ListGroups(ctx context.Context, req *monitoringpb.ListGrou
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -333,7 +333,7 @@ func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.Li
 		}
 
 		it.Response = resp
-		return resp.Members, resp.NextPageToken, nil
+		return resp.GetMembers(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -344,8 +344,8 @@ func (c *GroupClient) ListGroupMembers(ctx context.Context, req *monitoringpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
