@@ -896,6 +896,8 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 		})
 	}
 	if len(res.FailedLocations) > 0 {
+		// Return partial results and an error in
+		// case of some locations are unavailable.
 		return is, status.Errorf(codes.Unavailable, "Failed locations: %v", res.FailedLocations)
 	}
 	return is, nil
