@@ -120,8 +120,8 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		return &RowIterator{err: err}
 	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
-	sid, client := sh.getID(), sh.getClient()
-	if sid == "" || client == nil {
+	client := sh.getClient()
+	if client == nil {
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
