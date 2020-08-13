@@ -220,7 +220,7 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Contexts, resp.NextPageToken, nil
+		return resp.GetContexts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -231,8 +231,8 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

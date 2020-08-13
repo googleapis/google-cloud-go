@@ -190,7 +190,7 @@ func (c *Client) ListInsights(ctx context.Context, req *recommenderpb.ListInsigh
 		}
 
 		it.Response = resp
-		return resp.Insights, resp.NextPageToken, nil
+		return resp.GetInsights(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -201,8 +201,8 @@ func (c *Client) ListInsights(ctx context.Context, req *recommenderpb.ListInsigh
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -272,7 +272,7 @@ func (c *Client) ListRecommendations(ctx context.Context, req *recommenderpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Recommendations, resp.NextPageToken, nil
+		return resp.GetRecommendations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -283,8 +283,8 @@ func (c *Client) ListRecommendations(ctx context.Context, req *recommenderpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
