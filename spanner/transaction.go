@@ -120,8 +120,8 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		return &RowIterator{err: err}
 	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
-	sid, client := sh.getID(), sh.getClient()
-	if sid == "" || client == nil {
+	client := sh.getClient()
+	if client == nil {
 		// Might happen if transaction is closed in the middle of a API call.
 		return &RowIterator{err: errSessionClosed(sh)}
 	}
@@ -133,13 +133,13 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 			limit = opts.Limit
 		}
 	}
-	return stream(
+	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
 		sh.session.logger,
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:     sid,
+					Session:     t.sh.getID(),
 					Transaction: ts,
 					Table:       table,
 					Index:       index,
@@ -149,6 +149,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					Limit:       int64(limit),
 				})
 		},
+		t.replaceSessionFunc,
 		t.setTimestamp,
 		t.release,
 	)
