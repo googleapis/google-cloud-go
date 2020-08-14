@@ -209,7 +209,7 @@ func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsR
 		}
 
 		it.Response = resp
-		return resp.Realms, resp.NextPageToken, nil
+		return resp.GetRealms(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -220,8 +220,8 @@ func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsR
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

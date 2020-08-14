@@ -162,6 +162,53 @@ func TestClient_Single_SessionNotFound(t *testing.T) {
 	}
 }
 
+func TestClient_Single_Read_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodStreamingRead,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodStreamingRead,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	row, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+	if err != nil {
+		t.Fatalf("Unexpected error for read row: %v", err)
+	}
+	if row == nil {
+		t.Fatal("ReadRow did not return a row")
+	}
+}
+
 func TestClient_Single_RetryableErrorOnPartialResultSet(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -1987,6 +2034,24 @@ func TestClient_DecodeCustomFieldType(t *testing.T) {
 	got := results[0]
 	if !testEqual(got, want) {
 		t.Fatalf("mismatch result: got %v, want %v", got, want)
+	}
+}
+
+func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
+	old := os.Getenv("SPANNER_EMULATOR_HOST")
+	defer os.Setenv("SPANNER_EMULATOR_HOST", old)
+
+	os.Setenv("SPANNER_EMULATOR_HOST", "localhost:1234")
+
+	client, err := NewClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{},
+		option.WithCredentialsFile("/path/to/key.json"),
+	)
+	defer client.Close()
+	if err != nil {
+		t.Fatalf("Failed to create a client with credentials file when running against an emulator: %v", err)
 	}
 }
 
