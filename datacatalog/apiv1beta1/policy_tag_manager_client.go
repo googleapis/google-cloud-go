@@ -223,7 +223,7 @@ func (c *PolicyTagManagerClient) ListTaxonomies(ctx context.Context, req *dataca
 		}
 
 		it.Response = resp
-		return resp.Taxonomies, resp.NextPageToken, nil
+		return resp.GetTaxonomies(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -234,8 +234,8 @@ func (c *PolicyTagManagerClient) ListTaxonomies(ctx context.Context, req *dataca
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -328,7 +328,7 @@ func (c *PolicyTagManagerClient) ListPolicyTags(ctx context.Context, req *dataca
 		}
 
 		it.Response = resp
-		return resp.PolicyTags, resp.NextPageToken, nil
+		return resp.GetPolicyTags(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -339,8 +339,8 @@ func (c *PolicyTagManagerClient) ListPolicyTags(ctx context.Context, req *dataca
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

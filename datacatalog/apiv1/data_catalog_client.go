@@ -298,7 +298,7 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 		}
 
 		it.Response = resp
-		return resp.Results, resp.NextPageToken, nil
+		return resp.GetResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -309,8 +309,8 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -429,7 +429,7 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 		}
 
 		it.Response = resp
-		return resp.EntryGroups, resp.NextPageToken, nil
+		return resp.GetEntryGroups(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -440,8 +440,8 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -570,7 +570,7 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 		}
 
 		it.Response = resp
-		return resp.Entries, resp.NextPageToken, nil
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -581,8 +581,8 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -822,7 +822,7 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 		}
 
 		it.Response = resp
-		return resp.Tags, resp.NextPageToken, nil
+		return resp.GetTags(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -833,8 +833,8 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

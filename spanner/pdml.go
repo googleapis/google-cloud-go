@@ -76,9 +76,8 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		QueryOptions: options.Options,
 	}
 
-	// Make a retryer for Aborted errors.
-	// TODO: use generic Aborted retryer when merged with master
-	retryer := gax.OnCodes([]codes.Code{codes.Aborted}, DefaultRetryBackoff)
+	// Make a retryer for Aborted and certain Internal errors.
+	retryer := onCodes(DefaultRetryBackoff, codes.Aborted, codes.Internal)
 	// Execute the PDML and retry if the transaction is aborted.
 	executePdmlWithRetry := func(ctx context.Context) (int64, error) {
 		for {

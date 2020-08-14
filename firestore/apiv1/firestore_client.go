@@ -328,7 +328,7 @@ func (c *Client) GetDocument(ctx context.Context, req *firestorepb.GetDocumentRe
 
 // ListDocuments lists documents.
 func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListDocuments[0:len(c.CallOptions.ListDocuments):len(c.CallOptions.ListDocuments)], opts...)
 	it := &DocumentIterator{}
@@ -351,7 +351,7 @@ func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumen
 		}
 
 		it.Response = resp
-		return resp.Documents, resp.NextPageToken, nil
+		return resp.GetDocuments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -362,8 +362,8 @@ func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumen
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -508,7 +508,7 @@ func (c *Client) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQ
 		}
 
 		it.Response = resp
-		return resp.Partitions, resp.NextPageToken, nil
+		return resp.GetPartitions(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -519,8 +519,8 @@ func (c *Client) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQ
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -581,7 +581,7 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 		}
 
 		it.Response = resp
-		return resp.CollectionIds, resp.NextPageToken, nil
+		return resp.GetCollectionIds(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -592,8 +592,8 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -624,7 +624,7 @@ func (c *Client) BatchWrite(ctx context.Context, req *firestorepb.BatchWriteRequ
 
 // CreateDocument creates a new document.
 func (c *Client) CreateDocument(ctx context.Context, req *firestorepb.CreateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateDocument[0:len(c.CallOptions.CreateDocument):len(c.CallOptions.CreateDocument)], opts...)
 	var resp *firestorepb.Document

@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package profiler is a client for the Stackdriver Profiler service.
-//
-// This package is still experimental and subject to change.
+// Package profiler is a client for the Cloud Profiler service.
 //
 // Usage example:
 //
@@ -590,7 +588,7 @@ func initializeConfig(cfg Config) error {
 // server for instructions, and collects and uploads profiles as
 // requested.
 func pollProfilerService(ctx context.Context, a *agent) {
-	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
+	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)

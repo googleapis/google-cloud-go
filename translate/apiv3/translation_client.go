@@ -323,7 +323,7 @@ func (c *TranslationClient) ListGlossaries(ctx context.Context, req *translatepb
 		}
 
 		it.Response = resp
-		return resp.Glossaries, resp.NextPageToken, nil
+		return resp.GetGlossaries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -334,8 +334,8 @@ func (c *TranslationClient) ListGlossaries(ctx context.Context, req *translatepb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

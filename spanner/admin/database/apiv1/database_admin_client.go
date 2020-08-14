@@ -338,7 +338,7 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 		}
 
 		it.Response = resp
-		return resp.Databases, resp.NextPageToken, nil
+		return resp.GetDatabases(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -349,8 +349,8 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -633,7 +633,7 @@ func (c *DatabaseAdminClient) ListBackups(ctx context.Context, req *databasepb.L
 		}
 
 		it.Response = resp
-		return resp.Backups, resp.NextPageToken, nil
+		return resp.GetBackups(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -644,8 +644,8 @@ func (c *DatabaseAdminClient) ListBackups(ctx context.Context, req *databasepb.L
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -716,7 +716,7 @@ func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *d
 		}
 
 		it.Response = resp
-		return resp.Operations, resp.NextPageToken, nil
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -727,8 +727,8 @@ func (c *DatabaseAdminClient) ListDatabaseOperations(ctx context.Context, req *d
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -766,7 +766,7 @@ func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *dat
 		}
 
 		it.Response = resp
-		return resp.Operations, resp.NextPageToken, nil
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -777,8 +777,8 @@ func (c *DatabaseAdminClient) ListBackupOperations(ctx context.Context, req *dat
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
