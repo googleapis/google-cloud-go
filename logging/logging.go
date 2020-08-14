@@ -688,10 +688,10 @@ type HTTPRequest struct {
 	// field is only meaningful if CacheHit is true.
 	CacheValidatedWithOriginServer bool
 
-	// The number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.
+	// CacheFillBytes is the number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.
 	CacheFillBytes int64
 
-	// Whether or not a cache lookup was attempted.
+	// CacheLookup tells whether or not a cache lookup was attempted.
 	CacheLookup bool
 
 	// Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2", "websocket"
