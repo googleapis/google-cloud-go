@@ -327,7 +327,7 @@ func (c *Client) ListReservations(ctx context.Context, req *reservationpb.ListRe
 		}
 
 		it.Response = resp
-		return resp.Reservations, resp.NextPageToken, nil
+		return resp.GetReservations(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -338,8 +338,8 @@ func (c *Client) ListReservations(ctx context.Context, req *reservationpb.ListRe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -434,7 +434,7 @@ func (c *Client) ListCapacityCommitments(ctx context.Context, req *reservationpb
 		}
 
 		it.Response = resp
-		return resp.CapacityCommitments, resp.NextPageToken, nil
+		return resp.GetCapacityCommitments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -445,8 +445,8 @@ func (c *Client) ListCapacityCommitments(ctx context.Context, req *reservationpb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -646,7 +646,7 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 		}
 
 		it.Response = resp
-		return resp.Assignments, resp.NextPageToken, nil
+		return resp.GetAssignments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -657,8 +657,8 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -742,7 +742,7 @@ func (c *Client) SearchAssignments(ctx context.Context, req *reservationpb.Searc
 		}
 
 		it.Response = resp
-		return resp.Assignments, resp.NextPageToken, nil
+		return resp.GetAssignments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -753,8 +753,8 @@ func (c *Client) SearchAssignments(ctx context.Context, req *reservationpb.Searc
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

@@ -30,8 +30,6 @@ import (
 var testEncryptionKey = []byte("secret-key-that-is-32-bytes-long")
 
 func TestErrorOnObjectsInsertCall(t *testing.T) {
-	t.Skip("Skipping until https://github.com/googleapis/google-api-go-client/issues/392 is resolved")
-
 	t.Parallel()
 	ctx := context.Background()
 	const contents = "hello world"

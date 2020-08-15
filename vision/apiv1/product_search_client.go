@@ -438,7 +438,7 @@ func (c *ProductSearchClient) ListProductSets(ctx context.Context, req *visionpb
 		}
 
 		it.Response = resp
-		return resp.ProductSets, resp.NextPageToken, nil
+		return resp.GetProductSets(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -449,8 +449,8 @@ func (c *ProductSearchClient) ListProductSets(ctx context.Context, req *visionpb
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -571,7 +571,7 @@ func (c *ProductSearchClient) ListProducts(ctx context.Context, req *visionpb.Li
 		}
 
 		it.Response = resp
-		return resp.Products, resp.NextPageToken, nil
+		return resp.GetProducts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -582,8 +582,8 @@ func (c *ProductSearchClient) ListProducts(ctx context.Context, req *visionpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -748,7 +748,7 @@ func (c *ProductSearchClient) ListReferenceImages(ctx context.Context, req *visi
 		}
 
 		it.Response = resp
-		return resp.ReferenceImages, resp.NextPageToken, nil
+		return resp.GetReferenceImages(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -759,8 +759,8 @@ func (c *ProductSearchClient) ListReferenceImages(ctx context.Context, req *visi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -849,7 +849,7 @@ func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req 
 		}
 
 		it.Response = resp
-		return resp.Products, resp.NextPageToken, nil
+		return resp.GetProducts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -860,8 +860,8 @@ func (c *ProductSearchClient) ListProductsInProductSet(ctx context.Context, req 
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

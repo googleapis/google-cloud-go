@@ -288,7 +288,7 @@ func (c *CloudBillingClient) ListBillingAccounts(ctx context.Context, req *billi
 		}
 
 		it.Response = resp
-		return resp.BillingAccounts, resp.NextPageToken, nil
+		return resp.GetBillingAccounts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -299,8 +299,8 @@ func (c *CloudBillingClient) ListBillingAccounts(ctx context.Context, req *billi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -379,7 +379,7 @@ func (c *CloudBillingClient) ListProjectBillingInfo(ctx context.Context, req *bi
 		}
 
 		it.Response = resp
-		return resp.ProjectBillingInfo, resp.NextPageToken, nil
+		return resp.GetProjectBillingInfo(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -390,8 +390,8 @@ func (c *CloudBillingClient) ListProjectBillingInfo(ctx context.Context, req *bi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

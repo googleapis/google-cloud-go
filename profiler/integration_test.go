@@ -32,7 +32,7 @@ import (
 	compute "google.golang.org/api/compute/v1"
 )
 
-var runBackoffTest = flag.Bool("run_profiler_backoff_test", false, "Enables the backoff integration test. This integration test requires over 45 mins to run, so it is not run by default.")
+var runBackoffTest = flag.Bool("run_only_profiler_backoff_test", false, "Enables only the backoff integration test. This integration test requires over 45 mins to run, so it is not run by default.")
 
 const (
 	cloudScope        = "https://www.googleapis.com/auth/cloud-platform"
@@ -289,8 +289,8 @@ func TestAgentIntegration(t *testing.T) {
 	}
 
 	if *runBackoffTest {
-		testcases = append(testcases,
-			goGCETestCase{
+		testcases = []goGCETestCase{
+			{
 				InstanceConfig: proftest.InstanceConfig{
 					ProjectID: projectID,
 					Name:      fmt.Sprintf("profiler-backoff-test-go%s-%s", goVersionName, runID),
@@ -305,7 +305,8 @@ func TestAgentIntegration(t *testing.T) {
 				backoffTest:   true,
 				timeout:       backoffTestTimeout,
 				benchDuration: backoffBenchDuration,
-			})
+			},
+		}
 	}
 	// The number of tests run in parallel is the current value of GOMAXPROCS.
 	runtime.GOMAXPROCS(len(testcases))

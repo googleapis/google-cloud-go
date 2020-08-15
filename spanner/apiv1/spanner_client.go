@@ -385,7 +385,7 @@ func (c *Client) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRe
 		}
 
 		it.Response = resp
-		return resp.Sessions, resp.NextPageToken, nil
+		return resp.GetSessions(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -396,8 +396,8 @@ func (c *Client) ListSessions(ctx context.Context, req *spannerpb.ListSessionsRe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
