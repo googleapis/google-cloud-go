@@ -314,22 +314,13 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	var (
 		tx  transactionID
 		rts time.Time
-		s   *session
-		sh  *sessionHandle
 		err error
 	)
-	defer func() {
-		if err != nil && sh != nil {
-			s.delete(ctx)
-		}
-	}()
 
-	// Create session.
-	s, err = c.sc.createSession(ctx)
+	sh, err := c.idleSessions.take(ctx)
 	if err != nil {
-		return nil, err
+		return nil, toSpannerError(err)
 	}
-	sh = &sessionHandle{session: s}
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
