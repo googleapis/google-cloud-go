@@ -693,9 +693,6 @@ type HTTPRequest struct {
 
 	// CacheLookup tells whether or not a cache lookup was attempted.
 	CacheLookup bool
-
-	// Protocol used for the request. Examples: "HTTP/1.1", "HTTP/2", "websocket"
-	Protocol string
 }
 
 func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
