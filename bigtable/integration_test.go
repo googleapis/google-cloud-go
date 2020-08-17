@@ -33,8 +33,10 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	"google.golang.org/grpc/codes"
 )
 
 var (
@@ -46,6 +48,7 @@ var (
 	}
 
 	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	retryCodes     = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -2192,7 +2195,20 @@ func clearTimestamps(r Row) {
 }
 
 func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string) {
-	if err := ac.DeleteTable(ctx, name); err != nil {
+	retryOptions = []gax.CallOption{
+		gax.WithRetry(func() gax.Retryer {
+			return gax.OnCodes(retryCodes, gax.Backoff{
+				Initial:    100 * time.Millisecond,
+				Max:        2 * time.Second,
+				Multiplier: 1.2,
+			})
+		}),
+	}
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		return ac.DeleteTable(ctx, name)
+	}, retryOptions...)
+
+	if err != nil {
 		t.Logf("DeleteTable: %v", err)
 	}
 }
