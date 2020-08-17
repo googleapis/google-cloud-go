@@ -349,7 +349,7 @@ var (
 )
 
 // v2SanitizeHeaders applies the specifications for canonical extension headers at
-// https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
+// https://cloud.google.com/storage/docs/access-control/signed-urls-v2#about-canonical-extension-headers
 func v2SanitizeHeaders(hdrs []string) []string {
 	headerMap := map[string][]string{}
 	for _, hdr := range hdrs {
@@ -397,7 +397,7 @@ func v2SanitizeHeaders(hdrs []string) []string {
 }
 
 // v4SanitizeHeaders applies the specifications for canonical extension headers
-// at https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
+// at https://cloud.google.com/storage/docs/authentication/canonical-requests#about-headers.
 //
 // V4 does a couple things differently from V2:
 // - Headers get sorted by key, instead of by key:value. We do this in
