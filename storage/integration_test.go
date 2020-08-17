@@ -671,10 +671,11 @@ func TestIntegration_Objects(t *testing.T) {
 		contents[obj] = c
 	}
 
+	testObjectsIterateSelectedAttrsDelimiter(t, bkt, objects)
 	testObjectIterator(t, bkt, objects)
-	testObjectsIterateSelectedAttrs(t, bkt, objects)
-	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
-	testObjectIteratorWithOffset(t, bkt, objects)
+	//testObjectsIterateSelectedAttrs(t, bkt, objects)
+	//testObjectsIterateAllSelectedAttrs(t, bkt, objects)
+	//testObjectIteratorWithOffset(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1065,12 +1066,13 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
 	}
 	msg, ok := itesting.TestIterator(attrs,
-		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj"}) },
+		func() interface{} { return bkt.Objects(ctx, &Query{Prefix: "obj", Delimiter: "/"}) },
 		func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
 	if !ok {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
+
 }
 
 func testObjectIteratorWithOffset(t *testing.T, bkt *BucketHandle, objects []string) {
@@ -1121,6 +1123,40 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 	it := bkt.Objects(context.Background(), query)
 	for {
 		attrs, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Fatal(err)
+		}
+		gotNames = append(gotNames, attrs.Name)
+
+		if len(attrs.Bucket) > 0 {
+			t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+		}
+	}
+
+	sortedNames := make([]string, len(objects))
+	copy(sortedNames, objects)
+	sort.Strings(sortedNames)
+	sort.Strings(gotNames)
+
+	if !cmp.Equal(sortedNames, gotNames) {
+		t.Errorf("names = %v, want %v", gotNames, sortedNames)
+	}
+}
+
+func testObjectsIterateSelectedAttrsDelimiter(t *testing.T, bkt *BucketHandle, objects []string) {
+	// Create a query that will only select the "Name" attr of objects, and
+	// invoke object listing.
+	query := &Query{Prefix: "", Delimiter:"/"}
+	query.SetAttrSelection([]string{"Name"})
+
+	var gotNames []string
+	it := bkt.Objects(context.Background(), query)
+	for {
+		attrs, err := it.Next()
+		log.Printf("attrs: %v\n", attrs)
 		if err == iterator.Done {
 			break
 		}
