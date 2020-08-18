@@ -43,7 +43,9 @@ errors will be retried when correctness allows.
 To opt out of default deadlines, set the temporary environment variable
 GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE to "true" prior to client
 creation. This affects all Google Cloud Go client libraries. This opt-out
-mechanism will be removed in a future release.
+mechanism will be removed in a future release. File an issue at
+https://github.com/googleapis/google-cloud-go if the default deadlines
+cannot work for you.
 
 Do not attempt to control the initial connection (dialing) of a service by setting a
 timeout on the context passed to NewClient. Dialing is non-blocking, so timeouts
