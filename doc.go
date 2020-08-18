@@ -35,7 +35,7 @@ in this package for details.
 Timeouts and Cancellation
 
 By default, all Unary methods will have a default deadline applied to the
-context provided at call time, unless a deadline is already set. Streaming
+context provided at call time, unless a context deadline is already set. Streaming
 methods have no default deadline and will run indefinitely. To set timeouts or
 arrange for cancellation, use contexts. See the examples for details. Transient
 errors will be retried when correctness allows.
