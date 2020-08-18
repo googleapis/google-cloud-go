@@ -1,5 +1,13 @@
 # Changes
 
+## [0.64.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.63.0...v0.64.0) (2020-08-18)
+
+
+### Features
+
+* **all:** auto-regenerate gapics , refs [#2734](https://www.github.com/googleapis/google-cloud-go/issues/2734) [#2731](https://www.github.com/googleapis/google-cloud-go/issues/2731) [#2730](https://www.github.com/googleapis/google-cloud-go/issues/2730) [#2725](https://www.github.com/googleapis/google-cloud-go/issues/2725) [#2722](https://www.github.com/googleapis/google-cloud-go/issues/2722) [#2706](https://www.github.com/googleapis/google-cloud-go/issues/2706)
+* **pubsublite:** start generating v1 ([#2700](https://www.github.com/googleapis/google-cloud-go/issues/2700)) ([d2e777f](https://www.github.com/googleapis/google-cloud-go/commit/d2e777f56e08146646b3ffb7a78856795094ab4e))
+
 ## [0.63.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.62.0...v0.63.0) (2020-08-05)
 
 
