@@ -40,7 +40,7 @@ methods have no default deadline and will run indefinitely. To set timeouts or
 arrange for cancellation, use contexts. See the examples for details. Transient
 errors will be retried when correctness allows.
 
-To opt out of default deadlines, set the environment variable
+To opt out of default deadlines, set the temporary environment variable
 GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE to "true" prior to client
 creation. This affects all Google Cloud Go client libraries. This opt-out
 mechanism will be removed in a future release.
