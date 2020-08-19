@@ -304,9 +304,6 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 // useful in batch processing pipelines where one wants to divide the work of
 // reading from the database across multiple machines.
 //
-// Note: This transaction does not use the underlying session pool but creates a
-// new session each time, and the session is reused across clients.
-//
 // You should call Close() after the txn is no longer needed on local
 // client, and call Cleanup() when the txn is finished for all clients, to free
 // the session.

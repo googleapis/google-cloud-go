@@ -20,7 +20,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/gob"
-	"log"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -219,27 +218,16 @@ func (t *BatchReadOnlyTransaction) Close() {
 // usable anywhere, including other clients/processes with which this
 // transaction was shared.
 //
-// Calling Cleanup is optional, but recommended. If Cleanup is not called, the
-// transaction's resources will be freed when the session expires on the backend
-// and is deleted. For more information about recycled sessions, see
-// https://cloud.google.com/spanner/docs/sessions.
+// We must call Cleanup to free the session. Otherwise, the session will not be
+// returned to the session pool, which leads to a session leak.
 func (t *BatchReadOnlyTransaction) Cleanup(ctx context.Context) {
 	t.Close()
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	sh := t.sh
-	if sh == nil {
-		return
-	}
 	t.sh = nil
-	sid, client := sh.getID(), sh.getClient()
-	err := client.DeleteSession(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.DeleteSessionRequest{Name: sid})
-	if err != nil {
-		var logger *log.Logger
-		if sh.session != nil {
-			logger = sh.session.logger
-		}
-		logf(logger, "Failed to delete session %v. Error: %v", sid, err)
+	if sh != nil {
+		sh.recycle()
 	}
 }
 
