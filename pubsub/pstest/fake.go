@@ -187,7 +187,7 @@ func (s *Server) Messages() []*Message {
 	for _, m := range s.GServer.msgs {
 		m.Deliveries = m.deliveries
 		m.Acks = m.acks
-		m.Modacks = append([]Modack{}, m.modacks...)
+		m.Modacks = append([]Modack(nil), m.modacks...)
 		msgs = append(msgs, m)
 	}
 	return msgs
@@ -203,7 +203,7 @@ func (s *Server) Message(id string) *Message {
 	if m != nil {
 		m.Deliveries = m.deliveries
 		m.Acks = m.acks
-		m.Modacks = append([]Modack{}, m.modacks...)
+		m.Modacks = append([]Modack(nil), m.modacks...)
 	}
 	return m
 }
