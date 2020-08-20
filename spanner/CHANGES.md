@@ -1,5 +1,19 @@
 # Changes
 
+## v1.9.0
+* Features:
+  - feat(spanner): support custom field type (#2614)
+* Bugfixes:
+  - fix(spanner): call ctx.cancel after stats have been recorded (#2728)
+  - fix(spanner): retry session not found for read (#2724)
+  - fix(spanner): specify credentials with SPANNER_EMULATOR_HOST (#2701)
+  - fix(spanner): update pdml to retry EOS internal error (#2678)
+* Misc:
+  - test(spanner): unskip tests for emulator (#2675)
+* spansql/spannertest:
+  - spanner/spansql: restructure types and parsing for column options (#2656)
+  - spanner/spannertest: return error for Read with no keys (#2655)
+
 ## v1.8.0
 
 * Features:

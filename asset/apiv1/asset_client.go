@@ -228,14 +228,13 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // ExportAssets exports assets with time and resource types to a given Cloud Storage
 // location/BigQuery table. For Cloud Storage location destinations, the
 // output format is newline-delimited JSON. Each line represents a
-// google.cloud.asset.v1.Asset in the JSON
-// format; for BigQuery table destinations, the output table stores the fields
-// in asset proto as columns. This API implements the
-// google.longrunning.Operation API , which
-// allows you to keep track of the export. We recommend intervals of at least
-// 2 seconds with exponential retry to poll the export operation result. For
-// regular-size resource parent, the export operation usually finishes within
-// 5 minutes.
+// google.cloud.asset.v1.Asset in the JSON format; for BigQuery table
+// destinations, the output table stores the fields in asset proto as columns.
+// This API implements the google.longrunning.Operation API
+// , which allows you to keep track of the export. We recommend intervals of
+// at least 2 seconds with exponential retry to poll the export operation
+// result. For regular-size resource parent, the export operation usually
+// finishes within 5 minutes.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -359,9 +358,9 @@ func (c *Client) DeleteFeed(ctx context.Context, req *assetpb.DeleteFeedRequest,
 	return err
 }
 
-// SearchAllResources searches all the resources within the given accessible scope (e.g., a
-// project, a folder or an organization). Callers should have
-// cloud.assets.SearchAllResources permission upon the requested scope,
+// SearchAllResources searches all Cloud resources within the specified scope, such as a project,
+// folder, or organization. The caller must be granted the
+// cloudasset.assets.searchAllResources permission on the desired scope,
 // otherwise the request will be rejected.
 func (c *Client) SearchAllResources(ctx context.Context, req *assetpb.SearchAllResourcesRequest, opts ...gax.CallOption) *ResourceSearchResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
@@ -403,9 +402,9 @@ func (c *Client) SearchAllResources(ctx context.Context, req *assetpb.SearchAllR
 	return it
 }
 
-// SearchAllIamPolicies searches all the IAM policies within the given accessible scope (e.g., a
-// project, a folder or an organization). Callers should have
-// cloud.assets.SearchAllIamPolicies permission upon the requested scope,
+// SearchAllIamPolicies searches all IAM policies within the specified scope, such as a project,
+// folder, or organization. The caller must be granted the
+// cloudasset.assets.searchAllIamPolicies permission on the desired scope,
 // otherwise the request will be rejected.
 func (c *Client) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAllIamPoliciesRequest, opts ...gax.CallOption) *IamPolicySearchResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope())))
