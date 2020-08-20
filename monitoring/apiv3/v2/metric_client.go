@@ -233,7 +233,7 @@ func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req
 		}
 
 		it.Response = resp
-		return resp.ResourceDescriptors, resp.NextPageToken, nil
+		return resp.GetResourceDescriptors(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -244,8 +244,8 @@ func (c *MetricClient) ListMonitoredResourceDescriptors(ctx context.Context, req
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -291,7 +291,7 @@ func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitorin
 		}
 
 		it.Response = resp
-		return resp.MetricDescriptors, resp.NextPageToken, nil
+		return resp.GetMetricDescriptors(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -302,8 +302,8 @@ func (c *MetricClient) ListMetricDescriptors(ctx context.Context, req *monitorin
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -383,7 +383,7 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 		}
 
 		it.Response = resp
-		return resp.TimeSeries, resp.NextPageToken, nil
+		return resp.GetTimeSeries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -394,8 +394,8 @@ func (c *MetricClient) ListTimeSeries(ctx context.Context, req *monitoringpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

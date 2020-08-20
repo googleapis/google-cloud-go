@@ -773,7 +773,8 @@ type QuerySnapshotIterator struct {
 // Next blocks until the query's results change, then returns a QuerySnapshot for
 // the current results.
 //
-// Next never returns iterator.Done unless it is called after Stop.
+// Next is not expected to return iterator.Done unless it is called after Stop.
+// Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *QuerySnapshotIterator) Next() (*QuerySnapshot, error) {
 	if it.err != nil {
 		return nil, it.err
