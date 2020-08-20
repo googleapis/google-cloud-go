@@ -21,6 +21,7 @@ package main
 import (
 	"bytes"
 	"context"
+	"encoding/base64"
 	"encoding/csv"
 	"flag"
 	"fmt"
@@ -402,7 +403,7 @@ var commands = []struct {
 		Desc: "Read from a single row",
 		do:   doLookup,
 		Usage: "cbt lookup <table-id> <row-key> [columns=<family>:<qualifier>,...] [cells-per-column=<n>] " +
-			" [app-profile=<app profile id>]\n" +
+			" [app-profile=<app profile id>] [encoding=<hex|base64>]\n" +
 			"  row-key                             String or raw bytes. Raw bytes must be enclosed in single quotes and have a dollar-sign prefix\n" +
 			"  columns=<family>:<qualifier>,...    Read only these columns, comma-separated\n" +
 			"  cells-per-column=<n>                Read only this number of cells per column\n" +
@@ -433,7 +434,7 @@ var commands = []struct {
 		do:   doRead,
 		Usage: "cbt read <table-id> [start=<row-key>] [end=<row-key>] [prefix=<row-key-prefix>]" +
 			" [regex=<regex>] [columns=<family>:<qualifier>,...] [count=<n>] [cells-per-column=<n>]" +
-			" [app-profile=<app-profile-id>]\n" +
+			" [app-profile=<app-profile-id>] [encoding=<hex|base64>]\n" +
 			"  start=<row-key>                     Start reading at this row\n" +
 			"  end=<row-row>                       Stop reading before this row\n" +
 			"  prefix=<row-key-prefix>             Read rows with this prefix\n" +
@@ -965,15 +966,17 @@ func doListClusters(ctx context.Context, args ...string) {
 func doLookup(ctx context.Context, args ...string) {
 	if len(args) < 2 {
 		log.Fatalf("usage: cbt lookup <table> <row> [columns=<family:qualifier>...] [cells-per-column=<n>] " +
-			"[app-profile=<app profile id>]")
+			"[app-profile=<app profile id>] [encoding=<hex|base64>]")
 	}
 
-	parsed, err := parseArgs(args[2:], []string{"columns", "cells-per-column", "app-profile"})
+	fmt.Println(args)
+	parsed, err := parseArgs(args[2:], []string{"columns", "cells-per-column", "app-profile", "encoding"})
 	if err != nil {
 		log.Fatal(err)
 	}
 	var opts []bigtable.ReadOption
 	var filters []bigtable.Filter
+
 	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
 		n, err := strconv.Atoi(cellsPerColumn)
 		if err != nil {
@@ -1001,10 +1004,11 @@ func doLookup(ctx context.Context, args ...string) {
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
-	printRow(r)
+
+	printRow(r, parseEncoding(parsed))
 }
 
-func printRow(r bigtable.Row) {
+func printRow(r bigtable.Row, encoding encoding) {
 	fmt.Println(strings.Repeat("-", 40))
 	fmt.Println(r.Key())
 
@@ -1019,7 +1023,18 @@ func printRow(r bigtable.Row) {
 		for _, ri := range ris {
 			ts := time.Unix(0, int64(ri.Timestamp)*1e3)
 			fmt.Printf("  %-40s @ %s\n", ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
-			fmt.Printf("    %q\n", ri.Value)
+
+			switch encoding {
+			case plain:
+				fmt.Printf("    %q\n", ri.Value)
+			case hex:
+				fmt.Printf("    %x\n", ri.Value)
+			case b64:
+				{
+					encoded := base64.StdEncoding.EncodeToString(ri.Value)
+					fmt.Printf("    %s\n", encoded)
+				}
+			}
 		}
 	}
 }
@@ -1161,7 +1176,7 @@ func doRead(ctx context.Context, args ...string) {
 	// TODO(dsymonds): Support filters.
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])
 	err = tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
-		printRow(r)
+		printRow(r, parseEncoding(parsed))
 		return true
 	}, opts...)
 	if err != nil {
@@ -1658,4 +1673,26 @@ func parseProfileOpts(opt string, parsedArgs map[string]string) (bool, error) {
 		return status, nil
 	}
 	return false, nil
+}
+
+type encoding int
+
+const (
+	plain encoding = iota
+	hex
+	b64
+)
+
+func parseEncoding(opts map[string]string) encoding {
+	if encoding, ok := opts["encoding"]; ok {
+		switch encoding {
+		case "hex":
+			return hex
+		case "base64":
+			return b64
+		default:
+			return plain
+		}
+	}
+	return plain
 }
