@@ -457,7 +457,6 @@ func TestModAck(t *testing.T) {
 	for _, m := range msgs {
 		ackIDs = append(ackIDs, m.AckId)
 	}
-
 	if _, err := sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
 		Subscription:       sub.Name,
 		AckIds:             ackIDs,
@@ -470,15 +469,6 @@ func TestModAck(t *testing.T) {
 	if got, want := len(msgs), 3; got != want {
 		t.Errorf("got %d messages, want %d", got, want)
 	}
-
-	if _, err := sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
-		Subscription:       sub.Name,
-		AckIds:             ackIDs,
-		AckDeadlineSeconds: 0,
-	}); err != nil {
-		t.Fatal(err)
-	}
-
 }
 
 func TestAckDeadline(t *testing.T) {
