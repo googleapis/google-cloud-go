@@ -58,7 +58,7 @@ retry apt-get update >/dev/null
 retry apt-get -y -q install git >/dev/null
 
 # $GOCACHE is required from Go 1.12. See https://golang.org/doc/go1.11#gocache
-# $GOCACHE is explicitly set becasue $HOME is not set when this code runs
+# $GOCACHE is explicitly set because $HOME is not set when this code runs
 mkdir -p /tmp/gocache
 export GOCACHE=/tmp/gocache
 

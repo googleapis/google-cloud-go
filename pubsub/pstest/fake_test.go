@@ -25,6 +25,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -746,6 +747,43 @@ func TestModAck_Race(t *testing.T) {
 	}
 }
 
+func TestUpdateDeadLetterPolicy(t *testing.T) {
+	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	deadTop := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/TD"})
+	sub := mustCreateSubscription(context.TODO(), t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic:     deadTop.Name,
+			MaxDeliveryAttempts: 5,
+		},
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic: deadTop.Name,
+			// update max delivery attempts
+			MaxDeliveryAttempts: 10,
+		},
+	}
+
+	updated := mustUpdateSubscription(context.TODO(), t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"dead_letter_policy"}},
+	})
+
+	if got, want := updated.DeadLetterPolicy.MaxDeliveryAttempts, update.DeadLetterPolicy.MaxDeliveryAttempts; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 func mustStartStreamingPull(ctx context.Context, t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
 	spc, err := sc.StreamingPull(ctx)
 	if err != nil {
@@ -811,6 +849,14 @@ func mustCreateTopic(ctx context.Context, t *testing.T, pc pb.PublisherClient, t
 
 func mustCreateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) *pb.Subscription {
 	sub, err := sc.CreateSubscription(ctx, sub)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return sub
+}
+
+func mustUpdateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberClient, req *pb.UpdateSubscriptionRequest) *pb.Subscription {
+	sub, err := sc.UpdateSubscription(ctx, req)
 	if err != nil {
 		t.Fatal(err)
 	}
