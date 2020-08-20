@@ -706,11 +706,11 @@ func TestTimeNowFunc(t *testing.T) {
 
 func TestModAck_Race(t *testing.T) {
 	ctx := context.Background()
-	pclient, sclient, server, cleanup := newFake(context.TODO(), t)
+	pclient, sclient, server, cleanup := newFake(ctx, t)
 	defer cleanup()
 
-	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
-	sub := mustCreateSubscription(context.TODO(), t, sclient, &pb.Subscription{
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
 		AckDeadlineSeconds: 10,
@@ -721,7 +721,7 @@ func TestModAck_Race(t *testing.T) {
 		{Data: []byte("d2")},
 		{Data: []byte("d3")},
 	})
-	msgs := streamingPullN(context.TODO(), t, 3, sclient, sub)
+	msgs := streamingPullN(ctx, t, 3, sclient, sub)
 	var ackIDs []string
 	for _, m := range msgs {
 		ackIDs = append(ackIDs, m.AckId)
