@@ -457,6 +457,7 @@ func TestModAck(t *testing.T) {
 	for _, m := range msgs {
 		ackIDs = append(ackIDs, m.AckId)
 	}
+
 	if _, err := sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
 		Subscription:       sub.Name,
 		AckIds:             ackIDs,
@@ -469,6 +470,15 @@ func TestModAck(t *testing.T) {
 	if got, want := len(msgs), 3; got != want {
 		t.Errorf("got %d messages, want %d", got, want)
 	}
+
+	if _, err := sclient.ModifyAckDeadline(ctx, &pb.ModifyAckDeadlineRequest{
+		Subscription:       sub.Name,
+		AckIds:             ackIDs,
+		AckDeadlineSeconds: 0,
+	}); err != nil {
+		t.Fatal(err)
+	}
+
 }
 
 func TestAckDeadline(t *testing.T) {
@@ -701,6 +711,48 @@ func TestTimeNowFunc(t *testing.T) {
 	}
 	if got, want := m.PublishTime, timeFunc(); got != want {
 		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestModAck_Race(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, server, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(context.TODO(), t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+
+	publish(t, pclient, top, []*pb.PubsubMessage{
+		{Data: []byte("d1")},
+		{Data: []byte("d2")},
+		{Data: []byte("d3")},
+	})
+	msgs := streamingPullN(context.TODO(), t, 3, sclient, sub)
+	var ackIDs []string
+	for _, m := range msgs {
+		ackIDs = append(ackIDs, m.AckId)
+	}
+
+	// Try to access m.Modacks while simultaneously calling ModifyAckDeadline
+	// so as to try and create a race condition.
+	// Invoke ModifyAckDeadline from the server rather than the client
+	// to increase replicability of simultaneous data access.
+	go func() {
+		req := &pb.ModifyAckDeadlineRequest{
+			Subscription:       sub.Name,
+			AckIds:             ackIDs,
+			AckDeadlineSeconds: 0,
+		}
+		server.GServer.ModifyAckDeadline(ctx, req)
+	}()
+
+	sm := server.Messages()
+	for _, m := range sm {
+		fmt.Printf("got modacks: %v\n", m.Modacks)
 	}
 }
 
