@@ -160,15 +160,15 @@ type Message struct {
 	Data        []byte
 	Attributes  map[string]string
 	PublishTime time.Time
-	Deliveries  int // number of times delivery of the message was attempted
-	Acks        int // number of acks received from clients
+	Deliveries  int      // number of times delivery of the message was attempted
+	Acks        int      // number of acks received from clients
+	Modacks     []Modack // modacks received by server for this message
 	OrderingKey string
 
 	// protected by server mutex
 	deliveries int
 	acks       int
-	Modacks    []Modack // modacks received by server for this message
-
+	modacks    []Modack
 }
 
 // Modack represents a modack sent to the server.
@@ -187,6 +187,7 @@ func (s *Server) Messages() []*Message {
 	for _, m := range s.GServer.msgs {
 		m.Deliveries = m.deliveries
 		m.Acks = m.acks
+		m.Modacks = append([]Modack(nil), m.modacks...)
 		msgs = append(msgs, m)
 	}
 	return msgs
@@ -202,6 +203,7 @@ func (s *Server) Message(id string) *Message {
 	if m != nil {
 		m.Deliveries = m.deliveries
 		m.Acks = m.acks
+		m.Modacks = append([]Modack(nil), m.modacks...)
 	}
 	return m
 }
@@ -657,7 +659,7 @@ func (s *GServer) ModifyAckDeadline(_ context.Context, req *pb.ModifyAckDeadline
 	}
 	now := time.Now()
 	for _, id := range req.AckIds {
-		s.msgsByID[id].Modacks = append(s.msgsByID[id].Modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
+		s.msgsByID[id].modacks = append(s.msgsByID[id].modacks, Modack{AckID: id, AckDeadline: req.AckDeadlineSeconds, ReceivedAt: now})
 	}
 	dur := secsToDur(req.AckDeadlineSeconds)
 	for _, id := range req.AckIds {
