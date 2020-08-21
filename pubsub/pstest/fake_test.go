@@ -743,7 +743,7 @@ func TestModAck_Race(t *testing.T) {
 
 	sm := server.Messages()
 	for _, m := range sm {
-		fmt.Printf("got modacks: %v\n", m.Modacks)
+		t.Logf("got modacks: %v\n", m.Modacks)
 	}
 }
 
