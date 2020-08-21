@@ -19,7 +19,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"net/url"
 	"os"
 	"sync"
 	"testing"
@@ -75,20 +74,18 @@ func TestGetFailsOnBadURL(t *testing.T) {
 }
 
 func TestGet_LeadingSlash(t *testing.T) {
-	v := url.Values{}
-	v.Add("audience", "http://example.com")
-	want := "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/identity?audience=http%3A%2F%2Fexample.com"
+	want := "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/identity?audience=http://example.com"
 	tests := []struct {
 		name   string
 		suffix string
 	}{
 		{
 			name:   "without leading slash",
-			suffix: "instance/service-accounts/default/identity?" + v.Encode(),
+			suffix: "instance/service-accounts/default/identity?audience=http://example.com",
 		},
 		{
 			name:   "with leading slash",
-			suffix: "/instance/service-accounts/default/identity?" + v.Encode(),
+			suffix: "/instance/service-accounts/default/identity?audience=http://example.com",
 		},
 	}
 	for _, tc := range tests {
