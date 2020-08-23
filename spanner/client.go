@@ -304,6 +304,9 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 // useful in batch processing pipelines where one wants to divide the work of
 // reading from the database across multiple machines.
 //
+// Note: This transaction does not use the underlying session pool but creates a
+// new session each time, and the session is reused across clients.
+//
 // You should call Close() after the txn is no longer needed on local
 // client, and call Cleanup() when the txn is finished for all clients, to free
 // the session.
@@ -311,13 +314,22 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 	var (
 		tx  transactionID
 		rts time.Time
+		s   *session
+		sh  *sessionHandle
 		err error
 	)
+	defer func() {
+		if err != nil && sh != nil {
+			s.delete(ctx)
+		}
+	}()
 
-	sh, err := c.idleSessions.take(ctx)
+	// Create session.
+	s, err = c.sc.createSession(ctx)
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, err
 	}
+	sh = &sessionHandle{session: s}
 
 	// Begin transaction.
 	res, err := sh.getClient().BeginTransaction(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.BeginTransactionRequest{
