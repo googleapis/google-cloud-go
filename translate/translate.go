@@ -59,7 +59,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
-	rawService, err := raw.New(httpClient)
+	rawService, err := raw.NewService(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, fmt.Errorf("translate client: %v", err)
 	}
