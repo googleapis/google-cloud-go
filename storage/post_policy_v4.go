@@ -253,6 +253,9 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 		conditionStatusCodeOnSuccess(descFields.StatusCodeOnSuccess),
 		&singleValueCondition{"acl", descFields.ACL},
 		&singleValueCondition{"cache-control", descFields.CacheControl},
+		&singleValueCondition{"content-type", descFields.ContentType},
+		&singleValueCondition{"content-disposition", descFields.ContentDisposition},
+		&singleValueCondition{"content-encoding", descFields.ContentEncoding},
 	)
 
 	YYYYMMDD := now.Format(yearMonthDay)
