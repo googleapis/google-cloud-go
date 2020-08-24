@@ -21,7 +21,7 @@ import (
 )
 
 func TestParseBenchmarkNumber(t *testing.T) {
-	benchNumRE, err := regexp.Compile("benchmark (\\d+):")
+	benchNumRE, err := regexp.Compile(`benchmark (\d+):`)
 	if err != nil {
 		t.Fatalf("failed to get benchmark regexp: %v", err)
 	}

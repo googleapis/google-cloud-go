@@ -86,23 +86,17 @@ golint ./... 2>&1 | ( \
   tee /dev/stderr | (! read)
 
 staticcheck -go 1.11 ./... 2>&1 | ( \
-  grep -v S1007 | \
+  # Ignore deprecation warnings
   grep -v SA1019 | \
-  grep -v firestore/internal/doc-snippets.go | \
+  # Passing nil as context is a valid test.
   grep -v functions/metadata/metadata_test.go | \
-  grep -v spanner/value.go | \
+  # This includes old vendored code. This code is not being updated.
   grep -v go-cloud-debug-agent | \
-  grep -v pubsub/integration_test.go | \
-  grep -v internal/fields/fold.go | \
+  # This code is internal and is just meant to be a reference for debugging.
   grep -v httpreplay/internal/proxy/debug.go | \
-  grep -v bigtable/internal/cbtconfig/cbtconfig.go | \
-  grep -v bigtable/cmd/cbt/cbt.go | \
-  grep -v asset/v1beta1/doc.go | \
-  grep -v asset/v1beta1/mock_test.go | \
-  grep -v spanner/value_test.go | \
-  grep -v bigtable/reader.go | \
-  grep -v internal/btree/btree.go | \
-  grep -v container/apiv1/mock_test.go) | \
+  # The byte field is used to determine if pointers to the same node are
+  # really the same node.
+  grep -v internal/btree/btree.go) | \
   tee /dev/stderr | (! read)
 
 echo "Done vetting!"
