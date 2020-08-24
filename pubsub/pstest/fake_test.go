@@ -705,6 +705,48 @@ func TestTimeNowFunc(t *testing.T) {
 	}
 }
 
+func TestModAck_Race(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, server, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+
+	publish(t, pclient, top, []*pb.PubsubMessage{
+		{Data: []byte("d1")},
+		{Data: []byte("d2")},
+		{Data: []byte("d3")},
+	})
+	msgs := streamingPullN(ctx, t, 3, sclient, sub)
+	var ackIDs []string
+	for _, m := range msgs {
+		ackIDs = append(ackIDs, m.AckId)
+	}
+
+	// Try to access m.Modacks while simultaneously calling ModifyAckDeadline
+	// so as to try and create a race condition.
+	// Invoke ModifyAckDeadline from the server rather than the client
+	// to increase replicability of simultaneous data access.
+	go func() {
+		req := &pb.ModifyAckDeadlineRequest{
+			Subscription:       sub.Name,
+			AckIds:             ackIDs,
+			AckDeadlineSeconds: 0,
+		}
+		server.GServer.ModifyAckDeadline(ctx, req)
+	}()
+
+	sm := server.Messages()
+	for _, m := range sm {
+		t.Logf("got modacks: %v\n", m.Modacks)
+	}
+}
+
 func TestUpdateDeadLetterPolicy(t *testing.T) {
 	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
 	defer cleanup()
