@@ -442,7 +442,15 @@ func ExampleReadOnlyTransaction_ReadWithOptions() {
 			Index: "UsersByEmail",
 			Limit: 100,
 		})
-	_ = iter // TODO: iterate using Next or Do.
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+	}
 }
 
 func ExampleReadOnlyTransaction_ReadRow() {
@@ -466,7 +474,15 @@ func ExampleReadOnlyTransaction_Query() {
 		// TODO: Handle error.
 	}
 	iter := client.Single().Query(ctx, spanner.NewStatement("SELECT FirstName FROM Singers"))
-	_ = iter // TODO: iterate using Next or Do.
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+	}
 }
 
 func ExampleNewStatement() {
