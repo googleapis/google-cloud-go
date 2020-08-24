@@ -413,7 +413,15 @@ func ExampleReadOnlyTransaction_Read() {
 	iter := client.Single().Read(ctx, "Users",
 		spanner.KeySets(spanner.Key{"alice"}, spanner.Key{"bob"}),
 		[]string{"name", "email"})
-	_ = iter // TODO: iterate using Next or Do.
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+	}
 }
 
 func ExampleReadOnlyTransaction_ReadUsingIndex() {
@@ -426,7 +434,15 @@ func ExampleReadOnlyTransaction_ReadUsingIndex() {
 		"UsersByEmail",
 		spanner.KeySets(spanner.Key{"a@example.com"}, spanner.Key{"b@example.com"}),
 		[]string{"name", "email"})
-	_ = iter // TODO: iterate using Next or Do.
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+	}
 }
 
 func ExampleReadOnlyTransaction_ReadWithOptions() {
