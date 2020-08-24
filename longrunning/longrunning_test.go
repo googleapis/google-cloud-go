@@ -29,7 +29,6 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/longrunning"
 	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -166,7 +165,7 @@ func TestPollErrorResult(t *testing.T) {
 	if got := status.Code(err); got != errCode {
 		t.Errorf("error code, want %s, got %s", errCode, got)
 	}
-	if got := grpc.ErrorDesc(err); got != errMsg {
+	if got := status.Convert(err).Message(); got != errMsg {
 		t.Errorf("error code, want %s, got %s", errMsg, got)
 	}
 	if !op.Done() {

@@ -79,7 +79,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 
-	svc, err := raw.New(httpClient)
+	svc, err := raw.NewService(ctx, option.WithHTTPClient(httpClient))
 	if err != nil {
 		return nil, fmt.Errorf("constructing container client: %v", err)
 	}

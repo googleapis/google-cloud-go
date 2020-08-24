@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/profiler/proftest"
 	"golang.org/x/oauth2/google"
 	compute "google.golang.org/api/compute/v1"
+	"google.golang.org/api/option"
 )
 
 var runBackoffTest = flag.Bool("run_only_profiler_backoff_test", false, "Enables only the backoff integration test. This integration test requires over 45 mins to run, so it is not run by default.")
@@ -237,7 +238,7 @@ func TestAgentIntegration(t *testing.T) {
 		t.Fatalf("failed to get default client: %v", err)
 	}
 
-	computeService, err := compute.New(client)
+	computeService, err := compute.NewService(ctx, option.WithHTTPClient(client))
 	if err != nil {
 		t.Fatalf("failed to initialize compute service: %v", err)
 	}
