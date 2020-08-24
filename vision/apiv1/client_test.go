@@ -23,8 +23,8 @@ import (
 	"github.com/golang/protobuf/proto"
 	pb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	"google.golang.org/genproto/googleapis/rpc/status"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	grpcstatus "google.golang.org/grpc/status"
 )
 
 var batchResponse = &pb.BatchAnnotateImagesResponse{
@@ -204,7 +204,7 @@ func TestAnnotateOneError(t *testing.T) {
 	_, err = c.annotateOne(ctx,
 		&pb.Image{Source: &pb.ImageSource{ImageUri: "http://foo.jpg"}},
 		nil, pb.Feature_LOGO_DETECTION, 1, nil)
-	if c := grpc.Code(err); c != codes.NotFound {
+	if c := grpcstatus.Code(err); c != codes.NotFound {
 		t.Errorf("got %v, want NotFound", c)
 	}
 }
