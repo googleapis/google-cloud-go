@@ -35,6 +35,7 @@ import (
 	"encoding/binary"
 	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"net"
 	"regexp"
@@ -61,7 +62,7 @@ const (
 	minValidMilliSeconds = 0
 
 	// MilliSeconds field of the max valid Timestamp.
-	maxValidMilliSeconds = int64(time.Millisecond) * 253402300800
+	maxValidMilliSeconds = math.MaxInt64 - math.MaxInt64%1000
 )
 
 var (
