@@ -425,7 +425,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
-	var maxInt64 int64 = math.MaxInt64 - math.MaxInt64%1000
+	var maxTimestamp int64 = math.MaxInt64 - math.MaxInt64%1000
 	mreq1 := &btpb.MutateRowRequest{
 		TableName: tblInfo.Name,
 		RowKey:    []byte("row"),
@@ -433,7 +433,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 				FamilyName:      "cf0",
 				ColumnQualifier: []byte("col"),
-				TimestampMicros: maxInt64,
+				TimestampMicros: maxTimestamp,
 				Value:           []byte{},
 			}},
 		}},
@@ -449,7 +449,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 				FamilyName:      "cf0",
 				ColumnQualifier: []byte("col"),
-				TimestampMicros: maxInt64 + 1000,
+				TimestampMicros: maxTimestamp + 1000,
 				Value:           []byte{},
 			}},
 		}},
