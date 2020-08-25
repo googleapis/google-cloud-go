@@ -41,13 +41,8 @@ RUN mkdir /root/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" 
 
 RUN echo -e '#!/bin/bash\n\
     set -ex\n\
-    echo "https://$GITHUB_USERNAME:$GITHUB_ACCESS_TOKEN@github.com" > ~/.git-credentials \n\
     go mod download \n\
     go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
-    --githubAccessToken=$GITHUB_ACCESS_TOKEN \
-    --githubUsername=$GITHUB_USERNAME \
-    --githubName="$GITHUB_NAME" \
-    --githubEmail=$GITHUB_EMAIL \
     ' >> /run.sh
 RUN chmod a+x /run.sh
 
