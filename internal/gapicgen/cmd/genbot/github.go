@@ -17,9 +17,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
+	"path"
 	"strings"
 	"time"
 
@@ -91,7 +94,7 @@ type GithubClient struct {
 
 // NewGithubClient creates a new GithubClient.
 func NewGithubClient(ctx context.Context, username, name, email, accessToken string) (*GithubClient, error) {
-	if err := setGitCreds(name, email); err != nil {
+	if err := setGitCreds(name, email, username, accessToken); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +106,15 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 }
 
 // SetGitCreds sets credentials for gerrit.
-func setGitCreds(githubName, githubEmail string) error {
+func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) error {
+	u, err := user.Current()
+	if err != nil {
+		return err
+	}
+	gitCredentials := []byte(fmt.Sprintf("https://%s:%s@github.com", githubUsername, accessToken))
+	if err := ioutil.WriteFile(path.Join(u.HomeDir, ".git-credentials"), gitCredentials, 0644); err != nil {
+		return err
+	}
 	c := exec.Command("git", "config", "--global", "user.name", githubName)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
