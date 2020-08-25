@@ -455,7 +455,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 		}},
 	}
 	if _, err := s.MutateRow(ctx, mreq2); err == nil {
-		t.Fatalf("TimestampMicros has not the maximum value: %v", err)
+		t.Fatalf("want TimestampMicros rejection, got acception: %v", err)
 	}
 }
 func TestReadRows(t *testing.T) {
