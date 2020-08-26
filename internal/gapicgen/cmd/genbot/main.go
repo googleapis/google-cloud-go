@@ -72,6 +72,18 @@ func main() {
 
 	flag.Usage = usage
 	flag.Parse()
+	if *githubAccessToken == "" {
+		*githubAccessToken = os.Getenv("GITHUB_ACCESS_TOKEN")
+	}
+	if *githubUsername == "" {
+		*githubUsername = os.Getenv("GITHUB_USERNAME")
+	}
+	if *githubName == "" {
+		*githubName = os.Getenv("GITHUB_NAME")
+	}
+	if *githubEmail == "" {
+		*githubEmail = os.Getenv("GITHUB_EMAIL")
+	}
 
 	for k, v := range map[string]string{
 		"githubAccessToken": *githubAccessToken,
