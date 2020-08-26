@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package profiler is a client for the Stackdriver Profiler service.
-//
-// This package is still experimental and subject to change.
+// Package profiler is a client for the Cloud Profiler service.
 //
 // Usage example:
 //
@@ -151,6 +149,11 @@ type Config struct {
 	// When true, collecting the goroutine profiles is disabled.
 	NoGoroutineProfiling bool
 
+	// When true, the agent sends all telemetries via OpenCensus exporter, which
+	// can be viewed in Cloud Trace and Cloud Monitoring.
+	// Default is false.
+	EnableOCTelemetry bool
+
 	// ProjectID is the Cloud Console project ID to use instead of the one set by
 	// GOOGLE_CLOUD_PROJECT environment variable or read from the VM metadata
 	// server.
@@ -235,6 +238,9 @@ func start(cfg Config, options ...option.ClientOption) error {
 		option.WithEndpoint(config.APIAddr),
 		option.WithScopes(scope),
 		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
+	}
+	if !config.EnableOCTelemetry {
+		opts = append(opts, option.WithTelemetryDisabled())
 	}
 	opts = append(opts, options...)
 
@@ -582,7 +588,7 @@ func initializeConfig(cfg Config) error {
 // server for instructions, and collects and uploads profiles as
 // requested.
 func pollProfilerService(ctx context.Context, a *agent) {
-	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
+	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)

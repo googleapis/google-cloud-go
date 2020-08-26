@@ -344,7 +344,7 @@ func (s *session) destroy(isExpire bool) bool {
 func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
-	err := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
+	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
 	if err != nil {
 		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
@@ -1501,7 +1501,6 @@ func (hc *healthChecker) worker(i int) {
 		if ws != nil {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 			err := ws.prepareForWrite(ctx)
-			cancel()
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
 				// cycle.
@@ -1516,6 +1515,7 @@ func (hc *healthChecker) worker(i int) {
 			hc.pool.mu.Lock()
 			hc.pool.decNumBeingPreparedLocked(ctx)
 			hc.pool.mu.Unlock()
+			cancel()
 			hc.markDone(ws)
 		}
 		rs := getNextForPing()

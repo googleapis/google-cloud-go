@@ -1,5 +1,37 @@
 # Changes
 
+## v1.9.0
+* Features:
+  - feat(spanner): support custom field type (#2614)
+* Bugfixes:
+  - fix(spanner): call ctx.cancel after stats have been recorded (#2728)
+  - fix(spanner): retry session not found for read (#2724)
+  - fix(spanner): specify credentials with SPANNER_EMULATOR_HOST (#2701)
+  - fix(spanner): update pdml to retry EOS internal error (#2678)
+* Misc:
+  - test(spanner): unskip tests for emulator (#2675)
+* spansql/spannertest:
+  - spanner/spansql: restructure types and parsing for column options (#2656)
+  - spanner/spannertest: return error for Read with no keys (#2655)
+
+## v1.8.0
+
+* Features:
+  - feat(spanner): support of client-level custom retry settings (#2599)
+  - feat(spanner): add a statement-based way to run read-write transaction. (#2545)
+* Bugfixes:
+  - fix(spanner): set 'gccl' to the request header. (#2609)
+  - fix(spanner): add the missing resource prefix (#2605)
+  - fix(spanner): fix the upgrade of protobuf. (#2583)
+  - fix(spanner): do not copy protobuf messages by value. (#2581)
+  - fix(spanner): fix the required resource prefix. (#2580)
+  - fix(spanner): add extra field to ignore with cmp (#2577)
+  - fix(spanner): remove appengine-specific numChannels. (#2513)
+* Misc:
+  - test(spanner): log warning instead of fail for stress test (#2559)
+  - test(spanner): fix failed TestRsdBlockingStates test (#2597)
+  - chore(spanner): cleanup mockserver and mockclient (#2414)
+
 ## v1.7.0
 * Retry:
   - Only retry certain types of internal errors. (#2460)

@@ -167,38 +167,7 @@ type IntentsClient struct {
 
 // NewIntentsClient creates a new intents client.
 //
-// An intent represents a mapping between input from a user and an action to
-// be taken by your application. When you pass user input to the
-// DetectIntent (or
-// StreamingDetectIntent) method, the
-// Dialogflow API analyzes the input and searches
-// for a matching intent. If no match is found, the Dialogflow API returns a
-// fallback intent (is_fallback = true).
-//
-// You can provide additional information for the Dialogflow API to use to
-// match user input to an intent by adding the following to your intent.
-//
-//   Contexts - provide additional context for intent analysis. For
-//   example, if an intent is related to an object in your application that
-//   plays music, you can provide a context to determine when to match the
-//   intent if the user input is “turn it off”. You can include a context
-//   that matches the intent when there is previous user input of
-//   “play music”, and not when there is previous user input of
-//   “turn on the light”.
-//
-//   Events - allow for matching an intent by using an event name
-//   instead of user input. Your application can provide an event name and
-//   related parameters to the Dialogflow API to match an intent. For
-//   example, when your application starts, you can send a welcome event
-//   with a user name parameter to the Dialogflow API to match an intent with
-//   a personalized welcome message for the user.
-//
-//   Training phrases - provide examples of user input to train the
-//   Dialogflow API agent to better match intents.
-//
-// For more information about intents, see the
-// Dialogflow
-// documentation (at https://cloud.google.com/dialogflow/docs/intents-overview).
+// Service for managing Intents.
 func NewIntentsClient(ctx context.Context, opts ...option.ClientOption) (*IntentsClient, error) {
 	clientOpts := defaultIntentsClientOptions()
 
@@ -282,7 +251,7 @@ func (c *IntentsClient) ListIntents(ctx context.Context, req *dialogflowpb.ListI
 		}
 
 		it.Response = resp
-		return resp.Intents, resp.NextPageToken, nil
+		return resp.GetIntents(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -293,8 +262,8 @@ func (c *IntentsClient) ListIntents(ctx context.Context, req *dialogflowpb.ListI
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

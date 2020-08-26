@@ -17,9 +17,12 @@ package main
 import (
 	"context"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
+	"os/user"
+	"path"
 	"strings"
 	"time"
 
@@ -91,7 +94,7 @@ type GithubClient struct {
 
 // NewGithubClient creates a new GithubClient.
 func NewGithubClient(ctx context.Context, username, name, email, accessToken string) (*GithubClient, error) {
-	if err := setGitCreds(name, email); err != nil {
+	if err := setGitCreds(name, email, username, accessToken); err != nil {
 		return nil, err
 	}
 
@@ -103,7 +106,15 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 }
 
 // SetGitCreds sets credentials for gerrit.
-func setGitCreds(githubName, githubEmail string) error {
+func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) error {
+	u, err := user.Current()
+	if err != nil {
+		return err
+	}
+	gitCredentials := []byte(fmt.Sprintf("https://%s:%s@github.com", githubUsername, accessToken))
+	if err := ioutil.WriteFile(path.Join(u.HomeDir, ".git-credentials"), gitCredentials, 0644); err != nil {
+		return err
+	}
 	c := exec.Command("git", "config", "--global", "user.name", githubName)
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
@@ -240,8 +251,10 @@ func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, 
 	log.Println("creating google-cloud-go PR")
 
 	var body string
+	var draft bool
 	if genprotoPRNum > 0 {
 		body = gocloudCommitBody + fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum)
+		draft = true
 	} else {
 		body = gocloudCommitBody + "\n\nThere is no corresponding genproto PR.\n"
 	}
@@ -280,7 +293,7 @@ git push origin $BRANCH_NAME
 		Body:  &body,
 		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
 		Base:  github.String("master"),
-		Draft: github.Bool(true),
+		Draft: github.Bool(draft),
 	})
 	if err != nil {
 		return 0, err

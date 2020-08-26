@@ -45,6 +45,7 @@ type microgenConfig struct {
 }
 
 var microgenGapicConfigs = []*microgenConfig{
+	// Cloud APIs
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
 		pkg:                   "texttospeech",
@@ -672,6 +673,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/pubsublite/v1",
+		pkg:                   "pubsublite",
+		importPath:            "cloud.google.com/go/pubsublite/apiv1",
+		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
 		pkg:                   "automl",
 		importPath:            "cloud.google.com/go/automl/apiv1",
@@ -704,11 +713,69 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/gaming/v1",
+		pkg:                   "gaming",
+		importPath:            "cloud.google.com/go/gaming/apiv1",
+		gRPCServiceConfigPath: "google/cloud/gaming/v1/gaming_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gaming/v1/gaming_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/gaming/v1beta",
 		pkg:                   "gaming",
 		importPath:            "cloud.google.com/go/gaming/apiv1beta",
 		gRPCServiceConfigPath: "google/cloud/gaming/v1beta/gaming_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/gaming/v1beta/gaming_gapic.yaml",
 		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/policytroubleshooter/v1",
+		pkg:                   "policytroubleshooter",
+		importPath:            "cloud.google.com/go/policytroubleshooter/apiv1",
+		gRPCServiceConfigPath: "google/cloud/policytroubleshooter/v1/checker_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/policytroubleshooter/v1/policytroubleshooter_v1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/monitoring/dashboard/v1",
+		pkg:                   "dashboard",
+		importPath:            "cloud.google.com/go/monitoring/dashboard/apiv1",
+		gRPCServiceConfigPath: "google/monitoring/dashboard/v1/dashboards_grpc_service_config.json",
+		apiServiceConfigPath:  "google/monitoring/dashboard/v1/monitoring_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/functions/v1",
+		pkg:                   "functions",
+		importPath:            "cloud.google.com/go/functions/apiv1",
+		gRPCServiceConfigPath: "google/cloud/functions/v1/functions_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/functions/v1/functions_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/notebooks/v1beta1",
+		pkg:                   "notebooks",
+		importPath:            "cloud.google.com/go/notebooks/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/notebooks/v1beta1/notebooks_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/notebooks/v1beta1/notebooks_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/billing/budgets/v1beta1",
+		pkg:                   "budgets",
+		importPath:            "cloud.google.com/go/billing/budgets/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1beta1/billingbudgets_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+
+	// Non-Cloud APIs
+	{
+		inputDirectoryPath:    "google/analytics/admin/v1alpha",
+		pkg:                   "admin",
+		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/admin/v1alpha/admin_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
+		releaseLevel:          "alpha",
 	},
 }

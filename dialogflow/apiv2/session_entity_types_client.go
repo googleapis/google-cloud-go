@@ -134,23 +134,7 @@ type SessionEntityTypesClient struct {
 
 // NewSessionEntityTypesClient creates a new session entity types client.
 //
-// Entities are extracted from user input and represent parameters that are
-// meaningful to your application. For example, a date range, a proper name
-// such as a geographic location or landmark, and so on. Entities represent
-// actionable data for your application.
-//
-// Session entity types are referred to as User entity types and are
-// entities that are built for an individual user such as
-// favorites, preferences, playlists, and so on. You can redefine a session
-// entity type at the session level.
-//
-// Session entity methods do not work with Google Assistant integration.
-// Contact Dialogflow support if you need to use session entities
-// with Google Assistant integration.
-//
-// For more information about entity types, see the
-// Dialogflow
-// documentation (at https://cloud.google.com/dialogflow/docs/entities-overview).
+// Service for managing SessionEntityTypes.
 func NewSessionEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*SessionEntityTypesClient, error) {
 	clientOpts := defaultSessionEntityTypesClientOptions()
 
@@ -228,7 +212,7 @@ func (c *SessionEntityTypesClient) ListSessionEntityTypes(ctx context.Context, r
 		}
 
 		it.Response = resp
-		return resp.SessionEntityTypes, resp.NextPageToken, nil
+		return resp.GetSessionEntityTypes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -239,8 +223,8 @@ func (c *SessionEntityTypesClient) ListSessionEntityTypes(ctx context.Context, r
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

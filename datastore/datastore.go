@@ -75,6 +75,12 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 		}
+		if projectID == DetectProjectID {
+			projectID, _ = detectProjectID(ctx, opts...)
+			if projectID == "" {
+				projectID = "dummy-emulator-datastore-project"
+			}
+		}
 	} else {
 		o = []option.ClientOption{
 			option.WithEndpoint(prodAddr),
@@ -96,16 +102,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 
 	if projectID == DetectProjectID {
-		creds, err := transport.Creds(ctx, o...)
+		detected, err := detectProjectID(ctx, opts...)
 		if err != nil {
-			return nil, fmt.Errorf("fetching creds: %v", err)
+			return nil, err
 		}
-
-		if creds.ProjectID == "" {
-			return nil, errors.New("datastore: see the docs on DetectProjectID")
-		}
-
-		projectID = creds.ProjectID
+		projectID = detected
 	}
 
 	if projectID == "" {
@@ -120,6 +121,17 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		client:   newDatastoreClient(connPool, projectID),
 		dataset:  projectID,
 	}, nil
+}
+
+func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
+	creds, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return "", fmt.Errorf("fetching creds: %v", err)
+	}
+	if creds.ProjectID == "" {
+		return "", errors.New("datastore: see the docs on DetectProjectID")
+	}
+	return creds.ProjectID, nil
 }
 
 var (

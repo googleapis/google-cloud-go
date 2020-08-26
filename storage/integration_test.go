@@ -674,6 +674,7 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectIterator(t, bkt, objects)
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
+	testObjectIteratorWithOffset(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1072,6 +1073,44 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	// TODO(jba): test query.Delimiter != ""
 }
 
+func testObjectIteratorWithOffset(t *testing.T, bkt *BucketHandle, objects []string) {
+	ctx := context.Background()
+	h := testHelper{t}
+	// Collect the list of items we expect: ObjectAttrs in lexical order by name.
+	names := make([]string, len(objects))
+	copy(names, objects)
+	sort.Strings(names)
+	var attrs []*ObjectAttrs
+	for _, name := range names {
+		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
+	}
+	m := make(map[string][]*ObjectAttrs)
+	for i, name := range names {
+		// StartOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: obj/with/slashes, obj1, obj2
+		// ― obj1: obj1, obj2
+		// ― obj2: obj2.
+		m[name] = attrs[i:]
+		msg, ok := itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{StartOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+		// EndOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: ""
+		// ― obj1: obj/with/slashes
+		// ― obj2: obj/with/slashes, obj1.
+		m[name] = attrs[:i]
+		msg, ok = itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{EndOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+	}
+}
+
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Create a query that will only select the "Name" attr of objects, and
 	// invoke object listing.
@@ -1108,7 +1147,11 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Tests that all selected attributes work - query succeeds (without actually
 	// verifying the returned results).
-	query := &Query{Prefix: ""}
+	query := &Query{
+		Prefix:      "",
+		StartOffset: "obj/with/slashes",
+		EndOffset:   "obj2",
+	}
 	var selectedAttrs []string
 	for k := range attrToFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
@@ -1128,8 +1171,8 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 		count++
 	}
 
-	if count != len(objects) {
-		t.Errorf("count = %v, want %v", count, len(objects))
+	if count != len(objects)-1 {
+		t.Errorf("count = %v, want %v", count, len(objects)-1)
 	}
 }
 
@@ -1228,8 +1271,6 @@ func TestIntegration_SignedURL(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
-	t.Skip("Internal bug 128647687")
-
 	if testing.Short() { // do not test during replay
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -2603,7 +2644,6 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 }
 
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2652,7 +2692,6 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1565")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2671,8 +2710,15 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	}
 
 	// Remove the retention period
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
-	h.mustDeleteObject(oh)
+	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}})
+	// Deleting with retry, as bucket metadata changes
+	// can take some time to propagate.
+	err := retry(ctx, func() error {
+		return oh.Delete(ctx)
+	}, nil)
+	if err != nil {
+		h.t.Fatalf("%s: object delete: %v", loc(), err)
+	}
 	h.mustDeleteBucket(bkt)
 }
 

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
@@ -792,7 +793,8 @@ func TestIntegration_Read(t *testing.T) {
 
 		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",
 		// and join with a comma.
-		want string
+		want       string
+		wantLabels []string
 	}{
 		{
 			desc: "read all, unfiltered",
@@ -879,6 +881,14 @@ func TestIntegration_Read(t *testing.T) {
 			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
 			limit:  LimitRows(2),
 			want:   "gwashington-jadams-1,jadams-tjefferson-1",
+		},
+		{
+			desc:       "apply labels to the result rows",
+			rr:         RowRange{},
+			filter:     LabelFilter("test-label"),
+			limit:      LimitRows(2),
+			want:       "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			wantLabels: []string{"test-label", "test-label", "test-label"},
 		},
 		{
 			desc:   "read all, strip values",
@@ -968,10 +978,11 @@ func TestIntegration_Read(t *testing.T) {
 			if test.limit != nil {
 				opts = append(opts, test.limit)
 			}
-			var elt []string
+			var elt, labels []string
 			err := table.ReadRows(ctx, test.rr, func(r Row) bool {
 				for _, ris := range r {
 					for _, ri := range ris {
+						labels = append(labels, ri.Labels...)
 						elt = append(elt, formatReadItem(ri))
 					}
 				}
@@ -982,6 +993,9 @@ func TestIntegration_Read(t *testing.T) {
 			}
 			if got := strings.Join(elt, ","); got != test.want {
 				t.Fatalf("got %q\nwant %q", got, test.want)
+			}
+			if got, want := labels, test.wantLabels; !reflect.DeepEqual(got, want) {
+				t.Fatalf("got %q\nwant %q", got, want)
 			}
 		})
 	}
@@ -1968,6 +1982,138 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 	if cis.ServeNodes != int(numNodes) {
 		t.Errorf("ServeNodes returned %d, want %d", cis.ServeNodes, int(numNodes))
+	}
+}
+
+func TestIntegration_AdminBackup(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	cluster := testEnv.Config().Cluster
+
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer adminClient.DeleteTable(ctx, table)
+
+	list := func(cluster string) ([]*BackupInfo, error) {
+		infos := []*BackupInfo(nil)
+
+		it := adminClient.Backups(ctx, cluster)
+		for {
+			s, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return nil, err
+			}
+			infos = append(infos, s)
+		}
+		return infos, err
+	}
+
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Precondition: no backups
+	backups, err := list(cluster)
+	if err != nil {
+		t.Fatalf("Initial backup list: %v", err)
+	}
+	if got, want := len(backups), 0; got != want {
+		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
+	}
+
+	// Create backup
+	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
+
+	if err = adminClient.CreateBackup(ctx, table, cluster, "mybackup", time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+
+	// List backup
+	backups, err = list(cluster)
+	if err != nil {
+		t.Fatalf("Listing backups: %v", err)
+	}
+	if got, want := len(backups), 1; got != want {
+		t.Fatalf("Listing backup count: %d, want: %d", got, want)
+	}
+	if got, want := backups[0].Name, "mybackup"; got != want {
+		t.Fatalf("Backup name: %s, want: %s", got, want)
+	}
+	if got, want := backups[0].SourceTable, table; got != want {
+		t.Fatalf("Backup SourceTable: %s, want: %s", got, want)
+	}
+	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+		t.Fatalf("Backup ExpireTime: %s, want: %s", got, want)
+	}
+
+	// Get backup
+	backup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", backup)
+	}
+	if got, want := *backup, *backups[0]; got != want {
+		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	}
+
+	// Update backup
+	newExpireTime := time.Now().Add(10 * time.Hour)
+	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
+	if err != nil {
+		t.Fatalf("UpdateBackup failed: %v", err)
+	}
+
+	// Check that updated backup has the correct expire time
+	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", err)
+	}
+	backup.ExpireTime = newExpireTime
+	// Server clock and local clock may not be perfectly sync'ed.
+	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
+		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	}
+
+	// Restore backup
+	restoredTable := table + "-restored"
+	defer adminClient.DeleteTable(ctx, restoredTable)
+	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
+		t.Fatalf("RestoreTable: %v", err)
+	}
+	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
+		t.Fatalf("Restored TableInfo: %v", err)
+	}
+
+	// Delete backup
+	if err = adminClient.DeleteBackup(ctx, cluster, "mybackup"); err != nil {
+		t.Fatalf("DeleteBackup: %v", err)
+	}
+	backups, err = list(cluster)
+	if err != nil {
+		t.Fatalf("List after Delete: %v", err)
+	}
+	if got, want := len(backups), 0; got != want {
+		t.Fatalf("List after delete len: %d, want: %d", got, want)
 	}
 }
 
