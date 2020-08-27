@@ -242,6 +242,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client osconfigpb.OsConfigServiceClient
 
@@ -269,13 +272,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: osconfigpb.NewOsConfigServiceClient(connPool),
 	}
@@ -308,6 +317,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // ExecutePatchJob patch VM instances by creating and running a patch job.
 func (c *Client) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExecutePatchJob[0:len(c.CallOptions.ExecutePatchJob):len(c.CallOptions.ExecutePatchJob)], opts...)
@@ -326,6 +340,11 @@ func (c *Client) ExecutePatchJob(ctx context.Context, req *osconfigpb.ExecutePat
 // GetPatchJob get the patch job. This can be used to track the progress of an
 // ongoing patch job or review the details of completed jobs.
 func (c *Client) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetPatchJob[0:len(c.CallOptions.GetPatchJob):len(c.CallOptions.GetPatchJob)], opts...)
@@ -344,6 +363,11 @@ func (c *Client) GetPatchJob(ctx context.Context, req *osconfigpb.GetPatchJobReq
 // CancelPatchJob cancel a patch job. The patch job must be active. Canceled patch jobs
 // cannot be restarted.
 func (c *Client) CancelPatchJob(ctx context.Context, req *osconfigpb.CancelPatchJobRequest, opts ...gax.CallOption) (*osconfigpb.PatchJob, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CancelPatchJob[0:len(c.CallOptions.CancelPatchJob):len(c.CallOptions.CancelPatchJob)], opts...)
@@ -443,6 +467,11 @@ func (c *Client) ListPatchJobInstanceDetails(ctx context.Context, req *osconfigp
 
 // CreatePatchDeployment create an OS Config patch deployment.
 func (c *Client) CreatePatchDeployment(ctx context.Context, req *osconfigpb.CreatePatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreatePatchDeployment[0:len(c.CallOptions.CreatePatchDeployment):len(c.CallOptions.CreatePatchDeployment)], opts...)
@@ -460,6 +489,11 @@ func (c *Client) CreatePatchDeployment(ctx context.Context, req *osconfigpb.Crea
 
 // GetPatchDeployment get an OS Config patch deployment.
 func (c *Client) GetPatchDeployment(ctx context.Context, req *osconfigpb.GetPatchDeploymentRequest, opts ...gax.CallOption) (*osconfigpb.PatchDeployment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetPatchDeployment[0:len(c.CallOptions.GetPatchDeployment):len(c.CallOptions.GetPatchDeployment)], opts...)
@@ -518,6 +552,11 @@ func (c *Client) ListPatchDeployments(ctx context.Context, req *osconfigpb.ListP
 
 // DeletePatchDeployment delete an OS Config patch deployment.
 func (c *Client) DeletePatchDeployment(ctx context.Context, req *osconfigpb.DeletePatchDeploymentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeletePatchDeployment[0:len(c.CallOptions.DeletePatchDeployment):len(c.CallOptions.DeletePatchDeployment)], opts...)
@@ -531,6 +570,11 @@ func (c *Client) DeletePatchDeployment(ctx context.Context, req *osconfigpb.Dele
 
 // CreateGuestPolicy create an OS Config guest policy.
 func (c *Client) CreateGuestPolicy(ctx context.Context, req *osconfigpb.CreateGuestPolicyRequest, opts ...gax.CallOption) (*osconfigpb.GuestPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateGuestPolicy[0:len(c.CallOptions.CreateGuestPolicy):len(c.CallOptions.CreateGuestPolicy)], opts...)
@@ -548,6 +592,11 @@ func (c *Client) CreateGuestPolicy(ctx context.Context, req *osconfigpb.CreateGu
 
 // GetGuestPolicy get an OS Config guest policy.
 func (c *Client) GetGuestPolicy(ctx context.Context, req *osconfigpb.GetGuestPolicyRequest, opts ...gax.CallOption) (*osconfigpb.GuestPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGuestPolicy[0:len(c.CallOptions.GetGuestPolicy):len(c.CallOptions.GetGuestPolicy)], opts...)
@@ -606,6 +655,11 @@ func (c *Client) ListGuestPolicies(ctx context.Context, req *osconfigpb.ListGues
 
 // UpdateGuestPolicy update an OS Config guest policy.
 func (c *Client) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.UpdateGuestPolicyRequest, opts ...gax.CallOption) (*osconfigpb.GuestPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "guest_policy.name", url.QueryEscape(req.GetGuestPolicy().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateGuestPolicy[0:len(c.CallOptions.UpdateGuestPolicy):len(c.CallOptions.UpdateGuestPolicy)], opts...)
@@ -623,6 +677,11 @@ func (c *Client) UpdateGuestPolicy(ctx context.Context, req *osconfigpb.UpdateGu
 
 // DeleteGuestPolicy delete an OS Config guest policy.
 func (c *Client) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.DeleteGuestPolicyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteGuestPolicy[0:len(c.CallOptions.DeleteGuestPolicy):len(c.CallOptions.DeleteGuestPolicy)], opts...)
@@ -637,6 +696,11 @@ func (c *Client) DeleteGuestPolicy(ctx context.Context, req *osconfigpb.DeleteGu
 // LookupEffectiveGuestPolicy lookup the effective guest policy that applies to a VM instance. This
 // lookup merges all policies that are assigned to the instance ancestry.
 func (c *Client) LookupEffectiveGuestPolicy(ctx context.Context, req *osconfigpb.LookupEffectiveGuestPolicyRequest, opts ...gax.CallOption) (*osconfigpb.EffectiveGuestPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance", url.QueryEscape(req.GetInstance())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.LookupEffectiveGuestPolicy[0:len(c.CallOptions.LookupEffectiveGuestPolicy):len(c.CallOptions.LookupEffectiveGuestPolicy)], opts...)
