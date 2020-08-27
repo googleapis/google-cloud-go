@@ -906,7 +906,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 
 func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
-		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
+		return nil, errors.New("logging: Entry.LogName should not be set when writing")
 	}
 	t := e.Timestamp
 	if t.IsZero() {
