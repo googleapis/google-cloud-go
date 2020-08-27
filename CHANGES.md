@@ -1,5 +1,18 @@
 # Changes
 
+## [0.65.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.64.0...v0.65.0) (2020-08-27)
+
+
+### Features
+
+* **all:** auto-regenerate gapics , refs [#2774](https://www.github.com/googleapis/google-cloud-go/issues/2774) [#2764](https://www.github.com/googleapis/google-cloud-go/issues/2764)
+
+
+### Bug Fixes
+
+* **all:** correct minor typos ([#2756](https://www.github.com/googleapis/google-cloud-go/issues/2756)) ([03d78b5](https://www.github.com/googleapis/google-cloud-go/commit/03d78b5627819cb64d1f3866f90043f709e825e1))
+* **compute/metadata:** remove leading slash for Get suffix ([#2760](https://www.github.com/googleapis/google-cloud-go/issues/2760)) ([f0d605c](https://www.github.com/googleapis/google-cloud-go/commit/f0d605ccf32391a9da056a2c551158bd076c128d)), refs [#2750](https://www.github.com/googleapis/google-cloud-go/issues/2750)
+
 ## [0.64.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.63.0...v0.64.0) (2020-08-18)
 
 
