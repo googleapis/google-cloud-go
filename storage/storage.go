@@ -97,7 +97,11 @@ type Client struct {
 }
 
 // NewClient creates a new Google Cloud Storage client.
-// The default scope is ScopeFullControl. To use a different scope, like ScopeReadOnly, use option.WithScopes.
+// The default scope is ScopeFullControl. To use a different scope, like
+// ScopeReadOnly, use option.WithScopes.
+//
+// Clients should be reused instead of created as needed. The methods of Client
+// are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var host, readHost, scheme string
 
@@ -349,7 +353,7 @@ var (
 )
 
 // v2SanitizeHeaders applies the specifications for canonical extension headers at
-// https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
+// https://cloud.google.com/storage/docs/access-control/signed-urls-v2#about-canonical-extension-headers
 func v2SanitizeHeaders(hdrs []string) []string {
 	headerMap := map[string][]string{}
 	for _, hdr := range hdrs {
@@ -397,7 +401,7 @@ func v2SanitizeHeaders(hdrs []string) []string {
 }
 
 // v4SanitizeHeaders applies the specifications for canonical extension headers
-// at https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
+// at https://cloud.google.com/storage/docs/authentication/canonical-requests#about-headers.
 //
 // V4 does a couple things differently from V2:
 // - Headers get sorted by key, instead of by key:value. We do this in
@@ -1047,6 +1051,10 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	if !o.RetentionExpirationTime.IsZero() {
 		ret = o.RetentionExpirationTime.Format(time.RFC3339)
 	}
+	var ct string
+	if !o.CustomTime.IsZero() {
+		ct = o.CustomTime.Format(time.RFC3339)
+	}
 	return &raw.Object{
 		Bucket:                  bucket,
 		Name:                    o.Name,
@@ -1061,6 +1069,7 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		StorageClass:            o.StorageClass,
 		Acl:                     toRawObjectACL(o.ACL),
 		Metadata:                o.Metadata,
+		CustomTime:              ct,
 	}
 }
 
@@ -1199,6 +1208,14 @@ type ObjectAttrs struct {
 	// Etag is the HTTP/1.1 Entity tag for the object.
 	// This field is read-only.
 	Etag string
+
+	// A user-specified timestamp which can be applied to an object. This is
+	// typically set in order to use the CustomTimeBefore and DaysSinceCustomTime
+	// LifecycleConditions to manage object lifecycles.
+	//
+	// CustomTime cannot be removed once set on an object. It can be updated to a
+	// later value but not to an earlier one.
+	CustomTime time.Time
 }
 
 // convertTime converts a time in RFC3339 format to time.Time.
@@ -1252,6 +1269,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Deleted:                 convertTime(o.TimeDeleted),
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
+		CustomTime:              convertTime(o.CustomTime),
 	}
 }
 
@@ -1340,6 +1358,7 @@ var attrToFieldMap = map[string]string{
 	"Deleted":                 "timeDeleted",
 	"Updated":                 "updated",
 	"Etag":                    "etag",
+	"CustomTime":              "customTime",
 }
 
 // SetAttrSelection makes the query populate only specific attributes of

@@ -401,7 +401,7 @@ type QueryStatistics struct {
 	// UNKNOWN: accuracy of the estimate is unknown.
 	// PRECISE: estimate is precise.
 	// LOWER_BOUND: estimate is lower bound of what the query would cost.
-	// UPPER_BOUND: estiamte is upper bound of what the query would cost.
+	// UPPER_BOUND: estimate is upper bound of what the query would cost.
 	TotalBytesProcessedAccuracy string
 
 	// Describes execution plan for the query.
