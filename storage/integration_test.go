@@ -2686,7 +2686,7 @@ func TestIntegration_CustomTime(t *testing.T) {
 
 	// Update CustomTime to the future should succeed.
 	laterTime := ct.Add(10 * time.Hour)
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime:laterTime}); err != nil {
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
 		t.Fatalf("updating CustomTime: %v", err)
 	}
 
