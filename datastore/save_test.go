@@ -288,6 +288,20 @@ func TestSaveEmptySlice(t *testing.T) {
 	}
 }
 
+type Map map[int]int
+
+func (_ *Map) Load(_ []Property) error {
+	return nil
+}
+
+func (_ *Map) Save() ([]Property, error) {
+	return []Property{}, nil
+}
+
+type Struct struct {
+	Map Map
+}
+
 func TestSaveFieldsWithInterface(t *testing.T) {
 	// We should be able to extract the underlying value behind an interface.
 	// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
@@ -344,6 +358,13 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			},
 			want: []Property{
 				{Name: "Value", Value: nil},
+			},
+		},
+		{
+			name: "Nil map",
+			in:   &Struct{},
+			want: []Property{
+				{Name: "Map", Value: []Property{}},
 			},
 		},
 		{

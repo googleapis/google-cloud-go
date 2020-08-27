@@ -138,6 +138,17 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		}
 	}
 
+	if v.CanAddr() {
+		vi := v.Addr().Interface()
+		if pro, ok := vi.(PropertyLoadSaver); ok {
+			res, err := pro.Save()
+			if err != nil {
+				return fmt.Errorf("datastore: unsupported struct field type: %v", v.Type())
+			}
+			p.Value = res
+		}
+	}
+
 	if p.Value == nil {
 		return fmt.Errorf("datastore: unsupported struct field type: %v", v.Type())
 	}
