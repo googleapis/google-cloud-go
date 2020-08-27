@@ -2669,12 +2669,40 @@ func TestIntegration_CustomTime(t *testing.T) {
 	h.mustWrite(w, randomContents())
 
 	// Validate that CustomTime has been set
-	attrs, err := obj.Attrs(ctx)
-	if err != nil {
-		t.Fatalf("failed to get object attrs: %v", err)
+	checkCustomTime := func(want time.Time) error {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to get object attrs: %v", err)
+		}
+		if got := attrs.CustomTime; got != want {
+			return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+		}
+		return nil
 	}
-	if got := attrs.CustomTime; got != ct {
-		t.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+
+	if err := checkCustomTime(ct); err != nil {
+		t.Fatalf("checking CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the future should succeed.
+	laterTime := ct.Add(10 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime:laterTime}); err != nil {
+		t.Fatalf("updating CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the past should give error.
+	// This doesn't work currently!
+	//earlierTime := ct.Add(5*time.Hour)
+	//if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime:earlierTime}); err == nil {
+	//	t.Fatalf("backdating CustomTime: expected error, got none")
+	//}
+
+	// Zero value for CustomTime should be ignored.
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
+		t.Fatalf("empty update: %v", err)
+	}
+	if err := checkCustomTime(laterTime); err != nil {
+		t.Fatalf("after sending zero value: %v", err)
 	}
 }
 
