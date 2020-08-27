@@ -2,13 +2,11 @@
 
 ## v1.1.0
 
-- support unmarshalling stringified Severity
-- add exported SetGoogleClientInfo wrappers to manual file
-- remove TODO from doc
-- skip TestLogsAndDelete
-- support no payload
-- update "Grouping Logs by Request" docs
-- add auto-detection of monitored resources on GAE Standard
+- Support unmarshalling stringified Severity.
+- Add exported SetGoogleClientInfo wrappers to manual file.
+- Support no payload.
+- Update "Grouping Logs by Request" docs.
+- Add auto-detection of monitored resources on GAE Standard.
 
 ## v1.0.0
 
