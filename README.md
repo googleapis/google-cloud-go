@@ -87,7 +87,7 @@ Documentation and examples are available at [pkg.go.dev/cloud.google.com/go](htt
 
 ## [Go Versions Supported](#supported-versions)
 
-We currently support Go versions 1.11-1.15.
+We currently support Go versions 1.11 and newer.
 
 ## Authorization
 
