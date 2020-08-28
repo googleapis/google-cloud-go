@@ -111,6 +111,9 @@ type CloudSchedulerClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	cloudSchedulerClient schedulerpb.CloudSchedulerClient
 
@@ -136,13 +139,19 @@ func NewCloudSchedulerClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CloudSchedulerClient{
-		connPool:    connPool,
-		CallOptions: defaultCloudSchedulerCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCloudSchedulerCallOptions(),
 
 		cloudSchedulerClient: schedulerpb.NewCloudSchedulerClient(connPool),
 	}
@@ -216,6 +225,11 @@ func (c *CloudSchedulerClient) ListJobs(ctx context.Context, req *schedulerpb.Li
 
 // GetJob gets a job.
 func (c *CloudSchedulerClient) GetJob(ctx context.Context, req *schedulerpb.GetJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetJob[0:len(c.CallOptions.GetJob):len(c.CallOptions.GetJob)], opts...)
@@ -233,6 +247,11 @@ func (c *CloudSchedulerClient) GetJob(ctx context.Context, req *schedulerpb.GetJ
 
 // CreateJob creates a job.
 func (c *CloudSchedulerClient) CreateJob(ctx context.Context, req *schedulerpb.CreateJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateJob[0:len(c.CallOptions.CreateJob):len(c.CallOptions.CreateJob)], opts...)
@@ -258,6 +277,11 @@ func (c *CloudSchedulerClient) CreateJob(ctx context.Context, req *schedulerpb.C
 // not be executed. If this happens, retry the UpdateJob request
 // until a successful response is received.
 func (c *CloudSchedulerClient) UpdateJob(ctx context.Context, req *schedulerpb.UpdateJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "job.name", url.QueryEscape(req.GetJob().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateJob[0:len(c.CallOptions.UpdateJob):len(c.CallOptions.UpdateJob)], opts...)
@@ -275,6 +299,11 @@ func (c *CloudSchedulerClient) UpdateJob(ctx context.Context, req *schedulerpb.U
 
 // DeleteJob deletes a job.
 func (c *CloudSchedulerClient) DeleteJob(ctx context.Context, req *schedulerpb.DeleteJobRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteJob[0:len(c.CallOptions.DeleteJob):len(c.CallOptions.DeleteJob)], opts...)
@@ -294,6 +323,11 @@ func (c *CloudSchedulerClient) DeleteJob(ctx context.Context, req *schedulerpb.D
 // will be set to Job.State.PAUSED. A job must be in Job.State.ENABLED
 // to be paused.
 func (c *CloudSchedulerClient) PauseJob(ctx context.Context, req *schedulerpb.PauseJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.PauseJob[0:len(c.CallOptions.PauseJob):len(c.CallOptions.PauseJob)], opts...)
@@ -316,6 +350,11 @@ func (c *CloudSchedulerClient) PauseJob(ctx context.Context, req *schedulerpb.Pa
 // will be set to Job.State.ENABLED. A job must be in
 // Job.State.PAUSED to be resumed.
 func (c *CloudSchedulerClient) ResumeJob(ctx context.Context, req *schedulerpb.ResumeJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResumeJob[0:len(c.CallOptions.ResumeJob):len(c.CallOptions.ResumeJob)], opts...)
@@ -336,6 +375,11 @@ func (c *CloudSchedulerClient) ResumeJob(ctx context.Context, req *schedulerpb.R
 // When this method is called, Cloud Scheduler will dispatch the job, even
 // if the job is already running.
 func (c *CloudSchedulerClient) RunJob(ctx context.Context, req *schedulerpb.RunJobRequest, opts ...gax.CallOption) (*schedulerpb.Job, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RunJob[0:len(c.CallOptions.RunJob):len(c.CallOptions.RunJob)], opts...)
