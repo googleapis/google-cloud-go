@@ -31,7 +31,9 @@ package budgets // import "cloud.google.com/go/billing/budgets/apiv1beta1"
 
 import (
 	"context"
+	"os"
 	"runtime"
+	"strconv"
 	"strings"
 	"unicode"
 
@@ -44,7 +46,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200827"
+const versionClient = "20200828"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -55,6 +57,16 @@ func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 		}
 	}
 	return metadata.NewOutgoingContext(ctx, out)
+}
+
+func checkDisableDeadlines() (bool, error) {
+	raw, ok := os.LookupEnv("GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE")
+	if !ok {
+		return false, nil
+	}
+
+	b, err := strconv.ParseBool(raw)
+	return b, err
 }
 
 // DefaultAuthScopes reports the default set of authentication scopes to use with this package.
