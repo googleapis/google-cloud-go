@@ -78,6 +78,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client assetpb.AssetServiceClient
 
@@ -107,13 +110,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: assetpb.NewAssetServiceClient(connPool),
 	}
@@ -160,6 +169,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // google.longrunning.Operation API allowing
 // you to keep track of the export.
 func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest, opts ...gax.CallOption) (*ExportAssetsOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportAssets[0:len(c.CallOptions.ExportAssets):len(c.CallOptions.ExportAssets)], opts...)
@@ -185,6 +199,11 @@ func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequ
 // If a specified asset does not exist, this API returns an INVALID_ARGUMENT
 // error.
 func (c *Client) BatchGetAssetsHistory(ctx context.Context, req *assetpb.BatchGetAssetsHistoryRequest, opts ...gax.CallOption) (*assetpb.BatchGetAssetsHistoryResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchGetAssetsHistory[0:len(c.CallOptions.BatchGetAssetsHistory):len(c.CallOptions.BatchGetAssetsHistory)], opts...)
