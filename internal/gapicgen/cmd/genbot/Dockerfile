@@ -21,7 +21,7 @@ RUN apk add protoc protobuf-dev
 RUN protoc --version
 
 # Install Go.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz && \
+RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.15.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf /tmp/go.tgz && \
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH
