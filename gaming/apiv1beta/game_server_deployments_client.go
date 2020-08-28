@@ -133,6 +133,9 @@ type GameServerDeploymentsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	gameServerDeploymentsClient gamingpb.GameServerDeploymentsServiceClient
 
@@ -163,13 +166,19 @@ func NewGameServerDeploymentsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &GameServerDeploymentsClient{
-		connPool:    connPool,
-		CallOptions: defaultGameServerDeploymentsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultGameServerDeploymentsCallOptions(),
 
 		gameServerDeploymentsClient: gamingpb.NewGameServerDeploymentsServiceClient(connPool),
 	}
@@ -253,6 +262,11 @@ func (c *GameServerDeploymentsClient) ListGameServerDeployments(ctx context.Cont
 
 // GetGameServerDeployment gets details of a single game server deployment.
 func (c *GameServerDeploymentsClient) GetGameServerDeployment(ctx context.Context, req *gamingpb.GetGameServerDeploymentRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeployment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGameServerDeployment[0:len(c.CallOptions.GetGameServerDeployment):len(c.CallOptions.GetGameServerDeployment)], opts...)
@@ -270,6 +284,11 @@ func (c *GameServerDeploymentsClient) GetGameServerDeployment(ctx context.Contex
 
 // CreateGameServerDeployment creates a new game server deployment in a given project and location.
 func (c *GameServerDeploymentsClient) CreateGameServerDeployment(ctx context.Context, req *gamingpb.CreateGameServerDeploymentRequest, opts ...gax.CallOption) (*CreateGameServerDeploymentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateGameServerDeployment[0:len(c.CallOptions.CreateGameServerDeployment):len(c.CallOptions.CreateGameServerDeployment)], opts...)
@@ -289,6 +308,11 @@ func (c *GameServerDeploymentsClient) CreateGameServerDeployment(ctx context.Con
 
 // DeleteGameServerDeployment deletes a single game server deployment.
 func (c *GameServerDeploymentsClient) DeleteGameServerDeployment(ctx context.Context, req *gamingpb.DeleteGameServerDeploymentRequest, opts ...gax.CallOption) (*DeleteGameServerDeploymentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteGameServerDeployment[0:len(c.CallOptions.DeleteGameServerDeployment):len(c.CallOptions.DeleteGameServerDeployment)], opts...)
@@ -308,6 +332,11 @@ func (c *GameServerDeploymentsClient) DeleteGameServerDeployment(ctx context.Con
 
 // UpdateGameServerDeployment patches a game server deployment.
 func (c *GameServerDeploymentsClient) UpdateGameServerDeployment(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "game_server_deployment.name", url.QueryEscape(req.GetGameServerDeployment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateGameServerDeployment[0:len(c.CallOptions.UpdateGameServerDeployment):len(c.CallOptions.UpdateGameServerDeployment)], opts...)
@@ -327,6 +356,11 @@ func (c *GameServerDeploymentsClient) UpdateGameServerDeployment(ctx context.Con
 
 // GetGameServerDeploymentRollout gets details a single game server deployment rollout.
 func (c *GameServerDeploymentsClient) GetGameServerDeploymentRollout(ctx context.Context, req *gamingpb.GetGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.GameServerDeploymentRollout, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGameServerDeploymentRollout[0:len(c.CallOptions.GetGameServerDeploymentRollout):len(c.CallOptions.GetGameServerDeploymentRollout)], opts...)
@@ -349,6 +383,11 @@ func (c *GameServerDeploymentsClient) GetGameServerDeploymentRollout(ctx context
 // non existing realm is explicitly called out in game_server_config_overrides
 // field, that will also not result in an error.
 func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRollout(ctx context.Context, req *gamingpb.UpdateGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*UpdateGameServerDeploymentRolloutOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateGameServerDeploymentRollout[0:len(c.CallOptions.UpdateGameServerDeploymentRollout):len(c.CallOptions.UpdateGameServerDeploymentRollout)], opts...)
@@ -369,6 +408,11 @@ func (c *GameServerDeploymentsClient) UpdateGameServerDeploymentRollout(ctx cont
 // PreviewGameServerDeploymentRollout previews the game server deployment rollout. This API does not mutate the
 // rollout resource.
 func (c *GameServerDeploymentsClient) PreviewGameServerDeploymentRollout(ctx context.Context, req *gamingpb.PreviewGameServerDeploymentRolloutRequest, opts ...gax.CallOption) (*gamingpb.PreviewGameServerDeploymentRolloutResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "rollout.name", url.QueryEscape(req.GetRollout().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.PreviewGameServerDeploymentRollout[0:len(c.CallOptions.PreviewGameServerDeploymentRollout):len(c.CallOptions.PreviewGameServerDeploymentRollout)], opts...)
@@ -388,6 +432,11 @@ func (c *GameServerDeploymentsClient) PreviewGameServerDeploymentRollout(ctx con
 // deployment. Gathers all the Agones fleets and Agones autoscalers,
 // including fleets running an older version of the game server deployment.
 func (c *GameServerDeploymentsClient) FetchDeploymentState(ctx context.Context, req *gamingpb.FetchDeploymentStateRequest, opts ...gax.CallOption) (*gamingpb.FetchDeploymentStateResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.FetchDeploymentState[0:len(c.CallOptions.FetchDeploymentState):len(c.CallOptions.FetchDeploymentState)], opts...)

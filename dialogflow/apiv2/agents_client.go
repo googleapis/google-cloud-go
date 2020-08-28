@@ -174,6 +174,9 @@ type AgentsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	agentsClient dialogflowpb.AgentsClient
 
@@ -203,13 +206,19 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &AgentsClient{
-		connPool:    connPool,
-		CallOptions: defaultAgentsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultAgentsCallOptions(),
 
 		agentsClient: dialogflowpb.NewAgentsClient(connPool),
 	}
@@ -252,6 +261,11 @@ func (c *AgentsClient) setGoogleClientInfo(keyval ...string) {
 
 // GetAgent retrieves the specified agent.
 func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAgent[0:len(c.CallOptions.GetAgent):len(c.CallOptions.GetAgent)], opts...)
@@ -269,6 +283,11 @@ func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentR
 
 // SetAgent creates/updates the specified agent.
 func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.parent", url.QueryEscape(req.GetAgent().GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetAgent[0:len(c.CallOptions.SetAgent):len(c.CallOptions.SetAgent)], opts...)
@@ -286,6 +305,11 @@ func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentR
 
 // DeleteAgent deletes the specified agent.
 func (c *AgentsClient) DeleteAgent(ctx context.Context, req *dialogflowpb.DeleteAgentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAgent[0:len(c.CallOptions.DeleteAgent):len(c.CallOptions.DeleteAgent)], opts...)
@@ -348,6 +372,11 @@ func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.Searc
 //
 // Operation <response: google.protobuf.Empty>
 func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TrainAgent[0:len(c.CallOptions.TrainAgent):len(c.CallOptions.TrainAgent)], opts...)
@@ -369,6 +398,11 @@ func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAg
 //
 // Operation <response: ExportAgentResponse>
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportAgent[0:len(c.CallOptions.ExportAgent):len(c.CallOptions.ExportAgent)], opts...)
@@ -400,6 +434,11 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.Export
 // An operation which tracks when importing is complete. It only tracks
 // when the draft agent is updated not when it is done training.
 func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportAgent[0:len(c.CallOptions.ImportAgent):len(c.CallOptions.ImportAgent)], opts...)
@@ -430,6 +469,11 @@ func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.Import
 // An operation which tracks when restoring is complete. It only tracks
 // when the draft agent is updated not when it is done training.
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RestoreAgent[0:len(c.CallOptions.RestoreAgent):len(c.CallOptions.RestoreAgent)], opts...)
@@ -450,6 +494,11 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.Resto
 // GetValidationResult gets agent validation result. Agent validation is performed during
 // training time and is updated automatically when training is completed.
 func (c *AgentsClient) GetValidationResult(ctx context.Context, req *dialogflowpb.GetValidationResultRequest, opts ...gax.CallOption) (*dialogflowpb.ValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetValidationResult[0:len(c.CallOptions.GetValidationResult):len(c.CallOptions.GetValidationResult)], opts...)

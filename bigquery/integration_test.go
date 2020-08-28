@@ -2671,6 +2671,29 @@ func TestIntegration_RoutineScalarUDF(t *testing.T) {
 	}
 }
 
+func TestIntegration_RoutineJSUDF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a scalar UDF routine via API.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Language: "JAVASCRIPT", Type: "SCALAR_FUNCTION",
+		Description: "capitalizes using javascript",
+		Arguments: []*RoutineArgument{
+			{Name: "instr", Kind: "FIXED_TYPE", DataType: &StandardSQLDataType{TypeKind: "STRING"}},
+		},
+		ReturnType: &StandardSQLDataType{TypeKind: "STRING"},
+		Body:       "return instr.toUpperCase();",
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
 func TestIntegration_RoutineComplexTypes(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

@@ -82,6 +82,7 @@ func TestRoutineTypeConversions(t *testing.T) {
 				Etag:             "etag",
 				RoutineType:      "type",
 				Language:         "lang",
+				ReturnType:       &bq.StandardSqlDataType{TypeKind: "INT64"},
 			},
 			&RoutineMetadata{
 				CreationTime:     aTime,
@@ -91,16 +92,19 @@ func TestRoutineTypeConversions(t *testing.T) {
 				ETag:             "etag",
 				Type:             "type",
 				Language:         "lang",
+				ReturnType:       &StandardSQLDataType{TypeKind: "INT64"},
 			}},
 		{"body_and_libs", "FromRoutineMetadataToUpdate",
 			&RoutineMetadataToUpdate{
 				Body:              "body",
 				ImportedLibraries: []string{"foo", "bar"},
+				ReturnType:        &StandardSQLDataType{TypeKind: "FOO"},
 			},
 			&bq.Routine{
 				DefinitionBody:    "body",
 				ImportedLibraries: []string{"foo", "bar"},
-				ForceSendFields:   []string{"DefinitionBody", "ImportedLibraries"},
+				ReturnType:        &bq.StandardSqlDataType{TypeKind: "FOO"},
+				ForceSendFields:   []string{"DefinitionBody", "ImportedLibraries", "ReturnType"},
 			}},
 		{"null_fields", "FromRoutineMetadataToUpdate",
 			&RoutineMetadataToUpdate{
