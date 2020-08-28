@@ -115,6 +115,9 @@ type ImageAnnotatorClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	imageAnnotatorClient visionpb.ImageAnnotatorClient
 
@@ -146,13 +149,19 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ImageAnnotatorClient{
-		connPool:    connPool,
-		CallOptions: defaultImageAnnotatorCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultImageAnnotatorCallOptions(),
 
 		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
 	}
@@ -195,6 +204,11 @@ func (c *ImageAnnotatorClient) setGoogleClientInfo(keyval ...string) {
 
 // BatchAnnotateImages run image detection and annotation for a batch of images.
 func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchAnnotateImages[0:len(c.CallOptions.BatchAnnotateImages):len(c.CallOptions.BatchAnnotateImages)], opts...)
@@ -218,6 +232,11 @@ func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *vis
 // file provided and perform detection and annotation for each image
 // extracted.
 func (c *ImageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, req *visionpb.BatchAnnotateFilesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateFilesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchAnnotateFiles[0:len(c.CallOptions.BatchAnnotateFiles):len(c.CallOptions.BatchAnnotateFiles)], opts...)
@@ -243,6 +262,11 @@ func (c *ImageAnnotatorClient) BatchAnnotateFiles(ctx context.Context, req *visi
 // This service will write image annotation outputs to json files in customer
 // GCS bucket, each json file containing BatchAnnotateImagesResponse proto.
 func (c *ImageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, req *visionpb.AsyncBatchAnnotateImagesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateImagesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AsyncBatchAnnotateImages[0:len(c.CallOptions.AsyncBatchAnnotateImages):len(c.CallOptions.AsyncBatchAnnotateImages)], opts...)
@@ -267,6 +291,11 @@ func (c *ImageAnnotatorClient) AsyncBatchAnnotateImages(ctx context.Context, req
 // Operation.metadata contains OperationMetadata (metadata).
 // Operation.response contains AsyncBatchAnnotateFilesResponse (results).
 func (c *ImageAnnotatorClient) AsyncBatchAnnotateFiles(ctx context.Context, req *visionpb.AsyncBatchAnnotateFilesRequest, opts ...gax.CallOption) (*AsyncBatchAnnotateFilesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AsyncBatchAnnotateFiles[0:len(c.CallOptions.AsyncBatchAnnotateFiles):len(c.CallOptions.AsyncBatchAnnotateFiles)], opts...)
