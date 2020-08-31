@@ -778,4 +778,12 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/analytics/data/v1alpha",
+		pkg:                   "data",
+		importPath:            "cloud.google.com/go/analytics/data/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/data/v1alpha/analytics_data_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/data/v1alpha/analyticsdata_gapic.yaml",
+		releaseLevel:          "alpha",
+	},
 }
