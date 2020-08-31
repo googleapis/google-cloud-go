@@ -403,7 +403,8 @@ func TestProbeFastPath(t *testing.T) {
 				Q: "foo",
 			},
 			wantReq: &bq.QueryRequest{
-				Query: "foo",
+				Query:        "foo",
+				UseLegacySql: &pfalse,
 			},
 		},
 		{
