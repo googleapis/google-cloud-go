@@ -110,7 +110,10 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 	return c.newTransaction(ctx, newTransactionSettings(opts))
 }
 
-func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (*Transaction, error) {
+func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.ReadWriteTransaction")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
 	if s.readOnly {
 		req.TransactionOptions = &pb.TransactionOptions{
