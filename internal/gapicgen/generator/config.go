@@ -768,6 +768,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets_gapic.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/video/transcoder/v1beta1",
+		pkg:                   "transcoder",
+		importPath:            "cloud.google.com/go/video/transcoder/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/video/transcoder/v1beta1/transcoder_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/video/transcoder/v1beta1/transcoder_gapic.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
@@ -776,6 +784,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
 		gRPCServiceConfigPath: "google/analytics/admin/v1alpha/admin_grpc_service_config.json",
 		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/analytics/data/v1alpha",
+		pkg:                   "data",
+		importPath:            "cloud.google.com/go/analytics/data/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/data/v1alpha/analytics_data_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/data/v1alpha/analyticsdata_gapic.yaml",
 		releaseLevel:          "alpha",
 	},
 }
