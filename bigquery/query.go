@@ -391,9 +391,11 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.JobIDConfig.JobID != "" {
 		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")
 	}
+	pfalse := false
 	qRequest := &bq.QueryRequest{
 		Query:              q.QueryConfig.Q,
 		Location:           q.Location,
+		UseLegacySql:       &pfalse,
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
 		RequestId:          uid.NewSpace("request", nil).New(),
 		Labels:             q.Labels,

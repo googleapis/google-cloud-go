@@ -429,6 +429,7 @@ func TestProbeFastPath(t *testing.T) {
 					"key": "val",
 				},
 				MaximumBytesBilled: 123,
+				UseLegacySql:       &pfalse,
 				QueryParameters: []*bq.QueryParameter{
 					{
 						Name:           "user",
