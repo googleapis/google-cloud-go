@@ -372,9 +372,9 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 // user's Query configuration.  If all the options set on the job are supported on the
 // faster query path, this method returns a QueryRequest suitable for execution.
 func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
-	// This is essentially the denylist of settings which prevent us from composing an equivalent
-	// bq.QueryRequest due to differences in the available settings
-	// TODO: should we fail if someone specifies jobidconfig (sets job id construction behavior?)
+	// This is a denylist of settings which prevent us from composing an equivalent
+	// bq.QueryRequest due to differences between configuration parameters accepted
+	// by jobs.insert vs jobs.query.
 	if q.QueryConfig.Dst != nil ||
 		q.QueryConfig.TableDefinitions != nil ||
 		q.QueryConfig.CreateDisposition != "" ||
@@ -386,16 +386,17 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.QueryConfig.RangePartitioning != nil ||
 		q.QueryConfig.Clustering != nil ||
 		q.QueryConfig.DestinationEncryptionConfig != nil ||
-		q.QueryConfig.SchemaUpdateOptions != nil {
+		q.QueryConfig.SchemaUpdateOptions != nil ||
+		// User has defined the jobID generation behavior
+		q.JobIDConfig.JobID != "" {
 		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")
 	}
 	qRequest := &bq.QueryRequest{
 		Query:              q.QueryConfig.Q,
 		Location:           q.Location,
 		MaximumBytesBilled: q.QueryConfig.MaxBytesBilled,
-		// TODO: uncomment once request ID is enabled
-		RequestId: uid.NewSpace("request", nil).New(),
-		Labels:    q.Labels,
+		RequestId:          uid.NewSpace("request", nil).New(),
+		Labels:             q.Labels,
 	}
 	if q.QueryConfig.DisableQueryCache {
 		pfalse := false
