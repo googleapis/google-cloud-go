@@ -290,11 +290,11 @@ func TestSaveEmptySlice(t *testing.T) {
 
 type Map map[int]int
 
-func (_ *Map) Load(_ []Property) error {
+func (*Map) Load(_ []Property) error {
 	return nil
 }
 
-func (_ *Map) Save() ([]Property, error) {
+func (*Map) Save() ([]Property, error) {
 	return []Property{}, nil
 }
 
