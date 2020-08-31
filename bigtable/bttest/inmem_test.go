@@ -412,6 +412,9 @@ func (s *MockReadRowsServer) Send(resp *btpb.ReadRowsResponse) error {
 }
 
 func TestCheckTimestampMaxValue(t *testing.T) {
+	// Test that max Timestamp value can be passed in TimestampMicros without error
+	// and that max Timestamp is the largest valid value in Millis.
+	// See issue https://github.com/googleapis/google-cloud-go/issues/1790
 	ctx := context.Background()
 	s := &server{
 		tables: make(map[string]*table),
@@ -421,7 +424,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 			"cf0": {},
 		},
 	}
-	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "cluster", TableId: "t", Table: &newTbl})
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "issue-1790", TableId: "t", Table: &newTbl})
 	if err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
@@ -455,7 +458,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 		}},
 	}
 	if _, err := s.MutateRow(ctx, mreq2); err == nil {
-		t.Fatalf("want TimestampMicros rejection, got acception: %v", err)
+		t.Fatalf("want TimestampMicros rejection, got acceptance: %v", err)
 	}
 }
 func TestReadRows(t *testing.T) {
