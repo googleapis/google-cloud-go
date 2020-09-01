@@ -18,13 +18,17 @@ package data
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -36,6 +40,7 @@ type AlphaAnalyticsDataCallOptions struct {
 	RunPivotReport       []gax.CallOption
 	BatchRunReports      []gax.CallOption
 	BatchRunPivotReports []gax.CallOption
+	GetMetadata          []gax.CallOption
 }
 
 func defaultAlphaAnalyticsDataClientOptions() []option.ClientOption {
@@ -54,6 +59,17 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 		RunPivotReport:       []gax.CallOption{},
 		BatchRunReports:      []gax.CallOption{},
 		BatchRunPivotReports: []gax.CallOption{},
+		GetMetadata: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -63,6 +79,9 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 type AlphaAnalyticsDataClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	alphaAnalyticsDataClient datapb.AlphaAnalyticsDataClient
@@ -88,13 +107,19 @@ func NewAlphaAnalyticsDataClient(ctx context.Context, opts ...option.ClientOptio
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &AlphaAnalyticsDataClient{
-		connPool:    connPool,
-		CallOptions: defaultAlphaAnalyticsDataCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultAlphaAnalyticsDataCallOptions(),
 
 		alphaAnalyticsDataClient: datapb.NewAlphaAnalyticsDataClient(connPool),
 	}
@@ -133,6 +158,11 @@ func (c *AlphaAnalyticsDataClient) setGoogleClientInfo(keyval ...string) {
 // event count. Dimensions break down metrics across some common criteria,
 // such as country or event name.
 func (c *AlphaAnalyticsDataClient) RunReport(ctx context.Context, req *datapb.RunReportRequest, opts ...gax.CallOption) (*datapb.RunReportResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.RunReport[0:len(c.CallOptions.RunReport):len(c.CallOptions.RunReport)], opts...)
 	var resp *datapb.RunReportResponse
@@ -153,6 +183,11 @@ func (c *AlphaAnalyticsDataClient) RunReport(ctx context.Context, req *datapb.Ru
 // included in a pivot. Multiple pivots can be specified to further dissect
 // your data.
 func (c *AlphaAnalyticsDataClient) RunPivotReport(ctx context.Context, req *datapb.RunPivotReportRequest, opts ...gax.CallOption) (*datapb.RunPivotReportResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.RunPivotReport[0:len(c.CallOptions.RunPivotReport):len(c.CallOptions.RunPivotReport)], opts...)
 	var resp *datapb.RunPivotReportResponse
@@ -170,6 +205,11 @@ func (c *AlphaAnalyticsDataClient) RunPivotReport(ctx context.Context, req *data
 // BatchRunReports returns multiple reports in a batch. All reports must be for the same
 // Entity.
 func (c *AlphaAnalyticsDataClient) BatchRunReports(ctx context.Context, req *datapb.BatchRunReportsRequest, opts ...gax.CallOption) (*datapb.BatchRunReportsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.BatchRunReports[0:len(c.CallOptions.BatchRunReports):len(c.CallOptions.BatchRunReports)], opts...)
 	var resp *datapb.BatchRunReportsResponse
@@ -187,12 +227,41 @@ func (c *AlphaAnalyticsDataClient) BatchRunReports(ctx context.Context, req *dat
 // BatchRunPivotReports returns multiple pivot reports in a batch. All reports must be for the same
 // Entity.
 func (c *AlphaAnalyticsDataClient) BatchRunPivotReports(ctx context.Context, req *datapb.BatchRunPivotReportsRequest, opts ...gax.CallOption) (*datapb.BatchRunPivotReportsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.BatchRunPivotReports[0:len(c.CallOptions.BatchRunPivotReports):len(c.CallOptions.BatchRunPivotReports)], opts...)
 	var resp *datapb.BatchRunPivotReportsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.alphaAnalyticsDataClient.BatchRunPivotReports(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetMetadata returns metadata for dimensions and metrics available in reporting methods.
+// Used to explore the dimensions and metrics. Dimensions and metrics will be
+// mostly added over time, but renames and deletions may occur.
+func (c *AlphaAnalyticsDataClient) GetMetadata(ctx context.Context, req *datapb.GetMetadataRequest, opts ...gax.CallOption) (*datapb.Metadata, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetMetadata[0:len(c.CallOptions.GetMetadata):len(c.CallOptions.GetMetadata)], opts...)
+	var resp *datapb.Metadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alphaAnalyticsDataClient.GetMetadata(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
