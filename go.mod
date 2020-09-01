@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.10.0
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.5.1
+	github.com/google/go-cmp v0.5.2
 	github.com/google/martian/v3 v3.0.0
 	github.com/google/pprof v0.0.0-20200708004538-1a94d8640e99
 	github.com/googleapis/gax-go/v2 v2.0.5
@@ -20,5 +20,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/api v0.30.0
 	google.golang.org/genproto v0.0.0-20200831141814-d751682dd103
-	google.golang.org/grpc v1.31.0
+	google.golang.org/grpc v1.31.1
 )
