@@ -792,6 +792,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/workflows/executions/v1beta/executions_gapic.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/security/privateca/v1beta1",
+		pkg:                   "privateca",
+		importPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/security/privateca/v1beta1/privateca_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/security/privateca/v1beta1/privateca_gapic.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
