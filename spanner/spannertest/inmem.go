@@ -40,7 +40,8 @@ variable and use the regular spanner.NewClient:
 	...
 
 The same server also supports database admin operations for use with
-the cloud.google.com/go/spanner/admin/database/apiv1 package.
+the cloud.google.com/go/spanner/admin/database/apiv1 package. This only
+simulates the existence of a single database; its name is ignored.
 */
 package spannertest
 
@@ -90,7 +91,8 @@ type Server struct {
 type server struct {
 	logf Logger
 
-	db database
+	db    database
+	start time.Time
 
 	mu       sync.Mutex
 	sessions map[string]*session
@@ -175,6 +177,7 @@ func NewServer(laddr string) (*Server, error) {
 			logf: func(format string, args ...interface{}) {
 				log.Printf("spannertest.inmem: "+format, args...)
 			},
+			start:    time.Now(),
 			sessions: make(map[string]*session),
 			lros:     make(map[string]*lro),
 		},
@@ -231,6 +234,16 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	lro.mu.Unlock()
 
 	return lro.State(), nil
+}
+
+func (s *server) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest) (*adminpb.Database, error) {
+	s.logf("GetDatabase(%q)", req.Name)
+
+	return &adminpb.Database{
+		Name:       req.Name,
+		State:      adminpb.Database_READY,
+		CreateTime: timestampProto(s.start),
+	}, nil
 }
 
 // UpdateDDL applies the given DDL to the server.
