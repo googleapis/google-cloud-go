@@ -111,21 +111,24 @@ func (c *Client) NewTransaction(ctx context.Context, opts ...TransactionOption) 
 }
 
 func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ *Transaction, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.ReadWriteTransaction")
-	defer func() { trace.EndSpan(ctx, err) }()
-
 	req := &pb.BeginTransactionRequest{ProjectId: c.dataset}
 	if s.readOnly {
 		req.TransactionOptions = &pb.TransactionOptions{
 			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 		}
-	} else if s.prevID != nil {
-		req.TransactionOptions = &pb.TransactionOptions{
-			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
-				PreviousTransaction: s.prevID,
-			}},
+	} else {
+		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction")
+		defer func() { trace.EndSpan(ctx, err) }()
+
+		if s.prevID != nil {
+			req.TransactionOptions = &pb.TransactionOptions{
+				Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
+					PreviousTransaction: s.prevID,
+				}},
+			}
 		}
 	}
+
 	resp, err := c.client.BeginTransaction(ctx, req)
 	if err != nil {
 		return nil, err
