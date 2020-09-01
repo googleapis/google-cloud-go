@@ -62,6 +62,8 @@ const (
 	minValidMilliSeconds = 0
 
 	// MilliSeconds field of the max valid Timestamp.
+	// Must match the max value of type TimestampMicros (int64)
+	// truncated to the millis granularity by subtracting a remainder of 1000.
 	maxValidMilliSeconds = math.MaxInt64 - math.MaxInt64%1000
 )
 
