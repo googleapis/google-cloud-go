@@ -128,7 +128,6 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 			}
 		}
 	}
-
 	resp, err := c.client.BeginTransaction(ctx, req)
 	if err != nil {
 		return nil, err
