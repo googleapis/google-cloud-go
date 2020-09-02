@@ -1277,8 +1277,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 	select {
 	case <-done:
-	case <-time.After(30 * time.Second):
-		t.Fatal("timed out after 30s waiting for all messages to be received")
+	case <-time.After(60 * time.Second):
+		t.Fatal("timed out after 60s waiting for all messages to be received")
 	}
 
 	mu.Lock()
