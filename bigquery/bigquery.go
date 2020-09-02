@@ -123,7 +123,7 @@ func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*
 		return err
 	}
 
-	// we expect to control request ID, so we can always runWithRetry
+	// We control request ID, so we can always runWithRetry.
 	err = runWithRetry(ctx, invoke)
 	if err != nil {
 		return nil, err
