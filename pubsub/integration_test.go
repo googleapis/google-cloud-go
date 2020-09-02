@@ -1104,7 +1104,7 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 
 func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -1184,7 +1184,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -1291,7 +1291,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
