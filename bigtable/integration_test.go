@@ -36,7 +36,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var (
@@ -48,7 +48,6 @@ var (
 	}
 
 	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
-	retryCodes     = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -2197,11 +2196,12 @@ func clearTimestamps(r Row) {
 func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string) {
 	retryOptions = []gax.CallOption{
 		gax.WithRetry(func() gax.Retryer {
-			return gax.OnCodes(retryCodes, gax.Backoff{
-				Initial:    100 * time.Millisecond,
-				Max:        2 * time.Second,
-				Multiplier: 1.2,
-			})
+			return &deleteRetryer{
+				gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        2 * time.Second,
+					Multiplier: 1.2,
+				}}
 		}),
 	}
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
@@ -2211,4 +2211,20 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)
 	}
+}
+
+// deleteRetryer retries a call if any error occured.
+type deleteRetryer struct {
+	backoff gax.Backoff
+}
+
+func (r *deleteRetryer) Retry(err error) (time.Duration, bool) {
+	st, ok := status.FromError(err)
+	if !ok { // UnknownError
+		return 0, false
+	}
+	if st != nil {
+		return r.backoff.Pause(), true
+	}
+	return 0, false
 }
