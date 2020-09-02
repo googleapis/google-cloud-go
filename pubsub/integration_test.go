@@ -1308,14 +1308,14 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		t.Fatalf("topic %v should exist, but it doesn't", topic)
 	}
 
-	topic.PublishSettings.DelayThreshold = time.Second
+	topic.PublishSettings.BufferedByteLimit = 100
 	topic.EnableMessageOrdering = true
 
 	orderingKey := "some-ordering-key2"
 	// Publish a message that is too large so we'll get an error that
 	// pauses publishing for this ordering key.
 	r := topic.Publish(ctx, &Message{
-		Data:        bytes.Repeat([]byte("A"), 1e10),
+		Data:        bytes.Repeat([]byte("A"), 1000),
 		OrderingKey: orderingKey,
 	})
 	<-r.ready
@@ -1325,7 +1325,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Publish a normal sized message now, which should fail
 	// since publishing on this ordering key is paused.
 	r = topic.Publish(ctx, &Message{
-		Data:        []byte("failed message"),
+		Data:        []byte("should fail"),
 		OrderingKey: orderingKey,
 	})
 	<-r.ready
@@ -1336,7 +1336,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
 	topic.ResumePublish(orderingKey)
 	r = topic.Publish(ctx, &Message{
-		Data:        []byte("normal message"),
+		Data:        []byte("should succeed"),
 		OrderingKey: orderingKey,
 	})
 	<-r.ready
