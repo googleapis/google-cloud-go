@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
@@ -78,6 +79,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client tablespb.TablesServiceClient
 
@@ -109,13 +113,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: tablespb.NewTablesServiceClient(connPool),
 	}
@@ -148,6 +158,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // GetTable gets a table. Returns NOT_FOUND if the table does not exist.
 func (c *Client) GetTable(ctx context.Context, req *tablespb.GetTableRequest, opts ...gax.CallOption) (*tablespb.Table, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTable[0:len(c.CallOptions.GetTable):len(c.CallOptions.GetTable)], opts...)
@@ -187,7 +202,7 @@ func (c *Client) ListTables(ctx context.Context, req *tablespb.ListTablesRequest
 		}
 
 		it.Response = resp
-		return resp.Tables, resp.NextPageToken, nil
+		return resp.GetTables(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -198,13 +213,18 @@ func (c *Client) ListTables(ctx context.Context, req *tablespb.ListTablesRequest
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetRow gets a row. Returns NOT_FOUND if the row does not exist in the table.
 func (c *Client) GetRow(ctx context.Context, req *tablespb.GetRowRequest, opts ...gax.CallOption) (*tablespb.Row, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetRow[0:len(c.CallOptions.GetRow):len(c.CallOptions.GetRow)], opts...)
@@ -245,7 +265,7 @@ func (c *Client) ListRows(ctx context.Context, req *tablespb.ListRowsRequest, op
 		}
 
 		it.Response = resp
-		return resp.Rows, resp.NextPageToken, nil
+		return resp.GetRows(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -256,13 +276,18 @@ func (c *Client) ListRows(ctx context.Context, req *tablespb.ListRowsRequest, op
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // CreateRow creates a row.
 func (c *Client) CreateRow(ctx context.Context, req *tablespb.CreateRowRequest, opts ...gax.CallOption) (*tablespb.Row, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateRow[0:len(c.CallOptions.CreateRow):len(c.CallOptions.CreateRow)], opts...)
@@ -280,6 +305,11 @@ func (c *Client) CreateRow(ctx context.Context, req *tablespb.CreateRowRequest, 
 
 // BatchCreateRows creates multiple rows.
 func (c *Client) BatchCreateRows(ctx context.Context, req *tablespb.BatchCreateRowsRequest, opts ...gax.CallOption) (*tablespb.BatchCreateRowsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCreateRows[0:len(c.CallOptions.BatchCreateRows):len(c.CallOptions.BatchCreateRows)], opts...)
@@ -297,6 +327,11 @@ func (c *Client) BatchCreateRows(ctx context.Context, req *tablespb.BatchCreateR
 
 // UpdateRow updates a row.
 func (c *Client) UpdateRow(ctx context.Context, req *tablespb.UpdateRowRequest, opts ...gax.CallOption) (*tablespb.Row, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "row.name", url.QueryEscape(req.GetRow().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateRow[0:len(c.CallOptions.UpdateRow):len(c.CallOptions.UpdateRow)], opts...)
@@ -314,6 +349,11 @@ func (c *Client) UpdateRow(ctx context.Context, req *tablespb.UpdateRowRequest, 
 
 // BatchUpdateRows updates multiple rows.
 func (c *Client) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpdateRowsRequest, opts ...gax.CallOption) (*tablespb.BatchUpdateRowsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchUpdateRows[0:len(c.CallOptions.BatchUpdateRows):len(c.CallOptions.BatchUpdateRows)], opts...)
@@ -331,6 +371,11 @@ func (c *Client) BatchUpdateRows(ctx context.Context, req *tablespb.BatchUpdateR
 
 // DeleteRow deletes a row.
 func (c *Client) DeleteRow(ctx context.Context, req *tablespb.DeleteRowRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteRow[0:len(c.CallOptions.DeleteRow):len(c.CallOptions.DeleteRow)], opts...)
