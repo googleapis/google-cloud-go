@@ -1501,7 +1501,6 @@ func (hc *healthChecker) worker(i int) {
 		if ws != nil {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 			err := ws.prepareForWrite(ctx)
-			cancel()
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
 				// cycle.
@@ -1516,6 +1515,7 @@ func (hc *healthChecker) worker(i int) {
 			hc.pool.mu.Lock()
 			hc.pool.decNumBeingPreparedLocked(ctx)
 			hc.pool.mu.Unlock()
+			cancel()
 			hc.markDone(ws)
 		}
 		rs := getNextForPing()

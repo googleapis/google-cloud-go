@@ -193,7 +193,7 @@ func (pr *ProfileResponse) HasFunction(functionName string) error {
 	return fmt.Errorf("failed to find function name %s in profile", functionName)
 }
 
-// HasFunctionInFile returns nil if function is present in the specifed file, and an
+// HasFunctionInFile returns nil if function is present in the specified file, and an
 // error if the function/file combination is not present in the profile.
 func (pr *ProfileResponse) HasFunctionInFile(functionName string, filename string) error {
 	if err := pr.CheckNonEmpty(); err != nil {

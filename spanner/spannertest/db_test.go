@@ -541,6 +541,13 @@ func TestTableData(t *testing.T) {
 				{[]interface{}{false, nil, nil, false, true}},
 			},
 		},
+		// Regression test for aggregating no rows; it used to return an empty row.
+		// https://github.com/googleapis/google-cloud-go/issues/2793
+		{
+			`SELECT Cool, ARRAY_AGG(Name) FROM Staff WHERE Name > "zzz" GROUP BY Cool`,
+			nil,
+			nil,
+		},
 		// Regression test for evaluating `IN` incorrectly using ==.
 		// https://github.com/googleapis/google-cloud-go/issues/2458
 		{
