@@ -1290,7 +1290,6 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
-	//t.Skip("kokoro failing in https://github.com/googleapis/google-cloud-go/issues/1850")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
