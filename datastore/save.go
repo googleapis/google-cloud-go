@@ -143,7 +143,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		if pSaver, ok := vi.(PropertyLoadSaver); ok {
 			val, err := pSaver.Save()
 			if err != nil {
-				return fmt.Errorf("datastore: unsupported struct field type: %v", v.Type())
+				return fmt.Errorf("field save error: %v", err)
 			}
 			p.Value = val
 		}
