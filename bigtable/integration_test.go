@@ -2204,6 +2204,7 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 				}}
 		}),
 	}
+	ctx, _ = context.WithTimeout(ctx, time.Second*5)
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		return ac.DeleteTable(ctx, name)
 	}, retryOptions...)
