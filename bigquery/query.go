@@ -401,7 +401,6 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		Labels:             q.Labels,
 	}
 	if q.QueryConfig.DisableQueryCache {
-		pfalse := false
 		qRequest.UseQueryCache = &pfalse
 	}
 	// Convert query parameters
