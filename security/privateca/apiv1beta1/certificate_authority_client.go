@@ -387,6 +387,9 @@ type CertificateAuthorityClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	certificateAuthorityClient privatecapb.CertificateAuthorityServiceClient
 
@@ -417,13 +420,19 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CertificateAuthorityClient{
-		connPool:    connPool,
-		CallOptions: defaultCertificateAuthorityCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCertificateAuthorityCallOptions(),
 
 		certificateAuthorityClient: privatecapb.NewCertificateAuthorityServiceClient(connPool),
 	}
@@ -489,7 +498,7 @@ func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Cont
 		}
 
 		it.Response = resp
-		return resp.CertificateAuthorities, resp.NextPageToken, nil
+		return resp.GetCertificateAuthorities(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -500,8 +509,8 @@ func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Cont
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -530,7 +539,7 @@ func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.
 		}
 
 		it.Response = resp
-		return resp.CertificateRevocationLists, resp.NextPageToken, nil
+		return resp.GetCertificateRevocationLists(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -541,8 +550,8 @@ func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -571,7 +580,7 @@ func (c *CertificateAuthorityClient) ListCertificates(ctx context.Context, req *
 		}
 
 		it.Response = resp
-		return resp.Certificates, resp.NextPageToken, nil
+		return resp.GetCertificates(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -582,8 +591,8 @@ func (c *CertificateAuthorityClient) ListCertificates(ctx context.Context, req *
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -612,7 +621,7 @@ func (c *CertificateAuthorityClient) ListReusableConfigs(ctx context.Context, re
 		}
 
 		it.Response = resp
-		return resp.ReusableConfigs, resp.NextPageToken, nil
+		return resp.GetReusableConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -623,13 +632,18 @@ func (c *CertificateAuthorityClient) ListReusableConfigs(ctx context.Context, re
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetCertificateAuthority returns a CertificateAuthority.
 func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCertificateAuthority[0:len(c.CallOptions.GetCertificateAuthority):len(c.CallOptions.GetCertificateAuthority)], opts...)
@@ -647,6 +661,11 @@ func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context
 
 // GetCertificateRevocationList returns a CertificateRevocationList.
 func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCertificateRevocationList[0:len(c.CallOptions.GetCertificateRevocationList):len(c.CallOptions.GetCertificateRevocationList)], opts...)
@@ -664,6 +683,11 @@ func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Co
 
 // GetCertificate returns a Certificate.
 func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCertificate[0:len(c.CallOptions.GetCertificate):len(c.CallOptions.GetCertificate)], opts...)
@@ -681,6 +705,11 @@ func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *pr
 
 // GetReusableConfig returns a ReusableConfig.
 func (c *CertificateAuthorityClient) GetReusableConfig(ctx context.Context, req *privatecapb.GetReusableConfigRequest, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetReusableConfig[0:len(c.CallOptions.GetReusableConfig):len(c.CallOptions.GetReusableConfig)], opts...)
@@ -698,6 +727,11 @@ func (c *CertificateAuthorityClient) GetReusableConfig(ctx context.Context, req 
 
 // CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
 func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCertificateAuthority[0:len(c.CallOptions.CreateCertificateAuthority):len(c.CallOptions.CreateCertificateAuthority)], opts...)
@@ -718,6 +752,11 @@ func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Cont
 // CreateCertificateRevocationList create a new CertificateRevocationList in a given Project, Location
 // for a particular CertificateAuthority.
 func (c *CertificateAuthorityClient) CreateCertificateRevocationList(ctx context.Context, req *privatecapb.CreateCertificateRevocationListRequest, opts ...gax.CallOption) (*CreateCertificateRevocationListOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCertificateRevocationList[0:len(c.CallOptions.CreateCertificateRevocationList):len(c.CallOptions.CreateCertificateRevocationList)], opts...)
@@ -738,6 +777,11 @@ func (c *CertificateAuthorityClient) CreateCertificateRevocationList(ctx context
 // CreateCertificate create a new Certificate in a given Project, Location from a particular
 // CertificateAuthority.
 func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCertificate[0:len(c.CallOptions.CreateCertificate):len(c.CallOptions.CreateCertificate)], opts...)
@@ -755,6 +799,11 @@ func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req 
 
 // CreateReusableConfig create a new ReusableConfig in a given Project and Location.
 func (c *CertificateAuthorityClient) CreateReusableConfig(ctx context.Context, req *privatecapb.CreateReusableConfigRequest, opts ...gax.CallOption) (*CreateReusableConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateReusableConfig[0:len(c.CallOptions.CreateReusableConfig):len(c.CallOptions.CreateReusableConfig)], opts...)
@@ -774,6 +823,11 @@ func (c *CertificateAuthorityClient) CreateReusableConfig(ctx context.Context, r
 
 // UpdateCertificateAuthority update a CertificateAuthority.
 func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_authority.name", url.QueryEscape(req.GetCertificateAuthority().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCertificateAuthority[0:len(c.CallOptions.UpdateCertificateAuthority):len(c.CallOptions.UpdateCertificateAuthority)], opts...)
@@ -793,6 +847,11 @@ func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Cont
 
 // UpdateCertificateRevocationList update a CertificateRevocationList.
 func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_revocation_list.name", url.QueryEscape(req.GetCertificateRevocationList().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCertificateRevocationList[0:len(c.CallOptions.UpdateCertificateRevocationList):len(c.CallOptions.UpdateCertificateRevocationList)], opts...)
@@ -812,6 +871,11 @@ func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context
 
 // UpdateCertificate update a Certificate.
 func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate.name", url.QueryEscape(req.GetCertificate().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCertificate[0:len(c.CallOptions.UpdateCertificate):len(c.CallOptions.UpdateCertificate)], opts...)
@@ -829,6 +893,11 @@ func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req 
 
 // UpdateReusableConfig update a ReusableConfig.
 func (c *CertificateAuthorityClient) UpdateReusableConfig(ctx context.Context, req *privatecapb.UpdateReusableConfigRequest, opts ...gax.CallOption) (*UpdateReusableConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reusable_config.name", url.QueryEscape(req.GetReusableConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateReusableConfig[0:len(c.CallOptions.UpdateReusableConfig):len(c.CallOptions.UpdateReusableConfig)], opts...)
@@ -848,6 +917,11 @@ func (c *CertificateAuthorityClient) UpdateReusableConfig(ctx context.Context, r
 
 // GetCertificateAuthorityCsr get the CSR for a pending CertificateAuthority.
 func (c *CertificateAuthorityClient) GetCertificateAuthorityCsr(ctx context.Context, req *privatecapb.GetCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.GetCertificateAuthorityCsrResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCertificateAuthorityCsr[0:len(c.CallOptions.GetCertificateAuthorityCsr):len(c.CallOptions.GetCertificateAuthorityCsr)], opts...)
@@ -865,6 +939,11 @@ func (c *CertificateAuthorityClient) GetCertificateAuthorityCsr(ctx context.Cont
 
 // ActivateCertificateAuthority activate a pending CertificateAuthority.
 func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ActivateCertificateAuthority[0:len(c.CallOptions.ActivateCertificateAuthority):len(c.CallOptions.ActivateCertificateAuthority)], opts...)
@@ -884,6 +963,11 @@ func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Co
 
 // DisableCertificateAuthority disable a CertificateAuthority.
 func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DisableCertificateAuthority[0:len(c.CallOptions.DisableCertificateAuthority):len(c.CallOptions.DisableCertificateAuthority)], opts...)
@@ -903,6 +987,11 @@ func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Con
 
 // EnableCertificateAuthority enable a CertificateAuthority.
 func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.EnableCertificateAuthority[0:len(c.CallOptions.EnableCertificateAuthority):len(c.CallOptions.EnableCertificateAuthority)], opts...)
@@ -922,6 +1011,11 @@ func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Cont
 
 // ScheduleDeleteCertificateAuthority schedule a CertificateAuthority for deletion.
 func (c *CertificateAuthorityClient) ScheduleDeleteCertificateAuthority(ctx context.Context, req *privatecapb.ScheduleDeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*ScheduleDeleteCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ScheduleDeleteCertificateAuthority[0:len(c.CallOptions.ScheduleDeleteCertificateAuthority):len(c.CallOptions.ScheduleDeleteCertificateAuthority)], opts...)
@@ -941,6 +1035,11 @@ func (c *CertificateAuthorityClient) ScheduleDeleteCertificateAuthority(ctx cont
 
 // RestoreCertificateAuthority restore a CertificateAuthority that is scheduled for deletion.
 func (c *CertificateAuthorityClient) RestoreCertificateAuthority(ctx context.Context, req *privatecapb.RestoreCertificateAuthorityRequest, opts ...gax.CallOption) (*RestoreCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RestoreCertificateAuthority[0:len(c.CallOptions.RestoreCertificateAuthority):len(c.CallOptions.RestoreCertificateAuthority)], opts...)
@@ -960,6 +1059,11 @@ func (c *CertificateAuthorityClient) RestoreCertificateAuthority(ctx context.Con
 
 // RevokeCertificate revoke a Certificate.
 func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RevokeCertificate[0:len(c.CallOptions.RevokeCertificate):len(c.CallOptions.RevokeCertificate)], opts...)
