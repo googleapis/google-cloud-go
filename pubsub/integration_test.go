@@ -1183,7 +1183,6 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
-	t.Skip("Flaky, see https://github.com/googleapis/google-cloud-go/issues/1872")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -1291,7 +1290,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
-	t.Skip("kokoro failing in https://github.com/googleapis/google-cloud-go/issues/1850")
+	//t.Skip("kokoro failing in https://github.com/googleapis/google-cloud-go/issues/1850")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
@@ -1317,7 +1316,6 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Publish a message that is too large so we'll get an error that
 	// pauses publishing for this ordering key.
 	r := topic.Publish(ctx, &Message{
-		ID:          "1",
 		Data:        bytes.Repeat([]byte("A"), 1e10),
 		OrderingKey: orderingKey,
 	})
@@ -1328,7 +1326,6 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Publish a normal sized message now, which should fail
 	// since publishing on this ordering key is paused.
 	r = topic.Publish(ctx, &Message{
-		ID:          "2",
 		Data:        []byte("failed message"),
 		OrderingKey: orderingKey,
 	})
@@ -1340,7 +1337,6 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
 	topic.ResumePublish(orderingKey)
 	r = topic.Publish(ctx, &Message{
-		ID:          "4",
 		Data:        []byte("normal message"),
 		OrderingKey: orderingKey,
 	})
