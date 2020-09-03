@@ -1386,8 +1386,7 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 
 	if len(fieldSet) > 0 {
 		var b bytes.Buffer
-		//b.WriteString("prefixes,items(")
-		b.WriteString("items(")
+		b.WriteString("prefixes,items(")
 		first := true
 		for field := range fieldSet {
 			if !first {
