@@ -288,6 +288,8 @@ func TestSaveEmptySlice(t *testing.T) {
 	}
 }
 
+// Map is used by TestSaveFieldsWithInterface
+// to test a custom type property save.
 type Map map[int]int
 
 func (*Map) Load(_ []Property) error {
@@ -298,6 +300,8 @@ func (*Map) Save() ([]Property, error) {
 	return []Property{}, nil
 }
 
+// Struct is used by TestSaveFieldsWithInterface
+// to test a custom type property save.
 type Struct struct {
 	Map Map
 }
