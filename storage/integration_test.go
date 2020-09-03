@@ -682,13 +682,12 @@ func TestIntegration_Objects(t *testing.T) {
 		contents[obj] = c
 	}
 
-
 	testObjectIterator(t, bkt, objects)
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 	testObjectIteratorWithOffset(t, bkt, objects)
 	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
-		query := &Query{Prefix: "", Delimiter:"/"}
+		query := &Query{Prefix: "", Delimiter: "/"}
 		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
 			t.Fatalf("selecting query attrs: %v", err)
 		}
@@ -704,7 +703,7 @@ func TestIntegration_Objects(t *testing.T) {
 			if err != nil {
 				log.Fatal(err)
 			}
-			if attrs.Name != ""{
+			if attrs.Name != "" {
 				gotNames = append(gotNames, attrs.Name)
 			} else if attrs.Prefix != "" {
 				gotPrefixes = append(gotPrefixes, attrs.Prefix)
@@ -1120,7 +1119,6 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 		t.Errorf("ObjectIterator.Next: %s", msg)
 	}
 	// TODO(jba): test query.Delimiter != ""
-
 }
 
 func testObjectIteratorWithOffset(t *testing.T, bkt *BucketHandle, objects []string) {
@@ -1193,7 +1191,6 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 		t.Errorf("names = %v, want %v", gotNames, sortedNames)
 	}
 }
-
 
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Tests that all selected attributes work - query succeeds (without actually
