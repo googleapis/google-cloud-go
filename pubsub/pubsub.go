@@ -61,6 +61,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 			return nil, fmt.Errorf("grpc.Dial: %v", err)
 		}
 		o = []option.ClientOption{option.WithGRPCConn(conn)}
+		o = append(o, option.WithTelemetryDisabled())
 	} else {
 		numConns := runtime.GOMAXPROCS(0)
 		if numConns > 4 {
@@ -73,7 +74,6 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 				Time: 5 * time.Minute,
 			})),
 		}
-		o = append(o, openCensusOptions()...)
 	}
 	o = append(o, opts...)
 	pubc, err := vkit.NewPublisherClient(ctx, o...)
