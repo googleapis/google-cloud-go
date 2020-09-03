@@ -701,7 +701,7 @@ func TestIntegration_Objects(t *testing.T) {
 				break
 			}
 			if err != nil {
-				log.Fatal(err)
+				t.Fatalf("iterator.Next: %v", err)
 			}
 			if attrs.Name != "" {
 				gotNames = append(gotNames, attrs.Name)
@@ -1173,7 +1173,7 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		gotNames = append(gotNames, attrs.Name)
 
@@ -1214,7 +1214,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		count++
 	}
