@@ -2691,8 +2691,8 @@ func TestIntegration_CustomTime(t *testing.T) {
 	}
 
 	// Update CustomTime to the past should give error.
-	earlierTime := ct.Add(5*time.Hour)
-	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime:earlierTime}); err == nil {
+	earlierTime := ct.Add(5 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
 		t.Fatalf("backdating CustomTime: expected error, got none")
 	}
 
