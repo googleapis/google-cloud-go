@@ -73,6 +73,9 @@ type TopicStatsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	topicStatsClient pubsublitepb.TopicStatsServiceClient
 
@@ -97,13 +100,19 @@ func NewTopicStatsClient(ctx context.Context, opts ...option.ClientOption) (*Top
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &TopicStatsClient{
-		connPool:    connPool,
-		CallOptions: defaultTopicStatsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultTopicStatsCallOptions(),
 
 		topicStatsClient: pubsublitepb.NewTopicStatsServiceClient(connPool),
 	}
@@ -137,6 +146,11 @@ func (c *TopicStatsClient) setGoogleClientInfo(keyval ...string) {
 // ComputeMessageStats compute statistics about a range of messages in a given topic and
 // partition.
 func (c *TopicStatsClient) ComputeMessageStats(ctx context.Context, req *pubsublitepb.ComputeMessageStatsRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeMessageStatsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ComputeMessageStats[0:len(c.CallOptions.ComputeMessageStats):len(c.CallOptions.ComputeMessageStats)], opts...)

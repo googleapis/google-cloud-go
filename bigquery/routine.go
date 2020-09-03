@@ -156,6 +156,11 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	r.Language = rm.Language
 	r.RoutineType = rm.Type
 	r.DefinitionBody = rm.Body
+	rt, err := rm.ReturnType.toBQ()
+	if err != nil {
+		return nil, err
+	}
+	r.ReturnType = rt
 
 	var args []*bq.Argument
 	for _, v := range rm.Arguments {

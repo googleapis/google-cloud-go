@@ -118,6 +118,9 @@ type UptimeCheckClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	uptimeCheckClient monitoringpb.UptimeCheckServiceClient
 
@@ -149,13 +152,19 @@ func NewUptimeCheckClient(ctx context.Context, opts ...option.ClientOption) (*Up
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &UptimeCheckClient{
-		connPool:    connPool,
-		CallOptions: defaultUptimeCheckCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultUptimeCheckCallOptions(),
 
 		uptimeCheckClient: monitoringpb.NewUptimeCheckServiceClient(connPool),
 	}
@@ -230,6 +239,11 @@ func (c *UptimeCheckClient) ListUptimeCheckConfigs(ctx context.Context, req *mon
 
 // GetUptimeCheckConfig gets a single Uptime check configuration.
 func (c *UptimeCheckClient) GetUptimeCheckConfig(ctx context.Context, req *monitoringpb.GetUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetUptimeCheckConfig[0:len(c.CallOptions.GetUptimeCheckConfig):len(c.CallOptions.GetUptimeCheckConfig)], opts...)
@@ -247,6 +261,11 @@ func (c *UptimeCheckClient) GetUptimeCheckConfig(ctx context.Context, req *monit
 
 // CreateUptimeCheckConfig creates a new Uptime check configuration.
 func (c *UptimeCheckClient) CreateUptimeCheckConfig(ctx context.Context, req *monitoringpb.CreateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateUptimeCheckConfig[0:len(c.CallOptions.CreateUptimeCheckConfig):len(c.CallOptions.CreateUptimeCheckConfig)], opts...)
@@ -267,6 +286,11 @@ func (c *UptimeCheckClient) CreateUptimeCheckConfig(ctx context.Context, req *mo
 // configuration by specifying the fields to be updated via updateMask.
 // Returns the updated configuration.
 func (c *UptimeCheckClient) UpdateUptimeCheckConfig(ctx context.Context, req *monitoringpb.UpdateUptimeCheckConfigRequest, opts ...gax.CallOption) (*monitoringpb.UptimeCheckConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "uptime_check_config.name", url.QueryEscape(req.GetUptimeCheckConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateUptimeCheckConfig[0:len(c.CallOptions.UpdateUptimeCheckConfig):len(c.CallOptions.UpdateUptimeCheckConfig)], opts...)
@@ -286,6 +310,11 @@ func (c *UptimeCheckClient) UpdateUptimeCheckConfig(ctx context.Context, req *mo
 // if the Uptime check configuration is referenced by an alert policy or
 // other dependent configs that would be rendered invalid by the deletion.
 func (c *UptimeCheckClient) DeleteUptimeCheckConfig(ctx context.Context, req *monitoringpb.DeleteUptimeCheckConfigRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteUptimeCheckConfig[0:len(c.CallOptions.DeleteUptimeCheckConfig):len(c.CallOptions.DeleteUptimeCheckConfig)], opts...)

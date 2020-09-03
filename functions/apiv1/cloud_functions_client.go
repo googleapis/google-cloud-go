@@ -87,6 +87,9 @@ type CloudFunctionsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	cloudFunctionsClient functionspb.CloudFunctionsServiceClient
 
@@ -116,13 +119,19 @@ func NewCloudFunctionsClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CloudFunctionsClient{
-		connPool:    connPool,
-		CallOptions: defaultCloudFunctionsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCloudFunctionsCallOptions(),
 
 		cloudFunctionsClient: functionspb.NewCloudFunctionsServiceClient(connPool),
 	}
