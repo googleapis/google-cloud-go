@@ -134,6 +134,9 @@ type ContextsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	contextsClient dialogflowpb.ContextsClient
 
@@ -158,13 +161,19 @@ func NewContextsClient(ctx context.Context, opts ...option.ClientOption) (*Conte
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ContextsClient{
-		connPool:    connPool,
-		CallOptions: defaultContextsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultContextsCallOptions(),
 
 		contextsClient: dialogflowpb.NewContextsClient(connPool),
 	}
@@ -220,7 +229,7 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Contexts, resp.NextPageToken, nil
+		return resp.GetContexts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -231,13 +240,18 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetContext retrieves the specified context.
 func (c *ContextsClient) GetContext(ctx context.Context, req *dialogflowpb.GetContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetContext[0:len(c.CallOptions.GetContext):len(c.CallOptions.GetContext)], opts...)
@@ -257,6 +271,11 @@ func (c *ContextsClient) GetContext(ctx context.Context, req *dialogflowpb.GetCo
 //
 // If the specified context already exists, overrides the context.
 func (c *ContextsClient) CreateContext(ctx context.Context, req *dialogflowpb.CreateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateContext[0:len(c.CallOptions.CreateContext):len(c.CallOptions.CreateContext)], opts...)
@@ -274,6 +293,11 @@ func (c *ContextsClient) CreateContext(ctx context.Context, req *dialogflowpb.Cr
 
 // UpdateContext updates the specified context.
 func (c *ContextsClient) UpdateContext(ctx context.Context, req *dialogflowpb.UpdateContextRequest, opts ...gax.CallOption) (*dialogflowpb.Context, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "context.name", url.QueryEscape(req.GetContext().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateContext[0:len(c.CallOptions.UpdateContext):len(c.CallOptions.UpdateContext)], opts...)
@@ -291,6 +315,11 @@ func (c *ContextsClient) UpdateContext(ctx context.Context, req *dialogflowpb.Up
 
 // DeleteContext deletes the specified context.
 func (c *ContextsClient) DeleteContext(ctx context.Context, req *dialogflowpb.DeleteContextRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteContext[0:len(c.CallOptions.DeleteContext):len(c.CallOptions.DeleteContext)], opts...)
@@ -304,6 +333,11 @@ func (c *ContextsClient) DeleteContext(ctx context.Context, req *dialogflowpb.De
 
 // DeleteAllContexts deletes all active contexts in the specified session.
 func (c *ContextsClient) DeleteAllContexts(ctx context.Context, req *dialogflowpb.DeleteAllContextsRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAllContexts[0:len(c.CallOptions.DeleteAllContexts):len(c.CallOptions.DeleteAllContexts)], opts...)

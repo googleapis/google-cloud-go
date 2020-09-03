@@ -107,6 +107,9 @@ type RealmsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	realmsClient gamingpb.RealmsServiceClient
 
@@ -137,13 +140,19 @@ func NewRealmsClient(ctx context.Context, opts ...option.ClientOption) (*RealmsC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &RealmsClient{
-		connPool:    connPool,
-		CallOptions: defaultRealmsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultRealmsCallOptions(),
 
 		realmsClient: gamingpb.NewRealmsServiceClient(connPool),
 	}
@@ -209,7 +218,7 @@ func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsR
 		}
 
 		it.Response = resp
-		return resp.Realms, resp.NextPageToken, nil
+		return resp.GetRealms(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -220,13 +229,18 @@ func (c *RealmsClient) ListRealms(ctx context.Context, req *gamingpb.ListRealmsR
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetRealm gets details of a single realm.
 func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmRequest, opts ...gax.CallOption) (*gamingpb.Realm, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetRealm[0:len(c.CallOptions.GetRealm):len(c.CallOptions.GetRealm)], opts...)
@@ -244,6 +258,11 @@ func (c *RealmsClient) GetRealm(ctx context.Context, req *gamingpb.GetRealmReque
 
 // CreateRealm creates a new realm in a given project and location.
 func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateRealmRequest, opts ...gax.CallOption) (*CreateRealmOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateRealm[0:len(c.CallOptions.CreateRealm):len(c.CallOptions.CreateRealm)], opts...)
@@ -263,6 +282,11 @@ func (c *RealmsClient) CreateRealm(ctx context.Context, req *gamingpb.CreateReal
 
 // DeleteRealm deletes a single realm.
 func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteRealmRequest, opts ...gax.CallOption) (*DeleteRealmOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteRealm[0:len(c.CallOptions.DeleteRealm):len(c.CallOptions.DeleteRealm)], opts...)
@@ -282,6 +306,11 @@ func (c *RealmsClient) DeleteRealm(ctx context.Context, req *gamingpb.DeleteReal
 
 // UpdateRealm patches a single realm.
 func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateRealmRequest, opts ...gax.CallOption) (*UpdateRealmOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateRealm[0:len(c.CallOptions.UpdateRealm):len(c.CallOptions.UpdateRealm)], opts...)
@@ -301,6 +330,11 @@ func (c *RealmsClient) UpdateRealm(ctx context.Context, req *gamingpb.UpdateReal
 
 // PreviewRealmUpdate previews patches to a single realm.
 func (c *RealmsClient) PreviewRealmUpdate(ctx context.Context, req *gamingpb.PreviewRealmUpdateRequest, opts ...gax.CallOption) (*gamingpb.PreviewRealmUpdateResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "realm.name", url.QueryEscape(req.GetRealm().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.PreviewRealmUpdate[0:len(c.CallOptions.PreviewRealmUpdate):len(c.CallOptions.PreviewRealmUpdate)], opts...)

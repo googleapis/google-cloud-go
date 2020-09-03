@@ -62,6 +62,9 @@ type PolicyTagManagerSerializationClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	policyTagManagerSerializationClient datacatalogpb.PolicyTagManagerSerializationClient
 
@@ -87,13 +90,19 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PolicyTagManagerSerializationClient{
-		connPool:    connPool,
-		CallOptions: defaultPolicyTagManagerSerializationCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultPolicyTagManagerSerializationCallOptions(),
 
 		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(connPool),
 	}

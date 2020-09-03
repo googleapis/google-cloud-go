@@ -182,6 +182,9 @@ type CloudBillingClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	cloudBillingClient billingpb.CloudBillingClient
 
@@ -206,13 +209,19 @@ func NewCloudBillingClient(ctx context.Context, opts ...option.ClientOption) (*C
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CloudBillingClient{
-		connPool:    connPool,
-		CallOptions: defaultCloudBillingCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCloudBillingCallOptions(),
 
 		cloudBillingClient: billingpb.NewCloudBillingClient(connPool),
 	}
@@ -247,6 +256,11 @@ func (c *CloudBillingClient) setGoogleClientInfo(keyval ...string) {
 // must be a viewer of the billing
 // account (at https://cloud.google.com/billing/docs/how-to/billing-access).
 func (c *CloudBillingClient) GetBillingAccount(ctx context.Context, req *billingpb.GetBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetBillingAccount[0:len(c.CallOptions.GetBillingAccount):len(c.CallOptions.GetBillingAccount)], opts...)
@@ -288,7 +302,7 @@ func (c *CloudBillingClient) ListBillingAccounts(ctx context.Context, req *billi
 		}
 
 		it.Response = resp
-		return resp.BillingAccounts, resp.NextPageToken, nil
+		return resp.GetBillingAccounts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -299,8 +313,8 @@ func (c *CloudBillingClient) ListBillingAccounts(ctx context.Context, req *billi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -311,6 +325,11 @@ func (c *CloudBillingClient) ListBillingAccounts(ctx context.Context, req *billi
 // administrator (at https://cloud.google.com/billing/docs/how-to/billing-access)
 // of the billing account.
 func (c *CloudBillingClient) UpdateBillingAccount(ctx context.Context, req *billingpb.UpdateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateBillingAccount[0:len(c.CallOptions.UpdateBillingAccount):len(c.CallOptions.UpdateBillingAccount)], opts...)
@@ -337,6 +356,11 @@ func (c *CloudBillingClient) UpdateBillingAccount(ctx context.Context, req *bill
 // This method will return an error if the master account has not been
 // provisioned as a reseller account.
 func (c *CloudBillingClient) CreateBillingAccount(ctx context.Context, req *billingpb.CreateBillingAccountRequest, opts ...gax.CallOption) (*billingpb.BillingAccount, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CreateBillingAccount[0:len(c.CallOptions.CreateBillingAccount):len(c.CallOptions.CreateBillingAccount)], opts...)
 	var resp *billingpb.BillingAccount
@@ -379,7 +403,7 @@ func (c *CloudBillingClient) ListProjectBillingInfo(ctx context.Context, req *bi
 		}
 
 		it.Response = resp
-		return resp.ProjectBillingInfo, resp.NextPageToken, nil
+		return resp.GetProjectBillingInfo(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -390,8 +414,8 @@ func (c *CloudBillingClient) ListProjectBillingInfo(ctx context.Context, req *bi
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -399,6 +423,11 @@ func (c *CloudBillingClient) ListProjectBillingInfo(ctx context.Context, req *bi
 // must have permission to view the
 // project (at https://cloud.google.com/docs/permissions-overview#h.bgs0oxofvnoo).
 func (c *CloudBillingClient) GetProjectBillingInfo(ctx context.Context, req *billingpb.GetProjectBillingInfoRequest, opts ...gax.CallOption) (*billingpb.ProjectBillingInfo, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetProjectBillingInfo[0:len(c.CallOptions.GetProjectBillingInfo):len(c.CallOptions.GetProjectBillingInfo)], opts...)
@@ -445,6 +474,11 @@ func (c *CloudBillingClient) GetProjectBillingInfo(ctx context.Context, req *bil
 // disable billing, you should always call this method with the name of an
 // open billing account.
 func (c *CloudBillingClient) UpdateProjectBillingInfo(ctx context.Context, req *billingpb.UpdateProjectBillingInfoRequest, opts ...gax.CallOption) (*billingpb.ProjectBillingInfo, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateProjectBillingInfo[0:len(c.CallOptions.UpdateProjectBillingInfo):len(c.CallOptions.UpdateProjectBillingInfo)], opts...)
@@ -465,6 +499,11 @@ func (c *CloudBillingClient) UpdateProjectBillingInfo(ctx context.Context, req *
 // account, which is often given to billing account
 // viewers (at https://cloud.google.com/billing/docs/how-to/billing-access).
 func (c *CloudBillingClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
@@ -486,6 +525,11 @@ func (c *CloudBillingClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 // account, which is often given to billing account
 // administrators (at https://cloud.google.com/billing/docs/how-to/billing-access).
 func (c *CloudBillingClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
@@ -505,6 +549,11 @@ func (c *CloudBillingClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 // the resource and a set of permissions as input and returns the subset of
 // the input permissions that the caller is allowed for that resource.
 func (c *CloudBillingClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)

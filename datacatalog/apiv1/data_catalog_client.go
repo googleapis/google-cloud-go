@@ -197,6 +197,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client datacatalogpb.DataCatalogClient
 
@@ -222,13 +225,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: datacatalogpb.NewDataCatalogClient(connPool),
 	}
@@ -298,7 +307,7 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 		}
 
 		it.Response = resp
-		return resp.Results, resp.NextPageToken, nil
+		return resp.GetResults(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -309,8 +318,8 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -334,6 +343,11 @@ func (c *Client) SearchCatalog(ctx context.Context, req *datacatalogpb.SearchCat
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.CreateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateEntryGroup[0:len(c.CallOptions.CreateEntryGroup):len(c.CallOptions.CreateEntryGroup)], opts...)
@@ -351,6 +365,11 @@ func (c *Client) CreateEntryGroup(ctx context.Context, req *datacatalogpb.Create
 
 // GetEntryGroup gets an EntryGroup.
 func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEntryGroup[0:len(c.CallOptions.GetEntryGroup):len(c.CallOptions.GetEntryGroup)], opts...)
@@ -372,6 +391,11 @@ func (c *Client) GetEntryGroup(ctx context.Context, req *datacatalogpb.GetEntryG
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.UpdateEntryGroupRequest, opts ...gax.CallOption) (*datacatalogpb.EntryGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry_group.name", url.QueryEscape(req.GetEntryGroup().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEntryGroup[0:len(c.CallOptions.UpdateEntryGroup):len(c.CallOptions.UpdateEntryGroup)], opts...)
@@ -393,6 +417,11 @@ func (c *Client) UpdateEntryGroup(ctx context.Context, req *datacatalogpb.Update
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) DeleteEntryGroup(ctx context.Context, req *datacatalogpb.DeleteEntryGroupRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteEntryGroup[0:len(c.CallOptions.DeleteEntryGroup):len(c.CallOptions.DeleteEntryGroup)], opts...)
@@ -429,7 +458,7 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 		}
 
 		it.Response = resp
-		return resp.EntryGroups, resp.NextPageToken, nil
+		return resp.GetEntryGroups(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -440,8 +469,8 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -455,6 +484,11 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 //
 // A maximum of 100,000 entries may be created per entry group.
 func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateEntry[0:len(c.CallOptions.CreateEntry):len(c.CallOptions.CreateEntry)], opts...)
@@ -476,6 +510,11 @@ func (c *Client) CreateEntry(ctx context.Context, req *datacatalogpb.CreateEntry
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entry.name", url.QueryEscape(req.GetEntry().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEntry[0:len(c.CallOptions.UpdateEntry):len(c.CallOptions.UpdateEntry)], opts...)
@@ -499,6 +538,11 @@ func (c *Client) UpdateEntry(ctx context.Context, req *datacatalogpb.UpdateEntry
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntryRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteEntry[0:len(c.CallOptions.DeleteEntry):len(c.CallOptions.DeleteEntry)], opts...)
@@ -512,6 +556,11 @@ func (c *Client) DeleteEntry(ctx context.Context, req *datacatalogpb.DeleteEntry
 
 // GetEntry gets an entry.
 func (c *Client) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEntry[0:len(c.CallOptions.GetEntry):len(c.CallOptions.GetEntry)], opts...)
@@ -531,6 +580,11 @@ func (c *Client) GetEntry(ctx context.Context, req *datacatalogpb.GetEntryReques
 // the resource name from the source Google Cloud Platform service to get the
 // Data Catalog Entry.
 func (c *Client) LookupEntry(ctx context.Context, req *datacatalogpb.LookupEntryRequest, opts ...gax.CallOption) (*datacatalogpb.Entry, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.LookupEntry[0:len(c.CallOptions.LookupEntry):len(c.CallOptions.LookupEntry)], opts...)
 	var resp *datacatalogpb.Entry
@@ -570,7 +624,7 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 		}
 
 		it.Response = resp
-		return resp.Entries, resp.NextPageToken, nil
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -581,8 +635,8 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -592,6 +646,11 @@ func (c *Client) ListEntries(ctx context.Context, req *datacatalogpb.ListEntries
 // Project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)
 // for more information).
 func (c *Client) CreateTagTemplate(ctx context.Context, req *datacatalogpb.CreateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTagTemplate[0:len(c.CallOptions.CreateTagTemplate):len(c.CallOptions.CreateTagTemplate)], opts...)
@@ -609,6 +668,11 @@ func (c *Client) CreateTagTemplate(ctx context.Context, req *datacatalogpb.Creat
 
 // GetTagTemplate gets a tag template.
 func (c *Client) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTagTemplate[0:len(c.CallOptions.GetTagTemplate):len(c.CallOptions.GetTagTemplate)], opts...)
@@ -632,6 +696,11 @@ func (c *Client) GetTagTemplate(ctx context.Context, req *datacatalogpb.GetTagTe
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.UpdateTagTemplateRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag_template.name", url.QueryEscape(req.GetTagTemplate().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTagTemplate[0:len(c.CallOptions.UpdateTagTemplate):len(c.CallOptions.UpdateTagTemplate)], opts...)
@@ -653,6 +722,11 @@ func (c *Client) UpdateTagTemplate(ctx context.Context, req *datacatalogpb.Updat
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.DeleteTagTemplateRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTagTemplate[0:len(c.CallOptions.DeleteTagTemplate):len(c.CallOptions.DeleteTagTemplate)], opts...)
@@ -670,6 +744,11 @@ func (c *Client) DeleteTagTemplate(ctx context.Context, req *datacatalogpb.Delet
 // Project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)
 // for more information).
 func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.CreateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTagTemplateField[0:len(c.CallOptions.CreateTagTemplateField):len(c.CallOptions.CreateTagTemplateField)], opts...)
@@ -691,6 +770,11 @@ func (c *Client) CreateTagTemplateField(ctx context.Context, req *datacatalogpb.
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.UpdateTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTagTemplateField[0:len(c.CallOptions.UpdateTagTemplateField):len(c.CallOptions.UpdateTagTemplateField)], opts...)
@@ -712,6 +796,11 @@ func (c *Client) UpdateTagTemplateField(ctx context.Context, req *datacatalogpb.
 // Project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)
 // for more information).
 func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RenameTagTemplateField[0:len(c.CallOptions.RenameTagTemplateField):len(c.CallOptions.RenameTagTemplateField)], opts...)
@@ -733,6 +822,11 @@ func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.
 // (https://cloud.google.com/data-catalog/docs/concepts/resource-project (at https://cloud.google.com/data-catalog/docs/concepts/resource-project)) for
 // more information).
 func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.DeleteTagTemplateFieldRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTagTemplateField[0:len(c.CallOptions.DeleteTagTemplateField):len(c.CallOptions.DeleteTagTemplateField)], opts...)
@@ -752,6 +846,11 @@ func (c *Client) DeleteTagTemplateField(ctx context.Context, req *datacatalogpb.
 // template (at https://cloud.google.com/data-catalog/docs/reference/rest/v1/projects.locations.tagTemplates/create#path-parameters)
 // used to create the tag must be from the same organization.
 func (c *Client) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTag[0:len(c.CallOptions.CreateTag):len(c.CallOptions.CreateTag)], opts...)
@@ -769,6 +868,11 @@ func (c *Client) CreateTag(ctx context.Context, req *datacatalogpb.CreateTagRequ
 
 // UpdateTag updates an existing tag.
 func (c *Client) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTagRequest, opts ...gax.CallOption) (*datacatalogpb.Tag, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tag.name", url.QueryEscape(req.GetTag().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTag[0:len(c.CallOptions.UpdateTag):len(c.CallOptions.UpdateTag)], opts...)
@@ -786,6 +890,11 @@ func (c *Client) UpdateTag(ctx context.Context, req *datacatalogpb.UpdateTagRequ
 
 // DeleteTag deletes a tag.
 func (c *Client) DeleteTag(ctx context.Context, req *datacatalogpb.DeleteTagRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTag[0:len(c.CallOptions.DeleteTag):len(c.CallOptions.DeleteTag)], opts...)
@@ -822,7 +931,7 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 		}
 
 		it.Response = resp
-		return resp.Tags, resp.NextPageToken, nil
+		return resp.GetTags(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -833,8 +942,8 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -859,6 +968,11 @@ func (c *Client) ListTags(ctx context.Context, req *datacatalogpb.ListTagsReques
 //
 //   datacatalog.entryGroups.setIamPolicy to set policies on entry groups.
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
@@ -897,6 +1011,11 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 //
 //   datacatalog.entryGroups.getIamPolicy to get policies on entry groups.
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
@@ -929,6 +1048,11 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 // A caller is not required to have Google IAM permission to make this
 // request.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)

@@ -94,6 +94,9 @@ type DashboardsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	dashboardsClient dashboardpb.DashboardsServiceClient
 
@@ -119,13 +122,19 @@ func NewDashboardsClient(ctx context.Context, opts ...option.ClientOption) (*Das
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &DashboardsClient{
-		connPool:    connPool,
-		CallOptions: defaultDashboardsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultDashboardsCallOptions(),
 
 		dashboardsClient: dashboardpb.NewDashboardsServiceClient(connPool),
 	}
@@ -162,6 +171,11 @@ func (c *DashboardsClient) setGoogleClientInfo(keyval ...string) {
 // on the specified project. For more information, see
 // Google Cloud IAM (at https://cloud.google.com/iam).
 func (c *DashboardsClient) CreateDashboard(ctx context.Context, req *dashboardpb.CreateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateDashboard[0:len(c.CallOptions.CreateDashboard):len(c.CallOptions.CreateDashboard)], opts...)
@@ -206,7 +220,7 @@ func (c *DashboardsClient) ListDashboards(ctx context.Context, req *dashboardpb.
 		}
 
 		it.Response = resp
-		return resp.Dashboards, resp.NextPageToken, nil
+		return resp.GetDashboards(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -217,8 +231,8 @@ func (c *DashboardsClient) ListDashboards(ctx context.Context, req *dashboardpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -228,6 +242,11 @@ func (c *DashboardsClient) ListDashboards(ctx context.Context, req *dashboardpb.
 // on the specified dashboard. For more information, see
 // Google Cloud IAM (at https://cloud.google.com/iam).
 func (c *DashboardsClient) GetDashboard(ctx context.Context, req *dashboardpb.GetDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetDashboard[0:len(c.CallOptions.GetDashboard):len(c.CallOptions.GetDashboard)], opts...)
@@ -249,6 +268,11 @@ func (c *DashboardsClient) GetDashboard(ctx context.Context, req *dashboardpb.Ge
 // on the specified dashboard. For more information, see
 // Google Cloud IAM (at https://cloud.google.com/iam).
 func (c *DashboardsClient) DeleteDashboard(ctx context.Context, req *dashboardpb.DeleteDashboardRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteDashboard[0:len(c.CallOptions.DeleteDashboard):len(c.CallOptions.DeleteDashboard)], opts...)
@@ -266,6 +290,11 @@ func (c *DashboardsClient) DeleteDashboard(ctx context.Context, req *dashboardpb
 // on the specified dashboard. For more information, see
 // Google Cloud IAM (at https://cloud.google.com/iam).
 func (c *DashboardsClient) UpdateDashboard(ctx context.Context, req *dashboardpb.UpdateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "dashboard.name", url.QueryEscape(req.GetDashboard().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateDashboard[0:len(c.CallOptions.UpdateDashboard):len(c.CallOptions.UpdateDashboard)], opts...)

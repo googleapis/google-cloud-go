@@ -105,6 +105,9 @@ type AutoscalingPolicyClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	autoscalingPolicyClient dataprocpb.AutoscalingPolicyServiceClient
 
@@ -130,13 +133,19 @@ func NewAutoscalingPolicyClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &AutoscalingPolicyClient{
-		connPool:    connPool,
-		CallOptions: defaultAutoscalingPolicyCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultAutoscalingPolicyCallOptions(),
 
 		autoscalingPolicyClient: dataprocpb.NewAutoscalingPolicyServiceClient(connPool),
 	}
@@ -169,6 +178,11 @@ func (c *AutoscalingPolicyClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateAutoscalingPolicy creates new autoscaling policy.
 func (c *AutoscalingPolicyClient) CreateAutoscalingPolicy(ctx context.Context, req *dataprocpb.CreateAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateAutoscalingPolicy[0:len(c.CallOptions.CreateAutoscalingPolicy):len(c.CallOptions.CreateAutoscalingPolicy)], opts...)
@@ -189,6 +203,11 @@ func (c *AutoscalingPolicyClient) CreateAutoscalingPolicy(ctx context.Context, r
 // Disabled check for update_mask, because all updates will be full
 // replacements.
 func (c *AutoscalingPolicyClient) UpdateAutoscalingPolicy(ctx context.Context, req *dataprocpb.UpdateAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateAutoscalingPolicy[0:len(c.CallOptions.UpdateAutoscalingPolicy):len(c.CallOptions.UpdateAutoscalingPolicy)], opts...)
@@ -206,6 +225,11 @@ func (c *AutoscalingPolicyClient) UpdateAutoscalingPolicy(ctx context.Context, r
 
 // GetAutoscalingPolicy retrieves autoscaling policy.
 func (c *AutoscalingPolicyClient) GetAutoscalingPolicy(ctx context.Context, req *dataprocpb.GetAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAutoscalingPolicy[0:len(c.CallOptions.GetAutoscalingPolicy):len(c.CallOptions.GetAutoscalingPolicy)], opts...)
@@ -246,7 +270,7 @@ func (c *AutoscalingPolicyClient) ListAutoscalingPolicies(ctx context.Context, r
 		}
 
 		it.Response = resp
-		return resp.Policies, resp.NextPageToken, nil
+		return resp.GetPolicies(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -257,14 +281,19 @@ func (c *AutoscalingPolicyClient) ListAutoscalingPolicies(ctx context.Context, r
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // DeleteAutoscalingPolicy deletes an autoscaling policy. It is an error to delete an autoscaling
 // policy that is in use by one or more clusters.
 func (c *AutoscalingPolicyClient) DeleteAutoscalingPolicy(ctx context.Context, req *dataprocpb.DeleteAutoscalingPolicyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAutoscalingPolicy[0:len(c.CallOptions.DeleteAutoscalingPolicy):len(c.CallOptions.DeleteAutoscalingPolicy)], opts...)

@@ -73,6 +73,9 @@ type LookupClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	lookupClient servicedirectorypb.LookupServiceClient
 
@@ -97,13 +100,19 @@ func NewLookupClient(ctx context.Context, opts ...option.ClientOption) (*LookupC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &LookupClient{
-		connPool:    connPool,
-		CallOptions: defaultLookupCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultLookupCallOptions(),
 
 		lookupClient: servicedirectorypb.NewLookupServiceClient(connPool),
 	}
@@ -138,6 +147,11 @@ func (c *LookupClient) setGoogleClientInfo(keyval ...string) {
 // associated endpoints.
 // Resolving a service is not considered an active developer method.
 func (c *LookupClient) ResolveService(ctx context.Context, req *servicedirectorypb.ResolveServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.ResolveServiceResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResolveService[0:len(c.CallOptions.ResolveService):len(c.CallOptions.ResolveService)], opts...)

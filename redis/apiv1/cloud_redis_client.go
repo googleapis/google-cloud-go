@@ -82,6 +82,9 @@ type CloudRedisClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	cloudRedisClient redispb.CloudRedisClient
 
@@ -130,13 +133,19 @@ func NewCloudRedisClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CloudRedisClient{
-		connPool:    connPool,
-		CallOptions: defaultCloudRedisCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCloudRedisCallOptions(),
 
 		cloudRedisClient: redispb.NewCloudRedisClient(connPool),
 	}
@@ -210,7 +219,7 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		}
 
 		it.Response = resp
-		return resp.Instances, resp.NextPageToken, nil
+		return resp.GetInstances(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -221,13 +230,18 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetInstance gets the details of a specific Redis instance.
 func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInstanceRequest, opts ...gax.CallOption) (*redispb.Instance, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetInstance[0:len(c.CallOptions.GetInstance):len(c.CallOptions.GetInstance)], opts...)
@@ -256,6 +270,11 @@ func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInst
 // The returned operation is automatically deleted after a few hours, so there
 // is no need to call DeleteOperation.
 func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.CreateInstanceRequest, opts ...gax.CallOption) (*CreateInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateInstance[0:len(c.CallOptions.CreateInstance):len(c.CallOptions.CreateInstance)], opts...)
@@ -279,6 +298,11 @@ func (c *CloudRedisClient) CreateInstance(ctx context.Context, req *redispb.Crea
 // in the response field. The returned operation is automatically deleted
 // after a few hours, so there is no need to call DeleteOperation.
 func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.UpdateInstanceRequest, opts ...gax.CallOption) (*UpdateInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "instance.name", url.QueryEscape(req.GetInstance().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateInstance[0:len(c.CallOptions.UpdateInstance):len(c.CallOptions.UpdateInstance)], opts...)
@@ -299,6 +323,11 @@ func (c *CloudRedisClient) UpdateInstance(ctx context.Context, req *redispb.Upda
 // UpgradeInstance upgrades Redis instance to the newer Redis version specified in the
 // request.
 func (c *CloudRedisClient) UpgradeInstance(ctx context.Context, req *redispb.UpgradeInstanceRequest, opts ...gax.CallOption) (*UpgradeInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpgradeInstance[0:len(c.CallOptions.UpgradeInstance):len(c.CallOptions.UpgradeInstance)], opts...)
@@ -325,6 +354,11 @@ func (c *CloudRedisClient) UpgradeInstance(ctx context.Context, req *redispb.Upg
 // The returned operation is automatically deleted after a few hours, so
 // there is no need to call DeleteOperation.
 func (c *CloudRedisClient) ImportInstance(ctx context.Context, req *redispb.ImportInstanceRequest, opts ...gax.CallOption) (*ImportInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportInstance[0:len(c.CallOptions.ImportInstance):len(c.CallOptions.ImportInstance)], opts...)
@@ -349,6 +383,11 @@ func (c *CloudRedisClient) ImportInstance(ctx context.Context, req *redispb.Impo
 // The returned operation is automatically deleted after a few hours, so
 // there is no need to call DeleteOperation.
 func (c *CloudRedisClient) ExportInstance(ctx context.Context, req *redispb.ExportInstanceRequest, opts ...gax.CallOption) (*ExportInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportInstance[0:len(c.CallOptions.ExportInstance):len(c.CallOptions.ExportInstance)], opts...)
@@ -369,6 +408,11 @@ func (c *CloudRedisClient) ExportInstance(ctx context.Context, req *redispb.Expo
 // FailoverInstance initiates a failover of the master node to current replica node for a
 // specific STANDARD tier Cloud Memorystore for Redis instance.
 func (c *CloudRedisClient) FailoverInstance(ctx context.Context, req *redispb.FailoverInstanceRequest, opts ...gax.CallOption) (*FailoverInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.FailoverInstance[0:len(c.CallOptions.FailoverInstance):len(c.CallOptions.FailoverInstance)], opts...)
@@ -389,6 +433,11 @@ func (c *CloudRedisClient) FailoverInstance(ctx context.Context, req *redispb.Fa
 // DeleteInstance deletes a specific Redis instance.  Instance stops serving and data is
 // deleted.
 func (c *CloudRedisClient) DeleteInstance(ctx context.Context, req *redispb.DeleteInstanceRequest, opts ...gax.CallOption) (*DeleteInstanceOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteInstance[0:len(c.CallOptions.DeleteInstance):len(c.CallOptions.DeleteInstance)], opts...)

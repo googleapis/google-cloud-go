@@ -45,6 +45,7 @@ type microgenConfig struct {
 }
 
 var microgenGapicConfigs = []*microgenConfig{
+	// Cloud APIs
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
 		pkg:                   "texttospeech",
@@ -672,6 +673,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/pubsublite/v1",
+		pkg:                   "pubsublite",
+		importPath:            "cloud.google.com/go/pubsublite/apiv1",
+		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
 		pkg:                   "automl",
 		importPath:            "cloud.google.com/go/automl/apiv1",
@@ -701,6 +710,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/servicedirectory/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/servicedirectory/v1beta1/servicedirectory_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/servicedirectory/v1beta1/servicedirectory_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/gaming/v1",
+		pkg:                   "gaming",
+		importPath:            "cloud.google.com/go/gaming/apiv1",
+		gRPCServiceConfigPath: "google/cloud/gaming/v1/gaming_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gaming/v1/gaming_gapic.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -750,5 +767,63 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1beta1/billingbudgets_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets_gapic.yaml",
 		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/video/transcoder/v1beta1",
+		pkg:                   "transcoder",
+		importPath:            "cloud.google.com/go/video/transcoder/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/video/transcoder/v1beta1/transcoder_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/video/transcoder/v1beta1/transcoder_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/workflows/v1beta",
+		pkg:                   "workflows",
+		importPath:            "cloud.google.com/go/workflows/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/workflows/v1beta/workflows_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/workflows/v1beta/workflows_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/workflows/executions/v1beta",
+		pkg:                   "executions",
+		importPath:            "cloud.google.com/go/workflows/executions/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/workflows/executions/v1beta/executions_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/workflows/executions/v1beta/executions_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/security/privateca/v1beta1",
+		pkg:                   "privateca",
+		importPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/security/privateca/v1beta1/privateca_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/security/privateca/v1beta1/privateca_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+
+	// Non-Cloud APIs
+	{
+		inputDirectoryPath:    "google/analytics/admin/v1alpha",
+		pkg:                   "admin",
+		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/admin/v1alpha/admin_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/analytics/data/v1alpha",
+		pkg:                   "data",
+		importPath:            "cloud.google.com/go/analytics/data/apiv1alpha",
+		gRPCServiceConfigPath: "google/analytics/data/v1alpha/analytics_data_grpc_service_config.json",
+		apiServiceConfigPath:  "google/analytics/data/v1alpha/analyticsdata_gapic.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/area120/tables/v1alpha1",
+		pkg:                   "tables",
+		importPath:            "cloud.google.com/go/area120/tables/apiv1alpha1",
+		gRPCServiceConfigPath: "google/area120/tables/v1alpha1/tables_grpc_service_config.json",
+		apiServiceConfigPath:  "google/area120/tables/v1alpha1/language_gapic.yaml",
+		releaseLevel:          "alpha",
 	},
 }
