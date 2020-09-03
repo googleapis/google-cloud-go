@@ -818,10 +818,10 @@ func (s *server) CheckAndMutateRow(ctx context.Context, req *btpb.CheckAndMutate
 	// Figure out which mutation to apply.
 	whichMut := false
 	if req.PredicateFilter == nil {
-		// Use true_mutations iff row contains any cells.
+		// Use true_mutations if row contains any cells.
 		whichMut = !r.isEmpty()
 	} else {
-		// Use true_mutations iff any cells in the row match the filter.
+		// Use true_mutations if any cells in the row match the filter.
 		// TODO(dsymonds): This could be cheaper.
 		nr := r.copy()
 
