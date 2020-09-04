@@ -41,29 +41,30 @@ var newCertificateAuthorityClientHook clientHook
 
 // CertificateAuthorityCallOptions contains the retry settings for each method of CertificateAuthorityClient.
 type CertificateAuthorityCallOptions struct {
-	ListCertificateAuthorities         []gax.CallOption
-	ListCertificateRevocationLists     []gax.CallOption
-	ListCertificates                   []gax.CallOption
-	ListReusableConfigs                []gax.CallOption
-	GetCertificateAuthority            []gax.CallOption
-	GetCertificateRevocationList       []gax.CallOption
-	GetCertificate                     []gax.CallOption
-	GetReusableConfig                  []gax.CallOption
-	CreateCertificateAuthority         []gax.CallOption
-	CreateCertificateRevocationList    []gax.CallOption
 	CreateCertificate                  []gax.CallOption
-	CreateReusableConfig               []gax.CallOption
-	UpdateCertificateAuthority         []gax.CallOption
-	UpdateCertificateRevocationList    []gax.CallOption
+	GetCertificate                     []gax.CallOption
+	ListCertificates                   []gax.CallOption
+	RevokeCertificate                  []gax.CallOption
 	UpdateCertificate                  []gax.CallOption
-	UpdateReusableConfig               []gax.CallOption
-	GetCertificateAuthorityCsr         []gax.CallOption
 	ActivateCertificateAuthority       []gax.CallOption
+	CreateCertificateAuthority         []gax.CallOption
 	DisableCertificateAuthority        []gax.CallOption
 	EnableCertificateAuthority         []gax.CallOption
-	ScheduleDeleteCertificateAuthority []gax.CallOption
+	FetchCertificateAuthorityCsr       []gax.CallOption
+	GetCertificateAuthority            []gax.CallOption
+	ListCertificateAuthorities         []gax.CallOption
 	RestoreCertificateAuthority        []gax.CallOption
-	RevokeCertificate                  []gax.CallOption
+	ScheduleDeleteCertificateAuthority []gax.CallOption
+	UpdateCertificateAuthority         []gax.CallOption
+	CreateCertificateRevocationList    []gax.CallOption
+	GetCertificateRevocationList       []gax.CallOption
+	ListCertificateRevocationLists     []gax.CallOption
+	UpdateCertificateRevocationList    []gax.CallOption
+	CreateReusableConfig               []gax.CallOption
+	DeleteReusableConfig               []gax.CallOption
+	GetReusableConfig                  []gax.CallOption
+	ListReusableConfigs                []gax.CallOption
+	UpdateReusableConfig               []gax.CallOption
 }
 
 func defaultCertificateAuthorityClientOptions() []option.ClientOption {
@@ -78,72 +79,7 @@ func defaultCertificateAuthorityClientOptions() []option.ClientOption {
 
 func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 	return &CertificateAuthorityCallOptions{
-		ListCertificateAuthorities: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListCertificateRevocationLists: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListCertificates: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListReusableConfigs: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetCertificateAuthority: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetCertificateRevocationList: []gax.CallOption{
+		CreateCertificate: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -169,7 +105,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		GetReusableConfig: []gax.CallOption{
+		ListCertificates: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -182,72 +118,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		CreateCertificateAuthority: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateCertificateRevocationList: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateCertificate: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateReusableConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateCertificateAuthority: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateCertificateRevocationList: []gax.CallOption{
+		RevokeCertificate: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -273,33 +144,20 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		UpdateReusableConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		GetCertificateAuthorityCsr: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
 		ActivateCertificateAuthority: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCertificateAuthority: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -338,7 +196,33 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		ScheduleDeleteCertificateAuthority: []gax.CallOption{
+		FetchCertificateAuthorityCsr: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCertificateAuthority: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCertificateAuthorities: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -364,7 +248,137 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		RevokeCertificate: []gax.CallOption{
+		ScheduleDeleteCertificateAuthority: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCertificateAuthority: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCertificateRevocationList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCertificateRevocationList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCertificateRevocationLists: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCertificateRevocationList: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateReusableConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteReusableConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetReusableConfig: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListReusableConfigs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateReusableConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -473,86 +487,49 @@ func (c *CertificateAuthorityClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListCertificateAuthorities lists CertificateAuthorities.
-func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
+// CreateCertificate create a new Certificate in a given Project, Location from a particular
+// CertificateAuthority.
+func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCertificateAuthorities[0:len(c.CallOptions.ListCertificateAuthorities):len(c.CallOptions.ListCertificateAuthorities)], opts...)
-	it := &CertificateAuthorityIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
-		var resp *privatecapb.ListCertificateAuthoritiesResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.certificateAuthorityClient.ListCertificateAuthorities(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetCertificateAuthorities(), resp.GetNextPageToken(), nil
+	opts = append(c.CallOptions.CreateCertificate[0:len(c.CallOptions.CreateCertificate):len(c.CallOptions.CreateCertificate)], opts...)
+	var resp *privatecapb.Certificate
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.CreateCertificate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
+	return resp, nil
 }
 
-// ListCertificateRevocationLists lists CertificateRevocationLists.
-func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+// GetCertificate returns a Certificate.
+func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCertificateRevocationLists[0:len(c.CallOptions.ListCertificateRevocationLists):len(c.CallOptions.ListCertificateRevocationLists)], opts...)
-	it := &CertificateRevocationListIterator{}
-	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
-		var resp *privatecapb.ListCertificateRevocationListsResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.certificateAuthorityClient.ListCertificateRevocationLists(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetCertificateRevocationLists(), resp.GetNextPageToken(), nil
+	opts = append(c.CallOptions.GetCertificate[0:len(c.CallOptions.GetCertificate):len(c.CallOptions.GetCertificate)], opts...)
+	var resp *privatecapb.Certificate
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.GetCertificate(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
 	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
+	return resp, nil
 }
 
 // ListCertificates lists Certificates.
@@ -596,49 +573,8 @@ func (c *CertificateAuthorityClient) ListCertificates(ctx context.Context, req *
 	return it
 }
 
-// ListReusableConfigs lists ReusableConfigs.
-func (c *CertificateAuthorityClient) ListReusableConfigs(ctx context.Context, req *privatecapb.ListReusableConfigsRequest, opts ...gax.CallOption) *ReusableConfigIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListReusableConfigs[0:len(c.CallOptions.ListReusableConfigs):len(c.CallOptions.ListReusableConfigs)], opts...)
-	it := &ReusableConfigIterator{}
-	req = proto.Clone(req).(*privatecapb.ListReusableConfigsRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.ReusableConfig, string, error) {
-		var resp *privatecapb.ListReusableConfigsResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.certificateAuthorityClient.ListReusableConfigs(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetReusableConfigs(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
-}
-
-// GetCertificateAuthority returns a CertificateAuthority.
-func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
+// RevokeCertificate revoke a Certificate.
+func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -646,227 +582,17 @@ func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificateAuthority[0:len(c.CallOptions.GetCertificateAuthority):len(c.CallOptions.GetCertificateAuthority)], opts...)
-	var resp *privatecapb.CertificateAuthority
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificateAuthority(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// GetCertificateRevocationList returns a CertificateRevocationList.
-func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificateRevocationList[0:len(c.CallOptions.GetCertificateRevocationList):len(c.CallOptions.GetCertificateRevocationList)], opts...)
-	var resp *privatecapb.CertificateRevocationList
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificateRevocationList(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// GetCertificate returns a Certificate.
-func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificate[0:len(c.CallOptions.GetCertificate):len(c.CallOptions.GetCertificate)], opts...)
+	opts = append(c.CallOptions.RevokeCertificate[0:len(c.CallOptions.RevokeCertificate):len(c.CallOptions.RevokeCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificate(ctx, req, settings.GRPC...)
+		resp, err = c.certificateAuthorityClient.RevokeCertificate(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
-}
-
-// GetReusableConfig returns a ReusableConfig.
-func (c *CertificateAuthorityClient) GetReusableConfig(ctx context.Context, req *privatecapb.GetReusableConfigRequest, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetReusableConfig[0:len(c.CallOptions.GetReusableConfig):len(c.CallOptions.GetReusableConfig)], opts...)
-	var resp *privatecapb.ReusableConfig
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.GetReusableConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
-func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificateAuthority[0:len(c.CallOptions.CreateCertificateAuthority):len(c.CallOptions.CreateCertificateAuthority)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificateAuthority(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// CreateCertificateRevocationList create a new CertificateRevocationList in a given Project, Location
-// for a particular CertificateAuthority.
-func (c *CertificateAuthorityClient) CreateCertificateRevocationList(ctx context.Context, req *privatecapb.CreateCertificateRevocationListRequest, opts ...gax.CallOption) (*CreateCertificateRevocationListOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificateRevocationList[0:len(c.CallOptions.CreateCertificateRevocationList):len(c.CallOptions.CreateCertificateRevocationList)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificateRevocationList(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// CreateCertificate create a new Certificate in a given Project, Location from a particular
-// CertificateAuthority.
-func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificate[0:len(c.CallOptions.CreateCertificate):len(c.CallOptions.CreateCertificate)], opts...)
-	var resp *privatecapb.Certificate
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificate(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// CreateReusableConfig create a new ReusableConfig in a given Project and Location.
-func (c *CertificateAuthorityClient) CreateReusableConfig(ctx context.Context, req *privatecapb.CreateReusableConfigRequest, opts ...gax.CallOption) (*CreateReusableConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateReusableConfig[0:len(c.CallOptions.CreateReusableConfig):len(c.CallOptions.CreateReusableConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.CreateReusableConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// UpdateCertificateAuthority update a CertificateAuthority.
-func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_authority.name", url.QueryEscape(req.GetCertificateAuthority().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCertificateAuthority[0:len(c.CallOptions.UpdateCertificateAuthority):len(c.CallOptions.UpdateCertificateAuthority)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCertificateAuthority(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// UpdateCertificateRevocationList update a CertificateRevocationList.
-func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_revocation_list.name", url.QueryEscape(req.GetCertificateRevocationList().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCertificateRevocationList[0:len(c.CallOptions.UpdateCertificateRevocationList):len(c.CallOptions.UpdateCertificateRevocationList)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.UpdateCertificateRevocationList(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
 }
 
 // UpdateCertificate update a Certificate.
@@ -891,53 +617,12 @@ func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req 
 	return resp, nil
 }
 
-// UpdateReusableConfig update a ReusableConfig.
-func (c *CertificateAuthorityClient) UpdateReusableConfig(ctx context.Context, req *privatecapb.UpdateReusableConfigRequest, opts ...gax.CallOption) (*UpdateReusableConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reusable_config.name", url.QueryEscape(req.GetReusableConfig().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateReusableConfig[0:len(c.CallOptions.UpdateReusableConfig):len(c.CallOptions.UpdateReusableConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.UpdateReusableConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// GetCertificateAuthorityCsr get the CSR for a pending CertificateAuthority.
-func (c *CertificateAuthorityClient) GetCertificateAuthorityCsr(ctx context.Context, req *privatecapb.GetCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.GetCertificateAuthorityCsrResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificateAuthorityCsr[0:len(c.CallOptions.GetCertificateAuthorityCsr):len(c.CallOptions.GetCertificateAuthorityCsr)], opts...)
-	var resp *privatecapb.GetCertificateAuthorityCsrResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.GetCertificateAuthorityCsr(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// ActivateCertificateAuthority activate a pending CertificateAuthority.
+// ActivateCertificateAuthority activate a CertificateAuthority that is in state
+// PENDING_ACTIVATION and is
+// of type SUBORDINATE. After the
+// parent Certificate Authority signs a certificate signing request from
+// FetchCertificateAuthorityCsr, this method can complete the activation
+// process.
 func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -957,6 +642,30 @@ func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Co
 		return nil, err
 	}
 	return &ActivateCertificateAuthorityOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
+func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateCertificateAuthority[0:len(c.CallOptions.CreateCertificateAuthority):len(c.CallOptions.CreateCertificateAuthority)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.CreateCertificateAuthority(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateCertificateAuthorityOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
 }
@@ -1009,8 +718,14 @@ func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Cont
 	}, nil
 }
 
-// ScheduleDeleteCertificateAuthority schedule a CertificateAuthority for deletion.
-func (c *CertificateAuthorityClient) ScheduleDeleteCertificateAuthority(ctx context.Context, req *privatecapb.ScheduleDeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*ScheduleDeleteCertificateAuthorityOperation, error) {
+// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a CertificateAuthority
+// that is in state
+// PENDING_ACTIVATION and is
+// of type SUBORDINATE. The CSR must
+// then be signed by the desired parent Certificate Authority, which could be
+// another CertificateAuthority resource, or could be an on-prem
+// certificate authority. See also ActivateCertificateAuthority.
+func (c *CertificateAuthorityClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1018,19 +733,80 @@ func (c *CertificateAuthorityClient) ScheduleDeleteCertificateAuthority(ctx cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ScheduleDeleteCertificateAuthority[0:len(c.CallOptions.ScheduleDeleteCertificateAuthority):len(c.CallOptions.ScheduleDeleteCertificateAuthority)], opts...)
-	var resp *longrunningpb.Operation
+	opts = append(c.CallOptions.FetchCertificateAuthorityCsr[0:len(c.CallOptions.FetchCertificateAuthorityCsr):len(c.CallOptions.FetchCertificateAuthorityCsr)], opts...)
+	var resp *privatecapb.FetchCertificateAuthorityCsrResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.ScheduleDeleteCertificateAuthority(ctx, req, settings.GRPC...)
+		resp, err = c.certificateAuthorityClient.FetchCertificateAuthorityCsr(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return &ScheduleDeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
+	return resp, nil
+}
+
+// GetCertificateAuthority returns a CertificateAuthority.
+func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetCertificateAuthority[0:len(c.CallOptions.GetCertificateAuthority):len(c.CallOptions.GetCertificateAuthority)], opts...)
+	var resp *privatecapb.CertificateAuthority
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.GetCertificateAuthority(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListCertificateAuthorities lists CertificateAuthorities.
+func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListCertificateAuthorities[0:len(c.CallOptions.ListCertificateAuthorities):len(c.CallOptions.ListCertificateAuthorities)], opts...)
+	it := &CertificateAuthorityIterator{}
+	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
+		var resp *privatecapb.ListCertificateAuthoritiesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.certificateAuthorityClient.ListCertificateAuthorities(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCertificateAuthorities(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
 }
 
 // RestoreCertificateAuthority restore a CertificateAuthority that is scheduled for deletion.
@@ -1057,8 +833,8 @@ func (c *CertificateAuthorityClient) RestoreCertificateAuthority(ctx context.Con
 	}, nil
 }
 
-// RevokeCertificate revoke a Certificate.
-func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+// ScheduleDeleteCertificateAuthority schedule a CertificateAuthority for deletion.
+func (c *CertificateAuthorityClient) ScheduleDeleteCertificateAuthority(ctx context.Context, req *privatecapb.ScheduleDeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*ScheduleDeleteCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1066,17 +842,290 @@ func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RevokeCertificate[0:len(c.CallOptions.RevokeCertificate):len(c.CallOptions.RevokeCertificate)], opts...)
-	var resp *privatecapb.Certificate
+	opts = append(c.CallOptions.ScheduleDeleteCertificateAuthority[0:len(c.CallOptions.ScheduleDeleteCertificateAuthority):len(c.CallOptions.ScheduleDeleteCertificateAuthority)], opts...)
+	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.certificateAuthorityClient.RevokeCertificate(ctx, req, settings.GRPC...)
+		resp, err = c.certificateAuthorityClient.ScheduleDeleteCertificateAuthority(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ScheduleDeleteCertificateAuthorityOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// UpdateCertificateAuthority update a CertificateAuthority.
+func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_authority.name", url.QueryEscape(req.GetCertificateAuthority().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateCertificateAuthority[0:len(c.CallOptions.UpdateCertificateAuthority):len(c.CallOptions.UpdateCertificateAuthority)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.UpdateCertificateAuthority(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateCertificateAuthorityOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// CreateCertificateRevocationList create a new CertificateRevocationList in a given Project, Location
+// for a particular CertificateAuthority.
+func (c *CertificateAuthorityClient) CreateCertificateRevocationList(ctx context.Context, req *privatecapb.CreateCertificateRevocationListRequest, opts ...gax.CallOption) (*CreateCertificateRevocationListOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateCertificateRevocationList[0:len(c.CallOptions.CreateCertificateRevocationList):len(c.CallOptions.CreateCertificateRevocationList)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.CreateCertificateRevocationList(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateCertificateRevocationListOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// GetCertificateRevocationList returns a CertificateRevocationList.
+func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetCertificateRevocationList[0:len(c.CallOptions.GetCertificateRevocationList):len(c.CallOptions.GetCertificateRevocationList)], opts...)
+	var resp *privatecapb.CertificateRevocationList
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.GetCertificateRevocationList(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return resp, nil
+}
+
+// ListCertificateRevocationLists lists CertificateRevocationLists.
+func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListCertificateRevocationLists[0:len(c.CallOptions.ListCertificateRevocationLists):len(c.CallOptions.ListCertificateRevocationLists)], opts...)
+	it := &CertificateRevocationListIterator{}
+	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
+		var resp *privatecapb.ListCertificateRevocationListsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.certificateAuthorityClient.ListCertificateRevocationLists(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCertificateRevocationLists(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// UpdateCertificateRevocationList update a CertificateRevocationList.
+func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_revocation_list.name", url.QueryEscape(req.GetCertificateRevocationList().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateCertificateRevocationList[0:len(c.CallOptions.UpdateCertificateRevocationList):len(c.CallOptions.UpdateCertificateRevocationList)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.UpdateCertificateRevocationList(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateCertificateRevocationListOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// CreateReusableConfig create a new ReusableConfig in a given Project and Location.
+func (c *CertificateAuthorityClient) CreateReusableConfig(ctx context.Context, req *privatecapb.CreateReusableConfigRequest, opts ...gax.CallOption) (*CreateReusableConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateReusableConfig[0:len(c.CallOptions.CreateReusableConfig):len(c.CallOptions.CreateReusableConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.CreateReusableConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateReusableConfigOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// DeleteReusableConfig deleteReusableConfig deletes a ReusableConfig.
+func (c *CertificateAuthorityClient) DeleteReusableConfig(ctx context.Context, req *privatecapb.DeleteReusableConfigRequest, opts ...gax.CallOption) (*DeleteReusableConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteReusableConfig[0:len(c.CallOptions.DeleteReusableConfig):len(c.CallOptions.DeleteReusableConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.DeleteReusableConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteReusableConfigOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// GetReusableConfig returns a ReusableConfig.
+func (c *CertificateAuthorityClient) GetReusableConfig(ctx context.Context, req *privatecapb.GetReusableConfigRequest, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetReusableConfig[0:len(c.CallOptions.GetReusableConfig):len(c.CallOptions.GetReusableConfig)], opts...)
+	var resp *privatecapb.ReusableConfig
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.GetReusableConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListReusableConfigs lists ReusableConfigs.
+func (c *CertificateAuthorityClient) ListReusableConfigs(ctx context.Context, req *privatecapb.ListReusableConfigsRequest, opts ...gax.CallOption) *ReusableConfigIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListReusableConfigs[0:len(c.CallOptions.ListReusableConfigs):len(c.CallOptions.ListReusableConfigs)], opts...)
+	it := &ReusableConfigIterator{}
+	req = proto.Clone(req).(*privatecapb.ListReusableConfigsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.ReusableConfig, string, error) {
+		var resp *privatecapb.ListReusableConfigsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.certificateAuthorityClient.ListReusableConfigs(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetReusableConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// UpdateReusableConfig update a ReusableConfig.
+func (c *CertificateAuthorityClient) UpdateReusableConfig(ctx context.Context, req *privatecapb.UpdateReusableConfigRequest, opts ...gax.CallOption) (*UpdateReusableConfigOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reusable_config.name", url.QueryEscape(req.GetReusableConfig().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateReusableConfig[0:len(c.CallOptions.UpdateReusableConfig):len(c.CallOptions.UpdateReusableConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.certificateAuthorityClient.UpdateReusableConfig(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &UpdateReusableConfigOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
 }
 
 // ActivateCertificateAuthorityOperation manages a long-running operation from ActivateCertificateAuthority.
@@ -1352,6 +1401,64 @@ func (op *CreateReusableConfigOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateReusableConfigOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteReusableConfigOperation manages a long-running operation from DeleteReusableConfig.
+type DeleteReusableConfigOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteReusableConfigOperation returns a new DeleteReusableConfigOperation from a given name.
+// The name must be that of a previously created DeleteReusableConfigOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) DeleteReusableConfigOperation(name string) *DeleteReusableConfigOperation {
+	return &DeleteReusableConfigOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteReusableConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteReusableConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	return op.lro.Poll(ctx, nil, opts...)
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteReusableConfigOperation) Metadata() (*privatecapb.OperationMetadata, error) {
+	var meta privatecapb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteReusableConfigOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteReusableConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
