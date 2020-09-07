@@ -319,6 +319,11 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 				return st
 			}
 			return nil
+		case spansql.DropColumn:
+			if st := t.dropColumn(alt.Name); st.Code() != codes.OK {
+				return st
+			}
+			return nil
 		case spansql.AlterColumn:
 			if st := t.alterColumn(alt); st.Code() != codes.OK {
 				return st
@@ -622,6 +627,38 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		Type: cd.Type,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
+
+	return nil
+}
+
+func (t *table) dropColumn(name string) *status.Status {
+	// Only permit dropping non-key columns that aren't part of a secondary index.
+	// We don't support indexes, so only check that it isn't part of the primary key.
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
+
+	ci, ok := t.colIndex[name]
+	if !ok {
+		// TODO: What's the right response code?
+		return status.Newf(codes.InvalidArgument, "unknown column %q", name)
+	}
+	if ci < t.pkCols {
+		// TODO: What's the right response code?
+		return status.Newf(codes.InvalidArgument, "can't drop primary key column %q", name)
+	}
+
+	// Remove from cols and colIndex, and renumber colIndex.
+	t.cols = append(t.cols[:ci], t.cols[ci+1:]...)
+	delete(t.colIndex, name)
+	for i, col := range t.cols {
+		t.colIndex[col.Name] = i
+	}
+
+	// Drop data.
+	for i := range t.rows {
+		t.rows[i] = append(t.rows[i][:ci], t.rows[i][ci+1:]...)
+	}
 
 	return nil
 }
