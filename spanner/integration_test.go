@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"reflect"
 	"regexp"
@@ -93,6 +94,7 @@ var (
 				DateArray	ARRAY<DATE>,
 				Timestamp	TIMESTAMP,
 				TimestampArray	ARRAY<TIMESTAMP>,
+				Numeric NUMERIC,
 			) PRIMARY KEY (RowID)`,
 	}
 
@@ -1318,7 +1320,42 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	stmts := singerDBStatements
+	if isEmulatorEnvSet() {
+		stmts = []string{
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+			`CREATE TABLE Accounts (
+					AccountId	INT64 NOT NULL,
+					Nickname	STRING(100),
+					Balance		INT64 NOT NULL,
+				) PRIMARY KEY (AccountId)`,
+			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+			`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					String		STRING(MAX),
+					StringArray	ARRAY<STRING(MAX)>,
+					Bytes		BYTES(MAX),
+					BytesArray	ARRAY<BYTES(MAX)>,
+					Int64a		INT64,
+					Int64Array	ARRAY<INT64>,
+					Bool		BOOL,
+					BoolArray	ARRAY<BOOL>,
+					Float64		FLOAT64,
+					Float64Array	ARRAY<FLOAT64>,
+					Date		DATE,
+					DateArray	ARRAY<DATE>,
+					Timestamp	TIMESTAMP,
+					TimestampArray	ARRAY<TIMESTAMP>,
+				) PRIMARY KEY (RowID)`,
+		}
+	}
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
 
 	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
@@ -1329,6 +1366,10 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	// Boundaries
 	d2, _ := civil.ParseDate("0001-01-01")
 	d3, _ := civil.ParseDate("9999-12-31")
+
+	n0 := big.Rat{}
+	n1 := *big.NewRat(123456789, 1)
+	n2 := *big.NewRat(123456789, 1000000000)
 
 	tests := []struct {
 		col  string
@@ -1418,6 +1459,25 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
+	}
+
+	if !isEmulatorEnvSet() {
+		for _, tc := range []struct {
+			col  string
+			val  interface{}
+			want interface{}
+		}{
+			{col: "Numeric", val: n1},
+			{col: "Numeric", val: n2},
+			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+			{col: "Numeric", val: NullNumeric{n0, false}},
+			{col: "Numeric", val: nil, want: NullNumeric{}},
+		} {
+			tests = append(tests, tc)
+		}
 	}
 
 	// Write rows into table first.
@@ -3124,8 +3184,12 @@ func maxDuration(a, b time.Duration) time.Duration {
 	return b
 }
 
+func isEmulatorEnvSet() bool {
+	return os.Getenv("SPANNER_EMULATOR_HOST") != ""
+}
+
 func skipEmulatorTest(t *testing.T) {
-	if os.Getenv("SPANNER_EMULATOR_HOST") != "" {
+	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
 	}
 }
