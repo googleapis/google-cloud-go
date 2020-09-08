@@ -94,7 +94,6 @@ var (
 				DateArray	ARRAY<DATE>,
 				Timestamp	TIMESTAMP,
 				TimestampArray	ARRAY<TIMESTAMP>,
-				Numeric		NUMERIC
 			) PRIMARY KEY (RowID)`,
 	}
 
@@ -1321,7 +1320,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	stmts := singerDBStatements
-	if isEmulatorEnvSet() {
+	if !isEmulatorEnvSet() {
 		stmts = []string{
 			`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
@@ -1352,6 +1351,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					DateArray	ARRAY<DATE>,
 					Timestamp	TIMESTAMP,
 					TimestampArray	ARRAY<TIMESTAMP>,
+					Numeric		NUMERIC,
+					NumericArray	ARRAY<NUMERIC>
 				) PRIMARY KEY (RowID)`,
 		}
 	}
@@ -1475,6 +1476,12 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
 			{col: "Numeric", val: NullNumeric{n0, false}},
 			{col: "Numeric", val: nil, want: NullNumeric{}},
+			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+			{col: "NumericArray", val: []NullNumeric(nil)},
+			{col: "NumericArray", val: []NullNumeric{}},
+			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
 		} {
 			tests = append(tests, tc)
 		}
