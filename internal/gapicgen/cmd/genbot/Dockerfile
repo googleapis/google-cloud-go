@@ -21,7 +21,7 @@ RUN apk add protoc protobuf-dev
 RUN protoc --version
 
 # Install Go.
-RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.13.4.linux-amd64.tar.gz && \
+RUN wget -O /tmp/go.tgz https://dl.google.com/go/go1.15.linux-amd64.tar.gz && \
     tar -C /usr/local -xzf /tmp/go.tgz && \
     rm /tmp/go.tgz
 ENV PATH /usr/local/go/bin:$PATH
@@ -33,7 +33,7 @@ RUN GO111MODULE=on go get \
     golang.org/x/lint/golint@latest \
     golang.org/x/tools/cmd/goimports@latest \
     honnef.co/go/tools/cmd/staticcheck@latest \
-    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.14.4
+    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.15.1
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3

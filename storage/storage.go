@@ -872,6 +872,10 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 		attrs.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
 		forceSendFields = append(forceSendFields, "TemporaryHold")
 	}
+	if !uattrs.CustomTime.IsZero() {
+		attrs.CustomTime = uattrs.CustomTime
+		forceSendFields = append(forceSendFields, "CustomTime")
+	}
 	if uattrs.Metadata != nil {
 		attrs.Metadata = uattrs.Metadata
 		if len(attrs.Metadata) == 0 {
@@ -944,6 +948,7 @@ type ObjectAttrsToUpdate struct {
 	ContentEncoding    optional.String
 	ContentDisposition optional.String
 	CacheControl       optional.String
+	CustomTime         time.Time
 	Metadata           map[string]string // set to map[string]string{} to delete
 	ACL                []ACLRule
 

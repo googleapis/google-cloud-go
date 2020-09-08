@@ -441,7 +441,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		if err != nil {
 			return nil, err
 		}
-		if len(rowGroups) == 0 {
+		if len(sel.GroupBy) == 0 {
 			// No grouping, so aggregation applies to the entire table (e.g. COUNT(*)).
 			// This may result in a [0,0) entry for empty inputs.
 			rowGroups = [][2]int{{0, len(raw.rows)}}
