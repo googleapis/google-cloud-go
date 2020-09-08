@@ -145,7 +145,8 @@ func (at *AlterTable) clearOffset() {
 	at.Position.Offset = 0
 }
 
-// TableAlteration is satisfied by AddColumn, DropColumn and SetOnDelete.
+// TableAlteration is satisfied by AddColumn, DropColumn, AddConstraint,
+// DropConstraint, SetOnDelete and AlterColumn.
 type TableAlteration interface {
 	isTableAlteration()
 	SQL() string
@@ -168,6 +169,7 @@ type AlterColumn struct {
 	Alteration ColumnAlteration
 }
 
+// ColumnAlteration is satisfied by SetColumnType and SetColumnOptions.
 type ColumnAlteration interface {
 	isColumnAlteration()
 	SQL() string
