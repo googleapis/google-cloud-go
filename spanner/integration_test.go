@@ -94,7 +94,7 @@ var (
 				DateArray	ARRAY<DATE>,
 				Timestamp	TIMESTAMP,
 				TimestampArray	ARRAY<TIMESTAMP>,
-				Numeric		NUMERIC,
+				Numeric		NUMERIC
 			) PRIMARY KEY (RowID)`,
 	}
 
