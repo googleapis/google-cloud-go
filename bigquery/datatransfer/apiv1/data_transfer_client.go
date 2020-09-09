@@ -308,7 +308,7 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 		}
 
 		it.Response = resp
-		return resp.DataSources, resp.NextPageToken, nil
+		return resp.GetDataSources(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -319,8 +319,8 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -415,7 +415,7 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 		}
 
 		it.Response = resp
-		return resp.TransferConfigs, resp.NextPageToken, nil
+		return resp.GetTransferConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -426,8 +426,8 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -527,7 +527,7 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 		}
 
 		it.Response = resp
-		return resp.TransferRuns, resp.NextPageToken, nil
+		return resp.GetTransferRuns(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -538,8 +538,8 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -568,7 +568,7 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 		}
 
 		it.Response = resp
-		return resp.TransferMessages, resp.NextPageToken, nil
+		return resp.GetTransferMessages(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -579,8 +579,8 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

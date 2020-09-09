@@ -211,7 +211,7 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		}
 
 		it.Response = resp
-		return resp.Instances, resp.NextPageToken, nil
+		return resp.GetInstances(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -222,8 +222,8 @@ func (c *CloudRedisClient) ListInstances(ctx context.Context, req *redispb.ListI
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -247,7 +247,7 @@ func (c *CloudRedisClient) GetInstance(ctx context.Context, req *redispb.GetInst
 // CreateInstance creates a Redis instance based on the specified tier and memory size.
 //
 // By default, the instance is accessible from the project’s
-// default network (at /compute/docs/networks-and-firewalls#networks).
+// default network (at https://cloud.google.com/vpc/docs/vpc).
 //
 // The creation is executed asynchronously and callers may check the returned
 // operation to track its progress. Once the operation is completed the Redis

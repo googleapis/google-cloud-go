@@ -34,6 +34,8 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit godoc.org/cloud.google.com/go.
+//
+// Deprecated: Please use cloud.google.com/go/monitoring/apiv3/v2.
 package monitoring // import "cloud.google.com/go/monitoring/apiv3"
 
 import (
@@ -51,7 +53,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200413"
+const versionClient = "20200416"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

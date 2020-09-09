@@ -27,8 +27,15 @@ import (
 )
 
 // generateGapics generates gapics.
-func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
+func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string, gapicToGenerate string) error {
 	for _, c := range microgenGapicConfigs {
+		// Skip generation if generating all of the gapics and the associated
+		// config has a block on it. Or if generating a single gapic and it does
+		// not match the specified import path.
+		if (c.stopGeneration && gapicToGenerate == "") ||
+			(gapicToGenerate != "" && gapicToGenerate != c.importPath) {
+			continue
+		}
 		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
 			return err
 		}
@@ -44,12 +51,6 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 
 	if err := setVersion(gocloudDir); err != nil {
 		return err
-	}
-
-	for _, m := range gapicsWithManual {
-		if err := setGoogleClientInfo(gocloudDir + "/" + m); err != nil {
-			return err
-		}
 	}
 
 	if err := addModReplaceGenproto(gocloudDir, genprotoDir); err != nil {
@@ -111,22 +112,6 @@ go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 	return c.Run()
 }
 
-// setGoogleClientInfo enters a directory and updates setGoogleClientInfo
-// to be public. It is used for gapics which have manuals that use them, since
-// the manual needs to call this function.
-func setGoogleClientInfo(manualDir string) error {
-	// TODO(deklerk): Migrate this all to Go instead of using bash.
-
-	c := command("bash", "-c", `
-find . -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
-find . -name '*.backup' -delete
-`)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = manualDir
-	return c.Run()
-}
-
 // setVersion updates the versionClient constant in all .go files. It may create
 // .backup files on certain systems (darwin), and so should be followed by a
 // clean-up of .backup files.
@@ -165,6 +150,7 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 	}
 
 	args := []string{"-I", googleapisDir,
+		"--experimental_allow_proto3_optional",
 		"-I", protoDir,
 		"--go_gapic_out", gocloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
@@ -238,6 +224,14 @@ var manualEntries = []manifestEntry{
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/profiler",
+		Description:       "Cloud Profiler",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
 		ReleaseLevel:      "ga",
 	},
 	// Manuals with a GAPIC.

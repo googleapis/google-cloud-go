@@ -470,6 +470,17 @@ func TestSignedURL_MissingOptions(t *testing.T) {
 			},
 			"expires must be within seven days from now",
 		},
+		{
+			&SignedURLOptions{
+				GoogleAccessID: "access_id",
+				PrivateKey:     pk,
+				Method:         "GET",
+				Expires:        now.Add(time.Hour),
+				Scheme:         SigningSchemeV2,
+				Style:          VirtualHostedStyle(),
+			},
+			"are permitted with SigningSchemeV2",
+		},
 	}
 	oldUTCNow := utcNow
 	defer func() {
@@ -684,7 +695,7 @@ func TestCondition(t *testing.T) {
 				w.ContentType = "text/plain"
 				return w.Close()
 			},
-			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&prettyPrint=false&projection=full&uploadType=multipart",
+			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=1234&name=obj&prettyPrint=false&projection=full&uploadType=multipart",
 		},
 		{
 			func() error {
@@ -692,7 +703,7 @@ func TestCondition(t *testing.T) {
 				w.ContentType = "text/plain"
 				return w.Close()
 			},
-			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=0&prettyPrint=false&projection=full&uploadType=multipart",
+			"POST /upload/storage/v1/b/buck/o?alt=json&ifGenerationMatch=0&name=obj&prettyPrint=false&projection=full&uploadType=multipart",
 		},
 		{
 			func() error {
@@ -763,13 +774,14 @@ func TestObjectCompose(t *testing.T) {
 	}
 
 	testCases := []struct {
-		desc    string
-		dst     *ObjectHandle
-		srcs    []*ObjectHandle
-		attrs   *ObjectAttrs
-		wantReq raw.ComposeRequest
-		wantURL string
-		wantErr bool
+		desc       string
+		dst        *ObjectHandle
+		srcs       []*ObjectHandle
+		attrs      *ObjectAttrs
+		sendCRC32C bool
+		wantReq    raw.ComposeRequest
+		wantURL    string
+		wantErr    bool
 	}{
 		{
 			desc: "basic case",
@@ -839,6 +851,26 @@ func TestObjectCompose(t *testing.T) {
 			},
 		},
 		{
+			desc: "with crc32c",
+			dst:  c.Bucket("foo").Object("bar"),
+			srcs: []*ObjectHandle{
+				c.Bucket("foo").Object("baz"),
+				c.Bucket("foo").Object("quux"),
+			},
+			attrs: &ObjectAttrs{
+				CRC32C: 42,
+			},
+			sendCRC32C: true,
+			wantURL:    "/storage/v1/b/foo/o/bar/compose?alt=json&prettyPrint=false",
+			wantReq: raw.ComposeRequest{
+				Destination: &raw.Object{Bucket: "foo", Crc32c: "AAAAKg=="},
+				SourceObjects: []*raw.ComposeRequestSourceObjects{
+					{Name: "baz"},
+					{Name: "quux"},
+				},
+			},
+		},
+		{
 			desc:    "no sources",
 			dst:     c.Bucket("foo").Object("bar"),
 			wantErr: true,
@@ -898,6 +930,7 @@ func TestObjectCompose(t *testing.T) {
 		if tt.attrs != nil {
 			composer.ObjectAttrs = *tt.attrs
 		}
+		composer.SendCRC32C = tt.sendCRC32C
 		_, err := composer.Run(ctx)
 		if gotErr := err != nil; gotErr != tt.wantErr {
 			t.Errorf("%s: got error %v; want err %t", tt.desc, err, tt.wantErr)
@@ -1083,6 +1116,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				Bucket:                  "Test",
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
+				CustomTime:              "2020-08-25T19:33:36Z",
 				EventBasedHold:          false,
 				Etag:                    "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",
 				Generation:              7,
@@ -1099,6 +1133,7 @@ func TestRawObjectToObjectAttrs(t *testing.T) {
 				Created:                 time.Date(2019, 3, 31, 19, 32, 10, 0, time.UTC),
 				ContentLanguage:         "en-us",
 				ContentType:             "video/mpeg",
+				CustomTime:              time.Date(2020, 8, 25, 19, 33, 36, 0, time.UTC),
 				Deleted:                 time.Date(2019, 3, 31, 19, 33, 39, 0, time.UTC),
 				EventBasedHold:          false,
 				Etag:                    "Zkyw9ACJZUvcYmlFaKGChzhmtnE/dt1zHSfweiWpwzdGsqXwuJZqiD0",

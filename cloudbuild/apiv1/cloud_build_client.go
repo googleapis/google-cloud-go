@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
@@ -104,7 +104,7 @@ func defaultCallOptions() *CallOptions {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
 	// The connection to the service.
-	conn *grpc.ClientConn
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	client cloudbuildpb.CloudBuildClient
@@ -127,15 +127,15 @@ type Client struct {
 // A user can list previously-requested builds or get builds by their ID to
 // determine the status of the build.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultCallOptions(),
 
-		client: cloudbuildpb.NewCloudBuildClient(conn),
+		client: cloudbuildpb.NewCloudBuildClient(connPool),
 	}
 	c.setGoogleClientInfo()
 	return c, nil
@@ -143,13 +143,13 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 // Connection returns the client's connection to the API service.
 func (c *Client) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

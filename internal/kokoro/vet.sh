@@ -30,8 +30,7 @@ fi
 go install \
   github.com/golang/protobuf/protoc-gen-go \
   golang.org/x/lint/golint \
-  golang.org/x/tools/cmd/goimports \
-  honnef.co/go/tools/cmd/staticcheck
+  golang.org/x/tools/cmd/goimports
 
 # Fail if a dependency was added without the necessary go.mod/go.sum change
 # being part of the commit.
@@ -60,9 +59,11 @@ golint ./... 2>&1 | ( \
   grep -vE "receiver name [a-zA-Z]+[0-9]* should be consistent with previous receiver name" | \
   grep -vE "exported const AllUsers|AllAuthenticatedUsers|RoleOwner|SSD|HDD|PRODUCTION|DEVELOPMENT should have comment" | \
   grep -v "exported func Value returns unexported type pretty.val, which can be annoying to use" | \
-  grep -v "exported func Increment returns unexported type firestore.increment, which can be annoying to use" | \
+  grep -vE "exported func (Increment|FieldTransformIncrement|FieldTransformMinimum|FieldTransformMaximum) returns unexported type firestore.transform, which can be annoying to use" | \
   grep -v "ExecuteStreamingSql" | \
   grep -v "MethodExecuteSql should be MethodExecuteSQL" | \
+  grep -vE " executeStreamingSql(Min|Rnd)Time" | \
+  grep -vE " executeSql(Min|Rnd)Time" | \
   grep -vE "pubsub\/pstest\/fake\.go.+should have comment or be unexported" | \
   grep -v "ClusterId" | \
   grep -v "InstanceId" | \

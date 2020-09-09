@@ -360,3 +360,42 @@ func TestDeadLettering_toMessage(t *testing.T) {
 		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", *got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
 	}
 }
+
+func TestRetryPolicy_toProto(t *testing.T) {
+	in := &RetryPolicy{
+		MinimumBackoff: 20 * time.Second,
+		MaximumBackoff: 300 * time.Second,
+	}
+	got := in.toProto()
+	want := &pb.RetryPolicy{
+		MinimumBackoff: ptypes.DurationProto(20 * time.Second),
+		MaximumBackoff: ptypes.DurationProto(300 * time.Second),
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestOrdering_CreateSubscription(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}
+	orderSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := orderSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !cfg.EnableMessageOrdering {
+		t.Fatalf("Expected EnableMessageOrdering to be true in %s", orderSub.String())
+	}
+}

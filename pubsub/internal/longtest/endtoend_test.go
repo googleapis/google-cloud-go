@@ -136,6 +136,7 @@ loop:
 		}
 	}
 	wg.Wait()
+	close(recv)
 	for i, con := range consumers {
 		var numDups int
 		var zeroes int
@@ -149,7 +150,7 @@ loop:
 		if zeroes > 0 {
 			t.Errorf("Consumer %d: %d messages never arrived", i, zeroes)
 		} else if numDups > numAcceptableDups {
-			t.Errorf("Consumer %d: Willing to accept %d dups (%v duplicated of %d messages), but got %d", i, numAcceptableDups, acceptableDupPercentage, int(nMessages), numDups)
+			t.Errorf("Consumer %d: Willing to accept %d dups (%v%% duplicated of %d messages), but got %d", i, numAcceptableDups, acceptableDupPercentage, int(nMessages), numDups)
 		}
 	}
 
@@ -230,6 +231,7 @@ loop:
 			t.Fatal("timed out")
 		}
 	}
+	close(recv)
 	var numDups int
 	var zeroes int
 	for _, v := range consumer.counts {
@@ -275,7 +277,7 @@ type consumer struct {
 	// there are 5 3 second durations, then there will be 5 3 second Receives.
 	durations []time.Duration
 
-	// A value is sent to recv each time Inc is called.
+	// A value is sent to recv each time process is called.
 	recv chan struct{}
 
 	// How long to wait for before acking.

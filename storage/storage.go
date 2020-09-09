@@ -97,7 +97,11 @@ type Client struct {
 }
 
 // NewClient creates a new Google Cloud Storage client.
-// The default scope is ScopeFullControl. To use a different scope, like ScopeReadOnly, use option.WithScopes.
+// The default scope is ScopeFullControl. To use a different scope, like
+// ScopeReadOnly, use option.WithScopes.
+//
+// Clients should be reused instead of created as needed. The methods of Client
+// are safe for concurrent use by multiple goroutines.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var host, readHost, scheme string
 
@@ -169,6 +173,80 @@ const (
 	// SigningSchemeV4 uses the V4 scheme to sign URLs.
 	SigningSchemeV4
 )
+
+// URLStyle determines the style to use for the signed URL. pathStyle is the
+// default. All non-default options work with V4 scheme only. See
+// https://cloud.google.com/storage/docs/request-endpoints for details.
+type URLStyle interface {
+	// host should return the host portion of the signed URL, not including
+	// the scheme (e.g. storage.googleapis.com).
+	host(bucket string) string
+
+	// path should return the path portion of the signed URL, which may include
+	// both the bucket and object name or only the object name depending on the
+	// style.
+	path(bucket, object string) string
+}
+
+type pathStyle struct{}
+
+type virtualHostedStyle struct{}
+
+type bucketBoundHostname struct {
+	hostname string
+}
+
+func (s pathStyle) host(bucket string) string {
+	return "storage.googleapis.com"
+}
+
+func (s virtualHostedStyle) host(bucket string) string {
+	return bucket + ".storage.googleapis.com"
+}
+
+func (s bucketBoundHostname) host(bucket string) string {
+	return s.hostname
+}
+
+func (s pathStyle) path(bucket, object string) string {
+	p := bucket
+	if object != "" {
+		p += "/" + object
+	}
+	return p
+}
+
+func (s virtualHostedStyle) path(bucket, object string) string {
+	return object
+}
+
+func (s bucketBoundHostname) path(bucket, object string) string {
+	return object
+}
+
+// PathStyle is the default style, and will generate a URL of the form
+// "storage.googleapis.com/<bucket-name>/<object-name>".
+func PathStyle() URLStyle {
+	return pathStyle{}
+}
+
+// VirtualHostedStyle generates a URL relative to the bucket's virtual
+// hostname, e.g. "<bucket-name>.storage.googleapis.com/<object-name>".
+func VirtualHostedStyle() URLStyle {
+	return virtualHostedStyle{}
+}
+
+// BucketBoundHostname generates a URL with a custom hostname tied to a
+// specific GCS bucket. The desired hostname should be passed in using the
+// hostname argument. Generated urls will be of the form
+// "<bucket-bound-hostname>/<object-name>". See
+// https://cloud.google.com/storage/docs/request-endpoints#cname and
+// https://cloud.google.com/load-balancing/docs/https/adding-backend-buckets-to-load-balancers
+// for details. Note that for CNAMEs, only HTTP is supported, so Insecure must
+// be set to true.
+func BucketBoundHostname(hostname string) URLStyle {
+	return bucketBoundHostname{hostname: hostname}
+}
 
 // SignedURLOptions allows you to restrict the access to the signed URL.
 type SignedURLOptions struct {
@@ -244,6 +322,19 @@ type SignedURLOptions struct {
 	// Optional.
 	MD5 string
 
+	// Style provides options for the type of URL to use. Options are
+	// PathStyle (default), BucketBoundHostname, and VirtualHostedStyle. See
+	// https://cloud.google.com/storage/docs/request-endpoints for details.
+	// Only supported for V4 signing.
+	// Optional.
+	Style URLStyle
+
+	// Insecure determines whether the signed URL should use HTTPS (default) or
+	// HTTP.
+	// Only supported for V4 signing.
+	// Optional.
+	Insecure bool
+
 	// Scheme determines the version of URL signing to use. Default is
 	// SigningSchemeV2.
 	Scheme SigningScheme
@@ -262,7 +353,7 @@ var (
 )
 
 // v2SanitizeHeaders applies the specifications for canonical extension headers at
-// https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
+// https://cloud.google.com/storage/docs/access-control/signed-urls-v2#about-canonical-extension-headers
 func v2SanitizeHeaders(hdrs []string) []string {
 	headerMap := map[string][]string{}
 	for _, hdr := range hdrs {
@@ -310,7 +401,7 @@ func v2SanitizeHeaders(hdrs []string) []string {
 }
 
 // v4SanitizeHeaders applies the specifications for canonical extension headers
-// at https://cloud.google.com/storage/docs/access-control/signed-urls#about-canonical-extension-headers.
+// at https://cloud.google.com/storage/docs/authentication/canonical-requests#about-headers.
 //
 // V4 does a couple things differently from V2:
 // - Headers get sorted by key, instead of by key:value. We do this in
@@ -408,6 +499,12 @@ func validateOptions(opts *SignedURLOptions, now time.Time) error {
 			return errors.New("storage: invalid MD5 checksum")
 		}
 	}
+	if opts.Style == nil {
+		opts.Style = PathStyle()
+	}
+	if _, ok := opts.Style.(pathStyle); !ok && opts.Scheme == SigningSchemeV2 {
+		return errors.New("storage: only path-style URLs are permitted with SigningSchemeV2")
+	}
 	if opts.Scheme == SigningSchemeV4 {
 		cutoff := now.Add(604801 * time.Second) // 7 days + 1 second
 		if !opts.Expires.Before(cutoff) {
@@ -458,10 +555,8 @@ func pathEncodeV4(path string) string {
 func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (string, error) {
 	buf := &bytes.Buffer{}
 	fmt.Fprintf(buf, "%s\n", opts.Method)
-	u := &url.URL{Path: bucket}
-	if name != "" {
-		u.Path += "/" + name
-	}
+
+	u := &url.URL{Path: opts.Style.path(bucket, name)}
 	u.RawPath = pathEncodeV4(u.Path)
 
 	// Note: we have to add a / here because GCS does so auto-magically, despite
@@ -495,7 +590,15 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 
 	fmt.Fprintf(buf, "%s\n", canonicalQueryString.Encode())
 
-	u.Host = "storage.googleapis.com"
+	// Fill in the hostname based on the desired URL style.
+	u.Host = opts.Style.host(bucket)
+
+	// Fill in the URL scheme.
+	if opts.Insecure {
+		u.Scheme = "http"
+	} else {
+		u.Scheme = "https"
+	}
 
 	var headersWithValue []string
 	headersWithValue = append(headersWithValue, "host:"+u.Host)
@@ -559,7 +662,6 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	}
 	signature := hex.EncodeToString(b)
 	canonicalQueryString.Set("X-Goog-Signature", string(signature))
-	u.Scheme = "https"
 	u.RawQuery = canonicalQueryString.Encode()
 	return u.String(), nil
 }
@@ -949,6 +1051,10 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	if !o.RetentionExpirationTime.IsZero() {
 		ret = o.RetentionExpirationTime.Format(time.RFC3339)
 	}
+	var ct string
+	if !o.CustomTime.IsZero() {
+		ct = o.CustomTime.Format(time.RFC3339)
+	}
 	return &raw.Object{
 		Bucket:                  bucket,
 		Name:                    o.Name,
@@ -963,6 +1069,7 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		StorageClass:            o.StorageClass,
 		Acl:                     toRawObjectACL(o.ACL),
 		Metadata:                o.Metadata,
+		CustomTime:              ct,
 	}
 }
 
@@ -1032,11 +1139,11 @@ type ObjectAttrs struct {
 	// data is rejected if its MD5 hash does not match this field.
 	MD5 []byte
 
-	// CRC32C is the CRC32 checksum of the object's content using
-	// the Castagnoli93 polynomial. This field is read-only, except when
-	// used from a Writer. If set on a Writer and Writer.SendCRC32C
-	// is true, the uploaded data is rejected if its CRC32c hash does not
-	// match this field.
+	// CRC32C is the CRC32 checksum of the object's content using the Castagnoli93
+	// polynomial. This field is read-only, except when used from a Writer or
+	// Composer. In those cases, if the SendCRC32C field in the Writer or Composer
+	// is set to is true, the uploaded data is rejected if its CRC32C hash does
+	// not match this field.
 	CRC32C uint32
 
 	// MediaLink is an URL to the object's content. This field is read-only.
@@ -1101,6 +1208,14 @@ type ObjectAttrs struct {
 	// Etag is the HTTP/1.1 Entity tag for the object.
 	// This field is read-only.
 	Etag string
+
+	// A user-specified timestamp which can be applied to an object. This is
+	// typically set in order to use the CustomTimeBefore and DaysSinceCustomTime
+	// LifecycleConditions to manage object lifecycles.
+	//
+	// CustomTime cannot be removed once set on an object. It can be updated to a
+	// later value but not to an earlier one.
+	CustomTime time.Time
 }
 
 // convertTime converts a time in RFC3339 format to time.Time.
@@ -1154,6 +1269,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Deleted:                 convertTime(o.TimeDeleted),
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
+		CustomTime:              convertTime(o.CustomTime),
 	}
 }
 
@@ -1199,6 +1315,17 @@ type Query struct {
 	// the query. It's used internally and is populated for the user by
 	// calling Query.SetAttrSelection
 	fieldSelection string
+
+	// StartOffset is used to filter results to objects whose names are
+	// lexicographically equal to or after startOffset. If endOffset is also set,
+	// the objects listed will have names between startOffset (inclusive) and
+	// endOffset (exclusive).
+	StartOffset string
+
+	// EndOffset is used to filter results to objects whose names are
+	// lexicographically before endOffset. If startOffset is also set, the objects
+	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
+	EndOffset string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1231,6 +1358,7 @@ var attrToFieldMap = map[string]string{
 	"Deleted":                 "timeDeleted",
 	"Updated":                 "updated",
 	"Etag":                    "etag",
+	"CustomTime":              "customTime",
 }
 
 // SetAttrSelection makes the query populate only specific attributes of
@@ -1252,7 +1380,7 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 	}
 
 	if len(fieldSet) > 0 {
-		var b strings.Builder
+		var b bytes.Buffer
 		b.WriteString("items(")
 		first := true
 		for field := range fieldSet {

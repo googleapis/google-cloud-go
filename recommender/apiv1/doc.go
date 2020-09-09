@@ -17,8 +17,6 @@
 // Package recommender is an auto-generated package for the
 // Recommender API.
 //
-//   NOTE: This package is in alpha. It is not stable, and is likely to change.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -28,7 +26,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit godoc.org/cloud.google.com/go.
+// please visit pkg.go.dev/cloud.google.com/go.
 package recommender // import "cloud.google.com/go/recommender/apiv1"
 
 import (
@@ -46,7 +44,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200413"
+const versionClient = "20200825"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

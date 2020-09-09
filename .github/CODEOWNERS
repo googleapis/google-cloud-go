@@ -1,0 +1,10 @@
+# Default owner for all directories not owned by others
+*                   @codyoss @tbpg
+
+/bigtable/          @tritone
+/bigquery/          @shollyman
+/datastore/         @tritone
+/firestore/         @tritone
+/pubsub/            @hongalex
+/spanner/           @skuruppu
+/storage/           @tritone

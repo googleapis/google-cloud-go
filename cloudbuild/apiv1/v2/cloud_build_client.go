@@ -18,7 +18,9 @@ package cloudbuild
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -136,10 +138,32 @@ func defaultCallOptions() *CallOptions {
 		UpdateBuildTrigger: []gax.CallOption{},
 		RunBuildTrigger:    []gax.CallOption{},
 		CreateWorkerPool:   []gax.CallOption{},
-		GetWorkerPool:      []gax.CallOption{},
-		DeleteWorkerPool:   []gax.CallOption{},
-		UpdateWorkerPool:   []gax.CallOption{},
-		ListWorkerPools:    []gax.CallOption{},
+		GetWorkerPool: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteWorkerPool: []gax.CallOption{},
+		UpdateWorkerPool: []gax.CallOption{},
+		ListWorkerPools: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -239,7 +263,8 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // ID. Pass the build ID to GetBuild to determine the build status (such as
 // SUCCESS or FAILURE).
 func (c *Client) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBuildRequest, opts ...gax.CallOption) (*CreateBuildOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateBuild[0:len(c.CallOptions.CreateBuild):len(c.CallOptions.CreateBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -260,7 +285,8 @@ func (c *Client) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBuildR
 // The Build that is returned includes its status (such as SUCCESS,
 // FAILURE, or WORKING), and timing information.
 func (c *Client) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildRequest, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetBuild[0:len(c.CallOptions.GetBuild):len(c.CallOptions.GetBuild)], opts...)
 	var resp *cloudbuildpb.Build
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -279,7 +305,8 @@ func (c *Client) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildRequest
 // Previously requested builds may still be in-progress, or may have finished
 // successfully or unsuccessfully.
 func (c *Client) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsRequest, opts ...gax.CallOption) *BuildIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListBuilds[0:len(c.CallOptions.ListBuilds):len(c.CallOptions.ListBuilds)], opts...)
 	it := &BuildIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildsRequest)
@@ -301,7 +328,7 @@ func (c *Client) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsReq
 		}
 
 		it.Response = resp
-		return resp.Builds, resp.NextPageToken, nil
+		return resp.GetBuilds(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -312,14 +339,15 @@ func (c *Client) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsReq
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // CancelBuild cancels a build in progress.
 func (c *Client) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBuildRequest, opts ...gax.CallOption) (*cloudbuildpb.Build, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CancelBuild[0:len(c.CallOptions.CancelBuild):len(c.CallOptions.CancelBuild)], opts...)
 	var resp *cloudbuildpb.Build
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -363,7 +391,8 @@ func (c *Client) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBuildR
 //   object, which may or may not be available depending on the bucket’s
 //   lifecycle management settings.
 func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildRequest, opts ...gax.CallOption) (*RetryBuildOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RetryBuild[0:len(c.CallOptions.RetryBuild):len(c.CallOptions.RetryBuild)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -383,7 +412,8 @@ func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildReq
 //
 // This API is experimental.
 func (c *Client) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.CreateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateBuildTrigger[0:len(c.CallOptions.CreateBuildTrigger):len(c.CallOptions.CreateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -401,7 +431,8 @@ func (c *Client) CreateBuildTrigger(ctx context.Context, req *cloudbuildpb.Creat
 //
 // This API is experimental.
 func (c *Client) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetBuildTrigger[0:len(c.CallOptions.GetBuildTrigger):len(c.CallOptions.GetBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -419,7 +450,8 @@ func (c *Client) GetBuildTrigger(ctx context.Context, req *cloudbuildpb.GetBuild
 //
 // This API is experimental.
 func (c *Client) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBuildTriggersRequest, opts ...gax.CallOption) *BuildTriggerIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListBuildTriggers[0:len(c.CallOptions.ListBuildTriggers):len(c.CallOptions.ListBuildTriggers)], opts...)
 	it := &BuildTriggerIterator{}
 	req = proto.Clone(req).(*cloudbuildpb.ListBuildTriggersRequest)
@@ -441,7 +473,7 @@ func (c *Client) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBu
 		}
 
 		it.Response = resp
-		return resp.Triggers, resp.NextPageToken, nil
+		return resp.GetTriggers(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -452,8 +484,8 @@ func (c *Client) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBu
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -461,7 +493,8 @@ func (c *Client) ListBuildTriggers(ctx context.Context, req *cloudbuildpb.ListBu
 //
 // This API is experimental.
 func (c *Client) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.DeleteBuildTriggerRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteBuildTrigger[0:len(c.CallOptions.DeleteBuildTrigger):len(c.CallOptions.DeleteBuildTrigger)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -475,7 +508,8 @@ func (c *Client) DeleteBuildTrigger(ctx context.Context, req *cloudbuildpb.Delet
 //
 // This API is experimental.
 func (c *Client) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.UpdateBuildTriggerRequest, opts ...gax.CallOption) (*cloudbuildpb.BuildTrigger, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateBuildTrigger[0:len(c.CallOptions.UpdateBuildTrigger):len(c.CallOptions.UpdateBuildTrigger)], opts...)
 	var resp *cloudbuildpb.BuildTrigger
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -491,7 +525,8 @@ func (c *Client) UpdateBuildTrigger(ctx context.Context, req *cloudbuildpb.Updat
 
 // RunBuildTrigger runs a BuildTrigger at a particular source revision.
 func (c *Client) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunBuildTriggerRequest, opts ...gax.CallOption) (*RunBuildTriggerOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger_id", url.QueryEscape(req.GetTriggerId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RunBuildTrigger[0:len(c.CallOptions.RunBuildTrigger):len(c.CallOptions.RunBuildTrigger)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

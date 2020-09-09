@@ -183,7 +183,7 @@ func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 
 		firestoreAdminClient: adminpb.NewFirestoreAdminClient(connPool),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 
 	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
@@ -211,10 +211,10 @@ func (c *FirestoreAdminClient) Close() error {
 	return c.connPool.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *FirestoreAdminClient) SetGoogleClientInfo(keyval ...string) {
+func (c *FirestoreAdminClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -266,7 +266,7 @@ func (c *FirestoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Indexes, resp.NextPageToken, nil
+		return resp.GetIndexes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -277,8 +277,8 @@ func (c *FirestoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -390,7 +390,7 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.List
 		}
 
 		it.Response = resp
-		return resp.Fields, resp.NextPageToken, nil
+		return resp.GetFields(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -401,8 +401,8 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.List
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

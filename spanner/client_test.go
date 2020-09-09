@@ -20,8 +20,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 	"testing"
@@ -29,12 +27,12 @@ import (
 
 	"cloud.google.com/go/civil"
 	itestutil "cloud.google.com/go/internal/testutil"
+	vkit "cloud.google.com/go/spanner/apiv1"
 	. "cloud.google.com/go/spanner/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -59,6 +57,9 @@ func setupMockedTestServerWithConfigAndClientOptions(t *testing.T, config Client
 						return status.Errorf(codes.Internal, "unexpected number of api client token headers: %v", len(token))
 					}
 					if !strings.HasPrefix(token[0], "gl-go/") {
+						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
+					}
+					if !strings.Contains(token[0], "gccl/") {
 						return status.Errorf(codes.Internal, "unexpected api client token: %v", token[0])
 					}
 					return nil
@@ -98,34 +99,6 @@ func TestValidDatabaseName(t *testing.T) {
 	for _, d := range invalidDbUris {
 		if err, wantErr := validDatabaseName(d), "should conform to pattern"; !strings.Contains(err.Error(), wantErr) {
 			t.Errorf("validateDatabaseName(%q) = %q, want error pattern %q", validDbURI, err, wantErr)
-		}
-	}
-}
-
-// Test getInstanceName()
-func TestGetInstanceName(t *testing.T) {
-	validDbURI := "projects/spanner-cloud-test/instances/foo/databases/foodb"
-	invalidDbUris := []string{
-		// Completely wrong DB URI.
-		"foobarDB",
-		// Project ID contains "/".
-		"projects/spanner-cloud/test/instances/foo/databases/foodb",
-		// No instance ID.
-		"projects/spanner-cloud-test/instances//databases/foodb",
-	}
-	want := "projects/spanner-cloud-test/instances/foo"
-	got, err := getInstanceName(validDbURI)
-	if err != nil {
-		t.Errorf("getInstanceName(%q) has an error: %q, want nil", validDbURI, err)
-	}
-	if got != want {
-		t.Errorf("getInstanceName(%q) = %q, want %q", validDbURI, got, want)
-	}
-	for _, d := range invalidDbUris {
-		wantErr := "Failed to retrieve instance name"
-		_, err = getInstanceName(d)
-		if !strings.Contains(err.Error(), wantErr) {
-			t.Errorf("getInstanceName(%q) has an error: %q, want error pattern %q", validDbURI, err, wantErr)
 		}
 	}
 }
@@ -186,6 +159,53 @@ func TestClient_Single_SessionNotFound(t *testing.T) {
 	}
 	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
 		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_Single_Read_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodStreamingRead,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_Single_ReadRow_SessionNotFound(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(
+		MethodStreamingRead,
+		SimulatedExecutionTime{Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
+	)
+	ctx := context.Background()
+	row, err := client.Single().ReadRow(ctx, "Albums", Key{"foo"}, []string{"SingerId", "AlbumId", "AlbumTitle"})
+	if err != nil {
+		t.Fatalf("Unexpected error for read row: %v", err)
+	}
+	if row == nil {
+		t.Fatal("ReadRow did not return a row")
 	}
 }
 
@@ -257,6 +277,25 @@ func TestClient_Single_NonRetryableErrorOnPartialResultSet(t *testing.T) {
 	err := executeSingerQuery(ctx, client.Single())
 	if status.Code(err) != codes.NotFound {
 		t.Fatalf("Error mismatch:\ngot: %v\nwant: %v", err, codes.NotFound)
+	}
+}
+
+func TestClient_Single_NonRetryableInternalErrors(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	server.TestSpanner.AddPartialResultSetError(
+		SelectSingerIDAlbumIDAlbumTitleFromAlbums,
+		PartialResultSetExecutionTime{
+			ResumeToken: EncodeResumeToken(2),
+			Err:         status.Errorf(codes.Internal, "grpc: error while marshaling: string field contains invalid UTF-8"),
+		},
+	)
+	ctx := context.Background()
+	err := executeSingerQuery(ctx, client.Single())
+	if status.Code(err) != codes.Internal {
+		t.Fatalf("Error mismatch:\ngot: %v\nwant: %v", err, codes.Internal)
 	}
 }
 
@@ -350,157 +389,6 @@ func TestClient_Single_ContextCanceled_withDeclaredServerErrors(t *testing.T) {
 	err := executeSingerQueryWithRowFunc(ctx, client.Single(), f)
 	if status.Code(err) != codes.Canceled {
 		t.Fatalf("got unexpected error %v, expected Canceled", err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithEndpointsReturned(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	// Create two servers. The base server receives the GetInstance request and
-	// returns the instance endpoint of the target server. The client should contact
-	// the target server after getting the instance endpoint.
-	serverBase, optsBase, serverTeardownBase := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:8081")
-	defer serverTeardownBase()
-	serverTarget, optsTarget, serverTeardownTarget := NewMockedSpannerInMemTestServerWithAddr(t, "localhost:8082")
-	defer serverTeardownTarget()
-
-	// Return the instance endpoint.
-	instanceEndpoint := fmt.Sprintf("%s", optsTarget[0])
-	resps := []proto.Message{&instancepb.Instance{
-		EndpointUris: []string{instanceEndpoint},
-	}}
-	serverBase.TestInstanceAdmin.SetResps(resps)
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, optsBase...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := executeSingerQuery(ctx, client.Single()); err != nil {
-		t.Fatal(err)
-	}
-
-	// The base server should not receive any requests.
-	if _, err := shouldHaveReceived(serverBase.TestSpanner, []interface{}{}); err != nil {
-		t.Fatal(err)
-	}
-
-	// The target server should receive requests.
-	if _, err = shouldHaveReceived(serverTarget.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
-		&sppb.ExecuteSqlRequest{},
-	}); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithoutEndpointsReturned(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	// Return an empty list of endpoints.
-	resps := []proto.Message{&instancepb.Instance{
-		EndpointUris: []string{},
-	}}
-	server.TestInstanceAdmin.SetResps(resps)
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := executeSingerQuery(ctx, client.Single()); err != nil {
-		t.Fatal(err)
-	}
-
-	// Check if the request goes to the default endpoint.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
-		&sppb.ExecuteSqlRequest{},
-	}); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithPermissionDeniedError(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	server.TestInstanceAdmin.SetErr(status.Error(codes.PermissionDenied, "Permission Denied"))
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	// `PermissionDeniedError` causes a warning message to be logged, which is expected.
-	// We set the output to be discarded to avoid spamming the log.
-	logger := log.New(ioutil.Discard, "", log.LstdFlags)
-	client, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{logger: logger}, opts...)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if err := executeSingerQuery(ctx, client.Single()); err != nil {
-		t.Fatal(err)
-	}
-
-	// Fallback to use the default endpoint when calling GetInstance() returns
-	// a PermissionDenied error.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
-		&sppb.ExecuteSqlRequest{},
-	}); err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithUnavailableError(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	resps := []proto.Message{&instancepb.Instance{
-		EndpointUris: []string{},
-	}}
-	server.TestInstanceAdmin.SetResps(resps)
-	server.TestInstanceAdmin.SetErr(status.Error(codes.Unavailable, "Temporary unavailable"))
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	_, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
-	// The first request will get an error and the server resets the error to nil,
-	// so the next request will be fine. Due to retrying, there is no errors.
-	if err != nil {
-		t.Fatal(err)
-	}
-}
-
-func TestClient_ResourceBasedRouting_WithInvalidArgumentError(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
-
-	server, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
-	defer serverTeardown()
-
-	server.TestInstanceAdmin.SetErr(status.Error(codes.InvalidArgument, "Invalid argument"))
-
-	ctx := context.Background()
-	formattedDatabase := fmt.Sprintf("projects/%s/instances/%s/databases/%s", "some-project", "some-instance", "some-database")
-	_, err := NewClientWithConfig(ctx, formattedDatabase, ClientConfig{}, opts...)
-
-	if status.Code(err) != codes.InvalidArgument {
-		t.Fatalf("got unexpected exception %v, expected InvalidArgument", err)
 	}
 }
 
@@ -1114,6 +1002,52 @@ func TestClient_ReadWriteTransaction_BatchDMLAborted(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_BatchDMLAbortedHalfway(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	abortedStatement := "UPDATE FOO_ABORTED SET BAR=1 WHERE ID=2"
+	server.TestSpanner.PutStatementResult(
+		abortedStatement,
+		&StatementResult{
+			Type: StatementResultError,
+			Err:  status.Error(codes.Aborted, "Statement was aborted"),
+		},
+	)
+	ctx := context.Background()
+	var updateCounts []int64
+	attempts := 0
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		attempts++
+		if attempts > 1 {
+			// Replace the aborted result with a real result to prevent the
+			// transaction from aborting indefinitely.
+			server.TestSpanner.PutStatementResult(
+				abortedStatement,
+				&StatementResult{
+					Type:        StatementResultUpdateCount,
+					UpdateCount: 3,
+				},
+			)
+		}
+		var err error
+		updateCounts, err = tx.BatchUpdate(ctx, []Statement{{SQL: abortedStatement}, {SQL: UpdateBarSetFoo}})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("attempt count mismatch:\nWant: %v\nGot: %v", w, g)
+	}
+	if g, w := updateCounts, []int64{3, UpdateBarSetFooRowCount}; !testEqual(w, g) {
+		t.Fatalf("update count mismatch\nWant: %v\nGot: %v", w, g)
+	}
+}
+
 func TestClient_ReadWriteTransaction_QueryAborted(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -1257,6 +1191,7 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 		},
 	})
 	defer teardown()
+	sp := client.idleSessions
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
@@ -1266,17 +1201,19 @@ func TestClient_ApplyAtLeastOnceReuseSession(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		sp.mu.Lock()
+		if g, w := uint64(sp.idleList.Len())+sp.createReqs, sp.incStep; g != w {
 			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
-		if g, w := len(server.TestSpanner.DumpSessions()), 1; g != w {
+		if g, w := uint64(len(server.TestSpanner.DumpSessions())), sp.incStep; g != w {
 			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
+		sp.mu.Unlock()
 	}
 	// There should be no sessions marked as checked out.
-	client.idleSessions.mu.Lock()
-	g, w := client.idleSessions.trackedSessionHandles.Len(), 0
-	client.idleSessions.mu.Unlock()
+	sp.mu.Lock()
+	g, w := sp.trackedSessionHandles.Len(), 0
+	sp.mu.Unlock()
 	if g != w {
 		t.Fatalf("checked out sessions count mismatch:\nGot: %v\nWant: %v", g, w)
 	}
@@ -1292,6 +1229,7 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 		},
 	})
 	defer teardown()
+	sp := client.idleSessions
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
@@ -1305,12 +1243,14 @@ func TestClient_ApplyAtLeastOnceInvalidArgument(t *testing.T) {
 		if status.Code(err) != codes.InvalidArgument {
 			t.Fatal(err)
 		}
-		if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		sp.mu.Lock()
+		if g, w := uint64(sp.idleList.Len())+sp.createReqs, sp.incStep; g != w {
 			t.Fatalf("idle session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
-		if g, w := len(server.TestSpanner.DumpSessions()), 1; g != w {
+		if g, w := uint64(len(server.TestSpanner.DumpSessions())), sp.incStep; g != w {
 			t.Fatalf("server session count mismatch:\nGot: %v\nWant: %v", g, w)
 		}
+		sp.mu.Unlock()
 	}
 	// There should be no sessions marked as checked out.
 	client.idleSessions.mu.Lock()
@@ -1592,6 +1532,116 @@ func TestClient_WriteStructWithPointers(t *testing.T) {
 	}
 }
 
+func TestClient_WriteStructWithCustomTypes(t *testing.T) {
+	t.Parallel()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	type CustomString string
+	type CustomBool bool
+	type CustomInt64 int64
+	type CustomFloat64 float64
+	type CustomTime time.Time
+	type CustomDate civil.Date
+	type T struct {
+		ID    int64
+		Col1  CustomString
+		Col2  []CustomString
+		Col3  CustomBool
+		Col4  []CustomBool
+		Col5  CustomInt64
+		Col6  []CustomInt64
+		Col7  CustomFloat64
+		Col8  []CustomFloat64
+		Col9  CustomTime
+		Col10 []CustomTime
+		Col11 CustomDate
+		Col12 []CustomDate
+	}
+	t1 := T{
+		ID:    1,
+		Col2:  []CustomString{},
+		Col4:  []CustomBool{},
+		Col6:  []CustomInt64{},
+		Col8:  []CustomFloat64{},
+		Col10: []CustomTime{},
+		Col12: []CustomDate{},
+	}
+	t2 := T{
+		ID:    2,
+		Col1:  "foo",
+		Col2:  []CustomString{"foo"},
+		Col3:  true,
+		Col4:  []CustomBool{true},
+		Col5:  100,
+		Col6:  []CustomInt64{100},
+		Col7:  3.14,
+		Col8:  []CustomFloat64{3.14},
+		Col9:  CustomTime(time.Now()),
+		Col10: []CustomTime{CustomTime(time.Now())},
+		Col11: CustomDate(civil.DateOf(time.Now())),
+		Col12: []CustomDate{CustomDate(civil.DateOf(time.Now()))},
+	}
+	m1, err := InsertStruct("Tab", &t1)
+	if err != nil {
+		t.Fatal(err)
+	}
+	m2, err := InsertStruct("Tab", &t2)
+	if err != nil {
+		t.Fatal(err)
+	}
+	_, err = client.Apply(context.Background(), []*Mutation{m1, m2})
+	if err != nil {
+		t.Fatal(err)
+	}
+	requests := drainRequestsFromServer(server.TestSpanner)
+	for _, req := range requests {
+		if commit, ok := req.(*sppb.CommitRequest); ok {
+			if g, w := len(commit.Mutations), 2; w != g {
+				t.Fatalf("mutation count mismatch\nGot: %v\nWant: %v", g, w)
+			}
+			insert1 := commit.Mutations[0].GetInsert()
+			row1 := insert1.Values[0]
+			// The first insert should contain empty values and empty arrays
+			for i := 1; i < len(row1.Values); i += 2 {
+				// The non-array columns should contain empty values.
+				g := row1.Values[i].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+				// The array columns should not be NULL.
+				g, wList := row1.Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				if _, ok := g.(*structpb.Value_ListValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
+				}
+			}
+
+			// The second insert should contain all non-NULL values.
+			insert2 := commit.Mutations[1].GetInsert()
+			row2 := insert2.Values[0]
+			for i := 1; i < len(row2.Values); i += 2 {
+				// The non-array columns should contain non-NULL values.
+				g := row2.Values[i].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+				// The array columns should also be non-NULL.
+				g, wList := row2.Values[i+1].GetKind(), &structpb.Value_ListValue{}
+				if _, ok := g.(*structpb.Value_ListValue); !ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: %v", g, wList)
+				}
+				// The array should contain exactly 1 non-NULL value.
+				if gLength, wLength := len(row2.Values[i+1].GetListValue().Values), 1; gLength != wLength {
+					t.Fatalf("list value length mismatch\nGot: %v\nWant: %v", gLength, wLength)
+				}
+				g = row2.Values[i+1].GetListValue().Values[0].GetKind()
+				if _, ok := g.(*structpb.Value_NullValue); ok {
+					t.Fatalf("type mismatch\nGot: %v\nWant: non-NULL value", g)
+				}
+			}
+		}
+	}
+}
+
 func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
 	t.Parallel()
 	server, client, teardown := setupMockedTestServer(t)
@@ -1646,7 +1696,7 @@ func TestFailedCommit_NoRollback(t *testing.T) {
 	}
 	// The failed commit should not trigger a rollback after the commit.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{},
 	}); err != nil {
@@ -1677,7 +1727,7 @@ func TestFailedUpdate_ShouldRollback(t *testing.T) {
 	}
 	// The failed update should trigger a rollback.
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.RollbackRequest{},
@@ -1737,12 +1787,12 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	// Deliberately misconfigure NumChannels and ConnPool.
 	configuredNumChannels := 8
 	configuredConnPool := 16
-	_, err := NewClientWithConfig(
-		context.Background(),
-		"projects/p/instances/i/databases/d",
-		ClientConfig{NumChannels: configuredNumChannels},
-		option.WithGRPCConnectionPool(configuredConnPool),
-	)
+
+	_, opts, serverTeardown := NewMockedSpannerInMemTestServer(t)
+	defer serverTeardown()
+	opts = append(opts, option.WithGRPCConnectionPool(configuredConnPool))
+
+	_, err := NewClientWithConfig(context.Background(), "projects/p/instances/i/databases/d", ClientConfig{NumChannels: configuredNumChannels}, opts...)
 	msg := "Connection pool mismatch:"
 	if err == nil {
 		t.Fatalf("Error mismatch\nGot: nil\nWant: %s", msg)
@@ -1756,6 +1806,252 @@ func TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured(t *testing.T)
 	}
 	if !strings.Contains(se.Error(), msg) {
 		t.Fatalf("Error message mismatch\nGot: %s\nWant: %s", se.Error(), msg)
+	}
+}
+
+func TestClient_CallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		CreateSession: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable, codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	defer teardown()
+
+	c, err := client.sc.nextClient()
+	if err != nil {
+		t.Fatalf("failed to get a session client: %v", err)
+	}
+
+	cs := &gax.CallSettings{}
+	// This is the default retry setting.
+	c.CallOptions.CreateSession[0].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{250000000 32000000000 1.3 0} [14]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+
+	// This is the custom retry setting.
+	c.CallOptions.CreateSession[1].Resolve(cs)
+	if got, want := fmt.Sprintf("%v", cs.Retry()), "&{{200000000 30000000000 1.25 0} [14 4]}"; got != want {
+		t.Fatalf("merged CallOptions is incorrect: got %v, want %v", got, want)
+	}
+}
+
+func TestClient_QueryWithCallOptions(t *testing.T) {
+	t.Parallel()
+	co := &vkit.CallOptions{
+		ExecuteSql: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    200 * time.Millisecond,
+					Max:        30000 * time.Millisecond,
+					Multiplier: 1.25,
+				})
+			}),
+		},
+	}
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{CallOptions: co})
+	server.TestSpanner.PutExecutionTime(MethodExecuteSql, SimulatedExecutionTime{
+		Errors: []error{status.Error(codes.DeadlineExceeded, "Deadline exceeded")},
+	})
+	defer teardown()
+	ctx := context.Background()
+	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		_, err := tx.Update(ctx, Statement{SQL: UpdateBarSetFoo})
+		if err != nil {
+			return err
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+}
+
+func TestClient_EncodeCustomFieldType(t *testing.T) {
+	t.Parallel()
+
+	type typesTable struct {
+		Int    customStructToInt    `spanner:"Int"`
+		String customStructToString `spanner:"String"`
+		Float  customStructToFloat  `spanner:"Float"`
+		Bool   customStructToBool   `spanner:"Bool"`
+		Time   customStructToTime   `spanner:"Time"`
+		Date   customStructToDate   `spanner:"Date"`
+	}
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	d := typesTable{
+		Int:    customStructToInt{1, 23},
+		String: customStructToString{"A", "B"},
+		Float:  customStructToFloat{1.23, 12.3},
+		Bool:   customStructToBool{true, false},
+		Time:   customStructToTime{"A", "B"},
+		Date:   customStructToDate{"A", "B"},
+	}
+
+	m, err := InsertStruct("Types", &d)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	ms := []*Mutation{m}
+	_, err = client.Apply(ctx, ms)
+	if err != nil {
+		t.Fatalf("err: %v", err)
+	}
+
+	reqs := drainRequestsFromServer(server.TestSpanner)
+
+	for _, req := range reqs {
+		if commitReq, ok := req.(*sppb.CommitRequest); ok {
+			val := commitReq.Mutations[0].GetInsert().Values[0]
+
+			if got, want := val.Values[0].GetStringValue(), "123"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[0].GetKind(), want)
+			}
+			if got, want := val.Values[1].GetStringValue(), "A-B"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[1].GetKind(), want)
+			}
+			if got, want := val.Values[2].GetNumberValue(), float64(123.123); got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[2].GetKind(), want)
+			}
+			if got, want := val.Values[3].GetBoolValue(), true; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[3].GetKind(), want)
+			}
+			if got, want := val.Values[4].GetStringValue(), "2016-11-15T15:04:05.999999999Z"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[4].GetKind(), want)
+			}
+			if got, want := val.Values[5].GetStringValue(), "2016-11-15"; got != want {
+				t.Fatalf("value mismatch: got %v (kind %T), want %v", got, val.Values[5].GetKind(), want)
+			}
+		}
+	}
+}
+
+func setupDecodeCustomFieldResult(server *MockedSpannerInMemTestServer, stmt string) error {
+	metadata := &sppb.ResultSetMetadata{
+		RowType: &sppb.StructType{
+			Fields: []*sppb.StructType_Field{
+				{Name: "Int", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+				{Name: "String", Type: &sppb.Type{Code: sppb.TypeCode_STRING}},
+				{Name: "Float", Type: &sppb.Type{Code: sppb.TypeCode_FLOAT64}},
+				{Name: "Bool", Type: &sppb.Type{Code: sppb.TypeCode_BOOL}},
+				{Name: "Time", Type: &sppb.Type{Code: sppb.TypeCode_TIMESTAMP}},
+				{Name: "Date", Type: &sppb.Type{Code: sppb.TypeCode_DATE}},
+			},
+		},
+	}
+	rowValues := []*structpb.Value{
+		{Kind: &structpb.Value_StringValue{StringValue: "123"}},
+		{Kind: &structpb.Value_StringValue{StringValue: "A-B"}},
+		{Kind: &structpb.Value_NumberValue{NumberValue: float64(123.123)}},
+		{Kind: &structpb.Value_BoolValue{BoolValue: true}},
+		{Kind: &structpb.Value_StringValue{StringValue: "2016-11-15T15:04:05.999999999Z"}},
+		{Kind: &structpb.Value_StringValue{StringValue: "2016-11-15"}},
+	}
+	rows := []*structpb.ListValue{
+		{Values: rowValues},
+	}
+	resultSet := &sppb.ResultSet{
+		Metadata: metadata,
+		Rows:     rows,
+	}
+	result := &StatementResult{
+		Type:      StatementResultResultSet,
+		ResultSet: resultSet,
+	}
+	return server.TestSpanner.PutStatementResult(stmt, result)
+}
+
+func TestClient_DecodeCustomFieldType(t *testing.T) {
+	t.Parallel()
+
+	type typesTable struct {
+		Int    customStructToInt    `spanner:"Int"`
+		String customStructToString `spanner:"String"`
+		Float  customStructToFloat  `spanner:"Float"`
+		Bool   customStructToBool   `spanner:"Bool"`
+		Time   customStructToTime   `spanner:"Time"`
+		Date   customStructToDate   `spanner:"Date"`
+	}
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	query := "SELECT * FROM Types"
+	setupDecodeCustomFieldResult(server, query)
+
+	ctx := context.Background()
+	stmt := Statement{SQL: query}
+	iter := client.Single().Query(ctx, stmt)
+	defer iter.Stop()
+
+	var results []typesTable
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("failed to get next: %v", err)
+		}
+
+		var d typesTable
+		if err := row.ToStruct(&d); err != nil {
+			t.Fatalf("failed to convert a row to a struct: %v", err)
+		}
+		results = append(results, d)
+	}
+
+	if len(results) > 1 {
+		t.Fatalf("mismatch length of array: got %v, want 1", results)
+	}
+
+	want := typesTable{
+		Int:    customStructToInt{1, 23},
+		String: customStructToString{"A", "B"},
+		Float:  customStructToFloat{1.23, 12.3},
+		Bool:   customStructToBool{true, false},
+		Time:   customStructToTime{"A", "B"},
+		Date:   customStructToDate{"A", "B"},
+	}
+	got := results[0]
+	if !testEqual(got, want) {
+		t.Fatalf("mismatch result: got %v, want %v", got, want)
+	}
+}
+
+func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
+	old := os.Getenv("SPANNER_EMULATOR_HOST")
+	defer os.Setenv("SPANNER_EMULATOR_HOST", old)
+
+	os.Setenv("SPANNER_EMULATOR_HOST", "localhost:1234")
+
+	client, err := NewClientWithConfig(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		ClientConfig{},
+		option.WithCredentialsFile("/path/to/key.json"),
+	)
+	defer client.Close()
+	if err != nil {
+		t.Fatalf("Failed to create a client with credentials file when running against an emulator: %v", err)
 	}
 }
 

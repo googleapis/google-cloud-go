@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -123,6 +124,10 @@ func (c *Client) fullTableName(table string) string {
 	return fmt.Sprintf("projects/%s/instances/%s/tables/%s", c.project, c.instance, table)
 }
 
+func (c *Client) requestParamsHeaderValue(table string) string {
+	return fmt.Sprintf("table_name=%s&app_profile=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
+}
+
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
 // metadata merged with the provided mds.
 func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
@@ -148,7 +153,7 @@ func (c *Client) Open(table string) *Table {
 	return &Table{
 		c:     c,
 		table: table,
-		md:    metadata.Pairs(resourcePrefixHeader, c.fullTableName(table)),
+		md:    metadata.Pairs(resourcePrefixHeader, c.fullTableName(table), requestParamsHeader, c.requestParamsHeaderValue(table)),
 	}
 }
 

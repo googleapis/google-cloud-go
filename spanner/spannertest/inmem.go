@@ -70,6 +70,7 @@ import (
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -728,35 +729,81 @@ func (s *server) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (
 func parseQueryParams(p *structpb.Struct, types map[string]*spannerpb.Type) (queryParams, error) {
 	params := make(queryParams)
 	for k, v := range p.GetFields() {
-		switch v := v.Kind.(type) {
-		default:
-			return nil, fmt.Errorf("unsupported well-known type value kind %T", v)
-		case *structpb.Value_NullValue:
-			params[k] = queryParam{Value: nil} // TODO: set a type?
-		case *structpb.Value_NumberValue:
-			params[k] = queryParam{Value: v.NumberValue, Type: float64Type}
-		case *structpb.Value_StringValue:
-			switch types[k].Code {
-			case spannerpb.TypeCode_INT64:
-				params[k] = queryParam{Value: v.StringValue, Type: int64Type}
-			case spannerpb.TypeCode_TIMESTAMP:
-				params[k] = queryParam{Value: v.StringValue, Type: spansql.Type{Base: spansql.Timestamp}}
-			case spannerpb.TypeCode_DATE:
-				params[k] = queryParam{Value: v.StringValue, Type: spansql.Type{Base: spansql.Date}}
-			case spannerpb.TypeCode_BYTES:
-				b, err := base64.StdEncoding.DecodeString(v.StringValue)
-				if err != nil {
-					return nil, err
-				}
-				params[k] = queryParam{Value: b, Type: spansql.Type{Base: spansql.Bytes, Len: spansql.MaxLen}}
-			default:
-				// All other types represented on the wire as a string are stored internally as strings.
-				// We don't often get a type hint unfortunately, so ths type code here may be wrong.
-				params[k] = queryParam{Value: v.StringValue, Type: stringType}
-			}
+		p, err := parseQueryParam(v, types[k])
+		if err != nil {
+			return nil, err
 		}
+		params[k] = p
 	}
 	return params, nil
+}
+
+func parseQueryParam(v *structpb.Value, typ *spannerpb.Type) (queryParam, error) {
+	// TODO: Use valForType and typeFromSpannerType more comprehensively here?
+	// They are only used for StringValue vs, since that's what mostly needs parsing.
+
+	rawv := v
+	switch v := v.Kind.(type) {
+	default:
+		return queryParam{}, fmt.Errorf("unsupported well-known type value kind %T", v)
+	case *structpb.Value_NullValue:
+		return queryParam{Value: nil}, nil // TODO: set a type?
+	case *structpb.Value_NumberValue:
+		return queryParam{Value: v.NumberValue, Type: float64Type}, nil
+	case *structpb.Value_StringValue:
+		t, err := typeFromSpannerType(typ)
+		if err != nil {
+			return queryParam{}, err
+		}
+		val, err := valForType(rawv, t)
+		if err != nil {
+			return queryParam{}, err
+		}
+		return queryParam{Value: val, Type: t}, nil
+	case *structpb.Value_ListValue:
+		var list []interface{}
+		for _, elem := range v.ListValue.Values {
+			// TODO: Change the type parameter passed through? We only look at the code.
+			p, err := parseQueryParam(elem, typ)
+			if err != nil {
+				return queryParam{}, err
+			}
+			list = append(list, p.Value)
+		}
+		t, err := typeFromSpannerType(typ)
+		if err != nil {
+			return queryParam{}, err
+		}
+		return queryParam{Value: list, Type: t}, nil
+	}
+}
+
+func typeFromSpannerType(st *spannerpb.Type) (spansql.Type, error) {
+	switch st.Code {
+	default:
+		return spansql.Type{}, fmt.Errorf("unhandled spanner type code %v", st.Code)
+	case spannerpb.TypeCode_BOOL:
+		return spansql.Type{Base: spansql.Bool}, nil
+	case spannerpb.TypeCode_INT64:
+		return spansql.Type{Base: spansql.Int64}, nil
+	case spannerpb.TypeCode_FLOAT64:
+		return spansql.Type{Base: spansql.Float64}, nil
+	case spannerpb.TypeCode_TIMESTAMP:
+		return spansql.Type{Base: spansql.Timestamp}, nil
+	case spannerpb.TypeCode_DATE:
+		return spansql.Type{Base: spansql.Date}, nil
+	case spannerpb.TypeCode_STRING:
+		return spansql.Type{Base: spansql.String}, nil // no len
+	case spannerpb.TypeCode_BYTES:
+		return spansql.Type{Base: spansql.Bytes}, nil // no len
+	case spannerpb.TypeCode_ARRAY:
+		typ, err := typeFromSpannerType(st.ArrayElementType)
+		if err != nil {
+			return spansql.Type{}, err
+		}
+		typ.Array = true
+		return typ, nil
+	}
 }
 
 func spannerTypeFromType(typ spansql.Type) (*spannerpb.Type, error) {
@@ -805,6 +852,13 @@ func spannerValueFromValue(x interface{}) (*structpb.Value, error) {
 		return &structpb.Value{Kind: &structpb.Value_StringValue{x}}, nil
 	case []byte:
 		return &structpb.Value{Kind: &structpb.Value_StringValue{base64.StdEncoding.EncodeToString(x)}}, nil
+	case civil.Date:
+		// RFC 3339 date format.
+		return &structpb.Value{Kind: &structpb.Value_StringValue{x.String()}}, nil
+	case time.Time:
+		// RFC 3339 timestamp format with zone Z.
+		s := x.Format("2006-01-02T15:04:05.999999999Z")
+		return &structpb.Value{Kind: &structpb.Value_StringValue{s}}, nil
 	case nil:
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}, nil
 	case []interface{}:

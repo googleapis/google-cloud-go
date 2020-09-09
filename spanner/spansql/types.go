@@ -141,9 +141,6 @@ func (at *AlterTable) clearOffset() {
 	case AddConstraint:
 		alt.Constraint.clearOffset()
 		at.Alteration = alt
-	case AlterColumn:
-		alt.Def.clearOffset()
-		at.Alteration = alt
 	}
 	at.Position.Offset = 0
 }
@@ -166,7 +163,25 @@ type DropColumn struct{ Name string }
 type AddConstraint struct{ Constraint TableConstraint }
 type DropConstraint struct{ Name string }
 type SetOnDelete struct{ Action OnDelete }
-type AlterColumn struct{ Def ColumnDef }
+type AlterColumn struct {
+	Name       string
+	Alteration ColumnAlteration
+}
+
+type ColumnAlteration interface {
+	isColumnAlteration()
+	SQL() string
+}
+
+func (SetColumnType) isColumnAlteration()    {}
+func (SetColumnOptions) isColumnAlteration() {}
+
+type SetColumnType struct {
+	Type    Type
+	NotNull bool
+}
+
+type SetColumnOptions struct{ Options ColumnOptions }
 
 type OnDelete int
 
@@ -196,17 +211,23 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
-	// AllowCommitTimestamp represents a column OPTIONS.
-	// `true` if query is `OPTIONS (allow_commit_timestamp = true)`
-	// `false` if query is `OPTIONS (allow_commit_timestamp = null)`
-	// `nil` if there are no OPTIONS
-	AllowCommitTimestamp *bool
+	Options ColumnOptions
 
 	Position Position // position of the column name
 }
 
 func (cd ColumnDef) Pos() Position { return cd.Position }
 func (cd *ColumnDef) clearOffset() { cd.Position.Offset = 0 }
+
+// ColumnOptions represents options on a column as part of a
+// CREATE TABLE or ALTER TABLE statement.
+type ColumnOptions struct {
+	// AllowCommitTimestamp represents a column OPTIONS.
+	// `true` if query is `OPTIONS (allow_commit_timestamp = true)`
+	// `false` if query is `OPTIONS (allow_commit_timestamp = null)`
+	// `nil` if there are no OPTIONS
+	AllowCommitTimestamp *bool
+}
 
 // ForeignKey represents a foreign key definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
@@ -276,8 +297,10 @@ type Select struct {
 
 type SelectFrom struct {
 	// This only supports a FROM clause directly from a table.
-	Table       string
-	TableSample *TableSample
+	Table string
+	Alias string // empty if not aliased
+
+	TableSample *TableSample // TODO: This isn't part of from_item; move elsewhere.
 }
 
 type Order struct {
@@ -362,8 +385,8 @@ const (
 )
 
 type ComparisonOp struct {
-	LHS, RHS Expr
 	Op       ComparisonOperator
+	LHS, RHS Expr
 
 	// RHS2 is the third operand for BETWEEN.
 	// "<LHS> BETWEEN <RHS> AND <RHS2>".

@@ -148,6 +148,39 @@ func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
 // Predict perform an online prediction. The prediction result is directly
 // returned in the response.
 // Available for following ML scenarios, and their expected request payloads:
+//
+// AutoML Vision Classification
+//
+//   An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.
+//
+// AutoML Vision Object Detection
+//
+//   An image in .JPEG, .GIF or .PNG format, image_bytes up to 30MB.
+//
+// AutoML Natural Language Classification
+//
+//   A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in
+//   .PDF, .TIF or .TIFF format with size upto 2MB.
+//
+// AutoML Natural Language Entity Extraction
+//
+//   A TextSnippet up to 10,000 characters, UTF-8 NFC encoded or a document
+//   in .PDF, .TIF or .TIFF format with size upto 20MB.
+//
+// AutoML Natural Language Sentiment Analysis
+//
+//   A TextSnippet up to 60,000 characters, UTF-8 encoded or a document in
+//   .PDF, .TIF or .TIFF format with size upto 2MB.
+//
+// AutoML Translation
+//
+//   A TextSnippet up to 25,000 characters, UTF-8 encoded.
+//
+// AutoML Tables
+//
+//   A row with column values matching
+//   the columns of the model, up to 5MB. Not available for FORECASTING
+//   prediction_type.
 func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

@@ -29,7 +29,9 @@ import (
 	"io/ioutil"
 	"log"
 	"math/rand"
+	"mime/multipart"
 	"net/http"
+	"net/http/httputil"
 	"os"
 	"path/filepath"
 	"runtime"
@@ -263,14 +265,25 @@ func TestIntegration_BucketMethods(t *testing.T) {
 				},
 			}, {
 				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   20,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
-					AgeInDays:             30,
-					Liveness:              Live,
-					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"NEARLINE"},
-					NumNewerVersions:      10,
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
 				},
 			}},
 		},
@@ -587,14 +600,19 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 
 	objName := uidSpace.New()
 	obj := bkt.Object(objName)
-	w := obj.NewWriter(ctx)
-
 	contents := []byte("Hello, world this is a range request")
-	if _, err := w.Write(contents); err != nil {
-		t.Fatalf("Failed to write contents: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Fatalf("Failed to close writer: %v", err)
+
+	if err := retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			return fmt.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to close writer: %v", err)
+		}
+		return nil
+	}, nil); err != nil {
+		t.Fatal(err)
 	}
 
 	last5s := []struct {
@@ -667,6 +685,7 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectIterator(t, bkt, objects)
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
+	testObjectIteratorWithOffset(t, bkt, objects)
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1065,6 +1084,44 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	// TODO(jba): test query.Delimiter != ""
 }
 
+func testObjectIteratorWithOffset(t *testing.T, bkt *BucketHandle, objects []string) {
+	ctx := context.Background()
+	h := testHelper{t}
+	// Collect the list of items we expect: ObjectAttrs in lexical order by name.
+	names := make([]string, len(objects))
+	copy(names, objects)
+	sort.Strings(names)
+	var attrs []*ObjectAttrs
+	for _, name := range names {
+		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
+	}
+	m := make(map[string][]*ObjectAttrs)
+	for i, name := range names {
+		// StartOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: obj/with/slashes, obj1, obj2
+		// ― obj1: obj1, obj2
+		// ― obj2: obj2.
+		m[name] = attrs[i:]
+		msg, ok := itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{StartOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+		// EndOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: ""
+		// ― obj1: obj/with/slashes
+		// ― obj2: obj/with/slashes, obj1.
+		m[name] = attrs[:i]
+		msg, ok = itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{EndOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+	}
+}
+
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Create a query that will only select the "Name" attr of objects, and
 	// invoke object listing.
@@ -1101,7 +1158,11 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Tests that all selected attributes work - query succeeds (without actually
 	// verifying the returned results).
-	query := &Query{Prefix: ""}
+	query := &Query{
+		Prefix:      "",
+		StartOffset: "obj/with/slashes",
+		EndOffset:   "obj2",
+	}
 	var selectedAttrs []string
 	for k := range attrToFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
@@ -1121,8 +1182,8 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 		count++
 	}
 
-	if count != len(objects) {
-		t.Errorf("count = %v, want %v", count, len(objects))
+	if count != len(objects)-1 {
+		t.Errorf("count = %v, want %v", count, len(objects)-1)
 	}
 }
 
@@ -1221,8 +1282,6 @@ func TestIntegration_SignedURL(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
-	t.Skip("Internal bug 128647687")
-
 	if testing.Short() { // do not test during replay
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -1375,15 +1434,15 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1", "acl2"}
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
 	err = retry(ctx, func() error {
+		for _, obj := range aclObjects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+		}
 		acl, err = o.ACL().List(ctx)
 		if err != nil {
 			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
@@ -2595,8 +2654,31 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 	}
 }
 
+func TestIntegration_CustomTime(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	// Create object with CustomTime.
+	bkt := client.Bucket(bucketName)
+	obj := bkt.Object("custom-time-obj")
+	w := obj.NewWriter(ctx)
+	ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
+	w.ObjectAttrs.CustomTime = ct
+	h.mustWrite(w, randomContents())
+
+	// Validate that CustomTime has been set
+	attrs, err := obj.Attrs(ctx)
+	if err != nil {
+		t.Fatalf("failed to get object attrs: %v", err)
+	}
+	if got := attrs.CustomTime; got != ct {
+		t.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+	}
+}
+
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2645,7 +2727,6 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1565")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2664,8 +2745,15 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	}
 
 	// Remove the retention period
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
-	h.mustDeleteObject(oh)
+	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}})
+	// Deleting with retry, as bucket metadata changes
+	// can take some time to propagate.
+	err := retry(ctx, func() error {
+		return oh.Delete(ctx)
+	}, nil)
+	if err != nil {
+		h.t.Fatalf("%s: object delete: %v", loc(), err)
+	}
 	h.mustDeleteBucket(bkt)
 }
 
@@ -2952,6 +3040,96 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	}
 }
 
+// Ensures that a file stored with a:
+// * Content-Encoding of "gzip"
+// * Content-Type of "text/plain"
+// will be properly served back.
+// See:
+//  * https://cloud.google.com/storage/docs/transcoding#transcoding_and_gzip
+//  * https://github.com/googleapis/google-cloud-go/issues/1800
+func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	h := testHelper{t}
+
+	projectID := testutil.ProjID()
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, projectID, nil)
+	defer h.mustDeleteBucket(bkt)
+	obj := bkt.Object("decompressive-transcoding")
+	original := bytes.Repeat([]byte("a"), 4<<10)
+
+	// Wrap the file upload in a retry.
+	// TODO: Investigate removing retry after resolving
+	// https://github.com/googleapis/google-api-go-client/issues/392.
+	err := retry(ctx, func() error {
+		// Firstly upload the gzip compressed file.
+		w := obj.NewWriter(ctx)
+		// Compress and upload the content.
+		gzw := gzip.NewWriter(w)
+		if _, err := gzw.Write(original); err != nil {
+			return fmt.Errorf("Failed to compress content: %v", err)
+		}
+		if err := gzw.Close(); err != nil {
+			return fmt.Errorf("Failed to compress content: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to finish uploading the file: %v", err)
+		}
+		return nil
+	},
+		nil)
+
+	defer h.mustDeleteObject(obj)
+
+	// Now update the Content-Encoding and Content-Type to enable
+	// decompressive transcoding.
+	updatedAttrs, err := obj.Update(ctx, ObjectAttrsToUpdate{
+		ContentEncoding: "gzip",
+		ContentType:     "text/plain",
+	})
+	if err != nil {
+		t.Fatalf("Attribute update failure: %v", err)
+	}
+	if g, w := updatedAttrs.ContentEncoding, "gzip"; g != w {
+		t.Fatalf("ContentEncoding mismtach:\nGot:  %q\nWant: %q", g, w)
+	}
+	if g, w := updatedAttrs.ContentType, "text/plain"; g != w {
+		t.Fatalf("ContentType mismtach:\nGot:  %q\nWant: %q", g, w)
+	}
+
+	rWhole, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("Failed to create wholesome reader: %v", err)
+	}
+	blobWhole, err := ioutil.ReadAll(rWhole)
+	rWhole.Close()
+	if err != nil {
+		t.Fatalf("Failed to read the whole body: %v", err)
+	}
+	if g, w := blobWhole, original; !bytes.Equal(g, w) {
+		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+	}
+
+	// Now try a range read, which should return the whole body anyways since
+	// for decompressive transcoding, range requests ARE IGNORED by Cloud Storage.
+	r2kBTo3kB, err := obj.NewRangeReader(ctx, 2<<10, 3<<10)
+	if err != nil {
+		t.Fatalf("Failed to create range reader: %v", err)
+	}
+	blob2kBTo3kB, err := ioutil.ReadAll(r2kBTo3kB)
+	r2kBTo3kB.Close()
+	if err != nil {
+		t.Fatalf("Failed to read with the 2kB to 3kB range request: %v", err)
+	}
+	// The ENTIRE body MUST be served back regardless of the requested range.
+	if g, w := blob2kBTo3kB, original; !bytes.Equal(g, w) {
+		t.Fatalf("Body mismatch\nGot:\n%s\n\nWant:\n%s", g, w)
+	}
+}
+
 func TestIntegration_HMACKey(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
@@ -3058,15 +3236,126 @@ func TestIntegration_HMACKey(t *testing.T) {
 		t.Fatalf("Unexpected deletion failure: %v", err)
 	}
 
-	hk, err := hkh.Get(ctx)
-	if err == nil {
-		// If the err == nil, then the returned HMACKey's state MUST be Deleted.
-		if hk == nil || hk.State != Deleted {
-			t.Fatalf("After deletion\nGot %#v\nWanted state %q", hk, Deleted)
-		}
-	} else if !strings.Contains(err.Error(), "404") {
+	_, err = hkh.Get(ctx)
+	if err != nil && !strings.Contains(err.Error(), "404") {
 		// If the deleted key has already been garbage collected, a 404 is expected.
+		// Other errors should cause a failure and are not expected.
 		t.Fatalf("Unexpected error: %v", err)
+	}
+}
+
+func TestIntegration_PostPolicyV4(t *testing.T) {
+	jwtConf, err := testutil.JWTConfig()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if jwtConf == nil {
+		t.Skip("JSON key file is not present")
+	}
+
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	projectID := testutil.ProjID()
+	newBucketName := uidSpace.New()
+	b := client.Bucket(newBucketName)
+	h := testHelper{t}
+	h.mustCreate(b, projectID, nil)
+	defer h.mustDeleteBucket(b)
+
+	statusCodeToRespond := 200
+	opts := &PostPolicyV4Options{
+		GoogleAccessID: jwtConf.Email,
+		PrivateKey:     jwtConf.PrivateKey,
+
+		Expires: time.Now().Add(30 * time.Minute),
+
+		Fields: &PolicyV4Fields{
+			StatusCodeOnSuccess: statusCodeToRespond,
+			ContentType:         "text/plain",
+			ACL:                 "public-read",
+		},
+
+		// The conditions that the uploaded file will be expected to conform to.
+		Conditions: []PostPolicyV4Condition{
+			// Make the file a maximum of 10mB.
+			ConditionContentLengthRange(0, 10<<20),
+			ConditionStartsWith("$acl", "public"),
+		},
+	}
+
+	objectName := "my-object.txt"
+	pv4, err := GenerateSignedPostPolicyV4(newBucketName, objectName, opts)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	formBuf := new(bytes.Buffer)
+	mw := multipart.NewWriter(formBuf)
+	for fieldName, value := range pv4.Fields {
+		if err := mw.WriteField(fieldName, value); err != nil {
+			t.Fatalf("Failed to write form field: %q: %v", fieldName, err)
+		}
+	}
+
+	// Now let's perform the upload.
+	fileBody := bytes.Repeat([]byte("a"), 25)
+	mf, err := mw.CreateFormFile("file", "myfile.txt")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err := mf.Write(fileBody); err != nil {
+		t.Fatal(err)
+	}
+	if err := mw.Close(); err != nil {
+		t.Fatal(err)
+	}
+
+	// Compose the HTTP request.
+	req, err := http.NewRequest("POST", pv4.URL, formBuf)
+	if err != nil {
+		t.Fatalf("Failed to compose HTTP request: %v", err)
+	}
+	// Ensure the Content-Type is derived from the writer.
+	req.Header.Set("Content-Type", mw.FormDataContentType())
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if g, w := res.StatusCode, statusCodeToRespond; g != w {
+		blob, _ := httputil.DumpResponse(res, true)
+		t.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+	}
+	io.Copy(ioutil.Discard, res.Body)
+
+	// Verify that the file was properly uploaded, by
+	// reading back its attributes and content!
+	obj := b.Object(objectName)
+	defer h.mustDeleteObject(obj)
+
+	attrs, err := obj.Attrs(ctx)
+	if err != nil {
+		t.Fatalf("Failed to retrieve attributes: %v", err)
+	}
+	if g, w := attrs.Size, int64(len(fileBody)); g != w {
+		t.Errorf("ContentLength mismatch: got %d want %d", g, w)
+	}
+	if g, w := attrs.MD5, md5.Sum(fileBody); !bytes.Equal(g, w[:]) {
+		t.Errorf("MD5Checksum mismatch\nGot:  %x\nWant: %x", g, w)
+	}
+
+	// Compare the uploaded body with the expected.
+	rd, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Fatalf("Failed to create a reader: %v", err)
+	}
+	gotBody, err := ioutil.ReadAll(rd)
+	if err != nil {
+		t.Fatalf("Failed to read the body: %v", err)
+	}
+	if diff := testutil.Diff(string(gotBody), string(fileBody)); diff != "" {
+		t.Fatalf("Body mismatch: got - want +\n%s", diff)
 	}
 }
 
@@ -3396,7 +3685,7 @@ func retry(ctx context.Context, call func() error, check func() error) error {
 		}
 		err = call()
 		if err == nil {
-			if check() == nil {
+			if check == nil || check() == nil {
 				return nil
 			}
 			err = check()

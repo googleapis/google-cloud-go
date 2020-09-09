@@ -28,10 +28,11 @@ import (
 
 	. "cloud.google.com/go/spanner/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
-	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/iterator"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	gstatus "google.golang.org/grpc/status"
 )
 
@@ -53,8 +54,8 @@ func TestSingle(t *testing.T) {
 		t.Fatalf("Second acquire for single use, got %v, want %v.", e, wantErr)
 	}
 
-	// Only one CreateSessionRequest is sent.
-	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{&sppb.CreateSessionRequest{}}); err != nil {
+	// Only one BatchCreateSessionsRequest is sent.
+	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{&sppb.BatchCreateSessionsRequest{}}); err != nil {
 		t.Fatal(err)
 	}
 }
@@ -159,7 +160,7 @@ func TestApply_Single(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.CommitRequest{},
 	}); err != nil {
 		t.Fatal(err)
@@ -188,7 +189,7 @@ func TestApply_RetryOnAbort(t *testing.T) {
 	}
 
 	if _, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.CommitRequest{}, // First commit fails.
 		&sppb.BeginTransactionRequest{},
@@ -243,17 +244,7 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
 	}
 	_, got := client.Apply(ctx, ms, ApplyAtLeastOnce())
-	if !cmp.Equal(wantErr, got,
-		cmp.AllowUnexported(Error{}), cmp.FilterPath(func(path cmp.Path) bool {
-			// Ignore statusError Details and Error.trailers.
-			if strings.Contains(path.GoString(), "{*spanner.Error}.err.(*status.statusError).Details") {
-				return true
-			}
-			if strings.Contains(path.GoString(), "{*spanner.Error}.trailers") {
-				return true
-			}
-			return false
-		}, cmp.Ignore())) {
+	if !testEqual(wantErr, got) {
 		t.Fatalf("Expect Apply to fail\nGot:  %v\nWant: %v\n", got, wantErr)
 	}
 }
@@ -275,7 +266,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 	}
 	requests := drainRequestsFromServer(server.TestSpanner)
 	if err := compareRequests([]interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.RollbackRequest{}}, requests); err != nil {
 		// TODO: remove this once the session pool maintainer has been changed
@@ -285,7 +276,7 @@ func TestReadWriteTransaction_ErrorReturned(t *testing.T) {
 		// a fourth request. If this request is DeleteSession, that's OK and
 		// expected.
 		if err := compareRequests([]interface{}{
-			&sppb.CreateSessionRequest{},
+			&sppb.BatchCreateSessionsRequest{},
 			&sppb.BeginTransactionRequest{},
 			&sppb.RollbackRequest{},
 			&sppb.DeleteSessionRequest{}}, requests); err != nil {
@@ -318,7 +309,237 @@ func TestBatchDML_WithMultipleDML(t *testing.T) {
 	}
 
 	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
-		&sppb.CreateSessionRequest{},
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.ExecuteSqlRequest{},
+		&sppb.ExecuteBatchDmlRequest{},
+		&sppb.CommitRequest{},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if got, want := gotReqs[2].(*sppb.ExecuteSqlRequest).Seqno, int64(1); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[3].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(2); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[4].(*sppb.ExecuteSqlRequest).Seqno, int64(3); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+	if got, want := gotReqs[5].(*sppb.ExecuteBatchDmlRequest).Seqno, int64(4); got != want {
+		t.Errorf("got %d, want %d", got, want)
+	}
+}
+
+// When an Aborted error happens during a commit, it does not kick off a
+// rollback.
+func TestReadWriteStmtBasedTransaction_CommitAbortedErrorReturned(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.Aborted, "Transaction aborted")},
+		})
+
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.Aborted || !strings.Contains(err.Error(), "Transaction aborted") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{}}, requests); err != nil {
+		// TODO: remove this once the session pool maintainer has been changed
+		// so that is doesn't delete sessions already during the first
+		// maintenance window.
+		// If we failed to get 4, it might have because - due to timing - we got
+		// a fourth request. If this request is DeleteSession, that's OK and
+		// expected.
+		if err := compareRequests([]interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+// When a non-aborted error happens during a commit, it kicks off a rollback.
+func TestReadWriteStmtBasedTransaction_CommitNonAbortedErrorReturned(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
+		SimulatedExecutionTime{
+			Errors: []error{status.Errorf(codes.NotFound, "Session not found")},
+		})
+
+	txn, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if err != nil {
+		t.Fatalf("got an error: %v", err)
+	}
+	_, err = txn.Commit(ctx)
+	if status.Code(err) != codes.NotFound || !strings.Contains(err.Error(), "Session not found") {
+		t.Fatalf("got an incorrect error: %v", err)
+	}
+
+	requests := drainRequestsFromServer(server.TestSpanner)
+	if err := compareRequests([]interface{}{
+		&sppb.BatchCreateSessionsRequest{},
+		&sppb.BeginTransactionRequest{},
+		&sppb.CommitRequest{},
+		&sppb.RollbackRequest{}}, requests); err != nil {
+		// TODO: remove this once the session pool maintainer has been changed
+		// so that is doesn't delete sessions already during the first
+		// maintenance window.
+		// If we failed to get 4, it might have because - due to timing - we got
+		// a fourth request. If this request is DeleteSession, that's OK and
+		// expected.
+		if err := compareRequests([]interface{}{
+			&sppb.BatchCreateSessionsRequest{},
+			&sppb.BeginTransactionRequest{},
+			&sppb.CommitRequest{},
+			&sppb.RollbackRequest{},
+			&sppb.DeleteSessionRequest{}}, requests); err != nil {
+			t.Fatal(err)
+		}
+	}
+}
+
+func TestReadWriteStmtBasedTransaction(t *testing.T) {
+	t.Parallel()
+
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, make(map[string]SimulatedExecutionTime))
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 1; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func TestReadWriteStmtBasedTransaction_CommitAborted(t *testing.T) {
+	t.Parallel()
+	rowCount, attempts, err := testReadWriteStmtBasedTransaction(t, map[string]SimulatedExecutionTime{
+		MethodCommitTransaction: {Errors: []error{status.Error(codes.Aborted, "Transaction aborted")}},
+	})
+	if err != nil {
+		t.Fatalf("transaction failed to commit: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if g, w := attempts, 2; g != w {
+		t.Fatalf("number of attempts mismatch:\nGot%d\nWant:%d", g, w)
+	}
+}
+
+func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]SimulatedExecutionTime) (rowCount int64, attempts int, err error) {
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for method, exec := range executionTimes {
+		server.TestSpanner.PutExecutionTime(method, exec)
+	}
+	ctx := context.Background()
+
+	f := func(tx *ReadWriteStmtBasedTransaction) (int64, error) {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return 0, err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return 0, err
+			}
+			rowCount++
+		}
+		return rowCount, nil
+	}
+
+	for {
+		attempts++
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			return 0, attempts, fmt.Errorf("failed to begin a transaction: %v", err)
+		}
+		rowCount, err = f(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			return 0, attempts, err
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				return 0, attempts, err
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+
+	return rowCount, attempts, err
+}
+
+func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}, {SQL: UpdateBarSetFoo}}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.Update(ctx, Statement{SQL: UpdateBarSetFoo}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	if _, err = tx.BatchUpdate(ctx, []Statement{{SQL: UpdateBarSetFoo}}); err != nil {
+		tx.Rollback(ctx)
+		t.Fatal(err)
+	}
+	_, err = tx.Commit(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	gotReqs, err := shouldHaveReceived(server.TestSpanner, []interface{}{
+		&sppb.BatchCreateSessionsRequest{},
 		&sppb.BeginTransactionRequest{},
 		&sppb.ExecuteSqlRequest{},
 		&sppb.ExecuteBatchDmlRequest{},

@@ -699,11 +699,13 @@ func (p *parser) skipSpace() bool {
 		if term == "" {
 			break
 		}
-		ti := strings.Index(p.s[i:], term)
+		// Search for the terminator, starting after the marker.
+		ti := strings.Index(p.s[i+len(marker):], term)
 		if ti < 0 {
 			p.errorf("unterminated comment")
 			return false
 		}
+		ti += len(marker) // make ti relative to p.s[i:]
 		if com != nil && (com.end.Line+1 < p.line || com.marker != marker) {
 			// There's a previous comment, but there's an
 			// intervening blank line, or the marker changed.
@@ -1228,11 +1230,18 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
-		cd, err := p.parseColumnDef()
+		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
-		a.Alteration = AlterColumn{Def: cd}
+		ca, err := p.parseColumnAlteration()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AlterColumn{
+			Name:       name,
+			Alteration: ca,
+		}
 		return a, nil
 	}
 }
@@ -1294,8 +1303,9 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		cd.NotNull = true
 	}
 
-	if p.eat("OPTIONS") {
-		if cd.AllowCommitTimestamp, err = p.parseColumnOptions(); err != nil {
+	if p.sniff("OPTIONS") {
+		cd.Options, err = p.parseColumnOptions()
+		if err != nil {
 			return ColumnDef{}, err
 		}
 	}
@@ -1303,39 +1313,70 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 	return cd, nil
 }
 
-// parseColumnOptions returns allow_commit_timestamp.
-func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err *parseError) {
+func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
+	debugf("parseColumnAlteration: %v", p)
+	/*
+		{ data_type } [ NOT NULL ] | SET [ options_def ]
+	*/
+
+	if p.eat("SET") {
+		co, err := p.parseColumnOptions()
+		if err != nil {
+			return nil, err
+		}
+		return SetColumnOptions{Options: co}, nil
+	}
+
+	typ, err := p.parseType()
+	if err != nil {
+		return nil, err
+	}
+	sct := SetColumnType{Type: typ}
+
+	if p.eat("NOT", "NULL") {
+		sct.NotNull = true
+	}
+
+	return sct, nil
+}
+
+func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 	debugf("parseColumnOptions: %v", p)
 	/*
 		options_def:
 			OPTIONS (allow_commit_timestamp = { true | null })
 	*/
 
-	if err = p.expect("("); err != nil {
-		return nil, err
+	if err := p.expect("OPTIONS"); err != nil {
+		return ColumnOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return ColumnOptions{}, err
 	}
 
+	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
 		if tok.err != nil {
-			return nil, tok.err
+			return ColumnOptions{}, tok.err
 		}
-		allowCommitTimestamp = new(bool)
+		allowCommitTimestamp := new(bool)
 		switch tok.value {
 		case "true":
 			*allowCommitTimestamp = true
 		case "null":
 			*allowCommitTimestamp = false
 		default:
-			return nil, p.errorf("got %q, want true or null", tok.value)
+			return ColumnOptions{}, p.errorf("got %q, want true or null", tok.value)
 		}
+		co.AllowCommitTimestamp = allowCommitTimestamp
 	}
 
 	if err := p.expect(")"); err != nil {
-		return nil, err
+		return ColumnOptions{}, err
 	}
 
-	return
+	return co, nil
 }
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
@@ -1699,9 +1740,7 @@ func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
 
 		// TODO: The "AS" keyword is optional.
 		if p.eat("AS") {
-			// The docs don't seem to indicate the valid lexical element for aliases,
-			// but it seems likely that identifiers are suitable.
-			alias, err := p.parseTableOrIndexOrColumnName()
+			alias, err := p.parseAlias()
 			if err != nil {
 				return nil, nil, err
 			}
@@ -1724,7 +1763,21 @@ func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	// TODO: support more than a single table name.
 	tname, err := p.parseTableOrIndexOrColumnName()
-	return SelectFrom{Table: tname}, err
+	if err != nil {
+		return SelectFrom{}, err
+	}
+	sf := SelectFrom{Table: tname}
+
+	// TODO: The "AS" keyword is optional.
+	if p.eat("AS") {
+		alias, err := p.parseAlias()
+		if err != nil {
+			return SelectFrom{}, err
+		}
+		sf.Alias = alias
+	}
+
+	return sf, nil
 }
 
 func (p *parser) parseTableSample() (TableSample, *parseError) {
@@ -2224,6 +2277,12 @@ func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 		return nil, p.errorf("got non-bool expression %T", expr)
 	}
 	return be, nil
+}
+
+func (p *parser) parseAlias() (string, *parseError) {
+	// The docs don't specify what lexical token is valid for an alias,
+	// but it seems likely that it is an identifier.
+	return p.parseTableOrIndexOrColumnName()
 }
 
 func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {

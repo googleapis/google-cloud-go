@@ -47,9 +47,11 @@ type CallOptions struct {
 	Commit            []gax.CallOption
 	Rollback          []gax.CallOption
 	RunQuery          []gax.CallOption
+	PartitionQuery    []gax.CallOption
 	Write             []gax.CallOption
 	Listen            []gax.CallOption
 	ListCollectionIds []gax.CallOption
+	BatchWrite        []gax.CallOption
 	CreateDocument    []gax.CallOption
 }
 
@@ -91,7 +93,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateDocument: []gax.CallOption{},
+		UpdateDocument: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteDocument: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -131,7 +143,17 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		Commit: []gax.CallOption{},
+		Commit: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		Rollback: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -158,7 +180,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		Write: []gax.CallOption{},
+		PartitionQuery: []gax.CallOption{},
+		Write:          []gax.CallOption{},
 		Listen: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -185,7 +208,29 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateDocument: []gax.CallOption{},
+		BatchWrite: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Aborted,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateDocument: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -237,7 +282,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client: firestorepb.NewFirestoreClient(connPool),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 
 	return c, nil
 }
@@ -255,10 +300,10 @@ func (c *Client) Close() error {
 	return c.connPool.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) SetGoogleClientInfo(keyval ...string) {
+func (c *Client) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -283,7 +328,7 @@ func (c *Client) GetDocument(ctx context.Context, req *firestorepb.GetDocumentRe
 
 // ListDocuments lists documents.
 func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumentsRequest, opts ...gax.CallOption) *DocumentIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListDocuments[0:len(c.CallOptions.ListDocuments):len(c.CallOptions.ListDocuments)], opts...)
 	it := &DocumentIterator{}
@@ -306,7 +351,7 @@ func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumen
 		}
 
 		it.Response = resp
-		return resp.Documents, resp.NextPageToken, nil
+		return resp.GetDocuments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -317,8 +362,8 @@ func (c *Client) ListDocuments(ctx context.Context, req *firestorepb.ListDocumen
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -436,6 +481,49 @@ func (c *Client) RunQuery(ctx context.Context, req *firestorepb.RunQueryRequest,
 	return resp, nil
 }
 
+// PartitionQuery partitions a query by returning partition cursors that can be used to run
+// the query in parallel. The returned partition cursors are split points that
+// can be used by RunQuery as starting/end points for the query results.
+func (c *Client) PartitionQuery(ctx context.Context, req *firestorepb.PartitionQueryRequest, opts ...gax.CallOption) *CursorIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.PartitionQuery[0:len(c.CallOptions.PartitionQuery):len(c.CallOptions.PartitionQuery)], opts...)
+	it := &CursorIterator{}
+	req = proto.Clone(req).(*firestorepb.PartitionQueryRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*firestorepb.Cursor, string, error) {
+		var resp *firestorepb.PartitionQueryResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.PartitionQuery(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetPartitions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
 // Write streams batches of document updates and deletes, in order.
 func (c *Client) Write(ctx context.Context, opts ...gax.CallOption) (firestorepb.Firestore_WriteClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
@@ -493,7 +581,7 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 		}
 
 		it.Response = resp
-		return resp.CollectionIds, resp.NextPageToken, nil
+		return resp.GetCollectionIds(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -504,14 +592,39 @@ func (c *Client) ListCollectionIds(ctx context.Context, req *firestorepb.ListCol
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// BatchWrite applies a batch of write operations.
+//
+// The BatchWrite method does not apply the write operations atomically
+// and can apply them out of order. Method does not allow more than one write
+// per document. Each write succeeds or fails independently. See the
+// BatchWriteResponse for the success status of each write.
+//
+// If you require an atomically applied set of writes, use
+// Commit instead.
+func (c *Client) BatchWrite(ctx context.Context, req *firestorepb.BatchWriteRequest, opts ...gax.CallOption) (*firestorepb.BatchWriteResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "database", url.QueryEscape(req.GetDatabase())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.BatchWrite[0:len(c.CallOptions.BatchWrite):len(c.CallOptions.BatchWrite)], opts...)
+	var resp *firestorepb.BatchWriteResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.BatchWrite(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateDocument creates a new document.
 func (c *Client) CreateDocument(ctx context.Context, req *firestorepb.CreateDocumentRequest, opts ...gax.CallOption) (*firestorepb.Document, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "parent", url.QueryEscape(req.GetParent()), "collection_id", url.QueryEscape(req.GetCollectionId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateDocument[0:len(c.CallOptions.CreateDocument):len(c.CallOptions.CreateDocument)], opts...)
 	var resp *firestorepb.Document
@@ -524,6 +637,53 @@ func (c *Client) CreateDocument(ctx context.Context, req *firestorepb.CreateDocu
 		return nil, err
 	}
 	return resp, nil
+}
+
+// CursorIterator manages a stream of *firestorepb.Cursor.
+type CursorIterator struct {
+	items    []*firestorepb.Cursor
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*firestorepb.Cursor, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *CursorIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CursorIterator) Next() (*firestorepb.Cursor, error) {
+	var item *firestorepb.Cursor
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CursorIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CursorIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // DocumentIterator manages a stream of *firestorepb.Document.

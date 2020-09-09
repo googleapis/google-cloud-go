@@ -222,20 +222,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateJobTrigger: []gax.CallOption{},
-		UpdateJobTrigger: []gax.CallOption{},
-		HybridInspectJobTrigger: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		CreateJobTrigger:        []gax.CallOption{},
+		UpdateJobTrigger:        []gax.CallOption{},
+		HybridInspectJobTrigger: []gax.CallOption{},
 		GetJobTrigger: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -349,30 +338,8 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		HybridInspectDlpJob: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		FinishDlpJob: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
+		HybridInspectDlpJob: []gax.CallOption{},
+		FinishDlpJob:        []gax.CallOption{},
 	}
 }
 
@@ -549,7 +516,8 @@ func (c *Client) ReidentifyContent(ctx context.Context, req *dlppb.ReidentifyCon
 // supports. See https://cloud.google.com/dlp/docs/infotypes-reference (at https://cloud.google.com/dlp/docs/infotypes-reference) to
 // learn more.
 func (c *Client) ListInfoTypes(ctx context.Context, req *dlppb.ListInfoTypesRequest, opts ...gax.CallOption) (*dlppb.ListInfoTypesResponse, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListInfoTypes[0:len(c.CallOptions.ListInfoTypes):len(c.CallOptions.ListInfoTypes)], opts...)
 	var resp *dlppb.ListInfoTypesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -644,7 +612,7 @@ func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspec
 		}
 
 		it.Response = resp
-		return resp.InspectTemplates, resp.NextPageToken, nil
+		return resp.GetInspectTemplates(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -655,8 +623,8 @@ func (c *Client) ListInspectTemplates(ctx context.Context, req *dlppb.ListInspec
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -759,7 +727,7 @@ func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDei
 		}
 
 		it.Response = resp
-		return resp.DeidentifyTemplates, resp.NextPageToken, nil
+		return resp.GetDeidentifyTemplates(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -770,8 +738,8 @@ func (c *Client) ListDeidentifyTemplates(ctx context.Context, req *dlppb.ListDei
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -893,7 +861,7 @@ func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggers
 		}
 
 		it.Response = resp
-		return resp.JobTriggers, resp.NextPageToken, nil
+		return resp.GetJobTriggers(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -904,8 +872,8 @@ func (c *Client) ListJobTriggers(ctx context.Context, req *dlppb.ListJobTriggers
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -991,7 +959,7 @@ func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest,
 		}
 
 		it.Response = resp
-		return resp.Jobs, resp.NextPageToken, nil
+		return resp.GetJobs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1002,8 +970,8 @@ func (c *Client) ListDlpJobs(ctx context.Context, req *dlppb.ListDlpJobsRequest,
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -1145,7 +1113,7 @@ func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredI
 		}
 
 		it.Response = resp
-		return resp.StoredInfoTypes, resp.NextPageToken, nil
+		return resp.GetStoredInfoTypes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -1156,8 +1124,8 @@ func (c *Client) ListStoredInfoTypes(ctx context.Context, req *dlppb.ListStoredI
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

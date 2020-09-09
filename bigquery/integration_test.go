@@ -31,6 +31,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/httpreplay"
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
@@ -356,6 +357,7 @@ func TestIntegration_TableMetadata(t *testing.T) {
 		for _, v := range []*TableMetadata{md, clusterMD} {
 			got := v.TimePartitioning
 			want := &TimePartitioning{
+				Type:                   DayPartitioningType,
 				Expiration:             c.wantExpiration,
 				Field:                  c.wantField,
 				RequirePartitionFilter: c.wantPruneFilter,
@@ -396,6 +398,47 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 }
 
+func TestIntegration_HourTimePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := dataset.Table(tableIDs.New())
+
+	schema := Schema{
+		{Name: "name", Type: StringFieldType},
+		{Name: "somevalue", Type: IntegerFieldType},
+	}
+
+	// define hourly ingestion-based partitioning.
+	wantedTimePartitioning := &TimePartitioning{
+		Type: HourPartitioningType,
+	}
+
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:           schema,
+		TimePartitioning: wantedTimePartitioning,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer table.Delete(ctx)
+	md, err := table.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	if md.TimePartitioning == nil {
+		t.Fatal("expected time partitioning, got nil")
+	}
+	if diff := testutil.Diff(md.TimePartitioning, wantedTimePartitioning); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+	if md.TimePartitioning.Type != wantedTimePartitioning.Type {
+		t.Errorf("TimePartitioning interval mismatch: got %v, wanted %v", md.TimePartitioning.Type, wantedTimePartitioning.Type)
+	}
+}
+
 func TestIntegration_RangePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -409,7 +452,7 @@ func TestIntegration_RangePartitioning(t *testing.T) {
 	}
 
 	wantedRange := &RangePartitioningRange{
-		Start:    10,
+		Start:    0,
 		End:      135,
 		Interval: 25,
 	}
@@ -478,7 +521,7 @@ func TestIntegration_RemoveTimePartitioning(t *testing.T) {
 		t.Fatal(err)
 	}
 	if got := md.TimePartitioning.Expiration; got != want {
-		t.Fatalf("TimeParitioning expiration want = %v, got = %v", want, got)
+		t.Fatalf("TimePartitioning expiration want = %v, got = %v", want, got)
 	}
 
 	// Remove time partitioning expiration
@@ -829,6 +872,66 @@ func TestIntegration_Tables(t *testing.T) {
 	}
 }
 
+func TestIntegration_TableIAM(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	// Check to confirm some of our default permissions.
+	checkedPerms := []string{"bigquery.tables.get",
+		"bigquery.tables.getData", "bigquery.tables.update"}
+	perms, err := table.IAM().TestPermissions(ctx, checkedPerms)
+	if err != nil {
+		t.Fatalf("IAM().TestPermissions: %v", err)
+	}
+	if len(perms) != len(checkedPerms) {
+		t.Errorf("mismatch in permissions, got (%s) wanted (%s)", strings.Join(perms, " "), strings.Join(checkedPerms, " "))
+	}
+
+	// Get existing policy, add a binding for all authenticated users.
+	policy, err := table.IAM().Policy(ctx)
+	if err != nil {
+		t.Fatalf("IAM().Policy: %v", err)
+	}
+	wantedRole := iam.RoleName("roles/bigquery.dataViewer")
+	wantedMember := "allAuthenticatedUsers"
+	policy.Add(wantedMember, wantedRole)
+	if err := table.IAM().SetPolicy(ctx, policy); err != nil {
+		t.Fatalf("IAM().SetPolicy: %v", err)
+	}
+
+	// Verify policy mutations were persisted by refetching policy.
+	updatedPolicy, err := table.IAM().Policy(ctx)
+	if err != nil {
+		t.Fatalf("IAM.Policy (after update): %v", err)
+	}
+	foundRole := false
+	for _, r := range updatedPolicy.Roles() {
+		if r == wantedRole {
+			foundRole = true
+			break
+		}
+	}
+	if !foundRole {
+		t.Errorf("Did not find added role %s in the set of %d roles.",
+			wantedRole, len(updatedPolicy.Roles()))
+	}
+	members := updatedPolicy.Members(wantedRole)
+	foundMember := false
+	for _, m := range members {
+		if m == wantedMember {
+			foundMember = true
+			break
+		}
+	}
+	if !foundMember {
+		t.Errorf("Did not find member %s in role %s", wantedMember, wantedRole)
+	}
+}
+
 func TestIntegration_SimpleRowResults(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -851,12 +954,12 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			want:        [][]Value{},
 		},
 		{
-			// Note: currently CTAS returns the rows due to the destination table reference,
-			// but it's not clear that it should.
-			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			// Previously this would return rows due to the destination reference being present
+			// in the job config, but switching to relying on jobs.getQueryResults allows the
+			// service to decide the behavior.
 			description: "ctas ddl",
 			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
-			want:        [][]Value{{int64(17)}},
+			want:        nil,
 		},
 	}
 	for _, tc := range testCases {
@@ -871,6 +974,48 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
 		})
 	}
+}
+
+func TestIntegration_RoutineStoredProcedure(t *testing.T) {
+	// Verifies we're exhibiting documented behavior, where we're expected
+	// to return the last resultset in a script as the response from a script
+	// job.
+	// https://github.com/googleapis/google-cloud-go/issues/1974
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Define a simple stored procedure via DDL.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	sql := fmt.Sprintf(`
+		CREATE OR REPLACE PROCEDURE `+"`%s`"+`(val INT64)
+		BEGIN
+			SELECT CURRENT_TIMESTAMP() as ts;
+			SELECT val * 2 as f2;
+		END`,
+		routine.FullyQualifiedName())
+
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	// Invoke the stored procedure.
+	sql = fmt.Sprintf(`
+	CALL `+"`%s`"+`(5)`,
+		routine.FullyQualifiedName())
+
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("query.Read: %v", err)
+	}
+
+	checkReadAndTotalRows(t,
+		"expect result set from procedure",
+		it, [][]Value{{int64(10)}})
 }
 
 func TestIntegration_InsertAndRead(t *testing.T) {
@@ -2475,6 +2620,22 @@ func TestIntegration_ModelLifecycle(t *testing.T) {
 	}
 	if !seen {
 		t.Fatal("model not listed in dataset")
+	}
+
+	// Extract the model to GCS.
+	bucketName := testutil.ProjID()
+	objectName := fmt.Sprintf("bq-model-extract-%s", modelID)
+	uri := fmt.Sprintf("gs://%s/%s", bucketName, objectName)
+	defer storageClient.Bucket(bucketName).Object(objectName).Delete(ctx)
+	gr := NewGCSReference(uri)
+	gr.DestinationFormat = TFSavedModel
+	extractor := model.ExtractorTo(gr)
+	job, err := extractor.Run(ctx)
+	if err != nil {
+		t.Fatalf("failed to extract model to GCS: %v", err)
+	}
+	if _, err := job.Wait(ctx); err != nil {
+		t.Errorf("failed to complete extract job (%s): %v", job.ID(), err)
 	}
 
 	// Delete the model.

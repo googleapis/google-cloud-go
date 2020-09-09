@@ -70,7 +70,6 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -82,7 +81,6 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -90,13 +88,32 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		CreateEntityType: []gax.CallOption{},
-		UpdateEntityType: []gax.CallOption{},
+		CreateEntityType: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateEntityType: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteEntityType: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -104,12 +121,21 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		BatchUpdateEntityTypes: []gax.CallOption{},
+		BatchUpdateEntityTypes: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		BatchDeleteEntityTypes: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -117,13 +143,32 @@ func defaultEntityTypesCallOptions() *EntityTypesCallOptions {
 				})
 			}),
 		},
-		BatchCreateEntities: []gax.CallOption{},
-		BatchUpdateEntities: []gax.CallOption{},
+		BatchCreateEntities: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		BatchUpdateEntities: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		BatchDeleteEntities: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -158,34 +203,7 @@ type EntityTypesClient struct {
 
 // NewEntityTypesClient creates a new entity types client.
 //
-// Entities are extracted from user input and represent parameters that are
-// meaningful to your application. For example, a date range, a proper name
-// such as a geographic location or landmark, and so on. Entities represent
-// actionable data for your application.
-//
-// When you define an entity, you can also include synonyms that all map to
-// that entity. For example, “soft drink”, “soda”, “pop”, and so on.
-//
-// There are three types of entities:
-//
-//   System - entities that are defined by the Dialogflow API for common
-//   data types such as date, time, currency, and so on. A system entity is
-//   represented by the EntityType type.
-//
-//   Custom - entities that are defined by you that represent
-//   actionable data that is meaningful to your application. For example,
-//   you could define a pizza.sauce entity for red or white pizza sauce,
-//   a pizza.cheese entity for the different types of cheese on a pizza,
-//   a pizza.topping entity for different toppings, and so on. A custom
-//   entity is represented by the EntityType type.
-//
-//   User - entities that are built for an individual user such as
-//   favorites, preferences, playlists, and so on. A user entity is
-//   represented by the SessionEntityType type.
-//
-// For more information about entity types, see the
-// Dialogflow
-// documentation (at https://cloud.google.com/dialogflow/docs/entities-overview).
+// Service for managing EntityTypes.
 func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
 	clientOpts := defaultEntityTypesClientOptions()
 
@@ -269,7 +287,7 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 		}
 
 		it.Response = resp
-		return resp.EntityTypes, resp.NextPageToken, nil
+		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -280,8 +298,8 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

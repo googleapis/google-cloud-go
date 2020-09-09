@@ -36,6 +36,7 @@ import (
 
 	structpb "github.com/golang/protobuf/ptypes/struct"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
 )
 
@@ -155,8 +156,8 @@ The mapping between Spanner types and Go types internal to this package are:
 	FLOAT64		float64
 	STRING		string
 	BYTES		[]byte
-	DATE		string (RFC 3339 date; "YYYY-MM-DD")
-	TIMESTAMP	string (RFC 3339 timestamp with zone; "YYYY-MM-DDTHH:MM:SSZ")
+	DATE		civil.Date
+	TIMESTAMP	time.Time (location set to UTC)
 	ARRAY<T>	[]interface{}
 	STRUCT		TODO
 */
@@ -319,7 +320,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			}
 			return nil
 		case spansql.AlterColumn:
-			if st := t.alterColumn(alt.Def); st.Code() != codes.OK {
+			if st := t.alterColumn(alt); st.Code() != codes.OK {
 				return st
 			}
 			return nil
@@ -383,8 +384,7 @@ func (d *database) writeValues(tx *transaction, tbl string, cols []string, value
 				return err
 			}
 			if x == commitTimestampSentinel {
-				// Cloud Spanner commit timestamps have microsecond granularity.
-				x = tx.commitTimestamp.Format("2006-01-02T15:04:05.999999Z")
+				x = tx.commitTimestamp
 			}
 
 			r[i] = x
@@ -524,6 +524,13 @@ func (d *database) readTable(table string, cols []string, f func(*table, *rawIte
 }
 
 func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
+	// The real Cloud Spanner returns an error if the key set is empty by definition.
+	// That doesn't seem to be well-defined, but it is a common error to attempt a read with no keys,
+	// so catch that here and return a representative error.
+	if len(keys) == 0 && len(keyRanges) == 0 {
+		return nil, status.Error(codes.Unimplemented, "Cloud Spanner does not support reading no keys")
+	}
+
 	return d.readTable(tbl, cols, func(t *table, ri *rawIter, colIndexes []int) error {
 		// "If the same key is specified multiple times in the set (for
 		// example if two ranges, two keys, or a key and a range
@@ -619,7 +626,7 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	return nil
 }
 
-func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
+func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 	// Supported changes here are:
 	//	Add NOT NULL to a non-key column, excluding ARRAY columns.
 	//	Remove NOT NULL from a non-key column.
@@ -628,17 +635,22 @@ func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
 	//	Enable or disable commit timestamps in value and primary key columns.
 	// https://cloud.google.com/spanner/docs/schema-updates#supported-updates
 
+	sct, ok := alt.Alteration.(spansql.SetColumnType)
+	if !ok {
+		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
+	}
+
 	t.mu.Lock()
 	defer t.mu.Unlock()
 
-	ci, ok := t.colIndex[cd.Name]
+	ci, ok := t.colIndex[alt.Name]
 	if !ok {
 		// TODO: What's the right response code?
-		return status.Newf(codes.InvalidArgument, "unknown column %q", cd.Name)
+		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
 	// Check and make type transformations.
-	oldT, newT := t.cols[ci].Type, cd.Type
+	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
 	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
@@ -668,7 +680,7 @@ func (t *table) alterColumn(cd spansql.ColumnDef) *status.Status {
 
 	// TODO: Support other alterations.
 
-	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", cd.SQL())
+	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
 }
 
 func (t *table) insertRow(rowNum int, r row) {
@@ -785,6 +797,7 @@ func rowEqual(a, b []interface{}) bool {
 	return true
 }
 
+// valForType converts a value from its RPC form into its internal representation.
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
 		// TODO: enforce NOT NULL constraints?
@@ -843,12 +856,12 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 		// The Spanner protocol encodes DATE in RFC 3339 date format.
 		sv, ok := v.Kind.(*structpb.Value_StringValue)
 		if ok {
-			// Store it internally as a string, but validate its value.
 			s := sv.StringValue
-			if _, err := time.Parse("2006-01-02", s); err != nil {
+			d, err := parseAsDate(s)
+			if err != nil {
 				return nil, fmt.Errorf("bad DATE string %q: %v", s, err)
 			}
-			return s, nil
+			return d, nil
 		}
 	case spansql.Timestamp:
 		// The Spanner protocol encodes TIMESTAMP in RFC 3339 timestamp format with zone Z.
@@ -858,11 +871,11 @@ func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 			if strings.ToLower(s) == "spanner.commit_timestamp()" {
 				return commitTimestampSentinel, nil
 			}
-			// Store it internally as a string, but validate its value.
-			if _, err := time.Parse("2006-01-02T15:04:05.999999999Z", s); err != nil {
+			t, err := parseAsTimestamp(s)
+			if err != nil {
 				return nil, fmt.Errorf("bad TIMESTAMP string %q: %v", s, err)
 			}
-			return s, nil
+			return t, nil
 		}
 	}
 	return nil, fmt.Errorf("unsupported inserting value kind %T into column of type %s", v.Kind, t.SQL())
@@ -931,4 +944,9 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 		}
 		return n, nil
 	}
+}
+
+func parseAsDate(s string) (civil.Date, error) { return civil.ParseDate(s) }
+func parseAsTimestamp(s string) (time.Time, error) {
+	return time.Parse("2006-01-02T15:04:05.999999999Z", s)
 }

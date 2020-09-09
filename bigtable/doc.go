@@ -123,3 +123,7 @@ const clientUserAgent = "cbt-go/20180601"
 // resourcePrefixHeader is the name of the metadata header used to indicate
 // the resource being operated on.
 const resourcePrefixHeader = "google-cloud-resource-prefix"
+
+// requestParamsHeader is the name of the metadata header used for routing
+// requests based on resources accessed.
+const requestParamsHeader = "x-goog-request-params"

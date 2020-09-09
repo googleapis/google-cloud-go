@@ -272,7 +272,7 @@ func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest,
 		}
 
 		it.Response = resp
-		return resp.Queues, resp.NextPageToken, nil
+		return resp.GetQueues(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -283,8 +283,8 @@ func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest,
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -571,7 +571,7 @@ func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, o
 		}
 
 		it.Response = resp
-		return resp.Tasks, resp.NextPageToken, nil
+		return resp.GetTasks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -582,8 +582,8 @@ func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, o
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

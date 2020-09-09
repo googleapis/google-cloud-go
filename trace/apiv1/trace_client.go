@@ -18,7 +18,9 @@ package trace
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -137,7 +139,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client: cloudtracepb.NewTraceServiceClient(connPool),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 
 	return c, nil
 }
@@ -155,10 +157,10 @@ func (c *Client) Close() error {
 	return c.connPool.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) SetGoogleClientInfo(keyval ...string) {
+func (c *Client) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -166,7 +168,8 @@ func (c *Client) SetGoogleClientInfo(keyval ...string) {
 
 // ListTraces returns of a list of traces that match the specified filter conditions.
 func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesRequest, opts ...gax.CallOption) *TraceIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListTraces[0:len(c.CallOptions.ListTraces):len(c.CallOptions.ListTraces)], opts...)
 	it := &TraceIterator{}
 	req = proto.Clone(req).(*cloudtracepb.ListTracesRequest)
@@ -188,7 +191,7 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 		}
 
 		it.Response = resp
-		return resp.Traces, resp.NextPageToken, nil
+		return resp.GetTraces(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -199,14 +202,15 @@ func (c *Client) ListTraces(ctx context.Context, req *cloudtracepb.ListTracesReq
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetTrace gets a single trace by its ID.
 func (c *Client) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceRequest, opts ...gax.CallOption) (*cloudtracepb.Trace, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trace_id", url.QueryEscape(req.GetTraceId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTrace[0:len(c.CallOptions.GetTrace):len(c.CallOptions.GetTrace)], opts...)
 	var resp *cloudtracepb.Trace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -226,7 +230,8 @@ func (c *Client) GetTrace(ctx context.Context, req *cloudtracepb.GetTraceRequest
 // and any new fields provided are merged with the existing trace data. If the
 // ID does not match, a new trace is created.
 func (c *Client) PatchTraces(ctx context.Context, req *cloudtracepb.PatchTracesRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.PatchTraces[0:len(c.CallOptions.PatchTraces):len(c.CallOptions.PatchTraces)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

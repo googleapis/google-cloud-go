@@ -20,6 +20,7 @@ import (
 	"context"
 
 	asset "cloud.google.com/go/asset/apiv1"
+	"google.golang.org/api/iterator"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 )
 
@@ -172,4 +173,103 @@ func ExampleClient_DeleteFeed() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleClient_SearchAllResources() {
+	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &assetpb.SearchAllResourcesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.SearchAllResources(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_SearchAllIamPolicies() {
+	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &assetpb.SearchAllIamPoliciesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.SearchAllIamPolicies(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_AnalyzeIamPolicy() {
+	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &assetpb.AnalyzeIamPolicyRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.AnalyzeIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ExportIamPolicyAnalysis() {
+	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &assetpb.ExportIamPolicyAnalysisRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ExportIamPolicyAnalysis(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

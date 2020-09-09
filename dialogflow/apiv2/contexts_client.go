@@ -62,7 +62,6 @@ func defaultContextsCallOptions() *ContextsCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -74,7 +73,6 @@ func defaultContextsCallOptions() *ContextsCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -82,13 +80,32 @@ func defaultContextsCallOptions() *ContextsCallOptions {
 				})
 			}),
 		},
-		CreateContext: []gax.CallOption{},
-		UpdateContext: []gax.CallOption{},
+		CreateContext: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateContext: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteContext: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -100,7 +117,6 @@ func defaultContextsCallOptions() *ContextsCallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.DeadlineExceeded,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -130,24 +146,7 @@ type ContextsClient struct {
 
 // NewContextsClient creates a new contexts client.
 //
-// A context represents additional information included with user input or with
-// an intent returned by the Dialogflow API. Contexts are helpful for
-// differentiating user input which may be vague or have a different meaning
-// depending on additional details from your application such as user setting
-// and preferences, previous user input, where the user is in your application,
-// geographic location, and so on.
-//
-// You can include contexts as input parameters of a
-// DetectIntent (or
-// StreamingDetectIntent) request,
-// or as output contexts included in the returned intent.
-// Contexts expire when an intent is matched, after the number of DetectIntent
-// requests specified by the lifespan_count parameter, or after 20 minutes
-// if no intents are matched for a DetectIntent request.
-//
-// For more information about contexts, see the
-// Dialogflow
-// documentation (at https://cloud.google.com/dialogflow/docs/contexts-overview).
+// Service for managing Contexts.
 func NewContextsClient(ctx context.Context, opts ...option.ClientOption) (*ContextsClient, error) {
 	clientOpts := defaultContextsClientOptions()
 
@@ -221,7 +220,7 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Contexts, resp.NextPageToken, nil
+		return resp.GetContexts(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -232,8 +231,8 @@ func (c *ContextsClient) ListContexts(ctx context.Context, req *dialogflowpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

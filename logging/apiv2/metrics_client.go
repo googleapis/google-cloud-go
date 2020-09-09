@@ -60,8 +60,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		ListLogMetrics: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -72,8 +73,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		GetLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -85,8 +87,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		UpdateLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -97,8 +100,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		DeleteLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -109,7 +113,7 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 	}
 }
 
-// MetricsClient is a client for interacting with Stackdriver Logging API.
+// MetricsClient is a client for interacting with Cloud Logging API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type MetricsClient struct {
@@ -150,7 +154,7 @@ func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*Metric
 
 		metricsClient: loggingpb.NewMetricsServiceV2Client(connPool),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 
 	return c, nil
 }
@@ -168,10 +172,10 @@ func (c *MetricsClient) Close() error {
 	return c.connPool.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *MetricsClient) SetGoogleClientInfo(keyval ...string) {
+func (c *MetricsClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -202,7 +206,7 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListL
 		}
 
 		it.Response = resp
-		return resp.Metrics, resp.NextPageToken, nil
+		return resp.GetMetrics(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -213,8 +217,8 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListL
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

@@ -73,8 +73,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListSinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -85,8 +86,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		GetSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -98,8 +100,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		UpdateSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -110,8 +113,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		DeleteSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -122,8 +126,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListExclusions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -134,8 +139,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		GetExclusion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -148,8 +154,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		DeleteExclusion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -162,7 +169,7 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 	}
 }
 
-// ConfigClient is a client for interacting with Stackdriver Logging API.
+// ConfigClient is a client for interacting with Cloud Logging API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ConfigClient struct {
@@ -203,7 +210,7 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 
 		configClient: loggingpb.NewConfigServiceV2Client(connPool),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 
 	return c, nil
 }
@@ -221,10 +228,10 @@ func (c *ConfigClient) Close() error {
 	return c.connPool.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ConfigClient) SetGoogleClientInfo(keyval ...string) {
+func (c *ConfigClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
@@ -255,7 +262,7 @@ func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucke
 		}
 
 		it.Response = resp
-		return resp.Buckets, resp.NextPageToken, nil
+		return resp.GetBuckets(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -266,8 +273,8 @@ func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucke
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -340,7 +347,7 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 		}
 
 		it.Response = resp
-		return resp.Sinks, resp.NextPageToken, nil
+		return resp.GetSinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -351,8 +358,8 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -453,7 +460,7 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 		}
 
 		it.Response = resp
-		return resp.Exclusions, resp.NextPageToken, nil
+		return resp.GetExclusions(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -464,8 +471,8 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -542,7 +549,8 @@ func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.Delet
 // the GCP organization.
 //
 // See Enabling CMEK for Logs
-// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
 func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -572,7 +580,8 @@ func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCm
 // 3) access to the key is disabled.
 //
 // See Enabling CMEK for Logs
-// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
 func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

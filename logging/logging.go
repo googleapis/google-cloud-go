@@ -566,6 +566,17 @@ func (v Severity) String() string {
 	return strconv.Itoa(int(v))
 }
 
+// UnmarshalJSON turns a string representation of severity into the type
+// Severity.
+func (v *Severity) UnmarshalJSON(data []byte) error {
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
+		return err
+	}
+	*v = ParseSeverity(s)
+	return nil
+}
+
 // ParseSeverity returns the Severity whose name equals s, ignoring case. It
 // returns Default if no Severity matches.
 func ParseSeverity(s string) Severity {
@@ -676,6 +687,12 @@ type HTTPRequest struct {
 	// validated with the origin server before being served from cache. This
 	// field is only meaningful if CacheHit is true.
 	CacheValidatedWithOriginServer bool
+
+	// CacheFillBytes is the number of HTTP response bytes inserted into cache. Set only when a cache fill was attempted.
+	CacheFillBytes int64
+
+	// CacheLookup tells whether or not a cache lookup was attempted.
+	CacheLookup bool
 }
 
 func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
@@ -699,6 +716,9 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		Referer:                        r.Request.Referer(),
 		CacheHit:                       r.CacheHit,
 		CacheValidatedWithOriginServer: r.CacheValidatedWithOriginServer,
+		Protocol:                       r.Request.Proto,
+		CacheFillBytes:                 r.CacheFillBytes,
+		CacheLookup:                    r.CacheLookup,
 	}
 	if r.Latency != 0 {
 		pb.Latency = ptypes.DurationProto(r.Latency)

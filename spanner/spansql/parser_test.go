@@ -94,6 +94,25 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// https://github.com/googleapis/google-cloud-go/issues/1973
+		// except that "l.user_id" is replaced with "l_user_id" since we don't support
+		// the dot operator yet.
+		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l_user_id=@userID`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						Func{Name: "COUNT", Args: []Expr{Star}},
+					},
+					From: []SelectFrom{{Table: "Lists", Alias: "l"}},
+					Where: ComparisonOp{
+						Op:  Eq,
+						LHS: ID("l_user_id"),
+						RHS: Param("userID"),
+					},
+					ListAliases: []string{"count"},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
@@ -282,7 +301,7 @@ func TestParseDDL(t *testing.T) {
 					{Name: "System", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(2)},
 					{Name: "RepoPath", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(3)},
 					{Name: "Count", Type: Type{Base: Int64}, Position: line(4)},
-					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true), Position: line(6)},
+					{Name: "UpdatedAt", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(true)}, Position: line(6)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "System"},
@@ -375,12 +394,13 @@ func TestParseDDL(t *testing.T) {
 			},
 			&AlterTable{
 				Name: "FooBar",
-				Alteration: AlterColumn{Def: ColumnDef{
-					Name:     "Author",
-					Type:     Type{Base: String, Len: MaxLen},
-					NotNull:  true,
-					Position: line(26),
-				}},
+				Alteration: AlterColumn{
+					Name: "Author",
+					Alteration: SetColumnType{
+						Type:    Type{Base: String, Len: MaxLen},
+						NotNull: true,
+					},
+				},
 				Position: line(26),
 			},
 			&DropIndex{Name: "MyFirstIndex", Position: line(28)},
@@ -507,6 +527,10 @@ func TestParseFailures(t *testing.T) {
 		_, err := p.parseExpr()
 		return err
 	}
+	query := func(p *parser) error {
+		_, err := p.parseQuery()
+		return err
+	}
 
 	tests := []struct {
 		f    func(p *parser) error
@@ -540,6 +564,9 @@ func TestParseFailures(t *testing.T) {
 		{expr, `"""\"""`, "unterminated triple-quoted string by last backslash (double quote)"},
 		{expr, `'''\'''`, "unterminated triple-quoted string by last backslash (single quote)"},
 		{expr, `"foo" AND "bar"`, "logical operation on string literals"},
+		// Found by fuzzing.
+		// https://github.com/googleapis/google-cloud-go/issues/2196
+		{query, `/*/*/`, "invalid comment termination"},
 	}
 	for _, test := range tests {
 		p := newParser("f", test.in)
