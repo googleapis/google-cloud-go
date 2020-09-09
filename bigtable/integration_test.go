@@ -2199,7 +2199,7 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 		Max:        2 * time.Second,
 		Multiplier: 1.2,
 	}
-	ctx, _ = context.WithTimeout(ctx, time.Second*5)
+	ctx, _ = context.WithTimeout(ctx, time.Second*30)
 
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)
