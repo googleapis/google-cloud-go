@@ -545,7 +545,7 @@ var microgenGapicConfigs = []*microgenConfig{
 	{
 		inputDirectoryPath:    "google/devtools/cloudbuild/v1",
 		pkg:                   "cloudbuild",
-		importPath:            "cloud.google.com/go/cloudbuild/apiv1/v2",
+		importPath:            "cloud.google.com/go/cloudbuild/apiv1/v3",
 		gRPCServiceConfigPath: "google/devtools/cloudbuild/v1/cloudbuild_grpc_service_config.json",
 		apiServiceConfigPath:  "google/devtools/cloudbuild/v1/cloudbuild_v1.yaml",
 		releaseLevel:          "ga",
