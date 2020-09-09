@@ -152,7 +152,7 @@ type labelFilter string
 
 func (lf labelFilter) String() string { return fmt.Sprintf("apply_label(%s)", string(lf)) }
 
-func (lf labelFilter) proto() *btpb.RowFilter {
+func (lf labelFilter) Proto() *btpb.RowFilter {
 	return &btpb.RowFilter{Filter: &btpb.RowFilter_ApplyLabelTransformer{ApplyLabelTransformer: string(lf)}}
 }
 
