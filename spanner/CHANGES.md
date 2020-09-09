@@ -1,6 +1,18 @@
 # Changes
 
+## v1.10.0
+
+* feat(spanner): add support for NUMERIC data type (#2415)
+* feat(spanner): add custom type support to spanner.Key (#2748)
+* feat(spanner/spannertest): add support for bool parameter types (#2674)
+* fix(spanner): update PDML to take sessions from pool (#2736)
+* spanner/spansql: update docs on TableAlteration, ColumnAlteration (#2825)
+* spanner/spannertest: support dropping columns (#2823)
+* spanner/spannertest: implement GetDatabase (#2802)
+* spanner/spannertest: fix aggregation in query evaluation for empty inputs (#2803)
+
 ## v1.9.0
+
 * Features:
   - feat(spanner): support custom field type (#2614)
 * Bugfixes:
@@ -33,6 +45,7 @@
   - chore(spanner): cleanup mockserver and mockclient (#2414)
 
 ## v1.7.0
+
 * Retry:
   - Only retry certain types of internal errors. (#2460)
 * Tracing/metrics:
@@ -56,6 +69,7 @@
     hc.
 
 ## v1.6.0
+
 * Sessions:
   - Increase the number of sessions in batches instead of one by one when
     additional sessions are needed. The step size is set to 25, which means

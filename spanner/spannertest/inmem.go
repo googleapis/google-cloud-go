@@ -761,6 +761,8 @@ func parseQueryParam(v *structpb.Value, typ *spannerpb.Type) (queryParam, error)
 		return queryParam{}, fmt.Errorf("unsupported well-known type value kind %T", v)
 	case *structpb.Value_NullValue:
 		return queryParam{Value: nil}, nil // TODO: set a type?
+	case *structpb.Value_BoolValue:
+		return queryParam{Value: v.BoolValue, Type: boolType}, nil
 	case *structpb.Value_NumberValue:
 		return queryParam{Value: v.NumberValue, Type: float64Type}, nil
 	case *structpb.Value_StringValue:
