@@ -875,8 +875,9 @@ func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceID s
 }
 
 // Instances returns a list of instances in the project. If any location
-// (cluster) is unavailable due to some transient conditions, Instances returns
-// partial results and an error with unavailable locations list.
+// (cluster) is unavailable due to some transient conditions, Instances
+// returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
 func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListInstancesRequest{
