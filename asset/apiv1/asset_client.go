@@ -41,17 +41,15 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ExportAssets            []gax.CallOption
-	BatchGetAssetsHistory   []gax.CallOption
-	CreateFeed              []gax.CallOption
-	GetFeed                 []gax.CallOption
-	ListFeeds               []gax.CallOption
-	UpdateFeed              []gax.CallOption
-	DeleteFeed              []gax.CallOption
-	SearchAllResources      []gax.CallOption
-	SearchAllIamPolicies    []gax.CallOption
-	AnalyzeIamPolicy        []gax.CallOption
-	ExportIamPolicyAnalysis []gax.CallOption
+	ExportAssets          []gax.CallOption
+	BatchGetAssetsHistory []gax.CallOption
+	CreateFeed            []gax.CallOption
+	GetFeed               []gax.CallOption
+	ListFeeds             []gax.CallOption
+	UpdateFeed            []gax.CallOption
+	DeleteFeed            []gax.CallOption
+	SearchAllResources    []gax.CallOption
+	SearchAllIamPolicies  []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -141,18 +139,6 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		AnalyzeIamPolicy: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ExportIamPolicyAnalysis: []gax.CallOption{},
 	}
 }
 
@@ -504,61 +490,6 @@ func (c *Client) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAl
 	return it
 }
 
-// AnalyzeIamPolicy analyzes IAM policies to answer which identities have what accesses on
-// which resources.
-func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPolicyRequest, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.AnalyzeIamPolicy[0:len(c.CallOptions.AnalyzeIamPolicy):len(c.CallOptions.AnalyzeIamPolicy)], opts...)
-	var resp *assetpb.AnalyzeIamPolicyResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.AnalyzeIamPolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// ExportIamPolicyAnalysis exports the answers of which identities have what accesses on which
-// resources to a Google Cloud Storage or a BigQuery destination. For Cloud
-// Storage destination, the output format is the JSON format that represents a
-// google.cloud.asset.v1.AnalyzeIamPolicyResponse.
-// This method implements the
-// google.longrunning.Operation, which allows
-// you to track the export status. We recommend intervals of at least 2
-// seconds with exponential retry to poll the export operation result. The
-// metadata contains the request to help callers to map responses to requests.
-func (c *Client) ExportIamPolicyAnalysis(ctx context.Context, req *assetpb.ExportIamPolicyAnalysisRequest, opts ...gax.CallOption) (*ExportIamPolicyAnalysisOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ExportIamPolicyAnalysis[0:len(c.CallOptions.ExportIamPolicyAnalysis):len(c.CallOptions.ExportIamPolicyAnalysis)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ExportIamPolicyAnalysis(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &ExportIamPolicyAnalysisOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
 // ExportAssetsOperation manages a long-running operation from ExportAssets.
 type ExportAssetsOperation struct {
 	lro *longrunning.Operation
@@ -625,75 +556,6 @@ func (op *ExportAssetsOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportAssetsOperation) Name() string {
-	return op.lro.Name()
-}
-
-// ExportIamPolicyAnalysisOperation manages a long-running operation from ExportIamPolicyAnalysis.
-type ExportIamPolicyAnalysisOperation struct {
-	lro *longrunning.Operation
-}
-
-// ExportIamPolicyAnalysisOperation returns a new ExportIamPolicyAnalysisOperation from a given name.
-// The name must be that of a previously created ExportIamPolicyAnalysisOperation, possibly from a different process.
-func (c *Client) ExportIamPolicyAnalysisOperation(name string) *ExportIamPolicyAnalysisOperation {
-	return &ExportIamPolicyAnalysisOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *ExportIamPolicyAnalysisOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*assetpb.ExportIamPolicyAnalysisResponse, error) {
-	var resp assetpb.ExportIamPolicyAnalysisResponse
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *ExportIamPolicyAnalysisOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*assetpb.ExportIamPolicyAnalysisResponse, error) {
-	var resp assetpb.ExportIamPolicyAnalysisResponse
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *ExportIamPolicyAnalysisOperation) Metadata() (*assetpb.ExportIamPolicyAnalysisRequest, error) {
-	var meta assetpb.ExportIamPolicyAnalysisRequest
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *ExportIamPolicyAnalysisOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *ExportIamPolicyAnalysisOperation) Name() string {
 	return op.lro.Name()
 }
 
