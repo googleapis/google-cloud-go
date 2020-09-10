@@ -2728,11 +2728,10 @@ func TestIntegration_CustomTime(t *testing.T) {
 	}
 
 	// Update CustomTime to the past should give error.
-	// TODO(tritone): uncomment once internal bug is fixed.
-	//earlierTime := ct.Add(5*time.Hour)
-	//if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime:earlierTime}); err == nil {
-	//	t.Fatalf("backdating CustomTime: expected error, got none")
-	//}
+	earlierTime := ct.Add(5 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+		t.Fatalf("backdating CustomTime: expected error, got none")
+	}
 
 	// Zero value for CustomTime should be ignored.
 	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {

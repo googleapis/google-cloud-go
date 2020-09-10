@@ -34,9 +34,8 @@ func ExampleNewCertificateAuthorityClient() {
 	_ = c
 }
 
-func ExampleCertificateAuthorityClient_ListCertificateAuthorities() {
+func ExampleCertificateAuthorityClient_CreateCertificate() {
 	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-	// import "google.golang.org/api/iterator"
 
 	ctx := context.Background()
 	c, err := privateca.NewCertificateAuthorityClient(ctx)
@@ -44,26 +43,19 @@ func ExampleCertificateAuthorityClient_ListCertificateAuthorities() {
 		// TODO: Handle error.
 	}
 
-	req := &privatecapb.ListCertificateAuthoritiesRequest{
+	req := &privatecapb.CreateCertificateRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.ListCertificateAuthorities(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.CreateCertificate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
-func ExampleCertificateAuthorityClient_ListCertificateRevocationLists() {
+func ExampleCertificateAuthorityClient_GetCertificate() {
 	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-	// import "google.golang.org/api/iterator"
 
 	ctx := context.Background()
 	c, err := privateca.NewCertificateAuthorityClient(ctx)
@@ -71,21 +63,15 @@ func ExampleCertificateAuthorityClient_ListCertificateRevocationLists() {
 		// TODO: Handle error.
 	}
 
-	req := &privatecapb.ListCertificateRevocationListsRequest{
+	req := &privatecapb.GetCertificateRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.ListCertificateRevocationLists(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
+	resp, err := c.GetCertificate(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleCertificateAuthorityClient_ListCertificates() {
@@ -115,34 +101,7 @@ func ExampleCertificateAuthorityClient_ListCertificates() {
 	}
 }
 
-func ExampleCertificateAuthorityClient_ListReusableConfigs() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-	// import "google.golang.org/api/iterator"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.ListReusableConfigsRequest{
-		// TODO: Fill request struct fields.
-	}
-	it := c.ListReusableConfigs(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleCertificateAuthorityClient_GetCertificateAuthority() {
+func ExampleCertificateAuthorityClient_RevokeCertificate() {
 	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 
 	ctx := context.Background()
@@ -151,215 +110,10 @@ func ExampleCertificateAuthorityClient_GetCertificateAuthority() {
 		// TODO: Handle error.
 	}
 
-	req := &privatecapb.GetCertificateAuthorityRequest{
+	req := &privatecapb.RevokeCertificateRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetCertificateAuthority(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_GetCertificateRevocationList() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.GetCertificateRevocationListRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetCertificateRevocationList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_GetCertificate() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.GetCertificateRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetCertificate(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_GetReusableConfig() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.GetReusableConfigRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetReusableConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_CreateCertificateAuthority() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.CreateCertificateAuthorityRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.CreateCertificateAuthority(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_CreateCertificateRevocationList() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.CreateCertificateRevocationListRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.CreateCertificateRevocationList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_CreateCertificate() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.CreateCertificateRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateCertificate(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_CreateReusableConfig() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.CreateReusableConfigRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.CreateReusableConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_UpdateCertificateAuthority() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.UpdateCertificateAuthorityRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.UpdateCertificateAuthority(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_UpdateCertificateRevocationList() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.UpdateCertificateRevocationListRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.UpdateCertificateRevocationList(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.RevokeCertificate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -387,51 +141,6 @@ func ExampleCertificateAuthorityClient_UpdateCertificate() {
 	_ = resp
 }
 
-func ExampleCertificateAuthorityClient_UpdateReusableConfig() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.UpdateReusableConfigRequest{
-		// TODO: Fill request struct fields.
-	}
-	op, err := c.UpdateReusableConfig(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleCertificateAuthorityClient_GetCertificateAuthorityCsr() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
-	ctx := context.Background()
-	c, err := privateca.NewCertificateAuthorityClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &privatecapb.GetCertificateAuthorityCsrRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetCertificateAuthorityCsr(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleCertificateAuthorityClient_ActivateCertificateAuthority() {
 	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 
@@ -445,6 +154,31 @@ func ExampleCertificateAuthorityClient_ActivateCertificateAuthority() {
 		// TODO: Fill request struct fields.
 	}
 	op, err := c.ActivateCertificateAuthority(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_CreateCertificateAuthority() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.CreateCertificateAuthorityRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.CreateCertificateAuthority(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -507,7 +241,7 @@ func ExampleCertificateAuthorityClient_EnableCertificateAuthority() {
 	_ = resp
 }
 
-func ExampleCertificateAuthorityClient_ScheduleDeleteCertificateAuthority() {
+func ExampleCertificateAuthorityClient_FetchCertificateAuthorityCsr() {
 	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 
 	ctx := context.Background()
@@ -516,20 +250,62 @@ func ExampleCertificateAuthorityClient_ScheduleDeleteCertificateAuthority() {
 		// TODO: Handle error.
 	}
 
-	req := &privatecapb.ScheduleDeleteCertificateAuthorityRequest{
+	req := &privatecapb.FetchCertificateAuthorityCsrRequest{
 		// TODO: Fill request struct fields.
 	}
-	op, err := c.ScheduleDeleteCertificateAuthority(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	resp, err := op.Wait(ctx)
+	resp, err := c.FetchCertificateAuthorityCsr(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_GetCertificateAuthority() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.GetCertificateAuthorityRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetCertificateAuthority(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_ListCertificateAuthorities() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.ListCertificateAuthoritiesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListCertificateAuthorities(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
 
 func ExampleCertificateAuthorityClient_RestoreCertificateAuthority() {
@@ -557,7 +333,7 @@ func ExampleCertificateAuthorityClient_RestoreCertificateAuthority() {
 	_ = resp
 }
 
-func ExampleCertificateAuthorityClient_RevokeCertificate() {
+func ExampleCertificateAuthorityClient_ScheduleDeleteCertificateAuthority() {
 	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 
 	ctx := context.Background()
@@ -566,10 +342,257 @@ func ExampleCertificateAuthorityClient_RevokeCertificate() {
 		// TODO: Handle error.
 	}
 
-	req := &privatecapb.RevokeCertificateRequest{
+	req := &privatecapb.ScheduleDeleteCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.RevokeCertificate(ctx, req)
+	op, err := c.ScheduleDeleteCertificateAuthority(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_UpdateCertificateAuthority() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.UpdateCertificateAuthorityRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.UpdateCertificateAuthority(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_CreateCertificateRevocationList() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.CreateCertificateRevocationListRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.CreateCertificateRevocationList(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_GetCertificateRevocationList() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.GetCertificateRevocationListRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetCertificateRevocationList(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_ListCertificateRevocationLists() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.ListCertificateRevocationListsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListCertificateRevocationLists(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCertificateAuthorityClient_UpdateCertificateRevocationList() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.UpdateCertificateRevocationListRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.UpdateCertificateRevocationList(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_CreateReusableConfig() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.CreateReusableConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.CreateReusableConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_DeleteReusableConfig() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.DeleteReusableConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DeleteReusableConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleCertificateAuthorityClient_GetReusableConfig() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.GetReusableConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetReusableConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCertificateAuthorityClient_ListReusableConfigs() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.ListReusableConfigsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListReusableConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleCertificateAuthorityClient_UpdateReusableConfig() {
+	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
+
+	ctx := context.Background()
+	c, err := privateca.NewCertificateAuthorityClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &privatecapb.UpdateReusableConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.UpdateReusableConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
