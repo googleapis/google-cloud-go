@@ -1,6 +1,6 @@
-## Stackdriver Logging [![GoDoc](https://godoc.org/cloud.google.com/go/logging?status.svg)](https://godoc.org/cloud.google.com/go/logging)
+## Cloud Logging [![GoDoc](https://godoc.org/cloud.google.com/go/logging?status.svg)](https://godoc.org/cloud.google.com/go/logging)
 
-- [About Stackdriver Logging](https://cloud.google.com/logging/)
+- [About Cloud Logging](https://cloud.google.com/logging/)
 - [API documentation](https://cloud.google.com/logging/docs)
 - [Go client documentation](https://godoc.org/cloud.google.com/go/logging)
 - [Complete sample programs](https://github.com/GoogleCloudPlatform/golang-samples/tree/master/logging)
@@ -18,7 +18,7 @@ if err != nil {
 ```
 
 Usually, you'll want to add log entries to a buffer to be periodically flushed
-(automatically and asynchronously) to the Stackdriver Logging service.
+(automatically and asynchronously) to the Cloud Logging service.
 [snip]:# (logging-2)
 ```go
 logger := client.Logger("my-log")
