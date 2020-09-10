@@ -709,7 +709,7 @@ func TestIntegration_Objects(t *testing.T) {
 				gotPrefixes = append(gotPrefixes, attrs.Prefix)
 			}
 
-			if len(attrs.Bucket) > 0 {
+			if attrs.Bucket != "" {
 				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
 			}
 		}
