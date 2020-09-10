@@ -29,10 +29,12 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
@@ -1091,13 +1093,13 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
-	defer adminClient.DeleteTable(ctx, "mytable")
+	defer deleteTable(ctx, t, adminClient, "mytable")
 
 	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	defer adminClient.DeleteTable(ctx, "myothertable")
+	defer deleteTable(ctx, t, adminClient, "myothertable")
 
 	if err := adminClient.CreateTable(ctx, "myothertable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
@@ -1130,7 +1132,7 @@ func TestIntegration_Admin(t *testing.T) {
 	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
 		t.Fatalf("Creating table from TableConf: %v", err)
 	}
-	defer adminClient.DeleteTable(ctx, tblConf.TableID)
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
 
 	tblInfo, err := adminClient.TableInfo(ctx, tblConf.TableID)
 	if err != nil {
@@ -1222,7 +1224,7 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	defer adminClient.DeleteTable(ctx, "mytable")
+	defer deleteTable(ctx, t, adminClient, "mytable")
 	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
@@ -1637,7 +1639,7 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
-	defer adminClient.DeleteTable(ctx, table)
+	defer deleteTable(ctx, t, adminClient, table)
 
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
@@ -1688,7 +1690,7 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 
 	// Restore
 	restoredTable := table + "-restored"
-	defer adminClient.DeleteTable(ctx, restoredTable)
+	defer deleteTable(ctx, t, adminClient, restoredTable)
 	if err = adminClient.CreateTableFromSnapshot(ctx, restoredTable, cluster, "mysnapshot"); err != nil {
 		t.Fatalf("CreateTableFromSnapshot: %v", err)
 	}
@@ -1750,7 +1752,7 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
-	defer adminClient.DeleteTable(ctx, "mytable")
+	defer deleteTable(ctx, t, adminClient, "mytable")
 
 	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
@@ -2010,7 +2012,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
-	defer adminClient.DeleteTable(ctx, table)
+	defer deleteTable(ctx, t, adminClient, table)
 
 	list := func(cluster string) ([]*BackupInfo, error) {
 		infos := []*BackupInfo(nil)
@@ -2096,7 +2098,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Restore backup
 	restoredTable := table + "-restored"
-	defer adminClient.DeleteTable(ctx, restoredTable)
+	defer deleteTable(ctx, t, adminClient, restoredTable)
 	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
@@ -2188,5 +2190,25 @@ func clearTimestamps(r Row) {
 		for i := range ris {
 			ris[i].Timestamp = 0
 		}
+	}
+}
+
+func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string) {
+	bo := gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        2 * time.Second,
+		Multiplier: 1.2,
+	}
+	ctx, _ = context.WithTimeout(ctx, time.Second*30)
+
+	err := internal.Retry(ctx, bo, func() (bool, error) {
+		err := ac.DeleteTable(ctx, name)
+		if err != nil {
+			return true, err
+		}
+		return false, nil
+	})
+	if err != nil {
+		t.Logf("DeleteTable: %v", err)
 	}
 }

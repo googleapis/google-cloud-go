@@ -89,6 +89,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client speechpb.SpeechClient
 
@@ -118,13 +121,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: speechpb.NewSpeechClient(connPool),
 	}
@@ -168,6 +177,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // Recognize performs synchronous speech recognition: receive results after all audio
 // has been sent and processed.
 func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, opts ...gax.CallOption) (*speechpb.RecognizeResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.Recognize[0:len(c.CallOptions.Recognize):len(c.CallOptions.Recognize)], opts...)
 	var resp *speechpb.RecognizeResponse
@@ -189,6 +203,11 @@ func (c *Client) Recognize(ctx context.Context, req *speechpb.RecognizeRequest, 
 // For more information on asynchronous speech recognition, see the
 // how-to (at https://cloud.google.com/speech-to-text/docs/async-recognize).
 func (c *Client) LongRunningRecognize(ctx context.Context, req *speechpb.LongRunningRecognizeRequest, opts ...gax.CallOption) (*LongRunningRecognizeOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 5000000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.LongRunningRecognize[0:len(c.CallOptions.LongRunningRecognize):len(c.CallOptions.LongRunningRecognize)], opts...)
 	var resp *longrunningpb.Operation

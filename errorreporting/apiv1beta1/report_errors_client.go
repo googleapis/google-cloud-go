@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
@@ -60,6 +61,9 @@ type ReportErrorsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
 
@@ -84,13 +88,19 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ReportErrorsClient{
-		connPool:    connPool,
-		CallOptions: defaultReportErrorsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultReportErrorsCallOptions(),
 
 		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(connPool),
 	}
@@ -130,6 +140,11 @@ func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
 //
 // POST https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ReportErrorEvent[0:len(c.CallOptions.ReportErrorEvent):len(c.CallOptions.ReportErrorEvent)], opts...)
