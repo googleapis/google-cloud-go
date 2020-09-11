@@ -1369,8 +1369,10 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	d3, _ := civil.ParseDate("9999-12-31")
 
 	n0 := big.Rat{}
-	n1 := *big.NewRat(123456789, 1)
-	n2 := *big.NewRat(123456789, 1000000000)
+	n1p, _ := (&big.Rat{}).SetString("123456789")
+	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
+	n1 := *n1p
+	n2 := *n2p
 
 	tests := []struct {
 		col  string

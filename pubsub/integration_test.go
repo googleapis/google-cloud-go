@@ -1687,10 +1687,7 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 func TestIntegration_DetachSubscription(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	// TODO(hongalex): Remove this once subscription detachment is GA.
-	// https://github.com/googleapis/google-cloud-go/issues/2470
-	opts := withGRPCHeadersAssertion(t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
-	client := integrationTestClient(ctx, t, opts...)
+	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
