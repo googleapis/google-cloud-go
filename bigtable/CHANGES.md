@@ -1,5 +1,12 @@
 # Changes
 
+## v1.6.0
+- Add support partial results in InstanceAdminClient.Instances. In the case of
+  partial availability, available instances will be returned along with an
+  ErrPartiallyUnavailable error.
+- Add support for label filters.
+- Fix max valid timestamp in the emulator to allow reversed timestamp support.
+
 ## v1.5.0
 - Add support for managed backups.
 
