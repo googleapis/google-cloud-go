@@ -353,6 +353,19 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	var prof bytes.Buffer
 	pt := p.GetProfileType()
 
+	ptEnabled := false
+	for _, enabled := range a.profileTypes {
+		if enabled == pt {
+			ptEnabled = true
+			break
+		}
+	}
+
+	if !ptEnabled {
+		debugLog("skipping collection of disabled profile type: %v", pt)
+		return
+	}
+
 	switch pt {
 	case pb.ProfileType_CPU:
 		duration, err := ptypes.Duration(p.Duration)
