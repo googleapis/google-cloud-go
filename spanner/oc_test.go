@@ -142,6 +142,8 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	expectedWrites := uint64(math.Floor(float64(DefaultSessionPoolConfig.MinOpened) * DefaultSessionPoolConfig.WriteSessions))
 	expectedReads := DefaultSessionPoolConfig.MinOpened - expectedWrites
 	waitFor(t, func() error {
+		client.idleSessions.mu.Lock()
+		defer client.idleSessions.mu.Unlock()
 		if client.idleSessions.numReads == expectedReads && client.idleSessions.numWrites == expectedWrites {
 			return nil
 		}
