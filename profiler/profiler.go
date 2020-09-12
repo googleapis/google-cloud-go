@@ -621,6 +621,10 @@ func initializeConfig(cfg Config) error {
 		config.OOMProfileThreshold = 0.98
 	}
 
+	if config.OOMCheckInterval == 0 {
+		config.OOMCheckInterval = time.Duration(30) * time.Second
+	}
+
 	return nil
 }
 
@@ -689,6 +693,7 @@ func pollMemoryUtilization(ctx context.Context, a *agent) {
 		debugLog("HEAP profile collection is disabled. OOM profile collection will be disabled")
 		return
 	}
+	debugLog("OOM profiling enabled")
 
 	// Start ticker
 	tick := time.NewTicker(config.OOMCheckInterval)
