@@ -735,6 +735,12 @@ func (p *parser) skipSpace() bool {
 			p.line++
 		}
 		i += ti + len(term)
+
+		// A non-isolated comment is always complete and doesn't get
+		// combined with any future comment.
+		if !com.isolated {
+			com = nil
+		}
 	}
 	p.s = p.s[i:]
 	p.offset += i
