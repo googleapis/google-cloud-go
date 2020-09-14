@@ -1,4 +1,4 @@
-module cloud.google.com/go/third_party/internal/godocfx
+module cloud.google.com/go/internal/godocfx
 
 go 1.15
 
