@@ -2,10 +2,14 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// Package pkgsite is not for external use. May change at any time without
+// warning.
+//
 // Copied from
-// https://github.com/golang/pkgsite/blob/ff1e697b104e751da362159cf6c7743898eea3fe/internal/fetch/dochtml/internal/render/.
-
-package main
+// https://github.com/golang/pkgsite/blob/ff1e697b104e751da362159cf6c7743898eea3fe/internal/fetch/dochtml/internal/render/
+// and
+// https://github.com/golang/pkgsite/tree/88f8a28ab2102416529d05d11e8135a43e146d46/internal/fetch/dochtml.
+package pkgsite
 
 import (
 	"bytes"
@@ -17,7 +21,8 @@ import (
 	"strings"
 )
 
-func printType(fset *token.FileSet, decl ast.Decl) string {
+// PrintType returns a string representation of the decl.
+func PrintType(fset *token.FileSet, decl ast.Decl) string {
 	v := &declVisitor{}
 	ast.Walk(v, decl)
 

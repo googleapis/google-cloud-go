@@ -52,7 +52,7 @@ func main() {
 	outDir := flag.String("out", "obj/api", "Output directory (default obj/api)")
 	flag.Parse()
 	if flag.NArg() != 1 {
-		log.Fatalf("%s expected 1 arg, got %d", os.Args[0], flag.NArg())
+		log.Fatalf("%s missing required argument: module path", os.Args[0])
 	}
 
 	pages, toc, module, err := parse(flag.Arg(0))
@@ -127,6 +127,7 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	defer f.Close()
 	now := time.Now().UTC()
 	fmt.Fprintf(f, `update_time {
   seconds: %d

@@ -2,10 +2,7 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
-// Copied from
-// https://github.com/golang/pkgsite/tree/88f8a28ab2102416529d05d11e8135a43e146d46/internal/fetch/dochtml.
-
-package main
+package pkgsite
 
 import (
 	"bytes"

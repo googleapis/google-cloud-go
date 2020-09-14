@@ -21,7 +21,7 @@ set -x
 
 python3 -m pip install gcp-docuploader
 
-cd github/google-cloud-go/third_party/internal/godocfx
+cd github/google-cloud-go/internal/godocfx
 go install
 cd -
 

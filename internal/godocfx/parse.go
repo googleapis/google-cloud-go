@@ -22,6 +22,7 @@ import (
 	"sort"
 	"strings"
 
+	"cloud.google.com/go/third_party/pkgsite"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -52,7 +53,7 @@ type child string
 
 // syntax represents syntax.
 type syntax struct {
-	Content string
+	Content string `yaml:"content,omitempty"`
 }
 
 // item represents a DocFX item.
@@ -166,7 +167,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: printType(pkg.Fset, c.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pkg.Fset, c.Decl)},
 			})
 		}
 		for _, v := range docPkg.Vars {
@@ -182,7 +183,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: printType(pkg.Fset, v.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pkg.Fset, v.Decl)},
 			})
 		}
 		for _, t := range docPkg.Types {
@@ -196,7 +197,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 				Type:    "type",
 				Summary: t.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: printType(pkg.Fset, t.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pkg.Fset, t.Decl)},
 			}
 			// TODO: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
@@ -215,7 +216,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: printType(pkg.Fset, c.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pkg.Fset, c.Decl)},
 				})
 			}
 			for _, v := range t.Vars {
@@ -231,14 +232,14 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: printType(pkg.Fset, v.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pkg.Fset, v.Decl)},
 				})
 			}
 
 			for _, fn := range t.Funcs {
 				fnUID := uid + "." + fn.Name
 				pkgItem.addChild(child(fnUID))
-				s := Synopsis(pkg.Fset, fn.Decl)
+				s := pkgsite.Synopsis(pkg.Fset, fn.Decl)
 				pkgPage.addItem(&item{
 					UID:     fnUID,
 					Name:    s,
@@ -254,7 +255,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 			for _, fn := range t.Methods {
 				fnUID := uid + "." + fn.Name
 				pkgItem.addChild(child(fnUID))
-				s := Synopsis(pkg.Fset, fn.Decl)
+				s := pkgsite.Synopsis(pkg.Fset, fn.Decl)
 				pkgPage.addItem(&item{
 					UID:     fnUID,
 					Name:    s,
@@ -271,7 +272,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		for _, fn := range docPkg.Funcs {
 			uid := pkg.PkgPath + "." + fn.Name
 			pkgItem.addChild(child(uid))
-			s := Synopsis(pkg.Fset, fn.Decl)
+			s := pkgsite.Synopsis(pkg.Fset, fn.Decl)
 			pkgPage.addItem(&item{
 				UID:     uid,
 				Name:    s,
