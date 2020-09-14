@@ -119,16 +119,14 @@ func (c *Client) newTransaction(ctx context.Context, s *transactionSettings) (_ 
 		req.TransactionOptions = &pb.TransactionOptions{
 			Mode: &pb.TransactionOptions_ReadOnly_{ReadOnly: &pb.TransactionOptions_ReadOnly{}},
 		}
-	} else {
+	} else if s.prevID != nil {
 		ctx = trace.StartSpan(ctx, "cloud.google.com/go/datastore.Transaction.ReadWriteTransaction")
 		defer func() { trace.EndSpan(ctx, err) }()
 
-		if s.prevID != nil {
-			req.TransactionOptions = &pb.TransactionOptions{
-				Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
-					PreviousTransaction: s.prevID,
-				}},
-			}
+		req.TransactionOptions = &pb.TransactionOptions{
+			Mode: &pb.TransactionOptions_ReadWrite_{ReadWrite: &pb.TransactionOptions_ReadWrite{
+				PreviousTransaction: s.prevID,
+			}},
 		}
 	}
 	resp, err := c.client.BeginTransaction(ctx, req)
