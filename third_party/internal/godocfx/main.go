@@ -134,5 +134,5 @@ func main() {
 }
 name: %q
 version: %q
-language: "go"`, now.Second(), now.Nanosecond(), module.Path, module.Version)
+language: "go"`, now.Unix(), now.Nanosecond(), module.Path, module.Version)
 }
