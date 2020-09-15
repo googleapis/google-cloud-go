@@ -19,7 +19,7 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-python3 -m pip install gcp-docuploader
+python3 -m pip install "gcp-docuploader<2019.0.0"
 
 cd github/google-cloud-go/internal/godocfx
 go install
