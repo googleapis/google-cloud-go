@@ -88,6 +88,9 @@ type Controller2Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	controller2Client clouddebuggerpb.Controller2Client
 
@@ -131,13 +134,19 @@ func NewController2Client(ctx context.Context, opts ...option.ClientOption) (*Co
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Controller2Client{
-		connPool:    connPool,
-		CallOptions: defaultController2CallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultController2CallOptions(),
 
 		controller2Client: clouddebuggerpb.NewController2Client(connPool),
 	}
@@ -179,6 +188,11 @@ func (c *Controller2Client) setGoogleClientInfo(keyval ...string) {
 // from data loss, or change the debuggee_id format. Agents must handle
 // debuggee_id value changing upon re-registration.
 func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebuggerpb.RegisterDebuggeeRequest, opts ...gax.CallOption) (*clouddebuggerpb.RegisterDebuggeeResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.RegisterDebuggee[0:len(c.CallOptions.RegisterDebuggee):len(c.CallOptions.RegisterDebuggee)], opts...)
 	var resp *clouddebuggerpb.RegisterDebuggeeResponse
@@ -207,6 +221,11 @@ func (c *Controller2Client) RegisterDebuggee(ctx context.Context, req *clouddebu
 // until the controller removes them from the active list to avoid
 // setting those breakpoints again.
 func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clouddebuggerpb.ListActiveBreakpointsRequest, opts ...gax.CallOption) (*clouddebuggerpb.ListActiveBreakpointsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListActiveBreakpoints[0:len(c.CallOptions.ListActiveBreakpoints):len(c.CallOptions.ListActiveBreakpoints)], opts...)
@@ -231,6 +250,11 @@ func (c *Controller2Client) ListActiveBreakpoints(ctx context.Context, req *clou
 // semantics. These may only make changes such as canonicalizing a value
 // or snapping the location to the correct line of code.
 func (c *Controller2Client) UpdateActiveBreakpoint(ctx context.Context, req *clouddebuggerpb.UpdateActiveBreakpointRequest, opts ...gax.CallOption) (*clouddebuggerpb.UpdateActiveBreakpointResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "debuggee_id", url.QueryEscape(req.GetDebuggeeId()), "breakpoint.id", url.QueryEscape(req.GetBreakpoint().GetId())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateActiveBreakpoint[0:len(c.CallOptions.UpdateActiveBreakpoint):len(c.CallOptions.UpdateActiveBreakpoint)], opts...)

@@ -265,14 +265,25 @@ func TestIntegration_BucketMethods(t *testing.T) {
 				},
 			}, {
 				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   20,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
-					AgeInDays:             30,
-					Liveness:              Live,
-					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"NEARLINE"},
-					NumNewerVersions:      10,
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
 				},
 			}},
 		},
@@ -675,6 +686,43 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 	testObjectIteratorWithOffset(t, bkt, objects)
+	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
+		query := &Query{Prefix: "", Delimiter: "/"}
+		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+			t.Fatalf("selecting query attrs: %v", err)
+		}
+
+		var gotNames []string
+		var gotPrefixes []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			} else if attrs.Prefix != "" {
+				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			}
+
+			if attrs.Bucket != "" {
+				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			}
+		}
+
+		sortedNames := []string{"obj1", "obj2"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+		sortedPrefixes := []string{"obj/"}
+		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+		}
+	})
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1125,7 +1173,7 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		gotNames = append(gotNames, attrs.Name)
 
@@ -1166,7 +1214,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		count++
 	}
@@ -2640,6 +2688,57 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 	attrs := h.mustObjectAttrs(obj)
 	if attrs.RetentionExpirationTime == (time.Time{}) {
 		t.Fatalf("got=%v, wanted a non-zero value", attrs.RetentionExpirationTime)
+	}
+}
+
+func TestIntegration_CustomTime(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	// Create object with CustomTime.
+	bkt := client.Bucket(bucketName)
+	obj := bkt.Object("custom-time-obj")
+	w := obj.NewWriter(ctx)
+	ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
+	w.ObjectAttrs.CustomTime = ct
+	h.mustWrite(w, randomContents())
+
+	// Validate that CustomTime has been set
+	checkCustomTime := func(want time.Time) error {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to get object attrs: %v", err)
+		}
+		if got := attrs.CustomTime; got != want {
+			return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+		}
+		return nil
+	}
+
+	if err := checkCustomTime(ct); err != nil {
+		t.Fatalf("checking CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the future should succeed.
+	laterTime := ct.Add(10 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
+		t.Fatalf("updating CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the past should give error.
+	earlierTime := ct.Add(5 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+		t.Fatalf("backdating CustomTime: expected error, got none")
+	}
+
+	// Zero value for CustomTime should be ignored.
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
+		t.Fatalf("empty update: %v", err)
+	}
+	if err := checkCustomTime(laterTime); err != nil {
+		t.Fatalf("after sending zero value: %v", err)
 	}
 }
 
