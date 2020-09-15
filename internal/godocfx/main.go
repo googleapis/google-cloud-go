@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build go1.15
+
 /*Command godocfx generates DocFX YAML for Go code.
 
 Usage:

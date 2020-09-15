@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+// +build go1.15
+
 // Package pkgsite is not for external use. May change at any time without
 // warning.
 //
