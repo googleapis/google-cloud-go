@@ -8,3 +8,4 @@
 /pubsub/            @googleapis/api-pubsub
 /spanner/           @skuruppu
 /storage/           @tritone
+/dataproc/          @googleapis/yoshi-go
