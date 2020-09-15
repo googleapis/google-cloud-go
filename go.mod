@@ -16,7 +16,7 @@ require (
 	golang.org/x/net v0.0.0-20200904194848-62affa334b73
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/text v0.3.3
-	golang.org/x/tools v0.0.0-20200915031644-64986481280e // indirect
+	golang.org/x/tools v0.0.0-20200915031644-64986481280e
 	google.golang.org/api v0.31.0
 	google.golang.org/genproto v0.0.0-20200914193844-75d14daec038
 	google.golang.org/grpc v1.31.1
