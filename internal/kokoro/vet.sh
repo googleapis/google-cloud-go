@@ -101,7 +101,8 @@ staticcheck -go 1.11 ./... 2>&1 | (
     grep -v spanner/value_test.go |
     grep -v bigtable/reader.go |
     grep -v internal/btree/btree.go |
-    grep -v container/apiv1/mock_test.go
+    grep -v container/apiv1/mock_test.go |
+    grep -v third_party/pkgsite/synopsis.go
 ) |
   tee /dev/stderr | (! read)
 
