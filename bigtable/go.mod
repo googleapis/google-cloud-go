@@ -12,6 +12,6 @@ require (
 	golang.org/x/tools v0.0.0-20200915173823-2db8f0ff891c // indirect
 	google.golang.org/api v0.31.0
 	google.golang.org/genproto v0.0.0-20200914193844-75d14daec038
-	google.golang.org/grpc v1.31.1
+	google.golang.org/grpc v1.32.0
 	rsc.io/binaryregexp v0.2.0
 )

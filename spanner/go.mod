@@ -12,5 +12,5 @@ require (
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.31.0
 	google.golang.org/genproto v0.0.0-20200914193844-75d14daec038
-	google.golang.org/grpc v1.31.1
+	google.golang.org/grpc v1.32.0
 )
