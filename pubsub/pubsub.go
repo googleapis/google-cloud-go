@@ -101,11 +101,13 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // If the client is available for the lifetime of the program, then Close need not be
 // called at exit.
 func (c *Client) Close() error {
-	err := c.pubc.Close()
-	if err != nil {
+	if err := c.pubc.Close(); err != nil {
 		return err
 	}
-	return c.subc.Close()
+	if err := c.subc.Close(); err != nil {
+		return err
+	}
+	return nil
 }
 
 func (c *Client) fullyQualifiedProjectName() string {
