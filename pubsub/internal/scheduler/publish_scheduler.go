@@ -157,6 +157,13 @@ func (s *PublishScheduler) FlushAndStop() {
 	}
 }
 
+// Flush ensures all remaining messages are sent.
+func (s *PublishScheduler) Flush() {
+	for _, b := range s.bundlers {
+		b.Flush()
+	}
+}
+
 // IsPaused checks if the bundler associated with an ordering keys is
 // paused.
 func (s *PublishScheduler) IsPaused(orderingKey string) bool {

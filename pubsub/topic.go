@@ -463,6 +463,14 @@ func (t *Topic) Stop() {
 	t.scheduler.FlushAndStop()
 }
 
+// Flush ensures all remaining messages are sent.
+func (t *Topic) Flush() {
+	if t.stopped || t.scheduler == nil {
+		return
+	}
+	t.scheduler.Flush()
+}
+
 // A PublishResult holds the result from a call to Publish.
 type PublishResult struct {
 	ready    chan struct{}

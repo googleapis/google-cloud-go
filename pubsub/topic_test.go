@@ -307,3 +307,40 @@ func TestDetachSubscription(t *testing.T) {
 		t.Errorf("DetachSubscription failed: %v", err)
 	}
 }
+
+func TestFlushStopTopic(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "flush-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	topic.Flush()
+	r := topic.Publish(ctx, &Message{
+		Data: []byte("hello"),
+	})
+	_, err = r.Get(ctx)
+	if err != nil {
+		t.Errorf("got err: %v", err)
+	}
+	topic.Flush()
+	r = topic.Publish(ctx, &Message{
+		Data: []byte("world"),
+	})
+	_, err = r.Get(ctx)
+	if err != nil {
+		t.Errorf("got err: %v", err)
+	}
+	topic.Stop()
+	r = topic.Publish(ctx, &Message{
+		Data: []byte("world"),
+	})
+	_, err = r.Get(ctx)
+	if err != errTopicStopped {
+		t.Errorf("got %v, want errTopicStopped", err)
+	}
+}
