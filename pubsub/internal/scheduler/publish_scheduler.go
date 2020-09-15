@@ -157,11 +157,17 @@ func (s *PublishScheduler) FlushAndStop() {
 	}
 }
 
-// Flush ensures all remaining messages are sent.
+// Flush waits until all bundlers are sent.
 func (s *PublishScheduler) Flush() {
+	var wg sync.WaitGroup
 	for _, b := range s.bundlers {
-		b.Flush()
+		wg.Add(1)
+		go func(b *bundler.Bundler) {
+			defer wg.Done()
+			b.Flush()
+		}(b)
 	}
+	wg.Wait()
 }
 
 // IsPaused checks if the bundler associated with an ordering keys is
