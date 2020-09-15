@@ -42,6 +42,9 @@ func TestPostPolicyV4Conformance(t *testing.T) {
 	for _, testFile := range testFiles {
 		for _, tc := range testFile.PostPolicyV4Tests {
 			t.Run(tc.Description, func(t *testing.T) {
+				if tc.Description == "POST Policy With Additional Metadata" {
+					t.Skip("https://github.com/googleapis/google-cloud-go/issues/2767")
+				}
 				pin := tc.PolicyInput
 				utcNow = func() time.Time {
 					return time.Unix(pin.GetTimestamp().GetSeconds(), 0).UTC()
