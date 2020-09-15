@@ -319,6 +319,7 @@ func TestFlushStopTopic(t *testing.T) {
 		t.Fatal(err)
 	}
 
+	// Subsequent publishes after a flush should succeed.
 	topic.Flush()
 	r := topic.Publish(ctx, &Message{
 		Data: []byte("hello"),
@@ -327,6 +328,8 @@ func TestFlushStopTopic(t *testing.T) {
 	if err != nil {
 		t.Errorf("got err: %v", err)
 	}
+
+	// Publishing after a flush should succeed.
 	topic.Flush()
 	r = topic.Publish(ctx, &Message{
 		Data: []byte("world"),
@@ -335,9 +338,11 @@ func TestFlushStopTopic(t *testing.T) {
 	if err != nil {
 		t.Errorf("got err: %v", err)
 	}
+
+	// Publishing after Stop should fail.
 	topic.Stop()
 	r = topic.Publish(ctx, &Message{
-		Data: []byte("world"),
+		Data: []byte("this should fail"),
 	})
 	_, err = r.Get(ctx)
 	if err != errTopicStopped {
