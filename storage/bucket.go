@@ -1175,7 +1175,8 @@ func (it *ObjectIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 // subsequent calls will return the same error. To continue iteration, a new
 // `ObjectIterator` must be created. Since objects are ordered lexicographically
 // by name, `Query.StartOffset` can be used to create a new iterator which will
-// start at the desired place.
+// start at the desired place. See
+// https://pkg.go.dev/cloud.google.com/go/storage?tab=doc#hdr-Listing_objects.
 //
 // If Query.Delimiter is non-empty, some of the ObjectAttrs returned by Next will
 // have a non-empty Prefix field, and a zero value for all other fields. These
