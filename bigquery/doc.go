@@ -298,7 +298,7 @@ Extractor, then optionally configure it, and lastly call its Run method.
 
 Errors
 
-Errors returned by this client are often of the type [`googleapi.Error`](https://godoc.org/google.golang.org/api/googleapi#Error).
+Errors returned by this client are often of the type `[googleapi.Error](https://godoc.org/google.golang.org/api/googleapi#Error)`.
 These errors can be introspected for more information by type asserting to the richer `googleapi.Error` type. For example:
 
 	if e, ok := err.(*googleapi.Error); ok {
