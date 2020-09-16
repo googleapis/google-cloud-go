@@ -1,10 +1,10 @@
 # Default owner for all directories not owned by others
-*                   @codyoss @tbpg
+*                   @googleapis/yoshi-go-admins
 
 /bigtable/          @tritone
-/bigquery/          @shollyman
+/bigquery/          @googleapis/api-bigquery
 /datastore/         @tritone
 /firestore/         @tritone
-/pubsub/            @hongalex
+/pubsub/            @googleapis/api-pubsub
 /spanner/           @skuruppu
 /storage/           @tritone

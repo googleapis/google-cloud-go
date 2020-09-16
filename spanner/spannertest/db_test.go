@@ -527,6 +527,13 @@ func TestTableData(t *testing.T) {
 			},
 		},
 		{
+			`SELECT MAX(Name) FROM Staff WHERE Cool = @p1 LIMIT 1`,
+			queryParams{"p1": boolParam(true)},
+			[][]interface{}{
+				{"Teal'c"},
+			},
+		},
+		{
 			`SELECT MIN(Name) FROM Staff`,
 			nil,
 			[][]interface{}{
@@ -540,6 +547,13 @@ func TestTableData(t *testing.T) {
 				// Daniel, George (NULL), Jack (NULL), Sam, Teal'c
 				{[]interface{}{false, nil, nil, false, true}},
 			},
+		},
+		// Regression test for aggregating no rows; it used to return an empty row.
+		// https://github.com/googleapis/google-cloud-go/issues/2793
+		{
+			`SELECT Cool, ARRAY_AGG(Name) FROM Staff WHERE Name > "zzz" GROUP BY Cool`,
+			nil,
+			nil,
 		},
 		// Regression test for evaluating `IN` incorrectly using ==.
 		// https://github.com/googleapis/google-cloud-go/issues/2458
@@ -874,6 +888,7 @@ func floatV(f float64) *structpb.Value                { return &structpb.Value{K
 func boolV(b bool) *structpb.Value                    { return &structpb.Value{Kind: &structpb.Value_BoolValue{b}} }
 func nullV() *structpb.Value                          { return &structpb.Value{Kind: &structpb.Value_NullValue{}} }
 
+func boolParam(b bool) queryParam     { return queryParam{Value: b, Type: boolType} }
 func stringParam(s string) queryParam { return queryParam{Value: s, Type: stringType} }
 func intParam(i int64) queryParam     { return queryParam{Value: i, Type: int64Type} }
 func floatParam(f float64) queryParam { return queryParam{Value: f, Type: float64Type} }

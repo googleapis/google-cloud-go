@@ -17,6 +17,7 @@ package spanner
 import (
 	"context"
 	"fmt"
+	"math"
 	"strings"
 	"testing"
 	"time"
@@ -99,7 +100,16 @@ func testSimpleMetric(t *testing.T, v *view.View, measure, value string) {
 	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
 
 	// Wait for a while to see all exported metrics.
-	time.Sleep(100 * time.Millisecond)
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
 
 	// Wait until we see data from the view.
 	select {
@@ -125,13 +135,32 @@ func TestOCStats_SessionPool_SessionsCount(t *testing.T) {
 	te := testutil.NewTestExporter(SessionsCountView)
 	defer te.Unregister()
 
+	waitErr := &Error{}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: DefaultSessionPoolConfig})
 	defer teardown()
-
+	// Wait for the session pool initialization to finish.
+	expectedWrites := uint64(math.Floor(float64(DefaultSessionPoolConfig.MinOpened) * DefaultSessionPoolConfig.WriteSessions))
+	expectedReads := DefaultSessionPoolConfig.MinOpened - expectedWrites
+	waitFor(t, func() error {
+		client.idleSessions.mu.Lock()
+		defer client.idleSessions.mu.Unlock()
+		if client.idleSessions.numReads == expectedReads && client.idleSessions.numWrites == expectedWrites {
+			return nil
+		}
+		return waitErr
+	})
 	client.Single().ReadRow(context.Background(), "Users", Key{"alice"}, []string{"email"})
 
 	// Wait for a while to see all exported metrics.
-	time.Sleep(100 * time.Millisecond)
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) >= 4 {
+				return nil
+			}
+		}
+		return waitErr
+	})
 
 	// Wait until we see data from the view.
 	select {
@@ -190,7 +219,16 @@ func TestOCStats_SessionPool_GetSessionTimeoutsCount(t *testing.T) {
 	client.Single().ReadRow(ctx, "Users", Key{"alice"}, []string{"email"})
 
 	// Wait for a while to see all exported metrics.
-	time.Sleep(100 * time.Millisecond)
+	waitErr := &Error{}
+	waitFor(t, func() error {
+		select {
+		case stat := <-te.Stats:
+			if len(stat.Rows) > 0 {
+				return nil
+			}
+		}
+		return waitErr
+	})
 
 	// Wait until we see data from the view.
 	select {
