@@ -78,14 +78,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 	pubc, err := vkit.NewPublisherClient(ctx, o...)
 	if err != nil {
-		return nil, fmt.Errorf("pubsub: %v", err)
+		return nil, fmt.Errorf("pubsub(publisher): %v", err)
 	}
 	subc, err := vkit.NewSubscriberClient(ctx, o...)
 	if err != nil {
-		// Should never happen, since we are passing in the connection.
-		// If it does, we cannot close, because the user may have passed in their
-		// own connection originally.
-		return nil, fmt.Errorf("pubsub: %v", err)
+		return nil, fmt.Errorf("pubsub(subscriber): %v", err)
 	}
 	pubc.SetGoogleClientInfo("gccl", version.Repo)
 	return &Client{
@@ -102,10 +99,10 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // called at exit.
 func (c *Client) Close() error {
 	if err := c.pubc.Close(); err != nil {
-		return err
+		return fmt.Errorf("pubsub publisher closing error: %v", err)
 	}
 	if err := c.subc.Close(); err != nil {
-		return err
+		return fmt.Errorf("pubsub subscriber closing error: %v", err)
 	}
 	return nil
 }
