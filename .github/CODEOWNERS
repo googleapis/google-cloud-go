@@ -1,5 +1,5 @@
 # Default owner for all directories not owned by others
-*                   @codyoss @tbpg
+*                   @googleapis/yoshi-go-admins
 
 /bigtable/          @tritone
 /bigquery/          @googleapis/api-bigquery
@@ -8,4 +8,3 @@
 /pubsub/            @googleapis/api-pubsub
 /spanner/           @skuruppu
 /storage/           @tritone
-/dataproc/          @googleapis/yoshi-go-admins
