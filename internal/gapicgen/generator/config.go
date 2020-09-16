@@ -552,7 +552,7 @@ var microgenGapicConfigs = []*microgenConfig{
 	},
 	{
 		inputDirectoryPath:    "google/cloud/dialogflow/cx/v3beta1",
-		pkg:                   "dialogflow",
+		pkg:                   "cx",
 		importPath:            "cloud.google.com/go/dialogflow/cx/apiv3beta1",
 		gRPCServiceConfigPath: "google/cloud/dialogflow/cx/v3beta1/dialogflow_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/dialogflow/cx/v3beta1/dialogflow_v3beta1.yaml",
