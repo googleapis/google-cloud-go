@@ -333,9 +333,12 @@ func processExamples(exs []*doc.Example, fset *token.FileSet) []example {
 	result := []example{}
 	for _, ex := range exs {
 		buf := &bytes.Buffer{}
-		node := &printer.CommentedNode{
+		var node interface{} = &printer.CommentedNode{
 			Node:     ex.Code,
 			Comments: ex.Comments,
+		}
+		if ex.Play != nil {
+			node = ex.Play
 		}
 		if err := format.Node(buf, fset, node); err != nil {
 			log.Fatal(err)
