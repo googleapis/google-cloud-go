@@ -45,6 +45,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
 )
 
@@ -76,8 +77,13 @@ func main() {
 	if *rm {
 		os.RemoveAll(*outDir)
 	}
-	if err := os.MkdirAll(*outDir, os.ModePerm); err != nil {
-		log.Fatalf("os.MkdirAll: %v", err)
+
+	write(*outDir, pages, toc, module)
+}
+
+func write(outDir string, pages map[string]*page, toc tableOfContents, module *packages.Module) error {
+	if err := os.MkdirAll(outDir, os.ModePerm); err != nil {
+		return fmt.Errorf("os.MkdirAll: %v", err)
 	}
 	for path, p := range pages {
 		// Make the module root page the index.
@@ -86,29 +92,29 @@ func main() {
 		}
 		// Trim the module path from all other paths.
 		path = strings.TrimPrefix(path, module.Path+"/")
-		path = filepath.Join(*outDir, path+".yml")
+		path = filepath.Join(outDir, path+".yml")
 		if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
-			log.Fatalf("os.MkdirAll: %v", err)
+			return fmt.Errorf("os.MkdirAll: %v", err)
 		}
 		f, err := os.Create(path)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer f.Close()
 		fmt.Fprintln(f, "### YamlMime:UniversalReference")
 		if err := yaml.NewEncoder(f).Encode(p); err != nil {
-			log.Fatal(err)
+			return err
 		}
 
-		path = filepath.Join(*outDir, "toc.yml")
+		path = filepath.Join(outDir, "toc.yml")
 		f, err = os.Create(path)
 		if err != nil {
-			log.Fatal(err)
+			return err
 		}
 		defer f.Close()
 		fmt.Fprintln(f, "### YamlMime:TableOfContent")
 		if err := yaml.NewEncoder(f).Encode(toc); err != nil {
-			log.Fatal(err)
+			return err
 		}
 	}
 
@@ -124,10 +130,10 @@ func main() {
 		version: "v0.65.0"
 		language: "go"
 	*/
-	path := filepath.Join(*outDir, "docs.metadata")
+	path := filepath.Join(outDir, "docs.metadata")
 	f, err := os.Create(path)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer f.Close()
 	now := time.Now().UTC()
@@ -138,4 +144,5 @@ func main() {
 name: %q
 version: %q
 language: "go"`, now.Unix(), now.Nanosecond(), module.Path, module.Version)
+	return nil
 }
