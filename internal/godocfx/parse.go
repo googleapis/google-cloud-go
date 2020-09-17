@@ -241,50 +241,44 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 			for _, fn := range t.Funcs {
 				fnUID := uid + "." + fn.Name
 				pkgItem.addChild(child(fnUID))
-				s := pkgsite.Synopsis(pkg.Fset, fn.Decl)
 				pkgPage.addItem(&item{
 					UID:     fnUID,
-					Name:    s,
+					Name:    fmt.Sprintf("func %s\n", fn.Name),
 					ID:      fn.Name,
 					Parent:  uid,
 					Type:    "function",
 					Summary: fn.Doc,
 					Langs:   onlyGo,
-					// Note: Name has the syntax already.
-					// Syntax:  Syntax{Content: s},
+					Syntax:  syntax{Content: pkgsite.Synopsis(pkg.Fset, fn.Decl)},
 				})
 			}
 			for _, fn := range t.Methods {
 				fnUID := uid + "." + fn.Name
 				pkgItem.addChild(child(fnUID))
-				s := pkgsite.Synopsis(pkg.Fset, fn.Decl)
 				pkgPage.addItem(&item{
 					UID:     fnUID,
-					Name:    s,
+					Name:    fmt.Sprintf("func (%s) %s\n", fn.Recv, fn.Name),
 					ID:      fn.Name,
 					Parent:  uid,
-					Type:    "function",
+					Type:    "function", // Note: this is actually a method.
 					Summary: fn.Doc,
 					Langs:   onlyGo,
-					// Note: Name has the syntax already.
-					// Syntax:  Syntax{Content: s},
+					Syntax:  syntax{Content: pkgsite.Synopsis(pkg.Fset, fn.Decl)},
 				})
 			}
 		}
 		for _, fn := range docPkg.Funcs {
 			uid := pkg.PkgPath + "." + fn.Name
 			pkgItem.addChild(child(uid))
-			s := pkgsite.Synopsis(pkg.Fset, fn.Decl)
 			pkgPage.addItem(&item{
 				UID:     uid,
-				Name:    s,
+				Name:    fmt.Sprintf("func %s\n", fn.Name),
 				ID:      fn.Name,
 				Parent:  pkg.PkgPath,
 				Type:    "function",
 				Summary: fn.Doc,
 				Langs:   onlyGo,
-				// Note: Name has the syntax already.
-				// Syntax:  Syntax{Content: s},
+				Syntax:  syntax{Content: pkgsite.Synopsis(pkg.Fset, fn.Decl)},
 			})
 		}
 	}
