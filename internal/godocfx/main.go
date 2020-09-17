@@ -78,7 +78,9 @@ func main() {
 		os.RemoveAll(*outDir)
 	}
 
-	write(*outDir, pages, toc, module)
+	if err := write(*outDir, pages, toc, module); err != nil {
+		log.Fatalf("write: %v", err)
+	}
 }
 
 func write(outDir string, pages map[string]*page, toc tableOfContents, module *packages.Module) error {
