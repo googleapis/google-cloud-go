@@ -19,7 +19,7 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-python3 -m pip install gcp-docuploader
+python3 -m pip install "gcp-docuploader<2019.0.0"
 
 cd github/google-cloud-go/internal/godocfx
 go install
@@ -43,6 +43,6 @@ cd obj/api || exit 4
 
 python3 -m docuploader upload \
   --staging-bucket docs-staging-v2-staging \
-  --destination-prefix docfx- \
+  --destination-prefix docfx \
   --credentials "$KOKORO_KEYSTORE_DIR/73713_docuploader_service_account" \
   .
