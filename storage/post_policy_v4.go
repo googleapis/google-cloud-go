@@ -249,10 +249,16 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 	conds := make([]PostPolicyV4Condition, len(opts.Conditions))
 	copy(conds, opts.Conditions)
 	conds = append(conds,
-		conditionRedirectToURLOnSuccess(descFields.RedirectToURLOnSuccess),
-		conditionStatusCodeOnSuccess(descFields.StatusCodeOnSuccess),
+		// These are ordered lexicographically. Technically the order doesn't matter
+		// for creating the policy, but we use this order to match the
+		// cross-language conformance tests for this feature.
 		&singleValueCondition{"acl", descFields.ACL},
 		&singleValueCondition{"cache-control", descFields.CacheControl},
+		&singleValueCondition{"content-disposition", descFields.ContentDisposition},
+		&singleValueCondition{"content-encoding", descFields.ContentEncoding},
+		&singleValueCondition{"content-type", descFields.ContentType},
+		conditionRedirectToURLOnSuccess(descFields.RedirectToURLOnSuccess),
+		conditionStatusCodeOnSuccess(descFields.StatusCodeOnSuccess),
 	)
 
 	YYYYMMDD := now.Format(yearMonthDay)
