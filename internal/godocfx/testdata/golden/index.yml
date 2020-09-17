@@ -242,7 +242,7 @@ items:
   - go
   syntax:
     content: func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) (err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// No longer grant access to the bucket to everyone on the Internet.\nif err := client.Bucket(\"my-bucket\").ACL().Delete(ctx, storage.AllUsers); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.ACLHandle.List
   name: |
@@ -256,7 +256,7 @@ items:
   - go
   syntax:
     content: func (a *ACLHandle) List(ctx context.Context) (rules []ACLRule, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// List the default object ACLs for my-bucket.\naclRules, err := client.Bucket(\"my-bucket\").DefaultObjectACL().List(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(aclRules)\n"
 - uid: cloud.google.com/go/storage.ACLHandle.Set
   name: |
@@ -270,7 +270,7 @@ items:
   - go
   syntax:
     content: func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole) (err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Let any authenticated user read my-bucket/my-object.\nobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\nif err := obj.ACL().Set(ctx, storage.AllAuthenticatedUsers, storage.RoleReader); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.ACLRole
   name: ACLRole
@@ -389,7 +389,7 @@ items:
   - go
   syntax:
     content: "type BucketHandle struct {\n\t// contains filtered or unexported fields\n}"
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nattrs, err := client.Bucket(\"my-bucket\").Attrs(ctx)\nif err == storage.ErrBucketNotExist {\n\tfmt.Println(\"The bucket does not exist\")\n\treturn\n}\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Printf(\"The bucket exists and has attributes: %#v\\n\", attrs)\n"
     name: exists
 - uid: cloud.google.com/go/storage.BucketHandle.ACL
@@ -420,7 +420,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (ret *Notification, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nb := client.Bucket(\"my-bucket\")\nn, err := b.AddNotification(ctx, &storage.Notification{\n\tTopicProjectID: \"my-project\",\n\tTopicID:        \"my-topic\",\n\tPayloadFormat:  storage.JSONPayload,\n})\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(n.ID)\n"
 - uid: cloud.google.com/go/storage.BucketHandle.Attrs
   name: |
@@ -434,7 +434,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nattrs, err := client.Bucket(\"my-bucket\").Attrs(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(attrs)\n"
 - uid: cloud.google.com/go/storage.BucketHandle.Create
   name: |
@@ -449,7 +449,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) Create(ctx context.Context, projectID string, attrs *BucketAttrs) (err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nif err := client.Bucket(\"my-bucket\").Create(ctx, \"my-project\", nil); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.BucketHandle.DefaultObjectACL
   name: |
@@ -477,7 +477,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) Delete(ctx context.Context) (err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nif err := client.Bucket(\"my-bucket\").Delete(ctx); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.BucketHandle.DeleteNotification
   name: |
@@ -491,7 +491,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) DeleteNotification(ctx context.Context, id string) (err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nb := client.Bucket(\"my-bucket\")\n// TODO: Obtain notificationID from BucketHandle.AddNotification\n// or BucketHandle.Notifications.\nerr = b.DeleteNotification(ctx, notificationID)\nif err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.BucketHandle.IAM
   name: |
@@ -541,7 +541,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nb := client.Bucket(\"my-bucket\")\nattrs, err := b.Attrs(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Note that locking the bucket without first attaching a RetentionPolicy\n// that's at least 1 day is a no-op\nerr = b.If(storage.BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).LockRetentionPolicy(ctx)\nif err != nil {\n\t// TODO: handle err\n}\n"
 - uid: cloud.google.com/go/storage.BucketHandle.Notifications
   name: |
@@ -556,7 +556,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) Notifications(ctx context.Context) (n map[string]*Notification, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nb := client.Bucket(\"my-bucket\")\nns, err := b.Notifications(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nfor id, n := range ns {\n\tfmt.Printf(\"%s: %+v\\n\", id, n)\n}\n"
 - uid: cloud.google.com/go/storage.BucketHandle.Object
   name: |
@@ -590,7 +590,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nit := client.Bucket(\"my-bucket\").Objects(ctx, nil)\n_ = it // TODO: iterate using Next or iterator.Pager.\n"
 - uid: cloud.google.com/go/storage.BucketHandle.Update
   name: |
@@ -604,7 +604,7 @@ items:
   - go
   syntax:
     content: func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate) (attrs *BucketAttrs, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Enable versioning in the bucket, regardless of its previous value.\nattrs, err := client.Bucket(\"my-bucket\").Update(ctx,\n\tstorage.BucketAttrsToUpdate{VersioningEnabled: true})\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(attrs)\n"
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nb := client.Bucket(\"my-bucket\")\nattrs, err := b.Attrs(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nvar au storage.BucketAttrsToUpdate\nau.SetLabel(\"lab\", attrs.Labels[\"lab\"]+\"-more\")\nif attrs.Labels[\"delete-me\"] == \"yes\" {\n\tau.DeleteLabel(\"delete-me\")\n}\nattrs, err = b.\n\tIf(storage.BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).\n\tUpdate(ctx, au)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(attrs)\n"
     name: readModifyWrite
@@ -653,7 +653,7 @@ items:
   - go
   syntax:
     content: func (it *BucketIterator) Next() (*BucketAttrs, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nit := client.Buckets(ctx, \"my-project\")\nfor {\n\tbucketAttrs, err := it.Next()\n\tif err == iterator.Done {\n\t\tbreak\n\t}\n\tif err != nil {\n\t\t// TODO: Handle error.\n\t}\n\tfmt.Println(bucketAttrs)\n}\n"
 - uid: cloud.google.com/go/storage.BucketIterator.PageInfo
   name: |
@@ -749,7 +749,7 @@ items:
   - go
   syntax:
     content: func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\n// Use Google Application Default Credentials to authorize and authenticate the client.\n// More information about Application Default Credentials and how to enable is at\n// https://developers.google.com/identity/protocols/application-default-credentials.\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Use the client.\n\n// Close the client when finished.\nif err := client.Close(); err != nil {\n\t// TODO: handle error.\n}\n"
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx, option.WithoutAuthentication())\nif err != nil {\n\t// TODO: handle error.\n}\n// Use the client.\n\n// Close the client when finished.\nif err := client.Close(); err != nil {\n\t// TODO: handle error.\n}\n"
     name: unauthenticated
@@ -788,7 +788,7 @@ items:
   - go
   syntax:
     content: func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nit := client.Buckets(ctx, \"my-bucket\")\n_ = it // TODO: iterate using Next or iterator.Pager.\n"
 - uid: cloud.google.com/go/storage.Client.Close
   name: |
@@ -818,7 +818,7 @@ items:
   - go
   syntax:
     content: func (c *Client) CreateHMACKey(ctx context.Context, projectID, serviceAccountEmail string, ...) (*HMACKey, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nhkey, err := client.CreateHMACKey(ctx, \"project-id\", \"service-account-email\")\nif err != nil {\n\t// TODO: handle error.\n}\n_ = hkey // TODO: Use the HMAC Key.\n"
 - uid: cloud.google.com/go/storage.Client.HMACKeyHandle
   name: |
@@ -850,7 +850,7 @@ items:
   - go
   syntax:
     content: func (c *Client) ListHMACKeys(ctx context.Context, projectID string, opts ...HMACKeyOption) *HMACKeysIterator
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\niter := client.ListHMACKeys(ctx, \"project-id\")\nfor {\n\tkey, err := iter.Next()\n\tif err == iterator.Done {\n\t\tbreak\n\t}\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t_ = key // TODO: Use the key.\n}\n"
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\niter := client.ListHMACKeys(ctx, \"project-id\", storage.ForHMACKeyServiceAccountEmail(\"service@account.email\"))\nfor {\n\tkey, err := iter.Next()\n\tif err == iterator.Done {\n\t\tbreak\n\t}\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t_ = key // TODO: Use the key.\n}\n"
     name: forServiceAccountEmail
@@ -893,7 +893,7 @@ items:
   - go
   syntax:
     content: func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nbkt := client.Bucket(\"bucketname\")\nsrc1 := bkt.Object(\"o1\")\nsrc2 := bkt.Object(\"o2\")\ndst := bkt.Object(\"o3\")\n\n// Compose and modify metadata.\nc := dst.ComposerFrom(src1, src2)\nc.ContentType = \"text/plain\"\n\n// Set the expected checksum for the destination object to be validated by\n// the backend (if desired).\nc.CRC32C = 42\nc.SendCRC32C = true\n\nattrs, err := c.Run(ctx)\nif err != nil {\n\t// TODO: Handle error.\n}\nfmt.Println(attrs)\n// Just compose.\nattrs, err = dst.ComposerFrom(src1, src2).Run(ctx)\nif err != nil {\n\t// TODO: Handle error.\n}\nfmt.Println(attrs)\n"
 - uid: cloud.google.com/go/storage.Conditions
   name: Conditions
@@ -935,7 +935,7 @@ items:
   - go
   syntax:
     content: func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nsrc := client.Bucket(\"bucketname\").Object(\"file1\")\ndst := client.Bucket(\"another-bucketname\").Object(\"file2\")\n\n// Copy content and modify metadata.\ncopier := dst.CopierFrom(src)\ncopier.ContentType = \"text/plain\"\nattrs, err := copier.Run(ctx)\nif err != nil {\n\t// TODO: Handle error, possibly resuming with copier.RewriteToken.\n}\nfmt.Println(attrs)\n\n// Just copy content.\nattrs, err = dst.CopierFrom(src).Run(ctx)\nif err != nil {\n\t// TODO: Handle error. No way to resume.\n}\nfmt.Println(attrs)\n"
   - content: "// Display progress across multiple rewrite RPCs.\nctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nsrc := client.Bucket(\"bucketname\").Object(\"file1\")\ndst := client.Bucket(\"another-bucketname\").Object(\"file2\")\n\ncopier := dst.CopierFrom(src)\ncopier.ProgressFunc = func(copiedBytes, totalBytes uint64) {\n\tlog.Printf(\"copy %.1f%% done\", float64(copiedBytes)/float64(totalBytes)*100)\n}\nif _, err := copier.Run(ctx); err != nil {\n\t// TODO: handle error.\n}\n"
     name: progress
@@ -997,7 +997,7 @@ items:
   - go
   syntax:
     content: func (hkh *HMACKeyHandle) Delete(ctx context.Context, opts ...HMACKeyOption) error
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nhkh := client.HMACKeyHandle(\"project-id\", \"access-key-id\")\n// Make sure that the HMACKey being deleted has a status of inactive.\nif err := hkh.Delete(ctx); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.HMACKeyHandle.Get
   name: |
@@ -1017,7 +1017,7 @@ items:
   - go
   syntax:
     content: func (hkh *HMACKeyHandle) Get(ctx context.Context, opts ...HMACKeyOption) (*HMACKey, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nhkh := client.HMACKeyHandle(\"project-id\", \"access-key-id\")\nhkey, err := hkh.Get(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n_ = hkey // TODO: Use the HMAC Key.\n"
 - uid: cloud.google.com/go/storage.HMACKeyHandle.Update
   name: |
@@ -1033,7 +1033,7 @@ items:
   - go
   syntax:
     content: func (h *HMACKeyHandle) Update(ctx context.Context, au HMACKeyAttrsToUpdate, opts ...HMACKeyOption) (*HMACKey, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nhkh := client.HMACKeyHandle(\"project-id\", \"access-key-id\")\nukey, err := hkh.Update(ctx, storage.HMACKeyAttrsToUpdate{\n\tState: storage.Inactive,\n})\nif err != nil {\n\t// TODO: handle error.\n}\n_ = ukey // TODO: Use the HMAC Key.\n"
 - uid: cloud.google.com/go/storage.HMACKeyOption
   name: HMACKeyOption
@@ -1294,7 +1294,7 @@ items:
   - go
   syntax:
     content: "type ObjectHandle struct {\n\t// contains filtered or unexported fields\n}"
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nattrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Attrs(ctx)\nif err == storage.ErrObjectNotExist {\n\tfmt.Println(\"The object does not exist\")\n\treturn\n}\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Printf(\"The object exists and has attributes: %#v\\n\", attrs)\n"
     name: exists
 - uid: cloud.google.com/go/storage.ObjectHandle.ACL
@@ -1324,7 +1324,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nobjAttrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Attrs(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(objAttrs)\n"
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n// Read the object.\nobjAttrs1, err := obj.Attrs(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Do something else for a while.\ntime.Sleep(5 * time.Minute)\n// Now read the same contents, even if the object has been written since the last read.\nobjAttrs2, err := obj.Generation(objAttrs1.Generation).Attrs(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(objAttrs1, objAttrs2)\n"
     name: withConditions
@@ -1375,7 +1375,7 @@ items:
   - go
   syntax:
     content: func (dst *ObjectHandle) CopierFrom(src *ObjectHandle) *Copier
-  example:
+  codeexamples:
   - content: "// To rotate the encryption key on an object, copy it onto itself.\nctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nobj := client.Bucket(\"bucketname\").Object(\"obj\")\n// Assume obj is encrypted with key1, and we want to change to key2.\n_, err = obj.Key(key2).CopierFrom(obj.Key(key1)).Run(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n"
     name: rotateEncryptionKeys
 - uid: cloud.google.com/go/storage.ObjectHandle.Delete
@@ -1390,7 +1390,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) Delete(ctx context.Context) error
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// To delete multiple objects in a bucket, list them with an\n// ObjectIterator, then Delete them.\n\n// If you are using this package on the App Engine Flex runtime,\n// you can init a bucket client with your app's default bucket name.\n// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.\nbucket := client.Bucket(\"my-bucket\")\nit := bucket.Objects(ctx, nil)\nfor {\n\tobjAttrs, err := it.Next()\n\tif err != nil && err != iterator.Done {\n\t\t// TODO: Handle error.\n\t}\n\tif err == iterator.Done {\n\t\tbreak\n\t}\n\tif err := bucket.Object(objAttrs.Name).Delete(ctx); err != nil {\n\t\t// TODO: Handle error.\n\t}\n}\nfmt.Println(\"deleted all object items in the bucket specified.\")\n"
 - uid: cloud.google.com/go/storage.ObjectHandle.Generation
   name: |
@@ -1408,7 +1408,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) Generation(gen int64) *ObjectHandle
-  example:
+  codeexamples:
   - content: "// Read an object's contents from generation gen, regardless of the\n// current generation of the object.\nctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\nrc, err := obj.Generation(gen).NewReader(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\ndefer rc.Close()\nif _, err := io.Copy(os.Stdout, rc); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.ObjectHandle.If
   name: |
@@ -1426,7 +1426,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) If(conds Conditions) *ObjectHandle
-  example:
+  codeexamples:
   - content: "// Read from an object only if the current generation is gen.\nctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\nrc, err := obj.If(storage.Conditions{GenerationMatch: gen}).NewReader(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n\nif _, err := io.Copy(os.Stdout, rc); err != nil {\n\t// TODO: handle error.\n}\nif err := rc.Close(); err != nil {\n\tswitch ee := err.(type) {\n\tcase *googleapi.Error:\n\t\tif ee.Code == http.StatusPreconditionFailed {\n\t\t\t// The condition presented in the If failed.\n\t\t\t// TODO: handle error.\n\t\t}\n\n\t\t// TODO: handle other status codes here.\n\n\tdefault:\n\t\t// TODO: handle error.\n\t}\n}\n"
 - uid: cloud.google.com/go/storage.ObjectHandle.Key
   name: |
@@ -1444,7 +1444,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n// Encrypt the object's contents.\nw := obj.Key(secretKey).NewWriter(ctx)\nif _, err := w.Write([]byte(\"top secret\")); err != nil {\n\t// TODO: handle error.\n}\nif err := w.Close(); err != nil {\n\t// TODO: handle error.\n}\n"
 - uid: cloud.google.com/go/storage.ObjectHandle.NewRangeReader
   name: |
@@ -1467,7 +1467,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64) (r *Reader, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Read only the first 64K.\nrc, err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx, 0, 64*1024)\nif err != nil {\n\t// TODO: handle error.\n}\ndefer rc.Close()\n\nslurp, err := ioutil.ReadAll(rc)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Printf(\"first 64K of file contents:\\n%s\\n\", slurp)\n"
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Read only the last 10 bytes until the end of the file.\nrc, err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx, -10, -1)\nif err != nil {\n\t// TODO: handle error.\n}\ndefer rc.Close()\n\nslurp, err := ioutil.ReadAll(rc)\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Printf(\"Last 10 bytes from the end of the file:\\n%s\\n\", slurp)\n"
     name: lastNBytes
@@ -1489,7 +1489,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nrc, err := client.Bucket(\"my-bucket\").Object(\"my-object\").NewReader(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nslurp, err := ioutil.ReadAll(rc)\nrc.Close()\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(\"file contents:\", slurp)\n"
 - uid: cloud.google.com/go/storage.ObjectHandle.NewWriter
   name: |
@@ -1517,7 +1517,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nwc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n_ = wc // TODO: Use the Writer.\n"
 - uid: cloud.google.com/go/storage.ObjectHandle.ObjectName
   name: |
@@ -1557,7 +1557,7 @@ items:
   - go
   syntax:
     content: func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (oa *ObjectAttrs, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\n// Change only the content type of the object.\nobjAttrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Update(ctx, storage.ObjectAttrsToUpdate{\n\tContentType:        \"text/html\",\n\tContentDisposition: \"\", // delete ContentDisposition\n})\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(objAttrs)\n"
 - uid: cloud.google.com/go/storage.ObjectIterator
   name: ObjectIterator
@@ -1592,7 +1592,7 @@ items:
   - go
   syntax:
     content: func (it *ObjectIterator) Next() (*ObjectAttrs, error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nit := client.Bucket(\"my-bucket\").Objects(ctx, nil)\nfor {\n\tobjAttrs, err := it.Next()\n\tif err == iterator.Done {\n\t\tbreak\n\t}\n\tif err != nil {\n\t\t// TODO: Handle error.\n\t}\n\tfmt.Println(objAttrs)\n}\n"
 - uid: cloud.google.com/go/storage.ObjectIterator.PageInfo
   name: |
@@ -1643,7 +1643,7 @@ items:
   - go
   syntax:
     content: func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options) (*PostPolicyV4, error)
-  example:
+  codeexamples:
   - content: "pv4, err := storage.GenerateSignedPostPolicyV4(\"my-bucket\", \"my-object.txt\", &storage.PostPolicyV4Options{\n\tGoogleAccessID: \"my-access-id\",\n\tPrivateKey:     []byte(\"my-private-key\"),\n\n\t// The upload expires in 2hours.\n\tExpires: time.Now().Add(2 * time.Hour),\n\n\tFields: &storage.PolicyV4Fields{\n\t\tStatusCodeOnSuccess:    200,\n\t\tRedirectToURLOnSuccess: \"https://example.org/\",\n\t\t// It MUST only be a text file.\n\t\tContentType: \"text/plain\",\n\t},\n\n\t// The conditions that the uploaded file will be expected to conform to.\n\tConditions: []storage.PostPolicyV4Condition{\n\t\t// Make the file a maximum of 10mB.\n\t\tstorage.ConditionContentLengthRange(0, 10<<20),\n\t},\n})\nif err != nil {\n\t// TODO: handle error.\n}\n\n// Now you can upload your file using the generated post policy\n// with a plain HTTP client or even the browser.\nformBuf := new(bytes.Buffer)\nmw := multipart.NewWriter(formBuf)\nfor fieldName, value := range pv4.Fields {\n\tif err := mw.WriteField(fieldName, value); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\nfile := bytes.NewReader(bytes.Repeat([]byte(\"a\"), 100))\n\nmf, err := mw.CreateFormFile(\"file\", \"myfile.txt\")\nif err != nil {\n\t// TODO: handle error.\n}\nif _, err := io.Copy(mf, file); err != nil {\n\t// TODO: handle error.\n}\nif err := mw.Close(); err != nil {\n\t// TODO: handle error.\n}\n\n// Compose the request.\nreq, err := http.NewRequest(\"POST\", pv4.URL, formBuf)\nif err != nil {\n\t// TODO: handle error.\n}\n// Ensure the Content-Type is derived from the multipart writer.\nreq.Header.Set(\"Content-Type\", mw.FormDataContentType())\nres, err := http.DefaultClient.Do(req)\nif err != nil {\n\t// TODO: handle error.\n}\n_ = res\n"
 - uid: cloud.google.com/go/storage.PostPolicyV4Condition
   name: PostPolicyV4Condition
@@ -2069,7 +2069,7 @@ items:
   - go
   syntax:
     content: func (w *Writer) Write(p []byte) (n int, err error)
-  example:
+  codeexamples:
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\nwc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\nwc.ContentType = \"text/plain\"\nwc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role: storage.RoleReader}}\nif _, err := wc.Write([]byte(\"hello world\")); err != nil {\n\t// TODO: handle error.\n\t// Note that Write may return nil in some error situations,\n\t// so always check the error from Close.\n}\nif err := wc.Close(); err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(\"updated object:\", wc.Attrs())\n"
   - content: "ctx := context.Background()\nclient, err := storage.NewClient(ctx)\nif err != nil {\n\t// TODO: handle error.\n}\ndata := []byte(\"verify me\")\nwc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\nwc.CRC32C = crc32.Checksum(data, crc32.MakeTable(crc32.Castagnoli))\nwc.SendCRC32C = true\nif _, err := wc.Write([]byte(\"hello world\")); err != nil {\n\t// TODO: handle error.\n\t// Note that Write may return nil in some error situations,\n\t// so always check the error from Close.\n}\nif err := wc.Close(); err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(\"updated object:\", wc.Attrs())\n"
     name: checksum
@@ -2090,5 +2090,5 @@ items:
   - go
   syntax:
     content: func SignedURL(bucket, name string, opts *SignedURLOptions) (string, error)
-  example:
+  codeexamples:
   - content: "pkey, err := ioutil.ReadFile(\"my-private-key.pem\")\nif err != nil {\n\t// TODO: handle error.\n}\nurl, err := storage.SignedURL(\"my-bucket\", \"my-object\", &storage.SignedURLOptions{\n\tGoogleAccessID: \"xxx@developer.gserviceaccount.com\",\n\tPrivateKey:     pkey,\n\tMethod:         \"GET\",\n\tExpires:        time.Now().Add(48 * time.Hour),\n})\nif err != nil {\n\t// TODO: handle error.\n}\nfmt.Println(url)\n"

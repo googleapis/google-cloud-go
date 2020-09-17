@@ -78,7 +78,7 @@ type item struct {
 	Type     string    `yaml:"type,omitempty"`
 	Langs    []string  `yaml:"langs,omitempty"`
 	Syntax   syntax    `yaml:"syntax,omitempty"`
-	Example  []example `yaml:"example,omitempty"`
+	Examples []example `yaml:"codeexamples,omitempty"`
 	Children []child   `yaml:"children,omitempty"`
 }
 
@@ -174,13 +174,13 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		})
 
 		pkgItem := &item{
-			UID:     docPkg.ImportPath,
-			Name:    docPkg.ImportPath,
-			ID:      docPkg.Name,
-			Summary: docPkg.Doc,
-			Langs:   onlyGo,
-			Type:    "package",
-			Example: processExamples(docPkg.Examples, fset),
+			UID:      docPkg.ImportPath,
+			Name:     docPkg.ImportPath,
+			ID:       docPkg.Name,
+			Summary:  docPkg.Doc,
+			Langs:    onlyGo,
+			Type:     "package",
+			Examples: processExamples(docPkg.Examples, fset),
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pkgPath] = pkgPage
@@ -221,15 +221,15 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 			uid := docPkg.ImportPath + "." + t.Name
 			pkgItem.addChild(child(uid))
 			typeItem := &item{
-				UID:     uid,
-				Name:    t.Name,
-				ID:      t.Name,
-				Parent:  docPkg.ImportPath,
-				Type:    "type",
-				Summary: t.Doc,
-				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(fset, t.Decl)},
-				Example: processExamples(t.Examples, fset),
+				UID:      uid,
+				Name:     t.Name,
+				ID:       t.Name,
+				Parent:   docPkg.ImportPath,
+				Type:     "type",
+				Summary:  t.Doc,
+				Langs:    onlyGo,
+				Syntax:   syntax{Content: pkgsite.PrintType(fset, t.Decl)},
+				Examples: processExamples(t.Examples, fset),
 			}
 			// TODO: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
@@ -272,30 +272,30 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 				fnUID := uid + "." + fn.Name
 				pkgItem.addChild(child(fnUID))
 				pkgPage.addItem(&item{
-					UID:     fnUID,
-					Name:    fmt.Sprintf("func %s\n", fn.Name),
-					ID:      fn.Name,
-					Parent:  uid,
-					Type:    "function",
-					Summary: fn.Doc,
-					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
-					Example: processExamples(fn.Examples, fset),
+					UID:      fnUID,
+					Name:     fmt.Sprintf("func %s\n", fn.Name),
+					ID:       fn.Name,
+					Parent:   uid,
+					Type:     "function",
+					Summary:  fn.Doc,
+					Langs:    onlyGo,
+					Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
+					Examples: processExamples(fn.Examples, fset),
 				})
 			}
 			for _, fn := range t.Methods {
 				fnUID := uid + "." + fn.Name
 				pkgItem.addChild(child(fnUID))
 				pkgPage.addItem(&item{
-					UID:     fnUID,
-					Name:    fmt.Sprintf("func (%s) %s\n", fn.Recv, fn.Name),
-					ID:      fn.Name,
-					Parent:  uid,
-					Type:    "function", // Note: this is actually a method.
-					Summary: fn.Doc,
-					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
-					Example: processExamples(fn.Examples, fset),
+					UID:      fnUID,
+					Name:     fmt.Sprintf("func (%s) %s\n", fn.Recv, fn.Name),
+					ID:       fn.Name,
+					Parent:   uid,
+					Type:     "function", // Note: this is actually a method.
+					Summary:  fn.Doc,
+					Langs:    onlyGo,
+					Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
+					Examples: processExamples(fn.Examples, fset),
 				})
 			}
 		}
@@ -303,15 +303,15 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 			uid := docPkg.ImportPath + "." + fn.Name
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
-				UID:     uid,
-				Name:    fmt.Sprintf("func %s\n", fn.Name),
-				ID:      fn.Name,
-				Parent:  docPkg.ImportPath,
-				Type:    "function",
-				Summary: fn.Doc,
-				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
-				Example: processExamples(fn.Examples, fset),
+				UID:      uid,
+				Name:     fmt.Sprintf("func %s\n", fn.Name),
+				ID:       fn.Name,
+				Parent:   docPkg.ImportPath,
+				Type:     "function",
+				Summary:  fn.Doc,
+				Langs:    onlyGo,
+				Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
+				Examples: processExamples(fn.Examples, fset),
 			})
 		}
 	}
