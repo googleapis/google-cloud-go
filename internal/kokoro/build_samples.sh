@@ -44,6 +44,10 @@ for i in $(find . -name go.mod); do
   if [[ $i == *"/internal/"* ]]; then
     continue
   fi
+  # internal tooling
+  if [[ $i == *"/testing/sampletests/"* ]]; then
+    continue
+  fi
 
   pushd $(dirname $i)
   if goVersionShouldSkip; then
