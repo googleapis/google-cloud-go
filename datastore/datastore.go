@@ -421,15 +421,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 	found := resp.Found
 	missing := resp.Missing
-	// Upper bound 100 iterations to prevent infinite loop.
-	// We choose 100 iterations somewhat logically:
-	// Max number of Entities you can request from Datastore is 1,000.
-	// Max size for a Datastore Entity is 1 MiB.
-	// Max request size is 10 MiB, so we assume max response size is also 10 MiB.
-	// 1,000 / 10 = 100.
+	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
+	// number of Entities you can request from Datastore.
 	// Note that if ctx has a deadline, the deadline will probably
-	// be hit before we reach 100 iterations.
-	for i := 0; len(resp.Deferred) > 0 && i < 100; i++ {
+	// be hit before we reach 1000 iterations.
+	for i := 0; len(resp.Deferred) > 0 && i < 1000; i++ {
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
