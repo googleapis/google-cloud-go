@@ -1502,8 +1502,8 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 	return fk, nil
 }
 
-func (p *parser) parseColumnNameList() ([]string, *parseError) {
-	var list []string
+func (p *parser) parseColumnNameList() ([]ID, *parseError) {
+	var list []ID
 	err := p.parseCommaList(func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
@@ -1686,24 +1686,36 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	sel.List, sel.ListAliases = list, aliases
 
 	if p.eat("FROM") {
+		padTS := func() {
+			for len(sel.TableSamples) < len(sel.From) {
+				sel.TableSamples = append(sel.TableSamples, nil)
+			}
+		}
+
 		for {
 			from, err := p.parseSelectFrom()
 			if err != nil {
 				return Select{}, err
 			}
+			sel.From = append(sel.From, from)
+
 			if p.sniff("TABLESAMPLE") {
 				ts, err := p.parseTableSample()
 				if err != nil {
 					return Select{}, err
 				}
-				from.TableSample = &ts
+				padTS()
+				sel.TableSamples[len(sel.TableSamples)-1] = &ts
 			}
-			sel.From = append(sel.From, from)
 
 			if p.eat(",") {
 				continue
 			}
 			break
+		}
+
+		if sel.TableSamples != nil {
+			padTS()
 		}
 	}
 
@@ -1728,9 +1740,9 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	return sel, nil
 }
 
-func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
+func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 	var list []Expr
-	var aliases []string // Only set if any aliases are seen.
+	var aliases []ID // Only set if any aliases are seen.
 	padAliases := func() {
 		for len(aliases) < len(list) {
 			aliases = append(aliases, "")
@@ -1770,15 +1782,15 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	// TODO: support more than a single table name.
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return SelectFrom{}, err
+		return nil, err
 	}
-	sf := SelectFrom{Table: tname}
+	sf := SelectFromTable{Table: tname}
 
 	// TODO: The "AS" keyword is optional.
 	if p.eat("AS") {
 		alias, err := p.parseAlias()
 		if err != nil {
-			return SelectFrom{}, err
+			return nil, err
 		}
 		sf.Alias = alias
 	}
@@ -2285,13 +2297,13 @@ func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 	return be, nil
 }
 
-func (p *parser) parseAlias() (string, *parseError) {
+func (p *parser) parseAlias() (ID, *parseError) {
 	// The docs don't specify what lexical token is valid for an alias,
 	// but it seems likely that it is an identifier.
 	return p.parseTableOrIndexOrColumnName()
 }
 
-func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
+func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
 		table_name and column_name and index_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
@@ -2302,10 +2314,10 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
 		return "", tok.err
 	}
 	if tok.typ == quotedID {
-		return tok.string, nil
+		return ID(tok.string), nil
 	}
 	// TODO: enforce restrictions
-	return tok.value, nil
+	return ID(tok.value), nil
 }
 
 func (p *parser) parseOnDelete() (OnDelete, *parseError) {

@@ -43,8 +43,8 @@ import (
 type database struct {
 	mu      sync.Mutex
 	lastTS  time.Time // last commit timestamp
-	tables  map[string]*table
-	indexes map[string]struct{} // only record their existence
+	tables  map[spansql.ID]*table
+	indexes map[spansql.ID]struct{} // only record their existence
 
 	rwMu sync.Mutex // held by read-write transactions
 }
@@ -55,9 +55,9 @@ type table struct {
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
 	cols     []colInfo
-	colIndex map[string]int // col name to index
-	pkCols   int            // number of primary key columns (may be 0)
-	pkDesc   []bool         // whether each primary key column is in descending order
+	colIndex map[spansql.ID]int // col name to index
+	pkCols   int                // number of primary key columns (may be 0)
+	pkDesc   []bool             // whether each primary key column is in descending order
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -65,7 +65,7 @@ type table struct {
 
 // colInfo represents information about a column in a table or result set.
 type colInfo struct {
-	Name     string
+	Name     spansql.ID
 	Type     spansql.Type
 	AggIndex int // Index+1 of SELECT list for which this is an aggregate value.
 }
@@ -239,10 +239,10 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 
 	// Lazy init.
 	if d.tables == nil {
-		d.tables = make(map[string]*table)
+		d.tables = make(map[spansql.ID]*table)
 	}
 	if d.indexes == nil {
-		d.indexes = make(map[string]struct{})
+		d.indexes = make(map[spansql.ID]struct{})
 	}
 
 	switch stmt := stmt.(type) {
@@ -259,7 +259,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		// TODO: check stmt.Interleave details.
 
 		// Move primary keys first, preserving their order.
-		pk := make(map[string]int)
+		pk := make(map[spansql.ID]int)
 		var pkDesc []bool
 		for i, kp := range stmt.PrimaryKey {
 			pk[kp.Column] = -1000 + i
@@ -271,7 +271,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		})
 
 		t := &table{
-			colIndex: make(map[string]int),
+			colIndex: make(map[spansql.ID]int),
 			pkCols:   len(pk),
 			pkDesc:   pkDesc,
 		}
@@ -334,7 +334,7 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 
 }
 
-func (d *database) table(tbl string) (*table, error) {
+func (d *database) table(tbl spansql.ID) (*table, error) {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 
@@ -346,7 +346,7 @@ func (d *database) table(tbl string) (*table, error) {
 }
 
 // writeValues executes a write option (Insert, Update, etc.).
-func (d *database) writeValues(tx *transaction, tbl string, cols []string, values []*structpb.ListValue, f func(t *table, colIndexes []int, r row) error) error {
+func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.ID, values []*structpb.ListValue, f func(t *table, colIndexes []int, r row) error) error {
 	if err := tx.checkMutable(); err != nil {
 		return err
 	}
@@ -406,7 +406,7 @@ func (d *database) writeValues(tx *transaction, tbl string, cols []string, value
 	return nil
 }
 
-func (d *database) Insert(tx *transaction, tbl string, cols []string, values []*structpb.ListValue) error {
+func (d *database) Insert(tx *transaction, tbl spansql.ID, cols []spansql.ID, values []*structpb.ListValue) error {
 	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
@@ -418,7 +418,7 @@ func (d *database) Insert(tx *transaction, tbl string, cols []string, values []*
 	})
 }
 
-func (d *database) Update(tx *transaction, tbl string, cols []string, values []*structpb.ListValue) error {
+func (d *database) Update(tx *transaction, tbl spansql.ID, cols []spansql.ID, values []*structpb.ListValue) error {
 	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		if t.pkCols == 0 {
 			return status.Errorf(codes.InvalidArgument, "cannot update table %s with no columns in primary key", tbl)
@@ -437,7 +437,7 @@ func (d *database) Update(tx *transaction, tbl string, cols []string, values []*
 	})
 }
 
-func (d *database) InsertOrUpdate(tx *transaction, tbl string, cols []string, values []*structpb.ListValue) error {
+func (d *database) InsertOrUpdate(tx *transaction, tbl spansql.ID, cols []spansql.ID, values []*structpb.ListValue) error {
 	return d.writeValues(tx, tbl, cols, values, func(t *table, colIndexes []int, r row) error {
 		pk := r[:t.pkCols]
 		rowNum, found := t.rowForPK(pk)
@@ -456,7 +456,7 @@ func (d *database) InsertOrUpdate(tx *transaction, tbl string, cols []string, va
 
 // TODO: Replace
 
-func (d *database) Delete(tx *transaction, table string, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
+func (d *database) Delete(tx *transaction, table spansql.ID, keys []*structpb.ListValue, keyRanges keyRangeList, all bool) error {
 	if err := tx.checkMutable(); err != nil {
 		return err
 	}
@@ -507,7 +507,7 @@ func (d *database) Delete(tx *transaction, table string, keys []*structpb.ListVa
 }
 
 // readTable executes a read option (Read, ReadAll).
-func (d *database) readTable(table string, cols []string, f func(*table, *rawIter, []int) error) (*rawIter, error) {
+func (d *database) readTable(table spansql.ID, cols []spansql.ID, f func(*table, *rawIter, []int) error) (*rawIter, error) {
 	t, err := d.table(table)
 	if err != nil {
 		return nil, err
@@ -528,7 +528,7 @@ func (d *database) readTable(table string, cols []string, f func(*table, *rawIte
 	return ri, f(t, ri, colIndexes)
 }
 
-func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
+func (d *database) Read(tbl spansql.ID, cols []spansql.ID, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
 	// The real Cloud Spanner returns an error if the key set is empty by definition.
 	// That doesn't seem to be well-defined, but it is a common error to attempt a read with no keys,
 	// so catch that here and return a representative error.
@@ -592,7 +592,7 @@ func (d *database) Read(tbl string, cols []string, keys []*structpb.ListValue, k
 	})
 }
 
-func (d *database) ReadAll(tbl string, cols []string, limit int64) (*rawIter, error) {
+func (d *database) ReadAll(tbl spansql.ID, cols []spansql.ID, limit int64) (*rawIter, error) {
 	return d.readTable(tbl, cols, func(t *table, ri *rawIter, colIndexes []int) error {
 		for _, r := range t.rows {
 			ri.add(r, colIndexes)
@@ -631,7 +631,7 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	return nil
 }
 
-func (t *table) dropColumn(name string) *status.Status {
+func (t *table) dropColumn(name spansql.ID) *status.Status {
 	// Only permit dropping non-key columns that aren't part of a secondary index.
 	// We don't support indexes, so only check that it isn't part of the primary key.
 
@@ -753,7 +753,7 @@ func (t *table) findRange(r *keyRange) (int, int) {
 }
 
 // colIndexes returns the indexes for the named columns.
-func (t *table) colIndexes(cols []string) ([]int, error) {
+func (t *table) colIndexes(cols []spansql.ID) ([]int, error) {
 	var is []int
 	for _, col := range cols {
 		i, ok := t.colIndex[col]
