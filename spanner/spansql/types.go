@@ -25,12 +25,11 @@ import (
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
-// TODO: Perhaps identifiers in the AST should be ID-typed.
 
 // CreateTable represents a CREATE TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create_table
 type CreateTable struct {
-	Name        string
+	Name        ID
 	Columns     []ColumnDef
 	Constraints []TableConstraint
 	PrimaryKey  []KeyPart
@@ -56,7 +55,7 @@ func (ct *CreateTable) clearOffset() {
 
 // TableConstraint represents a constraint on a table.
 type TableConstraint struct {
-	Name       string // may be empty
+	Name       ID // may be empty
 	ForeignKey ForeignKey
 
 	Position Position // position of the "CONSTRAINT" or "FOREIGN" token
@@ -70,22 +69,22 @@ func (tc *TableConstraint) clearOffset() {
 
 // Interleave represents an interleave clause of a CREATE TABLE statement.
 type Interleave struct {
-	Parent   string
+	Parent   ID
 	OnDelete OnDelete
 }
 
 // CreateIndex represents a CREATE INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#create-index
 type CreateIndex struct {
-	Name    string
-	Table   string
+	Name    ID
+	Table   ID
 	Columns []KeyPart
 
 	Unique       bool
 	NullFiltered bool
 
-	Storing    []string
-	Interleave string
+	Storing    []ID
+	Interleave ID
 
 	Position Position // position of the "CREATE" token
 }
@@ -98,7 +97,7 @@ func (ci *CreateIndex) clearOffset()   { ci.Position.Offset = 0 }
 // DropTable represents a DROP TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop_table
 type DropTable struct {
-	Name string
+	Name ID
 
 	Position Position // position of the "DROP" token
 }
@@ -111,7 +110,7 @@ func (dt *DropTable) clearOffset()   { dt.Position.Offset = 0 }
 // DropIndex represents a DROP INDEX statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#drop-index
 type DropIndex struct {
-	Name string
+	Name ID
 
 	Position Position // position of the "DROP" token
 }
@@ -124,7 +123,7 @@ func (di *DropIndex) clearOffset()   { di.Position.Offset = 0 }
 // AlterTable represents an ALTER TABLE statement.
 // https://cloud.google.com/spanner/docs/data-definition-language#alter_table
 type AlterTable struct {
-	Name       string
+	Name       ID
 	Alteration TableAlteration
 
 	Position Position // position of the "ALTER" token
@@ -160,12 +159,12 @@ func (SetOnDelete) isTableAlteration()    {}
 func (AlterColumn) isTableAlteration()    {}
 
 type AddColumn struct{ Def ColumnDef }
-type DropColumn struct{ Name string }
+type DropColumn struct{ Name ID }
 type AddConstraint struct{ Constraint TableConstraint }
-type DropConstraint struct{ Name string }
+type DropConstraint struct{ Name ID }
 type SetOnDelete struct{ Action OnDelete }
 type AlterColumn struct {
-	Name       string
+	Name       ID
 	Alteration ColumnAlteration
 }
 
@@ -195,7 +194,7 @@ const (
 // Delete represents a DELETE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#delete-statement
 type Delete struct {
-	Table string
+	Table ID
 	Where BoolExpr
 
 	// TODO: Alias
@@ -209,7 +208,7 @@ func (*Delete) isDMLStmt()       {}
 // ColumnDef represents a column definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
 type ColumnDef struct {
-	Name    string
+	Name    ID
 	Type    Type
 	NotNull bool
 
@@ -234,9 +233,9 @@ type ColumnOptions struct {
 // ForeignKey represents a foreign key definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
 type ForeignKey struct {
-	Columns    []string
-	RefTable   string
-	RefColumns []string
+	Columns    []ID
+	RefTable   ID
+	RefColumns []ID
 
 	Position Position // position of the "FOREIGN" token
 }
@@ -268,7 +267,7 @@ const (
 
 // KeyPart represents a column specification as part of a primary key or index definition.
 type KeyPart struct {
-	Column string
+	Column ID
 	Desc   bool
 }
 
@@ -291,19 +290,33 @@ type Select struct {
 	GroupBy  []Expr
 	// TODO: Having
 
+	// When the FROM clause has TABLESAMPLE operators,
+	// TableSamples will be populated 1:1 with From;
+	// FROM clauses without will have a nil value.
+	TableSamples []*TableSample
+
 	// If the SELECT list has explicit aliases ("AS alias"),
 	// ListAliases will be populated 1:1 with List;
 	// aliases that are present will be non-empty.
-	ListAliases []string
+	ListAliases []ID
 }
 
-type SelectFrom struct {
-	// This only supports a FROM clause directly from a table.
-	Table string
-	Alias string // empty if not aliased
-
-	TableSample *TableSample // TODO: This isn't part of from_item; move elsewhere.
+// SelectFrom represents the FROM clause of a SELECT.
+// https://cloud.google.com/spanner/docs/query-syntax#from_clause
+type SelectFrom interface {
+	isSelectFrom()
+	SQL() string
 }
+
+// SelectFromTable is a SelectFrom that specifies a table to read from.
+type SelectFromTable struct {
+	Table ID
+	Alias ID // empty if not aliased
+}
+
+func (SelectFromTable) isSelectFrom() {}
+
+// TODO: SelectFromJoin, SelectFromSubquery, etc.
 
 type Order struct {
 	Expr Expr
@@ -442,7 +455,7 @@ type IsExpr interface {
 
 // Func represents a function call.
 type Func struct {
-	Name string
+	Name string // not ID
 	Args []Expr
 
 	// TODO: various functions permit as-expressions, which might warrant different types in here.
@@ -460,6 +473,7 @@ func (Paren) isBoolExpr() {} // possibly bool
 func (Paren) isExpr()     {}
 
 // ID represents an identifier.
+// https://cloud.google.com/spanner/docs/lexical#identifiers
 type ID string
 
 func (ID) isBoolExpr() {} // possibly bool
