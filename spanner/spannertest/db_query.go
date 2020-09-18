@@ -269,7 +269,7 @@ type queryParam struct {
 	Type  spansql.Type
 }
 
-type queryParams map[string]queryParam
+type queryParams map[string]queryParam // TODO: change key to spansql.Param?
 
 func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
 	// If there's an ORDER BY clause, extend the query to include the expressions we need
@@ -377,7 +377,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 	var rowGroups [][2]int // Sequence of half-open intervals of row numbers.
 	if len(sel.GroupBy) > 0 {
 		// Load aliases visible to this GROUP BY.
-		ec.aliases = make(map[string]spansql.Expr)
+		ec.aliases = make(map[spansql.ID]spansql.Expr)
 		for i, alias := range sel.ListAliases {
 			ec.aliases[alias] = sel.List[i]
 		}
@@ -525,7 +525,7 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 			aggType = int64Type
 		}
 		rawOut.cols = append(raw.cols, colInfo{
-			Name:     fexpr.SQL(),
+			Name:     spansql.ID(fexpr.SQL()), // TODO: this is a bit hokey, but it is output only
 			Type:     aggType,
 			AggIndex: aggI + 1,
 		})
