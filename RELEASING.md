@@ -87,12 +87,13 @@ the failures have been resolved.
       `git push origin $NV`
 1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `CHANGES.md`.
-1. (Internal only.) Wait for the new release to be available on pkg.go.dev, then
-   go to go/google-cloud-go-publish-docs and trigger the job with the following
-   environment variables:
+1. Run `go get cloud.google.com/go@vX.Y.Z` then wait for the release
+   to show up on http://pkg.go.dev/cloud.google.com/go (a few minutes).
+1. Go to the [doc publishing job](http://go/google-cloud-go-publish-docs) and
+   trigger the job with the following environment variables:
    `MODULE=cloud.google.com,VERSION=vX.Y.Z`.
-   Replace the module path and version with the values for the module you're
-   releasing.
+   Replace the version with the value for the module you're
+   releasing. See [`publish_docs.sh`](/internal/kokoro/publish_docs.sh).
 
 # How to release a submodule
 
@@ -128,9 +129,11 @@ To release a submodule:
       `git push origin $NV`
 1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `datastore/CHANGES.md`.
-1. (Internal only.) Wait for the new release to be available on pkg.go.dev, then
-   go to go/google-cloud-go-publish-docs and trigger the job with the following
-   environment variables:
+1. Run `go get cloud.google.com/go/datastore@vX.Y.Z` then wait for the release
+   to show up on http://pkg.go.dev/cloud.google.com/go/datastore (a few
+   minutes).
+1. Go to the [doc publishing job](http://go/google-cloud-go-publish-docs) and
+   trigger the job with the following environment variables:
    `MODULE=cloud.google.com/datastore,VERSION=vX.Y.Z`.
    Replace the module path and version with the values for the module you're
    releasing. See [`publish_docs.sh`](/internal/kokoro/publish_docs.sh).
