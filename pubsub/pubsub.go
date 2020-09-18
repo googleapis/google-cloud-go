@@ -101,10 +101,10 @@ func (c *Client) Close() error {
 	pubErr := c.pubc.Close()
 	subErr := c.subc.Close()
 	if pubErr != nil {
-		return fmt.Errorf("pubsub subscriber closing error: %v", err)
+		return fmt.Errorf("pubsub subscriber closing error: %v", pubErr)
 	}
 	if subErr != nil {
-		return fmt.Errorf("pubsub publisher closing error: %v", err)
+		return fmt.Errorf("pubsub publisher closing error: %v", subErr)
 	}
 	return nil
 }

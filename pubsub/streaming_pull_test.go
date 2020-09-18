@@ -318,7 +318,7 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	// Intentionally don't check the returned err here. In the fake,
 	// closing either the publisher/subscriber client will cause the
 	// server to clean up resources, which is different than in the
-	// live service. With the fake, client.Close() will return an
+	// live service. With the fake, client.Close() will return a
 	// "the client connection is closing" error with the second Close.
 	client.Close()
 
