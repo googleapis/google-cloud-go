@@ -291,18 +291,23 @@ type Select struct {
 	GroupBy  []Expr
 	// TODO: Having
 
+	// When the FROM clause has TABLESAMPLE operators,
+	// TableSamples will be populated 1:1 with From;
+	// FROM clauses without will have a nil value.
+	TableSamples []*TableSample
+
 	// If the SELECT list has explicit aliases ("AS alias"),
 	// ListAliases will be populated 1:1 with List;
 	// aliases that are present will be non-empty.
 	ListAliases []string
 }
 
+// SelectFrom represents the FROM clause of a SELECT.
+// https://cloud.google.com/spanner/docs/query-syntax#from_clause
 type SelectFrom struct {
-	// This only supports a FROM clause directly from a table.
+	// TODO: Turn this into an interface, and support JOIN, etc.
 	Table string
 	Alias string // empty if not aliased
-
-	TableSample *TableSample // TODO: This isn't part of from_item; move elsewhere.
 }
 
 type Order struct {
