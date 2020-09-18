@@ -1686,24 +1686,36 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	sel.List, sel.ListAliases = list, aliases
 
 	if p.eat("FROM") {
+		padTS := func() {
+			for len(sel.TableSamples) < len(sel.From) {
+				sel.TableSamples = append(sel.TableSamples, nil)
+			}
+		}
+
 		for {
 			from, err := p.parseSelectFrom()
 			if err != nil {
 				return Select{}, err
 			}
+			sel.From = append(sel.From, from)
+
 			if p.sniff("TABLESAMPLE") {
 				ts, err := p.parseTableSample()
 				if err != nil {
 					return Select{}, err
 				}
-				from.TableSample = &ts
+				padTS()
+				sel.TableSamples[len(sel.TableSamples)-1] = &ts
 			}
-			sel.From = append(sel.From, from)
 
 			if p.eat(",") {
 				continue
 			}
 			break
+		}
+
+		if sel.TableSamples != nil {
+			padTS()
 		}
 	}
 
@@ -1770,15 +1782,15 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	// TODO: support more than a single table name.
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return SelectFrom{}, err
+		return nil, err
 	}
-	sf := SelectFrom{Table: tname}
+	sf := SelectFromTable{Table: tname}
 
 	// TODO: The "AS" keyword is optional.
 	if p.eat("AS") {
 		alias, err := p.parseAlias()
 		if err != nil {
-			return SelectFrom{}, err
+			return nil, err
 		}
 		sf.Alias = alias
 	}

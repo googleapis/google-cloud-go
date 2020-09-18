@@ -236,7 +236,7 @@ func TestSQL(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{ID("A"), ID("B")},
-					From: []SelectFrom{{Table: "Table"}},
+					From: []SelectFrom{SelectFromTable{Table: "Table"}},
 					Where: LogicalOp{
 						LHS: ComparisonOp{
 							LHS: ID("C"),

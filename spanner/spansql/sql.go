@@ -262,7 +262,7 @@ func (sel Select) SQL() string {
 			if i > 0 {
 				str += ", "
 			}
-			str += ID(f.Table).SQL()
+			str += f.SQL()
 		}
 	}
 	if sel.Where != nil {
@@ -276,6 +276,14 @@ func (sel Select) SQL() string {
 			}
 			str += gb.SQL()
 		}
+	}
+	return str
+}
+
+func (sft SelectFromTable) SQL() string {
+	str := ID(sft.Table).SQL()
+	if sft.Alias != "" {
+		str += " AS " + ID(sft.Alias).SQL()
 	}
 	return str
 }

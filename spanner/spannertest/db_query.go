@@ -335,10 +335,15 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 	// First stage is to identify the data source.
 	// If there's a FROM then that names a table to use.
 	if len(sel.From) > 1 {
-		return nil, fmt.Errorf("selecting from more than one table not yet supported")
+		return nil, fmt.Errorf("selecting with more than one FROM clause not yet supported")
 	}
 	if len(sel.From) == 1 {
-		tableName := sel.From[0].Table
+		sft, ok := sel.From[0].(spansql.SelectFromTable)
+		if !ok {
+			return nil, fmt.Errorf("selecting with FROM clause of type %T not yet supported", sel.From[0])
+		}
+		// TODO: sft.Alias needs mixing in here.
+		tableName := sft.Table
 		t, err := d.table(tableName)
 		if err != nil {
 			return nil, err
