@@ -250,7 +250,7 @@ func TestSQL(t *testing.T) {
 							RHS: Null,
 						},
 					},
-					ListAliases: []string{"", "banana"},
+					ListAliases: []ID{"", "banana"},
 				},
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
