@@ -665,6 +665,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/talent/v4",
+		pkg:                   "talent",
+		importPath:            "cloud.google.com/go/talent/apiv4",
+		gRPCServiceConfigPath: "google/cloud/talent/v4/talent_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/talent/v4/talent_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/talent/v4beta1",
 		pkg:                   "talent",
 		importPath:            "cloud.google.com/go/talent/apiv4beta1",
