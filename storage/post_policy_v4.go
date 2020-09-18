@@ -267,8 +267,12 @@ func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options
 		"x-goog-date":             now.Format(iso8601),
 		"x-goog-credential":       opts.GoogleAccessID + "/" + YYYYMMDD + "/auto/storage/goog4_request",
 		"x-goog-algorithm":        "GOOG4-RSA-SHA256",
-		"success_action_redirect": descFields.RedirectToURLOnSuccess,
 		"acl":                     descFields.ACL,
+		"cache-control":           descFields.CacheControl,
+		"content-disposition":     descFields.ContentDisposition,
+		"content-encoding":        descFields.ContentEncoding,
+		"content-type":            descFields.ContentType,
+		"success_action_redirect": descFields.RedirectToURLOnSuccess,
 	}
 	for key, value := range descFields.Metadata {
 		conds = append(conds, &singleValueCondition{key, value})
