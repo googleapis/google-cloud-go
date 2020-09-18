@@ -3389,7 +3389,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 	}
 	if g, w := res.StatusCode, statusCodeToRespond; g != w {
 		blob, _ := httputil.DumpResponse(res, true)
-		t.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+		t.Fatalf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
 	}
 	io.Copy(ioutil.Discard, res.Body)
 
