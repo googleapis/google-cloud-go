@@ -304,11 +304,20 @@ type Select struct {
 
 // SelectFrom represents the FROM clause of a SELECT.
 // https://cloud.google.com/spanner/docs/query-syntax#from_clause
-type SelectFrom struct {
-	// TODO: Turn this into an interface, and support JOIN, etc.
+type SelectFrom interface {
+	isSelectFrom()
+	SQL() string
+}
+
+// SelectFromTable is a SelectFrom that specifies a table to read from.
+type SelectFromTable struct {
 	Table string
 	Alias string // empty if not aliased
 }
+
+func (SelectFromTable) isSelectFrom() {}
+
+// TODO: SelectFromJoin, SelectFromSubquery, etc.
 
 type Order struct {
 	Expr Expr

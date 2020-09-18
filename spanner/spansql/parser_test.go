@@ -33,7 +33,7 @@ func TestParseQuery(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
-					From: []SelectFrom{{
+					From: []SelectFrom{SelectFromTable{
 						Table: "Characters",
 					}},
 					Where: LogicalOp{
@@ -68,7 +68,7 @@ func TestParseQuery(t *testing.T) {
 							Args: []Expr{Star},
 						},
 					},
-					From: []SelectFrom{{Table: "Packages"}},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
 				},
 			},
 		},
@@ -76,7 +76,7 @@ func TestParseQuery(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{Star},
-					From: []SelectFrom{{Table: "Packages"}},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
 				},
 			},
 		},
@@ -88,7 +88,7 @@ func TestParseQuery(t *testing.T) {
 						ID("FirstName"),
 						ID("LastName"),
 					},
-					From:        []SelectFrom{{Table: "PlayerStats"}},
+					From:        []SelectFrom{SelectFromTable{Table: "PlayerStats"}},
 					GroupBy:     []Expr{ID("FirstName"), ID("LastName")},
 					ListAliases: []string{"total_points", "", "surname"},
 				},
@@ -103,7 +103,7 @@ func TestParseQuery(t *testing.T) {
 					List: []Expr{
 						Func{Name: "COUNT", Args: []Expr{Star}},
 					},
-					From: []SelectFrom{{Table: "Lists", Alias: "l"}},
+					From: []SelectFrom{SelectFromTable{Table: "Lists", Alias: "l"}},
 					Where: ComparisonOp{
 						Op:  Eq,
 						LHS: ID("l_user_id"),

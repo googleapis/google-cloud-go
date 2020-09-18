@@ -1782,15 +1782,15 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	// TODO: support more than a single table name.
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return SelectFrom{}, err
+		return nil, err
 	}
-	sf := SelectFrom{Table: tname}
+	sf := SelectFromTable{Table: tname}
 
 	// TODO: The "AS" keyword is optional.
 	if p.eat("AS") {
 		alias, err := p.parseAlias()
 		if err != nil {
-			return SelectFrom{}, err
+			return nil, err
 		}
 		sf.Alias = alias
 	}
