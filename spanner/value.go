@@ -121,8 +121,8 @@ type NullableValue interface {
 
 // NullInt64 represents a Cloud Spanner INT64 that may be NULL.
 type NullInt64 struct {
-	Int64 int64
-	Valid bool // Valid is true if Int64 is not NULL.
+	Int64 int64 // Int64 contains the value when it is non-NULL, and zero when NULL.
+	Valid bool  // Valid is true if Int64 is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullInt64.
@@ -167,8 +167,8 @@ func (n *NullInt64) UnmarshalJSON(payload []byte) error {
 
 // NullString represents a Cloud Spanner STRING that may be NULL.
 type NullString struct {
-	StringVal string
-	Valid     bool // Valid is true if StringVal is not NULL.
+	StringVal string // StringVal contains the value when it is non-NULL, and an empty string when NULL.
+	Valid     bool   // Valid is true if StringVal is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullString.
@@ -213,8 +213,8 @@ func (n *NullString) UnmarshalJSON(payload []byte) error {
 
 // NullFloat64 represents a Cloud Spanner FLOAT64 that may be NULL.
 type NullFloat64 struct {
-	Float64 float64
-	Valid   bool // Valid is true if Float64 is not NULL.
+	Float64 float64 // Float64 contains the value when it is non-NULL, and zero when NULL.
+	Valid   bool    // Valid is true if Float64 is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullFloat64.
@@ -259,7 +259,7 @@ func (n *NullFloat64) UnmarshalJSON(payload []byte) error {
 
 // NullBool represents a Cloud Spanner BOOL that may be NULL.
 type NullBool struct {
-	Bool  bool
+	Bool  bool // Bool contains the value when it is non-NULL, and false when NULL.
 	Valid bool // Valid is true if Bool is not NULL.
 }
 
@@ -305,8 +305,8 @@ func (n *NullBool) UnmarshalJSON(payload []byte) error {
 
 // NullTime represents a Cloud Spanner TIMESTAMP that may be null.
 type NullTime struct {
-	Time  time.Time
-	Valid bool // Valid is true if Time is not NULL.
+	Time  time.Time // Time contains the value when it is non-NULL, and a zero time.Time when NULL.
+	Valid bool      // Valid is true if Time is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullTime.
@@ -356,8 +356,8 @@ func (n *NullTime) UnmarshalJSON(payload []byte) error {
 
 // NullDate represents a Cloud Spanner DATE that may be null.
 type NullDate struct {
-	Date  civil.Date
-	Valid bool // Valid is true if Date is not NULL.
+	Date  civil.Date // Date contains the value when it is non-NULL, and a zero civil.Date when NULL.
+	Valid bool       // Valid is true if Date is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullDate.
@@ -407,8 +407,8 @@ func (n *NullDate) UnmarshalJSON(payload []byte) error {
 
 // NullNumeric represents a Cloud Spanner Numeric that may be NULL.
 type NullNumeric struct {
-	Numeric big.Rat
-	Valid   bool // Valid is true if Numeric is not NULL.
+	Numeric big.Rat // Numeric contains the value when it is non-NULL, and a zero big.Rat when NULL.
+	Valid   bool    // Valid is true if Numeric is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullNumeric.
@@ -460,7 +460,7 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 // See also the document for Row.
 // Note that NullRow is not a valid Cloud Spanner column Type.
 type NullRow struct {
-	Row   Row
+	Row   Row  // Row contains the value when it is non-NULL, and a zero Row when NULL.
 	Valid bool // Valid is true if Row is not NULL.
 }
 
