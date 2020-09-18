@@ -109,6 +109,28 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	return bqToJob(res, c)
 }
 
+// runQuery invokes the optimized query path.
+// Due to differences in options it supports, it cannot be used for all existing
+// jobs.insert requests that are query jobs.
+func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*bq.QueryResponse, error) {
+	call := c.bqs.Jobs.Query(c.projectID, queryRequest)
+	setClientHeader(call.Header())
+
+	var res *bq.QueryResponse
+	var err error
+	invoke := func() error {
+		res, err = call.Do()
+		return err
+	}
+
+	// We control request ID, so we can always runWithRetry.
+	err = runWithRetry(ctx, invoke)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // Convert a number of milliseconds since the Unix epoch to a time.Time.
 // Treat an input of zero specially: convert it to the zero time,
 // rather than the start of the epoch.
