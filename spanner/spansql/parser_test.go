@@ -33,7 +33,7 @@ func TestParseQuery(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
-					From: []SelectFrom{{
+					From: []SelectFrom{SelectFromTable{
 						Table: "Characters",
 					}},
 					Where: LogicalOp{
@@ -49,7 +49,7 @@ func TestParseQuery(t *testing.T) {
 							RHS: Null,
 						},
 					},
-					ListAliases: []string{"aka"},
+					ListAliases: []ID{"aka"},
 				},
 				Order: []Order{{
 					Expr: ID("Age"),
@@ -68,7 +68,7 @@ func TestParseQuery(t *testing.T) {
 							Args: []Expr{Star},
 						},
 					},
-					From: []SelectFrom{{Table: "Packages"}},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
 				},
 			},
 		},
@@ -76,7 +76,7 @@ func TestParseQuery(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{Star},
-					From: []SelectFrom{{Table: "Packages"}},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
 				},
 			},
 		},
@@ -88,9 +88,9 @@ func TestParseQuery(t *testing.T) {
 						ID("FirstName"),
 						ID("LastName"),
 					},
-					From:        []SelectFrom{{Table: "PlayerStats"}},
+					From:        []SelectFrom{SelectFromTable{Table: "PlayerStats"}},
 					GroupBy:     []Expr{ID("FirstName"), ID("LastName")},
-					ListAliases: []string{"total_points", "", "surname"},
+					ListAliases: []ID{"total_points", "", "surname"},
 				},
 			},
 		},
@@ -103,13 +103,13 @@ func TestParseQuery(t *testing.T) {
 					List: []Expr{
 						Func{Name: "COUNT", Args: []Expr{Star}},
 					},
-					From: []SelectFrom{{Table: "Lists", Alias: "l"}},
+					From: []SelectFrom{SelectFromTable{Table: "Lists", Alias: "l"}},
 					Where: ComparisonOp{
 						Op:  Eq,
 						LHS: ID("l_user_id"),
 						RHS: Param("userID"),
 					},
-					ListAliases: []string{"count"},
+					ListAliases: []ID{"count"},
 				},
 			},
 		},
@@ -318,7 +318,7 @@ func TestParseDDL(t *testing.T) {
 				Table:      "FooBar",
 				Columns:    []KeyPart{{Column: "Count", Desc: true}},
 				Unique:     true,
-				Storing:    []string{"Count"},
+				Storing:    []ID{"Count"},
 				Interleave: "SomeTable",
 				Position:   line(8),
 			},
@@ -334,18 +334,18 @@ func TestParseDDL(t *testing.T) {
 					{
 						Name: "Con1",
 						ForeignKey: ForeignKey{
-							Columns:    []string{"System"},
+							Columns:    []ID{"System"},
 							RefTable:   "FooBar",
-							RefColumns: []string{"System"},
+							RefColumns: []ID{"System"},
 							Position:   line(13),
 						},
 						Position: line(13),
 					},
 					{
 						ForeignKey: ForeignKey{
-							Columns:    []string{"System", "RepoPath"},
+							Columns:    []ID{"System", "RepoPath"},
 							RefTable:   "Stranger",
-							RefColumns: []string{"Sys", "RPath"},
+							RefColumns: []ID{"Sys", "RPath"},
 							Position:   line(15),
 						},
 						Position: line(15),
@@ -377,9 +377,9 @@ func TestParseDDL(t *testing.T) {
 				Alteration: AddConstraint{Constraint: TableConstraint{
 					Name: "Con2",
 					ForeignKey: ForeignKey{
-						Columns:    []string{"RepoPath"},
+						Columns:    []ID{"RepoPath"},
 						RefTable:   "Repos",
-						RefColumns: []string{"RPath"},
+						RefColumns: []ID{"RPath"},
 						Position:   line(23),
 					},
 					Position: line(23),
@@ -523,7 +523,7 @@ func TestParseDDL(t *testing.T) {
 	}
 }
 
-func tableByName(t *testing.T, ddl *DDL, name string) *CreateTable {
+func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 	t.Helper()
 	for _, stmt := range ddl.List {
 		if ct, ok := stmt.(*CreateTable); ok && ct.Name == name {
