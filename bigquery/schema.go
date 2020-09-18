@@ -250,7 +250,7 @@ var typeOfByteSlice = reflect.TypeOf([]byte{})
 //   DATE        NullDate
 //   TIME        NullTime
 //   DATETIME    NullDateTime
-//   GEOGRAPHY	 NullGeography
+//   GEOGRAPHY   NullGeography
 //
 // For a nullable BYTES field, use the type []byte and tag the field "nullable" (see below).
 // For a nullable NUMERIC field, use the type *big.Rat and tag the field "nullable".
