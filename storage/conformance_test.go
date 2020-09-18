@@ -151,9 +151,6 @@ func TestSigningV4Conformance(t *testing.T) {
 	for _, testFile := range testFiles {
 		for _, tc := range testFile.SigningV4Tests {
 			t.Run(tc.Description, func(t *testing.T) {
-				if tc.Description == "Query Parameter Encoding" {
-					t.Skip("https://github.com/googleapis/google-cloud-go/issues/2876")
-				}
 				utcNow = func() time.Time {
 					return time.Unix(tc.Timestamp.Seconds, 0).UTC()
 				}

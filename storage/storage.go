@@ -587,8 +587,8 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	for k, v := range opts.QueryParameters {
 		canonicalQueryString[k] = append(canonicalQueryString[k], v...)
 	}
-
-	fmt.Fprintf(buf, "%s\n", canonicalQueryString.Encode())
+	escapedQuery := strings.Replace(canonicalQueryString.Encode(), "+", "%20", -1)
+	fmt.Fprintf(buf, "%s\n", escapedQuery)
 
 	// Fill in the hostname based on the desired URL style.
 	u.Host = opts.Style.host(bucket)
