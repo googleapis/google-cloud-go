@@ -122,6 +122,9 @@ type EntityTypesClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	entityTypesClient cxpb.EntityTypesClient
 
@@ -147,13 +150,19 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &EntityTypesClient{
-		connPool:    connPool,
-		CallOptions: defaultEntityTypesCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultEntityTypesCallOptions(),
 
 		entityTypesClient: cxpb.NewEntityTypesClient(connPool),
 	}
@@ -209,7 +218,7 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *cxpb.ListE
 		}
 
 		it.Response = resp
-		return resp.EntityTypes, resp.NextPageToken, nil
+		return resp.GetEntityTypes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -220,13 +229,18 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *cxpb.ListE
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetEntityType retrieves the specified entity type.
 func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *cxpb.GetEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEntityType[0:len(c.CallOptions.GetEntityType):len(c.CallOptions.GetEntityType)], opts...)
@@ -244,6 +258,11 @@ func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *cxpb.GetEnti
 
 // CreateEntityType creates an entity type in the specified agent.
 func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *cxpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateEntityType[0:len(c.CallOptions.CreateEntityType):len(c.CallOptions.CreateEntityType)], opts...)
@@ -261,6 +280,11 @@ func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *cxpb.Crea
 
 // UpdateEntityType updates the specified entity type.
 func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *cxpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*cxpb.EntityType, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEntityType[0:len(c.CallOptions.UpdateEntityType):len(c.CallOptions.UpdateEntityType)], opts...)
@@ -278,6 +302,11 @@ func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *cxpb.Upda
 
 // DeleteEntityType deletes the specified entity type.
 func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *cxpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteEntityType[0:len(c.CallOptions.DeleteEntityType):len(c.CallOptions.DeleteEntityType)], opts...)

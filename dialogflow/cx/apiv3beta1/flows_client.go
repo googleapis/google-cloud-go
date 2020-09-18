@@ -138,6 +138,9 @@ type FlowsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	flowsClient cxpb.FlowsClient
 
@@ -167,13 +170,19 @@ func NewFlowsClient(ctx context.Context, opts ...option.ClientOption) (*FlowsCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &FlowsClient{
-		connPool:    connPool,
-		CallOptions: defaultFlowsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultFlowsCallOptions(),
 
 		flowsClient: cxpb.NewFlowsClient(connPool),
 	}
@@ -216,6 +225,11 @@ func (c *FlowsClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateFlow creates a flow in the specified agent.
 func (c *FlowsClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateFlow[0:len(c.CallOptions.CreateFlow):len(c.CallOptions.CreateFlow)], opts...)
@@ -233,6 +247,11 @@ func (c *FlowsClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowReques
 
 // DeleteFlow deletes a specified flow.
 func (c *FlowsClient) DeleteFlow(ctx context.Context, req *cxpb.DeleteFlowRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteFlow[0:len(c.CallOptions.DeleteFlow):len(c.CallOptions.DeleteFlow)], opts...)
@@ -269,7 +288,7 @@ func (c *FlowsClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequest,
 		}
 
 		it.Response = resp
-		return resp.Flows, resp.NextPageToken, nil
+		return resp.GetFlows(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -280,13 +299,18 @@ func (c *FlowsClient) ListFlows(ctx context.Context, req *cxpb.ListFlowsRequest,
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetFlow retrieves the specified flow.
 func (c *FlowsClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetFlow[0:len(c.CallOptions.GetFlow):len(c.CallOptions.GetFlow)], opts...)
@@ -304,6 +328,11 @@ func (c *FlowsClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest, opt
 
 // UpdateFlow updates the specified flow.
 func (c *FlowsClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "flow.name", url.QueryEscape(req.GetFlow().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateFlow[0:len(c.CallOptions.UpdateFlow):len(c.CallOptions.UpdateFlow)], opts...)
@@ -322,6 +351,11 @@ func (c *FlowsClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowReques
 // TrainFlow trains the specified flow. Note that only the flow in ‘draft’ environment
 // is trained.
 func (c *FlowsClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequest, opts ...gax.CallOption) (*TrainFlowOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TrainFlow[0:len(c.CallOptions.TrainFlow):len(c.CallOptions.TrainFlow)], opts...)
