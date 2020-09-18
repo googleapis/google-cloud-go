@@ -98,6 +98,9 @@ type SessionsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	sessionsClient cxpb.SessionsClient
 
@@ -125,13 +128,19 @@ func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*Sessi
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &SessionsClient{
-		connPool:    connPool,
-		CallOptions: defaultSessionsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultSessionsCallOptions(),
 
 		sessionsClient: cxpb.NewSessionsClient(connPool),
 	}
@@ -167,6 +176,11 @@ func (c *SessionsClient) setGoogleClientInfo(keyval ...string) {
 // entity types to be updated, which in turn might affect results of future
 // queries.
 func (c *SessionsClient) DetectIntent(ctx context.Context, req *cxpb.DetectIntentRequest, opts ...gax.CallOption) (*cxpb.DetectIntentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetectIntent[0:len(c.CallOptions.DetectIntent):len(c.CallOptions.DetectIntent)], opts...)
@@ -203,6 +217,11 @@ func (c *SessionsClient) StreamingDetectIntent(ctx context.Context, opts ...gax.
 // MatchIntent returns preliminary intent match results, doesn’t change the session
 // status.
 func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentRequest, opts ...gax.CallOption) (*cxpb.MatchIntentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MatchIntent[0:len(c.CallOptions.MatchIntent):len(c.CallOptions.MatchIntent)], opts...)
@@ -226,6 +245,11 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 // MatchIntentResponse.
 // Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "match_intent_request.session", url.QueryEscape(req.GetMatchIntentRequest().GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.FulfillIntent[0:len(c.CallOptions.FulfillIntent):len(c.CallOptions.FulfillIntent)], opts...)
