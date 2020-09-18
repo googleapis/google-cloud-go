@@ -122,6 +122,9 @@ type IntentsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	intentsClient cxpb.IntentsClient
 
@@ -146,13 +149,19 @@ func NewIntentsClient(ctx context.Context, opts ...option.ClientOption) (*Intent
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IntentsClient{
-		connPool:    connPool,
-		CallOptions: defaultIntentsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultIntentsCallOptions(),
 
 		intentsClient: cxpb.NewIntentsClient(connPool),
 	}
@@ -208,7 +217,7 @@ func (c *IntentsClient) ListIntents(ctx context.Context, req *cxpb.ListIntentsRe
 		}
 
 		it.Response = resp
-		return resp.Intents, resp.NextPageToken, nil
+		return resp.GetIntents(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -219,13 +228,18 @@ func (c *IntentsClient) ListIntents(ctx context.Context, req *cxpb.ListIntentsRe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetIntent retrieves the specified intent.
 func (c *IntentsClient) GetIntent(ctx context.Context, req *cxpb.GetIntentRequest, opts ...gax.CallOption) (*cxpb.Intent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIntent[0:len(c.CallOptions.GetIntent):len(c.CallOptions.GetIntent)], opts...)
@@ -243,6 +257,11 @@ func (c *IntentsClient) GetIntent(ctx context.Context, req *cxpb.GetIntentReques
 
 // CreateIntent creates an intent in the specified agent.
 func (c *IntentsClient) CreateIntent(ctx context.Context, req *cxpb.CreateIntentRequest, opts ...gax.CallOption) (*cxpb.Intent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateIntent[0:len(c.CallOptions.CreateIntent):len(c.CallOptions.CreateIntent)], opts...)
@@ -260,6 +279,11 @@ func (c *IntentsClient) CreateIntent(ctx context.Context, req *cxpb.CreateIntent
 
 // UpdateIntent updates the specified intent.
 func (c *IntentsClient) UpdateIntent(ctx context.Context, req *cxpb.UpdateIntentRequest, opts ...gax.CallOption) (*cxpb.Intent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "intent.name", url.QueryEscape(req.GetIntent().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateIntent[0:len(c.CallOptions.UpdateIntent):len(c.CallOptions.UpdateIntent)], opts...)
@@ -277,6 +301,11 @@ func (c *IntentsClient) UpdateIntent(ctx context.Context, req *cxpb.UpdateIntent
 
 // DeleteIntent deletes the specified intent.
 func (c *IntentsClient) DeleteIntent(ctx context.Context, req *cxpb.DeleteIntentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteIntent[0:len(c.CallOptions.DeleteIntent):len(c.CallOptions.DeleteIntent)], opts...)

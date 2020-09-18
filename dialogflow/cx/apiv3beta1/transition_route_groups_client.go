@@ -122,6 +122,9 @@ type TransitionRouteGroupsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	transitionRouteGroupsClient cxpb.TransitionRouteGroupsClient
 
@@ -146,13 +149,19 @@ func NewTransitionRouteGroupsClient(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &TransitionRouteGroupsClient{
-		connPool:    connPool,
-		CallOptions: defaultTransitionRouteGroupsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultTransitionRouteGroupsCallOptions(),
 
 		transitionRouteGroupsClient: cxpb.NewTransitionRouteGroupsClient(connPool),
 	}
@@ -208,7 +217,7 @@ func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Cont
 		}
 
 		it.Response = resp
-		return resp.TransitionRouteGroups, resp.NextPageToken, nil
+		return resp.GetTransitionRouteGroups(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -219,13 +228,18 @@ func (c *TransitionRouteGroupsClient) ListTransitionRouteGroups(ctx context.Cont
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetTransitionRouteGroup retrieves the specified TransitionRouteGroup.
 func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Context, req *cxpb.GetTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTransitionRouteGroup[0:len(c.CallOptions.GetTransitionRouteGroup):len(c.CallOptions.GetTransitionRouteGroup)], opts...)
@@ -243,6 +257,11 @@ func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Contex
 
 // CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
 func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTransitionRouteGroup[0:len(c.CallOptions.CreateTransitionRouteGroup):len(c.CallOptions.CreateTransitionRouteGroup)], opts...)
@@ -260,6 +279,11 @@ func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Con
 
 // UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
 func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transition_route_group.name", url.QueryEscape(req.GetTransitionRouteGroup().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTransitionRouteGroup[0:len(c.CallOptions.UpdateTransitionRouteGroup):len(c.CallOptions.UpdateTransitionRouteGroup)], opts...)
@@ -277,6 +301,11 @@ func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Con
 
 // DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
 func (c *TransitionRouteGroupsClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTransitionRouteGroup[0:len(c.CallOptions.DeleteTransitionRouteGroup):len(c.CallOptions.DeleteTransitionRouteGroup)], opts...)

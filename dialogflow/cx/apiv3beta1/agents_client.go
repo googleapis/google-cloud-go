@@ -150,6 +150,9 @@ type AgentsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	agentsClient cxpb.AgentsClient
 
@@ -179,13 +182,19 @@ func NewAgentsClient(ctx context.Context, opts ...option.ClientOption) (*AgentsC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &AgentsClient{
-		connPool:    connPool,
-		CallOptions: defaultAgentsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultAgentsCallOptions(),
 
 		agentsClient: cxpb.NewAgentsClient(connPool),
 	}
@@ -251,7 +260,7 @@ func (c *AgentsClient) ListAgents(ctx context.Context, req *cxpb.ListAgentsReque
 		}
 
 		it.Response = resp
-		return resp.Agents, resp.NextPageToken, nil
+		return resp.GetAgents(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -262,13 +271,18 @@ func (c *AgentsClient) ListAgents(ctx context.Context, req *cxpb.ListAgentsReque
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetAgent retrieves the specified agent.
 func (c *AgentsClient) GetAgent(ctx context.Context, req *cxpb.GetAgentRequest, opts ...gax.CallOption) (*cxpb.Agent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAgent[0:len(c.CallOptions.GetAgent):len(c.CallOptions.GetAgent)], opts...)
@@ -286,6 +300,11 @@ func (c *AgentsClient) GetAgent(ctx context.Context, req *cxpb.GetAgentRequest, 
 
 // CreateAgent creates an agent in the specified location.
 func (c *AgentsClient) CreateAgent(ctx context.Context, req *cxpb.CreateAgentRequest, opts ...gax.CallOption) (*cxpb.Agent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateAgent[0:len(c.CallOptions.CreateAgent):len(c.CallOptions.CreateAgent)], opts...)
@@ -303,6 +322,11 @@ func (c *AgentsClient) CreateAgent(ctx context.Context, req *cxpb.CreateAgentReq
 
 // UpdateAgent updates the specified agent.
 func (c *AgentsClient) UpdateAgent(ctx context.Context, req *cxpb.UpdateAgentRequest, opts ...gax.CallOption) (*cxpb.Agent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "agent.name", url.QueryEscape(req.GetAgent().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateAgent[0:len(c.CallOptions.UpdateAgent):len(c.CallOptions.UpdateAgent)], opts...)
@@ -320,6 +344,11 @@ func (c *AgentsClient) UpdateAgent(ctx context.Context, req *cxpb.UpdateAgentReq
 
 // DeleteAgent deletes the specified agent.
 func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAgent[0:len(c.CallOptions.DeleteAgent):len(c.CallOptions.DeleteAgent)], opts...)
@@ -333,6 +362,11 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentReq
 
 // ExportAgent exports the specified agent to a ZIP file.
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportAgent[0:len(c.CallOptions.ExportAgent):len(c.CallOptions.ExportAgent)], opts...)
@@ -355,6 +389,11 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentReq
 // Note that all existing intents, intent routes, entity types, pages and
 // webhooks in the agent will be deleted.
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RestoreAgent[0:len(c.CallOptions.RestoreAgent):len(c.CallOptions.RestoreAgent)], opts...)
