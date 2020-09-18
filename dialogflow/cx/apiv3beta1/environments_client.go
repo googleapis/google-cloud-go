@@ -138,6 +138,9 @@ type EnvironmentsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	environmentsClient cxpb.EnvironmentsClient
 
@@ -167,13 +170,19 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &EnvironmentsClient{
-		connPool:    connPool,
-		CallOptions: defaultEnvironmentsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultEnvironmentsCallOptions(),
 
 		environmentsClient: cxpb.NewEnvironmentsClient(connPool),
 	}
@@ -239,7 +248,7 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Environments, resp.NextPageToken, nil
+		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -250,13 +259,18 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetEnvironment retrieves the specified Environment.
 func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEnvironment[0:len(c.CallOptions.GetEnvironment):len(c.CallOptions.GetEnvironment)], opts...)
@@ -274,6 +288,11 @@ func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEn
 
 // CreateEnvironment creates an Environment in the specified Agent.
 func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateEnvironment[0:len(c.CallOptions.CreateEnvironment):len(c.CallOptions.CreateEnvironment)], opts...)
@@ -293,6 +312,11 @@ func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.Cr
 
 // UpdateEnvironment updates the specified Environment.
 func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEnvironment[0:len(c.CallOptions.UpdateEnvironment):len(c.CallOptions.UpdateEnvironment)], opts...)
@@ -312,6 +336,11 @@ func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.Up
 
 // DeleteEnvironment deletes the specified Environment.
 func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteEnvironment[0:len(c.CallOptions.DeleteEnvironment):len(c.CallOptions.DeleteEnvironment)], opts...)
@@ -348,7 +377,7 @@ func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *
 		}
 
 		it.Response = resp
-		return resp.Environments, resp.NextPageToken, nil
+		return resp.GetEnvironments(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -359,8 +388,8 @@ func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

@@ -122,6 +122,9 @@ type PagesClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	pagesClient cxpb.PagesClient
 
@@ -146,13 +149,19 @@ func NewPagesClient(ctx context.Context, opts ...option.ClientOption) (*PagesCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PagesClient{
-		connPool:    connPool,
-		CallOptions: defaultPagesCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultPagesCallOptions(),
 
 		pagesClient: cxpb.NewPagesClient(connPool),
 	}
@@ -208,7 +217,7 @@ func (c *PagesClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequest,
 		}
 
 		it.Response = resp
-		return resp.Pages, resp.NextPageToken, nil
+		return resp.GetPages(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -219,13 +228,18 @@ func (c *PagesClient) ListPages(ctx context.Context, req *cxpb.ListPagesRequest,
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetPage retrieves the specified page.
 func (c *PagesClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetPage[0:len(c.CallOptions.GetPage):len(c.CallOptions.GetPage)], opts...)
@@ -243,6 +257,11 @@ func (c *PagesClient) GetPage(ctx context.Context, req *cxpb.GetPageRequest, opt
 
 // CreatePage creates a page in the specified flow.
 func (c *PagesClient) CreatePage(ctx context.Context, req *cxpb.CreatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreatePage[0:len(c.CallOptions.CreatePage):len(c.CallOptions.CreatePage)], opts...)
@@ -260,6 +279,11 @@ func (c *PagesClient) CreatePage(ctx context.Context, req *cxpb.CreatePageReques
 
 // UpdatePage updates the specified page.
 func (c *PagesClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageRequest, opts ...gax.CallOption) (*cxpb.Page, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "page.name", url.QueryEscape(req.GetPage().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdatePage[0:len(c.CallOptions.UpdatePage):len(c.CallOptions.UpdatePage)], opts...)
@@ -277,6 +301,11 @@ func (c *PagesClient) UpdatePage(ctx context.Context, req *cxpb.UpdatePageReques
 
 // DeletePage deletes the specified page.
 func (c *PagesClient) DeletePage(ctx context.Context, req *cxpb.DeletePageRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeletePage[0:len(c.CallOptions.DeletePage):len(c.CallOptions.DeletePage)], opts...)
