@@ -25,7 +25,7 @@ import (
 )
 
 func (ct CreateTable) SQL() string {
-	str := "CREATE TABLE " + ID(ct.Name).SQL() + " (\n"
+	str := "CREATE TABLE " + ct.Name.SQL() + " (\n"
 	for _, c := range ct.Columns {
 		str += "  " + c.SQL() + ",\n"
 	}
@@ -41,7 +41,7 @@ func (ct CreateTable) SQL() string {
 	}
 	str += ")"
 	if il := ct.Interleave; il != nil {
-		str += ",\n  INTERLEAVE IN PARENT " + ID(il.Parent).SQL() + " ON DELETE " + il.OnDelete.SQL()
+		str += ",\n  INTERLEAVE IN PARENT " + il.Parent.SQL() + " ON DELETE " + il.OnDelete.SQL()
 	}
 	return str
 }
@@ -54,7 +54,7 @@ func (ci CreateIndex) SQL() string {
 	if ci.NullFiltered {
 		str += " NULL_FILTERED"
 	}
-	str += " INDEX " + ID(ci.Name).SQL() + " ON " + ID(ci.Table).SQL() + "("
+	str += " INDEX " + ci.Name.SQL() + " ON " + ci.Table.SQL() + "("
 	for i, c := range ci.Columns {
 		if i > 0 {
 			str += ", "
@@ -66,21 +66,21 @@ func (ci CreateIndex) SQL() string {
 		str += " STORING (" + idList(ci.Storing) + ")"
 	}
 	if ci.Interleave != "" {
-		str += ", INTERLEAVE IN " + ID(ci.Interleave).SQL()
+		str += ", INTERLEAVE IN " + ci.Interleave.SQL()
 	}
 	return str
 }
 
 func (dt DropTable) SQL() string {
-	return "DROP TABLE " + ID(dt.Name).SQL()
+	return "DROP TABLE " + dt.Name.SQL()
 }
 
 func (di DropIndex) SQL() string {
-	return "DROP INDEX " + ID(di.Name).SQL()
+	return "DROP INDEX " + di.Name.SQL()
 }
 
 func (at AlterTable) SQL() string {
-	return "ALTER TABLE " + ID(at.Name).SQL() + " " + at.Alteration.SQL()
+	return "ALTER TABLE " + at.Name.SQL() + " " + at.Alteration.SQL()
 }
 
 func (ac AddColumn) SQL() string {
@@ -88,7 +88,7 @@ func (ac AddColumn) SQL() string {
 }
 
 func (dc DropColumn) SQL() string {
-	return "DROP COLUMN " + ID(dc.Name).SQL()
+	return "DROP COLUMN " + dc.Name.SQL()
 }
 
 func (ac AddConstraint) SQL() string {
@@ -96,7 +96,7 @@ func (ac AddConstraint) SQL() string {
 }
 
 func (dc DropConstraint) SQL() string {
-	return "DROP CONSTRAINT " + ID(dc.Name).SQL()
+	return "DROP CONSTRAINT " + dc.Name.SQL()
 }
 
 func (sod SetOnDelete) SQL() string {
@@ -114,7 +114,7 @@ func (od OnDelete) SQL() string {
 }
 
 func (ac AlterColumn) SQL() string {
-	return "ALTER COLUMN " + ID(ac.Name).SQL() + " " + ac.Alteration.SQL()
+	return "ALTER COLUMN " + ac.Name.SQL() + " " + ac.Alteration.SQL()
 }
 
 func (sct SetColumnType) SQL() string {
@@ -144,11 +144,11 @@ func (co ColumnOptions) SQL() string {
 }
 
 func (d *Delete) SQL() string {
-	return "DELETE FROM " + ID(d.Table).SQL() + " WHERE " + d.Where.SQL()
+	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
 
 func (cd ColumnDef) SQL() string {
-	str := ID(cd.Name).SQL() + " " + cd.Type.SQL()
+	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
 		str += " NOT NULL"
 	}
@@ -161,7 +161,7 @@ func (cd ColumnDef) SQL() string {
 func (tc TableConstraint) SQL() string {
 	var str string
 	if tc.Name != "" {
-		str += "CONSTRAINT " + ID(tc.Name).SQL() + " "
+		str += "CONSTRAINT " + tc.Name.SQL() + " "
 	}
 	str += tc.ForeignKey.SQL()
 	return str
@@ -169,7 +169,7 @@ func (tc TableConstraint) SQL() string {
 
 func (fk ForeignKey) SQL() string {
 	str := "FOREIGN KEY (" + idList(fk.Columns)
-	str += ") REFERENCES " + ID(fk.RefTable).SQL() + " ("
+	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns) + ")"
 	return str
 }
@@ -212,7 +212,7 @@ func (tb TypeBase) SQL() string {
 }
 
 func (kp KeyPart) SQL() string {
-	str := ID(kp.Column).SQL()
+	str := kp.Column.SQL()
 	if kp.Desc {
 		str += " DESC"
 	}
@@ -252,7 +252,7 @@ func (sel Select) SQL() string {
 		if len(sel.ListAliases) > 0 {
 			alias := sel.ListAliases[i]
 			if alias != "" {
-				str += " AS " + ID(alias).SQL()
+				str += " AS " + alias.SQL()
 			}
 		}
 	}
@@ -262,7 +262,7 @@ func (sel Select) SQL() string {
 			if i > 0 {
 				str += ", "
 			}
-			str += ID(f.Table).SQL()
+			str += f.SQL()
 		}
 	}
 	if sel.Where != nil {
@@ -276,6 +276,14 @@ func (sel Select) SQL() string {
 			}
 			str += gb.SQL()
 		}
+	}
+	return str
+}
+
+func (sft SelectFromTable) SQL() string {
+	str := ID(sft.Table).SQL()
+	if sft.Alias != "" {
+		str += " AS " + ID(sft.Alias).SQL()
 	}
 	return str
 }
@@ -397,10 +405,10 @@ func (f Func) SQL() string {
 	return str
 }
 
-func idList(l []string) string {
+func idList(l []ID) string {
 	var ss []string
 	for _, s := range l {
-		ss = append(ss, ID(s).SQL())
+		ss = append(ss, s.SQL())
 	}
 	return strings.Join(ss, ", ")
 }

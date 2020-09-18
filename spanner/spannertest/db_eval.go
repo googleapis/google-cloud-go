@@ -37,7 +37,7 @@ type evalContext struct {
 	row  row
 
 	// If there are visible aliases, they are populated here.
-	aliases map[string]spansql.Expr
+	aliases map[spansql.ID]spansql.Expr
 
 	params queryParams
 }
@@ -451,23 +451,23 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 
 func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
 	for i, col := range ec.cols {
-		if col.Name == string(id) {
+		if col.Name == id {
 			return ec.row.copyDataElem(i), nil
 		}
 	}
-	if e, ok := ec.aliases[string(id)]; ok {
+	if e, ok := ec.aliases[id]; ok {
 		// Make a copy of the context without this alias
 		// to prevent an evaluation cycle.
 		innerEC := ec
-		innerEC.aliases = make(map[string]spansql.Expr)
+		innerEC.aliases = make(map[spansql.ID]spansql.Expr)
 		for alias, e := range ec.aliases {
-			if alias != string(id) {
+			if alias != id {
 				innerEC.aliases[alias] = e
 			}
 		}
 		return innerEC.evalExpr(e)
 	}
-	return nil, fmt.Errorf("couldn't resolve identifier %s", string(id))
+	return nil, fmt.Errorf("couldn't resolve identifier %s", id)
 }
 
 func (ec evalContext) coerceComparisonOpArgs(co spansql.ComparisonOp) (spansql.ComparisonOp, error) {
@@ -684,7 +684,7 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	case spansql.ID:
 		// TODO: support more than only naming a table column.
 		for _, col := range ec.cols {
-			if col.Name == string(e) {
+			if col.Name == e {
 				return col, nil
 			}
 		}
