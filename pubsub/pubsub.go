@@ -98,11 +98,13 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 // If the client is available for the lifetime of the program, then Close need not be
 // called at exit.
 func (c *Client) Close() error {
-	if err := c.pubc.Close(); err != nil {
-		return fmt.Errorf("pubsub publisher closing error: %v", err)
-	}
-	if err := c.subc.Close(); err != nil {
+	pubErr := c.pubc.Close()
+	subErr := c.subc.Close()
+	if pubErr != nil {
 		return fmt.Errorf("pubsub subscriber closing error: %v", err)
+	}
+	if subErr != nil {
+		return fmt.Errorf("pubsub publisher closing error: %v", err)
 	}
 	return nil
 }
