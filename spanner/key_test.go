@@ -301,6 +301,52 @@ func TestPrefixRange(t *testing.T) {
 	}
 }
 
+func TestKeySetFromKeys(t *testing.T) {
+	for i, test := range []struct {
+		ks        KeySet
+		wantProto *sppb.KeySet
+	}{
+		{
+			KeySetFromKeys(),
+			&sppb.KeySet{},
+		},
+		{
+			KeySetFromKeys(Key{1}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(intProto(1)),
+				},
+			},
+		},
+		{
+			KeySetFromKeys(Key{1}, Key{2}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(intProto(1)),
+					listValueProto(intProto(2)),
+				},
+			},
+		},
+		{
+			KeySetFromKeys(Key{1, "one"}, Key{2, "two"}),
+			&sppb.KeySet{
+				Keys: []*proto3.ListValue{
+					listValueProto(intProto(1), stringProto("one")),
+					listValueProto(intProto(2), stringProto("two")),
+				},
+			},
+		},
+	} {
+		gotProto, err := test.ks.keySetProto()
+		if err != nil {
+			t.Errorf("#%d: %v.proto() returns error %v; want nil error", i, test.ks, err)
+		}
+		if !testEqual(gotProto, test.wantProto) {
+			t.Errorf("#%d: %v.proto() = \n%v\nwant:\n%v", i, test.ks, gotProto.String(), test.wantProto.String())
+		}
+	}
+}
+
 func TestKeySets(t *testing.T) {
 	int1 := intProto(1)
 	int2 := intProto(2)

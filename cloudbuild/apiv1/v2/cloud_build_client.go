@@ -277,7 +277,7 @@ func (c *Client) CreateBuild(ctx context.Context, req *cloudbuildpb.CreateBuildR
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateBuild[0:len(c.CallOptions.CreateBuild):len(c.CallOptions.CreateBuild)], opts...)
 	var resp *longrunningpb.Operation
@@ -304,7 +304,7 @@ func (c *Client) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildRequest
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId()), "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetBuild[0:len(c.CallOptions.GetBuild):len(c.CallOptions.GetBuild)], opts...)
 	var resp *cloudbuildpb.Build
@@ -324,7 +324,7 @@ func (c *Client) GetBuild(ctx context.Context, req *cloudbuildpb.GetBuildRequest
 // Previously requested builds may still be in-progress, or may have finished
 // successfully or unsuccessfully.
 func (c *Client) ListBuilds(ctx context.Context, req *cloudbuildpb.ListBuildsRequest, opts ...gax.CallOption) *BuildIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListBuilds[0:len(c.CallOptions.ListBuilds):len(c.CallOptions.ListBuilds)], opts...)
 	it := &BuildIterator{}
@@ -370,7 +370,7 @@ func (c *Client) CancelBuild(ctx context.Context, req *cloudbuildpb.CancelBuildR
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId()), "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CancelBuild[0:len(c.CallOptions.CancelBuild):len(c.CallOptions.CancelBuild)], opts...)
 	var resp *cloudbuildpb.Build
@@ -420,7 +420,7 @@ func (c *Client) RetryBuild(ctx context.Context, req *cloudbuildpb.RetryBuildReq
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId())))
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "id", url.QueryEscape(req.GetId()), "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RetryBuild[0:len(c.CallOptions.RetryBuild):len(c.CallOptions.RetryBuild)], opts...)
 	var resp *longrunningpb.Operation

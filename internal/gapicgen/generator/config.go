@@ -551,6 +551,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/dialogflow/cx/v3beta1",
+		pkg:                   "cx",
+		importPath:            "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+		gRPCServiceConfigPath: "google/cloud/dialogflow/cx/v3beta1/dialogflow_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/dialogflow/cx/v3beta1/dialogflow_v3beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/dialogflow/v2",
 		pkg:                   "dialogflow",
 		importPath:            "cloud.google.com/go/dialogflow/apiv2",
@@ -655,6 +663,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/logging/v2/logging_grpc_service_config.json",
 		apiServiceConfigPath:  "google/logging/v2/logging.yaml",
 		releaseLevel:          "ga",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/talent/v4",
+		pkg:                   "talent",
+		importPath:            "cloud.google.com/go/talent/apiv4",
+		gRPCServiceConfigPath: "google/cloud/talent/v4/talent_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/talent/v4/talent_gapic.yaml",
+		releaseLevel:          "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/talent/v4beta1",
@@ -798,6 +814,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/security/privateca/v1beta1/privateca_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/security/privateca/v1beta1/privateca_gapic.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/assuredworkloads/v1beta1",
+		pkg:                   "assuredworkloads",
+		importPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/assuredworkloads/v1beta1/assuredworkloads_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/assuredworkloads/v1beta1/assuredworkloads_gapic.yaml",
 		releaseLevel:          "beta",
 	},
 
