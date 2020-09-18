@@ -200,7 +200,7 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 			// This likely means something more severe, like a problem with schema.
 			return nil, err
 		}
-		// If we failed to fet data from cache, invoke the appropriate service method.
+		// If we failed to fetch data from cache, invoke the appropriate service method.
 		if src.j != nil {
 			return fetchJobResultPage(ctx, src, schema, startIndex, pageSize, pageToken)
 		}
