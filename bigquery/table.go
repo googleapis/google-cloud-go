@@ -73,7 +73,7 @@ type TableMetadata struct {
 	// time partitioning or range partitioning can be specified.
 	TimePartitioning *TimePartitioning
 
-	// It non-nil, the table is partitioned by integer range.  Only one of
+	// If non-nil, the table is partitioned by integer range.  Only one of
 	// time partitioning or range partitioning can be specified.
 	RangePartitioning *RangePartitioning
 
