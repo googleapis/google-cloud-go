@@ -288,6 +288,24 @@ func TestSaveEmptySlice(t *testing.T) {
 	}
 }
 
+// Map is used by TestSaveFieldsWithInterface
+// to test a custom type property save.
+type Map map[int]int
+
+func (*Map) Load(_ []Property) error {
+	return nil
+}
+
+func (*Map) Save() ([]Property, error) {
+	return []Property{}, nil
+}
+
+// Struct is used by TestSaveFieldsWithInterface
+// to test a custom type property save.
+type Struct struct {
+	Map Map
+}
+
 func TestSaveFieldsWithInterface(t *testing.T) {
 	// We should be able to extract the underlying value behind an interface.
 	// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
@@ -344,6 +362,13 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			},
 			want: []Property{
 				{Name: "Value", Value: nil},
+			},
+		},
+		{
+			name: "Nil map",
+			in:   &Struct{},
+			want: []Property{
+				{Name: "Map", Value: []Property{}},
 			},
 		},
 		{

@@ -404,6 +404,15 @@ func KeySets(keySets ...KeySet) KeySet {
 	return u
 }
 
+// KeySetFromKeys returns a KeySet containing the given slice of keys.
+func KeySetFromKeys(keys ...Key) KeySet {
+	u := make(union, len(keys))
+	for i, k := range keys {
+		u[i] = k
+	}
+	return u
+}
+
 type union []KeySet
 
 func (u union) keySetProto() (*sppb.KeySet, error) {

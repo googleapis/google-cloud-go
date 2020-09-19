@@ -656,6 +656,7 @@ func compareVals(x, y interface{}) int {
 }
 
 var (
+	boolType    = spansql.Type{Base: spansql.Bool}
 	int64Type   = spansql.Type{Base: spansql.Int64}
 	float64Type = spansql.Type{Base: spansql.Float64}
 	stringType  = spansql.Type{Base: spansql.String}
@@ -664,6 +665,8 @@ var (
 func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	// TODO: more types
 	switch e := e.(type) {
+	case spansql.BoolLiteral:
+		return colInfo{Type: boolType}, nil
 	case spansql.IntegerLiteral:
 		return colInfo{Type: int64Type}, nil
 	case spansql.StringLiteral:

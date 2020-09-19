@@ -686,6 +686,43 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 	testObjectIteratorWithOffset(t, bkt, objects)
+	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
+		query := &Query{Prefix: "", Delimiter: "/"}
+		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+			t.Fatalf("selecting query attrs: %v", err)
+		}
+
+		var gotNames []string
+		var gotPrefixes []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			} else if attrs.Prefix != "" {
+				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			}
+
+			if attrs.Bucket != "" {
+				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			}
+		}
+
+		sortedNames := []string{"obj1", "obj2"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+		sortedPrefixes := []string{"obj/"}
+		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+		}
+	})
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1136,7 +1173,7 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		gotNames = append(gotNames, attrs.Name)
 
@@ -1177,7 +1214,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		count++
 	}
@@ -2669,12 +2706,39 @@ func TestIntegration_CustomTime(t *testing.T) {
 	h.mustWrite(w, randomContents())
 
 	// Validate that CustomTime has been set
-	attrs, err := obj.Attrs(ctx)
-	if err != nil {
-		t.Fatalf("failed to get object attrs: %v", err)
+	checkCustomTime := func(want time.Time) error {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to get object attrs: %v", err)
+		}
+		if got := attrs.CustomTime; got != want {
+			return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+		}
+		return nil
 	}
-	if got := attrs.CustomTime; got != ct {
-		t.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+
+	if err := checkCustomTime(ct); err != nil {
+		t.Fatalf("checking CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the future should succeed.
+	laterTime := ct.Add(10 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
+		t.Fatalf("updating CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the past should give error.
+	earlierTime := ct.Add(5 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+		t.Fatalf("backdating CustomTime: expected error, got none")
+	}
+
+	// Zero value for CustomTime should be ignored.
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
+		t.Fatalf("empty update: %v", err)
+	}
+	if err := checkCustomTime(laterTime); err != nil {
+		t.Fatalf("after sending zero value: %v", err)
 	}
 }
 
