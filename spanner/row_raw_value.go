@@ -12,5 +12,5 @@ func (r *Row) Fields() []*sppb.StructType_Field {
 
 // Values returns raw grpc protobuf row values
 func (r *Row) Values() []*proto3.Value {
-	return r.values
+	return r.vals
 }
