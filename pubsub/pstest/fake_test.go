@@ -784,6 +784,72 @@ func TestUpdateDeadLetterPolicy(t *testing.T) {
 	}
 }
 
+func TestUpdateRetryPolicy(t *testing.T) {
+	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	ctx := context.Background()
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		RetryPolicy: &pb.RetryPolicy{
+			MinimumBackoff: ptypes.DurationProto(10 * time.Second),
+			MaximumBackoff: ptypes.DurationProto(60 * time.Second),
+		},
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		RetryPolicy: &pb.RetryPolicy{
+			MinimumBackoff: ptypes.DurationProto(20 * time.Second),
+			MaximumBackoff: ptypes.DurationProto(100 * time.Second),
+		},
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"retry_policy"}},
+	})
+
+	if got, want := updated.RetryPolicy, update.RetryPolicy; testutil.Diff(got, want) != "" {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestUpdateFilter(t *testing.T) {
+	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	ctx := context.Background()
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		Filter:             "some-filter",
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		Filter:             "new-filter",
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"filter"}},
+	})
+
+	if got, want := updated.Filter, update.Filter; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
 func mustStartStreamingPull(ctx context.Context, t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
 	spc, err := sc.StreamingPull(ctx)
 	if err != nil {
