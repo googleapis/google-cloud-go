@@ -73,6 +73,9 @@ type CompletionClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	completionClient talentpb.CompletionClient
 
@@ -97,13 +100,19 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CompletionClient{
-		connPool:    connPool,
-		CallOptions: defaultCompletionCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCompletionCallOptions(),
 
 		completionClient: talentpb.NewCompletionClient(connPool),
 	}
@@ -137,6 +146,11 @@ func (c *CompletionClient) setGoogleClientInfo(keyval ...string) {
 // CompleteQuery completes the specified prefix with keyword suggestions.
 // Intended for use by a job search auto-complete search box.
 func (c *CompletionClient) CompleteQuery(ctx context.Context, req *talentpb.CompleteQueryRequest, opts ...gax.CallOption) (*talentpb.CompleteQueryResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tenant", url.QueryEscape(req.GetTenant())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CompleteQuery[0:len(c.CallOptions.CompleteQuery):len(c.CallOptions.CompleteQuery)], opts...)
