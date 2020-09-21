@@ -677,6 +677,9 @@ func (d *DocumentRef) Update(ctx context.Context, updates []Update, preconds ...
 
 // Collections returns an iterator over the immediate sub-collections of the document.
 func (d *DocumentRef) Collections(ctx context.Context) *CollectionIterator {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.DocumentRef.ListCollectionIds")
+	defer func() { trace.EndSpan(ctx, nil) }()
+
 	client := d.Parent.c
 	it := &CollectionIterator{
 		client: client,

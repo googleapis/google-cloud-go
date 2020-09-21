@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/btree"
+	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -695,7 +696,10 @@ func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryD
 	}
 }
 
-func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
+func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
+	it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
+	defer func() { trace.EndSpan(it.ctx, err) }()
+
 	client := it.q.c
 	if it.streamClient == nil {
 		sq, err := it.q.toProto()
@@ -715,7 +719,6 @@ func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
 		}
 	}
 	var res *pb.RunQueryResponse
-	var err error
 	for {
 		res, err = it.streamClient.Recv()
 		if err == io.EOF {

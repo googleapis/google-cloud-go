@@ -136,11 +136,14 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			// Prefer f's returned error to rollback error.
 			return err
 		}
+		ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.Commit")
 		_, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
 			Database:    t.c.path(),
 			Writes:      t.writes,
 			Transaction: t.id,
 		})
+		trace.EndSpan(ctx, err)
+
 		// If a read-write transaction returns Aborted, retry.
 		// On success or other failures, return here.
 		if t.readOnly || status.Code(err) != codes.Aborted {
@@ -180,12 +183,13 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 }
 
 func (t *Transaction) rollback() {
-	_ = t.c.c.Rollback(t.ctx, &pb.RollbackRequest{
+	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Transaction.Rollback")
+	err := t.c.c.Rollback(t.ctx, &pb.RollbackRequest{
 		Database:    t.c.path(),
 		Transaction: t.id,
 	})
-	// Ignore the rollback error.
-	// TODO(jba): Log it?
+	trace.EndSpan(t.ctx, err)
+	// Ignore the rollback error in return.
 	// Note: Rollback is idempotent so it will be retried by the gapic layer.
 }
 
