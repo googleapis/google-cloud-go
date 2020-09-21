@@ -134,9 +134,10 @@ To release a submodule:
    minutes).
 1. Go to the [doc publishing job](http://go/google-cloud-go-publish-docs) and
    trigger the job with the following environment variables:
-   `MODULE=cloud.google.com/datastore,VERSION=vX.Y.Z`.
+   `MODULE=cloud.google.com/go/datastore,VERSION=vX.Y.Z`.
    Replace the module path and version with the values for the module you're
-   releasing. See [`publish_docs.sh`](/internal/kokoro/publish_docs.sh).
+   releasing. You can leave all of the other fields blank.
+   See [`publish_docs.sh`](/internal/kokoro/publish_docs.sh).
 
 # Appendix
 
