@@ -785,10 +785,10 @@ func TestUpdateDeadLetterPolicy(t *testing.T) {
 }
 
 func TestUpdateRetryPolicy(t *testing.T) {
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
 	defer cleanup()
 
-	ctx := context.Background()
 	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,
@@ -821,10 +821,10 @@ func TestUpdateRetryPolicy(t *testing.T) {
 }
 
 func TestUpdateFilter(t *testing.T) {
-	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
 	defer cleanup()
 
-	ctx := context.Background()
 	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
 	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
 		AckDeadlineSeconds: minAckDeadlineSecs,
