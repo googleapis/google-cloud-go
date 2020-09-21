@@ -122,7 +122,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 
 	// First, collect all of the files grouped by package, including test
 	// packages.
-	pkgFiles := map[string][]string{}
+	allPkgFiles := map[string][]string{}
 	for _, pkg := range pkgs {
 		id := pkg.ID
 		// See https://pkg.go.dev/golang.org/x/tools/go/packages#Config.
@@ -144,17 +144,35 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		for _, f := range pkg.Syntax {
 			name := pkg.Fset.File(f.Pos()).Name()
 			if strings.HasSuffix(name, ".go") {
-				pkgFiles[id] = append(pkgFiles[id], name)
+				allPkgFiles[id] = append(allPkgFiles[id], name)
 			}
 		}
 	}
 
+	// Test files don't have Module set. Filter out packages in skipped modules.
+	pkgFiles := map[string][]string{}
+	pkgNames := []string{}
+	for pkgPath, files := range allPkgFiles {
+		skip := false
+		for skipped := range skippedModules {
+			if strings.HasPrefix(pkgPath, skipped) {
+				skip = true
+				break
+			}
+		}
+		if !skip {
+			pkgFiles[pkgPath] = files
+			pkgNames = append(pkgNames, pkgPath)
+		}
+	}
+	sort.Strings(pkgNames)
+
 	// Once the files are grouped by package, process each package
 	// independently.
-	for pkgPath, files := range pkgFiles {
+	for _, pkgPath := range pkgNames {
 		parsedFiles := []*ast.File{}
 		fset := token.NewFileSet()
-		for _, f := range files {
+		for _, f := range pkgFiles[pkgPath] {
 			pf, err := parser.ParseFile(fset, f, nil, parser.ParseComments)
 			if err != nil {
 				return nil, nil, nil, fmt.Errorf("ParseFile: %v", err)
@@ -166,6 +184,11 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		docPkg, err := doc.NewFromFiles(fset, parsedFiles, pkgPath)
 		if err != nil {
 			return nil, nil, nil, fmt.Errorf("doc.NewFromFiles: %v", err)
+		}
+
+		// Extra filter in case the file filtering didn't catch everything.
+		if !strings.HasPrefix(docPkg.ImportPath, module.Path) {
+			continue
 		}
 
 		toc = append(toc, &tocItem{
