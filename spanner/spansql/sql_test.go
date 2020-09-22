@@ -291,7 +291,7 @@ func TestSQL(t *testing.T) {
 			continue
 		}
 
-		// As a sanity check, confirm that parsing the SQL produces the original input.
+		// As a confidence check, confirm that parsing the SQL produces the original input.
 		data, err := test.reparse(sql)
 		if err != nil {
 			t.Errorf("Reparsing %q: %v", sql, err)
