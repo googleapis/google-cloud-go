@@ -1,5 +1,11 @@
 # Changes
 
+## v1.6.2
+
+- Make message.Modacks thread safe in pstest. (#2755)
+- Fix issue with closing publisher and subscriber client errors. (#2867)
+- Fix updating subscription filtering/retry policy in pstest. (#2901)
+
 ## v1.6.1
 
 - Fix issue where EnableMessageOrdering wasn't being parsed properly to `SubscriptionConfig`.
