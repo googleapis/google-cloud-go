@@ -281,11 +281,32 @@ func (sel Select) SQL() string {
 }
 
 func (sft SelectFromTable) SQL() string {
-	str := ID(sft.Table).SQL()
+	str := sft.Table.SQL()
 	if sft.Alias != "" {
-		str += " AS " + ID(sft.Alias).SQL()
+		str += " AS " + sft.Alias.SQL()
 	}
 	return str
+}
+
+func (sfj SelectFromJoin) SQL() string {
+	// TODO: The grammar permits arbitrary nesting. Does this need to add parens?
+	str := sfj.LHS.SQL() + " " + joinTypes[sfj.Type] + " JOIN "
+	// TODO: hints go here
+	str += sfj.RHS.SQL()
+	if sfj.On != nil {
+		str += " " + sfj.On.SQL()
+	} else if len(sfj.Using) > 0 {
+		str += " USING (" + idList(sfj.Using) + ")"
+	}
+	return str
+}
+
+var joinTypes = map[JoinType]string{
+	InnerJoin: "INNER",
+	CrossJoin: "CROSS",
+	FullJoin:  "FULL",
+	LeftJoin:  "LEFT",
+	RightJoin: "RIGHT",
 }
 
 func (o Order) SQL() string {

@@ -113,6 +113,41 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// TODO: `SELECT * FROM A INNER JOIN B ON A.w = B.y`
+		{`SELECT * FROM A INNER JOIN B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+					}},
+				},
+			},
+		},
+		// TODO: This should be `SELECT Roster.LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`
+		{`SELECT RosterLastName, TeamMascotMascot FROM Roster JOIN TeamMascot ON RosterSchoolID = TeamMascotSchoolID`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("RosterLastName"),
+						ID("TeamMascotMascot"),
+					},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS:  SelectFromTable{Table: "Roster"},
+						RHS:  SelectFromTable{Table: "TeamMascot"},
+						On: ComparisonOp{
+							Op:  Eq,
+							LHS: ID("RosterSchoolID"),
+							RHS: ID("TeamMascotSchoolID"),
+						},
+					}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)

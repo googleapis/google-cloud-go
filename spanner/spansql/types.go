@@ -316,7 +316,33 @@ type SelectFromTable struct {
 
 func (SelectFromTable) isSelectFrom() {}
 
-// TODO: SelectFromJoin, SelectFromSubquery, etc.
+// SelectFromJoin is a SelectFrom that joins two other SelectFroms.
+// https://cloud.google.com/spanner/docs/query-syntax#join_types
+type SelectFromJoin struct {
+	Type     JoinType
+	LHS, RHS SelectFrom
+
+	// Join condition.
+	// At most one of {On,Using} may be set.
+	On    BoolExpr
+	Using []ID
+
+	// TODO: hint keys (this will cover `X HASH JOIN Y` too).
+}
+
+func (SelectFromJoin) isSelectFrom() {}
+
+type JoinType int
+
+const (
+	InnerJoin JoinType = iota
+	CrossJoin
+	FullJoin
+	LeftJoin
+	RightJoin
+)
+
+// TODO: SelectFromSubquery, etc.
 
 type Order struct {
 	Expr Expr
