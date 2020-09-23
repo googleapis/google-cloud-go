@@ -1779,7 +1779,31 @@ func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 }
 
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
-	// TODO: support more than a single table name.
+	debugf("parseSelectFrom: %v", p)
+
+	/*
+		from_item: {
+			table_name [ table_hint_expr ] [ [ AS ] alias ] |
+			join |
+			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
+			field_path |
+			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
+				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
+			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
+		}
+
+		join:
+			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
+				[ ON bool_expression | USING ( join_column [, ...] ) ]
+
+		join_type:
+			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
+	*/
+
+	// A join starts with a from_item, so that can't be detected in advance.
+	// TODO: Support more than table name or join.
+	// TODO: Verify associativity of multile joins.
+
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
@@ -1795,7 +1819,68 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		sf.Alias = alias
 	}
 
-	return sf, nil
+	// Look ahead to see if this is a join.
+	tok := p.next()
+	if tok.err != nil {
+		p.back()
+		return sf, nil
+	}
+	var jt JoinType
+	if tok.value == "JOIN" {
+		// This is implicitly an inner join.
+		jt = InnerJoin
+	} else if j, ok := joinKeywords[tok.value]; ok {
+		jt = j
+		switch jt {
+		case FullJoin, LeftJoin, RightJoin:
+			// These join types are implicitly "outer" joins,
+			// so the "OUTER" keyword is optional.
+			p.eat("OUTER")
+		}
+		if err := p.expect("JOIN"); err != nil {
+			return nil, err
+		}
+	} else {
+		p.back()
+		return sf, nil
+	}
+
+	// TODO: consume "HASH"
+
+	sfj := SelectFromJoin{
+		Type: jt,
+		LHS:  sf,
+	}
+	sfj.RHS, err = p.parseSelectFrom()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.eat("ON") {
+		sfj.On, err = p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if p.eat("USING") {
+		if sfj.On != nil {
+			return nil, p.errorf("join may not have both ON and USING clauses")
+		}
+		sfj.Using, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return sfj, nil
+}
+
+var joinKeywords = map[string]JoinType{
+	"INNER": InnerJoin,
+	"CROSS": CrossJoin,
+	"FULL":  FullJoin,
+	"LEFT":  LeftJoin,
+	"RIGHT": RightJoin,
 }
 
 func (p *parser) parseTableSample() (TableSample, *parseError) {
