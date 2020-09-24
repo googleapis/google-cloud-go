@@ -237,7 +237,7 @@ items:
   summary: |
     Delete permanently deletes the ACL entry for the given entity.
   parent: cloud.google.com/go/storage.ACLHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -251,7 +251,7 @@ items:
   summary: |
     List retrieves ACL entries.
   parent: cloud.google.com/go/storage.ACLHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -265,7 +265,7 @@ items:
   summary: |
     Set sets the role for the given entity.
   parent: cloud.google.com/go/storage.ACLHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -335,7 +335,7 @@ items:
     DeleteLabel causes a label to be deleted when ua is used in a
     call to Bucket.Update.
   parent: cloud.google.com/go/storage.BucketAttrsToUpdate
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -348,7 +348,7 @@ items:
     SetLabel causes a label to be added or modified when ua is used
     in a call to Bucket.Update.
   parent: cloud.google.com/go/storage.BucketAttrsToUpdate
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -401,7 +401,7 @@ items:
     This controls who can list, create or overwrite the objects in a bucket.
     This call does not perform any network operations.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -415,7 +415,7 @@ items:
     and PayloadFormat, and must not set its ID. The other fields are all optional. The
     returned Notification's ID can be used to refer to it.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -429,7 +429,7 @@ items:
   summary: |
     Attrs returns the metadata for the bucket.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -444,7 +444,7 @@ items:
     Create creates the Bucket in the project.
     If attrs is nil the API defaults will be used.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -460,7 +460,7 @@ items:
     These ACLs are applied to newly created objects in this bucket that do not have a defined ACL.
     This call does not perform any network operations.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -472,7 +472,7 @@ items:
   summary: |
     Delete deletes the Bucket.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -486,7 +486,7 @@ items:
   summary: |
     DeleteNotification deletes the notification with the given ID.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -500,7 +500,7 @@ items:
   summary: |
     IAM provides access to IAM access control for the bucket.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -516,7 +516,7 @@ items:
     satisfied. The only valid preconditions for buckets are MetagenerationMatch
     and MetagenerationNotMatch.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -536,7 +536,7 @@ items:
     most customers. It might be changed in backwards-incompatible ways and is not
     subject to any SLA or deprecation policy.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -551,7 +551,7 @@ items:
     Notifications returns all the Notifications configured for this bucket, as a map
     indexed by notification ID.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -570,7 +570,7 @@ items:
     for valid object names can be found at:
       https://cloud.google.com/storage/docs/bucket-naming
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -585,7 +585,7 @@ items:
 
     Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -599,7 +599,7 @@ items:
   summary: |
     Update updates a bucket's attributes.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -619,7 +619,7 @@ items:
 
     A user project is required for all operations on Requester Pays buckets.
   parent: cloud.google.com/go/storage.BucketHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -648,7 +648,7 @@ items:
 
     Note: This method is not safe for concurrent operations without explicit synchronization.
   parent: cloud.google.com/go/storage.BucketIterator
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -664,7 +664,7 @@ items:
 
     Note: This method is not safe for concurrent operations without explicit synchronization.
   parent: cloud.google.com/go/storage.BucketIterator
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -766,7 +766,7 @@ items:
     found at:
       https://cloud.google.com/storage/docs/bucket-naming
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -783,7 +783,7 @@ items:
 
     Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -799,7 +799,7 @@ items:
 
     Close need not be called at program exit.
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -813,7 +813,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -829,7 +829,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -845,7 +845,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -863,7 +863,7 @@ items:
   summary: |
     ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
   parent: cloud.google.com/go/storage.Client
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -888,7 +888,7 @@ items:
   summary: |
     Run performs the compose operation.
   parent: cloud.google.com/go/storage.Composer
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -930,7 +930,7 @@ items:
   summary: |
     Run performs the copy.
   parent: cloud.google.com/go/storage.Copier
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -992,7 +992,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1012,7 +1012,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1028,7 +1028,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeyHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1125,7 +1125,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeysIterator
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1141,7 +1141,7 @@ items:
 
     This method is EXPERIMENTAL and subject to change or removal without notice.
   parent: cloud.google.com/go/storage.HMACKeysIterator
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1306,7 +1306,7 @@ items:
     This controls who can read and write this object.
     This call does not perform any network operations.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1319,7 +1319,7 @@ items:
     Attrs returns meta information about the object.
     ErrObjectNotExist will be returned if the object is not found.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1335,7 +1335,7 @@ items:
   summary: |
     BucketName returns the name of the bucket.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1353,7 +1353,7 @@ items:
     source objects and encrypt the destination object. It is an error
     to specify an encryption key for any of the source objects.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1370,7 +1370,7 @@ items:
     For Requester Pays buckets, the user project of dst is billed, unless it is empty,
     in which case the user project of src is billed.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1385,7 +1385,7 @@ items:
   summary: |
     Delete deletes the single specified object.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1403,7 +1403,7 @@ items:
     all operations work when given a specific generation; check the API
     endpoints at https://cloud.google.com/storage/docs/json_api/ for details.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1421,7 +1421,7 @@ items:
     satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
     for more details.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1439,7 +1439,7 @@ items:
     Encryption key must be a 32-byte AES-256 key.
     See https://cloud.google.com/storage/docs/encryption for details.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1462,7 +1462,7 @@ items:
     that file will be served back whole, regardless of the requested range as
     Google Cloud Storage dictates.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1484,7 +1484,7 @@ items:
 
     The caller must call Close on the returned Reader when done reading.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1512,7 +1512,7 @@ items:
     It is the caller's responsibility to call Close when writing is done. To
     stop writing without saving the data, cancel the context.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1526,7 +1526,7 @@ items:
   summary: |
     ObjectName returns the name of the object.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1538,7 +1538,7 @@ items:
   summary: |
     ReadCompressed when true causes the read to happen without decompressing.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1552,7 +1552,7 @@ items:
     All zero-value attributes are ignored.
     ErrObjectNotExist will be returned if the object is not found.
   parent: cloud.google.com/go/storage.ObjectHandle
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1587,7 +1587,7 @@ items:
 
     Note: This method is not safe for concurrent operations without explicit synchronization.
   parent: cloud.google.com/go/storage.ObjectIterator
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1603,7 +1603,7 @@ items:
 
     Note: This method is not safe for concurrent operations without explicit synchronization.
   parent: cloud.google.com/go/storage.ObjectIterator
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1731,7 +1731,7 @@ items:
     optimization; for more information, see
     https://cloud.google.com/storage/docs/json_api/v1/how-tos/performance
   parent: cloud.google.com/go/storage.Query
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1761,7 +1761,7 @@ items:
 
     Deprecated: use Reader.Attrs.CacheControl.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1773,7 +1773,7 @@ items:
   summary: |
     Close closes the Reader. It must be called when done reading.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1787,7 +1787,7 @@ items:
 
     Deprecated: use Reader.Attrs.ContentEncoding.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1801,7 +1801,7 @@ items:
 
     Deprecated: use Reader.Attrs.ContentType.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1815,7 +1815,7 @@ items:
 
     Deprecated: use Reader.Attrs.LastModified.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1825,7 +1825,7 @@ items:
     func (*Reader) Read
   id: Read
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1837,7 +1837,7 @@ items:
   summary: |
     Remain returns the number of bytes left to read, or -1 if unknown.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -1853,7 +1853,7 @@ items:
 
     Deprecated: use Reader.Attrs.Size.
   parent: cloud.google.com/go/storage.Reader
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -2015,7 +2015,7 @@ items:
     Attrs returns metadata about a successfully-written object.
     It's only valid to call it after Close returns nil.
   parent: cloud.google.com/go/storage.Writer
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -2029,7 +2029,7 @@ items:
     If Close doesn't return an error, metadata about the written object
     can be retrieved by calling Attrs.
   parent: cloud.google.com/go/storage.Writer
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -2044,7 +2044,7 @@ items:
 
     Deprecated: cancel the context passed to NewWriter instead.
   parent: cloud.google.com/go/storage.Writer
-  type: function
+  type: method
   langs:
   - go
   syntax:
@@ -2064,7 +2064,7 @@ items:
     Writes will be retried on transient errors from the server, unless
     Writer.ChunkSize has been set to zero.
   parent: cloud.google.com/go/storage.Writer
-  type: function
+  type: method
   langs:
   - go
   syntax:
