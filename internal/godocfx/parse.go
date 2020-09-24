@@ -254,9 +254,8 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 				Syntax:   syntax{Content: pkgsite.PrintType(fset, t.Decl)},
 				Examples: processExamples(t.Examples, fset),
 			}
-			// TODO: items are added as page.Children, rather than
+			// Note: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
-			// That also means methods are called functions.
 			pkgPage.addItem(typeItem)
 			for _, c := range t.Consts {
 				name := strings.Join(c.Names, ", ")
