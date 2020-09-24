@@ -314,7 +314,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Name:     fmt.Sprintf("func (%s) %s\n", fn.Recv, fn.Name),
 					ID:       fn.Name,
 					Parent:   uid,
-					Type:     "function", // Note: this is actually a method.
+					Type:     "method",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
 					Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
