@@ -121,3 +121,11 @@ func (m *Message) done(ack bool) {
 	m.calledDone = true
 	m.doneFunc(m.ackID, ack, m.receiveTime)
 }
+
+// AddCallbackForTesting attaches a callback to a Message. The callback will be called when the message is Acked or Nacked.
+// This method is for unit testing.
+func AddCallbackForTesting(m *Message, cb func(ack bool)) {
+	m.doneFunc = func(ackId string, ack bool, receiveTime time.Time) {
+		cb(ack)
+	}
+}
