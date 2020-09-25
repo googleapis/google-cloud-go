@@ -39,6 +39,7 @@ type CallOptions struct {
 	ReportTaskProgress      []gax.CallOption
 	ReportTaskComplete      []gax.CallOption
 	RegisterAgent           []gax.CallOption
+	ReportInventory         []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -102,6 +103,17 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		RegisterAgent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ReportInventory: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -285,6 +297,27 @@ func (c *Client) RegisterAgent(ctx context.Context, req *agentendpointpb.Registe
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RegisterAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ReportInventory reports the VMs current inventory.
+func (c *Client) ReportInventory(ctx context.Context, req *agentendpointpb.ReportInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportInventoryResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ReportInventory[0:len(c.CallOptions.ReportInventory):len(c.CallOptions.ReportInventory)], opts...)
+	var resp *agentendpointpb.ReportInventoryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ReportInventory(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
