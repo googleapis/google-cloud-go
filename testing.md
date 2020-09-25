@@ -84,8 +84,7 @@ method you can “override” the default unimplemented behavior of the one RPC 
 you would like to be faked.
 
 The test itself does require a little bit of setup: start up a `net.Listener`,
-register the server, and tell the client library to call the server. Here is an
-example of what this code looks like:
+register the server, and tell the client library to call the server:
 
 ```go
 import (
