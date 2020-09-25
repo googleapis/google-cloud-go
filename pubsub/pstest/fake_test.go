@@ -18,6 +18,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -933,8 +935,8 @@ func mustUpdateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberC
 // client. Its final return is a cleanup function.
 //
 // Note: be sure to call cleanup!
-func newFake(ctx context.Context, t *testing.T) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
-	srv := NewServer()
+func newFake(ctx context.Context, t *testing.T, opts ...ServerReactorOption) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
+	srv := NewServer(opts...)
 	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
@@ -942,5 +944,97 @@ func newFake(ctx context.Context, t *testing.T) (pb.PublisherClient, pb.Subscrib
 	return pb.NewPublisherClient(conn), pb.NewSubscriberClient(conn), srv, func() {
 		srv.Close()
 		conn.Close()
+	}
+}
+
+func TestErrorInjection(t *testing.T) {
+	testcases := []struct {
+		funcName string
+		param    interface{}
+	}{
+		{
+			funcName: "CreateTopic",
+		},
+		{
+			funcName: "GetTopic",
+		},
+		{
+			funcName: "UpdateTopic",
+		},
+		{
+			funcName: "ListTopics",
+		},
+		{
+			funcName: "ListTopicSubscriptions",
+		},
+		{
+			funcName: "DeleteTopic",
+		},
+		{
+			funcName: "CreateSubscription",
+		},
+		{
+			funcName: "GetSubscription",
+		},
+		{
+			funcName: "UpdateSubscription",
+			param:    &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{}},
+		},
+		{
+			funcName: "ListSubscriptions",
+		},
+		{
+			funcName: "DeleteSubscription",
+		},
+		{
+			funcName: "DetachSubscription",
+		},
+		{
+			funcName: "Publish",
+		},
+		{
+			funcName: "Acknowledge",
+		},
+		{
+			funcName: "ModifyAckDeadline",
+		},
+		{
+			funcName: "Pull",
+		},
+		{
+			funcName: "Seek",
+			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}},
+		},
+	}
+
+	for _, tc := range testcases {
+		ctx := context.TODO()
+		errMsg := "error-injection-" + tc.funcName
+		opts := []ServerReactorOption{
+			WithErrorInjection(tc.funcName, errMsg),
+		}
+		_, _, server, cleanup := newFake(ctx, t, opts...)
+		defer cleanup()
+
+		// We used reflection here to blindly look up the function by name and pass
+		// context and a typed nil, as all the functions under test will have such
+		// a function signature.
+		f := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName)
+		if !f.IsValid() {
+			t.Fatalf("Method %v Not Found", tc.funcName)
+		}
+		// If param is provided, use the param, otherwise create a typed nil that matches the parameter type.
+		var req reflect.Value
+		if tc.param != nil {
+			req = reflect.ValueOf(tc.param)
+		} else {
+			req = reflect.New(f.Type().In(1).Elem())
+		}
+		ret := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName).Call([]reflect.Value{reflect.ValueOf(ctx), req})
+
+		got := ret[1].Interface().(error)
+		if got == nil || !strings.Contains(got.Error(), errMsg) {
+			t.Errorf("Got error does not contain the right key %v", got)
+		}
 	}
 }
