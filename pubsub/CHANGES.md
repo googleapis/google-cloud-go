@@ -1,5 +1,9 @@
 # Changes
 
+## v1.7.0
+
+- Add reactor options to pstest server. (#2916)
+
 ## v1.6.2
 
 - Make message.Modacks thread safe in pstest. (#2755)
