@@ -9,8 +9,8 @@ on the Go client libraries.
 ## Testing gRPC services using fakes
 
 The clients found in `cloud.google.com/go` are gRPC based, with a couple of
-notable exceptions being the [storage](https://pkg.go.dev/cloud.google.com/go/storage)
-and [bigquery](https://pkg.go.dev/cloud.google.com/go/bigquery) clients.
+notable exceptions being the [`storage`](https://pkg.go.dev/cloud.google.com/go/storage)
+and [`bigquery`](https://pkg.go.dev/cloud.google.com/go/bigquery) clients.
 Interactions with gRPC services can be faked by serving up your own in-memory
 server within your test. One benefit of using this approach is that you don’t
 need to define an interface in your runtime code; This means you can keep using
