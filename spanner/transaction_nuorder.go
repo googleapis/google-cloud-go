@@ -23,5 +23,5 @@ func (t *ReadWriteTransaction) UpdateWithResultSet(ctx context.Context, stmt Sta
 	if resultSet.Stats == nil {
 		return nil, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
 	}
-	return resultSet.Stats, nil
+	return resultSet, nil
 }
