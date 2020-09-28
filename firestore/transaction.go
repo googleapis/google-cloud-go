@@ -116,11 +116,13 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 	// TODO(jba): get backoff time from gRPC trailer metadata? See
 	// extractRetryDelay in https://code.googlesource.com/gocloud/+/master/spanner/retry.go.
 	for i := 0; i < t.maxAttempts; i++ {
+		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.BeginTransaction")
 		var res *pb.BeginTransactionResponse
 		res, err = t.c.c.BeginTransaction(t.ctx, &pb.BeginTransactionRequest{
 			Database: db,
 			Options:  txOpts,
 		})
+		trace.EndSpan(t.ctx, err)
 		if err != nil {
 			return err
 		}
@@ -136,13 +138,13 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 			// Prefer f's returned error to rollback error.
 			return err
 		}
-		ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.Commit")
+		t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Client.Commit")
 		_, err = t.c.c.Commit(t.ctx, &pb.CommitRequest{
 			Database:    t.c.path(),
 			Writes:      t.writes,
 			Transaction: t.id,
 		})
-		trace.EndSpan(ctx, err)
+		trace.EndSpan(t.ctx, err)
 
 		// If a read-write transaction returns Aborted, retry.
 		// On success or other failures, return here.
@@ -183,13 +185,12 @@ func (c *Client) RunTransaction(ctx context.Context, f func(context.Context, *Tr
 }
 
 func (t *Transaction) rollback() {
-	t.ctx = trace.StartSpan(t.ctx, "cloud.google.com/go/firestore.Transaction.Rollback")
-	err := t.c.c.Rollback(t.ctx, &pb.RollbackRequest{
+	_ = t.c.c.Rollback(t.ctx, &pb.RollbackRequest{
 		Database:    t.c.path(),
 		Transaction: t.id,
 	})
-	trace.EndSpan(t.ctx, err)
-	// Ignore the rollback error in return.
+	// Ignore the rollback error.
+	// TODO(jba): Log it?
 	// Note: Rollback is idempotent so it will be retried by the gapic layer.
 }
 
