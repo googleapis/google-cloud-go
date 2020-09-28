@@ -951,15 +951,19 @@ func TestErrorInjection(t *testing.T) {
 	testcases := []struct {
 		funcName string
 		param    interface{}
+		code     codes.Code
 	}{
 		{
 			funcName: "CreateTopic",
+			code:     codes.Internal,
 		},
 		{
 			funcName: "GetTopic",
+			code:     codes.Aborted,
 		},
 		{
 			funcName: "UpdateTopic",
+			code:     codes.DeadlineExceeded,
 		},
 		{
 			funcName: "ListTopics",
@@ -1010,8 +1014,13 @@ func TestErrorInjection(t *testing.T) {
 	for _, tc := range testcases {
 		ctx := context.TODO()
 		errMsg := "error-injection-" + tc.funcName
+		// set error code to unknown unless specified
+		ec := codes.Unknown
+		if tc.code != codes.OK {
+			ec = tc.code
+		}
 		opts := []ServerReactorOption{
-			WithErrorInjection(tc.funcName, errMsg),
+			WithErrorInjection(tc.funcName, ec, errMsg),
 		}
 		_, _, server, cleanup := newFake(ctx, t, opts...)
 		defer cleanup()
@@ -1033,7 +1042,7 @@ func TestErrorInjection(t *testing.T) {
 		ret := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName).Call([]reflect.Value{reflect.ValueOf(ctx), req})
 
 		got := ret[1].Interface().(error)
-		if got == nil || !strings.Contains(got.Error(), errMsg) {
+		if got == nil || status.Code(got) != ec || !strings.Contains(got.Error(), errMsg) {
 			t.Errorf("Got error does not contain the right key %v", got)
 		}
 	}

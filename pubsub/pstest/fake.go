@@ -1171,20 +1171,22 @@ func (s *GServer) runReactor(req interface{}, funcName string, defaultObj interf
 	return false, nil, nil
 }
 
-// ErrorInjectionReactor is a reactor to inject an error message
-type ErrorInjectionReactor struct {
-	errMsg string
+// errorInjectionReactor is a reactor to inject an error message with status code.
+type errorInjectionReactor struct {
+	code codes.Code
+	msg  string
 }
 
-// React simply returns an error with defined error message.
-func (e *ErrorInjectionReactor) React(_ interface{}) (handled bool, ret interface{}, err error) {
-	return true, nil, fmt.Errorf(e.errMsg)
+// React simply returns an error with defined error message and status code.
+func (e *errorInjectionReactor) React(_ interface{}) (handled bool, ret interface{}, err error) {
+	return true, nil, status.Errorf(e.code, e.msg)
 }
 
-// WithErrorInjection creates a ServerReactorOption that injects error for a certain function.
-func WithErrorInjection(funcName string, errMsg string) ServerReactorOption {
+// WithErrorInjection creates a ServerReactorOption that injects error with defined status code and
+// message for a certain function.
+func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReactorOption {
 	return ServerReactorOption{
 		FuncName: funcName,
-		Reactor:  &ErrorInjectionReactor{errMsg: errMsg},
+		Reactor:  &errorInjectionReactor{code: code, msg: msg},
 	}
 }
