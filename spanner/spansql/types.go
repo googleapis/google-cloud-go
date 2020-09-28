@@ -479,6 +479,14 @@ type IsExpr interface {
 	SQL() string
 }
 
+// PathExp represents a path expression.
+//
+// The grammar for path expressions is not defined (see b/169017423 internally),
+// so this captures the most common form only, namely a dotted sequence of identifiers.
+type PathExp []ID
+
+func (PathExp) isExpr() {}
+
 // Func represents a function call.
 type Func struct {
 	Name string // not ID

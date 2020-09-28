@@ -63,7 +63,7 @@ func (ci CreateIndex) SQL() string {
 	}
 	str += ")"
 	if len(ci.Storing) > 0 {
-		str += " STORING (" + idList(ci.Storing) + ")"
+		str += " STORING (" + idList(ci.Storing, ", ") + ")"
 	}
 	if ci.Interleave != "" {
 		str += ", INTERLEAVE IN " + ci.Interleave.SQL()
@@ -168,9 +168,9 @@ func (tc TableConstraint) SQL() string {
 }
 
 func (fk ForeignKey) SQL() string {
-	str := "FOREIGN KEY (" + idList(fk.Columns)
+	str := "FOREIGN KEY (" + idList(fk.Columns, ", ")
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
-	str += idList(fk.RefColumns) + ")"
+	str += idList(fk.RefColumns, ", ") + ")"
 	return str
 }
 
@@ -296,7 +296,7 @@ func (sfj SelectFromJoin) SQL() string {
 	if sfj.On != nil {
 		str += " " + sfj.On.SQL()
 	} else if len(sfj.Using) > 0 {
-		str += " USING (" + idList(sfj.Using) + ")"
+		str += " USING (" + idList(sfj.Using, ", ") + ")"
 	}
 	return str
 }
@@ -426,13 +426,15 @@ func (f Func) SQL() string {
 	return str
 }
 
-func idList(l []ID) string {
+func idList(l []ID, join string) string {
 	var ss []string
 	for _, s := range l {
 		ss = append(ss, s.SQL())
 	}
-	return strings.Join(ss, ", ")
+	return strings.Join(ss, join)
 }
+
+func (pe PathExp) SQL() string { return idList([]ID(pe), ".") }
 
 func (p Paren) SQL() string { return "(" + p.Expr.SQL() + ")" }
 

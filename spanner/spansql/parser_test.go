@@ -95,9 +95,7 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// https://github.com/googleapis/google-cloud-go/issues/1973
-		// except that "l.user_id" is replaced with "l_user_id" since we don't support
-		// the dot operator yet.
-		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l_user_id=@userID`,
+		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -106,14 +104,30 @@ func TestParseQuery(t *testing.T) {
 					From: []SelectFrom{SelectFromTable{Table: "Lists", Alias: "l"}},
 					Where: ComparisonOp{
 						Op:  Eq,
-						LHS: ID("l_user_id"),
+						LHS: PathExp{"l", "user_id"},
 						RHS: Param("userID"),
 					},
 					ListAliases: []ID{"count"},
 				},
 			},
 		},
-		// TODO: `SELECT * FROM A INNER JOIN B ON A.w = B.y`
+		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS:  SelectFromTable{Table: "A"},
+						RHS:  SelectFromTable{Table: "B"},
+						On: ComparisonOp{
+							Op:  Eq,
+							LHS: PathExp{"A", "w"},
+							RHS: PathExp{"B", "y"},
+						},
+					}},
+				},
+			},
+		},
 		{`SELECT * FROM A INNER JOIN B USING (x)`,
 			Query{
 				Select: Select{
@@ -127,13 +141,12 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		// TODO: This should be `SELECT Roster.LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`
-		{`SELECT RosterLastName, TeamMascotMascot FROM Roster JOIN TeamMascot ON RosterSchoolID = TeamMascotSchoolID`,
+		{`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
 			Query{
 				Select: Select{
 					List: []Expr{
-						ID("RosterLastName"),
-						ID("TeamMascotMascot"),
+						PathExp{"Roster", "LastName"},
+						PathExp{"TeamMascot", "Mascot"},
 					},
 					From: []SelectFrom{SelectFromJoin{
 						Type: InnerJoin,
@@ -141,8 +154,8 @@ func TestParseQuery(t *testing.T) {
 						RHS:  SelectFromTable{Table: "TeamMascot"},
 						On: ComparisonOp{
 							Op:  Eq,
-							LHS: ID("RosterSchoolID"),
-							RHS: ID("TeamMascotSchoolID"),
+							LHS: PathExp{"Roster", "SchoolID"},
+							RHS: PathExp{"TeamMascot", "SchoolID"},
 						},
 					}},
 				},
