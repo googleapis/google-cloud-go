@@ -197,6 +197,7 @@ const (
 	float64Token
 	stringToken
 	bytesToken
+	unquotedID
 	quotedID
 )
 
@@ -752,10 +753,24 @@ func (p *parser) skipSpace() bool {
 
 // advance moves the parser to the next token, which will be available in p.cur.
 func (p *parser) advance() {
+	prevID := p.cur.typ == quotedID || p.cur.typ == unquotedID
+
 	p.skipSpace()
 	if p.done {
 		return
 	}
+
+	// If the previous token was an identifier (quoted or unquoted),
+	// the next token being a dot means this is a path expression (not a number).
+	if prevID && p.s[0] == '.' {
+		p.cur.err = nil
+		p.cur.line, p.cur.offset = p.line, p.offset
+		p.cur.typ = unknownToken
+		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
+		return
+	}
+
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
@@ -806,6 +821,7 @@ func (p *parser) advance() {
 			i++
 		}
 		p.cur.value, p.s = p.s[:i], p.s[i:]
+		p.cur.typ = unquotedID
 		p.offset += i
 		return
 	}
@@ -2314,8 +2330,6 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return StringLiteral(tok.string), nil
 	case bytesToken:
 		return BytesLiteral(tok.string), nil
-	case quotedID: // Unquoted identifers are handled below.
-		return ID(tok.string), nil
 	}
 
 	// Handle parenthesized expressions.
@@ -2367,7 +2381,40 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	if strings.HasPrefix(tok.value, "@") {
 		return Param(tok.value[1:]), nil
 	}
-	return ID(tok.value), nil
+
+	// Only thing left is a path expression or standalone identifier.
+	p.back()
+	pe, err := p.parsePathExp()
+	if err != nil {
+		return nil, err
+	}
+	if len(pe) == 1 {
+		return pe[0], nil // identifier
+	}
+	return pe, nil
+}
+
+func (p *parser) parsePathExp() (PathExp, *parseError) {
+	var pe PathExp
+	for {
+		tok := p.next()
+		if tok.err != nil {
+			return nil, tok.err
+		}
+		switch tok.typ {
+		case quotedID:
+			pe = append(pe, ID(tok.string))
+		case unquotedID:
+			pe = append(pe, ID(tok.value))
+		default:
+			// TODO: Is this correct?
+			return nil, p.errorf("expected identifer")
+		}
+		if !p.eat(".") {
+			break
+		}
+	}
+	return pe, nil
 }
 
 func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
@@ -2398,11 +2445,15 @@ func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	if tok.err != nil {
 		return "", tok.err
 	}
-	if tok.typ == quotedID {
+	switch tok.typ {
+	case quotedID:
 		return ID(tok.string), nil
+	case unquotedID:
+		// TODO: enforce restrictions
+		return ID(tok.value), nil
+	default:
+		return "", p.errorf("expected identifier")
 	}
-	// TODO: enforce restrictions
-	return ID(tok.value), nil
 }
 
 func (p *parser) parseOnDelete() (OnDelete, *parseError) {
