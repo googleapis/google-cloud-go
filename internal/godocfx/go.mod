@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.66.0
 	cloud.google.com/go/storage v1.11.0
 	github.com/kr/pretty v0.2.1 // indirect
-	golang.org/x/tools v0.0.0-20200918232735-d647fc253266
+	golang.org/x/tools v0.0.0-20200929161345-d7fc70abf50f
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )

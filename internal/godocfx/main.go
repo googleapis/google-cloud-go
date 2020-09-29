@@ -39,13 +39,13 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 	"time"
 
-	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
 )
 
@@ -58,17 +58,20 @@ func main() {
 		log.Fatalf("%s missing required argument: module path", os.Args[0])
 	}
 
-	pages, toc, module, err := parse(flag.Arg(0))
+	extraFiles := []string{
+		"README.md",
+	}
+	r, err := parse(flag.Arg(0), extraFiles)
 	if err != nil {
 		log.Fatal(err)
 	}
 
 	if *print {
-		if err := yaml.NewEncoder(os.Stdout).Encode(pages); err != nil {
+		if err := yaml.NewEncoder(os.Stdout).Encode(r.pages); err != nil {
 			log.Fatal(err)
 		}
 		fmt.Println("----- toc.yaml")
-		if err := yaml.NewEncoder(os.Stdout).Encode(toc); err != nil {
+		if err := yaml.NewEncoder(os.Stdout).Encode(r.toc); err != nil {
 			log.Fatal(err)
 		}
 		return
@@ -78,22 +81,22 @@ func main() {
 		os.RemoveAll(*outDir)
 	}
 
-	if err := write(*outDir, pages, toc, module); err != nil {
+	if err := write(*outDir, r, extraFiles); err != nil {
 		log.Fatalf("write: %v", err)
 	}
 }
 
-func write(outDir string, pages map[string]*page, toc tableOfContents, module *packages.Module) error {
+func write(outDir string, r *result, extraFiles []string) error {
 	if err := os.MkdirAll(outDir, os.ModePerm); err != nil {
 		return fmt.Errorf("os.MkdirAll: %v", err)
 	}
-	for path, p := range pages {
+	for path, p := range r.pages {
 		// Make the module root page the index.
-		if path == module.Path {
+		if path == r.module.Path {
 			path = "index"
 		}
 		// Trim the module path from all other paths.
-		path = strings.TrimPrefix(path, module.Path+"/")
+		path = strings.TrimPrefix(path, r.module.Path+"/")
 		path = filepath.Join(outDir, path+".yml")
 		if err := os.MkdirAll(filepath.Dir(path), os.ModePerm); err != nil {
 			return fmt.Errorf("os.MkdirAll: %v", err)
@@ -115,8 +118,22 @@ func write(outDir string, pages map[string]*page, toc tableOfContents, module *p
 		}
 		defer f.Close()
 		fmt.Fprintln(f, "### YamlMime:TableOfContent")
-		if err := yaml.NewEncoder(f).Encode(toc); err != nil {
+		if err := yaml.NewEncoder(f).Encode(r.toc); err != nil {
 			return err
+		}
+	}
+
+	for _, path := range extraFiles {
+		src, err := os.Open(filepath.Join(r.module.Dir, path))
+		if err != nil {
+			return err
+		}
+		dst, err := os.Create(filepath.Join(outDir, path))
+		if err != nil {
+			return err
+		}
+		if _, err := io.Copy(dst, src); err != nil {
+			return nil
 		}
 	}
 
@@ -145,6 +162,6 @@ func write(outDir string, pages map[string]*page, toc tableOfContents, module *p
 }
 name: %q
 version: %q
-language: "go"`, now.Unix(), now.Nanosecond(), module.Path, module.Version)
+language: "go"`, now.Unix(), now.Nanosecond(), r.module.Path, r.module.Version)
 	return nil
 }

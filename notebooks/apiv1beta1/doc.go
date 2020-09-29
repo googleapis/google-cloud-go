@@ -17,10 +17,8 @@
 // Package notebooks is an auto-generated package for the
 // Notebooks API.
 //
-// AI Platform Notebooks API (beta) is used to manage notebook resources in
-// Google Cloud. AI Platform Notebooks API is in a pre-release state and
-// might change or have limited support. For more information, see the <a
-// href="/products#product-launch-stages">product launch stages</a>.
+// AI Platform Notebooks API is used to manage notebook resources in Google
+// Cloud.
 //
 //   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
@@ -53,7 +51,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200921"
+const versionClient = "20200929"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
