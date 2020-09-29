@@ -94,7 +94,7 @@ type Client struct {
 
 // NewClient creates a new video intelligence service client.
 //
-// Service that implements Google Cloud Video Intelligence API.
+// Service that implements the Video Intelligence API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultClientOptions()
 
