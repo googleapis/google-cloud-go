@@ -82,9 +82,21 @@ func (ni *nullIter) Next() (row, error) {
 type tableIter struct {
 	t        *table
 	rowIndex int // index of next row to return
+
+	alias spansql.ID // if non-empty, "AS <alias>"
 }
 
-func (ti *tableIter) Cols() []colInfo { return ti.t.cols }
+func (ti *tableIter) Cols() []colInfo {
+	var cis []colInfo
+	for _, ci := range ti.t.cols {
+		if ti.alias != "" {
+			ci.Alias = spansql.PathExp{ti.alias, ci.Name}
+		}
+		cis = append(cis, ci)
+	}
+	return cis
+}
+
 func (ti *tableIter) Next() (row, error) {
 	if ti.rowIndex >= len(ti.t.rows) {
 		return nil, io.EOF
@@ -342,7 +354,6 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		if !ok {
 			return nil, fmt.Errorf("selecting with FROM clause of type %T not yet supported", sel.From[0])
 		}
-		// TODO: sft.Alias needs mixing in here.
 		tableName := sft.Table
 		t, err := d.table(tableName)
 		if err != nil {
@@ -350,8 +361,9 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		}
 		t.mu.Lock()
 		defer t.mu.Unlock()
-		ri = &tableIter{t: t}
-		ec.cols = t.cols
+		ti := &tableIter{t: t, alias: sft.Alias}
+		ri = ti
+		ec.cols = ti.Cols()
 
 		// On the way out, convert the result to a rawIter
 		// so that the table may be safely unlocked.

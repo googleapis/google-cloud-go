@@ -67,7 +67,8 @@ type table struct {
 type colInfo struct {
 	Name     spansql.ID
 	Type     spansql.Type
-	AggIndex int // Index+1 of SELECT list for which this is an aggregate value.
+	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
+	Alias    spansql.PathExp // an alternate name for this column (result sets only)
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
