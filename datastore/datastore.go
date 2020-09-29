@@ -376,7 +376,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	v := reflect.ValueOf(dst)
 	multiArgType, _ := checkMultiArg(v)
 
-	// Sanity checks
+	// Confidence checks
 	if multiArgType == multiArgTypeInvalid {
 		return errors.New("datastore: dst has invalid type")
 	}
