@@ -26,6 +26,7 @@ import (
 	"go/printer"
 	"go/token"
 	"log"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -41,6 +42,7 @@ type tocItem struct {
 	UID   string     `yaml:"uid,omitempty"`
 	Name  string     `yaml:"name,omitempty"`
 	Items []*tocItem `yaml:"items,omitempty"`
+	Href  string     `yaml:"href,omitempty"`
 }
 
 func (t *tocItem) addItem(i *tocItem) {
@@ -92,11 +94,19 @@ func (i *item) addChild(c child) {
 
 var onlyGo = []string{"go"}
 
+type result struct {
+	pages  map[string]*page
+	toc    tableOfContents
+	module *packages.Module
+}
+
 // parse parses the directory into a map of import path -> page and a TOC.
 //
 // glob is the path to parse, usually ending in `...`. glob is passed directly
 // to packages.Load as-is.
-func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, error) {
+//
+// extraFiles is a list of paths relative to the module root to include.
+func parse(glob string, extraFiles []string) (*result, error) {
 	config := &packages.Config{
 		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
 		Tests: true,
@@ -104,12 +114,12 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 
 	pkgs, err := packages.Load(config, glob)
 	if err != nil {
-		return nil, nil, nil, fmt.Errorf("packages.Load: %v", err)
+		return nil, fmt.Errorf("packages.Load: %v", err)
 	}
 	packages.PrintErrors(pkgs) // Don't fail everything because of one package.
 
 	if len(pkgs) == 0 {
-		return nil, nil, nil, fmt.Errorf("pattern %q matched 0 packages", glob)
+		return nil, fmt.Errorf("pattern %q matched 0 packages", glob)
 	}
 
 	pages := map[string]*page{}
@@ -122,7 +132,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 
 	// First, collect all of the files grouped by package, including test
 	// packages.
-	allPkgFiles := map[string][]string{}
+	goPkgFiles := map[string][]string{}
 	for _, pkg := range pkgs {
 		id := pkg.ID
 		// See https://pkg.go.dev/golang.org/x/tools/go/packages#Config.
@@ -144,7 +154,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		for _, f := range pkg.Syntax {
 			name := pkg.Fset.File(f.Pos()).Name()
 			if strings.HasSuffix(name, ".go") {
-				allPkgFiles[id] = append(allPkgFiles[id], name)
+				goPkgFiles[id] = append(goPkgFiles[id], name)
 			}
 		}
 	}
@@ -152,7 +162,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 	// Test files don't have Module set. Filter out packages in skipped modules.
 	pkgFiles := map[string][]string{}
 	pkgNames := []string{}
-	for pkgPath, files := range allPkgFiles {
+	for pkgPath, files := range goPkgFiles {
 		skip := false
 		for skipped := range skippedModules {
 			if strings.HasPrefix(pkgPath, skipped) {
@@ -175,7 +185,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		for _, f := range pkgFiles[pkgPath] {
 			pf, err := parser.ParseFile(fset, f, nil, parser.ParseComments)
 			if err != nil {
-				return nil, nil, nil, fmt.Errorf("ParseFile: %v", err)
+				return nil, fmt.Errorf("ParseFile: %v", err)
 			}
 			parsedFiles = append(parsedFiles, pf)
 		}
@@ -183,7 +193,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		// Parse out GoDoc.
 		docPkg, err := doc.NewFromFiles(fset, parsedFiles, pkgPath)
 		if err != nil {
-			return nil, nil, nil, fmt.Errorf("doc.NewFromFiles: %v", err)
+			return nil, fmt.Errorf("doc.NewFromFiles: %v", err)
 		}
 
 		// Extra filter in case the file filtering didn't catch everything.
@@ -191,10 +201,25 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 			continue
 		}
 
-		toc = append(toc, &tocItem{
+		pkgTOCITem := &tocItem{
 			UID:  docPkg.ImportPath,
 			Name: docPkg.ImportPath,
-		})
+		}
+		toc = append(toc, pkgTOCITem)
+
+		// If the package path == module path, add the extra files to the TOC
+		// as a child of the module==pkg item.
+		if pkgPath == module.Path {
+			for _, path := range extraFiles {
+				base := filepath.Base(path)
+				name := strings.TrimSuffix(base, filepath.Ext(base))
+				name = strings.Title(name)
+				pkgTOCITem.addItem(&tocItem{
+					Href: path,
+					Name: name,
+				})
+			}
+		}
 
 		pkgItem := &item{
 			UID:      docPkg.ImportPath,
@@ -345,7 +370,12 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 		sort.Strings(skipped)
 		log.Printf("Warning: Only processed %s@%s, skipped:\n%s\n", module.Path, module.Version, strings.Join(skipped, "\n"))
 	}
-	return pages, toc, module, nil
+
+	return &result{
+		pages:  pages,
+		toc:    toc,
+		module: module,
+	}, nil
 }
 
 // processExamples converts the examples to []example.
