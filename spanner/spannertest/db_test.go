@@ -548,6 +548,14 @@ func TestTableData(t *testing.T) {
 				{[]interface{}{false, nil, nil, false, true}},
 			},
 		},
+		// SELECT with aliases.
+		{
+			`SELECT s.Name FROM Staff AS s WHERE s.ID = 3 ORDER BY s.Tenure`,
+			nil,
+			[][]interface{}{
+				{"Sam"},
+			},
+		},
 		// Regression test for aggregating no rows; it used to return an empty row.
 		// https://github.com/googleapis/google-cloud-go/issues/2793
 		{
