@@ -354,6 +354,8 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return nil, fmt.Errorf("TODO: evalExpr(%s %T)", e.SQL(), e)
 	case coercedValue:
 		return e.val, nil
+	case spansql.PathExp:
+		return ec.evalPathExp(e)
 	case spansql.ID:
 		return ec.evalID(e)
 	case spansql.Param:
@@ -449,11 +451,36 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	}
 }
 
-func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
-	for i, col := range ec.cols {
-		if col.Name == id {
-			return ec.row.copyDataElem(i), nil
+// resolveColumnIndex turns an ID or PathExp into a table column index.
+func (ec evalContext) resolveColumnIndex(e spansql.Expr) (int, error) {
+	switch e := e.(type) {
+	case spansql.ID:
+		for i, col := range ec.cols {
+			if col.Name == e {
+				return i, nil
+			}
 		}
+	case spansql.PathExp:
+		for i, col := range ec.cols {
+			if pathExpEqual(e, col.Alias) {
+				return i, nil
+			}
+		}
+	}
+	return 0, fmt.Errorf("couldn't resolve [%s] as a table column", e.SQL())
+}
+
+func (ec evalContext) evalPathExp(pe spansql.PathExp) (interface{}, error) {
+	// TODO: support more than only naming an aliased table column.
+	if i, err := ec.resolveColumnIndex(pe); err == nil {
+		return ec.row.copyDataElem(i), nil
+	}
+	return nil, fmt.Errorf("couldn't resolve path expression %s", pe.SQL())
+}
+
+func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
+	if i, err := ec.resolveColumnIndex(id); err == nil {
+		return ec.row.copyDataElem(i), nil
 	}
 	if e, ok := ec.aliases[id]; ok {
 		// Make a copy of the context without this alias
@@ -681,13 +708,13 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: t}, nil
 	case spansql.LogicalOp, spansql.ComparisonOp, spansql.IsOp:
 		return colInfo{Type: spansql.Type{Base: spansql.Bool}}, nil
-	case spansql.ID:
+	case spansql.PathExp, spansql.ID:
 		// TODO: support more than only naming a table column.
-		for _, col := range ec.cols {
-			if col.Name == e {
-				return col, nil
-			}
+		i, err := ec.resolveColumnIndex(e)
+		if err == nil {
+			return ec.cols[i], nil
 		}
+		// Let errors fall through.
 	case spansql.Param:
 		qp, ok := ec.params[string(e)]
 		if !ok {
@@ -746,6 +773,18 @@ func (ec evalContext) arithColType(ao spansql.ArithOp) (spansql.Type, error) {
 		// "All bitwise operators return the same type and the same length as the first operand."
 		return lhs, nil
 	}
+}
+
+func pathExpEqual(a, b spansql.PathExp) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func evalLike(str, pat string) bool {
