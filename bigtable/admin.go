@@ -1008,7 +1008,10 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
 }
 
-// Clusters lists the clusters in an instance.
+// Clusters lists the clusters in an instance. If any location
+// (cluster) is unavailable due to some transient conditions, Clusters
+// returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
 func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string) ([]*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
@@ -1021,7 +1024,6 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	if err != nil {
 		return nil, err
 	}
-	// TODO(garyelliott): Deal with failed_locations.
 	var cis []*ClusterInfo
 	for _, c := range res.Clusters {
 		nameParts := strings.Split(c.Name, "/")
@@ -1033,6 +1035,11 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			State:       c.State.String(),
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
 		})
+	}
+	if len(res.FailedLocations) > 0 {
+		// Return partial results and an error in
+		// case of some locations are unavailable.
+		return cis, ErrPartiallyUnavailable{res.FailedLocations}
 	}
 	return cis, nil
 }
