@@ -1,5 +1,10 @@
 # Changes
 
+## v1.11.1
+
+* Addresses issue with optimized query path changes, released
+  in v1.11.0
+
 ## v1.11.0
 
 * Add support for optimized query path.
