@@ -42,7 +42,7 @@ godocfx "$MODULE/..."
 cd obj/api || exit 4
 
 python3 -m docuploader upload \
-  --staging-bucket docs-staging-v2-staging \
+  --staging-bucket docs-staging-v2 \
   --destination-prefix docfx \
   --credentials "$KOKORO_KEYSTORE_DIR/73713_docuploader_service_account" \
   .

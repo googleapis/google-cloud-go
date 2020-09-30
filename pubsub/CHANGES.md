@@ -1,5 +1,19 @@
 # Changes
 
+## v1.8.0
+
+- Add status code to error injection in pstest. This is a BREAKING CHANGE.
+
+## v1.7.0
+
+- Add reactor options to pstest server. (#2916)
+
+## v1.6.2
+
+- Make message.Modacks thread safe in pstest. (#2755)
+- Fix issue with closing publisher and subscriber client errors. (#2867)
+- Fix updating subscription filtering/retry policy in pstest. (#2901)
+
 ## v1.6.1
 
 - Fix issue where EnableMessageOrdering wasn't being parsed properly to `SubscriptionConfig`.

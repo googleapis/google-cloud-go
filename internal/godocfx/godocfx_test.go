@@ -36,21 +36,21 @@ func TestMain(m *testing.M) {
 
 func TestParse(t *testing.T) {
 	testPath := "cloud.google.com/go/storage"
-	pages, toc, module, err := parse(testPath)
+	r, err := parse(testPath, nil)
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
-	if got, want := len(toc), 1; got != want {
+	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(pages), 1; got != want {
+	if got, want := len(r.pages), 1; got != want {
 		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
 	}
-	if got := module.Path; got != testPath {
+	if got := r.module.Path; got != testPath {
 		t.Fatalf("Parse got module = %q, want %q", got, testPath)
 	}
 
-	page := pages[testPath]
+	page := r.pages[testPath]
 
 	// Check invariants for every item.
 	for _, item := range page.Items {
@@ -64,8 +64,7 @@ func TestParse(t *testing.T) {
 	}
 
 	// Check there is at least one type, const, variable, and function.
-	// Note: no method because they aren't printed for Namespaces yet.
-	wants := []string{"type", "const", "variable", "function"}
+	wants := []string{"type", "const", "variable", "function", "method"}
 	for _, want := range wants {
 		found := false
 		for _, c := range page.Items {
@@ -83,9 +82,10 @@ func TestParse(t *testing.T) {
 func TestGoldens(t *testing.T) {
 	gotDir := "testdata/out"
 	goldenDir := "testdata/golden"
+	extraFiles := []string{"README.md"}
 
 	testPath := "cloud.google.com/go/storage"
-	pages, toc, module, err := parse(testPath)
+	r, err := parse(testPath, extraFiles)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -95,7 +95,7 @@ func TestGoldens(t *testing.T) {
 	if updateGoldens {
 		os.RemoveAll(goldenDir)
 
-		if err := write(goldenDir, pages, toc, module); err != nil {
+		if err := write(goldenDir, r, extraFiles); err != nil {
 			t.Fatalf("write: %v", err)
 		}
 
@@ -110,7 +110,7 @@ func TestGoldens(t *testing.T) {
 		return
 	}
 
-	if err := write(gotDir, pages, toc, module); err != nil {
+	if err := write(gotDir, r, extraFiles); err != nil {
 		t.Fatalf("write: %v", err)
 	}
 
