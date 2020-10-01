@@ -316,6 +316,23 @@ func TestTableData(t *testing.T) {
 			},
 			PrimaryKey: []spansql.KeyPart{{Column: "LastName"}, {Column: "OpponentID"}}, // TODO: is this right?
 		},
+		// JoinA and JoinB are "A" and "B" from https://cloud.google.com/spanner/docs/query-syntax#join_types.
+		{
+			Name: "JoinA",
+			Columns: []spansql.ColumnDef{
+				{Name: "w", Type: spansql.Type{Base: spansql.Int64}},
+				{Name: "x", Type: spansql.Type{Base: spansql.String}},
+			},
+			PrimaryKey: []spansql.KeyPart{{Column: "w"}, {Column: "x"}},
+		},
+		{
+			Name: "JoinB",
+			Columns: []spansql.ColumnDef{
+				{Name: "y", Type: spansql.Type{Base: spansql.Int64}},
+				{Name: "z", Type: spansql.Type{Base: spansql.String}},
+			},
+			PrimaryKey: []spansql.KeyPart{{Column: "y"}, {Column: "z"}},
+		},
 	} {
 		st := db.ApplyDDL(ct)
 		if st.Code() != codes.OK {
@@ -330,6 +347,24 @@ func TestTableData(t *testing.T) {
 		listV(stringV("Coolidge"), stringV("77"), stringV("1")),
 		listV(stringV("Adams"), stringV("52"), stringV("4")),
 		listV(stringV("Buchanan"), stringV("50"), stringV("13")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	err = db.Insert(tx, "JoinA", []spansql.ID{"w", "x"}, []*structpb.ListValue{
+		listV(stringV("1"), stringV("a")),
+		listV(stringV("2"), stringV("b")),
+		listV(stringV("3"), stringV("c")),
+		listV(stringV("3"), stringV("d")),
+	})
+	if err != nil {
+		t.Fatalf("Inserting data: %v", err)
+	}
+	err = db.Insert(tx, "JoinB", []spansql.ID{"y", "z"}, []*structpb.ListValue{
+		listV(stringV("2"), stringV("k")),
+		listV(stringV("3"), stringV("m")),
+		listV(stringV("3"), stringV("n")),
+		listV(stringV("4"), stringV("p")),
 	})
 	if err != nil {
 		t.Fatalf("Inserting data: %v", err)
@@ -554,6 +589,19 @@ func TestTableData(t *testing.T) {
 			nil,
 			[][]interface{}{
 				{"Sam"},
+			},
+		},
+		// Joins.
+		{
+			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", nil, nil},
+				{int64(2), "b", int64(2), "k"},
+				{int64(3), "c", int64(3), "m"},
+				{int64(3), "c", int64(3), "n"},
+				{int64(3), "d", int64(3), "m"},
+				{int64(3), "d", int64(3), "n"},
 			},
 		},
 		// Regression test for aggregating no rows; it used to return an empty row.
