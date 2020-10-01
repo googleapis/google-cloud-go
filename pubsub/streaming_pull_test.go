@@ -315,12 +315,9 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	// wait for receives to happen
 	time.Sleep(100 * time.Millisecond)
 
-	// Intentionally don't check the returned err here. In the fake,
-	// closing either the publisher/subscriber client will cause the
-	// server to clean up resources, which is different than in the
-	// live service. With the fake, client.Close() will return a
-	// "the client connection is closing" error with the second Close.
-	client.Close()
+	if err := client.Close(); err != nil {
+		t.Fatalf("Got error while closing client: %v", err)
+	}
 
 	// wait for things to close
 	time.Sleep(100 * time.Millisecond)
