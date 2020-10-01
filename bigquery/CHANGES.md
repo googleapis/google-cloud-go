@@ -1,5 +1,9 @@
 # Changes
 
+## v1.11.2
+
+* Addresses issue with consuming query results using an iterator.Pager
+
 ## v1.11.1
 
 * Addresses issue with optimized query path changes, released
