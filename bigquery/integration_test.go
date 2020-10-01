@@ -982,6 +982,44 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryIterationPager(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	sql := `
+	SELECT
+		num,
+		num * 2 as double
+	FROM
+		UNNEST(GENERATE_ARRAY(1,5)) as num`
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("Read: %v", err)
+	}
+	pager := iterator.NewPager(it, 2, "")
+	rowsFetched := 0
+	for {
+		var rows [][]Value
+		nextPageToken, err := pager.NextPage(&rows)
+		if err != nil {
+			t.Fatalf("NextPage: %v", err)
+		}
+		rowsFetched = rowsFetched + len(rows)
+
+		if nextPageToken == "" {
+			break
+		}
+	}
+
+	wantRows := 5
+	if rowsFetched != wantRows {
+		t.Errorf("Expected %d rows, got %d", wantRows, rowsFetched)
+	}
+}
+
 func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 	// Verifies we're exhibiting documented behavior, where we're expected
 	// to return the last resultset in a script as the response from a script
