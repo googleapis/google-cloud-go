@@ -17,12 +17,12 @@ by ascending esotericism:
 
 - expression functions
 - more aggregation functions
+- more joins types (INNER, CROSS, FULL, RIGHT)
 - INSERT/UPDATE DML statements
+- SELECT HAVING
 - case insensitivity
 - alternate literal types (esp. strings)
 - STRUCT types
-- SELECT HAVING
-- joins
 - transaction simulation
 - expression type casting, coercion
 - subselects
