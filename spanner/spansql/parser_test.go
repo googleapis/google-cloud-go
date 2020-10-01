@@ -161,6 +161,35 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		// Joins with hints.
+		{`SELECT * FROM A HASH JOIN B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+						Hints: map[string]string{"JOIN_METHOD": "HASH_JOIN"},
+					}},
+				},
+			},
+		},
+		{`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+						Hints: map[string]string{"JOIN_METHOD": "HASH_JOIN"},
+					}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
