@@ -776,7 +776,7 @@ func (p *parser) advance() {
 	p.cur.typ = unknownToken
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '*':
+	case ',', ';', '(', ')', '{', '}', '*':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		p.offset++
@@ -1841,6 +1841,14 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		p.back()
 		return sf, nil
 	}
+	var hashJoin bool // Special case for "HASH JOIN" syntax.
+	if tok.value == "HASH" {
+		hashJoin = true
+		tok = p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+	}
 	var jt JoinType
 	if tok.value == "JOIN" {
 		// This is implicitly an inner join.
@@ -1861,12 +1869,51 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		return sf, nil
 	}
 
-	// TODO: consume "HASH"
-
 	sfj := SelectFromJoin{
 		Type: jt,
 		LHS:  sf,
 	}
+	setHint := func(k, v string) {
+		if sfj.Hints == nil {
+			sfj.Hints = make(map[string]string)
+		}
+		sfj.Hints[k] = v
+	}
+	if hashJoin {
+		setHint("JOIN_METHOD", "HASH_JOIN")
+	}
+
+	if p.eat("@") {
+		if err := p.expect("{"); err != nil {
+			return nil, err
+		}
+		for {
+			if p.sniff("}") {
+				break
+			}
+			tok := p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			k := tok.value
+			if err := p.expect("="); err != nil {
+				return nil, err
+			}
+			tok = p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			v := tok.value
+			setHint(k, v)
+			if !p.eat(",") {
+				break
+			}
+		}
+		if err := p.expect("}"); err != nil {
+			return nil, err
+		}
+	}
+
 	sfj.RHS, err = p.parseSelectFrom()
 	if err != nil {
 		return nil, err

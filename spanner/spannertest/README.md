@@ -30,4 +30,3 @@ by ascending esotericism:
 - partition support
 - conditional expressions
 - table sampling (implementation)
-- hints for table/joins

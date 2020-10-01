@@ -327,7 +327,9 @@ type SelectFromJoin struct {
 	On    BoolExpr
 	Using []ID
 
-	// TODO: hint keys (this will cover `X HASH JOIN Y` too).
+	// Hints are suggestions for how to evaluate a join.
+	// https://cloud.google.com/spanner/docs/query-syntax#join-hints
+	Hints map[string]string
 }
 
 func (SelectFromJoin) isSelectFrom() {}
