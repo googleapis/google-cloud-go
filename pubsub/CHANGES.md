@@ -1,5 +1,9 @@
 # Changes
 
+## v1.8.1
+
+- Suppress connection is closing on error on subscriber close. (#2951)
+
 ## v1.8.0
 
 - Add status code to error injection in pstest. This is a BREAKING CHANGE.
@@ -21,7 +25,7 @@
 ## v1.6.0
 
 - Fix issue where subscriber streams were limited because it was using a single grpc conn.
-	- As a side effect, publisher and subscriber grpc conns are no longer shared.
+  - As a side effect, publisher and subscriber grpc conns are no longer shared.
 - Add fake time function in pstest.
 - Add support for server side flow control.
 
