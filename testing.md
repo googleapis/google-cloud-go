@@ -137,6 +137,9 @@ func TestTranslateTextWithConcreteClient(t *testing.T) {
 }
 ```
 
+To view a full working example see the
+[code here](https://github.com/googleapis/google-cloud-go/tree/master/internal/examples/fake).
+
 ## Testing using mocks
 
 When mocking code you need to work with interfaces. Let’s create an interface
@@ -208,6 +211,9 @@ If you prefer to not write your own mocks there are mocking frameworks such as
 [golang/mock](https://github.com/golang/mock) which can generate mocks for you
 from an interface. As a word of caution though, try to not
 [overuse mocks](https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html).
+
+To view a full working example see the
+[code here](https://github.com/googleapis/google-cloud-go/tree/master/internal/examples/mock).
 
 ## Testing using emulators
 
