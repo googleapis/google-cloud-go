@@ -18,9 +18,7 @@ package data
 
 import (
 	"context"
-	"fmt"
 	"math"
-	"net/url"
 	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -40,7 +38,7 @@ type AlphaAnalyticsDataCallOptions struct {
 	RunPivotReport       []gax.CallOption
 	BatchRunReports      []gax.CallOption
 	BatchRunPivotReports []gax.CallOption
-	GetMetadata          []gax.CallOption
+	GetUniversalMetadata []gax.CallOption
 }
 
 func defaultAlphaAnalyticsDataClientOptions() []option.ClientOption {
@@ -59,7 +57,7 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 		RunPivotReport:       []gax.CallOption{},
 		BatchRunReports:      []gax.CallOption{},
 		BatchRunPivotReports: []gax.CallOption{},
-		GetMetadata: []gax.CallOption{
+		GetUniversalMetadata: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -246,22 +244,24 @@ func (c *AlphaAnalyticsDataClient) BatchRunPivotReports(ctx context.Context, req
 	return resp, nil
 }
 
-// GetMetadata returns metadata for dimensions and metrics available in reporting methods.
+// GetUniversalMetadata returns metadata for dimensions and metrics available in reporting methods.
 // Used to explore the dimensions and metrics. Dimensions and metrics will be
 // mostly added over time, but renames and deletions may occur.
-func (c *AlphaAnalyticsDataClient) GetMetadata(ctx context.Context, req *datapb.GetMetadataRequest, opts ...gax.CallOption) (*datapb.Metadata, error) {
+//
+// This method returns Universal Metadata. Universal Metadata are dimensions
+// and metrics applicable to any property such as country and totalUsers.
+func (c *AlphaAnalyticsDataClient) GetUniversalMetadata(ctx context.Context, req *datapb.GetUniversalMetadataRequest, opts ...gax.CallOption) (*datapb.UniversalMetadata, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetMetadata[0:len(c.CallOptions.GetMetadata):len(c.CallOptions.GetMetadata)], opts...)
-	var resp *datapb.Metadata
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.GetUniversalMetadata[0:len(c.CallOptions.GetUniversalMetadata):len(c.CallOptions.GetUniversalMetadata)], opts...)
+	var resp *datapb.UniversalMetadata
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = c.alphaAnalyticsDataClient.GetMetadata(ctx, req, settings.GRPC...)
+		resp, err = c.alphaAnalyticsDataClient.GetUniversalMetadata(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
