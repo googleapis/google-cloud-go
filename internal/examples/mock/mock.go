@@ -29,9 +29,9 @@ type TranslationClient interface {
 	TranslateText(ctx context.Context, req *translatepb.TranslateTextRequest, opts ...gax.CallOption) (*translatepb.TranslateTextResponse, error)
 }
 
-// TranslateTextWithAbstractClient translates text to the targetLand using the
+// TranslateTextWithInterfaceClient translates text to the targetLand using the
 // provided client.
-func TranslateTextWithAbstractClient(client TranslationClient, text string, targetLang string) (string, error) {
+func TranslateTextWithInterfaceClient(client TranslationClient, text string, targetLang string) (string, error) {
 	ctx := context.Background()
 	log.Printf("Translating %q to %q", text, targetLang)
 	req := &translatepb.TranslateTextRequest{

@@ -25,6 +25,8 @@ import (
 	"google.golang.org/grpc"
 )
 
+// fakeTranslationServer respresents a fake gRPC server where all of the methods
+// are unimplemented except TranslateText which is explicitly overridden.
 type fakeTranslationServer struct {
 	translatepb.UnimplementedTranslationServiceServer
 }

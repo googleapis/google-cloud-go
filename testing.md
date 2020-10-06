@@ -8,6 +8,9 @@ on the Go client libraries.
 
 ## Testing gRPC services using fakes
 
+*Note*: You can see the full
+[example code using a fake here](https://github.com/googleapis/google-cloud-go/tree/master/internal/examples/fake).
+
 The clients found in `cloud.google.com/go` are gRPC based, with a couple of
 notable exceptions being the [`storage`](https://pkg.go.dev/cloud.google.com/go/storage)
 and [`bigquery`](https://pkg.go.dev/cloud.google.com/go/bigquery) clients.
@@ -137,10 +140,10 @@ func TestTranslateTextWithConcreteClient(t *testing.T) {
 }
 ```
 
-To view a full working example see the
-[code here](https://github.com/googleapis/google-cloud-go/tree/master/internal/examples/fake).
-
 ## Testing using mocks
+
+*Note*: You can see the full
+[example code using a mock here](https://github.com/googleapis/google-cloud-go/tree/master/internal/examples/mock).
 
 When mocking code you need to work with interfaces. Let’s create an interface
 for the `cloud.google.com/go/translate/apiv3` client used in the
@@ -160,7 +163,7 @@ rewrite the function signature to take the interface instead of the concrete
 type.
 
 ```go
-func TranslateTextWithAbstractClient(client TranslationClient, text string, targetLang string) (string, error) {
+func TranslateTextWithInterfaceClient(client TranslationClient, text string, targetLang string) (string, error) {
 // ...
 }
 ```
@@ -197,7 +200,7 @@ func (*mockClient) TranslateText(_ context.Context, req *translatepb.TranslateTe
 
 func TestTranslateTextWithAbstractClient(t *testing.T) {
         client := &mockClient{}
-        text, err := TranslateTextWithAbstractClient(client, "Hola Mundo", "en-US")
+        text, err := TranslateTextWithInterfaceClient(client, "Hola Mundo", "en-US")
         if err != nil {
                 t.Fatal(err)
         }

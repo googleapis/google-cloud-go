@@ -22,6 +22,8 @@ import (
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
 
+// mockClient fullfills the TranslationClient interface and is used as a mock
+// standin for a `translate.Client` that is only used to TranslateText.
 type mockClient struct{}
 
 func (*mockClient) TranslateText(_ context.Context, req *translatepb.TranslateTextRequest, opts ...gax.CallOption) (*translatepb.TranslateTextResponse, error) {
@@ -35,9 +37,9 @@ func (*mockClient) TranslateText(_ context.Context, req *translatepb.TranslateTe
 	return resp, nil
 }
 
-func TestTranslateTextWithAbstractClient(t *testing.T) {
+func TestTranslateTextWithInterfaceClient(t *testing.T) {
 	client := &mockClient{}
-	text, err := TranslateTextWithAbstractClient(client, "Hola Mundo", "en-US")
+	text, err := TranslateTextWithInterfaceClient(client, "Hola Mundo", "en-US")
 	if err != nil {
 		t.Fatal(err)
 	}
