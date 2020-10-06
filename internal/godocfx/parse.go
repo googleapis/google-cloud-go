@@ -123,7 +123,6 @@ func parse(glob string, extraFiles []string) (*result, error) {
 	}
 
 	pages := map[string]*page{}
-	toc := tableOfContents{}
 
 	module := pkgs[0].Module
 	skippedModules := map[string]struct{}{}
@@ -177,6 +176,8 @@ func parse(glob string, extraFiles []string) (*result, error) {
 	}
 	sort.Strings(pkgNames)
 
+	toc := buildTOC(module.Path, pkgNames, extraFiles)
+
 	// Once the files are grouped by package, process each package
 	// independently.
 	for _, pkgPath := range pkgNames {
@@ -199,26 +200,6 @@ func parse(glob string, extraFiles []string) (*result, error) {
 		// Extra filter in case the file filtering didn't catch everything.
 		if !strings.HasPrefix(docPkg.ImportPath, module.Path) {
 			continue
-		}
-
-		pkgTOCITem := &tocItem{
-			UID:  docPkg.ImportPath,
-			Name: docPkg.ImportPath,
-		}
-		toc = append(toc, pkgTOCITem)
-
-		// If the package path == module path, add the extra files to the TOC
-		// as a child of the module==pkg item.
-		if pkgPath == module.Path {
-			for _, path := range extraFiles {
-				base := filepath.Base(path)
-				name := strings.TrimSuffix(base, filepath.Ext(base))
-				name = strings.Title(name)
-				pkgTOCITem.addItem(&tocItem{
-					Href: path,
-					Name: name,
-				})
-			}
 		}
 
 		pkgItem := &item{
@@ -411,4 +392,115 @@ func processExamples(exs []*doc.Example, fset *token.FileSet) []example {
 		})
 	}
 	return result
+}
+
+func buildTOC(mod string, pkgs []string, extraFiles []string) tableOfContents {
+	toc := tableOfContents{}
+
+	modTOC := &tocItem{
+		UID:  mod, // Assume the module root has a package.
+		Name: mod,
+	}
+	for _, path := range extraFiles {
+		base := filepath.Base(path)
+		name := strings.TrimSuffix(base, filepath.Ext(base))
+		name = strings.Title(name)
+		modTOC.addItem(&tocItem{
+			Href: path,
+			Name: name,
+		})
+	}
+
+	toc = append(toc, modTOC)
+
+	if len(pkgs) == 1 {
+		// The module only has one package.
+		return toc
+	}
+
+	// partialTrie represents the parts of each package name that come after
+	// the module name.
+	//
+	// A package name is three parts: mod/mid/suffix
+	//
+	// For example, cloud.google.com/go/bigquery/connection/apiv1 would be split
+	// into cloud.google.com/go, bigquery, and connection/apiv1.
+	//
+	// Don't do a full trie to keep nesting to a minimum.
+	partialTrie := map[string][]string{}
+	mids := []string{}
+
+	for _, pkg := range pkgs {
+		if pkg == mod {
+			continue
+		}
+		if !strings.HasPrefix(pkg, mod) {
+			panic(fmt.Sprintf("Package %q does not start with %q, should never happen", pkg, mod))
+		}
+		midAndSuffix := strings.TrimPrefix(pkg, mod+"/")
+		parts := strings.SplitN(midAndSuffix, "/", 2)
+
+		mid := parts[0]
+		suffix := ""
+		if len(parts) > 1 {
+			suffix = parts[1]
+		}
+
+		if _, ok := partialTrie[mid]; !ok {
+			mids = append(mids, mid)
+		}
+
+		partialTrie[mid] = append(partialTrie[mid], suffix)
+	}
+
+	sort.Strings(mids)
+
+	for _, mid := range mids {
+		suffixes := partialTrie[mid]
+
+		// No need to nest if there is only one suffix.
+		if len(suffixes) == 1 {
+			suffix := suffixes[0]
+			name := mid
+			if suffix != "" {
+				name = name + "/" + suffix
+			}
+			uid := mod + "/" + name
+			pkgTOCItem := &tocItem{
+				UID:  uid,
+				Name: name,
+			}
+			modTOC.addItem(pkgTOCItem)
+			continue
+		}
+
+		sort.Strings(suffixes)
+
+		midTOC := &tocItem{
+			// No Uref or UID because this may not be a package.
+			Name: mid,
+		}
+		modTOC.addItem(midTOC)
+
+		for _, suffix := range suffixes {
+			uid := mod + "/" + mid
+			if suffix != "" {
+				uid = uid + "/" + suffix
+			}
+
+			// Empty suffix means this mid is a package itself.
+			if suffix == "" {
+				midTOC.UID = uid
+				continue
+			}
+
+			pkgTOC := &tocItem{
+				UID:  uid,
+				Name: suffix,
+			}
+			midTOC.addItem(pkgTOC)
+		}
+	}
+
+	return toc
 }
