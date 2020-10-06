@@ -569,18 +569,16 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
+	var start, end time.Time
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
 		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
 	} else {
-		start := time.Now()
+		start = time.Now()
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
-		end := time.Now()
-		stats.Record(ctx,
-			PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
-			PublishedMessages.M(int64(len(bms))))
+		end = time.Now()
 	}
 	if err != nil {
 		t.scheduler.Pause(orderingKey)
@@ -589,6 +587,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		ctx, _ = tag.New(ctx, tag.Upsert(keyStatus, "ERROR"),
 			tag.Upsert(keyError, err.Error()))
 	}
+	stats.Record(ctx,
+		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
+		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
 		if err != nil {
 			bm.res.set("", err)
