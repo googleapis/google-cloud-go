@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
@@ -379,6 +380,7 @@ type BoolExpr interface {
 type Expr interface {
 	isExpr()
 	SQL() string
+	addSQL(*strings.Builder)
 }
 
 // LiteralOrParam is implemented by integer literal and parameter values.
@@ -477,8 +479,7 @@ func (IsOp) isExpr()     {}
 
 type IsExpr interface {
 	isIsExpr()
-	isExpr()
-	SQL() string
+	Expr
 }
 
 // PathExp represents a path expression.
