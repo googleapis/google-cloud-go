@@ -215,9 +215,6 @@ If you prefer to not write your own mocks there are mocking frameworks such as
 from an interface. As a word of caution though, try to not
 [overuse mocks](https://testing.googleblog.com/2013/05/testing-on-toilet-dont-overuse-mocks.html).
 
-To view a full working example see the
-[code here](https://github.com/googleapis/google-cloud-go/tree/master/internal/examples/mock).
-
 ## Testing using emulators
 
 Some of the client libraries provided in `cloud.google.com/go` support running
