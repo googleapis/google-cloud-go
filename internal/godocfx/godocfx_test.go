@@ -18,7 +18,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
@@ -81,15 +80,10 @@ func TestParse(t *testing.T) {
 	}
 
 	foundREADME := false
-	foundNested := false
 	foundUnnested := false
 	for _, item := range r.toc[0].Items {
-		fmt.Println(item.Name)
 		if item.Name == "README" {
 			foundREADME = true
-		}
-		if len(item.Items) > 0 {
-			foundNested = true
 		}
 		if len(item.Items) == 0 && len(item.UID) > 0 && len(item.Name) > 0 {
 			foundUnnested = true
@@ -97,9 +91,6 @@ func TestParse(t *testing.T) {
 	}
 	if !foundREADME {
 		t.Errorf("Parse didn't find a README in TOC")
-	}
-	if !foundNested {
-		t.Errorf("Parse didn't find a nested element in TOC")
 	}
 	if !foundUnnested {
 		t.Errorf("Parse didn't find an unnested element in TOC (e.g. datatransfer/apiv1)")
