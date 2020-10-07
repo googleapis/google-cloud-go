@@ -18,12 +18,14 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"testing"
 
-	_ "cloud.google.com/go/storage" // Implicitly required by test.
+	_ "cloud.google.com/go/bigquery" // Implicitly required by test.
+	_ "cloud.google.com/go/storage"  // Implicitly required by test.
 )
 
 var updateGoldens bool
@@ -35,22 +37,22 @@ func TestMain(m *testing.M) {
 }
 
 func TestParse(t *testing.T) {
-	testPath := "cloud.google.com/go/storage"
-	r, err := parse(testPath, nil)
+	mod := "cloud.google.com/go/bigquery"
+	r, err := parse(mod+"/...", []string{"README.md"})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
 	if got, want := len(r.toc), 1; got != want {
 		t.Fatalf("Parse got len(toc) = %d, want %d", got, want)
 	}
-	if got, want := len(r.pages), 1; got != want {
+	if got, want := len(r.pages), 10; got != want {
 		t.Errorf("Parse got len(pages) = %d, want %d", got, want)
 	}
-	if got := r.module.Path; got != testPath {
-		t.Fatalf("Parse got module = %q, want %q", got, testPath)
+	if got := r.module.Path; got != mod {
+		t.Fatalf("Parse got module = %q, want %q", got, mod)
 	}
 
-	page := r.pages[testPath]
+	page := r.pages[mod]
 
 	// Check invariants for every item.
 	for _, item := range page.Items {
@@ -63,7 +65,7 @@ func TestParse(t *testing.T) {
 		}
 	}
 
-	// Check there is at least one type, const, variable, and function.
+	// Check there is at least one type, const, variable, function, and method.
 	wants := []string{"type", "const", "variable", "function", "method"}
 	for _, want := range wants {
 		found := false
@@ -76,6 +78,31 @@ func TestParse(t *testing.T) {
 		if !found {
 			t.Errorf("Parse got no %q, want at least one", want)
 		}
+	}
+
+	foundREADME := false
+	foundNested := false
+	foundUnnested := false
+	for _, item := range r.toc[0].Items {
+		fmt.Println(item.Name)
+		if item.Name == "README" {
+			foundREADME = true
+		}
+		if len(item.Items) > 0 {
+			foundNested = true
+		}
+		if len(item.Items) == 0 && len(item.UID) > 0 && len(item.Name) > 0 {
+			foundUnnested = true
+		}
+	}
+	if !foundREADME {
+		t.Errorf("Parse didn't find a README in TOC")
+	}
+	if !foundNested {
+		t.Errorf("Parse didn't find a nested element in TOC")
+	}
+	if !foundUnnested {
+		t.Errorf("Parse didn't find an unnested element in TOC (e.g. datatransfer/apiv1)")
 	}
 }
 
