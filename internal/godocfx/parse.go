@@ -418,18 +418,7 @@ func buildTOC(mod string, pkgs []string, extraFiles []string) tableOfContents {
 		return toc
 	}
 
-	// partialTrie represents the parts of each package name that come after
-	// the module name.
-	//
-	// A package name is three parts: mod/mid/suffix
-	//
-	// For example, cloud.google.com/go/bigquery/connection/apiv1 would be split
-	// into cloud.google.com/go, bigquery, and connection/apiv1.
-	//
-	// Don't do a full trie to keep nesting to a minimum.
-	partialTrie := map[string][]string{}
-	mids := []string{}
-
+	trimmedPkgs := []string{}
 	for _, pkg := range pkgs {
 		if pkg == mod {
 			continue
@@ -437,69 +426,19 @@ func buildTOC(mod string, pkgs []string, extraFiles []string) tableOfContents {
 		if !strings.HasPrefix(pkg, mod) {
 			panic(fmt.Sprintf("Package %q does not start with %q, should never happen", pkg, mod))
 		}
-		midAndSuffix := strings.TrimPrefix(pkg, mod+"/")
-		parts := strings.SplitN(midAndSuffix, "/", 2)
-
-		mid := parts[0]
-		suffix := ""
-		if len(parts) > 1 {
-			suffix = parts[1]
-		}
-
-		if _, ok := partialTrie[mid]; !ok {
-			mids = append(mids, mid)
-		}
-
-		partialTrie[mid] = append(partialTrie[mid], suffix)
+		trimmed := strings.TrimPrefix(pkg, mod+"/")
+		trimmedPkgs = append(trimmedPkgs, trimmed)
 	}
 
-	sort.Strings(mids)
+	sort.Strings(trimmedPkgs)
 
-	for _, mid := range mids {
-		suffixes := partialTrie[mid]
-
-		// No need to nest if there is only one suffix.
-		if len(suffixes) == 1 {
-			suffix := suffixes[0]
-			name := mid
-			if suffix != "" {
-				name = name + "/" + suffix
-			}
-			uid := mod + "/" + name
-			pkgTOCItem := &tocItem{
-				UID:  uid,
-				Name: name,
-			}
-			modTOC.addItem(pkgTOCItem)
-			continue
+	for _, trimmed := range trimmedPkgs {
+		uid := mod + "/" + trimmed
+		pkgTOCItem := &tocItem{
+			UID:  uid,
+			Name: trimmed,
 		}
-
-		sort.Strings(suffixes)
-
-		midTOC := &tocItem{
-			// No Uref or UID because this may not be a package.
-			Name: mid,
-		}
-		modTOC.addItem(midTOC)
-
-		for _, suffix := range suffixes {
-			uid := mod + "/" + mid
-			if suffix != "" {
-				uid = uid + "/" + suffix
-			}
-
-			// Empty suffix means this mid is a package itself.
-			if suffix == "" {
-				midTOC.UID = uid
-				continue
-			}
-
-			pkgTOC := &tocItem{
-				UID:  uid,
-				Name: suffix,
-			}
-			midTOC.addItem(pkgTOC)
-		}
+		modTOC.addItem(pkgTOCItem)
 	}
 
 	return toc
