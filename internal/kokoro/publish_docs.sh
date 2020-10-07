@@ -19,7 +19,7 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
-if [ -z "$MODULE" ] ] ; then
+if [ -z "$MODULE" ] ; then
     echo "Must set the MODULE environment variables"
     exit 1
 fi
