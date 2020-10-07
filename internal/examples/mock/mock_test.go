@@ -29,9 +29,7 @@ type mockClient struct{}
 func (*mockClient) TranslateText(_ context.Context, req *translatepb.TranslateTextRequest, opts ...gax.CallOption) (*translatepb.TranslateTextResponse, error) {
 	resp := &translatepb.TranslateTextResponse{
 		Translations: []*translatepb.Translation{
-			&translatepb.Translation{
-				TranslatedText: "Hello World",
-			},
+			{TranslatedText: "Hello World"},
 		},
 	}
 	return resp, nil
