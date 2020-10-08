@@ -647,6 +647,15 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{false, true, false, true, true, false},
 			},
 		},
+		// Check handling of bools that might be NULL.
+		// There was a bug where logical operators always returned true/false.
+		{
+			`SELECT @x, NOT @x, @x AND TRUE, @x AND FALSE, @x OR TRUE, @x OR FALSE`,
+			map[string]interface{}{"x": (*bool)(nil)},
+			[][]interface{}{
+				{nil, nil, nil, nil, true, nil},
+			},
+		},
 		{
 			`SELECT Name FROM Staff WHERE Cool`,
 			nil,
@@ -675,12 +684,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		{
 			// Expression in SELECT list.
-			// TODO: This is broken against production; seems like BOOL ordering is wrong.
 			`SELECT Name, Cool IS NOT NULL FROM Staff WHERE Tenure/2 > 4 ORDER BY NOT Cool, Name`,
 			nil,
 			[][]interface{}{
+				{"Jack", false},  // Jack has NULL Cool (NULLs always come first in orderings)
 				{"Daniel", true}, // Daniel has Cool==true
-				{"Jack", false},  // Jack has NULL Cool
 				{"Sam", true},    // Sam has Cool==false
 			},
 		},
@@ -767,15 +775,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			// TODO: This is broken against production; ordering of result rows is incorrect
-			`SELECT DISTINCT Cool, Tenure > 8 FROM Staff`,
+			`SELECT DISTINCT Cool, Tenure > 8 FROM Staff ORDER BY Cool`,
 			nil,
 			[][]interface{}{
-				// The non-distinct results are be
+				// The non-distinct results are
 				//          [[false true] [<nil> false] [<nil> true] [false true] [true false]]
-				{false, true},
 				{nil, false},
 				{nil, true},
+				{false, true},
 				{true, false},
 			},
 		},
@@ -901,6 +908,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 	}
+	var failures int
 	for _, test := range tests {
 		stmt := spanner.NewStatement(test.q)
 		stmt.Params = test.params
@@ -909,11 +917,16 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		all, err := slurpRows(t, ri)
 		if err != nil {
 			t.Errorf("Query(%q, %v): %v", test.q, test.params, err)
+			failures++
 			continue
 		}
 		if !reflect.DeepEqual(all, test.want) {
 			t.Errorf("Results from Query(%q, %v) are wrong.\n got %v\nwant %v", test.q, test.params, all, test.want)
+			failures++
 		}
+	}
+	if failures > 0 {
+		t.Logf("%d queries failed", failures)
 	}
 }
 
