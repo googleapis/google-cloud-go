@@ -26,6 +26,7 @@ import (
 	"go/printer"
 	"go/token"
 	"log"
+	"os"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -95,9 +96,10 @@ func (i *item) addChild(c child) {
 var onlyGo = []string{"go"}
 
 type result struct {
-	pages  map[string]*page
-	toc    tableOfContents
-	module *packages.Module
+	pages      map[string]*page
+	toc        tableOfContents
+	module     *packages.Module
+	extraFiles []string
 }
 
 // parse parses the directory into a map of import path -> page and a TOC.
@@ -106,7 +108,7 @@ type result struct {
 // to packages.Load as-is.
 //
 // extraFiles is a list of paths relative to the module root to include.
-func parse(glob string, extraFiles []string) (*result, error) {
+func parse(glob string, optionalExtraFiles []string) (*result, error) {
 	config := &packages.Config{
 		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
 		Tests: true,
@@ -138,6 +140,7 @@ func parse(glob string, extraFiles []string) (*result, error) {
 		// The uncompiled test package shows up as "foo_test [foo.test]".
 		if strings.HasSuffix(id, ".test") ||
 			strings.Contains(id, "internal") ||
+			strings.Contains(id, "third_party") ||
 			(strings.Contains(id, " [") && !strings.Contains(id, "_test [")) {
 			continue
 		}
@@ -175,6 +178,15 @@ func parse(glob string, extraFiles []string) (*result, error) {
 		}
 	}
 	sort.Strings(pkgNames)
+
+	// Filter out extra files that don't exist because some modules don't have a
+	// README.
+	extraFiles := []string{}
+	for _, f := range optionalExtraFiles {
+		if _, err := os.Stat(filepath.Join(module.Dir, f)); err == nil {
+			extraFiles = append(extraFiles, f)
+		}
+	}
 
 	toc := buildTOC(module.Path, pkgNames, extraFiles)
 
@@ -353,9 +365,10 @@ func parse(glob string, extraFiles []string) (*result, error) {
 	}
 
 	return &result{
-		pages:  pages,
-		toc:    toc,
-		module: module,
+		pages:      pages,
+		toc:        toc,
+		module:     module,
+		extraFiles: extraFiles,
 	}, nil
 }
 
