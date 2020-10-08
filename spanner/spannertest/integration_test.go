@@ -409,6 +409,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		"PlayerStats",
 		"JoinA",
 		"JoinB",
+		"SomeStrings",
 	}
 	for _, table := range allTables {
 		dropTable(t, adminClient, table)
@@ -594,6 +595,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		// JoinA and JoinB are "A" and "B" from https://cloud.google.com/spanner/docs/query-syntax#join_types.
 		`CREATE TABLE JoinA ( w INT64, x STRING(MAX) ) PRIMARY KEY (w, x)`,
 		`CREATE TABLE JoinB ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
+		// Some other test tables.
+		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
 	)
 	if err != nil {
 		t.Fatalf("Creating sample tables: %v", err)
@@ -614,6 +617,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{3, "m"}),
 		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{3, "n"}),
 		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{4, "p"}),
+
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{0, "afoo"}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
+		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{3, "bbar"}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
@@ -872,6 +880,24 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 			[][]interface{}{
 				{int64(1)},
+			},
+		},
+		// Regression TEST for mishandling NULLs with LIKE operator.
+		{
+			`SELECT i, str FROM SomeStrings WHERE str LIKE "%bar"`,
+			nil,
+			[][]interface{}{
+				// Does not include [0, "afoo"] or [2, nil].
+				{int64(1), "abar"},
+				{int64(3), "bbar"},
+			},
+		},
+		{
+			`SELECT i, str FROM SomeStrings WHERE str NOT LIKE "%bar"`,
+			nil,
+			[][]interface{}{
+				// Does not include [1, "abar"], [2, nil] or [3, "bbar"].
+				{int64(0), "afoo"},
 			},
 		},
 	}
