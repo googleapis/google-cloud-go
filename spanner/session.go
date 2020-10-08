@@ -33,6 +33,7 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
+	octrace "go.opencensus.io/trace"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
@@ -227,6 +228,11 @@ func (s *session) String() string {
 func (s *session) ping() error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
+
+	// Start parent span that doesn't record.
+	_, span := octrace.StartSpan(ctx, "cloud.google.com/go/spanner.ping", octrace.WithSampler(octrace.NeverSample()))
+	defer span.End()
+
 	// s.getID is safe even when s is invalid.
 	_, err := s.client.ExecuteSql(contextWithOutgoingMetadata(ctx, s.md), &sppb.ExecuteSqlRequest{
 		Session: s.getID(),
@@ -338,7 +344,7 @@ func (s *session) destroy(isExpire bool) bool {
 func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
-	err := s.client.DeleteSession(ctx, &sppb.DeleteSessionRequest{Name: s.getID()})
+	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
 	if err != nil {
 		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
@@ -1495,7 +1501,6 @@ func (hc *healthChecker) worker(i int) {
 		if ws != nil {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 			err := ws.prepareForWrite(ctx)
-			cancel()
 			if err != nil {
 				// Skip handling prepare error, session can be prepared in next
 				// cycle.
@@ -1510,6 +1515,7 @@ func (hc *healthChecker) worker(i int) {
 			hc.pool.mu.Lock()
 			hc.pool.decNumBeingPreparedLocked(ctx)
 			hc.pool.mu.Unlock()
+			cancel()
 			hc.markDone(ws)
 		}
 		rs := getNextForPing()

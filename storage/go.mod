@@ -3,16 +3,13 @@ module cloud.google.com/go/storage
 go 1.11
 
 require (
-	cloud.google.com/go v0.57.0
-	cloud.google.com/go/bigquery v1.8.0 // indirect
+	cloud.google.com/go v0.67.0
 	github.com/golang/protobuf v1.4.2
-	github.com/google/go-cmp v0.4.1
+	github.com/google/go-cmp v0.5.2
 	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/net v0.0.0-20200520182314-0ba52f642ac2 // indirect
-	golang.org/x/oauth2 v0.0.0-20200107190931-bf48bf16ab8d
-	golang.org/x/sys v0.0.0-20200523222454-059865788121 // indirect
-	golang.org/x/tools v0.0.0-20200609095342-308beac2836f // indirect
-	google.golang.org/api v0.26.0
-	google.golang.org/genproto v0.0.0-20200608115520-7c474a2e3482
-	google.golang.org/grpc v1.29.1
+	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
+	golang.org/x/tools v0.0.0-20201008025239-9df69603baec // indirect
+	google.golang.org/api v0.32.0
+	google.golang.org/genproto v0.0.0-20201007142714-5c0e72c5e71e
+	google.golang.org/grpc v1.32.0
 )

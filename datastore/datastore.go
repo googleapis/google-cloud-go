@@ -75,6 +75,12 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
 		}
+		if projectID == DetectProjectID {
+			projectID, _ = detectProjectID(ctx, opts...)
+			if projectID == "" {
+				projectID = "dummy-emulator-datastore-project"
+			}
+		}
 	} else {
 		o = []option.ClientOption{
 			option.WithEndpoint(prodAddr),
@@ -96,16 +102,11 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 
 	if projectID == DetectProjectID {
-		creds, err := transport.Creds(ctx, o...)
+		detected, err := detectProjectID(ctx, opts...)
 		if err != nil {
-			return nil, fmt.Errorf("fetching creds: %v", err)
+			return nil, err
 		}
-
-		if creds.ProjectID == "" {
-			return nil, errors.New("datastore: see the docs on DetectProjectID")
-		}
-
-		projectID = creds.ProjectID
+		projectID = detected
 	}
 
 	if projectID == "" {
@@ -120,6 +121,17 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		client:   newDatastoreClient(connPool, projectID),
 		dataset:  projectID,
 	}, nil
+}
+
+func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
+	creds, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return "", fmt.Errorf("fetching creds: %v", err)
+	}
+	if creds.ProjectID == "" {
+		return "", errors.New("datastore: see the docs on DetectProjectID")
+	}
+	return creds.ProjectID, nil
 }
 
 var (
@@ -364,7 +376,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	v := reflect.ValueOf(dst)
 	multiArgType, _ := checkMultiArg(v)
 
-	// Sanity checks
+	// Confidence checks
 	if multiArgType == multiArgTypeInvalid {
 		return errors.New("datastore: dst has invalid type")
 	}
@@ -409,15 +421,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 	found := resp.Found
 	missing := resp.Missing
-	// Upper bound 100 iterations to prevent infinite loop.
-	// We choose 100 iterations somewhat logically:
-	// Max number of Entities you can request from Datastore is 1,000.
-	// Max size for a Datastore Entity is 1 MiB.
-	// Max request size is 10 MiB, so we assume max response size is also 10 MiB.
-	// 1,000 / 10 = 100.
+	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
+	// number of Entities you can request from Datastore.
 	// Note that if ctx has a deadline, the deadline will probably
-	// be hit before we reach 100 iterations.
-	for i := 0; len(resp.Deferred) > 0 && i < 100; i++ {
+	// be hit before we reach 1000 iterations.
+	for i := 0; len(resp.Deferred) > 0 && i < 1000; i++ {
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {

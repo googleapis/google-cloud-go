@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"math/big"
 	"strings"
 
 	"cloud.google.com/go/internal/testutil"
@@ -27,7 +28,7 @@ import (
 func testEqual(a, b interface{}) bool {
 	return testutil.Equal(a, b,
 		cmp.AllowUnexported(TimestampBound{}, Error{}, TransactionOutcomeUnknownError{},
-			Mutation{}, Row{}, Partition{}, BatchReadOnlyTransactionID{}),
+			Mutation{}, Row{}, Partition{}, BatchReadOnlyTransactionID{}, big.Rat{}, big.Int{}),
 		cmp.FilterPath(func(path cmp.Path) bool {
 			// Ignore Error.state, Error.sizeCache, and Error.unknownFields
 			if strings.HasSuffix(path.GoString(), ".err.(*status.Error).state") {
@@ -39,6 +40,9 @@ func testEqual(a, b interface{}) bool {
 			if strings.HasSuffix(path.GoString(), ".err.(*status.Error).unknownFields") {
 				return true
 			}
+			if strings.HasSuffix(path.GoString(), ".err.(*status.Error).e") {
+				return true
+			}
 			if strings.Contains(path.GoString(), "{*status.Error}.state") {
 				return true
 			}
@@ -46,6 +50,9 @@ func testEqual(a, b interface{}) bool {
 				return true
 			}
 			if strings.Contains(path.GoString(), "{*status.Error}.unknownFields") {
+				return true
+			}
+			if strings.Contains(path.GoString(), "{*status.Error}.e") {
 				return true
 			}
 			return false

@@ -71,10 +71,10 @@ func TestSQL(t *testing.T) {
 					{Name: "Cf", Type: Type{Base: Bytes, Len: 4711}, Position: line(7)},
 					{Name: "Cg", Type: Type{Base: Bytes, Len: MaxLen}, Position: line(8)},
 					{Name: "Ch", Type: Type{Base: Date}, Position: line(9)},
-					{Name: "Ci", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(true), Position: line(10)},
+					{Name: "Ci", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(true)}, Position: line(10)},
 					{Name: "Cj", Type: Type{Array: true, Base: Int64}, Position: line(11)},
 					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
-					{Name: "Cl", Type: Type{Base: Timestamp}, AllowCommitTimestamp: boolAddr(false), Position: line(13)},
+					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -191,6 +191,36 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name: "Cg",
+					Alteration: SetColumnType{
+						Type: Type{Base: String, Len: MaxLen},
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Cg STRING(MAX)",
+			reparseDDL,
+		},
+		{
+			&AlterTable{
+				Name: "Ta",
+				Alteration: AlterColumn{
+					Name: "Ci",
+					Alteration: SetColumnOptions{
+						Options: ColumnOptions{
+							AllowCommitTimestamp: boolAddr(false),
+						},
+					},
+				},
+				Position: line(1),
+			},
+			"ALTER TABLE Ta ALTER COLUMN Ci SET OPTIONS (allow_commit_timestamp = null)",
+			reparseDDL,
+		},
+		{
 			&Delete{
 				Table: "Ta",
 				Where: ComparisonOp{
@@ -206,7 +236,7 @@ func TestSQL(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{ID("A"), ID("B")},
-					From: []SelectFrom{{Table: "Table"}},
+					From: []SelectFrom{SelectFromTable{Table: "Table"}},
 					Where: LogicalOp{
 						LHS: ComparisonOp{
 							LHS: ID("C"),
@@ -220,7 +250,7 @@ func TestSQL(t *testing.T) {
 							RHS: Null,
 						},
 					},
-					ListAliases: []string{"", "banana"},
+					ListAliases: []ID{"", "banana"},
 				},
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
@@ -261,7 +291,7 @@ func TestSQL(t *testing.T) {
 			continue
 		}
 
-		// As a sanity check, confirm that parsing the SQL produces the original input.
+		// As a confidence check, confirm that parsing the SQL produces the original input.
 		data, err := test.reparse(sql)
 		if err != nil {
 			t.Errorf("Reparsing %q: %v", sql, err)

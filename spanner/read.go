@@ -457,7 +457,7 @@ var (
 )
 
 func (d *resumableStreamDecoder) next() bool {
-	retryer := gax.OnCodes([]codes.Code{codes.Unavailable, codes.Internal}, d.backoff)
+	retryer := onCodes(d.backoff, codes.Unavailable, codes.Internal)
 	for {
 		switch d.state {
 		case unConnected:
@@ -669,7 +669,7 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, error) 
 		p.chunked = false
 		// Try to merge first value in r.Values into uncompleted row.
 		last := len(p.row.vals) - 1
-		if last < 0 { // sanity check
+		if last < 0 { // confidence check
 			return nil, errChunkedEmptyRow()
 		}
 		var err error

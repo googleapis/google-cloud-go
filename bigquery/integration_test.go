@@ -954,12 +954,18 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			want:        [][]Value{},
 		},
 		{
-			// Note: currently CTAS returns the rows due to the destination table reference,
-			// but it's not clear that it should.
-			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			// Previously this would return rows due to the destination reference being present
+			// in the job config, but switching to relying on jobs.getQueryResults allows the
+			// service to decide the behavior.
 			description: "ctas ddl",
 			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
-			want:        [][]Value{{int64(17)}},
+			want:        nil,
+		},
+		{
+			// This is a longer running query to ensure probing works as expected.
+			description: "long running",
+			query:       "select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo",
+			want:        [][]Value{{int64(1000000000)}},
 		},
 	}
 	for _, tc := range testCases {
@@ -974,6 +980,86 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
 		})
 	}
+}
+
+func TestIntegration_QueryIterationPager(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	sql := `
+	SELECT
+		num,
+		num * 2 as double
+	FROM
+		UNNEST(GENERATE_ARRAY(1,5)) as num`
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("Read: %v", err)
+	}
+	pager := iterator.NewPager(it, 2, "")
+	rowsFetched := 0
+	for {
+		var rows [][]Value
+		nextPageToken, err := pager.NextPage(&rows)
+		if err != nil {
+			t.Fatalf("NextPage: %v", err)
+		}
+		rowsFetched = rowsFetched + len(rows)
+
+		if nextPageToken == "" {
+			break
+		}
+	}
+
+	wantRows := 5
+	if rowsFetched != wantRows {
+		t.Errorf("Expected %d rows, got %d", wantRows, rowsFetched)
+	}
+}
+
+func TestIntegration_RoutineStoredProcedure(t *testing.T) {
+	// Verifies we're exhibiting documented behavior, where we're expected
+	// to return the last resultset in a script as the response from a script
+	// job.
+	// https://github.com/googleapis/google-cloud-go/issues/1974
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Define a simple stored procedure via DDL.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	sql := fmt.Sprintf(`
+		CREATE OR REPLACE PROCEDURE `+"`%s`"+`(val INT64)
+		BEGIN
+			SELECT CURRENT_TIMESTAMP() as ts;
+			SELECT val * 2 as f2;
+		END`,
+		routine.FullyQualifiedName())
+
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	// Invoke the stored procedure.
+	sql = fmt.Sprintf(`
+	CALL `+"`%s`"+`(5)`,
+		routine.FullyQualifiedName())
+
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("query.Read: %v", err)
+	}
+
+	checkReadAndTotalRows(t,
+		"expect result set from procedure",
+		it, [][]Value{{int64(10)}})
 }
 
 func TestIntegration_InsertAndRead(t *testing.T) {
@@ -2623,6 +2709,29 @@ func TestIntegration_RoutineScalarUDF(t *testing.T) {
 				},
 			},
 		},
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
+func TestIntegration_RoutineJSUDF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a scalar UDF routine via API.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Language: "JAVASCRIPT", Type: "SCALAR_FUNCTION",
+		Description: "capitalizes using javascript",
+		Arguments: []*RoutineArgument{
+			{Name: "instr", Kind: "FIXED_TYPE", DataType: &StandardSQLDataType{TypeKind: "STRING"}},
+		},
+		ReturnType: &StandardSQLDataType{TypeKind: "STRING"},
+		Body:       "return instr.toUpperCase();",
 	})
 	if err != nil {
 		t.Fatalf("Create: %v", err)

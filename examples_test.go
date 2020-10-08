@@ -18,11 +18,10 @@ import (
 	"context"
 	"time"
 
-	"cloud.google.com/go/bigquery"
-	"cloud.google.com/go/datastore"
-	"cloud.google.com/go/pubsub"
+	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
+	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
 )
 
 // To set a timeout for an RPC, use context.WithTimeout.
@@ -31,7 +30,7 @@ func Example_timeout() {
 	// Do not set a timeout on the context passed to NewClient: dialing happens
 	// asynchronously, and the context is used to refresh credentials in the
 	// background.
-	client, err := bigquery.NewClient(ctx, "project-id")
+	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -39,7 +38,8 @@ func Example_timeout() {
 	tctx, cancel := context.WithTimeout(ctx, 10*time.Second)
 	defer cancel() // Always call cancel.
 
-	if err := client.Dataset("new-dataset").Create(tctx, nil); err != nil {
+	req := &secretmanagerpb.DeleteSecretRequest{Name: "projects/project-id/secrets/name"}
+	if err := client.DeleteSecret(tctx, req); err != nil {
 		// TODO: handle error.
 	}
 }
@@ -49,7 +49,7 @@ func Example_cancellation() {
 	ctx := context.Background()
 	// Do not cancel the context passed to NewClient: dialing happens asynchronously,
 	// and the context is used to refresh credentials in the background.
-	client, err := bigquery.NewClient(ctx, "project-id")
+	client, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -58,7 +58,8 @@ func Example_cancellation() {
 
 	// TODO: Make the cancel function available to whatever might want to cancel the
 	// call--perhaps a GUI button.
-	if err := client.Dataset("new-dataset").Create(cctx, nil); err != nil {
+	req := &secretmanagerpb.DeleteSecretRequest{Name: "projects/proj/secrets/name"}
+	if err := client.DeleteSecret(cctx, req); err != nil {
 		// TODO: handle error.
 	}
 }
@@ -69,7 +70,7 @@ func Example_cancellation() {
 // For information on how to create and obtain Application Default Credentials, see
 // https://developers.google.com/identity/protocols/application-default-credentials.
 func Example_applicationDefaultCredentials() {
-	client, err := datastore.NewClient(context.Background(), "project-id")
+	client, err := secretmanager.NewClient(context.Background())
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -84,8 +85,8 @@ func Example_applicationDefaultCredentials() {
 // This example uses the Datastore client, but the same steps apply to
 // the other client libraries underneath this package.
 func Example_credentialsFile() {
-	client, err := datastore.NewClient(context.Background(),
-		"project-id", option.WithCredentialsFile("/path/to/service-account-key.json"))
+	client, err := secretmanager.NewClient(context.Background(),
+		option.WithCredentialsFile("/path/to/service-account-key.json"))
 	if err != nil {
 		// TODO: handle error.
 	}
@@ -97,18 +98,18 @@ func Example_credentialsFile() {
 //
 // The google package in this example is at golang.org/x/oauth2/google.
 //
-// This example uses the PubSub client, but the same steps apply to
+// This example uses the Secret Manager client, but the same steps apply to
 // the other client libraries underneath this package. Note that scopes can be
 // found at https://developers.google.com/identity/protocols/googlescopes, and
 // are also provided in all auto-generated libraries: for example,
-// cloud.google.com/go/pubsub/apiv1 provides DefaultAuthScopes.
+// cloud.google.com/go/secretmanager/apiv1 provides DefaultAuthScopes.
 func Example_credentialsFromJSON() {
 	ctx := context.Background()
-	creds, err := google.CredentialsFromJSON(ctx, []byte("JSON creds"), pubsub.ScopePubSub)
+	creds, err := google.CredentialsFromJSON(ctx, []byte("JSON creds"), secretmanager.DefaultAuthScopes()...)
 	if err != nil {
 		// TODO: handle error.
 	}
-	client, err := pubsub.NewClient(ctx, "project-id", option.WithCredentials(creds))
+	client, err := secretmanager.NewClient(ctx, option.WithCredentials(creds))
 	if err != nil {
 		// TODO: handle error.
 	}

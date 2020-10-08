@@ -315,9 +315,8 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	// wait for receives to happen
 	time.Sleep(100 * time.Millisecond)
 
-	err := client.Close()
-	if err != nil {
-		t.Fatal(err)
+	if err := client.Close(); err != nil {
+		t.Fatalf("Got error while closing client: %v", err)
 	}
 
 	// wait for things to close
@@ -327,7 +326,7 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	case recvErr := <-recvFinished:
 		s, ok := status.FromError(recvErr)
 		if !ok {
-			t.Fatalf("Expected a gRPC failure, got %v", err)
+			t.Fatalf("Expected a gRPC failure, got %v", recvErr)
 		}
 		if s.Code() != codes.Canceled {
 			t.Fatalf("Expected canceled, got %v", s.Code())

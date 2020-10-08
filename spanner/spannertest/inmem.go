@@ -40,7 +40,8 @@ variable and use the regular spanner.NewClient:
 	...
 
 The same server also supports database admin operations for use with
-the cloud.google.com/go/spanner/admin/database/apiv1 package.
+the cloud.google.com/go/spanner/admin/database/apiv1 package. This only
+simulates the existence of a single database; its name is ignored.
 */
 package spannertest
 
@@ -90,7 +91,8 @@ type Server struct {
 type server struct {
 	logf Logger
 
-	db database
+	db    database
+	start time.Time
 
 	mu       sync.Mutex
 	sessions map[string]*session
@@ -175,6 +177,7 @@ func NewServer(laddr string) (*Server, error) {
 			logf: func(format string, args ...interface{}) {
 				log.Printf("spannertest.inmem: "+format, args...)
 			},
+			start:    time.Now(),
 			sessions: make(map[string]*session),
 			lros:     make(map[string]*lro),
 		},
@@ -231,6 +234,16 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	lro.mu.Unlock()
 
 	return lro.State(), nil
+}
+
+func (s *server) GetDatabase(ctx context.Context, req *adminpb.GetDatabaseRequest) (*adminpb.Database, error) {
+	s.logf("GetDatabase(%q)", req.Name)
+
+	return &adminpb.Database{
+		Name:       req.Name,
+		State:      adminpb.Database_READY,
+		CreateTime: timestampProto(s.start),
+	}, nil
 }
 
 // UpdateDDL applies the given DDL to the server.
@@ -552,10 +565,10 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	var ri rowIter
 	if req.KeySet.All {
 		s.logf("Reading all from %s (cols: %v)", req.Table, req.Columns)
-		ri, err = s.db.ReadAll(req.Table, req.Columns, req.Limit)
+		ri, err = s.db.ReadAll(spansql.ID(req.Table), idList(req.Columns), req.Limit)
 	} else {
 		s.logf("Reading rows from %d keys and %d ranges from %s (cols: %v)", len(req.KeySet.Keys), len(req.KeySet.Ranges), req.Table, req.Columns)
-		ri, err = s.db.Read(req.Table, req.Columns, req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
+		ri, err = s.db.Read(spansql.ID(req.Table), idList(req.Columns), req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
 	}
 	if err != nil {
 		return err
@@ -580,7 +593,7 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 			return err
 		}
 		rsm.RowType.Fields = append(rsm.RowType.Fields, &spannerpb.StructType_Field{
-			Name: ci.Name,
+			Name: string(ci.Name),
 			Type: st,
 		})
 	}
@@ -673,19 +686,19 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp
 			return nil, fmt.Errorf("unsupported mutation operation type %T", op)
 		case *spannerpb.Mutation_Insert:
 			ins := op.Insert
-			err := s.db.Insert(tx, ins.Table, ins.Columns, ins.Values)
+			err := s.db.Insert(tx, spansql.ID(ins.Table), idList(ins.Columns), ins.Values)
 			if err != nil {
 				return nil, err
 			}
 		case *spannerpb.Mutation_Update:
 			up := op.Update
-			err := s.db.Update(tx, up.Table, up.Columns, up.Values)
+			err := s.db.Update(tx, spansql.ID(up.Table), idList(up.Columns), up.Values)
 			if err != nil {
 				return nil, err
 			}
 		case *spannerpb.Mutation_InsertOrUpdate:
 			iou := op.InsertOrUpdate
-			err := s.db.InsertOrUpdate(tx, iou.Table, iou.Columns, iou.Values)
+			err := s.db.InsertOrUpdate(tx, spansql.ID(iou.Table), idList(iou.Columns), iou.Values)
 			if err != nil {
 				return nil, err
 			}
@@ -693,7 +706,7 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp
 			del := op.Delete
 			ks := del.KeySet
 
-			err := s.db.Delete(tx, del.Table, ks.Keys, makeKeyRangeList(ks.Ranges), ks.All)
+			err := s.db.Delete(tx, spansql.ID(del.Table), ks.Keys, makeKeyRangeList(ks.Ranges), ks.All)
 			if err != nil {
 				return nil, err
 			}
@@ -748,6 +761,8 @@ func parseQueryParam(v *structpb.Value, typ *spannerpb.Type) (queryParam, error)
 		return queryParam{}, fmt.Errorf("unsupported well-known type value kind %T", v)
 	case *structpb.Value_NullValue:
 		return queryParam{Value: nil}, nil // TODO: set a type?
+	case *structpb.Value_BoolValue:
+		return queryParam{Value: v.BoolValue, Type: boolType}, nil
 	case *structpb.Value_NumberValue:
 		return queryParam{Value: v.NumberValue, Type: float64Type}, nil
 	case *structpb.Value_StringValue:
@@ -901,4 +916,11 @@ func makeKeyRange(r *spannerpb.KeyRange) *keyRange {
 		kr.end = e.EndOpen
 	}
 	return &kr
+}
+
+func idList(ss []string) (ids []spansql.ID) {
+	for _, s := range ss {
+		ids = append(ids, spansql.ID(s))
+	}
+	return
 }

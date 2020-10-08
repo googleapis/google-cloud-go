@@ -1,5 +1,14 @@
 # Changes
 
+## v1.3.0
+- Fix saving behavior for non-struct custom types which implement
+  `PropertyLoadSaver` and for nil interface types.
+- Support `DetectProjectID` when using the emulator.
+
+## v1.2.0
+- Adds Datastore Admin API.
+- Documentation updates.
+
 ## v1.1.0
 
 - DEADLINE_EXCEEDED is now not retried.

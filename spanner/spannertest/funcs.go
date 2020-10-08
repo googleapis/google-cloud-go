@@ -18,6 +18,7 @@ package spannertest
 
 import (
 	"fmt"
+	"math"
 
 	"cloud.google.com/go/spanner/spansql"
 )
@@ -65,6 +66,12 @@ var aggregateFuncs = map[string]aggregateFunc{
 			return n, int64Type, nil
 		},
 	},
+	"MAX": {Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+		return evalMinMax("MAX", false, values, typ)
+	}},
+	"MIN": {Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+		return evalMinMax("MIN", true, values, typ)
+	}},
 	"SUM": {
 		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
 			if typ.Array || !(typ.Base == spansql.Int64 || typ.Base == spansql.Float64) {
@@ -102,4 +109,32 @@ var aggregateFuncs = map[string]aggregateFunc{
 			return sum, typ, nil
 		},
 	},
+}
+
+func evalMinMax(name string, isMin bool, values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+	if typ.Array {
+		return nil, spansql.Type{}, fmt.Errorf("%s only supports non-array arguments, not %s", name, typ.SQL())
+	}
+	if len(values) == 0 {
+		// "Returns NULL if there are zero input rows".
+		return nil, typ, nil
+	}
+
+	// Compute running MIN/MAX.
+	// "Returns NULL if ... expression evaluates to NULL for all rows".
+	var minMax interface{}
+	for _, v := range values {
+		if v == nil {
+			// "Returns the {maximum|minimum} value of non-NULL expressions".
+			continue
+		}
+		if typ.Base == spansql.Float64 && math.IsNaN(v.(float64)) {
+			// "Returns NaN if the input contains a NaN".
+			return v, typ, nil
+		}
+		if minMax == nil || compareVals(v, minMax) < 0 == isMin {
+			minMax = v
+		}
+	}
+	return minMax, typ, nil
 }

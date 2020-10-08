@@ -102,6 +102,15 @@ func TestIntegration_All(t *testing.T) {
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
+	for _, sync := range []bool{false, true} {
+		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
+			testPublishAndReceive(t, client, maxMsgs, sync, 10, 0)
+		}
+
+		// Tests for large messages (larger than the 4MB gRPC limit).
+		testPublishAndReceive(t, client, 0, sync, 1, 5*1024*1024)
+	}
+
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
 	if err != nil {
 		t.Errorf("CreateTopic error: %v", err)
@@ -127,14 +136,6 @@ func TestIntegration_All(t *testing.T) {
 		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
 	}
 
-	for _, sync := range []bool{false, true} {
-		for _, maxMsgs := range []int{0, 3, -1} { // MaxOutstandingMessages = default, 3, unlimited
-			testPublishAndReceive(t, topic, sub, maxMsgs, sync, 10, 0)
-		}
-
-		// Tests for large messages (larger than the 4MB gRPC limit).
-		testPublishAndReceive(t, topic, sub, 0, sync, 1, 5*1024*1024)
-	}
 	if msg, ok := testIAM(ctx, topic.IAM(), "pubsub.topics.get"); !ok {
 		t.Errorf("topic IAM: %s", msg)
 	}
@@ -220,8 +221,32 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 	return metadata.NewOutgoingContext(ctx, metadata.Join(allMDs...))
 }
 
-func testPublishAndReceive(t *testing.T, topic *Topic, sub *Subscription, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
+func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	ctx := context.Background()
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Errorf("CreateTopic error: %v", err)
+	}
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatalf("TopicExists error: %v", err)
+	}
+	if !exists {
+		t.Errorf("topic %v should exist, but it doesn't", topic)
+	}
+
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+		t.Errorf("CreateSub error: %v", err)
+	}
+	exists, err = sub.Exists(ctx)
+	if err != nil {
+		t.Fatalf("SubExists error: %v", err)
+	}
+	if !exists {
+		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+	}
 	var msgs []*Message
 	for i := 0; i < numMsgs; i++ {
 		text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
@@ -735,7 +760,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 }
 
 // NOTE: This test should be skipped by open source contributors. It requires
-// whitelisting, a (gsuite) organization project, and specific permissions.
+// allowlisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1079,7 +1104,7 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 
 func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -1158,9 +1183,8 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
-	t.Skip("Flaky, see https://github.com/googleapis/google-cloud-go/issues/1872")
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -1253,8 +1277,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 
 	select {
 	case <-done:
-	case <-time.After(30 * time.Second):
-		t.Fatal("timed out after 30s waiting for all messages to be received")
+	case <-time.After(60 * time.Second):
+		t.Fatal("timed out after 60s waiting for all messages to be received")
 	}
 
 	mu.Lock()
@@ -1266,9 +1290,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
-	t.Skip("kokoro failing in https://github.com/googleapis/google-cloud-go/issues/1850")
 	ctx := context.Background()
-	client := integrationTestClient(ctx, t)
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -1285,15 +1308,14 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		t.Fatalf("topic %v should exist, but it doesn't", topic)
 	}
 
-	topic.PublishSettings.DelayThreshold = time.Second
+	topic.PublishSettings.BufferedByteLimit = 100
 	topic.EnableMessageOrdering = true
 
 	orderingKey := "some-ordering-key2"
 	// Publish a message that is too large so we'll get an error that
 	// pauses publishing for this ordering key.
 	r := topic.Publish(ctx, &Message{
-		ID:          "1",
-		Data:        bytes.Repeat([]byte("A"), 1e10),
+		Data:        bytes.Repeat([]byte("A"), 1000),
 		OrderingKey: orderingKey,
 	})
 	<-r.ready
@@ -1303,8 +1325,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Publish a normal sized message now, which should fail
 	// since publishing on this ordering key is paused.
 	r = topic.Publish(ctx, &Message{
-		ID:          "2",
-		Data:        []byte("failed message"),
+		Data:        []byte("should fail"),
 		OrderingKey: orderingKey,
 	})
 	<-r.ready
@@ -1315,8 +1336,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
 	topic.ResumePublish(orderingKey)
 	r = topic.Publish(ctx, &Message{
-		ID:          "4",
-		Data:        []byte("normal message"),
+		Data:        []byte("should succeed"),
 		OrderingKey: orderingKey,
 	})
 	<-r.ready
@@ -1661,5 +1681,49 @@ func TestIntegration_RetryPolicy(t *testing.T) {
 	want.RetryPolicy = nil
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestIntegration_DetachSubscription(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t)
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatalf("CreateTopic error: %v", err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+
+	cfg := SubscriptionConfig{
+		Topic: topic,
+	}
+	var sub *Subscription
+	if sub, err = client.CreateSubscription(ctx, subIDs.New(), cfg); err != nil {
+		t.Fatalf("CreateSub error: %v", err)
+	}
+	defer sub.Delete(ctx)
+
+	if _, err := client.DetachSubscription(ctx, sub.String()); err != nil {
+		t.Fatalf("DetachSubscription error: %v", err)
+	}
+
+	newSub := client.Subscription(sub.ID())
+	got, err := newSub.Config(ctx)
+	if err != nil {
+		t.Fatalf("GetSubscription error: %v", err)
+	}
+	want := SubscriptionConfig{
+		Topic:               topic,
+		AckDeadline:         10 * time.Second,
+		RetainAckedMessages: false,
+		RetentionDuration:   defaultRetentionDuration,
+		ExpirationPolicy:    defaultExpirationPolicy,
+		Detached:            true,
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("SubscriptionConfig for detached sub; got: - want: +\n%s", diff)
 	}
 }
