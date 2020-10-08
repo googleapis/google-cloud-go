@@ -972,7 +972,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 			if err != nil {
 				return 0, err
 			}
-			if b {
+			if b != nil && *b {
 				copy(t.rows[i:], t.rows[i+1:])
 				t.rows = t.rows[:len(t.rows)-1]
 				n++
