@@ -141,6 +141,13 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		case spansql.Ne:
 			return compareVals(lhs, rhs) != 0, nil
 		case spansql.Like, spansql.NotLike:
+			if lhs == nil || rhs == nil {
+				// Either operand being NULL should result in NULL.
+				// TODO: Perhaps evalBoolExpr should be merged with evalExpr,
+				// and boolean coercion should happen at the top-most level
+				// so NULLs can be correctly transported.
+				return false, nil
+			}
 			left, ok := lhs.(string)
 			if !ok {
 				// TODO: byte works here too?
