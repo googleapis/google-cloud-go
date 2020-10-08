@@ -113,7 +113,7 @@ func TestGoldens(t *testing.T) {
 	if updateGoldens {
 		os.RemoveAll(goldenDir)
 
-		if err := write(goldenDir, r, extraFiles); err != nil {
+		if err := write(goldenDir, r); err != nil {
 			t.Fatalf("write: %v", err)
 		}
 
@@ -128,7 +128,7 @@ func TestGoldens(t *testing.T) {
 		return
 	}
 
-	if err := write(gotDir, r, extraFiles); err != nil {
+	if err := write(gotDir, r); err != nil {
 		t.Fatalf("write: %v", err)
 	}
 
