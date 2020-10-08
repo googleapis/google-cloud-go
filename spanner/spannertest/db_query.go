@@ -171,10 +171,9 @@ func (wi whereIter) Next() (row, error) {
 		if err != nil {
 			return nil, err
 		}
-		if !b {
-			continue
+		if b != nil && *b {
+			return row, nil
 		}
-		return row, nil
 	}
 }
 
@@ -734,7 +733,11 @@ func (ji *joinIter) Next() (row, error) {
 
 func (ji *joinIter) evalCond() (bool, error) {
 	if ji.sfj.On != nil {
-		return ji.ec.evalBoolExpr(ji.sfj.On)
+		b, err := ji.ec.evalBoolExpr(ji.sfj.On)
+		if err != nil {
+			return false, err
+		}
+		return b != nil && *b, nil
 	}
 
 	if len(ji.sfj.Using) > 0 {
