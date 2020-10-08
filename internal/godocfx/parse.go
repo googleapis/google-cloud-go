@@ -218,7 +218,7 @@ func parse(glob string, optionalExtraFiles []string) (*result, error) {
 			UID:      docPkg.ImportPath,
 			Name:     docPkg.ImportPath,
 			ID:       docPkg.Name,
-			Summary:  docPkg.Doc,
+			Summary:  toHTML(docPkg.Doc),
 			Langs:    onlyGo,
 			Type:     "package",
 			Examples: processExamples(docPkg.Examples, fset),
@@ -455,4 +455,10 @@ func buildTOC(mod string, pkgs []string, extraFiles []string) tableOfContents {
 	}
 
 	return toc
+}
+
+func toHTML(s string) string {
+	buf := &bytes.Buffer{}
+	doc.ToHTML(buf, s, nil)
+	return buf.String()
 }
