@@ -58,10 +58,10 @@ func main() {
 		log.Fatalf("%s missing required argument: module path", os.Args[0])
 	}
 
-	extraFiles := []string{
+	optionalExtraFiles := []string{
 		"README.md",
 	}
-	r, err := parse(flag.Arg(0), extraFiles)
+	r, err := parse(flag.Arg(0), optionalExtraFiles)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -81,12 +81,12 @@ func main() {
 		os.RemoveAll(*outDir)
 	}
 
-	if err := write(*outDir, r, extraFiles); err != nil {
+	if err := write(*outDir, r); err != nil {
 		log.Fatalf("write: %v", err)
 	}
 }
 
-func write(outDir string, r *result, extraFiles []string) error {
+func write(outDir string, r *result) error {
 	if err := os.MkdirAll(outDir, os.ModePerm); err != nil {
 		return fmt.Errorf("os.MkdirAll: %v", err)
 	}
@@ -123,7 +123,7 @@ func write(outDir string, r *result, extraFiles []string) error {
 		}
 	}
 
-	for _, path := range extraFiles {
+	for _, path := range r.extraFiles {
 		src, err := os.Open(filepath.Join(r.module.Dir, path))
 		if err != nil {
 			return err
