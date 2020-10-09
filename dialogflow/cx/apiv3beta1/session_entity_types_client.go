@@ -137,8 +137,7 @@ type SessionEntityTypesClient struct {
 
 // NewSessionEntityTypesClient creates a new session entity types client.
 //
-// Service for managing
-// SessionEntityTypes.
+// Service for managing SessionEntityTypes.
 func NewSessionEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*SessionEntityTypesClient, error) {
 	clientOpts := defaultSessionEntityTypesClientOptions()
 

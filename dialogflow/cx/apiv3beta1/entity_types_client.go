@@ -137,8 +137,7 @@ type EntityTypesClient struct {
 
 // NewEntityTypesClient creates a new entity types client.
 //
-// Service for managing
-// EntityTypes.
+// Service for managing EntityTypes.
 func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*EntityTypesClient, error) {
 	clientOpts := defaultEntityTypesClientOptions()
 
