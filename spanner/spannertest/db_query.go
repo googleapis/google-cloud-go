@@ -87,12 +87,13 @@ type tableIter struct {
 }
 
 func (ti *tableIter) Cols() []colInfo {
-	var cis []colInfo
+	// Build colInfo in the original column order.
+	cis := make([]colInfo, len(ti.t.cols))
 	for _, ci := range ti.t.cols {
 		if ti.alias != "" {
 			ci.Alias = spansql.PathExp{ti.alias, ci.Name}
 		}
-		cis = append(cis, ci)
+		cis[ti.t.origIndex[ci.Name]] = ci
 	}
 	return cis
 }
@@ -101,8 +102,15 @@ func (ti *tableIter) Next() (row, error) {
 	if ti.rowIndex >= len(ti.t.rows) {
 		return nil, io.EOF
 	}
-	res := ti.t.rows[ti.rowIndex]
+	r := ti.t.rows[ti.rowIndex]
 	ti.rowIndex++
+
+	// Build output row in the original column order.
+	res := make(row, len(r))
+	for i, ci := range ti.t.cols {
+		res[ti.t.origIndex[ci.Name]] = r[i]
+	}
+
 	return res, nil
 }
 

@@ -54,10 +54,11 @@ type table struct {
 
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
-	cols     []colInfo
-	colIndex map[spansql.ID]int // col name to index
-	pkCols   int                // number of primary key columns (may be 0)
-	pkDesc   []bool             // whether each primary key column is in descending order
+	cols      []colInfo
+	colIndex  map[spansql.ID]int // col name to index
+	origIndex map[spansql.ID]int // original index of each column upon construction
+	pkCols    int                // number of primary key columns (may be 0)
+	pkDesc    []bool             // whether each primary key column is in descending order
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -259,6 +260,12 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 
 		// TODO: check stmt.Interleave details.
 
+		// Record original column ordering.
+		orig := make(map[spansql.ID]int)
+		for i, col := range stmt.Columns {
+			orig[col.Name] = i
+		}
+
 		// Move primary keys first, preserving their order.
 		pk := make(map[spansql.ID]int)
 		var pkDesc []bool
@@ -272,9 +279,10 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		})
 
 		t := &table{
-			colIndex: make(map[spansql.ID]int),
-			pkCols:   len(pk),
-			pkDesc:   pkDesc,
+			colIndex:  make(map[spansql.ID]int),
+			origIndex: orig,
+			pkCols:    len(pk),
+			pkDesc:    pkDesc,
 		}
 		for _, cd := range stmt.Columns {
 			if st := t.addColumn(cd, true); st.Code() != codes.OK {
@@ -628,6 +636,9 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		Type: cd.Type,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
+	if !newTable {
+		t.origIndex[cd.Name] = len(t.cols) - 1
+	}
 
 	return nil
 }
@@ -649,11 +660,18 @@ func (t *table) dropColumn(name spansql.ID) *status.Status {
 		return status.Newf(codes.InvalidArgument, "can't drop primary key column %q", name)
 	}
 
-	// Remove from cols and colIndex, and renumber colIndex.
+	// Remove from cols and colIndex, and renumber colIndex and origIndex.
 	t.cols = append(t.cols[:ci], t.cols[ci+1:]...)
 	delete(t.colIndex, name)
 	for i, col := range t.cols {
 		t.colIndex[col.Name] = i
+	}
+	pre := t.origIndex[name]
+	delete(t.origIndex, name)
+	for n, i := range t.origIndex {
+		if i > pre {
+			t.origIndex[n]--
+		}
 	}
 
 	// Drop data.
