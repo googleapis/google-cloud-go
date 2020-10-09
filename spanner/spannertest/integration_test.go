@@ -735,22 +735,21 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			// TODO: This is broken against production; column order for * is wrong.
 			`SELECT * FROM Staff WHERE Name LIKE "S%"`,
 			nil,
 			[][]interface{}{
-				// These are returned in table column order.
-				// Note that the primary key columns get sorted first.
-				{"Sam", int64(3), int64(9), false, 1.75, nil, nil, nil},
+				// These are returned in table column order, based on the appearance in the DDL.
+				// Our internal implementation sorts the primary key columns first,
+				// but that should not become visible via SELECT *.
+				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil},
 			},
 		},
 		{
 			// Exactly the same as the previous, except with a redundant ORDER BY clause.
-			// TODO: This is broken against production; column order for * is wrong.
 			`SELECT * FROM Staff WHERE Name LIKE "S%" ORDER BY Name`,
 			nil,
 			[][]interface{}{
-				{"Sam", int64(3), int64(9), false, 1.75, nil, nil, nil},
+				{int64(9), int64(3), "Sam", false, 1.75, nil, nil, nil},
 			},
 		},
 		{
