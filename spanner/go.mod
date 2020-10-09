@@ -8,10 +8,10 @@ require (
 	github.com/google/go-cmp v0.5.2
 	github.com/googleapis/gax-go/v2 v2.0.5
 	go.opencensus.io v0.22.4
-	golang.org/x/tools v0.0.0-20201008025239-9df69603baec // indirect
+	golang.org/x/tools v0.0.0-20201009032223-96877f285f7e // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.32.0
-	google.golang.org/genproto v0.0.0-20201007142714-5c0e72c5e71e
+	google.golang.org/genproto v0.0.0-20201008135153-289734e2e40c
 	google.golang.org/grpc v1.32.0
 	google.golang.org/protobuf v1.25.0
 )
