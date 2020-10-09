@@ -63,6 +63,16 @@ func (p Project) String() string {
 	return string(p)
 }
 
+// LocationPath stores a path consisting of a project and zone.
+type LocationPath struct {
+	Project Project
+	Zone    CloudZone
+}
+
+func (l LocationPath) String() string {
+	return fmt.Sprintf("projects/%s/locations/%s", l.Project, l.Zone)
+}
+
 // TopicID identifies a Google Pub/Sub Lite topic.
 // See https://cloud.google.com/pubsub/lite/docs/topics for more information.
 type TopicID string
@@ -96,6 +106,10 @@ func ParseTopicPath(input string) (TopicPath, error) {
 
 func (t TopicPath) String() string {
 	return fmt.Sprintf("projects/%s/locations/%s/topics/%s", t.Project, t.Zone, t.ID)
+}
+
+func (t TopicPath) Location() LocationPath {
+	return LocationPath{t.Project, t.Zone}
 }
 
 // SubscriptionID identifies a Google Pub/Sub Lite subscription.
@@ -133,4 +147,8 @@ func ParseSubscriptionPath(input string) (SubscriptionPath, error) {
 
 func (s SubscriptionPath) String() string {
 	return fmt.Sprintf("projects/%s/locations/%s/subscriptions/%s", s.Project, s.Zone, s.ID)
+}
+
+func (s SubscriptionPath) Location() LocationPath {
+	return LocationPath{s.Project, s.Zone}
 }
