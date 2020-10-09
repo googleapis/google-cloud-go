@@ -653,7 +653,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			`SELECT @x, NOT @x, @x AND TRUE, @x AND FALSE, @x OR TRUE, @x OR FALSE`,
 			map[string]interface{}{"x": (*bool)(nil)},
 			[][]interface{}{
-				{nil, nil, nil, nil, true, nil},
+				// At the time of writing (9 Oct 2020), the docs are wrong for `NULL AND FALSE`;
+				// the production Spanner returns FALSE, which is what we match.
+				{nil, nil, nil, false, true, nil},
 			},
 		},
 		{
