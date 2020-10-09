@@ -101,23 +101,35 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 		// https://cloud.google.com/spanner/docs/operators#logical_operators
 		switch be.Op {
 		case spansql.And:
-			if lhs == nil || rhs == nil {
-				return nil, nil
-			}
-			b := *lhs && *rhs
-			return &b, nil
-		case spansql.Or:
-			if lhs == nil && rhs != nil && *rhs {
-				return rhs, nil
-			}
-			if rhs == nil && lhs != nil && *lhs {
+			if lhs != nil {
+				if *lhs {
+					// TRUE AND x => x
+					return rhs, nil
+				}
+				// FALSE AND x => FALSE
 				return lhs, nil
 			}
-			if lhs == nil || rhs == nil {
-				return nil, nil
+			// NULL AND FALSE => FALSE
+			if rhs != nil && !*rhs {
+				return rhs, nil
 			}
-			b := *lhs || *rhs
-			return &b, nil
+			// NULL AND TRUE|NULL => NULL
+			return nil, nil
+		case spansql.Or:
+			if lhs != nil {
+				if *lhs {
+					// TRUE OR x => TRUE
+					return lhs, nil
+				}
+				// FALSE OR x => x
+				return rhs, nil
+			}
+			// NULL OR TRUE => TRUE
+			if rhs != nil && *rhs {
+				return rhs, nil
+			}
+			// NULL OR FALSE|NULL => NULL
+			return nil, nil
 		case spansql.Not:
 			if rhs == nil {
 				return nil, nil
