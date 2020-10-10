@@ -409,6 +409,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		"PlayerStats",
 		"JoinA",
 		"JoinB",
+		"JoinC",
+		"JoinD",
 		"SomeStrings",
 	}
 	for _, table := range allTables {
@@ -592,9 +594,12 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			OpponentID INT64,
 			PointsScored INT64,
 		) PRIMARY KEY (LastName, OpponentID)`, // TODO: is this right?
-		// JoinA and JoinB are "A" and "B" from https://cloud.google.com/spanner/docs/query-syntax#join_types.
+		// JoinFoo are from https://cloud.google.com/spanner/docs/query-syntax#join_types.
+		// They aren't consistently named in the docs.
 		`CREATE TABLE JoinA ( w INT64, x STRING(MAX) ) PRIMARY KEY (w, x)`,
 		`CREATE TABLE JoinB ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
+		`CREATE TABLE JoinC ( x INT64, y STRING(MAX) ) PRIMARY KEY (x, y)`,
+		`CREATE TABLE JoinD ( x INT64, z STRING(MAX) ) PRIMARY KEY (x, z)`,
 		// Some other test tables.
 		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
 	)
@@ -617,6 +622,17 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{3, "m"}),
 		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{3, "n"}),
 		spanner.Insert("JoinB", []string{"y", "z"}, []interface{}{4, "p"}),
+
+		// JoinC and JoinD have the same contents as JoinA and JoinB; they have different column names.
+		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{1, "a"}),
+		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{2, "b"}),
+		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{3, "c"}),
+		spanner.Insert("JoinC", []string{"x", "y"}, []interface{}{3, "d"}),
+
+		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{2, "k"}),
+		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{3, "m"}),
+		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{3, "n"}),
+		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{4, "p"}),
 
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{0, "afoo"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
@@ -857,8 +873,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		// Joins.
 		{
-			// TODO: This is broken against production; row ordering is wrong.
-			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y`,
+			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
 			nil,
 			[][]interface{}{
 				{int64(1), "a", nil, nil},
@@ -867,6 +882,19 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(3), "c", int64(3), "n"},
 				{int64(3), "d", int64(3), "m"},
 				{int64(3), "d", int64(3), "n"},
+			},
+		},
+		{
+			// Same as the previous, but using a USING clause instead of an ON clause.
+			`SELECT * FROM JoinC LEFT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", nil},
+				{int64(2), "b", "k"},
+				{int64(3), "c", "m"},
+				{int64(3), "c", "n"},
+				{int64(3), "d", "m"},
+				{int64(3), "d", "n"},
 			},
 		},
 		// Regression test for aggregating no rows; it used to return an empty row.
