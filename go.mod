@@ -18,6 +18,6 @@ require (
 	golang.org/x/text v0.3.3
 	golang.org/x/tools v0.0.0-20201011145850-ed2f50202694
 	google.golang.org/api v0.32.0
-	google.golang.org/genproto v0.0.0-20201008135153-289734e2e40c
+	google.golang.org/genproto v0.0.0-20201009135657-4d944d34d83c
 	google.golang.org/grpc v1.32.0
 )
