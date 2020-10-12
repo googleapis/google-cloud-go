@@ -824,6 +824,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/assuredworkloads/v1beta1/assuredworkloads_gapic.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/accessapproval/v1",
+		pkg:                   "accessapproval",
+		importPath:            "cloud.google.com/go/accessapproval/apiv1",
+		gRPCServiceConfigPath: "google/cloud/accessapproval/v1/accessapproval_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/accessapproval/v1/accessapproval_gapic.yaml",
+		// GA after 2020/11/12
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
