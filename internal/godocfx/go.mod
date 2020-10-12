@@ -3,7 +3,7 @@ module cloud.google.com/go/internal/godocfx
 go 1.15
 
 require (
-	cloud.google.com/go v0.67.0
+	cloud.google.com/go v0.68.0
 	cloud.google.com/go/bigquery v1.8.0
 	cloud.google.com/go/storage v1.11.0
 	github.com/kr/pretty v0.2.1 // indirect
