@@ -1,4 +1,12 @@
 {
+  "cloud.google.com/go/accessapproval/apiv1": {
+    "distribution_name": "cloud.google.com/go/accessapproval/apiv1",
+    "description": "",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/accessapproval/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/analytics/admin/apiv1alpha": {
     "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
     "description": "",
