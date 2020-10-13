@@ -8,16 +8,16 @@ require (
 	github.com/golang/protobuf v1.4.2
 	github.com/google/go-cmp v0.5.2
 	github.com/google/martian/v3 v3.0.0
-	github.com/google/pprof v0.0.0-20200905233945-acf8798be1f7
+	github.com/google/pprof v0.0.0-20201009210932-67992a1a5a35
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/jstemmer/go-junit-report v0.9.1
-	go.opencensus.io v0.22.4
+	go.opencensus.io v0.22.5
 	golang.org/x/lint v0.0.0-20200302205851-738671d3881b
-	golang.org/x/net v0.0.0-20200904194848-62affa334b73
+	golang.org/x/net v0.0.0-20201010224723-4f7140c49acb
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
 	golang.org/x/text v0.3.3
-	golang.org/x/tools v0.0.0-20200904185747-39188db58858
-	google.golang.org/api v0.31.0
-	google.golang.org/genproto v0.0.0-20200904004341-0bd0a958aa1d
-	google.golang.org/grpc v1.31.1
+	golang.org/x/tools v0.0.0-20201013053347-2db1cd791039
+	google.golang.org/api v0.32.0
+	google.golang.org/genproto v0.0.0-20201013134114-7f9ee70cb474
+	google.golang.org/grpc v1.32.0
 )

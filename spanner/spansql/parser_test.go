@@ -33,7 +33,7 @@ func TestParseQuery(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
-					From: []SelectFrom{{
+					From: []SelectFrom{SelectFromTable{
 						Table: "Characters",
 					}},
 					Where: LogicalOp{
@@ -49,7 +49,7 @@ func TestParseQuery(t *testing.T) {
 							RHS: Null,
 						},
 					},
-					ListAliases: []string{"aka"},
+					ListAliases: []ID{"aka"},
 				},
 				Order: []Order{{
 					Expr: ID("Age"),
@@ -68,7 +68,7 @@ func TestParseQuery(t *testing.T) {
 							Args: []Expr{Star},
 						},
 					},
-					From: []SelectFrom{{Table: "Packages"}},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
 				},
 			},
 		},
@@ -76,7 +76,7 @@ func TestParseQuery(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{Star},
-					From: []SelectFrom{{Table: "Packages"}},
+					From: []SelectFrom{SelectFromTable{Table: "Packages"}},
 				},
 			},
 		},
@@ -88,28 +88,105 @@ func TestParseQuery(t *testing.T) {
 						ID("FirstName"),
 						ID("LastName"),
 					},
-					From:        []SelectFrom{{Table: "PlayerStats"}},
+					From:        []SelectFrom{SelectFromTable{Table: "PlayerStats"}},
 					GroupBy:     []Expr{ID("FirstName"), ID("LastName")},
-					ListAliases: []string{"total_points", "", "surname"},
+					ListAliases: []ID{"total_points", "", "surname"},
 				},
 			},
 		},
 		// https://github.com/googleapis/google-cloud-go/issues/1973
-		// except that "l.user_id" is replaced with "l_user_id" since we don't support
-		// the dot operator yet.
-		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l_user_id=@userID`,
+		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
 			Query{
 				Select: Select{
 					List: []Expr{
 						Func{Name: "COUNT", Args: []Expr{Star}},
 					},
-					From: []SelectFrom{{Table: "Lists", Alias: "l"}},
+					From: []SelectFrom{SelectFromTable{Table: "Lists", Alias: "l"}},
 					Where: ComparisonOp{
 						Op:  Eq,
-						LHS: ID("l_user_id"),
+						LHS: PathExp{"l", "user_id"},
 						RHS: Param("userID"),
 					},
-					ListAliases: []string{"count"},
+					ListAliases: []ID{"count"},
+				},
+			},
+		},
+		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS:  SelectFromTable{Table: "A"},
+						RHS:  SelectFromTable{Table: "B"},
+						On: ComparisonOp{
+							Op:  Eq,
+							LHS: PathExp{"A", "w"},
+							RHS: PathExp{"B", "y"},
+						},
+					}},
+				},
+			},
+		},
+		{`SELECT * FROM A INNER JOIN B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+					}},
+				},
+			},
+		},
+		{`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						PathExp{"Roster", "LastName"},
+						PathExp{"TeamMascot", "Mascot"},
+					},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS:  SelectFromTable{Table: "Roster"},
+						RHS:  SelectFromTable{Table: "TeamMascot"},
+						On: ComparisonOp{
+							Op:  Eq,
+							LHS: PathExp{"Roster", "SchoolID"},
+							RHS: PathExp{"TeamMascot", "SchoolID"},
+						},
+					}},
+				},
+			},
+		},
+		// Joins with hints.
+		{`SELECT * FROM A HASH JOIN B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+						Hints: map[string]string{"JOIN_METHOD": "HASH_JOIN"},
+					}},
+				},
+			},
+		},
+		{`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+						Hints: map[string]string{"JOIN_METHOD": "HASH_JOIN"},
+					}},
 				},
 			},
 		},
@@ -292,8 +369,12 @@ func TestParseDDL(t *testing.T) {
 		CREATE TABLE NonScalars (
 			Dummy INT64 NOT NULL, -- dummy comment
 			Ids ARRAY<INT64>, -- comment on ids
+			-- leading multi comment immediately after inline comment
+			BCol BOOL,
 			Names ARRAY<STRING(MAX)>,
 		) PRIMARY KEY (Dummy);
+
+		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
 				Name: "FooBar",
@@ -314,7 +395,7 @@ func TestParseDDL(t *testing.T) {
 				Table:      "FooBar",
 				Columns:    []KeyPart{{Column: "Count", Desc: true}},
 				Unique:     true,
-				Storing:    []string{"Count"},
+				Storing:    []ID{"Count"},
 				Interleave: "SomeTable",
 				Position:   line(8),
 			},
@@ -330,18 +411,18 @@ func TestParseDDL(t *testing.T) {
 					{
 						Name: "Con1",
 						ForeignKey: ForeignKey{
-							Columns:    []string{"System"},
+							Columns:    []ID{"System"},
 							RefTable:   "FooBar",
-							RefColumns: []string{"System"},
+							RefColumns: []ID{"System"},
 							Position:   line(13),
 						},
 						Position: line(13),
 					},
 					{
 						ForeignKey: ForeignKey{
-							Columns:    []string{"System", "RepoPath"},
+							Columns:    []ID{"System", "RepoPath"},
 							RefTable:   "Stranger",
-							RefColumns: []string{"Sys", "RPath"},
+							RefColumns: []ID{"Sys", "RPath"},
 							Position:   line(15),
 						},
 						Position: line(15),
@@ -373,9 +454,9 @@ func TestParseDDL(t *testing.T) {
 				Alteration: AddConstraint{Constraint: TableConstraint{
 					Name: "Con2",
 					ForeignKey: ForeignKey{
-						Columns:    []string{"RepoPath"},
+						Columns:    []ID{"RepoPath"},
 						RefTable:   "Repos",
-						RefColumns: []string{"RPath"},
+						RefColumns: []ID{"RPath"},
 						Position:   line(23),
 					},
 					Position: line(23),
@@ -410,7 +491,8 @@ func TestParseDDL(t *testing.T) {
 				Columns: []ColumnDef{
 					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(34)},
 					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(35)},
-					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(36)},
+					{Name: "BCol", Type: Type{Base: Bool}, Position: line(37)},
+					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(38)},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
 				Position:   line(33),
@@ -431,6 +513,10 @@ func TestParseDDL(t *testing.T) {
 			// These comments shouldn't get combined:
 			{Marker: "--", Start: line(34), End: line(34), Text: []string{"dummy comment"}},
 			{Marker: "--", Start: line(35), End: line(35), Text: []string{"comment on ids"}},
+			{Marker: "--", Isolated: true, Start: line(36), End: line(36), Text: []string{"leading multi comment immediately after inline comment"}},
+
+			// Comment after everything else.
+			{Marker: "--", Isolated: true, Start: line(41), End: line(41), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -502,16 +588,19 @@ func TestParseDDL(t *testing.T) {
 	} else if com.Text[0] != "This is another comment." {
 		t.Errorf("InlineComment returned the wrong comment (%q) for FooBar.RepoPath", com.Text[0])
 	}
-	// There are no leading comments on the columns of NonScalars,
+	// There are no leading comments on the columns of NonScalars (except for BCol),
 	// even though there's often a comment on the previous line.
 	for _, cd := range tableByName(t, ddl, "NonScalars").Columns {
+		if cd.Name == "BCol" {
+			continue
+		}
 		if com := ddl.LeadingComment(cd); com != nil {
 			t.Errorf("Leading comment found for NonScalars.%s: %v", cd.Name, com)
 		}
 	}
 }
 
-func tableByName(t *testing.T, ddl *DDL, name string) *CreateTable {
+func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 	t.Helper()
 	for _, stmt := range ddl.List {
 		if ct, ok := stmt.(*CreateTable); ok && ct.Name == name {

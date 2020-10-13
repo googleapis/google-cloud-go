@@ -197,6 +197,7 @@ const (
 	float64Token
 	stringToken
 	bytesToken
+	unquotedID
 	quotedID
 )
 
@@ -735,6 +736,12 @@ func (p *parser) skipSpace() bool {
 			p.line++
 		}
 		i += ti + len(term)
+
+		// A non-isolated comment is always complete and doesn't get
+		// combined with any future comment.
+		if !com.isolated {
+			com = nil
+		}
 	}
 	p.s = p.s[i:]
 	p.offset += i
@@ -746,16 +753,30 @@ func (p *parser) skipSpace() bool {
 
 // advance moves the parser to the next token, which will be available in p.cur.
 func (p *parser) advance() {
+	prevID := p.cur.typ == quotedID || p.cur.typ == unquotedID
+
 	p.skipSpace()
 	if p.done {
 		return
 	}
+
+	// If the previous token was an identifier (quoted or unquoted),
+	// the next token being a dot means this is a path expression (not a number).
+	if prevID && p.s[0] == '.' {
+		p.cur.err = nil
+		p.cur.line, p.cur.offset = p.line, p.offset
+		p.cur.typ = unknownToken
+		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
+		return
+	}
+
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '*':
+	case ',', ';', '(', ')', '{', '}', '*':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		p.offset++
@@ -800,6 +821,7 @@ func (p *parser) advance() {
 			i++
 		}
 		p.cur.value, p.s = p.s[:i], p.s[i:]
+		p.cur.typ = unquotedID
 		p.offset += i
 		return
 	}
@@ -1496,8 +1518,8 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 	return fk, nil
 }
 
-func (p *parser) parseColumnNameList() ([]string, *parseError) {
-	var list []string
+func (p *parser) parseColumnNameList() ([]ID, *parseError) {
+	var list []ID
 	err := p.parseCommaList(func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
@@ -1680,24 +1702,36 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	sel.List, sel.ListAliases = list, aliases
 
 	if p.eat("FROM") {
+		padTS := func() {
+			for len(sel.TableSamples) < len(sel.From) {
+				sel.TableSamples = append(sel.TableSamples, nil)
+			}
+		}
+
 		for {
 			from, err := p.parseSelectFrom()
 			if err != nil {
 				return Select{}, err
 			}
+			sel.From = append(sel.From, from)
+
 			if p.sniff("TABLESAMPLE") {
 				ts, err := p.parseTableSample()
 				if err != nil {
 					return Select{}, err
 				}
-				from.TableSample = &ts
+				padTS()
+				sel.TableSamples[len(sel.TableSamples)-1] = &ts
 			}
-			sel.From = append(sel.From, from)
 
 			if p.eat(",") {
 				continue
 			}
 			break
+		}
+
+		if sel.TableSamples != nil {
+			padTS()
 		}
 	}
 
@@ -1722,9 +1756,9 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	return sel, nil
 }
 
-func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
+func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 	var list []Expr
-	var aliases []string // Only set if any aliases are seen.
+	var aliases []ID // Only set if any aliases are seen.
 	padAliases := func() {
 		for len(aliases) < len(list) {
 			aliases = append(aliases, "")
@@ -1761,23 +1795,155 @@ func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
 }
 
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
-	// TODO: support more than a single table name.
+	debugf("parseSelectFrom: %v", p)
+
+	/*
+		from_item: {
+			table_name [ table_hint_expr ] [ [ AS ] alias ] |
+			join |
+			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
+			field_path |
+			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
+				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
+			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
+		}
+
+		join:
+			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
+				[ ON bool_expression | USING ( join_column [, ...] ) ]
+
+		join_type:
+			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
+	*/
+
+	// A join starts with a from_item, so that can't be detected in advance.
+	// TODO: Support more than table name or join.
+	// TODO: Verify associativity of multile joins.
+
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return SelectFrom{}, err
+		return nil, err
 	}
-	sf := SelectFrom{Table: tname}
+	sf := SelectFromTable{Table: tname}
 
 	// TODO: The "AS" keyword is optional.
 	if p.eat("AS") {
 		alias, err := p.parseAlias()
 		if err != nil {
-			return SelectFrom{}, err
+			return nil, err
 		}
 		sf.Alias = alias
 	}
 
-	return sf, nil
+	// Look ahead to see if this is a join.
+	tok := p.next()
+	if tok.err != nil {
+		p.back()
+		return sf, nil
+	}
+	var hashJoin bool // Special case for "HASH JOIN" syntax.
+	if tok.value == "HASH" {
+		hashJoin = true
+		tok = p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+	}
+	var jt JoinType
+	if tok.value == "JOIN" {
+		// This is implicitly an inner join.
+		jt = InnerJoin
+	} else if j, ok := joinKeywords[tok.value]; ok {
+		jt = j
+		switch jt {
+		case FullJoin, LeftJoin, RightJoin:
+			// These join types are implicitly "outer" joins,
+			// so the "OUTER" keyword is optional.
+			p.eat("OUTER")
+		}
+		if err := p.expect("JOIN"); err != nil {
+			return nil, err
+		}
+	} else {
+		p.back()
+		return sf, nil
+	}
+
+	sfj := SelectFromJoin{
+		Type: jt,
+		LHS:  sf,
+	}
+	setHint := func(k, v string) {
+		if sfj.Hints == nil {
+			sfj.Hints = make(map[string]string)
+		}
+		sfj.Hints[k] = v
+	}
+	if hashJoin {
+		setHint("JOIN_METHOD", "HASH_JOIN")
+	}
+
+	if p.eat("@") {
+		if err := p.expect("{"); err != nil {
+			return nil, err
+		}
+		for {
+			if p.sniff("}") {
+				break
+			}
+			tok := p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			k := tok.value
+			if err := p.expect("="); err != nil {
+				return nil, err
+			}
+			tok = p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			v := tok.value
+			setHint(k, v)
+			if !p.eat(",") {
+				break
+			}
+		}
+		if err := p.expect("}"); err != nil {
+			return nil, err
+		}
+	}
+
+	sfj.RHS, err = p.parseSelectFrom()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.eat("ON") {
+		sfj.On, err = p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if p.eat("USING") {
+		if sfj.On != nil {
+			return nil, p.errorf("join may not have both ON and USING clauses")
+		}
+		sfj.Using, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return sfj, nil
+}
+
+var joinKeywords = map[string]JoinType{
+	"INNER": InnerJoin,
+	"CROSS": CrossJoin,
+	"FULL":  FullJoin,
+	"LEFT":  LeftJoin,
+	"RIGHT": RightJoin,
 }
 
 func (p *parser) parseTableSample() (TableSample, *parseError) {
@@ -2211,8 +2377,6 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return StringLiteral(tok.string), nil
 	case bytesToken:
 		return BytesLiteral(tok.string), nil
-	case quotedID: // Unquoted identifers are handled below.
-		return ID(tok.string), nil
 	}
 
 	// Handle parenthesized expressions.
@@ -2264,7 +2428,40 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	if strings.HasPrefix(tok.value, "@") {
 		return Param(tok.value[1:]), nil
 	}
-	return ID(tok.value), nil
+
+	// Only thing left is a path expression or standalone identifier.
+	p.back()
+	pe, err := p.parsePathExp()
+	if err != nil {
+		return nil, err
+	}
+	if len(pe) == 1 {
+		return pe[0], nil // identifier
+	}
+	return pe, nil
+}
+
+func (p *parser) parsePathExp() (PathExp, *parseError) {
+	var pe PathExp
+	for {
+		tok := p.next()
+		if tok.err != nil {
+			return nil, tok.err
+		}
+		switch tok.typ {
+		case quotedID:
+			pe = append(pe, ID(tok.string))
+		case unquotedID:
+			pe = append(pe, ID(tok.value))
+		default:
+			// TODO: Is this correct?
+			return nil, p.errorf("expected identifer")
+		}
+		if !p.eat(".") {
+			break
+		}
+	}
+	return pe, nil
 }
 
 func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
@@ -2279,13 +2476,13 @@ func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 	return be, nil
 }
 
-func (p *parser) parseAlias() (string, *parseError) {
+func (p *parser) parseAlias() (ID, *parseError) {
 	// The docs don't specify what lexical token is valid for an alias,
 	// but it seems likely that it is an identifier.
 	return p.parseTableOrIndexOrColumnName()
 }
 
-func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
+func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
 		table_name and column_name and index_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
@@ -2295,11 +2492,15 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
 	if tok.err != nil {
 		return "", tok.err
 	}
-	if tok.typ == quotedID {
-		return tok.string, nil
+	switch tok.typ {
+	case quotedID:
+		return ID(tok.string), nil
+	case unquotedID:
+		// TODO: enforce restrictions
+		return ID(tok.value), nil
+	default:
+		return "", p.errorf("expected identifier")
 	}
-	// TODO: enforce restrictions
-	return tok.value, nil
 }
 
 func (p *parser) parseOnDelete() (OnDelete, *parseError) {

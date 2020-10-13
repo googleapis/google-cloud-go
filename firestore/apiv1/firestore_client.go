@@ -180,8 +180,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		PartitionQuery: []gax.CallOption{},
-		Write:          []gax.CallOption{},
+		PartitionQuery: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		Write: []gax.CallOption{},
 		Listen: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{

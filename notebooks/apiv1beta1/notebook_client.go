@@ -122,7 +122,7 @@ type NotebookClient struct {
 
 // NewNotebookClient creates a new notebook service client.
 //
-// API service for Cloud AI Platform Notebooks.
+// API v1beta1 service for Cloud AI Platform Notebooks.
 func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*NotebookClient, error) {
 	clientOpts := defaultNotebookClientOptions()
 

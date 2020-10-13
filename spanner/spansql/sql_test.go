@@ -236,7 +236,7 @@ func TestSQL(t *testing.T) {
 			Query{
 				Select: Select{
 					List: []Expr{ID("A"), ID("B")},
-					From: []SelectFrom{{Table: "Table"}},
+					From: []SelectFrom{SelectFromTable{Table: "Table"}},
 					Where: LogicalOp{
 						LHS: ComparisonOp{
 							LHS: ID("C"),
@@ -250,7 +250,7 @@ func TestSQL(t *testing.T) {
 							RHS: Null,
 						},
 					},
-					ListAliases: []string{"", "banana"},
+					ListAliases: []ID{"", "banana"},
 				},
 				Order: []Order{{Expr: ID("OCol"), Desc: true}},
 				Limit: IntegerLiteral(1000),
@@ -291,7 +291,7 @@ func TestSQL(t *testing.T) {
 			continue
 		}
 
-		// As a sanity check, confirm that parsing the SQL produces the original input.
+		// As a confidence check, confirm that parsing the SQL produces the original input.
 		data, err := test.reparse(sql)
 		if err != nil {
 			t.Errorf("Reparsing %q: %v", sql, err)
