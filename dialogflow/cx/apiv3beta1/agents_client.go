@@ -360,7 +360,7 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentReq
 	return err
 }
 
-// ExportAgent exports the specified agent to a ZIP file.
+// ExportAgent exports the specified agent to a binary file.
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -384,10 +384,10 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentReq
 	}, nil
 }
 
-// RestoreAgent restores the specified agent from a ZIP file.
+// RestoreAgent restores the specified agent from a binary file.
 //
-// Note that all existing intents, intent routes, entity types, pages and
-// webhooks in the agent will be deleted.
+// Replaces the current agent with a new one. Note that all existing resources
+// in agent (e.g. intents, entity types, flows) will be removed.
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
