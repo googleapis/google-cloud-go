@@ -887,6 +887,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/websecurityscanner/apiv1": {
+    "distribution_name": "cloud.google.com/go/websecurityscanner/apiv1",
+    "description": "Web Security Scanner API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/workflows/apiv1beta": {
     "distribution_name": "cloud.google.com/go/workflows/apiv1beta",
     "description": "",
