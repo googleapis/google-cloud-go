@@ -13,7 +13,7 @@
 // limitations under the License.
 
 /*
-Package logging contains a Stackdriver Logging client suitable for writing logs.
+Package logging contains a Cloud Logging client suitable for writing logs.
 For reading logs, and working with sinks, metrics and monitored resources,
 see package cloud.google.com/go/logging/logadmin.
 
@@ -23,7 +23,7 @@ See https://cloud.google.com/logging/docs/api/v2/ for an introduction to the API
 
 Creating a Client
 
-Use a Client to interact with the Stackdriver Logging API.
+Use a Client to interact with the Cloud Logging API.
 
 	// Create a Client
 	ctx := context.Background()
@@ -36,7 +36,7 @@ Use a Client to interact with the Stackdriver Logging API.
 Basic Usage
 
 For most use cases, you'll want to add log entries to a buffer to be periodically
-flushed (automatically and asynchronously) to the Stackdriver Logging service.
+flushed (automatically and asynchronously) to the Cloud Logging service.
 
 	// Initialize a logger
 	lg := client.Logger("my-log")
@@ -47,7 +47,7 @@ flushed (automatically and asynchronously) to the Stackdriver Logging service.
 
 Closing your Client
 
-You should call Client.Close before your program exits to flush any buffered log entries to the Stackdriver Logging service.
+You should call Client.Close before your program exits to flush any buffered log entries to the Cloud Logging service.
 
 	// Close the client when finished.
 	err = client.Close()
@@ -106,7 +106,7 @@ An Entry may have one of a number of severity levels associated with it.
 
 Viewing Logs
 
-You can view Stackdriver logs for projects at
+You can view Cloud logs for projects at
 https://console.cloud.google.com/logs/viewer. Use the dropdown at the top left. When
 running from a Google Cloud Platform VM, select "GCE VM Instance". Otherwise, select
 "Google Project" and then the project ID. Logs for organizations, folders and billing

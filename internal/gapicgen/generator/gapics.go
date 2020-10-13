@@ -253,7 +253,7 @@ var manualEntries = []manifestEntry{
 	},
 	{
 		DistributionName:  "cloud.google.com/go/logging",
-		Description:       "Stackdriver Logging API",
+		Description:       "Cloud Logging API",
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/logging",
