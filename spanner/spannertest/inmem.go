@@ -17,7 +17,7 @@ limitations under the License.
 /*
 Package spannertest contains test helpers for working with Cloud Spanner.
 
-This package is EXPERIMENTAL, and is lacking many features. See the README.md
+This package is EXPERIMENTAL, and is lacking several features. See the README.md
 file in this directory for more details.
 
 In-memory fake
