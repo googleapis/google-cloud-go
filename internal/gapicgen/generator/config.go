@@ -833,6 +833,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2020/11/12
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/websecurityscanner/v1",
+		pkg:                   "websecurityscanner",
+		importPath:            "cloud.google.com/go/websecurityscanner/apiv1",
+		gRPCServiceConfigPath: "google/cloud/websecurityscanner/v1/websecurityscanner_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/websecurityscanner/v1/websecurityscanner_v1.yaml",
+		// GA after 2020/13/12
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
