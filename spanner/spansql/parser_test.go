@@ -225,7 +225,10 @@ func TestParseExpr(t *testing.T) {
 		{`4e2`, FloatLiteral(4e2)},
 		{`X + Y * Z`, ArithOp{LHS: ID("X"), Op: Add, RHS: ArithOp{LHS: ID("Y"), Op: Mul, RHS: ID("Z")}}},
 		{`X + Y + Z`, ArithOp{LHS: ArithOp{LHS: ID("X"), Op: Add, RHS: ID("Y")}, Op: Add, RHS: ID("Z")}},
-		{`X * -Y`, ArithOp{LHS: ID("X"), Op: Mul, RHS: ArithOp{Op: Neg, RHS: ID("Y")}}},
+		{`+X * -Y`, ArithOp{LHS: ArithOp{Op: Plus, RHS: ID("X")}, Op: Mul, RHS: ArithOp{Op: Neg, RHS: ID("Y")}}},
+		// Don't require space around +/- operators.
+		{`ID+100`, ArithOp{LHS: ID("ID"), Op: Add, RHS: IntegerLiteral(100)}},
+		{`ID-100`, ArithOp{LHS: ID("ID"), Op: Sub, RHS: IntegerLiteral(100)}},
 		{`ID&0x3fff`, ArithOp{LHS: ID("ID"), Op: BitAnd, RHS: IntegerLiteral(0x3fff)}},
 		{`SHA1("Hello" || " " || "World")`, Func{Name: "SHA1", Args: []Expr{ArithOp{LHS: ArithOp{LHS: StringLiteral("Hello"), Op: Concat, RHS: StringLiteral(" ")}, Op: Concat, RHS: StringLiteral("World")}}}},
 		{`Count > 0`, ComparisonOp{LHS: ID("Count"), Op: Gt, RHS: IntegerLiteral(0)}},
@@ -322,8 +325,8 @@ func TestParseExpr(t *testing.T) {
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("[%s]: incorrect parse\n got <%T> %#v\nwant <%T> %#v", test.in, got, got, test.want, test.want)
 		}
-		if p.s != "" {
-			t.Errorf("[%s]: Unparsed [%s]", test.in, p.s)
+		if rem := p.Rem(); rem != "" {
+			t.Errorf("[%s]: Unparsed [%s]", test.in, rem)
 		}
 	}
 }
@@ -613,12 +616,16 @@ func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 
 func TestParseFailures(t *testing.T) {
 	expr := func(p *parser) error {
-		_, err := p.parseExpr()
-		return err
+		if _, pe := p.parseExpr(); pe != nil {
+			return pe
+		}
+		return nil
 	}
 	query := func(p *parser) error {
-		_, err := p.parseQuery()
-		return err
+		if _, pe := p.parseQuery(); pe != nil {
+			return pe
+		}
+		return nil
 	}
 
 	tests := []struct {
