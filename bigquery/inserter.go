@@ -19,15 +19,25 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"cloud.google.com/go/internal/trace"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
 )
 
 // NoDedupeID indicates a streaming insert row wants to opt out of best-effort
 // deduplication.
 // It is EXPERIMENTAL and subject to change or removal without notice.
 const NoDedupeID = "NoDedupeID"
+
+// ErrRequestMalformed is surfaced for cases where the response from the backend
+// indicates a generic error, but is unstructured and ambiguous.
+//
+// For streaming insert requests, this generally indicates that either the row
+// data is excessively large, or that the batch factor is too high (too many rows
+// sent as part of a single insert).
+var ErrRequestMalformed = fmt.Errorf("Your client has issued a malformed or illegal request.")
 
 // An Inserter does streaming inserts into a BigQuery table.
 // It is safe for concurrent use.
@@ -186,6 +196,11 @@ func (u *Inserter) putMulti(ctx context.Context, src []ValueSaver) error {
 		return err
 	})
 	if err != nil {
+		// Attempt to intercept an unstructured error, and supply a more reasonable error to guide users.
+		e, ok := err.(*googleapi.Error)
+		if ok && e.Code == 400 && strings.Contains(e.Body, "Your client has issued a malformed or illegal request.") {
+			return ErrRequestMalformed
+		}
 		return err
 	}
 	return handleInsertErrors(res.InsertErrors, req.Rows)

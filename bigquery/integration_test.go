@@ -1062,6 +1062,65 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		it, [][]Value{{int64(10)}})
 }
 
+func TestIntegration_InsertErrors(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	ins := table.Inserter()
+	var saverRows []*ValuesSaver
+
+	// badSaver represents an excessively sized (>5Mb) row message for insertion.
+	badSaver := &ValuesSaver{
+		Schema:   schema,
+		InsertID: NoDedupeID,
+		Row:      []Value{strings.Repeat("X", 5242881), []Value{int64(1)}, []Value{true}},
+	}
+
+	// Case 1: A single oversized row.
+	saverRows = append(saverRows, badSaver)
+	err := ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted row size error, got successful insert.")
+	}
+	if _, ok := err.(PutMultiError); !ok {
+		t.Errorf("Wanted PutMultiError, but wasn't: %v", err)
+	}
+	got := putError(err)
+	want := "Maximum allowed row size exceeded"
+	if !strings.Contains(got, want) {
+		t.Errorf("Error didn't contain expected substring (%s): %s", want, got)
+	}
+	// Case 2: The overall request size > 10MB)
+	// 2x 5MB rows
+	saverRows = append(saverRows, badSaver)
+	err = ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted structured size error, got successful insert.")
+	}
+	e, ok := err.(*googleapi.Error)
+	if !ok {
+		t.Errorf("Wanted googleapi.Error, got: %v", err)
+	}
+	want = "Request payload size exceeds the limit"
+	if !strings.Contains(e.Message, want) {
+		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	}
+	// Case 3: Very Large Request
+	// Request so large it gets rejected by an intermediate (4x 5MB rows)
+	saverRows = append(saverRows, saverRows...)
+	err = ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted error, got successful insert.")
+	}
+	if err != ErrRequestMalformed {
+		t.Errorf("Wanted ErrRequestMalformed, got: %v", err)
+	}
+}
+
 func TestIntegration_InsertAndRead(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
