@@ -636,26 +636,143 @@ func (d *database) evalSelectFrom(ec evalContext, sf spansql.SelectFrom) (evalCo
 			return ec, nil, nil, err
 		}
 
-		// Construct a merged evalContext.
-		// TODO: Remove ambiguous names here? Or catch them when evaluated?
-		ec.cols = append(append([]colInfo(nil), lhsEC.cols...), rhsEC.cols...) // force a copy
-		ec.row = make(row, len(ec.cols))                                       // row is used as scratch space in joinIter.Next.
-		// TODO: aliases might need work?
-
-		return ec, &joinIter{
-			sfj: sf,
-			ec:  ec,
-
-			lhs:     lhsRaw,
-			rhsOrig: rhsRaw,
-		}, func() {}, nil
+		ji, ec, err := newJoinIter(lhsRaw, rhsRaw, lhsEC, rhsEC, sf)
+		if err != nil {
+			return ec, nil, nil, err
+		}
+		return ec, ji, func() {}, nil
 	}
 }
 
+func newJoinIter(lhs, rhs *rawIter, lhsEC, rhsEC evalContext, sfj spansql.SelectFromJoin) (*joinIter, evalContext, error) {
+	if sfj.On != nil && len(sfj.Using) > 0 {
+		return nil, evalContext{}, fmt.Errorf("JOIN may not have both ON and USING clauses")
+	}
+	if sfj.On == nil && len(sfj.Using) == 0 && sfj.Type != spansql.CrossJoin {
+		// TODO: This isn't correct for joining against a non-table.
+		return nil, evalContext{}, fmt.Errorf("non-CROSS JOIN must have ON or USING clause")
+	}
+
+	// Start with the context from the LHS (aliases and params should be the same on both sides).
+	ji := &joinIter{
+		jt: sfj.Type,
+		ec: lhsEC,
+
+		lhs:     lhs,
+		rhsOrig: rhs,
+	}
+	ji.ec.cols, ji.ec.row = nil, nil
+
+	// Construct a merged evalContext, and prepare the join condition evaluation.
+	// TODO: Remove ambiguous names here? Or catch them when evaluated?
+	// TODO: aliases might need work?
+	if len(sfj.Using) == 0 {
+		ji.prepNonUsing(sfj.On, lhsEC, rhsEC)
+	} else {
+		if err := ji.prepUsing(sfj.Using, lhsEC, rhsEC); err != nil {
+			return nil, evalContext{}, err
+		}
+	}
+
+	return ji, ji.ec, nil
+}
+
+// prepNonUsing configures the joinIter to evaluate with an ON clause or no join clause.
+// The arg is nil in the latter case.
+func (ji *joinIter) prepNonUsing(on spansql.BoolExpr, lhsEC, rhsEC evalContext) {
+	// Having ON or no clause results in the full set of columns from both sides.
+	// Force a copy.
+	ji.ec.cols = append(ji.ec.cols, lhsEC.cols...)
+	ji.ec.cols = append(ji.ec.cols, rhsEC.cols...)
+	ji.ec.row = make(row, len(ji.ec.cols))
+
+	ji.cond = func(lhs, rhs row) (bool, error) {
+		copy(ji.ec.row, lhs)
+		copy(ji.ec.row[len(lhs):], rhs)
+		if on == nil {
+			// No condition; all rows match.
+			return true, nil
+		}
+		b, err := ji.ec.evalBoolExpr(on)
+		if err != nil {
+			return false, err
+		}
+		return b != nil && *b, nil
+	}
+}
+
+func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext) error {
+	// Having a USING clause results in the set of named columns once,
+	// followed by the unnamed columns from both sides.
+
+	// lhsUsing is the column indexes in the LHS that the USING clause references.
+	// rhsUsing is similar.
+	// lhsNotUsing/rhsNotUsing are the complement.
+	var lhsUsing, rhsUsing []int
+	var lhsNotUsing, rhsNotUsing []int
+	// lhsUsed, rhsUsed are the set of column indexes in lhsUsing/rhsUsing.
+	lhsUsed, rhsUsed := make(map[int]bool), make(map[int]bool)
+	for _, id := range using {
+		lhsi, err := lhsEC.resolveColumnIndex(id)
+		if err != nil {
+			return err
+		}
+		lhsUsing = append(lhsUsing, lhsi)
+		lhsUsed[lhsi] = true
+
+		rhsi, err := rhsEC.resolveColumnIndex(id)
+		if err != nil {
+			return err
+		}
+		rhsUsing = append(rhsUsing, rhsi)
+		rhsUsed[rhsi] = true
+
+		// TODO: Should this hide or merge column aliases?
+		ji.ec.cols = append(ji.ec.cols, lhsEC.cols[lhsi])
+	}
+	for i, col := range lhsEC.cols {
+		if !lhsUsed[i] {
+			ji.ec.cols = append(ji.ec.cols, col)
+			lhsNotUsing = append(lhsNotUsing, i)
+		}
+	}
+	for i, col := range rhsEC.cols {
+		if !rhsUsed[i] {
+			ji.ec.cols = append(ji.ec.cols, col)
+			rhsNotUsing = append(rhsNotUsing, i)
+		}
+	}
+	ji.ec.row = make(row, len(ji.ec.cols))
+
+	ji.cond = func(lhs, rhs row) (bool, error) {
+		for i, lhsi := range lhsUsing {
+			rhsi := rhsUsing[i]
+			if compareVals(lhs[lhsi], rhs[rhsi]) != 0 {
+				return false, nil
+			}
+			ji.ec.row[i] = lhs[lhsi]
+		}
+
+		// The loop above copied the values from the common columns into ji.ec.row already;
+		// we just need to copy the remaining values.
+		j := len(lhsUsing)
+		for _, i := range lhsNotUsing {
+			ji.ec.row[j] = lhs[i]
+			j++
+		}
+		for _, i := range rhsNotUsing {
+			ji.ec.row[j] = rhs[i]
+			j++
+		}
+
+		return true, nil
+	}
+	return nil
+}
+
 type joinIter struct {
-	sfj     spansql.SelectFromJoin // TODO: or less of this?
-	ec      evalContext            // combined context
-	scratch row                    // used for synthetic lhs+rhs row
+	jt spansql.JoinType
+	ec evalContext // combined context
 
 	// lhs is scanned (consumed), but rhs is cloned for each lhs row.
 	lhs, rhsOrig *rawIter
@@ -663,6 +780,10 @@ type joinIter struct {
 	lhsRow row      // current row from lhs, or nil if it is time to advance
 	rhs    *rawIter // current clone of rhs
 	any    bool     // true if any rhs rows have matched lhsRow
+
+	// cond reports whether the LHS and RHS rows "join" (e.g. the ON clause is true).
+	// It populates ec.row with the output.
+	cond func(lhs, rhs row) (bool, error)
 }
 
 func (ji *joinIter) Cols() []colInfo { return ji.ec.cols }
@@ -680,8 +801,8 @@ func (ji *joinIter) nextLeft() error {
 
 func (ji *joinIter) Next() (row, error) {
 	// TODO: More join types.
-	if ji.sfj.Type != spansql.LeftJoin {
-		return nil, fmt.Errorf("TODO: can't yet evaluate join of type %v in %s", ji.sfj.Type, ji.sfj.SQL())
+	if ji.jt != spansql.LeftJoin {
+		return nil, fmt.Errorf("TODO: can't yet evaluate join of type %v", ji.jt)
 	}
 
 	/*
@@ -725,9 +846,7 @@ func (ji *joinIter) Next() (row, error) {
 		if err != nil {
 			return nil, err
 		}
-		copy(ji.ec.row, ji.lhsRow)
-		copy(ji.ec.row[len(ji.lhsRow):], rhsRow)
-		match, err := ji.evalCond()
+		match, err := ji.cond(ji.lhsRow, rhsRow)
 		if err != nil {
 			return nil, err
 		}
@@ -737,24 +856,6 @@ func (ji *joinIter) Next() (row, error) {
 		ji.any = true
 		return ji.ec.row, nil
 	}
-}
-
-func (ji *joinIter) evalCond() (bool, error) {
-	if ji.sfj.On != nil {
-		b, err := ji.ec.evalBoolExpr(ji.sfj.On)
-		if err != nil {
-			return false, err
-		}
-		return b != nil && *b, nil
-	}
-
-	if len(ji.sfj.Using) > 0 {
-		// TODO: USING in JOIN condition
-		return false, fmt.Errorf("USING clause in JOIN condition not yet supported")
-	}
-
-	// If there's no ON or USING condition, it matches.
-	return true, nil
 }
 
 // externalRowSorter implements sort.Interface for a slice of rows

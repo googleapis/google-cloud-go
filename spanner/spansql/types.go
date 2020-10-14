@@ -391,7 +391,7 @@ type LiteralOrParam interface {
 
 type ArithOp struct {
 	Op       ArithOperator
-	LHS, RHS Expr // only RHS is set for Neg, BitNot
+	LHS, RHS Expr // only RHS is set for Neg, Plus, BitNot
 }
 
 func (ArithOp) isExpr() {}
@@ -400,6 +400,7 @@ type ArithOperator int
 
 const (
 	Neg    ArithOperator = iota // unary -
+	Plus                        // unary +
 	BitNot                      // unary ~
 	Mul                         // *
 	Div                         // /
@@ -415,7 +416,7 @@ const (
 
 type LogicalOp struct {
 	Op       LogicalOperator
-	LHS, RHS BoolExpr // only RHS is set for Neg, BitNot
+	LHS, RHS BoolExpr // only RHS is set for Not
 }
 
 func (LogicalOp) isBoolExpr() {}

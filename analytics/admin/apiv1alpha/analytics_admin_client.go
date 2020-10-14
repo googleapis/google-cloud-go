@@ -43,6 +43,7 @@ type AnalyticsAdminCallOptions struct {
 	DeleteAccount                     []gax.CallOption
 	UpdateAccount                     []gax.CallOption
 	ProvisionAccountTicket            []gax.CallOption
+	ListAccountSummaries              []gax.CallOption
 	GetProperty                       []gax.CallOption
 	ListProperties                    []gax.CallOption
 	CreateProperty                    []gax.CallOption
@@ -104,22 +105,34 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 		DeleteAccount:          []gax.CallOption{},
 		UpdateAccount:          []gax.CallOption{},
 		ProvisionAccountTicket: []gax.CallOption{},
-		GetProperty:            []gax.CallOption{},
-		ListProperties:         []gax.CallOption{},
-		CreateProperty:         []gax.CallOption{},
-		DeleteProperty:         []gax.CallOption{},
-		UpdateProperty:         []gax.CallOption{},
-		GetUserLink:            []gax.CallOption{},
-		BatchGetUserLinks:      []gax.CallOption{},
-		ListUserLinks:          []gax.CallOption{},
-		AuditUserLinks:         []gax.CallOption{},
-		CreateUserLink:         []gax.CallOption{},
-		BatchCreateUserLinks:   []gax.CallOption{},
-		UpdateUserLink:         []gax.CallOption{},
-		BatchUpdateUserLinks:   []gax.CallOption{},
-		DeleteUserLink:         []gax.CallOption{},
-		BatchDeleteUserLinks:   []gax.CallOption{},
-		GetWebDataStream:       []gax.CallOption{},
+		ListAccountSummaries: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetProperty:          []gax.CallOption{},
+		ListProperties:       []gax.CallOption{},
+		CreateProperty:       []gax.CallOption{},
+		DeleteProperty:       []gax.CallOption{},
+		UpdateProperty:       []gax.CallOption{},
+		GetUserLink:          []gax.CallOption{},
+		BatchGetUserLinks:    []gax.CallOption{},
+		ListUserLinks:        []gax.CallOption{},
+		AuditUserLinks:       []gax.CallOption{},
+		CreateUserLink:       []gax.CallOption{},
+		BatchCreateUserLinks: []gax.CallOption{},
+		UpdateUserLink:       []gax.CallOption{},
+		BatchUpdateUserLinks: []gax.CallOption{},
+		DeleteUserLink:       []gax.CallOption{},
+		BatchDeleteUserLinks: []gax.CallOption{},
+		GetWebDataStream:     []gax.CallOption{},
 		DeleteWebDataStream: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -385,6 +398,46 @@ func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *
 		return nil, err
 	}
 	return resp, nil
+}
+
+// ListAccountSummaries returns summaries of all accounts accessible by the caller.
+func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ListAccountSummaries[0:len(c.CallOptions.ListAccountSummaries):len(c.CallOptions.ListAccountSummaries)], opts...)
+	it := &AccountSummaryIterator{}
+	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
+		var resp *adminpb.ListAccountSummariesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListAccountSummaries(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAccountSummaries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
 }
 
 // GetProperty lookup for a single “App+Web” Property.
@@ -1512,6 +1565,53 @@ func (it *AccountIterator) bufLen() int {
 }
 
 func (it *AccountIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// AccountSummaryIterator manages a stream of *adminpb.AccountSummary.
+type AccountSummaryIterator struct {
+	items    []*adminpb.AccountSummary
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccountSummary, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AccountSummaryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AccountSummaryIterator) Next() (*adminpb.AccountSummary, error) {
+	var item *adminpb.AccountSummary
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AccountSummaryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AccountSummaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

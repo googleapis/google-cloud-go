@@ -321,7 +321,7 @@
   },
   "cloud.google.com/go/errorreporting": {
     "distribution_name": "cloud.google.com/go/errorreporting",
-    "description": "Stackdriver Error Reporting API",
+    "description": "Cloud Error Reporting API",
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/errorreporting",
@@ -329,7 +329,7 @@
   },
   "cloud.google.com/go/errorreporting/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/errorreporting/apiv1beta1",
-    "description": "Stackdriver Error Reporting API",
+    "description": "Cloud Error Reporting API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/errorreporting/apiv1beta1",
@@ -433,7 +433,7 @@
   },
   "cloud.google.com/go/logging": {
     "distribution_name": "cloud.google.com/go/logging",
-    "description": "Stackdriver Logging API",
+    "description": "Cloud Logging API",
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/logging",
@@ -885,6 +885,14 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/webrisk/apiv1beta1",
+    "release_level": "beta"
+  },
+  "cloud.google.com/go/websecurityscanner/apiv1": {
+    "distribution_name": "cloud.google.com/go/websecurityscanner/apiv1",
+    "description": "Web Security Scanner API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1",
     "release_level": "beta"
   },
   "cloud.google.com/go/workflows/apiv1beta": {
