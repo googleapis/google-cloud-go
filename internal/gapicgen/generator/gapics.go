@@ -237,7 +237,7 @@ var manualEntries = []manifestEntry{
 	// Manuals with a GAPIC.
 	{
 		DistributionName:  "cloud.google.com/go/errorreporting",
-		Description:       "Stackdriver Error Reporting API",
+		Description:       "Cloud Error Reporting API",
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
