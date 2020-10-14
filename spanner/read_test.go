@@ -1143,10 +1143,12 @@ func TestRsdBlockingStates(t *testing.T) {
 			}
 			var mutex = &sync.Mutex{}
 			var rs []*sppb.PartialResultSet
+			rowsFetched := make(chan int)
 			go func() {
 				for {
 					if !r.next() {
 						// Note that r.Next also exits on context cancel/timeout.
+						close(rowsFetched)
 						return
 					}
 					mutex.Lock()
@@ -1154,9 +1156,17 @@ func TestRsdBlockingStates(t *testing.T) {
 					mutex.Unlock()
 				}
 			}()
+			// Wait until all rows have been fetched.
+			if len(test.want) > 0 {
+				select {
+				case <-rowsFetched:
+				case <-time.After(1 * time.Second):
+					t.Fatal("Timeout in waiting for rows to be fetched")
+				}
+			}
 			// Verify that resumableStreamDecoder reaches expected state.
 			select {
-			case <-stateDone: // Note that at this point, receiver is still blockingon r.next().
+			case <-stateDone: // Note that at this point, receiver is still blocking on r.next().
 				// Check if resumableStreamDecoder carried out expected state
 				// transitions.
 				if !testEqual(st, test.stateHistory) {
