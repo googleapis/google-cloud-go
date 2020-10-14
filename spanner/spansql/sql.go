@@ -351,6 +351,11 @@ func (ao ArithOp) addSQL(sb *strings.Builder) {
 		ao.RHS.addSQL(sb)
 		sb.WriteString(")")
 		return
+	case Plus:
+		sb.WriteString("+(")
+		ao.RHS.addSQL(sb)
+		sb.WriteString(")")
+		return
 	case BitNot:
 		sb.WriteString("~(")
 		ao.RHS.addSQL(sb)

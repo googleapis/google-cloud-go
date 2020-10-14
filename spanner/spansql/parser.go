@@ -184,9 +184,13 @@ type token struct {
 	line, offset int
 
 	typ     tokenType
-	int64   int64
 	float64 float64
 	string  string // unquoted form for stringToken/bytesToken/quotedID
+
+	// int64Token is parsed as a number only when it is known to be a literal.
+	// This permits correct handling of operators preceding such a token,
+	// which cannot be identified as part of the int64 until later.
+	int64Base int
 }
 
 type tokenType int
@@ -415,7 +419,9 @@ digitLoop:
 		p.cur.float64, err = strconv.ParseFloat(sign+p.cur.value[d0:], 64)
 	} else {
 		p.cur.typ = int64Token
-		p.cur.int64, err = strconv.ParseInt(sign+p.cur.value[d0:], base, 64)
+		p.cur.value = sign + p.cur.value[d0:]
+		p.cur.int64Base = base
+		// This is parsed on demand.
 	}
 	if err != nil {
 		p.errorf("bad numeric literal %q: %v", p.cur.value, err)
@@ -776,7 +782,7 @@ func (p *parser) advance() {
 	p.cur.typ = unknownToken
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '{', '}', '*':
+	case ',', ';', '(', ')', '{', '}', '*', '+', '-':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		p.offset++
@@ -825,8 +831,8 @@ func (p *parser) advance() {
 		p.offset += i
 		return
 	}
-	if len(p.s) >= 2 && (p.s[0] == '+' || p.s[0] == '-' || p.s[0] == '.') && ('0' <= p.s[1] && p.s[1] <= '9') {
-		// [-+.] followed by a digit.
+	if len(p.s) >= 2 && p.s[0] == '.' && ('0' <= p.s[1] && p.s[1] <= '9') {
+		// dot followed by a digit.
 		p.consumeNumber()
 		return
 	}
@@ -1588,7 +1594,11 @@ func (p *parser) parseType() (Type, *parseError) {
 		if tok.value == "MAX" {
 			t.Len = MaxLen
 		} else if tok.typ == int64Token {
-			t.Len = tok.int64
+			n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+			if err != nil {
+				return Type{}, p.errorf("%v", err)
+			}
+			t.Len = n
 		} else {
 			return Type{}, p.errorf("got %q, want MAX or int64", tok.value)
 		}
@@ -2025,7 +2035,11 @@ func (p *parser) parseLiteralOrParam() (LiteralOrParam, *parseError) {
 		return nil, tok.err
 	}
 	if tok.typ == int64Token {
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	}
 	// TODO: check character sets.
 	if strings.HasPrefix(tok.value, "@") {
@@ -2343,6 +2357,7 @@ func (p *parser) parseArithOp() (Expr, *parseError) {
 var unaryArithOperators = map[string]ArithOperator{
 	"-": Neg,
 	"~": BitNot,
+	"+": Plus,
 }
 
 func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
@@ -2350,7 +2365,35 @@ func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
 	if tok.err != nil {
 		return nil, tok.err
 	}
-	if op, ok := unaryArithOperators[tok.value]; ok {
+
+	op := tok.value
+
+	if op == "-" || op == "+" {
+		// If the next token is a numeric token, combine and parse as a literal.
+		ntok := p.next()
+		if ntok.err == nil {
+			switch ntok.typ {
+			case int64Token:
+				comb := op + ntok.value
+				n, err := strconv.ParseInt(comb, ntok.int64Base, 64)
+				if err != nil {
+					return nil, p.errorf("%v", err)
+				}
+				return IntegerLiteral(n), nil
+			case float64Token:
+				f := ntok.float64
+				if op == "-" {
+					f = -f
+				}
+				return FloatLiteral(f), nil
+			}
+		}
+		// It is not possible for the p.back() lower down to fire
+		// because - and + are in unaryArithOperators.
+		p.back()
+	}
+
+	if op, ok := unaryArithOperators[op]; ok {
 		e, err := p.parseLit()
 		if err != nil {
 			return nil, err
@@ -2370,7 +2413,11 @@ func (p *parser) parseLit() (Expr, *parseError) {
 
 	switch tok.typ {
 	case int64Token:
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	case float64Token:
 		return FloatLiteral(tok.float64), nil
 	case stringToken:
