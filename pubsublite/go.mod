@@ -1,6 +1,6 @@
 module cloud.google.com/go/pubsublite
 
-go 1.15
+go 1.11
 
 require (
 	cloud.google.com/go v0.69.1
