@@ -103,7 +103,7 @@ Next, ensure the following APIs are enabled in the general project:
 - Google Compute Engine Instance Group Updater API
 - Google Compute Engine Instance Groups API
 - Kubernetes Engine API
-- Stackdriver Error Reporting API
+- Cloud Error Reporting API
 
 Next, create a Datastore database in the general project, and a Firestore
 database in the Firestore project.
