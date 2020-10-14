@@ -95,8 +95,8 @@ const (
 	SharedServiceAccount = "serviceAccount:cloud-logs@system.gserviceaccount.com"
 )
 
-// WriteLogEntries writes log entries to Stackdriver Logging. All log entries in
-// Stackdriver Logging are written by this method.
+// WriteLogEntries writes log entries to Cloud Logging. All log entries in
+// Cloud Logging are written by this method.
 func (h *loggingHandler) WriteLogEntries(_ context.Context, req *logpb.WriteLogEntriesRequest) (*logpb.WriteLogEntriesResponse, error) {
 	if !strings.HasPrefix(req.LogName, "projects/"+ValidProjectID+"/") && !strings.HasPrefix(req.LogName, "organizations/"+ValidOrgID+"/") {
 		return nil, fmt.Errorf("bad LogName: %q", req.LogName)
@@ -130,7 +130,7 @@ func (h *loggingHandler) WriteLogEntries(_ context.Context, req *logpb.WriteLogE
 }
 
 // ListLogEntries lists log entries. Use this method to retrieve log entries
-// from Stackdriver Logging.
+// from Cloud Logging.
 //
 // This fake implementation ignores project IDs. It does not support full filtering, only
 // expressions of the form "logName = NAME".
@@ -222,7 +222,7 @@ func compareTimestamps(ts1, ts2 *tspb.Timestamp) int64 {
 	return int64(ts1.Nanos - ts2.Nanos)
 }
 
-// Lists monitored resource descriptors that are used by Stackdriver Logging.
+// Lists monitored resource descriptors that are used by Cloud Logging.
 func (h *loggingHandler) ListMonitoredResourceDescriptors(context.Context, *logpb.ListMonitoredResourceDescriptorsRequest) (*logpb.ListMonitoredResourceDescriptorsResponse, error) {
 	return &logpb.ListMonitoredResourceDescriptorsResponse{
 		ResourceDescriptors: []*mrpb.MonitoredResourceDescriptor{
