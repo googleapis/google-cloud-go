@@ -433,7 +433,7 @@
   },
   "cloud.google.com/go/logging": {
     "distribution_name": "cloud.google.com/go/logging",
-    "description": "Stackdriver Logging API",
+    "description": "Cloud Logging API",
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/logging",
