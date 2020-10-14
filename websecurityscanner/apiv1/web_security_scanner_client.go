@@ -187,6 +187,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client websecurityscannerpb.WebSecurityScannerClient
 
@@ -213,13 +216,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: websecurityscannerpb.NewWebSecurityScannerClient(connPool),
 	}
@@ -252,6 +261,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // CreateScanConfig creates a new ScanConfig.
 func (c *Client) CreateScanConfig(ctx context.Context, req *websecurityscannerpb.CreateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateScanConfig[0:len(c.CallOptions.CreateScanConfig):len(c.CallOptions.CreateScanConfig)], opts...)
@@ -269,6 +283,11 @@ func (c *Client) CreateScanConfig(ctx context.Context, req *websecurityscannerpb
 
 // DeleteScanConfig deletes an existing ScanConfig and its child resources.
 func (c *Client) DeleteScanConfig(ctx context.Context, req *websecurityscannerpb.DeleteScanConfigRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteScanConfig[0:len(c.CallOptions.DeleteScanConfig):len(c.CallOptions.DeleteScanConfig)], opts...)
@@ -282,6 +301,11 @@ func (c *Client) DeleteScanConfig(ctx context.Context, req *websecurityscannerpb
 
 // GetScanConfig gets a ScanConfig.
 func (c *Client) GetScanConfig(ctx context.Context, req *websecurityscannerpb.GetScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetScanConfig[0:len(c.CallOptions.GetScanConfig):len(c.CallOptions.GetScanConfig)], opts...)
@@ -322,7 +346,7 @@ func (c *Client) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.
 		}
 
 		it.Response = resp
-		return resp.ScanConfigs, resp.NextPageToken, nil
+		return resp.GetScanConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -333,13 +357,18 @@ func (c *Client) ListScanConfigs(ctx context.Context, req *websecurityscannerpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // UpdateScanConfig updates a ScanConfig. This method support partial update of a ScanConfig.
 func (c *Client) UpdateScanConfig(ctx context.Context, req *websecurityscannerpb.UpdateScanConfigRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "scan_config.name", url.QueryEscape(req.GetScanConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateScanConfig[0:len(c.CallOptions.UpdateScanConfig):len(c.CallOptions.UpdateScanConfig)], opts...)
@@ -357,6 +386,11 @@ func (c *Client) UpdateScanConfig(ctx context.Context, req *websecurityscannerpb
 
 // StartScanRun start a ScanRun according to the given ScanConfig.
 func (c *Client) StartScanRun(ctx context.Context, req *websecurityscannerpb.StartScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.StartScanRun[0:len(c.CallOptions.StartScanRun):len(c.CallOptions.StartScanRun)], opts...)
@@ -374,6 +408,11 @@ func (c *Client) StartScanRun(ctx context.Context, req *websecurityscannerpb.Sta
 
 // GetScanRun gets a ScanRun.
 func (c *Client) GetScanRun(ctx context.Context, req *websecurityscannerpb.GetScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetScanRun[0:len(c.CallOptions.GetScanRun):len(c.CallOptions.GetScanRun)], opts...)
@@ -415,7 +454,7 @@ func (c *Client) ListScanRuns(ctx context.Context, req *websecurityscannerpb.Lis
 		}
 
 		it.Response = resp
-		return resp.ScanRuns, resp.NextPageToken, nil
+		return resp.GetScanRuns(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -426,13 +465,18 @@ func (c *Client) ListScanRuns(ctx context.Context, req *websecurityscannerpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // StopScanRun stops a ScanRun. The stopped ScanRun is returned.
 func (c *Client) StopScanRun(ctx context.Context, req *websecurityscannerpb.StopScanRunRequest, opts ...gax.CallOption) (*websecurityscannerpb.ScanRun, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.StopScanRun[0:len(c.CallOptions.StopScanRun):len(c.CallOptions.StopScanRun)], opts...)
@@ -473,7 +517,7 @@ func (c *Client) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.
 		}
 
 		it.Response = resp
-		return resp.CrawledUrls, resp.NextPageToken, nil
+		return resp.GetCrawledUrls(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -484,13 +528,18 @@ func (c *Client) ListCrawledUrls(ctx context.Context, req *websecurityscannerpb.
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetFinding gets a Finding.
 func (c *Client) GetFinding(ctx context.Context, req *websecurityscannerpb.GetFindingRequest, opts ...gax.CallOption) (*websecurityscannerpb.Finding, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetFinding[0:len(c.CallOptions.GetFinding):len(c.CallOptions.GetFinding)], opts...)
@@ -531,7 +580,7 @@ func (c *Client) ListFindings(ctx context.Context, req *websecurityscannerpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Findings, resp.NextPageToken, nil
+		return resp.GetFindings(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -542,13 +591,18 @@ func (c *Client) ListFindings(ctx context.Context, req *websecurityscannerpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // ListFindingTypeStats list all FindingTypeStats under a given ScanRun.
 func (c *Client) ListFindingTypeStats(ctx context.Context, req *websecurityscannerpb.ListFindingTypeStatsRequest, opts ...gax.CallOption) (*websecurityscannerpb.ListFindingTypeStatsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListFindingTypeStats[0:len(c.CallOptions.ListFindingTypeStats):len(c.CallOptions.ListFindingTypeStats)], opts...)
