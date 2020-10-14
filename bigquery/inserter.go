@@ -34,10 +34,12 @@ const NoDedupeID = "NoDedupeID"
 // ErrRequestMalformed is surfaced for cases where the response from the backend
 // indicates a generic error, but is unstructured and ambiguous.
 //
-// For streaming insert requests, this generally indicates that either the row
+// For streaming insert requests, this often indicates that either the row
 // data is excessively large, or that the batch factor is too high (too many rows
-// sent as part of a single insert).
-var ErrRequestMalformed = fmt.Errorf("Your client has issued a malformed or illegal request.")
+// sent as part of a single insert).  However, the error response provides no
+// further diagnostic information, and may indicate problems other than size such
+// as QPS or fundamental problems with the payload.
+var ErrRequestMalformed = fmt.Errorf("your client has issued a malformed or illegal request")
 
 // An Inserter does streaming inserts into a BigQuery table.
 // It is safe for concurrent use.
