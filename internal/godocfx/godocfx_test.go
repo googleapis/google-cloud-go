@@ -147,6 +147,9 @@ func TestGoldens(t *testing.T) {
 	}
 
 	for _, golden := range goldens {
+		if golden.IsDir() {
+			continue
+		}
 		gotPath := filepath.Join(gotDir, golden.Name())
 		goldenPath := filepath.Join(goldenDir, golden.Name())
 
