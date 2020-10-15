@@ -22,7 +22,7 @@ import (
 // LocationPath stores a path consisting of a project and zone.
 type LocationPath struct {
 	// A Google Cloud project. The project ID (e.g. "my-project") or the project
-	// number (e.g. 987654321) can be provided.
+	// number (e.g. "987654321") can be provided.
 	Project string
 
 	// A Google Cloud zone, for example "us-central1-a".
@@ -39,7 +39,7 @@ func (l LocationPath) String() string {
 // See https://cloud.google.com/pubsub/lite/docs/topics for more information.
 type TopicPath struct {
 	// A Google Cloud project. The project ID (e.g. "my-project") or the project
-	// number (e.g. 987654321) can be provided.
+	// number (e.g. "987654321") can be provided.
 	Project string
 
 	// A Google Cloud zone, for example "us-central1-a".
@@ -77,7 +77,7 @@ func ParseTopicPath(input string) (TopicPath, error) {
 // information.
 type SubscriptionPath struct {
 	// A Google Cloud project. The project ID (e.g. "my-project") or the project
-	// number (e.g. 987654321) can be provided.
+	// number (e.g. "987654321") can be provided.
 	Project string
 
 	// A Google Cloud zone. An example zone is "us-central1-a".
@@ -135,6 +135,9 @@ func ValidateRegion(input string) error {
 }
 
 // ZoneToRegion returns the region that the given zone is in.
-func ZoneToRegion(zone string) string {
-	return zone[0:strings.LastIndex(zone, "-")]
+func ZoneToRegion(zone string) (string, error) {
+	if err := ValidateZone(zone); err != nil {
+		return "", err
+	}
+	return zone[0:strings.LastIndex(zone, "-")], nil
 }

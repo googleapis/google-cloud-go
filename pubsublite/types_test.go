@@ -192,8 +192,34 @@ func TestValidateRegion(t *testing.T) {
 }
 
 func TestZoneToRegion(t *testing.T) {
-	zone := "europe-west1-d"
-	if got, want := ZoneToRegion(zone), "europe-west1"; got != want {
-		t.Errorf("ZoneToRegion(%q) = %v, want %v", zone, got, want)
+	for _, tc := range []struct {
+		desc       string
+		zone       string
+		wantRegion string
+		wantErr    bool
+	}{
+		{
+			desc:       "valid",
+			zone:       "europe-west1-d",
+			wantRegion: "europe-west1",
+			wantErr:    false,
+		},
+		{
+			desc:    "invalid: insufficient dashes",
+			zone:    "europe-west1",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: no dashes",
+			zone:    "europewest1",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotRegion, gotErr := ZoneToRegion(tc.zone)
+			if gotRegion != tc.wantRegion || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ZoneToRegion(%q) = (%v, %v), want (%v, err=%v)", tc.zone, gotRegion, gotErr, tc.wantRegion, tc.wantErr)
+			}
+		})
 	}
 }
