@@ -842,6 +842,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2020/13/12
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/managedidentities/v1",
+		pkg:                   "managedidentities",
+		importPath:            "cloud.google.com/go/managedidentities/apiv1",
+		gRPCServiceConfigPath: "google/cloud/managedidentities/v1/managedidentities_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/managedidentities/v1/managedidentities_v1.yaml",
+		// GA after 2020/15/12
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

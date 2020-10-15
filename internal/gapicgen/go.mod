@@ -3,6 +3,7 @@ module cloud.google.com/go/internal/gapicgen
 go 1.13
 
 require (
+	github.com/golang/protobuf v1.4.3 // indirect
 	github.com/google/go-cmp v0.5.2 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/kr/text v0.2.0 // indirect
