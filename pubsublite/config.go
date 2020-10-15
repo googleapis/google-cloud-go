@@ -185,7 +185,7 @@ const (
 	// subscribers.
 	DeliverImmediately = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVER_IMMEDIATELY)
 
-	//  means the server will not deliver a published message to
+	// DeliverAfterStored means the server will not deliver a published message to
 	// subscribers until the message has been successfully written to storage.
 	// This will result in higher end-to-end latency, but consistent delivery.
 	DeliverAfterStored = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED)
