@@ -809,9 +809,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		rb.DefaultObjectAcl = nil
 		rb.ForceSendFields = append(rb.ForceSendFields, "DefaultObjectAcl")
 	}
-	if ua.StorageClass != "" {
-		rb.StorageClass = ua.StorageClass
-	}
+	rb.StorageClass = ua.StorageClass
 	if ua.setLabels != nil || ua.deleteLabels != nil {
 		rb.Labels = map[string]string{}
 		for k, v := range ua.setLabels {
