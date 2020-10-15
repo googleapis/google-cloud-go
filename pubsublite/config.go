@@ -177,16 +177,17 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 type DeliveryRequirement int32
 
 const (
-	// Unset delivery requirement.
+	// UnspecifiedDeliveryRequirement represents and unset delivery requirement.
 	UnspecifiedDeliveryRequirement = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVERY_REQUIREMENT_UNSPECIFIED)
 
-	// The server does not wait for a published message to be successfully
-	// written to storage before delivering it to subscribers.
+	// DeliverImmediately means the server will not not wait for a published
+	// message to be successfully written to storage before delivering it to
+	// subscribers.
 	DeliverImmediately = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVER_IMMEDIATELY)
 
-	// The server will not deliver a published message to subscribers until
-	// the message has been successfully written to storage. This will result
-	// in higher end-to-end latency, but consistent delivery.
+	// DeliverAfterStored means the server will not deliver a published message to
+	// subscribers until the message has been successfully written to storage.
+	// This will result in higher end-to-end latency, but consistent delivery.
 	DeliverAfterStored = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED)
 )
 
