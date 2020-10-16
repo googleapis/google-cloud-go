@@ -7,7 +7,7 @@ require (
 	cloud.google.com/go/bigquery v1.8.0
 	cloud.google.com/go/storage v1.11.0
 	github.com/kr/pretty v0.2.1 // indirect
-	golang.org/x/tools v0.0.0-20201014231627-1610a49f37af
+	golang.org/x/tools v0.0.0-20201017001424-6003fad69a88
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )
