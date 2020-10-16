@@ -62,7 +62,7 @@ func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []optio
 	return append(grpcHeadersEnforcer.CallOptions(), opts...)
 }
 
-func adminClient(t *testing.T, ctx context.Context, region string, opts ...option.ClientOption) *Client {
+func adminClient(ctx context.Context, t *testing.T, region string, opts ...option.ClientOption) *Client {
 	ts := testutil.TokenSource(ctx, vkit.DefaultAuthScopes()...)
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
@@ -106,7 +106,7 @@ func TestResourceAdminOperations(t *testing.T) {
 	subscriptionPath := SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
 	t.Logf("Topic path: %s", topicPath)
 
-	client := adminClient(t, ctx, region)
+	client := adminClient(ctx, t, region)
 	defer client.Close()
 
 	// Topic admin operations.
