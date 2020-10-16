@@ -800,11 +800,92 @@ func (ji *joinIter) nextLeft() error {
 }
 
 func (ji *joinIter) Next() (row, error) {
-	// TODO: More join types.
-	if ji.jt != spansql.LeftJoin {
+	// TODO: FULL and RIGHT joins; they'll need more structural work in joinIter.
+	switch ji.jt {
+	default:
 		return nil, fmt.Errorf("TODO: can't yet evaluate join of type %v", ji.jt)
+	case spansql.InnerJoin:
+		return ji.innerJoin()
+	case spansql.CrossJoin:
+		return ji.crossJoin()
+	case spansql.LeftJoin:
+		return ji.leftJoin()
+	}
+}
+
+// TODO: Refactor these individual JOIN implementations when they are complete.
+
+func (ji *joinIter) innerJoin() (row, error) {
+	/*
+		An INNER JOIN, or simply JOIN, effectively calculates the
+		Cartesian product of the two from_items and discards all rows
+		that do not meet the join condition.
+	*/
+	if ji.lhsRow == nil {
+		if err := ji.nextLeft(); err != nil {
+			return nil, err
+		}
 	}
 
+	for {
+		rhsRow, err := ji.rhs.Next()
+		if err == io.EOF {
+			// Finished the current LHS row;
+			// advance to next one.
+			if err := ji.nextLeft(); err != nil {
+				return nil, err
+			}
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		match, err := ji.cond(ji.lhsRow, rhsRow)
+		if err != nil {
+			return nil, err
+		}
+		if !match {
+			continue
+		}
+		return ji.ec.row, nil
+	}
+}
+
+func (ji *joinIter) crossJoin() (row, error) {
+	/*
+		CROSS JOIN returns the Cartesian product of the two from_items.
+		In other words, it combines each row from the first from_item
+		with each row from the second from_item.
+	*/
+	if ji.lhsRow == nil {
+		if err := ji.nextLeft(); err != nil {
+			return nil, err
+		}
+	}
+
+	for {
+		rhsRow, err := ji.rhs.Next()
+		if err == io.EOF {
+			// Finished the current LHS row;
+			// advance to next one.
+			if err := ji.nextLeft(); err != nil {
+				return nil, err
+			}
+			continue
+		}
+		if err != nil {
+			return nil, err
+		}
+		// The condition will be trivially true.
+		_, err = ji.cond(ji.lhsRow, rhsRow)
+		if err != nil {
+			return nil, err
+		}
+		return ji.ec.row, nil
+	}
+}
+
+func (ji *joinIter) leftJoin() (row, error) {
 	/*
 		The result of a LEFT OUTER JOIN (or simply LEFT JOIN) for two
 		from_items always retains all rows of the left from_item in the
