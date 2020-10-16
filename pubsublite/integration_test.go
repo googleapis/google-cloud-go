@@ -22,6 +22,9 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
+
+	vkit "cloud.google.com/go/pubsublite/apiv1"
 )
 
 const gibi = 1 << 30
@@ -47,6 +50,29 @@ func initIntegrationTest(t *testing.T) {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
 	rng = testutil.NewRand(time.Now())
+}
+
+func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []option.ClientOption {
+	grpcHeadersEnforcer := &testutil.HeadersEnforcer{
+		OnFailure: t.Errorf,
+		Checkers: []*testutil.HeaderChecker{
+			testutil.XGoogClientHeaderChecker,
+		},
+	}
+	return append(grpcHeadersEnforcer.CallOptions(), opts...)
+}
+
+func adminClient(t *testing.T, ctx context.Context, region string, opts ...option.ClientOption) *Client {
+	ts := testutil.TokenSource(ctx, vkit.DefaultAuthScopes()...)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
+	client, err := NewAdminClient(ctx, region, opts...)
+	if err != nil {
+		t.Fatalf("Failed to create admin client: %v", err)
+	}
+	return client
 }
 
 func cleanUpTopic(ctx context.Context, t *testing.T, client *Client, name TopicPath) {
@@ -80,10 +106,7 @@ func TestResourceAdminOperations(t *testing.T) {
 	subscriptionPath := SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
 	t.Logf("Topic path: %s", topicPath)
 
-	client, err := NewAdminClient(ctx, region)
-	if err != nil {
-		t.Fatalf("Failed to create client: %v", err)
-	}
+	client := adminClient(t, ctx, region)
 	defer client.Close()
 
 	// Topic admin operations.
