@@ -74,6 +74,7 @@ func TestResourceAdminOperations(t *testing.T) {
 	zone := randomLiteZone()
 	region, _ := ZoneToRegion(zone)
 	resourceID := fmt.Sprintf("go-test-admin-%d", rng.Int63())
+
 	locationPath := LocationPath{Project: proj, Zone: zone}
 	topicPath := TopicPath{Project: proj, Zone: zone, TopicID: resourceID}
 	subscriptionPath := SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}

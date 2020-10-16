@@ -15,9 +15,7 @@ package pubsublite
 
 import (
 	"context"
-	"fmt"
 
-	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -43,7 +41,7 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 	options := []option.ClientOption{option.WithEndpoint(region + "-pubsublite.googleapis.com:443")}
 	admin, err := vkit.NewAdminClient(ctx, options...)
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: %v", err)
+		return nil, err
 	}
 	return &Client{Region: region, admin: admin}, nil
 }
@@ -57,7 +55,7 @@ func (c *Client) CreateTopic(ctx context.Context, config *TopicConfig) (*TopicCo
 	}
 	topicpb, err := c.admin.CreateTopic(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to create topic: %v", err)
+		return nil, err
 	}
 	return protoToTopicConfig(topicpb)
 }
@@ -67,24 +65,21 @@ func (c *Client) CreateTopic(ctx context.Context, config *TopicConfig) (*TopicCo
 func (c *Client) UpdateTopic(ctx context.Context, config *TopicConfigToUpdate) (*TopicConfig, error) {
 	topicpb, err := c.admin.UpdateTopic(ctx, config.toUpdateRequest())
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to update topic: %v", err)
+		return nil, err
 	}
 	return protoToTopicConfig(topicpb)
 }
 
 // DeleteTopic deletes a topic.
 func (c *Client) DeleteTopic(ctx context.Context, topic TopicPath) error {
-	if err := c.admin.DeleteTopic(ctx, &pb.DeleteTopicRequest{Name: topic.String()}); err != nil {
-		return fmt.Errorf("pubsublite: failed to delete topic: %v", err)
-	}
-	return nil
+	return c.admin.DeleteTopic(ctx, &pb.DeleteTopicRequest{Name: topic.String()})
 }
 
 // Topic retrieves the configuration of a topic.
 func (c *Client) Topic(ctx context.Context, topic TopicPath) (*TopicConfig, error) {
 	topicpb, err := c.admin.GetTopic(ctx, &pb.GetTopicRequest{Name: topic.String()})
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to retrieve topic config: %v", err)
+		return nil, err
 	}
 	return protoToTopicConfig(topicpb)
 }
@@ -93,7 +88,7 @@ func (c *Client) Topic(ctx context.Context, topic TopicPath) (*TopicConfig, erro
 func (c *Client) TopicPartitions(ctx context.Context, topic TopicPath) (int64, error) {
 	partitions, err := c.admin.GetTopicPartitions(ctx, &pb.GetTopicPartitionsRequest{Name: topic.String()})
 	if err != nil {
-		return 0, fmt.Errorf("pubsublite: failed to retrieve topic partitions: %v", err)
+		return 0, err
 	}
 	return partitions.GetPartitionCount(), nil
 }
@@ -120,7 +115,7 @@ func (c *Client) CreateSubscription(ctx context.Context, config *SubscriptionCon
 	}
 	subspb, err := c.admin.CreateSubscription(ctx, req)
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to create subscription: %v", err)
+		return nil, err
 	}
 	return protoToSubscriptionConfig(subspb)
 }
@@ -130,24 +125,21 @@ func (c *Client) CreateSubscription(ctx context.Context, config *SubscriptionCon
 func (c *Client) UpdateSubscription(ctx context.Context, config *SubscriptionConfigToUpdate) (*SubscriptionConfig, error) {
 	subspb, err := c.admin.UpdateSubscription(ctx, config.toUpdateRequest())
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to update subscription: %v", err)
+		return nil, err
 	}
 	return protoToSubscriptionConfig(subspb)
 }
 
 // DeleteSubscription deletes a subscription.
 func (c *Client) DeleteSubscription(ctx context.Context, subscription SubscriptionPath) error {
-	if err := c.admin.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Name: subscription.String()}); err != nil {
-		return fmt.Errorf("pubsublite: failed to delete subscription: %v", err)
-	}
-	return nil
+	return c.admin.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Name: subscription.String()})
 }
 
 // Subscription retrieves the configuration of a subscription.
 func (c *Client) Subscription(ctx context.Context, subscription SubscriptionPath) (*SubscriptionConfig, error) {
 	subspb, err := c.admin.GetSubscription(ctx, &pb.GetSubscriptionRequest{Name: subscription.String()})
 	if err != nil {
-		return nil, fmt.Errorf("pubsublite: failed to retrieve subscription config: %v", err)
+		return nil, err
 	}
 	return protoToSubscriptionConfig(subspb)
 }
@@ -177,9 +169,6 @@ type TopicIterator struct {
 func (t *TopicIterator) Next() (*TopicConfig, error) {
 	topicpb, err := t.it.Next()
 	if err != nil {
-		if err != iterator.Done {
-			err = fmt.Errorf("pubsublite: failed to list topics: %v", err)
-		}
 		return nil, err
 	}
 	return protoToTopicConfig(topicpb)
@@ -196,9 +185,6 @@ type SubscriptionIterator struct {
 func (s *SubscriptionIterator) Next() (*SubscriptionConfig, error) {
 	subspb, err := s.it.Next()
 	if err != nil {
-		if err != iterator.Done {
-			err = fmt.Errorf("pubsublite: failed to list subscriptions: %v", err)
-		}
 		return nil, err
 	}
 	return protoToSubscriptionConfig(subspb)
@@ -215,9 +201,6 @@ type SubscriptionPathIterator struct {
 func (sp *SubscriptionPathIterator) Next() (SubscriptionPath, error) {
 	subsPath, err := sp.it.Next()
 	if err != nil {
-		if err != iterator.Done {
-			err = fmt.Errorf("pubsublite: failed to list topic subscriptions: %v", err)
-		}
 		return SubscriptionPath{}, err
 	}
 	return ParseSubscriptionPath(subsPath)
