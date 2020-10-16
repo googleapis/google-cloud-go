@@ -383,7 +383,8 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
 	}
-	// Check that StorageClass has "STANDARD" for unset field.
+	// Check that StorageClass has "STANDARD" value for unset field by default
+	// before passing new value.
 	wantStorageClass := "STANDARD"
 	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
 		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
