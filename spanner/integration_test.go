@@ -2314,7 +2314,11 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Umm", "Kulthum")`,
 		})
 		defer iter.Stop()
-		if row, err := iter.Next(); err != iterator.Done {
+		row, err := iter.Next()
+		if ErrCode(err) == codes.Aborted {
+			return err
+		}
+		if err != iterator.Done {
 			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
 		}
 		if iter.RowCount != 1 {
