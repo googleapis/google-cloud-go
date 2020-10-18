@@ -970,7 +970,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(1)},
 			},
 		},
-		// Regression TEST for mishandling NULLs with LIKE operator.
+		// Regression test for mishandling NULLs with LIKE operator.
 		{
 			`SELECT i, str FROM SomeStrings WHERE str LIKE "%bar"`,
 			nil,
@@ -986,6 +986,15 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			[][]interface{}{
 				// Does not include [1, "abar"], [2, nil] or [3, "bbar"].
 				{int64(0), "afoo"},
+			},
+		},
+		// Regression test for ORDER BY combined with SELECT aliases.
+		{
+			`SELECT Name AS nom FROM Staff ORDER BY ID LIMIT 2`,
+			nil,
+			[][]interface{}{
+				{"Jack"},
+				{"Daniel"},
 			},
 		},
 	}
