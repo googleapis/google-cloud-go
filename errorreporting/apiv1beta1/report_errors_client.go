@@ -54,7 +54,7 @@ func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	}
 }
 
-// ReportErrorsClient is a client for interacting with Stackdriver Error Reporting API.
+// ReportErrorsClient is a client for interacting with Cloud Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ReportErrorsClient struct {
