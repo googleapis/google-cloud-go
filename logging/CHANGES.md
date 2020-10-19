@@ -1,6 +1,6 @@
 # Changes
 
-## v1.1.0
+## v1.1.1
 
 - Rebrand "Stackdriver Logging" to "Cloud Logging".
 
