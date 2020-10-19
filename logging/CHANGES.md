@@ -2,6 +2,10 @@
 
 ## v1.1.0
 
+- Rebrand "Stackdriver Logging" to "Cloud Logging".
+
+## v1.1.0
+
 - Support unmarshalling stringified Severity.
 - Add exported SetGoogleClientInfo wrappers to manual file.
 - Support no payload.
