@@ -3156,6 +3156,11 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 	for {
 		row, err := iter.Next()
 		if err == iterator.Done {
+			if iter.Metadata == nil {
+				// All queries should always return metadata, regardless whether
+				// they return any rows or not.
+				return nil, errors.New("missing metadata from query")
+			}
 			return vals, nil
 		}
 		if err != nil {
