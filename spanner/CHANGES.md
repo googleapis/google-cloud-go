@@ -11,14 +11,7 @@
   - test(spanner): fix flaky oc_test.go (#2838)
   - docs(spanner): document NULL value (#2885)
 * spansql/spannertest:
-  - feat(spanner/spansql): parse join hints (#2936)
-  - feat(spanner/spansql): parse path expressions (#2924)
-  - feat(spanner/spansql): parse joins (#2896)
-  - feat(spanner/spannertest): implement RIGHT JOIN (#3042)
-  - feat(spanner/spannertest): support INNER and CROSS JOIN (#3037)
-  - feat(spanner/spannertest): support USING clause in JOIN (#2995)
-  - feat(spanner/spannertest): support LEFT OUTER JOIN with ON clause (#2945)
-  - feat(spanner/spannertest): evaluate path expressions (#2931)
+  - Support JOINs (all but FULL JOIN) (#2936, #2924, #2896, #3042, #3037, #2995, #2945, #2931)
   - fix(spanner/spansql): fix parsing of unary minus and plus (#2997)
   - fix(spanner/spansql): fix parsing of adjacent inline and leading comments (#2851)
   - fix(spanner/spannertest): fix ORDER BY combined with SELECT aliases (#3043)
@@ -31,6 +24,7 @@
   - doc(spanner/spannertest): document the implementation (#2996)
   - perf(spanner/spannertest): speed up no-wait DDL changes (#2994)
   - perf(spanner/spansql): make fewer allocations during SQL (#2969)
+* Backward Incompatible Changes
   - chore(spanner/spansql): use ID type for identifiers throughout (#2889)
   - chore(spanner/spansql): restructure FROM, TABLESAMPLE (#2888)
 
