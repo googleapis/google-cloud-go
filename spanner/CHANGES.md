@@ -12,6 +12,7 @@
   - docs(spanner): document NULL value (#2885)
 * spansql/spannertest:
   - Support JOINs (all but FULL JOIN) (#2936, #2924, #2896, #3042, #3037, #2995, #2945, #2931)
+  - feat(spanner/spansql): parse CHECK constraints (#3046)
   - fix(spanner/spansql): fix parsing of unary minus and plus (#2997)
   - fix(spanner/spansql): fix parsing of adjacent inline and leading comments (#2851)
   - fix(spanner/spannertest): fix ORDER BY combined with SELECT aliases (#3043)
