@@ -3,7 +3,7 @@ module cloud.google.com/go/pubsublite
 go 1.11
 
 require (
-	cloud.google.com/go v0.69.1
+	cloud.google.com/go v0.70.0
 	github.com/golang/protobuf v1.4.3
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/tools v0.0.0-20201017001424-6003fad69a88 // indirect
