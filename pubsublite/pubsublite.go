@@ -17,6 +17,7 @@ import (
 	"context"
 
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
@@ -25,29 +26,28 @@ import (
 // Client provides admin operations for Google Pub/Sub Lite resources within a
 // Google Cloud region. A Client may be shared by multiple goroutines.
 type Client struct {
-	// The Google Cloud region that this Client manages resources for.
-	Region string
-	admin  *vkit.AdminClient
+	admin *vkit.AdminClient
 }
 
-// NewAdminClient creates a new Cloud Pub/Sub Lite client to perform admin
-// operations for resources within a given region.
+// NewClient creates a new Cloud Pub/Sub Lite client to perform admin operations
+// for resources within a given region.
 // See https://cloud.google.com/pubsub/lite/docs/locations for the list of
 // regions and zones where Google Pub/Sub Lite is available.
-func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (c *Client, err error) {
+func NewClient(ctx context.Context, region string, opts ...option.ClientOption) (c *Client, err error) {
 	if err := validateRegion(region); err != nil {
 		return nil, err
 	}
-	options := []option.ClientOption{option.WithEndpoint(region + "-pubsublite.googleapis.com:443")}
+	options := []option.ClientOption{internaloption.WithDefaultEndpoint(region + "-pubsublite.googleapis.com:443")}
+	options = append(options, opts...)
 	admin, err := vkit.NewAdminClient(ctx, options...)
 	if err != nil {
 		return nil, err
 	}
-	return &Client{Region: region, admin: admin}, nil
+	return &Client{admin: admin}, nil
 }
 
 // CreateTopic creates a new topic from the given config.
-func (c *Client) CreateTopic(ctx context.Context, config *TopicConfig) (*TopicConfig, error) {
+func (c *Client) CreateTopic(ctx context.Context, config TopicConfig) (*TopicConfig, error) {
 	req := &pb.CreateTopicRequest{
 		Parent:  config.Name.location().String(),
 		Topic:   config.toProto(),
@@ -62,7 +62,7 @@ func (c *Client) CreateTopic(ctx context.Context, config *TopicConfig) (*TopicCo
 
 // UpdateTopic updates an existing topic from the given config and returns the
 // new topic config.
-func (c *Client) UpdateTopic(ctx context.Context, config *TopicConfigToUpdate) (*TopicConfig, error) {
+func (c *Client) UpdateTopic(ctx context.Context, config TopicConfigToUpdate) (*TopicConfig, error) {
 	topicpb, err := c.admin.UpdateTopic(ctx, config.toUpdateRequest())
 	if err != nil {
 		return nil, err
@@ -107,7 +107,7 @@ func (c *Client) Topics(ctx context.Context, location LocationPath) *TopicIterat
 }
 
 // CreateSubscription creates a new subscription from the given config.
-func (c *Client) CreateSubscription(ctx context.Context, config *SubscriptionConfig) (*SubscriptionConfig, error) {
+func (c *Client) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
 	req := &pb.CreateSubscriptionRequest{
 		Parent:         config.Name.location().String(),
 		Subscription:   config.toProto(),
@@ -122,7 +122,7 @@ func (c *Client) CreateSubscription(ctx context.Context, config *SubscriptionCon
 
 // UpdateSubscription updates an existing subscription from the given config and
 // returns the new subscription config.
-func (c *Client) UpdateSubscription(ctx context.Context, config *SubscriptionConfigToUpdate) (*SubscriptionConfig, error) {
+func (c *Client) UpdateSubscription(ctx context.Context, config SubscriptionConfigToUpdate) (*SubscriptionConfig, error) {
 	subspb, err := c.admin.UpdateSubscription(ctx, config.toUpdateRequest())
 	if err != nil {
 		return nil, err
