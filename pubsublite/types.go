@@ -48,6 +48,8 @@ type TopicPath struct {
 	Zone string
 
 	// The ID of the Google Pub/Sub Lite topic, for example "my-topic-name".
+	// See https://cloud.google.com/pubsub/docs/admin#resource_names for more
+	// information.
 	TopicID string
 }
 
@@ -55,16 +57,15 @@ func (t TopicPath) String() string {
 	return fmt.Sprintf("projects/%s/locations/%s/topics/%s", t.Project, t.Zone, t.TopicID)
 }
 
-// Location returns the path of the parent location.
-func (t TopicPath) Location() LocationPath {
+func (t TopicPath) location() LocationPath {
 	return LocationPath{Project: t.Project, Zone: t.Zone}
 }
 
 var topicPathRE = regexp.MustCompile(`^projects/([^/]+)/locations/([^/]+)/topics/([^/]+)$`)
 
-// ParseTopicPath parses the full path of a Google Pub/Sub Lite topic, which
+// parseTopicPath parses the full path of a Google Pub/Sub Lite topic, which
 // should have the format: `projects/{project}/locations/{zone}/topics/{id}`.
-func ParseTopicPath(input string) (TopicPath, error) {
+func parseTopicPath(input string) (TopicPath, error) {
 	parts := topicPathRE.FindStringSubmatch(input)
 	if len(parts) < 4 {
 		return TopicPath{}, fmt.Errorf("pubsublite: invalid topic path %q", input)
@@ -87,6 +88,8 @@ type SubscriptionPath struct {
 
 	// The ID of the Google Pub/Sub Lite subscription, for example
 	// "my-subscription-name".
+	// See https://cloud.google.com/pubsub/docs/admin#resource_names for more
+	// information.
 	SubscriptionID string
 }
 
@@ -94,17 +97,16 @@ func (s SubscriptionPath) String() string {
 	return fmt.Sprintf("projects/%s/locations/%s/subscriptions/%s", s.Project, s.Zone, s.SubscriptionID)
 }
 
-// Location returns the path of the parent location.
-func (s SubscriptionPath) Location() LocationPath {
+func (s SubscriptionPath) location() LocationPath {
 	return LocationPath{Project: s.Project, Zone: s.Zone}
 }
 
 var subsPathRE = regexp.MustCompile(`^projects/([^/]+)/locations/([^/]+)/subscriptions/([^/]+)$`)
 
-// ParseSubscriptionPath parses the full path of a Google Pub/Sub Lite
+// parseSubscriptionPath parses the full path of a Google Pub/Sub Lite
 // subscription, which should have the format:
 // `projects/{project}/locations/{zone}/subscriptions/{id}`.
-func ParseSubscriptionPath(input string) (SubscriptionPath, error) {
+func parseSubscriptionPath(input string) (SubscriptionPath, error) {
 	parts := subsPathRE.FindStringSubmatch(input)
 	if len(parts) < 4 {
 		return SubscriptionPath{}, fmt.Errorf("pubsublite: invalid subscription path %q", input)
@@ -112,10 +114,10 @@ func ParseSubscriptionPath(input string) (SubscriptionPath, error) {
 	return SubscriptionPath{Project: parts[1], Zone: parts[2], SubscriptionID: parts[3]}, nil
 }
 
-// ValidateZone verifies that the `input` string has the format of a valid
+// validateZone verifies that the `input` string has the format of a valid
 // Google Cloud zone. An example zone is "europe-west1-b".
 // See https://cloud.google.com/compute/docs/regions-zones for more information.
-func ValidateZone(input string) error {
+func validateZone(input string) error {
 	parts := strings.Split(input, "-")
 	if len(parts) != 3 {
 		return fmt.Errorf("pubsublite: invalid zone %q", input)
@@ -123,10 +125,10 @@ func ValidateZone(input string) error {
 	return nil
 }
 
-// ValidateRegion verifies that the `input` string has the format of a valid
+// validateRegion verifies that the `input` string has the format of a valid
 // Google Cloud region. An example region is "europe-west1".
 // See https://cloud.google.com/compute/docs/regions-zones for more information.
-func ValidateRegion(input string) error {
+func validateRegion(input string) error {
 	parts := strings.Split(input, "-")
 	if len(parts) != 2 {
 		return fmt.Errorf("pubsublite: invalid region %q", input)
@@ -136,7 +138,7 @@ func ValidateRegion(input string) error {
 
 // ZoneToRegion returns the region that the given zone is in.
 func ZoneToRegion(zone string) (string, error) {
-	if err := ValidateZone(zone); err != nil {
+	if err := validateZone(zone); err != nil {
 		return "", err
 	}
 	return zone[0:strings.LastIndex(zone, "-")], nil

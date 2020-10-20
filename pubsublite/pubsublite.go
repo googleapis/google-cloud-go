@@ -35,7 +35,7 @@ type Client struct {
 // See https://cloud.google.com/pubsub/lite/docs/locations for the list of
 // regions and zones where Google Pub/Sub Lite is available.
 func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (c *Client, err error) {
-	if err := ValidateRegion(region); err != nil {
+	if err := validateRegion(region); err != nil {
 		return nil, err
 	}
 	options := []option.ClientOption{option.WithEndpoint(region + "-pubsublite.googleapis.com:443")}
@@ -49,7 +49,7 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 // CreateTopic creates a new topic from the given config.
 func (c *Client) CreateTopic(ctx context.Context, config *TopicConfig) (*TopicConfig, error) {
 	req := &pb.CreateTopicRequest{
-		Parent:  config.Name.Location().String(),
+		Parent:  config.Name.location().String(),
 		Topic:   config.toProto(),
 		TopicId: config.Name.TopicID,
 	}
@@ -85,12 +85,12 @@ func (c *Client) Topic(ctx context.Context, topic TopicPath) (*TopicConfig, erro
 }
 
 // TopicPartitions returns the number of partitions for a topic.
-func (c *Client) TopicPartitions(ctx context.Context, topic TopicPath) (int64, error) {
+func (c *Client) TopicPartitions(ctx context.Context, topic TopicPath) (int, error) {
 	partitions, err := c.admin.GetTopicPartitions(ctx, &pb.GetTopicPartitionsRequest{Name: topic.String()})
 	if err != nil {
 		return 0, err
 	}
-	return partitions.GetPartitionCount(), nil
+	return int(partitions.GetPartitionCount()), nil
 }
 
 // TopicSubscriptions retrieves the list of subscription paths for a topic.
@@ -109,7 +109,7 @@ func (c *Client) Topics(ctx context.Context, location LocationPath) *TopicIterat
 // CreateSubscription creates a new subscription from the given config.
 func (c *Client) CreateSubscription(ctx context.Context, config *SubscriptionConfig) (*SubscriptionConfig, error) {
 	req := &pb.CreateSubscriptionRequest{
-		Parent:         config.Name.Location().String(),
+		Parent:         config.Name.location().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: config.Name.SubscriptionID,
 	}
@@ -203,5 +203,5 @@ func (sp *SubscriptionPathIterator) Next() (SubscriptionPath, error) {
 	if err != nil {
 		return SubscriptionPath{}, err
 	}
-	return ParseSubscriptionPath(subsPath)
+	return parseSubscriptionPath(subsPath)
 }

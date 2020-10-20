@@ -33,15 +33,15 @@ type TopicConfig struct {
 
 	// The number of partitions in the topic. Must be at least 1. Cannot be
 	// changed after creation.
-	PartitionCount int64
+	PartitionCount int
 
 	// Publish throughput capacity per partition in MiB/s.
 	// Must be >= 4 and <= 16.
-	PublishCapacityMiBPerSec int32
+	PublishCapacityMiBPerSec int
 
 	// Subscribe throughput capacity per partition in MiB/s.
 	// Must be >= 4 and <= 32.
-	SubscribeCapacityMiBPerSec int32
+	SubscribeCapacityMiBPerSec int
 
 	// The provisioned storage, in bytes, per partition. If the number of bytes
 	// stored in any of the topic's partitions grows beyond this value, older
@@ -59,11 +59,11 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 	topicpb := &pb.Topic{
 		Name: tc.Name.String(),
 		PartitionConfig: &pb.Topic_PartitionConfig{
-			Count: tc.PartitionCount,
+			Count: int64(tc.PartitionCount),
 			Dimension: &pb.Topic_PartitionConfig_Capacity_{
 				Capacity: &pb.Topic_PartitionConfig_Capacity{
-					PublishMibPerSec:   tc.PublishCapacityMiBPerSec,
-					SubscribeMibPerSec: tc.SubscribeCapacityMiBPerSec,
+					PublishMibPerSec:   int32(tc.PublishCapacityMiBPerSec),
+					SubscribeMibPerSec: int32(tc.SubscribeCapacityMiBPerSec),
 				},
 			},
 		},
@@ -81,7 +81,7 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 }
 
 func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
-	name, err := ParseTopicPath(t.GetName())
+	name, err := parseTopicPath(t.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("pubsublite: invalid topic name %q in topic config", t.GetName())
 	}
@@ -90,9 +90,9 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	retentionCfg := t.GetRetentionConfig()
 	topic := &TopicConfig{
 		Name:                       name,
-		PartitionCount:             partitionCfg.GetCount(),
-		PublishCapacityMiBPerSec:   partitionCfg.GetCapacity().GetPublishMibPerSec(),
-		SubscribeCapacityMiBPerSec: partitionCfg.GetCapacity().GetSubscribeMibPerSec(),
+		PartitionCount:             int(partitionCfg.GetCount()),
+		PublishCapacityMiBPerSec:   int(partitionCfg.GetCapacity().GetPublishMibPerSec()),
+		SubscribeCapacityMiBPerSec: int(partitionCfg.GetCapacity().GetSubscribeMibPerSec()),
 		PerPartitionBytes:          retentionCfg.GetPerPartitionBytes(),
 	}
 	// An unset retention period proto denotes "infinite retention".
@@ -117,10 +117,10 @@ type TopicConfigToUpdate struct {
 	Name TopicPath
 
 	// If non-zero, will update the publish throughput capacity per partition.
-	PublishCapacityMiBPerSec int32
+	PublishCapacityMiBPerSec int
 
 	// If non-zero, will update the subscribe throughput capacity per partition.
-	SubscribeCapacityMiBPerSec int32
+	SubscribeCapacityMiBPerSec int
 
 	// If non-zero, will update the provisioned storage per partition.
 	PerPartitionBytes int64
@@ -137,8 +137,8 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 		PartitionConfig: &pb.Topic_PartitionConfig{
 			Dimension: &pb.Topic_PartitionConfig_Capacity_{
 				Capacity: &pb.Topic_PartitionConfig_Capacity{
-					PublishMibPerSec:   tc.PublishCapacityMiBPerSec,
-					SubscribeMibPerSec: tc.SubscribeCapacityMiBPerSec,
+					PublishMibPerSec:   int32(tc.PublishCapacityMiBPerSec),
+					SubscribeMibPerSec: int32(tc.SubscribeCapacityMiBPerSec),
 				},
 			},
 		},
@@ -219,11 +219,11 @@ func (sc *SubscriptionConfig) toProto() *pb.Subscription {
 }
 
 func protoToSubscriptionConfig(s *pb.Subscription) (*SubscriptionConfig, error) {
-	name, err := ParseSubscriptionPath(s.GetName())
+	name, err := parseSubscriptionPath(s.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("pubsublite: invalid subscription name %q in subscription config", s.GetName())
 	}
-	topic, err := ParseTopicPath(s.GetTopic())
+	topic, err := parseTopicPath(s.GetTopic())
 	if err != nil {
 		return nil, fmt.Errorf("pubsublite: invalid topic name %q in subscription config", s.GetTopic())
 	}
