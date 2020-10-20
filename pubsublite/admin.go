@@ -23,17 +23,18 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
-// Client provides admin operations for Google Pub/Sub Lite resources within a
-// Google Cloud region. A Client may be shared by multiple goroutines.
-type Client struct {
+// AdminClient provides admin operations for Google Pub/Sub Lite resources
+// within a Google Cloud region. An AdminClient may be shared by multiple
+// goroutines.
+type AdminClient struct {
 	admin *vkit.AdminClient
 }
 
-// NewClient creates a new Cloud Pub/Sub Lite client to perform admin operations
-// for resources within a given region.
+// NewAdminClient creates a new Cloud Pub/Sub Lite client to perform admin
+// operations for resources within a given region.
 // See https://cloud.google.com/pubsub/lite/docs/locations for the list of
 // regions and zones where Google Pub/Sub Lite is available.
-func NewClient(ctx context.Context, region string, opts ...option.ClientOption) (c *Client, err error) {
+func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*AdminClient, error) {
 	if err := validateRegion(region); err != nil {
 		return nil, err
 	}
@@ -43,17 +44,17 @@ func NewClient(ctx context.Context, region string, opts ...option.ClientOption) 
 	if err != nil {
 		return nil, err
 	}
-	return &Client{admin: admin}, nil
+	return &AdminClient{admin: admin}, nil
 }
 
 // CreateTopic creates a new topic from the given config.
-func (c *Client) CreateTopic(ctx context.Context, config TopicConfig) (*TopicConfig, error) {
+func (ac *AdminClient) CreateTopic(ctx context.Context, config TopicConfig) (*TopicConfig, error) {
 	req := &pb.CreateTopicRequest{
 		Parent:  config.Name.location().String(),
 		Topic:   config.toProto(),
 		TopicId: config.Name.TopicID,
 	}
-	topicpb, err := c.admin.CreateTopic(ctx, req)
+	topicpb, err := ac.admin.CreateTopic(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -62,8 +63,8 @@ func (c *Client) CreateTopic(ctx context.Context, config TopicConfig) (*TopicCon
 
 // UpdateTopic updates an existing topic from the given config and returns the
 // new topic config.
-func (c *Client) UpdateTopic(ctx context.Context, config TopicConfigToUpdate) (*TopicConfig, error) {
-	topicpb, err := c.admin.UpdateTopic(ctx, config.toUpdateRequest())
+func (ac *AdminClient) UpdateTopic(ctx context.Context, config TopicConfigToUpdate) (*TopicConfig, error) {
+	topicpb, err := ac.admin.UpdateTopic(ctx, config.toUpdateRequest())
 	if err != nil {
 		return nil, err
 	}
@@ -71,13 +72,13 @@ func (c *Client) UpdateTopic(ctx context.Context, config TopicConfigToUpdate) (*
 }
 
 // DeleteTopic deletes a topic.
-func (c *Client) DeleteTopic(ctx context.Context, topic TopicPath) error {
-	return c.admin.DeleteTopic(ctx, &pb.DeleteTopicRequest{Name: topic.String()})
+func (ac *AdminClient) DeleteTopic(ctx context.Context, topic TopicPath) error {
+	return ac.admin.DeleteTopic(ctx, &pb.DeleteTopicRequest{Name: topic.String()})
 }
 
 // Topic retrieves the configuration of a topic.
-func (c *Client) Topic(ctx context.Context, topic TopicPath) (*TopicConfig, error) {
-	topicpb, err := c.admin.GetTopic(ctx, &pb.GetTopicRequest{Name: topic.String()})
+func (ac *AdminClient) Topic(ctx context.Context, topic TopicPath) (*TopicConfig, error) {
+	topicpb, err := ac.admin.GetTopic(ctx, &pb.GetTopicRequest{Name: topic.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +86,8 @@ func (c *Client) Topic(ctx context.Context, topic TopicPath) (*TopicConfig, erro
 }
 
 // TopicPartitions returns the number of partitions for a topic.
-func (c *Client) TopicPartitions(ctx context.Context, topic TopicPath) (int, error) {
-	partitions, err := c.admin.GetTopicPartitions(ctx, &pb.GetTopicPartitionsRequest{Name: topic.String()})
+func (ac *AdminClient) TopicPartitions(ctx context.Context, topic TopicPath) (int, error) {
+	partitions, err := ac.admin.GetTopicPartitions(ctx, &pb.GetTopicPartitionsRequest{Name: topic.String()})
 	if err != nil {
 		return 0, err
 	}
@@ -94,26 +95,26 @@ func (c *Client) TopicPartitions(ctx context.Context, topic TopicPath) (int, err
 }
 
 // TopicSubscriptions retrieves the list of subscription paths for a topic.
-func (c *Client) TopicSubscriptions(ctx context.Context, topic TopicPath) (*SubscriptionPathIterator, error) {
-	subsPathIt := c.admin.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{Name: topic.String()})
+func (ac *AdminClient) TopicSubscriptions(ctx context.Context, topic TopicPath) (*SubscriptionPathIterator, error) {
+	subsPathIt := ac.admin.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{Name: topic.String()})
 	return &SubscriptionPathIterator{it: subsPathIt}, nil
 }
 
 // Topics retrieves the list of topic configs for a given project and zone.
-func (c *Client) Topics(ctx context.Context, location LocationPath) *TopicIterator {
+func (ac *AdminClient) Topics(ctx context.Context, location LocationPath) *TopicIterator {
 	return &TopicIterator{
-		it: c.admin.ListTopics(ctx, &pb.ListTopicsRequest{Parent: location.String()}),
+		it: ac.admin.ListTopics(ctx, &pb.ListTopicsRequest{Parent: location.String()}),
 	}
 }
 
 // CreateSubscription creates a new subscription from the given config.
-func (c *Client) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
+func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
 	req := &pb.CreateSubscriptionRequest{
 		Parent:         config.Name.location().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: config.Name.SubscriptionID,
 	}
-	subspb, err := c.admin.CreateSubscription(ctx, req)
+	subspb, err := ac.admin.CreateSubscription(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -122,8 +123,8 @@ func (c *Client) CreateSubscription(ctx context.Context, config SubscriptionConf
 
 // UpdateSubscription updates an existing subscription from the given config and
 // returns the new subscription config.
-func (c *Client) UpdateSubscription(ctx context.Context, config SubscriptionConfigToUpdate) (*SubscriptionConfig, error) {
-	subspb, err := c.admin.UpdateSubscription(ctx, config.toUpdateRequest())
+func (ac *AdminClient) UpdateSubscription(ctx context.Context, config SubscriptionConfigToUpdate) (*SubscriptionConfig, error) {
+	subspb, err := ac.admin.UpdateSubscription(ctx, config.toUpdateRequest())
 	if err != nil {
 		return nil, err
 	}
@@ -131,13 +132,13 @@ func (c *Client) UpdateSubscription(ctx context.Context, config SubscriptionConf
 }
 
 // DeleteSubscription deletes a subscription.
-func (c *Client) DeleteSubscription(ctx context.Context, subscription SubscriptionPath) error {
-	return c.admin.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Name: subscription.String()})
+func (ac *AdminClient) DeleteSubscription(ctx context.Context, subscription SubscriptionPath) error {
+	return ac.admin.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Name: subscription.String()})
 }
 
 // Subscription retrieves the configuration of a subscription.
-func (c *Client) Subscription(ctx context.Context, subscription SubscriptionPath) (*SubscriptionConfig, error) {
-	subspb, err := c.admin.GetSubscription(ctx, &pb.GetSubscriptionRequest{Name: subscription.String()})
+func (ac *AdminClient) Subscription(ctx context.Context, subscription SubscriptionPath) (*SubscriptionConfig, error) {
+	subspb, err := ac.admin.GetSubscription(ctx, &pb.GetSubscriptionRequest{Name: subscription.String()})
 	if err != nil {
 		return nil, err
 	}
@@ -146,17 +147,17 @@ func (c *Client) Subscription(ctx context.Context, subscription SubscriptionPath
 
 // Subscriptions retrieves the list of subscription configs for a given project
 // and zone.
-func (c *Client) Subscriptions(ctx context.Context, location LocationPath) *SubscriptionIterator {
+func (ac *AdminClient) Subscriptions(ctx context.Context, location LocationPath) *SubscriptionIterator {
 	return &SubscriptionIterator{
-		it: c.admin.ListSubscriptions(ctx, &pb.ListSubscriptionsRequest{Parent: location.String()}),
+		it: ac.admin.ListSubscriptions(ctx, &pb.ListSubscriptionsRequest{Parent: location.String()}),
 	}
 }
 
 // Close releases any resources held by the client when it is no longer
 // required. If the client is available for the lifetime of the program, then
 // Close need not be called at exit.
-func (c *Client) Close() error {
-	return c.admin.Close()
+func (ac *AdminClient) Close() error {
+	return ac.admin.Close()
 }
 
 // TopicIterator is an iterator that returns a list of topic configs.

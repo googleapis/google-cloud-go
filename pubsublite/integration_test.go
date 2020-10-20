@@ -63,27 +63,27 @@ func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []optio
 	return append(grpcHeadersEnforcer.CallOptions(), opts...)
 }
 
-func adminClient(ctx context.Context, t *testing.T, region string, opts ...option.ClientOption) *Client {
+func adminClient(ctx context.Context, t *testing.T, region string, opts ...option.ClientOption) *AdminClient {
 	ts := testutil.TokenSource(ctx, vkit.DefaultAuthScopes()...)
 	if ts == nil {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
 	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
-	client, err := NewClient(ctx, region, opts...)
+	admin, err := NewAdminClient(ctx, region, opts...)
 	if err != nil {
 		t.Fatalf("Failed to create admin client: %v", err)
 	}
-	return client
+	return admin
 }
 
-func cleanUpTopic(ctx context.Context, t *testing.T, client *Client, name TopicPath) {
-	if err := client.DeleteTopic(ctx, name); err != nil {
+func cleanUpTopic(ctx context.Context, t *testing.T, admin *AdminClient, name TopicPath) {
+	if err := admin.DeleteTopic(ctx, name); err != nil {
 		t.Errorf("Failed to delete topic %s: %v", name, err)
 	}
 }
 
-func cleanUpSubscription(ctx context.Context, t *testing.T, client *Client, name SubscriptionPath) {
-	if err := client.DeleteSubscription(ctx, name); err != nil {
+func cleanUpSubscription(ctx context.Context, t *testing.T, admin *AdminClient, name SubscriptionPath) {
+	if err := admin.DeleteSubscription(ctx, name); err != nil {
 		t.Errorf("Failed to delete subscription %s: %v", name, err)
 	}
 }
@@ -106,8 +106,8 @@ func TestResourceAdminOperations(t *testing.T) {
 	subscriptionPath := SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
 	t.Logf("Topic path: %s", topicPath)
 
-	client := adminClient(ctx, t, region)
-	defer client.Close()
+	admin := adminClient(ctx, t, region)
+	defer admin.Close()
 
 	// Topic admin operations.
 	newTopicConfig := &TopicConfig{
@@ -119,28 +119,28 @@ func TestResourceAdminOperations(t *testing.T) {
 		RetentionDuration:          time.Duration(24 * time.Hour),
 	}
 
-	gotTopicConfig, err := client.CreateTopic(ctx, *newTopicConfig)
+	gotTopicConfig, err := admin.CreateTopic(ctx, *newTopicConfig)
 	if err != nil {
 		t.Fatalf("Failed to create topic: %v", err)
 	}
-	defer cleanUpTopic(ctx, t, client, topicPath)
+	defer cleanUpTopic(ctx, t, admin, topicPath)
 	if diff := testutil.Diff(gotTopicConfig, newTopicConfig); diff != "" {
 		t.Errorf("CreateTopic() got: -, want: +\n%s", diff)
 	}
 
-	if gotTopicConfig, err := client.Topic(ctx, topicPath); err != nil {
+	if gotTopicConfig, err := admin.Topic(ctx, topicPath); err != nil {
 		t.Errorf("Failed to get topic: %v", err)
 	} else if diff := testutil.Diff(gotTopicConfig, newTopicConfig); diff != "" {
 		t.Errorf("Topic() got: -, want: +\n%s", diff)
 	}
 
-	if gotTopicPartitions, err := client.TopicPartitions(ctx, topicPath); err != nil {
+	if gotTopicPartitions, err := admin.TopicPartitions(ctx, topicPath); err != nil {
 		t.Errorf("Failed to get topic partitions: %v", err)
 	} else if gotTopicPartitions != newTopicConfig.PartitionCount {
 		t.Errorf("TopicPartitions() got: %v, want: %v", gotTopicPartitions, newTopicConfig.PartitionCount)
 	}
 
-	topicIt := client.Topics(ctx, locationPath)
+	topicIt := admin.Topics(ctx, locationPath)
 	var foundTopic *TopicConfig
 	for {
 		topic, err := topicIt.Next()
@@ -171,7 +171,7 @@ func TestResourceAdminOperations(t *testing.T) {
 		PerPartitionBytes:          30 * gibi,
 		RetentionDuration:          time.Duration(24 * time.Hour),
 	}
-	if gotTopicConfig, err := client.UpdateTopic(ctx, topicUpdate1); err != nil {
+	if gotTopicConfig, err := admin.UpdateTopic(ctx, topicUpdate1); err != nil {
 		t.Errorf("Failed to update topic: %v", err)
 	} else if diff := testutil.Diff(gotTopicConfig, wantUpdatedTopicConfig1); diff != "" {
 		t.Errorf("UpdateTopic() got: -, want: +\n%s", diff)
@@ -189,7 +189,7 @@ func TestResourceAdminOperations(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 8,
 		PerPartitionBytes:          35 * gibi,
 	}
-	if gotTopicConfig, err := client.UpdateTopic(ctx, topicUpdate2); err != nil {
+	if gotTopicConfig, err := admin.UpdateTopic(ctx, topicUpdate2); err != nil {
 		t.Errorf("Failed to update topic: %v", err)
 	} else if diff := testutil.Diff(gotTopicConfig, wantUpdatedTopicConfig2); diff != "" {
 		t.Errorf("UpdateTopic() got: -, want: +\n%s", diff)
@@ -202,22 +202,22 @@ func TestResourceAdminOperations(t *testing.T) {
 		DeliveryRequirement: DeliverImmediately,
 	}
 
-	gotSubsConfig, err := client.CreateSubscription(ctx, *newSubsConfig)
+	gotSubsConfig, err := admin.CreateSubscription(ctx, *newSubsConfig)
 	if err != nil {
 		t.Fatalf("Failed to create subscription: %v", err)
 	}
-	defer cleanUpSubscription(ctx, t, client, subscriptionPath)
+	defer cleanUpSubscription(ctx, t, admin, subscriptionPath)
 	if diff := testutil.Diff(gotSubsConfig, newSubsConfig); diff != "" {
 		t.Errorf("CreateSubscription() got: -, want: +\n%s", diff)
 	}
 
-	if gotSubsConfig, err := client.Subscription(ctx, subscriptionPath); err != nil {
+	if gotSubsConfig, err := admin.Subscription(ctx, subscriptionPath); err != nil {
 		t.Errorf("Failed to get subscription: %v", err)
 	} else if diff := testutil.Diff(gotSubsConfig, newSubsConfig); diff != "" {
 		t.Errorf("Subscription() got: -, want: +\n%s", diff)
 	}
 
-	subsIt := client.Subscriptions(ctx, locationPath)
+	subsIt := admin.Subscriptions(ctx, locationPath)
 	var foundSubs *SubscriptionConfig
 	for {
 		subs, err := subsIt.Next()
@@ -235,7 +235,7 @@ func TestResourceAdminOperations(t *testing.T) {
 		t.Errorf("Subscriptions() found config: -, want: +\n%s", diff)
 	}
 
-	if subsPathIt, err := client.TopicSubscriptions(ctx, topicPath); err != nil {
+	if subsPathIt, err := admin.TopicSubscriptions(ctx, topicPath); err != nil {
 		t.Errorf("Failed to list topic subscriptions: %v", err)
 	} else {
 		foundSubsPath := false
@@ -263,7 +263,7 @@ func TestResourceAdminOperations(t *testing.T) {
 		Topic:               topicPath,
 		DeliveryRequirement: DeliverAfterStored,
 	}
-	if gotSubsConfig, err := client.UpdateSubscription(ctx, subsUpdate); err != nil {
+	if gotSubsConfig, err := admin.UpdateSubscription(ctx, subsUpdate); err != nil {
 		t.Errorf("Failed to update subscription: %v", err)
 	} else if diff := testutil.Diff(gotSubsConfig, wantUpdatedSubsConfig); diff != "" {
 		t.Errorf("UpdateSubscription() got: -, want: +\n%s", diff)
