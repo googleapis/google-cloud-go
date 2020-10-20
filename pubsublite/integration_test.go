@@ -188,6 +188,7 @@ func TestResourceAdminOperations(t *testing.T) {
 		PublishCapacityMiBPerSec:   6,
 		SubscribeCapacityMiBPerSec: 8,
 		PerPartitionBytes:          35 * gibi,
+		RetentionDuration:          InfiniteRetention,
 	}
 	if gotTopicConfig, err := admin.UpdateTopic(ctx, topicUpdate2); err != nil {
 		t.Errorf("Failed to update topic: %v", err)

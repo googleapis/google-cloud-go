@@ -24,6 +24,11 @@ import (
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
+// InfiniteRetention is a sentinel used in topic configs to denote an infinite
+// retention duration (i.e. retain messages as long as there is available
+// storage).
+const InfiniteRetention = time.Duration(-1)
+
 // TopicConfig describes the properties of a Google Pub/Sub Lite topic.
 // See https://cloud.google.com/pubsub/lite/docs/topics for more information
 // about how topics are configured.
@@ -49,10 +54,10 @@ type TopicConfig struct {
 	// value of `RetentionDuration`.
 	PerPartitionBytes int64
 
-	// How long a published message is retained. If unset, messages will be
-	// retained as long as the bytes retained for each partition is below
-	// `PerPartitionBytes`.
-	RetentionDuration optional.Duration
+	// How long a published message is retained. If set to `InfiniteRetention`,
+	// messages will be retained as long as the bytes retained for each partition
+	// is below `PerPartitionBytes`.
+	RetentionDuration time.Duration
 }
 
 func (tc *TopicConfig) toProto() *pb.Topic {
@@ -71,11 +76,8 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 			PerPartitionBytes: tc.PerPartitionBytes,
 		},
 	}
-	if tc.RetentionDuration != nil {
-		duration := optional.ToDuration(tc.RetentionDuration)
-		if duration >= 0 {
-			topicpb.RetentionConfig.Period = ptypes.DurationProto(duration)
-		}
+	if tc.RetentionDuration >= 0 {
+		topicpb.RetentionConfig.Period = ptypes.DurationProto(tc.RetentionDuration)
 	}
 	return topicpb
 }
@@ -94,6 +96,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 		PublishCapacityMiBPerSec:   int(partitionCfg.GetCapacity().GetPublishMibPerSec()),
 		SubscribeCapacityMiBPerSec: int(partitionCfg.GetCapacity().GetSubscribeMibPerSec()),
 		PerPartitionBytes:          retentionCfg.GetPerPartitionBytes(),
+		RetentionDuration:          InfiniteRetention,
 	}
 	// An unset retention period proto denotes "infinite retention".
 	if retentionCfg.Period != nil {
@@ -105,11 +108,6 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	}
 	return topic, nil
 }
-
-// InfiniteRetention is sentinel used when updating topic configs to clear a
-// retention duration (i.e. retain messages as long as there is available
-// storage).
-const InfiniteRetention = time.Duration(-1)
 
 // TopicConfigToUpdate specifies the properties to update for a topic.
 type TopicConfigToUpdate struct {
@@ -127,7 +125,7 @@ type TopicConfigToUpdate struct {
 
 	// If specified, will update how long a published message is retained. To
 	// clear a retention duration (i.e. retain messages as long as there is
-	// available storage), set this to `pubsublite.InfiniteRetention`.
+	// available storage), set this to `InfiniteRetention`.
 	RetentionDuration optional.Duration
 }
 
