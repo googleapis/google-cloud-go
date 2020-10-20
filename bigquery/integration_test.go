@@ -1116,8 +1116,12 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Wanted error, got successful insert.")
 	}
-	if err != ErrRequestMalformed {
-		t.Errorf("Wanted ErrRequestMalformed, got: %v", err)
+	e, ok = err.(*googleapi.Error)
+	if !ok {
+		t.Errorf("wanted googleapi.Error, got: %v", err)
+	}
+	if e.Code != http.StatusBadRequest {
+		t.Errorf("Wanted HTTP 400, got %d", e.Code)
 	}
 }
 
