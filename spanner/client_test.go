@@ -1880,6 +1880,51 @@ func TestClient_QueryWithCallOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ShouldReceiveMetadataForEmptyResultSet(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	// This creates an empty result set.
+	res := server.CreateSingleRowSingersResult(SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	sql := "SELECT SingerId, AlbumId, AlbumTitle FROM Albums WHERE 1=2"
+	server.TestSpanner.PutStatementResult(sql, res)
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Query(ctx, NewStatement(sql))
+	defer iter.Stop()
+	row, err := iter.Next()
+	if err != iterator.Done {
+		t.Errorf("Query result mismatch:\nGot: %v\nWant: <no rows>", row)
+	}
+	metadata := iter.Metadata
+	if metadata == nil {
+		t.Fatalf("Missing ResultSet Metadata")
+	}
+	if metadata.RowType == nil {
+		t.Fatalf("Missing ResultSet RowType")
+	}
+	if metadata.RowType.Fields == nil {
+		t.Fatalf("Missing ResultSet Fields")
+	}
+	if g, w := len(metadata.RowType.Fields), 3; g != w {
+		t.Fatalf("Field count mismatch\nGot: %v\nWant: %v", g, w)
+	}
+	wantFieldNames := []string{"SingerId", "AlbumId", "AlbumTitle"}
+	for i, w := range wantFieldNames {
+		g := metadata.RowType.Fields[i].Name
+		if g != w {
+			t.Fatalf("Field[%v] name mismatch\nGot: %v\nWant: %v", i, g, w)
+		}
+	}
+	wantFieldTypes := []sppb.TypeCode{sppb.TypeCode_INT64, sppb.TypeCode_INT64, sppb.TypeCode_STRING}
+	for i, w := range wantFieldTypes {
+		g := metadata.RowType.Fields[i].Type.Code
+		if g != w {
+			t.Fatalf("Field[%v] type mismatch\nGot: %v\nWant: %v", i, g, w)
+		}
+	}
+}
+
 func TestClient_EncodeCustomFieldType(t *testing.T) {
 	t.Parallel()
 
