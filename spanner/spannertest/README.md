@@ -28,6 +28,7 @@ by ascending esotericism:
 - transaction simulation
 - expression type casting, coercion
 - subselects
+- FOREIGN KEY and CHECK constraints
 - set operations (UNION, INTERSECT, EXCEPT)
 - partition support
 - conditional expressions

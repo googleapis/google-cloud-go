@@ -57,15 +57,28 @@ func (ct *CreateTable) clearOffset() {
 // TableConstraint represents a constraint on a table.
 type TableConstraint struct {
 	Name       ID // may be empty
-	ForeignKey ForeignKey
+	Constraint Constraint
 
-	Position Position // position of the "CONSTRAINT" or "FOREIGN" token
+	Position Position // position of the "CONSTRAINT" token, or Constraint.Pos()
 }
 
 func (tc TableConstraint) Pos() Position { return tc.Position }
 func (tc *TableConstraint) clearOffset() {
+	switch c := tc.Constraint.(type) {
+	case ForeignKey:
+		c.clearOffset()
+		tc.Constraint = c
+	case Check:
+		c.clearOffset()
+		tc.Constraint = c
+	}
 	tc.Position.Offset = 0
-	tc.ForeignKey.clearOffset()
+}
+
+type Constraint interface {
+	isConstraint()
+	SQL() string
+	Node
 }
 
 // Interleave represents an interleave clause of a CREATE TABLE statement.
@@ -243,6 +256,19 @@ type ForeignKey struct {
 
 func (fk ForeignKey) Pos() Position { return fk.Position }
 func (fk *ForeignKey) clearOffset() { fk.Position.Offset = 0 }
+func (ForeignKey) isConstraint()    {}
+
+// Check represents a check constraint as part of a CREATE TABLE
+// or ALTER TABLE statement.
+type Check struct {
+	Expr BoolExpr
+
+	Position Position // position of the "CHECK" token
+}
+
+func (c Check) Pos() Position { return c.Position }
+func (c *Check) clearOffset() { c.Position.Offset = 0 }
+func (Check) isConstraint()   {}
 
 // Type represents a column type.
 type Type struct {

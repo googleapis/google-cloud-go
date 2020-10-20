@@ -1,5 +1,34 @@
 # Changes
 
+## v1.11.0
+
+* Features:
+  - feat(spanner): add KeySetFromKeys function (#2837)
+* Misc:
+  - test(spanner): check for Aborted error (#3039)
+  - test(spanner): fix potential race condition in TestRsdBlockingStates (#3017)
+  - test(spanner): compare data instead of struct (#3013)
+  - test(spanner): fix flaky oc_test.go (#2838)
+  - docs(spanner): document NULL value (#2885)
+* spansql/spannertest:
+  - Support JOINs (all but FULL JOIN) (#2936, #2924, #2896, #3042, #3037, #2995, #2945, #2931)
+  - feat(spanner/spansql): parse CHECK constraints (#3046)
+  - fix(spanner/spansql): fix parsing of unary minus and plus (#2997)
+  - fix(spanner/spansql): fix parsing of adjacent inline and leading comments (#2851)
+  - fix(spanner/spannertest): fix ORDER BY combined with SELECT aliases (#3043)
+  - fix(spanner/spannertest): generate query output columns in construction order (#2990)
+  - fix(spanner/spannertest): correct handling of NULL AND FALSE (#2991)
+  - fix(spanner/spannertest): correct handling of tri-state boolean expression evaluation (#2983)
+  - fix(spanner/spannertest): fix handling of NULL with LIKE operator (#2982)
+  - test(spanner/spannertest): migrate most test code to integration_test.go (#2977)
+  - test(spanner/spansql): add fuzz target for ParseQuery (#2909)
+  - doc(spanner/spannertest): document the implementation (#2996)
+  - perf(spanner/spannertest): speed up no-wait DDL changes (#2994)
+  - perf(spanner/spansql): make fewer allocations during SQL (#2969)
+* Backward Incompatible Changes
+  - chore(spanner/spansql): use ID type for identifiers throughout (#2889)
+  - chore(spanner/spansql): restructure FROM, TABLESAMPLE (#2888)
+
 ## v1.10.0
 
 * feat(spanner): add support for NUMERIC data type (#2415)

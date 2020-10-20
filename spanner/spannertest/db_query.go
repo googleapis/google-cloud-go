@@ -461,18 +461,19 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 		}
 	}
 
+	// Load aliases visible to any future iterators,
+	// including GROUP BY and ORDER BY. These are not visible to the WHERE clause.
+	ec.aliases = make(map[spansql.ID]spansql.Expr)
+	for i, alias := range sel.ListAliases {
+		ec.aliases[alias] = sel.List[i]
+	}
+	// TODO: Add aliases for "1", "2", etc.
+
 	// Apply GROUP BY.
 	// This only reorders rows to group rows together;
 	// aggregation happens next.
 	var rowGroups [][2]int // Sequence of half-open intervals of row numbers.
 	if len(sel.GroupBy) > 0 {
-		// Load aliases visible to this GROUP BY.
-		ec.aliases = make(map[spansql.ID]spansql.Expr)
-		for i, alias := range sel.ListAliases {
-			ec.aliases[alias] = sel.List[i]
-		}
-		// TODO: Add aliases for "1", "2", etc.
-
 		raw, err := toRawIter(ri)
 		if err != nil {
 			return nil, err
