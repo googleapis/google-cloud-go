@@ -191,10 +191,27 @@ type selIter struct {
 	ec   evalContext
 	cis  []colInfo
 	list []spansql.Expr
+
+	distinct bool // whether this is a SELECT DISTINCT
+	seen     []row
 }
 
-func (si selIter) Cols() []colInfo { return si.cis }
-func (si selIter) Next() (row, error) {
+func (si *selIter) Cols() []colInfo { return si.cis }
+func (si *selIter) Next() (row, error) {
+	for {
+		r, err := si.next()
+		if err != nil {
+			return nil, err
+		}
+		if si.distinct && !si.keep(r) {
+			continue
+		}
+		return r, nil
+	}
+}
+
+// next retrieves the next row for the SELECT and evaluates its expression list.
+func (si *selIter) next() (row, error) {
 	r, err := si.ri.Next()
 	if err != nil {
 		return nil, err
@@ -216,35 +233,17 @@ func (si selIter) Next() (row, error) {
 	return out, nil
 }
 
-// distinctIter applies a DISTINCT filter.
-type distinctIter struct {
-	ri   rowIter
-	seen []row
-}
-
-func (di *distinctIter) Cols() []colInfo { return di.ri.Cols() }
-func (di *distinctIter) Next() (row, error) {
+func (si *selIter) keep(r row) bool {
 	// This is hilariously inefficient; O(N^2) in the number of returned rows.
 	// Some sort of hashing could be done to deduplicate instead.
 	// This also breaks on array/struct types.
-	for {
-		row, err := di.ri.Next()
-		if err != nil {
-			return nil, err
+	for _, prev := range si.seen {
+		if rowEqual(prev, r) {
+			return false
 		}
-		dupe := false
-		for _, prev := range di.seen {
-			if rowEqual(prev, row) {
-				dupe = true
-				break
-			}
-		}
-		if dupe {
-			continue
-		}
-		di.seen = append(di.seen, row)
-		return row, nil
 	}
+	si.seen = append(si.seen, r)
+	return true
 }
 
 // offsetIter applies an OFFSET clause.
@@ -295,39 +294,70 @@ type queryParam struct {
 
 type queryParams map[string]queryParam // TODO: change key to spansql.Param?
 
-func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
-	// If there's an ORDER BY clause, extend the query to include the expressions we need
-	// so they get evaluated during evalSelect. TODO: Is this actually okay?
+type queryContext struct {
+	params queryParams
+
+	tables     []*table // sorted by name
+	tableIndex map[spansql.ID]*table
+	locks      int
+}
+
+func (qc *queryContext) Lock() {
+	// Take locks in name order.
+	for _, t := range qc.tables {
+		t.mu.Lock()
+		qc.locks++
+	}
+}
+
+func (qc *queryContext) Unlock() {
+	for _, t := range qc.tables {
+		t.mu.Unlock()
+		qc.locks--
+	}
+}
+
+func (d *database) Query(q spansql.Query, params queryParams) (ri rowIter, err error) {
+	// Figure out the context of the query and take any required locks.
+	qc, err := d.queryContext(q, params)
+	if err != nil {
+		return nil, err
+	}
+	qc.Lock()
+	// On the way out, if there were locks taken, flatten the output
+	// and release the locks.
+	if qc.locks > 0 {
+		defer func() {
+			if err == nil {
+				ri, err = toRawIter(ri)
+			}
+			qc.Unlock()
+		}()
+	}
+
+	// Prepare auxiliary expressions to evaluate for ORDER BY.
 	var aux []spansql.Expr
 	var desc []bool
 	for _, o := range q.Order {
 		aux = append(aux, o.Expr)
 		desc = append(desc, o.Desc)
 	}
-	q.Select.List = append(q.Select.List, aux...)
 
-	ri, err := d.evalSelect(q.Select, params)
+	si, err := d.evalSelect(q.Select, qc)
 	if err != nil {
 		return nil, err
 	}
+	ri = si
 
 	// Apply ORDER BY.
 	if len(q.Order) > 0 {
-		raw, err := toRawIter(ri)
+		// Evaluate the selIter completely, and sort the rows by the auxiliary expressions.
+		rows, keys, err := evalSelectOrder(si, aux)
 		if err != nil {
 			return nil, err
 		}
-		sort.Slice(raw.rows, func(one, two int) bool {
-			r1, r2 := raw.rows[one], raw.rows[two]
-			aux1, aux2 := r1[len(r1)-len(aux):], r2[len(r2)-len(aux):] // sort keys
-			return compareValLists(aux1, aux2, desc) < 0
-		})
-		// Remove ORDER BY values.
-		raw.cols = raw.cols[:len(raw.cols)-len(aux)]
-		for i, row := range raw.rows {
-			raw.rows[i] = row[:len(row)-len(aux)]
-		}
-		ri = raw
+		sort.Sort(externalRowSorter{rows: rows, keys: keys, desc: desc})
+		ri = &rawIter{cols: si.cis, rows: rows}
 	}
 
 	// Apply LIMIT, OFFSET.
@@ -350,10 +380,63 @@ func (d *database) Query(q spansql.Query, params queryParams) (rowIter, error) {
 	return ri, nil
 }
 
-func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIter, evalErr error) {
-	ri = &nullIter{}
-	ec := evalContext{
+func (d *database) queryContext(q spansql.Query, params queryParams) (*queryContext, error) {
+	qc := &queryContext{
 		params: params,
+	}
+
+	// Look for any mentioned tables and add them to qc.tableIndex.
+	addTable := func(name spansql.ID) error {
+		if _, ok := qc.tableIndex[name]; ok {
+			return nil // Already found this table.
+		}
+		t, err := d.table(name)
+		if err != nil {
+			return err
+		}
+		if qc.tableIndex == nil {
+			qc.tableIndex = make(map[spansql.ID]*table)
+		}
+		qc.tableIndex[name] = t
+		return nil
+	}
+	var findTables func(sf spansql.SelectFrom) error
+	findTables = func(sf spansql.SelectFrom) error {
+		switch sf := sf.(type) {
+		default:
+			return fmt.Errorf("can't prepare query context for SelectFrom of type %T", sf)
+		case spansql.SelectFromTable:
+			return addTable(sf.Table)
+		case spansql.SelectFromJoin:
+			if err := findTables(sf.LHS); err != nil {
+				return err
+			}
+			return findTables(sf.RHS)
+		}
+	}
+	for _, sf := range q.Select.From {
+		if err := findTables(sf); err != nil {
+			return nil, err
+		}
+	}
+
+	// Build qc.tables in name order so we can take locks in a well-defined order.
+	var names []spansql.ID
+	for name := range qc.tableIndex {
+		names = append(names, name)
+	}
+	sort.Slice(names, func(i, j int) bool { return names[i] < names[j] })
+	for _, name := range names {
+		qc.tables = append(qc.tables, qc.tableIndex[name])
+	}
+
+	return qc, nil
+}
+
+func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter, evalErr error) {
+	var ri rowIter = &nullIter{}
+	ec := evalContext{
+		params: qc.params,
 	}
 
 	// First stage is to identify the data source.
@@ -362,21 +445,11 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		return nil, fmt.Errorf("selecting with more than one FROM clause not yet supported")
 	}
 	if len(sel.From) == 1 {
-		var unlock func()
 		var err error
-		ec, ri, unlock, err = d.evalSelectFrom(ec, sel.From[0])
+		ec, ri, err = d.evalSelectFrom(qc, ec, sel.From[0])
 		if err != nil {
 			return nil, err
 		}
-		defer unlock()
-
-		// On the way out, convert the result to a rawIter
-		// so that any locked tables may be safely unlocked.
-		defer func() {
-			if evalErr == nil {
-				ri, evalErr = toRawIter(ri)
-			}
-		}()
 	}
 
 	// Apply WHERE.
@@ -388,18 +461,19 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 		}
 	}
 
+	// Load aliases visible to any future iterators,
+	// including GROUP BY and ORDER BY. These are not visible to the WHERE clause.
+	ec.aliases = make(map[spansql.ID]spansql.Expr)
+	for i, alias := range sel.ListAliases {
+		ec.aliases[alias] = sel.List[i]
+	}
+	// TODO: Add aliases for "1", "2", etc.
+
 	// Apply GROUP BY.
 	// This only reorders rows to group rows together;
 	// aggregation happens next.
 	var rowGroups [][2]int // Sequence of half-open intervals of row numbers.
 	if len(sel.GroupBy) > 0 {
-		// Load aliases visible to this GROUP BY.
-		ec.aliases = make(map[spansql.ID]spansql.Expr)
-		for i, alias := range sel.ListAliases {
-			ec.aliases[alias] = sel.List[i]
-		}
-		// TODO: Add aliases for "1", "2", etc.
-
 		raw, err := toRawIter(ri)
 		if err != nil {
 			return nil, err
@@ -577,31 +651,27 @@ func (d *database) evalSelect(sel spansql.Select, params queryParams) (ri rowIte
 			colInfos = append(colInfos, ci)
 		}
 	}
-	ri = selIter{
+
+	return &selIter{
 		ri:   ri,
 		ec:   ec,
 		cis:  colInfos,
 		list: sel.List,
-	}
 
-	// Apply DISTINCT.
-	if sel.Distinct {
-		ri = &distinctIter{ri: ri}
-	}
-
-	return ri, nil
+		distinct: sel.Distinct, // Apply DISTINCT.
+	}, nil
 }
 
-func (d *database) evalSelectFrom(ec evalContext, sf spansql.SelectFrom) (evalContext, rowIter, func(), error) {
+func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.SelectFrom) (evalContext, rowIter, error) {
 	switch sf := sf.(type) {
 	default:
-		return ec, nil, nil, fmt.Errorf("selecting with FROM clause of type %T not yet supported", sf)
+		return ec, nil, fmt.Errorf("selecting with FROM clause of type %T not yet supported", sf)
 	case spansql.SelectFromTable:
-		t, err := d.table(sf.Table)
-		if err != nil {
-			return ec, nil, nil, err
+		t, ok := qc.tableIndex[sf.Table]
+		if !ok {
+			// This shouldn't be possible; the queryContext should have discovered missing tables already.
+			return ec, nil, fmt.Errorf("unknown table %q", sf.Table)
 		}
-		t.mu.Lock()
 		ti := &tableIter{t: t}
 		if sf.Alias != "" {
 			ti.alias = sf.Alias
@@ -611,36 +681,33 @@ func (d *database) evalSelectFrom(ec evalContext, sf spansql.SelectFrom) (evalCo
 			ti.alias = sf.Table
 		}
 		ec.cols = ti.Cols()
-		return ec, ti, t.mu.Unlock, nil
+		return ec, ti, nil
 	case spansql.SelectFromJoin:
-		// TODO: Avoid the toRawIter calls here by rethinking how locking works throughout evalSelect,
-		// then doing the RHS recursive evalSelectFrom in joinIter.Next on demand.
+		// TODO: Avoid the toRawIter calls here by doing the RHS recursive evalSelectFrom in joinIter.Next on demand.
 
-		lhsEC, lhs, unlock, err := d.evalSelectFrom(ec, sf.LHS)
+		lhsEC, lhs, err := d.evalSelectFrom(qc, ec, sf.LHS)
 		if err != nil {
-			return ec, nil, nil, err
+			return ec, nil, err
 		}
 		lhsRaw, err := toRawIter(lhs)
-		unlock()
 		if err != nil {
-			return ec, nil, nil, err
+			return ec, nil, err
 		}
 
-		rhsEC, rhs, unlock, err := d.evalSelectFrom(ec, sf.RHS)
+		rhsEC, rhs, err := d.evalSelectFrom(qc, ec, sf.RHS)
 		if err != nil {
-			return ec, nil, nil, err
+			return ec, nil, err
 		}
 		rhsRaw, err := toRawIter(rhs)
-		unlock()
 		if err != nil {
-			return ec, nil, nil, err
+			return ec, nil, err
 		}
 
 		ji, ec, err := newJoinIter(lhsRaw, rhsRaw, lhsEC, rhsEC, sf)
 		if err != nil {
-			return ec, nil, nil, err
+			return ec, nil, err
 		}
-		return ec, ji, func() {}, nil
+		return ec, ji, nil
 	}
 }
 
@@ -658,8 +725,23 @@ func newJoinIter(lhs, rhs *rawIter, lhsEC, rhsEC evalContext, sfj spansql.Select
 		jt: sfj.Type,
 		ec: lhsEC,
 
-		lhs:     lhs,
-		rhsOrig: rhs,
+		primary:       lhs,
+		secondaryOrig: rhs,
+
+		primaryOffset:   0,
+		secondaryOffset: len(lhsEC.cols),
+	}
+	switch ji.jt {
+	case spansql.LeftJoin:
+		ji.nullPad = true
+	case spansql.RightJoin:
+		ji.nullPad = true
+		// Primary is RHS.
+		ji.ec = rhsEC
+		ji.primary, ji.secondaryOrig = rhs, lhs
+		ji.primaryOffset, ji.secondaryOffset = len(rhsEC.cols), 0
+	case spansql.FullJoin:
+		return nil, evalContext{}, fmt.Errorf("TODO: can't yet evaluate FULL JOIN")
 	}
 	ji.ec.cols, ji.ec.row = nil, nil
 
@@ -669,7 +751,7 @@ func newJoinIter(lhs, rhs *rawIter, lhsEC, rhsEC evalContext, sfj spansql.Select
 	if len(sfj.Using) == 0 {
 		ji.prepNonUsing(sfj.On, lhsEC, rhsEC)
 	} else {
-		if err := ji.prepUsing(sfj.Using, lhsEC, rhsEC); err != nil {
+		if err := ji.prepUsing(sfj.Using, lhsEC, rhsEC, ji.jt == spansql.RightJoin); err != nil {
 			return nil, evalContext{}, err
 		}
 	}
@@ -686,9 +768,9 @@ func (ji *joinIter) prepNonUsing(on spansql.BoolExpr, lhsEC, rhsEC evalContext) 
 	ji.ec.cols = append(ji.ec.cols, rhsEC.cols...)
 	ji.ec.row = make(row, len(ji.ec.cols))
 
-	ji.cond = func(lhs, rhs row) (bool, error) {
-		copy(ji.ec.row, lhs)
-		copy(ji.ec.row[len(lhs):], rhs)
+	ji.cond = func(primary, secondary row) (bool, error) {
+		copy(ji.ec.row[ji.primaryOffset:], primary)
+		copy(ji.ec.row[ji.secondaryOffset:], secondary)
 		if on == nil {
 			// No condition; all rows match.
 			return true, nil
@@ -699,9 +781,15 @@ func (ji *joinIter) prepNonUsing(on spansql.BoolExpr, lhsEC, rhsEC evalContext) 
 		}
 		return b != nil && *b, nil
 	}
+	ji.zero = func(primary row) {
+		for i := range ji.ec.row {
+			ji.ec.row[i] = nil
+		}
+		copy(ji.ec.row[ji.primaryOffset:], primary)
+	}
 }
 
-func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext) error {
+func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext, flipped bool) error {
 	// Having a USING clause results in the set of named columns once,
 	// followed by the unnamed columns from both sides.
 
@@ -744,28 +832,49 @@ func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext) erro
 	}
 	ji.ec.row = make(row, len(ji.ec.cols))
 
-	ji.cond = func(lhs, rhs row) (bool, error) {
-		for i, lhsi := range lhsUsing {
-			rhsi := rhsUsing[i]
-			if compareVals(lhs[lhsi], rhs[rhsi]) != 0 {
-				return false, nil
-			}
-			ji.ec.row[i] = lhs[lhsi]
-		}
+	primaryUsing, secondaryUsing := lhsUsing, rhsUsing
+	if flipped {
+		primaryUsing, secondaryUsing = secondaryUsing, primaryUsing
+	}
 
-		// The loop above copied the values from the common columns into ji.ec.row already;
-		// we just need to copy the remaining values.
-		j := len(lhsUsing)
+	orNil := func(r row, i int) interface{} {
+		if r == nil {
+			return nil
+		}
+		return r[i]
+	}
+	// populate writes the data to ji.ec.row in the correct positions.
+	populate := func(primary, secondary row) { // secondary may be nil
+		j := 0
+		for _, pi := range primaryUsing {
+			ji.ec.row[j] = primary[pi]
+			j++
+		}
+		lhs, rhs := primary, secondary
+		if flipped {
+			rhs, lhs = lhs, rhs
+		}
 		for _, i := range lhsNotUsing {
-			ji.ec.row[j] = lhs[i]
+			ji.ec.row[j] = orNil(lhs, i)
 			j++
 		}
 		for _, i := range rhsNotUsing {
-			ji.ec.row[j] = rhs[i]
+			ji.ec.row[j] = orNil(rhs, i)
 			j++
 		}
-
+	}
+	ji.cond = func(primary, secondary row) (bool, error) {
+		for i, pi := range primaryUsing {
+			si := secondaryUsing[i]
+			if compareVals(primary[pi], secondary[si]) != 0 {
+				return false, nil
+			}
+		}
+		populate(primary, secondary)
 		return true, nil
+	}
+	ji.zero = func(primary row) {
+		populate(primary, nil)
 	}
 	return nil
 }
@@ -774,71 +883,62 @@ type joinIter struct {
 	jt spansql.JoinType
 	ec evalContext // combined context
 
-	// lhs is scanned (consumed), but rhs is cloned for each lhs row.
-	lhs, rhsOrig *rawIter
+	// The "primary" is scanned (consumed), but the secondary is cloned for each primary row.
+	// Most join types have primary==LHS; a RIGHT JOIN is the exception.
+	primary, secondaryOrig *rawIter
 
-	lhsRow row      // current row from lhs, or nil if it is time to advance
-	rhs    *rawIter // current clone of rhs
-	any    bool     // true if any rhs rows have matched lhsRow
+	// The offsets into ec.row that the primary/secondary rows should appear
+	// in the final output. Not used when there's a USING clause.
+	primaryOffset, secondaryOffset int
+	// nullPad is whether primary rows without matching secondary rows
+	// should be yielded with null padding (e.g. OUTER JOINs).
+	nullPad bool
 
-	// cond reports whether the LHS and RHS rows "join" (e.g. the ON clause is true).
+	primaryRow row      // current row from primary, or nil if it is time to advance
+	secondary  *rawIter // current clone of secondary
+	any        bool     // true if any secondary rows have matched primaryRow
+
+	// cond reports whether the primary and secondary rows "join" (e.g. the ON clause is true).
 	// It populates ec.row with the output.
-	cond func(lhs, rhs row) (bool, error)
+	cond func(primary, secondary row) (bool, error)
+	// zero populates ec.row with the primary row and sets the remainder to NULL.
+	// This is used when nullPad is true and a primary row doesn't match any secondary row.
+	zero func(primary row)
 }
 
 func (ji *joinIter) Cols() []colInfo { return ji.ec.cols }
 
-func (ji *joinIter) nextLeft() error {
+func (ji *joinIter) nextPrimary() error {
 	var err error
-	ji.lhsRow, err = ji.lhs.Next()
+	ji.primaryRow, err = ji.primary.Next()
 	if err != nil {
 		return err
 	}
-	ji.rhs = ji.rhsOrig.clone()
+	ji.secondary = ji.secondaryOrig.clone()
 	ji.any = false
 	return nil
 }
 
 func (ji *joinIter) Next() (row, error) {
-	// TODO: More join types.
-	if ji.jt != spansql.LeftJoin {
-		return nil, fmt.Errorf("TODO: can't yet evaluate join of type %v", ji.jt)
-	}
-
-	/*
-		The result of a LEFT OUTER JOIN (or simply LEFT JOIN) for two
-		from_items always retains all rows of the left from_item in the
-		JOIN clause, even if no rows in the right from_item satisfy the
-		join predicate.
-
-		LEFT indicates that all rows from the left from_item are
-		returned; if a given row from the left from_item does not join
-		to any row in the right from_item, the row will return with
-		NULLs for all columns from the right from_item. Rows from the
-		right from_item that do not join to any row in the left
-		from_item are discarded.
-	*/
-	if ji.lhsRow == nil {
-		if err := ji.nextLeft(); err != nil {
+	if ji.primaryRow == nil {
+		if err := ji.nextPrimary(); err != nil {
 			return nil, err
 		}
 	}
 
 	for {
-		rhsRow, err := ji.rhs.Next()
+		secondaryRow, err := ji.secondary.Next()
 		if err == io.EOF {
-			if !ji.any {
-				copy(ji.ec.row, ji.lhsRow)
-				for i := len(ji.lhsRow); i < len(ji.ec.row); i++ {
-					ji.ec.row[i] = nil
-				}
-				ji.lhsRow = nil
+			// Finished the current primary row.
+
+			if !ji.any && ji.nullPad {
+				ji.zero(ji.primaryRow)
+				ji.primaryRow = nil
 				return ji.ec.row, nil
 			}
 
-			// Finished the current LHS row;
-			// advance to next one.
-			if err := ji.nextLeft(); err != nil {
+			// Advance to next one.
+			if err := ji.nextPrimary(); err != nil {
 				return nil, err
 			}
 			continue
@@ -846,7 +946,9 @@ func (ji *joinIter) Next() (row, error) {
 		if err != nil {
 			return nil, err
 		}
-		match, err := ji.cond(ji.lhsRow, rhsRow)
+
+		// We have a pair of rows to consider.
+		match, err := ji.cond(ji.primaryRow, secondaryRow)
 		if err != nil {
 			return nil, err
 		}
@@ -858,16 +960,37 @@ func (ji *joinIter) Next() (row, error) {
 	}
 }
 
+func evalSelectOrder(si *selIter, aux []spansql.Expr) (rows []row, keys [][]interface{}, err error) {
+	// This is like toRawIter except it also evaluates the auxiliary expressions for ORDER BY.
+	for {
+		r, err := si.Next()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, nil, err
+		}
+		key, err := si.ec.evalExprList(aux)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		rows = append(rows, r.copyAllData())
+		keys = append(keys, key)
+	}
+	return
+}
+
 // externalRowSorter implements sort.Interface for a slice of rows
 // with an external sort key.
 type externalRowSorter struct {
 	rows []row
 	keys [][]interface{}
+	desc []bool // may be nil
 }
 
 func (ers externalRowSorter) Len() int { return len(ers.rows) }
 func (ers externalRowSorter) Less(i, j int) bool {
-	return compareValLists(ers.keys[i], ers.keys[j], nil) < 0
+	return compareValLists(ers.keys[i], ers.keys[j], ers.desc) < 0
 }
 func (ers externalRowSorter) Swap(i, j int) {
 	ers.rows[i], ers.rows[j] = ers.rows[j], ers.rows[i]

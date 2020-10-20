@@ -84,6 +84,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client managedidentitiespb.ManagedIdentitiesServiceClient
 
@@ -147,13 +150,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: managedidentitiespb.NewManagedIdentitiesServiceClient(connPool),
 	}
@@ -196,6 +205,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // CreateMicrosoftAdDomain creates a Microsoft AD domain.
 func (c *Client) CreateMicrosoftAdDomain(ctx context.Context, req *managedidentitiespb.CreateMicrosoftAdDomainRequest, opts ...gax.CallOption) (*CreateMicrosoftAdDomainOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateMicrosoftAdDomain[0:len(c.CallOptions.CreateMicrosoftAdDomain):len(c.CallOptions.CreateMicrosoftAdDomain)], opts...)
@@ -215,6 +229,11 @@ func (c *Client) CreateMicrosoftAdDomain(ctx context.Context, req *managedidenti
 
 // ResetAdminPassword resets a domain’s administrator password.
 func (c *Client) ResetAdminPassword(ctx context.Context, req *managedidentitiespb.ResetAdminPasswordRequest, opts ...gax.CallOption) (*managedidentitiespb.ResetAdminPasswordResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResetAdminPassword[0:len(c.CallOptions.ResetAdminPassword):len(c.CallOptions.ResetAdminPassword)], opts...)
@@ -255,7 +274,7 @@ func (c *Client) ListDomains(ctx context.Context, req *managedidentitiespb.ListD
 		}
 
 		it.Response = resp
-		return resp.Domains, resp.NextPageToken, nil
+		return resp.GetDomains(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -266,13 +285,18 @@ func (c *Client) ListDomains(ctx context.Context, req *managedidentitiespb.ListD
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetDomain gets information about a domain.
 func (c *Client) GetDomain(ctx context.Context, req *managedidentitiespb.GetDomainRequest, opts ...gax.CallOption) (*managedidentitiespb.Domain, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetDomain[0:len(c.CallOptions.GetDomain):len(c.CallOptions.GetDomain)], opts...)
@@ -290,6 +314,11 @@ func (c *Client) GetDomain(ctx context.Context, req *managedidentitiespb.GetDoma
 
 // UpdateDomain updates the metadata and configuration of a domain.
 func (c *Client) UpdateDomain(ctx context.Context, req *managedidentitiespb.UpdateDomainRequest, opts ...gax.CallOption) (*UpdateDomainOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "domain.name", url.QueryEscape(req.GetDomain().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateDomain[0:len(c.CallOptions.UpdateDomain):len(c.CallOptions.UpdateDomain)], opts...)
@@ -309,6 +338,11 @@ func (c *Client) UpdateDomain(ctx context.Context, req *managedidentitiespb.Upda
 
 // DeleteDomain deletes a domain.
 func (c *Client) DeleteDomain(ctx context.Context, req *managedidentitiespb.DeleteDomainRequest, opts ...gax.CallOption) (*DeleteDomainOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteDomain[0:len(c.CallOptions.DeleteDomain):len(c.CallOptions.DeleteDomain)], opts...)
@@ -328,6 +362,11 @@ func (c *Client) DeleteDomain(ctx context.Context, req *managedidentitiespb.Dele
 
 // AttachTrust adds an AD trust to a domain.
 func (c *Client) AttachTrust(ctx context.Context, req *managedidentitiespb.AttachTrustRequest, opts ...gax.CallOption) (*AttachTrustOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.AttachTrust[0:len(c.CallOptions.AttachTrust):len(c.CallOptions.AttachTrust)], opts...)
@@ -347,6 +386,11 @@ func (c *Client) AttachTrust(ctx context.Context, req *managedidentitiespb.Attac
 
 // ReconfigureTrust updates the DNS conditional forwarder.
 func (c *Client) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.ReconfigureTrustRequest, opts ...gax.CallOption) (*ReconfigureTrustOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ReconfigureTrust[0:len(c.CallOptions.ReconfigureTrust):len(c.CallOptions.ReconfigureTrust)], opts...)
@@ -366,6 +410,11 @@ func (c *Client) ReconfigureTrust(ctx context.Context, req *managedidentitiespb.
 
 // DetachTrust removes an AD trust.
 func (c *Client) DetachTrust(ctx context.Context, req *managedidentitiespb.DetachTrustRequest, opts ...gax.CallOption) (*DetachTrustOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetachTrust[0:len(c.CallOptions.DetachTrust):len(c.CallOptions.DetachTrust)], opts...)
@@ -386,6 +435,11 @@ func (c *Client) DetachTrust(ctx context.Context, req *managedidentitiespb.Detac
 // ValidateTrust validates a trust state, that the target domain is reachable, and that the
 // target domain is able to accept incoming trust requests.
 func (c *Client) ValidateTrust(ctx context.Context, req *managedidentitiespb.ValidateTrustRequest, opts ...gax.CallOption) (*ValidateTrustOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ValidateTrust[0:len(c.CallOptions.ValidateTrust):len(c.CallOptions.ValidateTrust)], opts...)

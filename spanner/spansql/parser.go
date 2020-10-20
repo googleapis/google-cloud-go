@@ -1066,11 +1066,11 @@ func (p *parser) sniffTableConstraint() bool {
 	// could be the start of a declaration of a column called "CONSTRAINT" of boolean type,
 	// or it could be the start of a foreign key constraint called "BOOL".
 	// We have to sniff up to the third token to see what production it is.
-	// If we have "FOREIGN" and "KEY", this is an unnamed table constraint.
-	// If we have "CONSTRAINT", an identifier and "FOREIGN", this is a table constraint.
+	// If we have "FOREIGN" and "KEY" (or "CHECK"), this is an unnamed table constraint.
+	// If we have "CONSTRAINT", an identifier and "FOREIGN" (or "CHECK"), this is a table constraint.
 	// Otherwise, this is a column definition.
 
-	if p.sniff("FOREIGN", "KEY") {
+	if p.sniff("FOREIGN", "KEY") || p.sniff("CHECK") {
 		return true
 	}
 
@@ -1085,7 +1085,7 @@ func (p *parser) sniffTableConstraint() bool {
 	if _, err := p.parseTableOrIndexOrColumnName(); err != nil {
 		return false
 	}
-	return p.eat("FOREIGN")
+	return p.sniff("FOREIGN") || p.sniff("CHECK")
 }
 
 func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
@@ -1201,7 +1201,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	default:
 		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
 	case "ADD":
-		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") {
+		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") || p.sniff("CHECK") {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
 				return nil, err
@@ -1458,36 +1458,45 @@ func (p *parser) parseTableConstraint() (TableConstraint, *parseError) {
 	/*
 		table_constraint:
 			[ CONSTRAINT constraint_name ]
-			foreign_key
+			{ check | foreign_key }
 	*/
 
 	if p.eat("CONSTRAINT") {
 		pos := p.Pos()
-		// Named foreign key.
+		// Named constraint.
 		cname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return TableConstraint{}, err
 		}
-		fk, err := p.parseForeignKey()
+		c, err := p.parseConstraint()
 		if err != nil {
 			return TableConstraint{}, err
 		}
 		return TableConstraint{
 			Name:       cname,
-			ForeignKey: fk,
+			Constraint: c,
 			Position:   pos,
 		}, nil
 	}
 
-	// Unnamed foreign key.
-	fk, err := p.parseForeignKey()
+	// Unnamed constraint.
+	c, err := p.parseConstraint()
 	if err != nil {
 		return TableConstraint{}, err
 	}
 	return TableConstraint{
-		ForeignKey: fk,
-		Position:   fk.Position,
+		Constraint: c,
+		Position:   c.Pos(),
 	}, nil
+}
+
+func (p *parser) parseConstraint() (Constraint, *parseError) {
+	if p.sniff("FOREIGN") {
+		fk, err := p.parseForeignKey()
+		return fk, err
+	}
+	c, err := p.parseCheck()
+	return c, err
 }
 
 func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
@@ -1522,6 +1531,32 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 		return ForeignKey{}, err
 	}
 	return fk, nil
+}
+
+func (p *parser) parseCheck() (Check, *parseError) {
+	debugf("parseCheck: %v", p)
+
+	/*
+		check:
+			CHECK ( expression )
+	*/
+
+	if err := p.expect("CHECK"); err != nil {
+		return Check{}, err
+	}
+	c := Check{Position: p.Pos()}
+	if err := p.expect("("); err != nil {
+		return Check{}, err
+	}
+	var err *parseError
+	c.Expr, err = p.parseBoolExpr()
+	if err != nil {
+		return Check{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return Check{}, err
+	}
+	return c, nil
 }
 
 func (p *parser) parseColumnNameList() ([]ID, *parseError) {

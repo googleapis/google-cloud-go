@@ -407,10 +407,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	allTables := []string{
 		"Staff",
 		"PlayerStats",
-		"JoinA",
-		"JoinB",
-		"JoinC",
-		"JoinD",
+		"JoinA", "JoinB", "JoinC", "JoinD", "JoinE", "JoinF",
 		"SomeStrings",
 	}
 	for _, table := range allTables {
@@ -600,6 +597,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		`CREATE TABLE JoinB ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
 		`CREATE TABLE JoinC ( x INT64, y STRING(MAX) ) PRIMARY KEY (x, y)`,
 		`CREATE TABLE JoinD ( x INT64, z STRING(MAX) ) PRIMARY KEY (x, z)`,
+		`CREATE TABLE JoinE ( w INT64, x STRING(MAX) ) PRIMARY KEY (w, x)`,
+		`CREATE TABLE JoinF ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
 		// Some other test tables.
 		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
 	)
@@ -633,6 +632,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{3, "m"}),
 		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{3, "n"}),
 		spanner.Insert("JoinD", []string{"x", "z"}, []interface{}{4, "p"}),
+
+		// JoinE and JoinF are used in the CROSS JOIN test.
+		spanner.Insert("JoinE", []string{"w", "x"}, []interface{}{1, "a"}),
+		spanner.Insert("JoinE", []string{"w", "x"}, []interface{}{2, "b"}),
+
+		spanner.Insert("JoinF", []string{"y", "z"}, []interface{}{2, "c"}),
+		spanner.Insert("JoinF", []string{"y", "z"}, []interface{}{3, "d"}),
 
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{0, "afoo"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
@@ -865,13 +871,45 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		// SELECT with aliases.
 		{
+			// Aliased table.
 			`SELECT s.Name FROM Staff AS s WHERE s.ID = 3 ORDER BY s.Tenure`,
 			nil,
 			[][]interface{}{
 				{"Sam"},
 			},
 		},
+		{
+			// Aliased expression.
+			`SELECT Name AS nom FROM Staff WHERE ID < 4 ORDER BY nom`,
+			nil,
+			[][]interface{}{
+				{"Daniel"},
+				{"Jack"},
+				{"Sam"},
+			},
+		},
 		// Joins.
+		{
+			`SELECT * FROM JoinA INNER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w, x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(2), "b", int64(2), "k"},
+				{int64(3), "c", int64(3), "m"},
+				{int64(3), "c", int64(3), "n"},
+				{int64(3), "d", int64(3), "m"},
+				{int64(3), "d", int64(3), "n"},
+			},
+		},
+		{
+			`SELECT * FROM JoinE CROSS JOIN JoinF ORDER BY w, x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", int64(2), "c"},
+				{int64(1), "a", int64(3), "d"},
+				{int64(2), "b", int64(2), "c"},
+				{int64(2), "b", int64(3), "d"},
+			},
+		},
 		{
 			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
 			nil,
@@ -897,6 +935,31 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(3), "d", "n"},
 			},
 		},
+		{
+			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
+			`SELECT * FROM JoinA RIGHT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w IS NULL, w, x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(2), "b", int64(2), "k"},
+				{int64(3), "c", int64(3), "m"},
+				{int64(3), "c", int64(3), "n"},
+				{int64(3), "d", int64(3), "m"},
+				{int64(3), "d", int64(3), "n"},
+				{nil, nil, int64(4), "p"},
+			},
+		},
+		{
+			`SELECT * FROM JoinC RIGHT OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(2), "b", "k"},
+				{int64(3), "c", "m"},
+				{int64(3), "c", "n"},
+				{int64(3), "d", "m"},
+				{int64(3), "d", "n"},
+				{int64(4), nil, "p"},
+			},
+		},
 		// Regression test for aggregating no rows; it used to return an empty row.
 		// https://github.com/googleapis/google-cloud-go/issues/2793
 		{
@@ -918,7 +981,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(1)},
 			},
 		},
-		// Regression TEST for mishandling NULLs with LIKE operator.
+		// Regression test for mishandling NULLs with LIKE operator.
 		{
 			`SELECT i, str FROM SomeStrings WHERE str LIKE "%bar"`,
 			nil,
@@ -934,6 +997,15 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			[][]interface{}{
 				// Does not include [1, "abar"], [2, nil] or [3, "bbar"].
 				{int64(0), "afoo"},
+			},
+		},
+		// Regression test for ORDER BY combined with SELECT aliases.
+		{
+			`SELECT Name AS nom FROM Staff ORDER BY ID LIMIT 2`,
+			nil,
+			[][]interface{}{
+				{"Jack"},
+				{"Daniel"},
 			},
 		},
 	}
