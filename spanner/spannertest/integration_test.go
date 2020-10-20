@@ -871,9 +871,20 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		},
 		// SELECT with aliases.
 		{
+			// Aliased table.
 			`SELECT s.Name FROM Staff AS s WHERE s.ID = 3 ORDER BY s.Tenure`,
 			nil,
 			[][]interface{}{
+				{"Sam"},
+			},
+		},
+		{
+			// Aliased expression.
+			`SELECT Name AS nom FROM Staff WHERE ID < 4 ORDER BY nom`,
+			nil,
+			[][]interface{}{
+				{"Daniel"},
+				{"Jack"},
 				{"Sam"},
 			},
 		},
