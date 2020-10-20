@@ -876,7 +876,7 @@ func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s]
 var reCloudTraceContext = regexp.MustCompile(`([a-f\d]+)/([a-f\d]+);o=(\d)`)
 
 func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampled bool) {
-	// As per the format described at https://cloud.google.com/trace/docs/troubleshooting#force-trace
+	// As per the format described at https://cloud.google.com/trace/docs/setup#force-trace
 	//    "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
 	// for example:
 	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b120001000/0;o=1"
@@ -884,7 +884,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	// We expect:
 	//   * traceID:         "105445aa7843bc8bf206b120001000"
 	//   * spanID:          ""
-	//   * traceSampled:    true
+	//   * traceSampled:    true (defaults to false, if not user specified)
 	matches := reCloudTraceContext.FindAllStringSubmatch(s, -1)
 	if len(matches) != 1 {
 		return
