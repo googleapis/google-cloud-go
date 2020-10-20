@@ -403,6 +403,11 @@ func checkNestedTxn(ctx context.Context) error {
 	return nil
 }
 
+// ReadWriteTransactionOptions provides options for a read-write transaction.
+type ReadWriteTransactionOptions struct {
+	CommitOptions CommitOptions
+}
+
 // ReadWriteTransaction executes a read-write transaction, with retries as
 // necessary.
 //
@@ -470,6 +475,8 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
+		t.txOpts = options
+
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")
 		if err = t.begin(ctx); err != nil {
