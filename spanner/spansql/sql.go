@@ -174,7 +174,7 @@ func (tc TableConstraint) SQL() string {
 	if tc.Name != "" {
 		str += "CONSTRAINT " + tc.Name.SQL() + " "
 	}
-	str += tc.ForeignKey.SQL()
+	str += tc.Constraint.SQL()
 	return str
 }
 
@@ -183,6 +183,10 @@ func (fk ForeignKey) SQL() string {
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns, ", ") + ")"
 	return str
+}
+
+func (c Check) SQL() string {
+	return "CHECK (" + c.Expr.SQL() + ")"
 }
 
 func (t Type) SQL() string {
