@@ -17,6 +17,7 @@ package pubsub
 import (
 	"context"
 	"io"
+	"strings"
 	"sync"
 	"time"
 
@@ -438,6 +439,16 @@ func (it *messageIterator) sendModAck(m map[string]bool, deadline time.Duration)
 				recordStat(it.ctx, ModAckTimeoutCount, 1)
 				return nil
 			default:
+				if err == nil {
+					return nil
+				}
+				// This addresses an error where `context deadline exceeded` errors
+				// not captured by the previous case do not cause fatal errors.
+				// See https://github.com/googleapis/google-cloud-go/issues/3060
+				if strings.Contains(err.Error(), "context deadline exceeded") {
+					recordStat(it.ctx, ModAckTimeoutCount, 1)
+					return nil
+				}
 				// Any other error is fatal.
 				return err
 			}
