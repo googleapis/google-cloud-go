@@ -879,12 +879,12 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	// As per the format described at https://cloud.google.com/trace/docs/setup#force-trace
 	//    "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
 	// for example:
-	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b120001000/0;o=1"
+	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b120001000/1;o=1"
 	//
 	// We expect:
-	//   * traceID (optional):         "105445aa7843bc8bf206b120001000"
-	//   * spanID (optional):          "0"
-	//   * traceSampled (optional):    1 (defaults to false)
+	//   * traceID (optional): 			"105445aa7843bc8bf206b120001000"
+	//   * spanID (optional):       	"1"
+	//   * traceSampled (optional): 	true
 	matches := reCloudTraceContext.FindStringSubmatch(s)
 
 	traceID, spanID, traceSampled = matches[1], matches[3], (matches[5] == "1")

@@ -313,7 +313,7 @@ func TestToLogEntryTrace(t *testing.T) {
 			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
 		},
 		{
-			"X-Trace-Context header with blank TraceSampled",
+			"X-Trace-Context header with missing traceSampled aka ?o=*",
 			Entry{
 				HTTPRequest: &HTTPRequest{
 					Request: &http.Request{
