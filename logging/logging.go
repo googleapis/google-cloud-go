@@ -886,7 +886,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	//   * spanID (optional):          "0"
 	//   * traceSampled (optional):    1 (defaults to false)
 	matches := reCloudTraceContext.FindStringSubmatch(s)
-	
+
 	traceID, spanID, traceSampled = matches[1], matches[3], (matches[5] == "1")
 
 	if spanID == "0" {
