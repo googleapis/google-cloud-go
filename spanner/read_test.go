@@ -584,7 +584,7 @@ nextTest:
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
-			rs, err := p.add(v)
+			rs, _, err := p.add(v)
 			if err != nil {
 				t.Errorf("test %d.%d: partialResultSetDecoder.add(%v) = %v; want nil", i, j, v, err)
 				continue nextTest
