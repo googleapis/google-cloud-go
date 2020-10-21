@@ -403,11 +403,6 @@ func checkNestedTxn(ctx context.Context) error {
 	return nil
 }
 
-// ReadWriteTransactionOptions provides options for a read-write transaction.
-type ReadWriteTransactionOptions struct {
-	CommitOptions CommitOptions
-}
-
 // ReadWriteTransaction executes a read-write transaction, with retries as
 // necessary.
 //

@@ -82,6 +82,11 @@ type TransactionOptions struct {
 	CommitOptions CommitOptions
 }
 
+// TransactionOptions provides options for a transaction.
+type TransactionOptions struct {
+	CommitOptions CommitOptions
+}
+
 // errSessionClosed returns error for using a recycled/destroyed session
 func errSessionClosed(sh *sessionHandle) error {
 	return spannerErrorf(codes.FailedPrecondition,
@@ -1084,6 +1089,8 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 type ReadWriteStmtBasedTransaction struct {
 	// ReadWriteTransaction contains methods for performing transactional reads.
 	ReadWriteTransaction
+
+	options TransactionOptions
 }
 
 // NewReadWriteStmtBasedTransaction starts a read-write transaction. Commit() or
