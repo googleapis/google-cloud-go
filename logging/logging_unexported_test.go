@@ -289,16 +289,52 @@ func TestToLogEntryTrace(t *testing.T) {
 			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000", SpanId: "000000000000004a", TraceSampled: true},
 		},
 		{
+			"X-Trace-Context header with blank trace",
+			Entry{
+				HTTPRequest: &HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"/0;o=1"}},
+					},
+				},
+			},
+			logging.LogEntry{TraceSampled: true},
+		},
+		{
 			"X-Trace-Context header with blank span",
 			Entry{
 				HTTPRequest: &HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
 					},
 				},
 			},
 			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
+		},
+		{
+			"X-Trace-Context header with blank TraceSampled",
+			Entry{
+				HTTPRequest: &HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+					},
+				},
+			},
+			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
+		},
+		{
+			"X-Trace-Context header with all blank fields",
+			Entry{
+				HTTPRequest: &HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {""}},
+					},
+				},
+			},
+			logging.LogEntry{},
 		},
 		{
 			"Invalid X-Trace-Context header but already set TraceID",
