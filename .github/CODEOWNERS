@@ -8,4 +8,4 @@
 /logging/           @nicoleczhu
 /pubsub/            @googleapis/api-pubsub
 /spanner/           @skuruppu
-/storage/           @tritone
+/storage/           @googleapis/api-storage
