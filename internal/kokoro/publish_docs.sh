@@ -35,8 +35,6 @@ export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
 # Generate the YAML and a docs.metadata file.
 godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
 
-cd obj/api || exit 4
-
 for f in $(find obj/api -name docs.metadata); do
   d=$(dirname $f)
   cd $d
