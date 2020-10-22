@@ -960,6 +960,7 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 
 // CommitResponse provides a response of a transaction commit in a database.
 type CommitResponse struct {
+	// CommitTs is the commit time for a transaction.
 	CommitTs time.Time
 }
 
