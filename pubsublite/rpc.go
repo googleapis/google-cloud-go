@@ -64,7 +64,7 @@ func isRetryableSendCode(code codes.Code) bool {
 	switch code {
 	// Client-side errors that occur during grpc.ClientStream.SendMsg() have a
 	// smaller set of retryable codes.
-	case codes.Unavailable:
+	case codes.DeadlineExceeded, codes.Unavailable:
 		return true
 	default:
 		return false

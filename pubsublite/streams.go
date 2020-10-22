@@ -112,7 +112,7 @@ func (rs *retryableStream) Start(result chan error) {
 		result <- status.Error(codes.Internal, "pubsublite: stream has already been started")
 		return
 	}
-	go rs.reconnect(&result)
+	go rs.reconnect(result)
 }
 
 // Stop gracefully closes the stream without error.
@@ -189,11 +189,11 @@ func (rs *retryableStream) clearStream() {
 //
 // Intended to be called in a goroutine. It ends once the connection has been
 // established or the stream terminated.
-func (rs *retryableStream) reconnect(result *chan error) {
+func (rs *retryableStream) reconnect(result chan error) {
 	var outerErr error
 	defer func() {
 		if result != nil {
-			*result <- outerErr
+			result <- outerErr
 		}
 	}()
 
