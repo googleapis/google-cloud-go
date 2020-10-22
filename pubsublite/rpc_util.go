@@ -31,6 +31,11 @@ type streamRetryer struct {
 
 func newStreamRetryer(timeout time.Duration) *streamRetryer {
 	return &streamRetryer{
+		bo: gax.Backoff{
+			Initial:    10 * time.Millisecond,
+			Max:        10 * time.Second,
+			Multiplier: 2,
+		},
 		deadline: time.Now().Add(timeout),
 	}
 }
