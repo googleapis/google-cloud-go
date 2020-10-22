@@ -108,10 +108,10 @@ type result struct {
 // to packages.Load as-is.
 //
 // extraFiles is a list of paths relative to the module root to include.
-func parse(glob string, optionalExtraFiles []string) (*result, error) {
+func parse(glob string, workingDir string, optionalExtraFiles []string) (*result, error) {
 	pages := map[string]*page{}
 
-	pkgInfos, err := loadPackages(glob)
+	pkgInfos, err := loadPackages(glob, workingDir)
 	if err != nil {
 		return nil, err
 	}
@@ -380,10 +380,11 @@ type pkgInfo struct {
 	fset *token.FileSet
 }
 
-func loadPackages(glob string) ([]pkgInfo, error) {
+func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	config := &packages.Config{
 		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
 		Tests: true,
+		Dir:   workingDir,
 	}
 
 	allPkgs, err := packages.Load(config, glob)
@@ -398,8 +399,6 @@ func loadPackages(glob string) ([]pkgInfo, error) {
 
 	module := allPkgs[0].Module
 	skippedModules := map[string]struct{}{}
-
-	log.Printf("Processing %s@%s", module.Path, module.Version)
 
 	// First, collect all of the files grouped by package, including test
 	// packages.
