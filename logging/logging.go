@@ -873,7 +873,13 @@ func (l *Logger) writeLogEntries(entries []*logpb.LogEntry) {
 // (for example by calling SetFlags or SetPrefix).
 func (l *Logger) StandardLogger(s Severity) *log.Logger { return l.stdLoggers[s] }
 
-var reCloudTraceContext = regexp.MustCompile(`([a-f\d]+)?(/([a-f\d]+))?(;o=(\d))?`)
+var reCloudTraceContext = regexp.MustCompile(
+	// Matches on "TRACE_ID"
+	`([a-f\d]+)?` +
+		// Matches on "/SPAN_ID"
+		`(?:/([a-f\d]+))?` +
+		// Matches on ";0=TRACE_TRUE"
+		`(?:;o=(\d))?`)
 
 func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampled bool) {
 	// As per the format described at https://cloud.google.com/trace/docs/setup#force-trace
@@ -887,7 +893,7 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	//   * traceSampled (optional): 	true
 	matches := reCloudTraceContext.FindStringSubmatch(s)
 
-	traceID, spanID, traceSampled = matches[1], matches[3], (matches[5] == "1")
+	traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"
 
 	if spanID == "0" {
 		spanID = ""
