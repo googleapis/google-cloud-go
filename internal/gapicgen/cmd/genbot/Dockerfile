@@ -29,7 +29,7 @@ RUN go version
 
 # Install Go tools.
 RUN GO111MODULE=on go get \
-    github.com/golang/protobuf/protoc-gen-go@v1.4.2 \
+    github.com/golang/protobuf/protoc-gen-go@v1.4.3 \
     golang.org/x/lint/golint@latest \
     golang.org/x/tools/cmd/goimports@latest \
     honnef.co/go/tools/cmd/staticcheck@latest \
