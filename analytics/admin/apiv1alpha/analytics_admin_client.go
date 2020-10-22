@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 	"google.golang.org/grpc"
@@ -90,7 +91,8 @@ type AnalyticsAdminCallOptions struct {
 
 func defaultAnalyticsAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

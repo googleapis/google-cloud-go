@@ -27,6 +27,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -47,7 +48,8 @@ type ImageAnnotatorCallOptions struct {
 
 func defaultImageAnnotatorClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
