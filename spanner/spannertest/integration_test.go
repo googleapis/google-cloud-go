@@ -27,6 +27,7 @@ package spannertest
 import (
 	"context"
 	"flag"
+	"fmt"
 	"reflect"
 	"sort"
 	"testing"
@@ -146,7 +147,9 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Dropping old index: %v", err)
 	}
-	dropTable(t, adminClient, tableName)
+	if err := dropTable(t, adminClient, tableName); err != nil {
+		t.Fatal(err)
+	}
 	err = updateDDL(t, adminClient,
 		`CREATE TABLE `+tableName+` (
 			FirstName STRING(20) NOT NULL,
@@ -404,14 +407,28 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	defer cancel()
 
 	// Drop any old tables.
+	// Do them all concurrently; this saves a lot of time.
 	allTables := []string{
 		"Staff",
 		"PlayerStats",
 		"JoinA", "JoinB", "JoinC", "JoinD", "JoinE", "JoinF",
 		"SomeStrings",
 	}
+	errc := make(chan error)
 	for _, table := range allTables {
-		dropTable(t, adminClient, table)
+		go func(table string) {
+			errc <- dropTable(t, adminClient, table)
+		}(table)
+	}
+	var bad bool
+	for range allTables {
+		if err := <-errc; err != nil {
+			t.Error(err)
+			bad = true
+		}
+	}
+	if bad {
+		t.FailNow()
 	}
 
 	err := updateDDL(t, adminClient,
@@ -861,8 +878,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			// TODO: This is broken against production; does not permit ORDER BY on something not grouped/aggregated.
-			`SELECT ARRAY_AGG(Cool) FROM Staff ORDER BY Name`,
+			`SELECT ARRAY_AGG(Cool) FROM Staff`,
 			nil,
 			[][]interface{}{
 				// Daniel, George (NULL), Jack (NULL), Sam, Teal'c
@@ -1011,6 +1027,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 	var failures int
 	for _, test := range tests {
+		t.Logf("Testing query: %s", test.q)
 		stmt := spanner.NewStatement(test.q)
 		stmt.Params = test.params
 
@@ -1031,7 +1048,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	}
 }
 
-func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) {
+func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table string) error {
 	t.Helper()
 	err := updateDDL(t, adminClient, "DROP TABLE "+table)
 	// NotFound is an acceptable failure mode here.
@@ -1039,8 +1056,9 @@ func dropTable(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, table str
 		err = nil
 	}
 	if err != nil {
-		t.Fatalf("Dropping old table %q: %v", table, err)
+		return fmt.Errorf("dropping old table %q: %v", table, err)
 	}
+	return nil
 }
 
 func updateDDL(t *testing.T, adminClient *dbadmin.DatabaseAdminClient, statements ...string) error {
