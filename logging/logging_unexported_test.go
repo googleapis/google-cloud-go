@@ -431,10 +431,10 @@ func TestFromHTTPRequest(t *testing.T) {
 	}
 
 	// fromHTTPRequest returns nil if there is no Request property (but does not panic)
-	req_nil := &HTTPRequest{
+	reqNil := &HTTPRequest{
 		RequestSize: 100,
 	}
-	got = fromHTTPRequest(req_nil)
+	got = fromHTTPRequest(reqNil)
 	if got != nil {
 		t.Errorf("got  %+v\nwant %+v", got, want)
 	}
