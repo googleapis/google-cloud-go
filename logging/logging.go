@@ -693,7 +693,7 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		return nil
 	}
 	if r.Request == nil {
-		log.Println("error: HTTPRequest must have a non-nil Request")
+		log.Println("logging: HTTPRequest must have a non-nil Request")
 		return nil
 	}
 	u := *r.Request.URL
@@ -797,7 +797,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: vals}}}
 	default:
-		log.Printf("error: bad type %T for JSON value", v)
+		log.Printf("logging: bad type %T for JSON value", v)
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}
 	}
 }
