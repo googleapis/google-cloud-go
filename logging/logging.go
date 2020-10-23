@@ -47,7 +47,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -174,26 +173,20 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 	return client, nil
 }
 
-var unixZeroTimestamp *tspb.Timestamp
-
-func init() {
-	var err error
-	unixZeroTimestamp, err = ptypes.TimestampProto(time.Unix(0, 0))
-	if err != nil {
-		log.Fatalf("ptypes.TimestampProto(time.Unix(0,0)) failed: %v", err)
-	}
-}
-
 // Ping reports whether the client's connection to the logging service and the
 // authentication configuration are valid. To accomplish this, Ping writes a
 // log entry "ping" to a log named "ping".
 func (c *Client) Ping(ctx context.Context) error {
+	unixZeroTimestamp, err := ptypes.TimestampProto(time.Unix(0, 0))
+	if err != nil {
+		return err
+	}
 	ent := &logpb.LogEntry{
 		Payload:   &logpb.LogEntry_TextPayload{TextPayload: "ping"},
 		Timestamp: unixZeroTimestamp, // Identical timestamps and insert IDs are both
 		InsertId:  "ping",            // necessary for the service to dedup these entries.
 	}
-	_, err := c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
+	_, err = c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:  internal.LogPath(c.parent, "ping"),
 		Resource: monitoredResource(c.parent),
 		Entries:  []*logpb.LogEntry{ent},
@@ -700,7 +693,7 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		return nil
 	}
 	if r.Request == nil {
-		log.Println("Error: HTTPRequest must have a non-nil Request")
+		log.Println("error: HTTPRequest must have a non-nil Request")
 		return nil
 	}
 	u := *r.Request.URL
@@ -804,7 +797,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: vals}}}
 	default:
-		log.Printf("Error: bad type %T for JSON value", v)
+		log.Printf("error: bad type %T for JSON value", v)
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}
 	}
 }
