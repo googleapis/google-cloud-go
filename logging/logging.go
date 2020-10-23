@@ -180,7 +180,7 @@ func init() {
 	var err error
 	unixZeroTimestamp, err = ptypes.TimestampProto(time.Unix(0, 0))
 	if err != nil {
-		panic(err)
+		log.Fatalf("ptypes.TimestampProto(time.Unix(0,0)) failed: %v", err)
 	}
 }
 
@@ -700,7 +700,8 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 		return nil
 	}
 	if r.Request == nil {
-		panic("HTTPRequest must have a non-nil Request")
+		log.Println("Error: HTTPRequest must have a non-nil Request")
+		return nil
 	}
 	u := *r.Request.URL
 	u.Fragment = ""
@@ -803,7 +804,8 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: vals}}}
 	default:
-		panic(fmt.Sprintf("bad type %T for JSON value", v))
+		log.Printf("Error: bad type %T for JSON value", v)
+		return &structpb.Value{Kind: &structpb.Value_NullValue{}}
 	}
 }
 
