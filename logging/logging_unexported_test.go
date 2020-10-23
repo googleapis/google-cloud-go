@@ -429,6 +429,15 @@ func TestFromHTTPRequest(t *testing.T) {
 	if _, err := proto.Marshal(got); err != nil {
 		t.Fatalf("Unexpected proto.Marshal error: %v", err)
 	}
+
+	// fromHTTPRequest returns nil if there is no Request property (but does not panic)
+	req_nil := &HTTPRequest{
+		RequestSize: 100,
+	}
+	got = fromHTTPRequest(req_nil)
+	if got != nil {
+		t.Errorf("got  %+v\nwant %+v", got, want)
+	}
 }
 
 func TestMonitoredResource(t *testing.T) {
