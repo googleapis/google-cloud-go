@@ -49,6 +49,14 @@ func TestExternalDataConfig(t *testing.T) {
 			},
 		},
 		{
+			SourceFormat: Avro,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   AutoHivePartitioningMode,
+				SourceURIPrefix:        "gs://somebucket/a/b/c",
+				RequirePartitionFilter: true,
+			},
+		},
+		{
 			SourceFormat: Bigtable,
 			Options: &BigtableOptions{
 				IgnoreUnspecifiedColumnFamilies: true,
