@@ -73,10 +73,9 @@ var DefaultPublishSettings = PublishSettings{
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
 	Timeout:        60 * time.Second,
-	// By default, limit the buffer 10 times the max publish request size. The
-	// number 10 is chosen as a reasonable amount of messages in the worst case
-	// whilst still capping the number to a low enough value to not OOM users.
-	BufferedByteLimit: 10 * MaxPublishRequestBytes,
+	// By default set to a high limit that is not likely to occur, but prevents
+	// OOM errors in clients.
+	BufferedByteLimit: 1 << 30, // 1 GiB
 }
 
 func validatePublishSettings(settings PublishSettings) error {
