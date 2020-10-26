@@ -92,6 +92,7 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 				PublishCapacityMiBPerSec:   4,
 				SubscribeCapacityMiBPerSec: 8,
 				PerPartitionBytes:          4294967296,
+				RetentionDuration:          InfiniteRetention,
 			},
 		},
 		{
