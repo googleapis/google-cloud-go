@@ -82,11 +82,6 @@ type TransactionOptions struct {
 	CommitOptions CommitOptions
 }
 
-// TransactionOptions provides options for a transaction.
-type TransactionOptions struct {
-	CommitOptions CommitOptions
-}
-
 // errSessionClosed returns error for using a recycled/destroyed session
 func errSessionClosed(sh *sessionHandle) error {
 	return spannerErrorf(codes.FailedPrecondition,
