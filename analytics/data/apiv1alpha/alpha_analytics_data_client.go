@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
 	"google.golang.org/grpc"
@@ -46,7 +47,8 @@ type AlphaAnalyticsDataCallOptions struct {
 
 func defaultAlphaAnalyticsDataClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("analyticsdata.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("analyticsdata.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("analyticsdata.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
