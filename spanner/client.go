@@ -424,11 +424,29 @@ func checkNestedTxn(ctx context.Context) error {
 func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (commitTimestamp time.Time, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
+	resp, err := c.rwTransaction(ctx, f, TransactionOptions{})
+	return resp.CommitTs, err
+}
+
+// ReadWriteTransactionWithOptions executes a read-write transaction with
+// configurable options, with retries as necessary.
+//
+// ReadWriteTransactionWithOptions is a configurable ReadWriteTransaction.
+//
+// See https://godoc.org/cloud.google.com/go/spanner#ReadWriteTransaction for
+// more details.
+func (c *Client) ReadWriteTransactionWithOptions(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransactionWithOptions")
+	defer func() { trace.EndSpan(ctx, err) }()
+	resp, err = c.rwTransaction(ctx, f, options)
+	return resp, err
+}
+
+func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	if err := checkNestedTxn(ctx); err != nil {
-		return time.Time{}, err
+		return resp, err
 	}
 	var (
-		ts time.Time
 		sh *sessionHandle
 	)
 	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
@@ -457,13 +475,13 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		if err = t.begin(ctx); err != nil {
 			return err
 		}
-		ts, err = t.runInTransaction(ctx, f)
+		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
 	if sh != nil {
 		sh.recycle()
 	}
-	return ts, err
+	return resp, err
 }
 
 // applyOption controls the behavior of Client.Apply.
