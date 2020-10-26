@@ -1,5 +1,11 @@
 # Changes
 
+## v1.8.2
+
+- Fixes:
+  - fix(pubsub): track errors in published messages opencensus metric (#2970)
+  - fix(pubsub): do not propagate context deadline exceeded error (#3055)
+
 ## v1.8.1
 
 - Suppress connection is closing on error on subscriber close. (#2951)

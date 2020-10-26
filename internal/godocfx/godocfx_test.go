@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 
 func TestParse(t *testing.T) {
 	mod := "cloud.google.com/go/bigquery"
-	r, err := parse(mod+"/...", []string{"README.md"})
+	r, err := parse(mod+"/...", ".", []string{"README.md"})
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestGoldens(t *testing.T) {
 	extraFiles := []string{"README.md"}
 
 	testPath := "cloud.google.com/go/storage"
-	r, err := parse(testPath, extraFiles)
+	r, err := parse(testPath, ".", extraFiles)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
