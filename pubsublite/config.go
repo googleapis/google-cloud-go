@@ -24,6 +24,11 @@ import (
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
+// InfiniteRetention is a sentinel used in topic configs to denote an infinite
+// retention duration (i.e. retain messages as long as there is available
+// storage).
+const InfiniteRetention = time.Duration(-1)
+
 // TopicConfig describes the properties of a Google Pub/Sub Lite topic.
 // See https://cloud.google.com/pubsub/lite/docs/topics for more information
 // about how topics are configured.
@@ -33,37 +38,37 @@ type TopicConfig struct {
 
 	// The number of partitions in the topic. Must be at least 1. Cannot be
 	// changed after creation.
-	PartitionCount int64
+	PartitionCount int
 
 	// Publish throughput capacity per partition in MiB/s.
 	// Must be >= 4 and <= 16.
-	PublishCapacityMiBPerSec int32
+	PublishCapacityMiBPerSec int
 
 	// Subscribe throughput capacity per partition in MiB/s.
 	// Must be >= 4 and <= 32.
-	SubscribeCapacityMiBPerSec int32
+	SubscribeCapacityMiBPerSec int
 
 	// The provisioned storage, in bytes, per partition. If the number of bytes
 	// stored in any of the topic's partitions grows beyond this value, older
 	// messages will be dropped to make room for newer ones, regardless of the
-	// value of `RetentionDuration`.
+	// value of `RetentionDuration`. Must be > 0.
 	PerPartitionBytes int64
 
-	// How long a published message is retained. If unset, messages will be
-	// retained as long as the bytes retained for each partition is below
-	// `PerPartitionBytes`.
-	RetentionDuration optional.Duration
+	// How long a published message is retained. If set to `InfiniteRetention`,
+	// messages will be retained as long as the bytes retained for each partition
+	// is below `PerPartitionBytes`. Otherwise, must be > 0.
+	RetentionDuration time.Duration
 }
 
 func (tc *TopicConfig) toProto() *pb.Topic {
 	topicpb := &pb.Topic{
 		Name: tc.Name.String(),
 		PartitionConfig: &pb.Topic_PartitionConfig{
-			Count: tc.PartitionCount,
+			Count: int64(tc.PartitionCount),
 			Dimension: &pb.Topic_PartitionConfig_Capacity_{
 				Capacity: &pb.Topic_PartitionConfig_Capacity{
-					PublishMibPerSec:   tc.PublishCapacityMiBPerSec,
-					SubscribeMibPerSec: tc.SubscribeCapacityMiBPerSec,
+					PublishMibPerSec:   int32(tc.PublishCapacityMiBPerSec),
+					SubscribeMibPerSec: int32(tc.SubscribeCapacityMiBPerSec),
 				},
 			},
 		},
@@ -71,17 +76,14 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 			PerPartitionBytes: tc.PerPartitionBytes,
 		},
 	}
-	if tc.RetentionDuration != nil {
-		duration := optional.ToDuration(tc.RetentionDuration)
-		if duration >= 0 {
-			topicpb.RetentionConfig.Period = ptypes.DurationProto(duration)
-		}
+	if tc.RetentionDuration >= 0 {
+		topicpb.RetentionConfig.Period = ptypes.DurationProto(tc.RetentionDuration)
 	}
 	return topicpb
 }
 
 func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
-	name, err := ParseTopicPath(t.GetName())
+	name, err := parseTopicPath(t.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("pubsublite: invalid topic name %q in topic config", t.GetName())
 	}
@@ -90,10 +92,11 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	retentionCfg := t.GetRetentionConfig()
 	topic := &TopicConfig{
 		Name:                       name,
-		PartitionCount:             partitionCfg.GetCount(),
-		PublishCapacityMiBPerSec:   partitionCfg.GetCapacity().GetPublishMibPerSec(),
-		SubscribeCapacityMiBPerSec: partitionCfg.GetCapacity().GetSubscribeMibPerSec(),
+		PartitionCount:             int(partitionCfg.GetCount()),
+		PublishCapacityMiBPerSec:   int(partitionCfg.GetCapacity().GetPublishMibPerSec()),
+		SubscribeCapacityMiBPerSec: int(partitionCfg.GetCapacity().GetSubscribeMibPerSec()),
 		PerPartitionBytes:          retentionCfg.GetPerPartitionBytes(),
+		RetentionDuration:          InfiniteRetention,
 	}
 	// An unset retention period proto denotes "infinite retention".
 	if retentionCfg.Period != nil {
@@ -106,28 +109,23 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 	return topic, nil
 }
 
-// InfiniteRetention is sentinel used when updating topic configs to clear a
-// retention duration (i.e. retain messages as long as there is available
-// storage).
-const InfiniteRetention = time.Duration(-1)
-
 // TopicConfigToUpdate specifies the properties to update for a topic.
 type TopicConfigToUpdate struct {
 	// The full path of the topic to update. Required.
 	Name TopicPath
 
 	// If non-zero, will update the publish throughput capacity per partition.
-	PublishCapacityMiBPerSec int32
+	PublishCapacityMiBPerSec int
 
 	// If non-zero, will update the subscribe throughput capacity per partition.
-	SubscribeCapacityMiBPerSec int32
+	SubscribeCapacityMiBPerSec int
 
 	// If non-zero, will update the provisioned storage per partition.
 	PerPartitionBytes int64
 
 	// If specified, will update how long a published message is retained. To
 	// clear a retention duration (i.e. retain messages as long as there is
-	// available storage), set this to `pubsublite.InfiniteRetention`.
+	// available storage), set this to `InfiniteRetention`.
 	RetentionDuration optional.Duration
 }
 
@@ -137,8 +135,8 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 		PartitionConfig: &pb.Topic_PartitionConfig{
 			Dimension: &pb.Topic_PartitionConfig_Capacity_{
 				Capacity: &pb.Topic_PartitionConfig_Capacity{
-					PublishMibPerSec:   tc.PublishCapacityMiBPerSec,
-					SubscribeMibPerSec: tc.SubscribeCapacityMiBPerSec,
+					PublishMibPerSec:   int32(tc.PublishCapacityMiBPerSec),
+					SubscribeMibPerSec: int32(tc.SubscribeCapacityMiBPerSec),
 				},
 			},
 		},
@@ -219,11 +217,11 @@ func (sc *SubscriptionConfig) toProto() *pb.Subscription {
 }
 
 func protoToSubscriptionConfig(s *pb.Subscription) (*SubscriptionConfig, error) {
-	name, err := ParseSubscriptionPath(s.GetName())
+	name, err := parseSubscriptionPath(s.GetName())
 	if err != nil {
 		return nil, fmt.Errorf("pubsublite: invalid subscription name %q in subscription config", s.GetName())
 	}
-	topic, err := ParseTopicPath(s.GetTopic())
+	topic, err := parseTopicPath(s.GetTopic())
 	if err != nil {
 		return nil, fmt.Errorf("pubsublite: invalid topic name %q in subscription config", s.GetTopic())
 	}

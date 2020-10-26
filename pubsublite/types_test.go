@@ -64,9 +64,9 @@ func TestParseTopicPath(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotPath, gotErr := ParseTopicPath(tc.input)
+			gotPath, gotErr := parseTopicPath(tc.input)
 			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
-				t.Errorf("ParseTopicPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+				t.Errorf("parseTopicPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
 			}
 		})
 	}
@@ -121,9 +121,9 @@ func TestParseSubscriptionPath(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotPath, gotErr := ParseSubscriptionPath(tc.input)
+			gotPath, gotErr := parseSubscriptionPath(tc.input)
 			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
-				t.Errorf("ParseSubscriptionPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+				t.Errorf("parseSubscriptionPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
 			}
 		})
 	}
@@ -152,9 +152,9 @@ func TestValidateZone(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			err := ValidateZone(tc.input)
+			err := validateZone(tc.input)
 			if (err != nil) != tc.wantErr {
-				t.Errorf("ValidateZone(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
+				t.Errorf("validateZone(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
 			}
 		})
 	}
@@ -183,9 +183,9 @@ func TestValidateRegion(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			err := ValidateRegion(tc.input)
+			err := validateRegion(tc.input)
 			if (err != nil) != tc.wantErr {
-				t.Errorf("ValidateRegion(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
+				t.Errorf("validateRegion(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
 			}
 		})
 	}
