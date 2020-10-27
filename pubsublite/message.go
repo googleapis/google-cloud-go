@@ -15,13 +15,12 @@ package pubsublite
 
 import (
 	"crypto/sha256"
+	"fmt"
 	"math/big"
 	"math/rand"
 	"time"
 
 	"github.com/golang/protobuf/ptypes"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
@@ -65,7 +64,7 @@ func (m *Message) toProto() (*pb.PubSubMessage, error) {
 	if !m.EventTime.IsZero() {
 		ts, err := ptypes.TimestampProto(m.EventTime)
 		if err != nil {
-			return nil, status.Errorf(codes.FailedPrecondition, "pubsublite: error converting message timestamp: %v", err)
+			return nil, fmt.Errorf("pubsublite: error converting message timestamp: %v", err)
 		}
 		msgpb.EventTime = ts
 	}
