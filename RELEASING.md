@@ -64,7 +64,7 @@ the failures have been resolved.
    [continuous Kokoro build](http://go/google-cloud-go-continuous). If there are any
    failures in the most recent build, address them before proceeding with the
    release.
-1. Navigate to `~/code/gocloud/` and switch to master.
+1. Navigate to `google-cloud-go/` and switch to master.
 1. `git pull`
 1. Run `git tag -l | grep -v beta | grep -v alpha` to see all existing releases.
    The current latest tag `$CV` is the largest tag. It should look something
@@ -76,8 +76,9 @@ the failures have been resolved.
    (the `git log` is going to show you things in submodules, which are not going
    to be part of your release).
 1. Edit `CHANGES.md` to include a summary of the changes.
-1. `cd internal/version && go generate && cd -`
-1. Commit the changes, push to your fork, and create a PR.
+1. In `internal/version/version.go`, update `const Repo` to today's date with the format `YYYYMMDD`.
+1. In `internal/version` run `go generate`.
+1. Commit the changes, ignoring the generated `.go-r` file. Push to your fork, and create a PR titled `chore: release $NV`.
 1. Wait for the PR to be reviewed and merged. Once it's merged, and without
    merging any other PRs in the meantime:
    a. Switch to master.
@@ -85,7 +86,7 @@ the failures have been resolved.
    c. Tag the repo with the next version: `git tag $NV`.
    d. Push the tag to origin:
       `git push origin $NV`
-2. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
+1. Update [the releases page](https://github.com/googleapis/google-cloud-go/releases)
    with the new release, copying the contents of `CHANGES.md`.
 
 # How to release a submodule
@@ -102,7 +103,7 @@ To release a submodule:
    failures in the most recent build, address them before proceeding with the
    release. (This applies even if the failures are in a different submodule from the one
    being released.)
-1. Navigate to `~/code/gocloud/` and switch to master.
+1. Navigate to `google-cloud-go/` and switch to master.
 1. `git pull`
 1. Run `git tag -l | grep datastore | grep -v beta | grep -v alpha` to see all
    existing releases. The current latest tag `$CV` is the largest tag. It
@@ -111,8 +112,9 @@ To release a submodule:
 1. On master, run `git log $CV.. -- datastore/` to list all the changes to the
    submodule directory since the last release.
 1. Edit `datastore/CHANGES.md` to include a summary of the changes.
-1. `cd internal/version && go generate && cd -`
-1. Commit the changes, push to your fork, and create a PR.
+1. In `internal/version/version.go`, update `const Repo` to today's date with the format `YYYYMMDD`.
+1. In `internal/version` run `go generate`.
+1. Commit the changes, ignoring the generated `.go-r` file. Push to your fork, and create a PR titled `chore(datastore): release $NV`.
 1. Wait for the PR to be reviewed and merged. Once it's merged, and without
    merging any other PRs in the meantime:
    a. Switch to master.

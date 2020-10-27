@@ -686,6 +686,43 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 	testObjectIteratorWithOffset(t, bkt, objects)
+	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
+		query := &Query{Prefix: "", Delimiter: "/"}
+		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+			t.Fatalf("selecting query attrs: %v", err)
+		}
+
+		var gotNames []string
+		var gotPrefixes []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			} else if attrs.Prefix != "" {
+				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			}
+
+			if attrs.Bucket != "" {
+				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			}
+		}
+
+		sortedNames := []string{"obj1", "obj2"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+		sortedPrefixes := []string{"obj/"}
+		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+		}
+	})
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1136,7 +1173,7 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		gotNames = append(gotNames, attrs.Name)
 
@@ -1177,7 +1214,7 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		count++
 	}
@@ -1838,7 +1875,7 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-	bkt := client.Bucket("storage-library-test-bucket")
+	bkt := client.Bucket(bucketName)
 	h := testHelper{t}
 
 	for _, tst := range []struct {
@@ -1848,6 +1885,8 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 		{`"Cafe\u0301"`, "Normalization Form D"},
 	} {
 		name, err := strconv.Unquote(tst.nameQuoted)
+		w := bkt.Object(name).NewWriter(ctx)
+		h.mustWrite(w, []byte(tst.content))
 		if err != nil {
 			t.Fatalf("invalid name: %s: %v", tst.nameQuoted, err)
 		}
@@ -2316,15 +2355,30 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		uncompressedBucket = "gcp-public-data-landsat"
 		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
 
-		gzippedBucket = "storage-library-test-bucket"
 		gzippedObject = "gzipped-text.txt"
 	)
 	ctx := context.Background()
-	client, err := newTestClient(ctx, option.WithoutAuthentication())
+	client, err := newTestClient(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
+	h := testHelper{t}
 	defer client.Close()
+
+	// Create gzipped object.
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
+	zw.Name = gzippedObject
+	if _, err := zw.Write([]byte("gzipped object data")); err != nil {
+		t.Fatalf("creating gzip: %v", err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatalf("closing gzip writer: %v", err)
+	}
+	w := client.Bucket(bucketName).Object(gzippedObject).NewWriter(ctx)
+	w.ContentEncoding = "gzip"
+	w.ContentType = "text/plain"
+	h.mustWrite(w, buf.Bytes())
 
 	for _, test := range []struct {
 		desc           string
@@ -2372,7 +2426,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			// because it was computed against the zipped contents. We can detect
 			// this case using http.Response.Uncompressed.
 			desc:           "compressed, entire file, unzipped",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
@@ -2382,7 +2436,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			// When we read a gzipped file uncompressed, it's like reading a regular file:
 			// the served content and the CRC match.
 			desc:           "compressed, entire file, read compressed",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
@@ -2390,7 +2444,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		},
 		{
 			desc:           "compressed, partial, server unzips",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         1,
 			length:         8,
 			readCompressed: false,
@@ -2399,7 +2453,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		},
 		{
 			desc:           "compressed, partial, read compressed",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         1,
 			length:         8,
 			readCompressed: true,
@@ -2691,11 +2745,10 @@ func TestIntegration_CustomTime(t *testing.T) {
 	}
 
 	// Update CustomTime to the past should give error.
-	// TODO(tritone): uncomment once internal bug is fixed.
-	//earlierTime := ct.Add(5*time.Hour)
-	//if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime:earlierTime}); err == nil {
-	//	t.Fatalf("backdating CustomTime: expected error, got none")
-	//}
+	earlierTime := ct.Add(5 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+		t.Fatalf("backdating CustomTime: expected error, got none")
+	}
 
 	// Zero value for CustomTime should be ignored.
 	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
@@ -3353,7 +3406,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 	}
 	if g, w := res.StatusCode, statusCodeToRespond; g != w {
 		blob, _ := httputil.DumpResponse(res, true)
-		t.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+		t.Fatalf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
 	}
 	io.Copy(ioutil.Discard, res.Body)
 

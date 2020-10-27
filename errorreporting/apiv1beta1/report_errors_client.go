@@ -21,9 +21,11 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
@@ -39,7 +41,8 @@ type ReportErrorsCallOptions struct {
 
 func defaultReportErrorsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -53,12 +56,15 @@ func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	}
 }
 
-// ReportErrorsClient is a client for interacting with Stackdriver Error Reporting API.
+// ReportErrorsClient is a client for interacting with Cloud Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ReportErrorsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	reportErrorsClient clouderrorreportingpb.ReportErrorsServiceClient
@@ -84,13 +90,19 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ReportErrorsClient{
-		connPool:    connPool,
-		CallOptions: defaultReportErrorsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultReportErrorsCallOptions(),
 
 		reportErrorsClient: clouderrorreportingpb.NewReportErrorsServiceClient(connPool),
 	}
@@ -130,6 +142,11 @@ func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
 //
 // POST https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_name", url.QueryEscape(req.GetProjectName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ReportErrorEvent[0:len(c.CallOptions.ReportErrorEvent):len(c.CallOptions.ReportErrorEvent)], opts...)

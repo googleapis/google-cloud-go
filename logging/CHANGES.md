@@ -1,5 +1,9 @@
 # Changes
 
+## v1.1.1
+
+- Rebrand "Stackdriver Logging" to "Cloud Logging".
+
 ## v1.1.0
 
 - Support unmarshalling stringified Severity.

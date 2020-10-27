@@ -22,6 +22,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	"google.golang.org/grpc"
@@ -37,7 +38,8 @@ type SubscriberCallOptions struct {
 
 func defaultSubscriberClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -57,6 +59,9 @@ func defaultSubscriberCallOptions() *SubscriberCallOptions {
 type SubscriberClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	subscriberClient pubsublitepb.SubscriberServiceClient
@@ -83,13 +88,19 @@ func NewSubscriberClient(ctx context.Context, opts ...option.ClientOption) (*Sub
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &SubscriberClient{
-		connPool:    connPool,
-		CallOptions: defaultSubscriberCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultSubscriberCallOptions(),
 
 		subscriberClient: pubsublitepb.NewSubscriberServiceClient(connPool),
 	}

@@ -26,6 +26,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -54,7 +55,8 @@ type PolicyTagManagerCallOptions struct {
 
 func defaultPolicyTagManagerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("datacatalog.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -87,6 +89,9 @@ type PolicyTagManagerClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	policyTagManagerClient datacatalogpb.PolicyTagManagerClient
 
@@ -112,13 +117,19 @@ func NewPolicyTagManagerClient(ctx context.Context, opts ...option.ClientOption)
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PolicyTagManagerClient{
-		connPool:    connPool,
-		CallOptions: defaultPolicyTagManagerCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultPolicyTagManagerCallOptions(),
 
 		policyTagManagerClient: datacatalogpb.NewPolicyTagManagerClient(connPool),
 	}

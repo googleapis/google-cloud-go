@@ -26,6 +26,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	"google.golang.org/grpc"
@@ -42,7 +43,8 @@ type CloudCatalogCallOptions struct {
 
 func defaultCloudCatalogClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudbilling.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudbilling.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudbilling.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -63,6 +65,9 @@ func defaultCloudCatalogCallOptions() *CloudCatalogCallOptions {
 type CloudCatalogClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	cloudCatalogClient billingpb.CloudCatalogClient
@@ -90,13 +95,19 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CloudCatalogClient{
-		connPool:    connPool,
-		CallOptions: defaultCloudCatalogCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCloudCatalogCallOptions(),
 
 		cloudCatalogClient: billingpb.NewCloudCatalogClient(connPool),
 	}

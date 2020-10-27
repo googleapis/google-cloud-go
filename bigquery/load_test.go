@@ -102,7 +102,7 @@ func TestLoad(t *testing.T) {
 				CreateDisposition:           CreateNever,
 				WriteDisposition:            WriteTruncate,
 				Labels:                      map[string]string{"a": "b"},
-				TimePartitioning:            &TimePartitioning{Type: DayPartitioningType, Expiration: 1234 * time.Millisecond},
+				TimePartitioning:            &TimePartitioning{Type: MonthPartitioningType, Expiration: 1234 * time.Millisecond},
 				Clustering:                  &Clustering{Fields: []string{"cfield1"}},
 				DestinationEncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				SchemaUpdateOptions:         []string{"ALLOW_FIELD_ADDITION"},
@@ -114,7 +114,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
 				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
-					Type:         "DAY",
+					Type:         "MONTH",
 					ExpirationMs: 1234,
 				}
 				j.Configuration.Load.Clustering = &bq.Clustering{

@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
 	"google.golang.org/grpc"
@@ -61,7 +62,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("bigqueryreservation.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("bigqueryreservation.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("bigqueryreservation.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -210,6 +212,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client reservationpb.ReservationServiceClient
 
@@ -248,13 +253,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: reservationpb.NewReservationServiceClient(connPool),
 	}
@@ -287,6 +298,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // CreateReservation creates a new reservation resource.
 func (c *Client) CreateReservation(ctx context.Context, req *reservationpb.CreateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateReservation[0:len(c.CallOptions.CreateReservation):len(c.CallOptions.CreateReservation)], opts...)
@@ -345,6 +361,11 @@ func (c *Client) ListReservations(ctx context.Context, req *reservationpb.ListRe
 
 // GetReservation returns information about the reservation.
 func (c *Client) GetReservation(ctx context.Context, req *reservationpb.GetReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetReservation[0:len(c.CallOptions.GetReservation):len(c.CallOptions.GetReservation)], opts...)
@@ -364,6 +385,11 @@ func (c *Client) GetReservation(ctx context.Context, req *reservationpb.GetReser
 // Returns google.rpc.Code.FAILED_PRECONDITION when reservation has
 // assignments.
 func (c *Client) DeleteReservation(ctx context.Context, req *reservationpb.DeleteReservationRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteReservation[0:len(c.CallOptions.DeleteReservation):len(c.CallOptions.DeleteReservation)], opts...)
@@ -377,6 +403,11 @@ func (c *Client) DeleteReservation(ctx context.Context, req *reservationpb.Delet
 
 // UpdateReservation updates an existing reservation resource.
 func (c *Client) UpdateReservation(ctx context.Context, req *reservationpb.UpdateReservationRequest, opts ...gax.CallOption) (*reservationpb.Reservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateReservation[0:len(c.CallOptions.UpdateReservation):len(c.CallOptions.UpdateReservation)], opts...)
@@ -394,6 +425,11 @@ func (c *Client) UpdateReservation(ctx context.Context, req *reservationpb.Updat
 
 // CreateCapacityCommitment creates a new capacity commitment resource.
 func (c *Client) CreateCapacityCommitment(ctx context.Context, req *reservationpb.CreateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCapacityCommitment[0:len(c.CallOptions.CreateCapacityCommitment):len(c.CallOptions.CreateCapacityCommitment)], opts...)
@@ -452,6 +488,11 @@ func (c *Client) ListCapacityCommitments(ctx context.Context, req *reservationpb
 
 // GetCapacityCommitment returns information about the capacity commitment.
 func (c *Client) GetCapacityCommitment(ctx context.Context, req *reservationpb.GetCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCapacityCommitment[0:len(c.CallOptions.GetCapacityCommitment):len(c.CallOptions.GetCapacityCommitment)], opts...)
@@ -471,6 +512,11 @@ func (c *Client) GetCapacityCommitment(ctx context.Context, req *reservationpb.G
 // before its commitment_end_time will fail with the error code
 // google.rpc.Code.FAILED_PRECONDITION.
 func (c *Client) DeleteCapacityCommitment(ctx context.Context, req *reservationpb.DeleteCapacityCommitmentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteCapacityCommitment[0:len(c.CallOptions.DeleteCapacityCommitment):len(c.CallOptions.DeleteCapacityCommitment)], opts...)
@@ -490,6 +536,11 @@ func (c *Client) DeleteCapacityCommitment(ctx context.Context, req *reservationp
 // Attempting to change to a plan with shorter commitment period will fail
 // with the error code google.rpc.Code.FAILED_PRECONDITION.
 func (c *Client) UpdateCapacityCommitment(ctx context.Context, req *reservationpb.UpdateCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "capacity_commitment.name", url.QueryEscape(req.GetCapacityCommitment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCapacityCommitment[0:len(c.CallOptions.UpdateCapacityCommitment):len(c.CallOptions.UpdateCapacityCommitment)], opts...)
@@ -514,6 +565,11 @@ func (c *Client) UpdateCapacityCommitment(ctx context.Context, req *reservationp
 // split a 10000 capacity commitment into commitments of 2000 and 8000. Then,
 // you would change the plan of the first one to FLEX and then delete it.
 func (c *Client) SplitCapacityCommitment(ctx context.Context, req *reservationpb.SplitCapacityCommitmentRequest, opts ...gax.CallOption) (*reservationpb.SplitCapacityCommitmentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SplitCapacityCommitment[0:len(c.CallOptions.SplitCapacityCommitment):len(c.CallOptions.SplitCapacityCommitment)], opts...)
@@ -537,6 +593,11 @@ func (c *Client) SplitCapacityCommitment(ctx context.Context, req *reservationpb
 // Attempting to merge capacity commitments of different plan will fail
 // with the error code google.rpc.Code.FAILED_PRECONDITION.
 func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationpb.MergeCapacityCommitmentsRequest, opts ...gax.CallOption) (*reservationpb.CapacityCommitment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MergeCapacityCommitments[0:len(c.CallOptions.MergeCapacityCommitments):len(c.CallOptions.MergeCapacityCommitments)], opts...)
@@ -584,6 +645,11 @@ func (c *Client) MergeCapacityCommitments(ctx context.Context, req *reservationp
 // Returns google.rpc.Code.INVALID_ARGUMENT when location of the assignment
 // does not match location of the reservation.
 func (c *Client) CreateAssignment(ctx context.Context, req *reservationpb.CreateAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateAssignment[0:len(c.CallOptions.CreateAssignment):len(c.CallOptions.CreateAssignment)], opts...)
@@ -680,6 +746,11 @@ func (c *Client) ListAssignments(ctx context.Context, req *reservationpb.ListAss
 // queries from project1 will still use res1 while queries from
 // project2 will switch to use on-demand mode.
 func (c *Client) DeleteAssignment(ctx context.Context, req *reservationpb.DeleteAssignmentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAssignment[0:len(c.CallOptions.DeleteAssignment):len(c.CallOptions.DeleteAssignment)], opts...)
@@ -764,6 +835,11 @@ func (c *Client) SearchAssignments(ctx context.Context, req *reservationpb.Searc
 // by providing a transactional change that ensures an assignee always has an
 // associated reservation.
 func (c *Client) MoveAssignment(ctx context.Context, req *reservationpb.MoveAssignmentRequest, opts ...gax.CallOption) (*reservationpb.Assignment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MoveAssignment[0:len(c.CallOptions.MoveAssignment):len(c.CallOptions.MoveAssignment)], opts...)
@@ -781,6 +857,11 @@ func (c *Client) MoveAssignment(ctx context.Context, req *reservationpb.MoveAssi
 
 // GetBiReservation retrieves a BI reservation.
 func (c *Client) GetBiReservation(ctx context.Context, req *reservationpb.GetBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetBiReservation[0:len(c.CallOptions.GetBiReservation):len(c.CallOptions.GetBiReservation)], opts...)
@@ -805,6 +886,11 @@ func (c *Client) GetBiReservation(ctx context.Context, req *reservationpb.GetBiR
 // greater than 0. In order to release BI capacity reservation size
 // must be set to 0.
 func (c *Client) UpdateBiReservation(ctx context.Context, req *reservationpb.UpdateBiReservationRequest, opts ...gax.CallOption) (*reservationpb.BiReservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "bi_reservation.name", url.QueryEscape(req.GetBiReservation().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateBiReservation[0:len(c.CallOptions.UpdateBiReservation):len(c.CallOptions.UpdateBiReservation)], opts...)

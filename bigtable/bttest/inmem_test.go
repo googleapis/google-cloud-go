@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"math"
 	"math/rand"
 	"sort"
 	"strconv"
@@ -410,6 +411,56 @@ func (s *MockReadRowsServer) Send(resp *btpb.ReadRowsResponse) error {
 	return nil
 }
 
+func TestCheckTimestampMaxValue(t *testing.T) {
+	// Test that max Timestamp value can be passed in TimestampMicros without error
+	// and that max Timestamp is the largest valid value in Millis.
+	// See issue https://github.com/googleapis/google-cloud-go/issues/1790
+	ctx := context.Background()
+	s := &server{
+		tables: make(map[string]*table),
+	}
+	newTbl := btapb.Table{
+		ColumnFamilies: map[string]*btapb.ColumnFamily{
+			"cf0": {},
+		},
+	}
+	tblInfo, err := s.CreateTable(ctx, &btapb.CreateTableRequest{Parent: "issue-1790", TableId: "t", Table: &newTbl})
+	if err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	var maxTimestamp int64 = math.MaxInt64 - math.MaxInt64%1000
+	mreq1 := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: maxTimestamp,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq1); err != nil {
+		t.Fatalf("TimestampMicros wasn't set: %v", err)
+	}
+
+	mreq2 := &btpb.MutateRowRequest{
+		TableName: tblInfo.Name,
+		RowKey:    []byte("row"),
+		Mutations: []*btpb.Mutation{{
+			Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+				FamilyName:      "cf0",
+				ColumnQualifier: []byte("col"),
+				TimestampMicros: maxTimestamp + 1000,
+				Value:           []byte{},
+			}},
+		}},
+	}
+	if _, err := s.MutateRow(ctx, mreq2); err == nil {
+		t.Fatalf("want TimestampMicros rejection, got acceptance: %v", err)
+	}
+}
 func TestReadRows(t *testing.T) {
 	ctx := context.Background()
 	s := &server{

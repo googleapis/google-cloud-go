@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -61,7 +62,8 @@ type RegistrationCallOptions struct {
 
 func defaultRegistrationClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("servicedirectory.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("servicedirectory.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("servicedirectory.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -297,6 +299,9 @@ type RegistrationClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	registrationClient servicedirectorypb.RegistrationServiceClient
 
@@ -335,13 +340,19 @@ func NewRegistrationClient(ctx context.Context, opts ...option.ClientOption) (*R
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &RegistrationClient{
-		connPool:    connPool,
-		CallOptions: defaultRegistrationCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultRegistrationCallOptions(),
 
 		registrationClient: servicedirectorypb.NewRegistrationServiceClient(connPool),
 	}
@@ -374,6 +385,11 @@ func (c *RegistrationClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateNamespace creates a namespace, and returns the new Namespace.
 func (c *RegistrationClient) CreateNamespace(ctx context.Context, req *servicedirectorypb.CreateNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateNamespace[0:len(c.CallOptions.CreateNamespace):len(c.CallOptions.CreateNamespace)], opts...)
@@ -432,6 +448,11 @@ func (c *RegistrationClient) ListNamespaces(ctx context.Context, req *servicedir
 
 // GetNamespace gets a namespace.
 func (c *RegistrationClient) GetNamespace(ctx context.Context, req *servicedirectorypb.GetNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetNamespace[0:len(c.CallOptions.GetNamespace):len(c.CallOptions.GetNamespace)], opts...)
@@ -449,6 +470,11 @@ func (c *RegistrationClient) GetNamespace(ctx context.Context, req *servicedirec
 
 // UpdateNamespace updates a namespace.
 func (c *RegistrationClient) UpdateNamespace(ctx context.Context, req *servicedirectorypb.UpdateNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "namespace.name", url.QueryEscape(req.GetNamespace().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateNamespace[0:len(c.CallOptions.UpdateNamespace):len(c.CallOptions.UpdateNamespace)], opts...)
@@ -467,6 +493,11 @@ func (c *RegistrationClient) UpdateNamespace(ctx context.Context, req *servicedi
 // DeleteNamespace deletes a namespace. This also deletes all services and endpoints in
 // the namespace.
 func (c *RegistrationClient) DeleteNamespace(ctx context.Context, req *servicedirectorypb.DeleteNamespaceRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteNamespace[0:len(c.CallOptions.DeleteNamespace):len(c.CallOptions.DeleteNamespace)], opts...)
@@ -480,6 +511,11 @@ func (c *RegistrationClient) DeleteNamespace(ctx context.Context, req *servicedi
 
 // CreateService creates a service, and returns the new Service.
 func (c *RegistrationClient) CreateService(ctx context.Context, req *servicedirectorypb.CreateServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateService[0:len(c.CallOptions.CreateService):len(c.CallOptions.CreateService)], opts...)
@@ -538,6 +574,11 @@ func (c *RegistrationClient) ListServices(ctx context.Context, req *servicedirec
 
 // GetService gets a service.
 func (c *RegistrationClient) GetService(ctx context.Context, req *servicedirectorypb.GetServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetService[0:len(c.CallOptions.GetService):len(c.CallOptions.GetService)], opts...)
@@ -555,6 +596,11 @@ func (c *RegistrationClient) GetService(ctx context.Context, req *servicedirecto
 
 // UpdateService updates a service.
 func (c *RegistrationClient) UpdateService(ctx context.Context, req *servicedirectorypb.UpdateServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service.name", url.QueryEscape(req.GetService().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateService[0:len(c.CallOptions.UpdateService):len(c.CallOptions.UpdateService)], opts...)
@@ -573,6 +619,11 @@ func (c *RegistrationClient) UpdateService(ctx context.Context, req *servicedire
 // DeleteService deletes a service. This also deletes all endpoints associated with
 // the service.
 func (c *RegistrationClient) DeleteService(ctx context.Context, req *servicedirectorypb.DeleteServiceRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteService[0:len(c.CallOptions.DeleteService):len(c.CallOptions.DeleteService)], opts...)
@@ -586,6 +637,11 @@ func (c *RegistrationClient) DeleteService(ctx context.Context, req *servicedire
 
 // CreateEndpoint creates a endpoint, and returns the new Endpoint.
 func (c *RegistrationClient) CreateEndpoint(ctx context.Context, req *servicedirectorypb.CreateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateEndpoint[0:len(c.CallOptions.CreateEndpoint):len(c.CallOptions.CreateEndpoint)], opts...)
@@ -644,6 +700,11 @@ func (c *RegistrationClient) ListEndpoints(ctx context.Context, req *servicedire
 
 // GetEndpoint gets a endpoint.
 func (c *RegistrationClient) GetEndpoint(ctx context.Context, req *servicedirectorypb.GetEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEndpoint[0:len(c.CallOptions.GetEndpoint):len(c.CallOptions.GetEndpoint)], opts...)
@@ -661,6 +722,11 @@ func (c *RegistrationClient) GetEndpoint(ctx context.Context, req *servicedirect
 
 // UpdateEndpoint updates a endpoint.
 func (c *RegistrationClient) UpdateEndpoint(ctx context.Context, req *servicedirectorypb.UpdateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "endpoint.name", url.QueryEscape(req.GetEndpoint().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEndpoint[0:len(c.CallOptions.UpdateEndpoint):len(c.CallOptions.UpdateEndpoint)], opts...)
@@ -678,6 +744,11 @@ func (c *RegistrationClient) UpdateEndpoint(ctx context.Context, req *servicedir
 
 // DeleteEndpoint deletes a endpoint.
 func (c *RegistrationClient) DeleteEndpoint(ctx context.Context, req *servicedirectorypb.DeleteEndpointRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteEndpoint[0:len(c.CallOptions.DeleteEndpoint):len(c.CallOptions.DeleteEndpoint)], opts...)
@@ -691,6 +762,11 @@ func (c *RegistrationClient) DeleteEndpoint(ctx context.Context, req *servicedir
 
 // GetIamPolicy gets the IAM Policy for a resource (namespace or service only).
 func (c *RegistrationClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
@@ -708,6 +784,11 @@ func (c *RegistrationClient) GetIamPolicy(ctx context.Context, req *iampb.GetIam
 
 // SetIamPolicy sets the IAM Policy for a resource (namespace or service only).
 func (c *RegistrationClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
@@ -725,6 +806,11 @@ func (c *RegistrationClient) SetIamPolicy(ctx context.Context, req *iampb.SetIam
 
 // TestIamPermissions tests IAM permissions for a resource (namespace or service only).
 func (c *RegistrationClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 15000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
