@@ -23,6 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
 	"google.golang.org/grpc"
@@ -38,7 +39,8 @@ type IamCheckerCallOptions struct {
 
 func defaultIamCheckerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("policytroubleshooter.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("policytroubleshooter.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("policytroubleshooter.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

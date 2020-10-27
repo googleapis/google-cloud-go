@@ -26,6 +26,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -54,7 +55,8 @@ type PolicyTagManagerCallOptions struct {
 
 func defaultPolicyTagManagerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("datacatalog.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
