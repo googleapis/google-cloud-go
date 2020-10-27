@@ -13,13 +13,10 @@
 
 package pubsublite
 
-import (
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
-)
+import "errors"
 
 var (
 	// ErrOverflow indicates that the publish buffers have overflowed. See
 	// comments for PublishSettings.BufferedByteLimit.
-	ErrOverflow = status.Errorf(codes.ResourceExhausted, "pubsublite: client-side publish buffers have overflowed")
+	ErrOverflow = errors.New("pubsublite: client-side publish buffers have overflowed")
 )

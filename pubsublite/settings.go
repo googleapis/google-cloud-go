@@ -14,10 +14,9 @@
 package pubsublite
 
 import (
+	"errors"
+	"fmt"
 	"time"
-
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
 )
 
 const (
@@ -80,25 +79,25 @@ var DefaultPublishSettings = PublishSettings{
 
 func validatePublishSettings(settings PublishSettings) error {
 	if settings.DelayThreshold <= 0 {
-		return status.Error(codes.InvalidArgument, "pubsublite: invalid publish settings. DelayThreshold duration must be > 0")
+		return errors.New("pubsublite: invalid publish settings. DelayThreshold duration must be > 0")
 	}
 	if settings.Timeout <= 0 {
-		return status.Error(codes.InvalidArgument, "pubsublite: invalid publish settings. Timeout duration must be > 0")
+		return errors.New("pubsublite: invalid publish settings. Timeout duration must be > 0")
 	}
 	if settings.CountThreshold <= 0 {
-		return status.Error(codes.InvalidArgument, "pubsublite: invalid publish settings. CountThreshold must be > 0")
+		return errors.New("pubsublite: invalid publish settings. CountThreshold must be > 0")
 	}
 	if settings.CountThreshold > MaxPublishRequestCount {
-		return status.Errorf(codes.InvalidArgument, "pubsublite: invalid publish settings. Maximum CountThreshold is MaxPublishRequestCount (%d)", MaxPublishRequestCount)
+		return fmt.Errorf("pubsublite: invalid publish settings. Maximum CountThreshold is MaxPublishRequestCount (%d)", MaxPublishRequestCount)
 	}
 	if settings.ByteThreshold <= 0 {
-		return status.Error(codes.InvalidArgument, "pubsublite: invalid publish settings. ByteThreshold must be > 0")
+		return errors.New("pubsublite: invalid publish settings. ByteThreshold must be > 0")
 	}
 	if settings.ByteThreshold > MaxPublishRequestBytes {
-		return status.Errorf(codes.InvalidArgument, "pubsublite: invalid publish settings. Maximum ByteThreshold is MaxPublishRequestBytes (%d)", MaxPublishRequestBytes)
+		return fmt.Errorf("pubsublite: invalid publish settings. Maximum ByteThreshold is MaxPublishRequestBytes (%d)", MaxPublishRequestBytes)
 	}
 	if settings.BufferedByteLimit <= 0 {
-		return status.Error(codes.InvalidArgument, "pubsublite: invalid publish settings. BufferedByteLimit must be > 0")
+		return errors.New("pubsublite: invalid publish settings. BufferedByteLimit must be > 0")
 	}
 	return nil
 }
