@@ -30,8 +30,23 @@ import (
 
 // Server is a mock Pub/Sub Lite server that can be used for unit testing.
 type Server struct {
-	LiteServer *MockLiteServer
+	LiteServer MockServer
 	gRPCServer *testutil.Server
+}
+
+// MockServer is an in-memory mock implementation of a Pub/Sub Lite service,
+// which allows unit tests to inspect requests received by the server and send
+// fake responses.
+// This is the interface that should be used by tests.
+type MockServer interface {
+	// OnTestStart must be called at the start of each test to clear any existing
+	// state and set the verifier for unary RPCs.
+	OnTestStart(globalVerifier *RPCVerifier)
+	// OnTestEnd should be called at the end of each test to flush the verifiers
+	// (i.e. check whether any expected requests were not sent to the server).
+	OnTestEnd()
+	// AddPublishStream adds a verifier for a publish stream of a topic partition.
+	AddPublishStream(topic string, partition int, streamVerifier *RPCVerifier)
 }
 
 // NewServer creates a new mock Pub/Sub Lite server.
@@ -62,10 +77,8 @@ type streamHolder struct {
 	verifier *RPCVerifier
 }
 
-// MockLiteServer is an in-memory mock implementation of a Pub/Sub Lite service,
-// which allows unit tests to inspect requests received by the server and send
-// fake responses.
-type MockLiteServer struct {
+// mockLiteServer implements the MockServer interface.
+type mockLiteServer struct {
 	pb.AdminServiceServer
 	pb.PublisherServiceServer
 
@@ -87,46 +100,14 @@ func key(path string, partition int) string {
 	return fmt.Sprintf("%s:%d", path, partition)
 }
 
-func newMockLiteServer() *MockLiteServer {
-	return &MockLiteServer{
+func newMockLiteServer() *mockLiteServer {
+	return &mockLiteServer{
 		publishVerifiers: make(map[string]*streamVerifiers),
 		activeStreams:    make(map[int]*streamHolder),
 	}
 }
 
-// OnTestStart must be called at the start of each test to clear any existing
-// state and set the verifier for unary RPCs.
-func (s *MockLiteServer) OnTestStart(globalVerifier *RPCVerifier) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	if s.testActive {
-		panic("MockLiteServer is already in use by another test")
-	}
-
-	s.testActive = true
-	s.globalVerifier = globalVerifier
-	s.publishVerifiers = make(map[string]*streamVerifiers)
-	s.activeStreams = make(map[int]*streamHolder)
-}
-
-// OnTestEnd should be called at the end of each test to flush the verifiers
-// (i.e. check whether any expected requests were not sent to the server).
-func (s *MockLiteServer) OnTestEnd() {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	s.testActive = false
-	if s.globalVerifier != nil {
-		s.globalVerifier.Flush()
-	}
-
-	for _, as := range s.activeStreams {
-		as.verifier.Flush()
-	}
-}
-
-func (s *MockLiteServer) pushStreamVerifier(key string, v *RPCVerifier, verifiers map[string]*streamVerifiers) {
+func (s *mockLiteServer) pushStreamVerifier(key string, v *RPCVerifier, verifiers map[string]*streamVerifiers) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -138,7 +119,7 @@ func (s *MockLiteServer) pushStreamVerifier(key string, v *RPCVerifier, verifier
 	sv.push(v)
 }
 
-func (s *MockLiteServer) popStreamVerifier(key string, verifiers map[string]*streamVerifiers) (*RPCVerifier, error) {
+func (s *mockLiteServer) popStreamVerifier(key string, verifiers map[string]*streamVerifiers) (*RPCVerifier, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -149,7 +130,7 @@ func (s *MockLiteServer) popStreamVerifier(key string, verifiers map[string]*str
 	return sv.pop()
 }
 
-func (s *MockLiteServer) startStream(stream grpc.ServerStream, verifier *RPCVerifier) (id int) {
+func (s *mockLiteServer) startStream(stream grpc.ServerStream, verifier *RPCVerifier) (id int) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -159,14 +140,14 @@ func (s *MockLiteServer) startStream(stream grpc.ServerStream, verifier *RPCVeri
 	return
 }
 
-func (s *MockLiteServer) endStream(id int) {
+func (s *mockLiteServer) endStream(id int) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	delete(s.activeStreams, id)
 }
 
-func (s *MockLiteServer) handleStream(stream grpc.ServerStream, req interface{}, requestType reflect.Type, verifier *RPCVerifier) (err error) {
+func (s *mockLiteServer) handleStream(stream grpc.ServerStream, req interface{}, requestType reflect.Type, verifier *RPCVerifier) (err error) {
 	id := s.startStream(stream, verifier)
 
 	// Verify initial request.
@@ -205,13 +186,43 @@ func (s *MockLiteServer) handleStream(stream grpc.ServerStream, req interface{},
 	return
 }
 
-// AddPublishStream adds a verifier for a publish stream.
-func (s *MockLiteServer) AddPublishStream(topic string, partition int, streamVerifier *RPCVerifier) {
+// MockServer implementation.
+
+func (s *mockLiteServer) OnTestStart(globalVerifier *RPCVerifier) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if s.testActive {
+		panic("mockLiteServer is already in use by another test")
+	}
+
+	s.testActive = true
+	s.globalVerifier = globalVerifier
+	s.publishVerifiers = make(map[string]*streamVerifiers)
+	s.activeStreams = make(map[int]*streamHolder)
+}
+
+func (s *mockLiteServer) OnTestEnd() {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	s.testActive = false
+	if s.globalVerifier != nil {
+		s.globalVerifier.Flush()
+	}
+
+	for _, as := range s.activeStreams {
+		as.verifier.Flush()
+	}
+}
+
+func (s *mockLiteServer) AddPublishStream(topic string, partition int, streamVerifier *RPCVerifier) {
 	s.pushStreamVerifier(key(topic, partition), streamVerifier, s.publishVerifiers)
 }
 
-// Publish implements PublisherService.Publish.
-func (s *MockLiteServer) Publish(stream pb.PublisherService_PublishServer) error {
+// PublisherService implementation.
+
+func (s *mockLiteServer) Publish(stream pb.PublisherService_PublishServer) error {
 	req, err := stream.Recv()
 	if err != nil {
 		return status.Errorf(codes.FailedPrecondition, "mockserver: stream recv error before initial request: %v", err)
@@ -230,8 +241,9 @@ func (s *MockLiteServer) Publish(stream pb.PublisherService_PublishServer) error
 	return s.handleStream(stream, req, reflect.TypeOf(pb.PublishRequest{}), verifier)
 }
 
-// GetTopicPartitions implements AdminService.GetTopicPartitions.
-func (s *MockLiteServer) GetTopicPartitions(ctx context.Context, req *pb.GetTopicPartitionsRequest) (*pb.TopicPartitions, error) {
+// AdminService implementation.
+
+func (s *mockLiteServer) GetTopicPartitions(ctx context.Context, req *pb.GetTopicPartitionsRequest) (*pb.TopicPartitions, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
