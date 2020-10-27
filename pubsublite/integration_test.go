@@ -16,6 +16,7 @@ package pubsublite
 import (
 	"context"
 	"math/rand"
+	"strconv"
 	"testing"
 	"time"
 
@@ -49,6 +50,10 @@ func initIntegrationTest(t *testing.T) {
 	}
 	if testutil.ProjID() == "" {
 		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	// The Pub/Sub Lite server will accept project ID or number by EOQ4, 2020.
+	if _, err := strconv.ParseInt(testutil.ProjID(), 10, 64); err != nil {
+		t.Skip("Integration tests skipped. Only project number currently supported.")
 	}
 	rng = testutil.NewRand(time.Now())
 }
