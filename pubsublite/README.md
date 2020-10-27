@@ -1,4 +1,4 @@
-## Cloud Pub/Sub Lite 
+## Cloud Pub/Sub Lite [![GoDoc](https://godoc.org/cloud.google.com/go/pubsublite?status.svg)](https://godoc.org/cloud.google.com/go/pubsublite)
 
 - [About Cloud Pub/Sub Lite](https://cloud.google.com/pubsub/lite/docs)
 
