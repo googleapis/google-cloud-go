@@ -18,7 +18,7 @@ using Google Pub/Sub Lite.
 More information about Google Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/lite.
 
-This library is under development and will not be stable until v1.0.0 has been
-released.
+This library is under development and will not provdie a delightful user
+experience until v1.0.0 has been released.
 */
 package pubsublite // import "cloud.google.com/go/pubsublite"
