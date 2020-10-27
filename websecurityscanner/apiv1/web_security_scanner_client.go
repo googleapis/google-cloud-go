@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
 	"google.golang.org/grpc"
@@ -55,7 +56,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("websecurityscanner.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("websecurityscanner.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("websecurityscanner.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

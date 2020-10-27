@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -65,7 +66,8 @@ type CertificateAuthorityCallOptions struct {
 
 func defaultCertificateAuthorityClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
