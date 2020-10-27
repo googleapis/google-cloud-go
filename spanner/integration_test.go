@@ -964,6 +964,72 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	}
 }
 
+// Test ReadWriteTransactionWithOptions.
+func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
+	t.Parallel()
+
+	// Give a longer deadline because of transaction backoffs.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	readBalance := func(iter *RowIterator) (int64, error) {
+		defer iter.Stop()
+		var bal int64
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				return bal, nil
+			}
+			if err != nil {
+				return 0, err
+			}
+			if err := row.Column(0, &bal); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	txOpts := TransactionOptions{CommitOptions{ReturnCommitStats: true}}
+	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Query Foo's balance and Bar's balance.
+		bf, e := readBalance(tx.Query(ctx,
+			Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
+		if e != nil {
+			return e
+		}
+		bb, e := readBalance(tx.Read(ctx, "Accounts", KeySets(Key{int64(2)}), []string{"Balance"}))
+		if e != nil {
+			return e
+		}
+		if bf <= 0 {
+			return nil
+		}
+		bf--
+		bb++
+		return tx.BufferWrite([]*Mutation{
+			Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), bf}),
+			Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(2), bb}),
+		})
+	}, txOpts)
+	if err != nil {
+		t.Fatalf("Failed to execute transaction: %v", err)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
+	}
+}
+
 func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	t.Parallel()
 
@@ -1053,6 +1119,88 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot %v\nwant%v", got, want)
+	}
+}
+
+func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
+		outBalance, err := getBalance(txn, Key{1})
+		if err != nil {
+			return err
+		}
+		const transferAmt = 20
+		if outBalance >= transferAmt {
+			inBalance, err := getBalance(txn, Key{2})
+			if err != nil {
+				return err
+			}
+			inBalance += transferAmt
+			outBalance -= transferAmt
+			cols := []string{"AccountId", "Balance"}
+			txn.BufferWrite([]*Mutation{
+				Update("Accounts", cols, []interface{}{1, outBalance}),
+				Update("Accounts", cols, []interface{}{2, inBalance}),
+			})
+		}
+		return nil
+	}
+
+	var resp CommitResponse
+	txOpts := TransactionOptions{CommitOptions{ReturnCommitStats: true}}
+	for {
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, txOpts)
+		if err != nil {
+			t.Fatalf("failed to begin a transaction: %v", err)
+		}
+		err = statements(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			t.Fatalf("failed to execute statements: %v", err)
+		} else if err == nil {
+			resp, err = tx.CommitWithReturnResp(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				t.Fatalf("failed to commit a transaction: %v", err)
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
 	}
 }
 
