@@ -25,7 +25,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 )
 
-// streamStatus is the state of a gRPC client stream. A stream starts off
+// streamStatus is the status of a retryableStream. A stream starts off
 // uninitialized. While it is active, it can transition between reconnecting and
 // connected due to retryable errors. When a permanent error occurs, the stream
 // is terminated and cannot be reconnected.
@@ -38,15 +38,15 @@ const (
 	streamTerminated    streamStatus = 3
 )
 
-// streamHandler provides hooks for different streaming RPCs (e.g. publish,
-// subscribe, streaming cursor, etc) to use retryableStream. All Pub/Sub Lite
-// streaming RPCs implement a similar handshaking protocol, where an initial
-// request and response must be transmitted before other requests can be sent
-// over the stream.
+// streamHandler provides hooks for different Pub/Sub Lite streaming APIs
+// (e.g. publish, subscribe, streaming cursor, etc.) to use retryableStream.
+// All Pub/Sub Lite streaming APIs implement a similar handshaking protocol,
+// where an initial request and response must be transmitted before other
+// requests can be sent over the stream.
 //
-// streamHandler methods must not be called while holding the retryableStream.mu
-// in order to prevent the streamHandler calling back into the retryableStream
-// and deadlocking.
+// streamHandler methods must not be called while holding retryableStream.mu in
+// order to prevent the streamHandler calling back into the retryableStream and
+// deadlocking.
 type streamHandler interface {
 	// newStream implementations must create the client stream with the given
 	// (cancellable) context.
@@ -73,7 +73,7 @@ type streamHandler interface {
 // terminate() can be called at any time, either by the client to force stream
 // closure, or as a result of an unretryable error.
 //
-// Safe to call capitalized methods from multiple goroutines, All other methods
+// Safe to call capitalized methods from multiple goroutines. All other methods
 // are private implementation.
 type retryableStream struct {
 	// Immutable after creation.
@@ -105,8 +105,8 @@ func newRetryableStream(ctx context.Context, handler streamHandler, timeout time
 	}
 }
 
-// Start establishes a stream connection. It is a no-op if the stream is started
-// again.
+// Start establishes a stream connection. It is a no-op if the stream has
+// already started.
 func (rs *retryableStream) Start() {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
@@ -130,7 +130,7 @@ func (rs *retryableStream) Send(request interface{}) (sent bool) {
 
 	if rs.stream != nil {
 		err := rs.stream.SendMsg(request)
-		// Note that if SendMsg returns an error, the stream is aborted.
+		// Note: if SendMsg returns an error, the stream is aborted.
 		switch {
 		case err == nil:
 			sent = true
@@ -151,7 +151,7 @@ func (rs *retryableStream) Send(request interface{}) (sent bool) {
 	return
 }
 
-// Status returns the current status of the stream.
+// Status returns the current status of the retryable stream.
 func (rs *retryableStream) Status() streamStatus {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
@@ -302,7 +302,8 @@ func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 		err := recvStream.RecvMsg(response)
 
 		// If the current stream has changed while listening, any errors or messages
-		// received now are obsolete. Discard and end the goroutine.
+		// received now are obsolete. Discard and end the goroutine. Assume the
+		// stream has been cancelled elsewhere.
 		if rs.currentStream() != recvStream {
 			break
 		}
