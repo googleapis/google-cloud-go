@@ -21,90 +21,81 @@ import (
 func TestValidatePublishSettings(t *testing.T) {
 	for _, tc := range []struct {
 		desc string
-		// settingsFunc is passed DefaultPublishSettings
-		settingsFunc func(settings PublishSettings) PublishSettings
-		wantErr      bool
+		// mutateSettings is passed a copy of DefaultPublishSettings to mutate.
+		mutateSettings func(settings *PublishSettings)
+		wantErr        bool
 	}{
 		{
-			desc: "valid: default",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
-				return DefaultPublishSettings
-			},
-			wantErr: false,
+			desc:           "valid: default",
+			mutateSettings: func(settings *PublishSettings) {},
+			wantErr:        false,
 		},
 		{
 			desc: "valid: max",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
-				return PublishSettings{
-					CountThreshold: MaxPublishRequestCount,
-					ByteThreshold:  MaxPublishRequestBytes,
-					// These have no max bounds, check large values.
-					DelayThreshold:    24 * time.Hour,
-					Timeout:           24 * time.Hour,
-					BufferedByteLimit: 1e10,
-				}
+			mutateSettings: func(settings *PublishSettings) {
+				settings.CountThreshold = MaxPublishRequestCount
+				settings.ByteThreshold = MaxPublishRequestBytes
+				// These have no max bounds, check large values.
+				settings.DelayThreshold = 24 * time.Hour
+				settings.Timeout = 24 * time.Hour
+				settings.BufferedByteLimit = 1e10
 			},
 			wantErr: false,
 		},
 		{
 			desc: "invalid: zero CountThreshold",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.CountThreshold = 0
-				return settings
 			},
 			wantErr: true,
 		},
 		{
 			desc: "invalid: CountThreshold over MaxPublishRequestCount",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.CountThreshold = MaxPublishRequestCount + 1
-				return settings
 			},
 			wantErr: true,
 		},
 		{
 			desc: "invalid: ByteThreshold over MaxPublishRequestBytes",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.ByteThreshold = MaxPublishRequestBytes + 1
-				return settings
 			},
 			wantErr: true,
 		},
 		{
 			desc: "invalid: zero ByteThreshold",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.ByteThreshold = 0
-				return settings
 			},
 			wantErr: true,
 		},
 		{
 			desc: "invalid: zero DelayThreshold",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.DelayThreshold = time.Duration(0)
-				return settings
 			},
 			wantErr: true,
 		},
 		{
 			desc: "invalid: zero Timeout",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.Timeout = time.Duration(0)
-				return settings
 			},
 			wantErr: true,
 		},
 		{
 			desc: "invalid: zero BufferedByteLimit",
-			settingsFunc: func(settings PublishSettings) PublishSettings {
+			mutateSettings: func(settings *PublishSettings) {
 				settings.BufferedByteLimit = 0
-				return settings
 			},
 			wantErr: true,
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			settings := tc.settingsFunc(DefaultPublishSettings)
+			settings := DefaultPublishSettings
+			tc.mutateSettings(&settings)
+
 			gotErr := validatePublishSettings(settings)
 			if (gotErr != nil) != tc.wantErr {
 				t.Errorf("validatePublishSettings(%v) = %v, want err=%v", settings, gotErr, tc.wantErr)
