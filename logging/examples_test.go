@@ -18,8 +18,8 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"os"
 	"net/http"
+	"os"
 
 	"cloud.google.com/go/logging"
 	"go.opencensus.io/trace"
