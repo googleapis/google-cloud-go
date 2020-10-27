@@ -89,7 +89,7 @@ type mockLiteServer struct {
 	globalVerifier *RPCVerifier
 
 	// Publish stream verifiers by topic & partition.
-	publishVerifiers map[string]*streamVerifiers
+	publishVerifiers *keyedStreamVerifiers
 
 	nextStreamID  int
 	activeStreams map[int]*streamHolder
@@ -102,32 +102,9 @@ func key(path string, partition int) string {
 
 func newMockLiteServer() *mockLiteServer {
 	return &mockLiteServer{
-		publishVerifiers: make(map[string]*streamVerifiers),
+		publishVerifiers: newKeyedStreamVerifiers(),
 		activeStreams:    make(map[int]*streamHolder),
 	}
-}
-
-func (s *mockLiteServer) pushStreamVerifier(key string, v *RPCVerifier, verifiers map[string]*streamVerifiers) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	sv, ok := verifiers[key]
-	if !ok {
-		sv = newStreamVerifiers(v.t)
-		verifiers[key] = sv
-	}
-	sv.push(v)
-}
-
-func (s *mockLiteServer) popStreamVerifier(key string, verifiers map[string]*streamVerifiers) (*RPCVerifier, error) {
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	sv, ok := verifiers[key]
-	if !ok {
-		return nil, status.Error(codes.FailedPrecondition, "mockserver: unexpected connection with no configured responses")
-	}
-	return sv.pop()
 }
 
 func (s *mockLiteServer) startStream(stream grpc.ServerStream, verifier *RPCVerifier) (id int) {
@@ -147,7 +124,19 @@ func (s *mockLiteServer) endStream(id int) {
 	delete(s.activeStreams, id)
 }
 
-func (s *mockLiteServer) handleStream(stream grpc.ServerStream, req interface{}, requestType reflect.Type, verifier *RPCVerifier) (err error) {
+func (s *mockLiteServer) popStreamVerifier(key string, keyedVerifiers *keyedStreamVerifiers) (*RPCVerifier, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	return keyedVerifiers.Pop(key)
+}
+
+func (s *mockLiteServer) handleStream(stream grpc.ServerStream, req interface{}, requestType reflect.Type, key string, keyedVerifiers *keyedStreamVerifiers) (err error) {
+	verifier, err := s.popStreamVerifier(key, keyedVerifiers)
+	if err != nil {
+		return err
+	}
+
 	id := s.startStream(stream, verifier)
 
 	// Verify initial request.
@@ -193,12 +182,12 @@ func (s *mockLiteServer) OnTestStart(globalVerifier *RPCVerifier) {
 	defer s.mu.Unlock()
 
 	if s.testActive {
-		panic("mockLiteServer is already in use by another test")
+		panic("mockserver is already in use by another test")
 	}
 
 	s.testActive = true
 	s.globalVerifier = globalVerifier
-	s.publishVerifiers = make(map[string]*streamVerifiers)
+	s.publishVerifiers.Reset()
 	s.activeStreams = make(map[int]*streamHolder)
 }
 
@@ -217,7 +206,9 @@ func (s *mockLiteServer) OnTestEnd() {
 }
 
 func (s *mockLiteServer) AddPublishStream(topic string, partition int, streamVerifier *RPCVerifier) {
-	s.pushStreamVerifier(key(topic, partition), streamVerifier, s.publishVerifiers)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.publishVerifiers.Push(key(topic, partition), streamVerifier)
 }
 
 // PublisherService implementation.
@@ -232,13 +223,8 @@ func (s *mockLiteServer) Publish(stream pb.PublisherService_PublishServer) error
 	}
 
 	initReq := req.GetInitialRequest()
-	verifier, err := s.popStreamVerifier(
-		key(initReq.GetTopic(), int(initReq.GetPartition())),
-		s.publishVerifiers)
-	if err != nil {
-		return err
-	}
-	return s.handleStream(stream, req, reflect.TypeOf(pb.PublishRequest{}), verifier)
+	k := key(initReq.GetTopic(), int(initReq.GetPartition()))
+	return s.handleStream(stream, req, reflect.TypeOf(pb.PublishRequest{}), k, s.publishVerifiers)
 }
 
 // AdminService implementation.

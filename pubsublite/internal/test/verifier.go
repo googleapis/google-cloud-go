@@ -177,19 +177,49 @@ func newStreamVerifiers(t *testing.T) *streamVerifiers {
 	}
 }
 
-func (v *streamVerifiers) push(rv *RPCVerifier) {
-	v.verifiers.PushBack(rv)
+func (sv *streamVerifiers) Push(v *RPCVerifier) {
+	sv.verifiers.PushBack(v)
 }
 
-func (v *streamVerifiers) pop() (*RPCVerifier, error) {
-	v.numStreams++
-	elem := v.verifiers.Front()
+func (sv *streamVerifiers) Pop() (*RPCVerifier, error) {
+	sv.numStreams++
+	elem := sv.verifiers.Front()
 	if elem == nil {
-		v.t.Errorf("stream(%d): unexpected connection with no verifiers", v.numStreams)
+		sv.t.Errorf("stream(%d): unexpected connection with no verifiers", sv.numStreams)
 		return nil, status.Error(codes.FailedPrecondition, "mockserver: got unexpected stream connection")
 	}
 
-	rv, _ := elem.Value.(*RPCVerifier)
-	v.verifiers.Remove(elem)
-	return rv, nil
+	v, _ := elem.Value.(*RPCVerifier)
+	sv.verifiers.Remove(elem)
+	return v, nil
+}
+
+// keyedStreamVerifiers stores indexed streamVerifiers.
+type keyedStreamVerifiers struct {
+	verifiers map[string]*streamVerifiers
+}
+
+func newKeyedStreamVerifiers() *keyedStreamVerifiers {
+	return &keyedStreamVerifiers{verifiers: make(map[string]*streamVerifiers)}
+}
+
+func (kv *keyedStreamVerifiers) Reset() {
+	kv.verifiers = make(map[string]*streamVerifiers)
+}
+
+func (kv *keyedStreamVerifiers) Push(key string, v *RPCVerifier) {
+	sv, ok := kv.verifiers[key]
+	if !ok {
+		sv = newStreamVerifiers(v.t)
+		kv.verifiers[key] = sv
+	}
+	sv.Push(v)
+}
+
+func (kv *keyedStreamVerifiers) Pop(key string) (*RPCVerifier, error) {
+	sv, ok := kv.verifiers[key]
+	if !ok {
+		return nil, status.Error(codes.FailedPrecondition, "mockserver: unexpected connection with no configured responses")
+	}
+	return sv.Pop()
 }
