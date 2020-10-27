@@ -8,3 +8,5 @@
 /pubsub/            @hongalex
 /spanner/           @skuruppu
 /storage/           @tritone
+/errorreporting/    @googleapis/api-logging @nicoleczhu
+/logging/           @googleapis/api-logging @nicoleczhu
