@@ -127,25 +127,25 @@ func (v *RPCVerifier) Pop(gotRequest interface{}) (interface{}, error) {
 // next tuple is nil, in which case the response or error should be returned to
 // the client without waiting for a request. Useful for streams where the server
 // continuously sends data (e.g. subscribe stream).
-func (v *RPCVerifier) TryPop() (interface{}, error, bool) {
+func (v *RPCVerifier) TryPop() (bool, interface{}, error) {
 	v.mu.Lock()
 	defer v.mu.Unlock()
 
 	elem := v.rpcs.Front()
 	if elem == nil {
-		return nil, nil, false
+		return false, nil, nil
 	}
 
 	rpc, _ := elem.Value.(*rpcMetadata)
 	if rpc.wantRequest != nil {
-		return nil, nil, false
+		return false, nil, nil
 	}
 
 	v.rpcs.Remove(elem)
 	if err := rpc.wait(); err != nil {
-		return nil, err, true
+		return true, nil, err
 	}
-	return rpc.retResponse, rpc.retErr, true
+	return true, rpc.retResponse, rpc.retErr
 }
 
 // Flush logs an error for any remaining {request, response, error} tuples, in

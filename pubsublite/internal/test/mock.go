@@ -80,6 +80,7 @@ type MockLiteServer struct {
 
 	nextStreamID  int
 	activeStreams map[int]*streamHolder
+	testActive    bool
 }
 
 func key(path string, partition int) string {
@@ -99,6 +100,11 @@ func (s *MockLiteServer) OnTestStart(globalVerifier *RPCVerifier) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	if s.testActive {
+		panic("MockLiteServer is already in use by another test")
+	}
+
+	s.testActive = true
 	s.globalVerifier = globalVerifier
 	s.publishVerifiers = make(map[string]*streamVerifiers)
 	s.activeStreams = make(map[int]*streamHolder)
@@ -110,6 +116,7 @@ func (s *MockLiteServer) OnTestEnd() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
+	s.testActive = false
 	if s.globalVerifier != nil {
 		s.globalVerifier.Flush()
 	}
@@ -177,7 +184,7 @@ func (s *MockLiteServer) handleStream(stream grpc.ServerStream, req interface{},
 		}
 
 		// Check whether the next response isn't blocked on a request.
-		retResponse, retErr, ok = verifier.TryPop()
+		ok, retResponse, retErr = verifier.TryPop()
 		if ok {
 			continue
 		}
@@ -203,8 +210,7 @@ func (s *MockLiteServer) AddPublishStream(topic string, partition int, streamVer
 	s.pushStreamVerifier(key(topic, partition), streamVerifier, s.publishVerifiers)
 }
 
-// PublisherService implementation.
-
+// Publish implements PublisherService.Publish.
 func (s *MockLiteServer) Publish(stream pb.PublisherService_PublishServer) error {
 	req, err := stream.Recv()
 	if err != nil {
@@ -224,8 +230,7 @@ func (s *MockLiteServer) Publish(stream pb.PublisherService_PublishServer) error
 	return s.handleStream(stream, req, reflect.TypeOf(pb.PublishRequest{}), verifier)
 }
 
-// AdminService implementation.
-
+// GetTopicPartitions implements AdminService.GetTopicPartitions.
 func (s *MockLiteServer) GetTopicPartitions(ctx context.Context, req *pb.GetTopicPartitionsRequest) (*pb.TopicPartitions, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()

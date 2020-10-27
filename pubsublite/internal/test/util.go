@@ -41,5 +41,8 @@ type FakeSource struct {
 	Ret int64
 }
 
-func (f *FakeSource) Int63() int64    { return f.Ret }
+// Int63 returns the configured fake random number.
+func (f *FakeSource) Int63() int64 { return f.Ret }
+
+// Seed is unimplemented.
 func (f *FakeSource) Seed(seed int64) {}
