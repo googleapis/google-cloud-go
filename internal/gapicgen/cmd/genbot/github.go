@@ -69,7 +69,7 @@ genbot to assign reviewers to the google-cloud-go PR.
 // review the PRs.
 //
 // TODO(ndietz): Can we use github teams?
-var githubReviewers = []string{"hongalex", "broady", "noahdietz", "tritone", "codyoss", "tbpg"}
+var githubReviewers = []string{"hongalex", "broady", "tritone", "codyoss", "tbpg"}
 
 // PullRequest represents a GitHub pull request.
 type PullRequest struct {
