@@ -400,7 +400,10 @@ func TestFromHTTPRequest(t *testing.T) {
 		CacheHit:                       true,
 		CacheValidatedWithOriginServer: true,
 	}
-	got := fromHTTPRequest(req)
+	got, err := fromHTTPRequest(req)
+	if err != nil {
+		t.Errorf("got %v", err)
+	}
 	want := &logtypepb.HttpRequest{
 		RequestMethod: "GET",
 
@@ -434,8 +437,8 @@ func TestFromHTTPRequest(t *testing.T) {
 	reqNil := &HTTPRequest{
 		RequestSize: 100,
 	}
-	got = fromHTTPRequest(reqNil)
-	if got != nil {
+	got, err = fromHTTPRequest(reqNil)
+	if got != nil && err == nil {
 		t.Errorf("got  %+v\nwant %+v", got, want)
 	}
 }

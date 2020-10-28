@@ -688,13 +688,12 @@ type HTTPRequest struct {
 	CacheLookup bool
 }
 
-func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
+func fromHTTPRequest(r *HTTPRequest) (*logtypepb.HttpRequest, error) {
 	if r == nil {
-		return nil
+		return nil, nil
 	}
 	if r.Request == nil {
-		log.Println("logging: HTTPRequest must have a non-nil Request")
-		return nil
+		return nil, errors.New("logging: HTTPRequest must have a non-nil Request")
 	}
 	u := *r.Request.URL
 	u.Fragment = ""
@@ -717,7 +716,7 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 	if r.Latency != 0 {
 		pb.Latency = ptypes.DurationProto(r.Latency)
 	}
-	return pb
+	return pb, nil
 }
 
 // fixUTF8 is a helper that fixes an invalid UTF-8 string by replacing
@@ -797,7 +796,6 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: vals}}}
 	default:
-		log.Printf("logging: bad type %T for JSON value", v)
 		return &structpb.Value{Kind: &structpb.Value_NullValue{}}
 	}
 }
@@ -928,11 +926,15 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 			e.TraceSampled = e.TraceSampled || traceSampled
 		}
 	}
+	req, err := fromHTTPRequest(e.HTTPRequest)
+	if err != nil {
+		l.client.error(err)
+	}
 	ent := &logpb.LogEntry{
 		Timestamp:      ts,
 		Severity:       logtypepb.LogSeverity(e.Severity),
 		InsertId:       e.InsertID,
-		HttpRequest:    fromHTTPRequest(e.HTTPRequest),
+		HttpRequest:    req,
 		Operation:      e.Operation,
 		Labels:         e.Labels,
 		Trace:          e.Trace,
