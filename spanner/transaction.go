@@ -1007,9 +1007,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 		resp.CommitTs = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
 	}
-	if options.ReturnCommitStats {
-		resp.CommitStats = res.CommitStats
-	}
+	resp.CommitStats = res.CommitStats
 	if isSessionNotFoundError(err) {
 		t.sh.destroy()
 	}
