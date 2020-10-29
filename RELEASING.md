@@ -68,13 +68,18 @@ proceeding with the release.
 
 ### Automated Release
 
-If there are changes that have not yet been released a pull request should be
-automatically opened with a title like "chore: release 0.XX.0", where XX is the
-next version to be released. To cut a release, approve and merge this pull
-request. Doing so will update the `CHANGES.md`, tag the merged commit with the
-appropriate version , and draft a GitHub release.
+If there are changes that have not yet been released a
+[pull request](https://github.com/googleapis/google-cloud-go/pull/2971) should
+be automatically opened by [release-please](https://github.com/googleapis/release-please)
+with a title like "chore: release 0.XX.0", where XX is the next version to be
+released. To cut a release, approve and merge this pull request. Doing so will
+update the `CHANGES.md`, tag the merged commit with the appropriate version,
+and draft a GitHub release.
 
 ### Manual Release
+
+If for whatever reason the automated release process is not working as expected,
+here is how to manually cut a release.
 
 1. Navigate to `google-cloud-go/` and switch to master.
 1. `git pull`
