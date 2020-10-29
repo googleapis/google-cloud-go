@@ -5,7 +5,8 @@
 /bigquery/          @googleapis/api-bigquery
 /datastore/         @tritone
 /firestore/         @tritone
-/logging/           @nicoleczhu
 /pubsub/            @googleapis/api-pubsub
 /spanner/           @skuruppu
 /storage/           @tritone
+/errorreporting/    @googleapis/api-logging 
+/logging/           @googleapis/api-logging
