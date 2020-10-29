@@ -36,7 +36,8 @@ import (
 )
 
 const (
-	endpoint = "spanner.googleapis.com:443"
+	endpoint     = "spanner.googleapis.com:443"
+	mtlsEndpoint = "spanner.mtls.googleapis.com:443"
 
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
@@ -166,7 +167,8 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 	// gRPC options.
 	allOpts := []option.ClientOption{
-		option.WithEndpoint(endpoint),
+		internaloption.WithDefaultEndpoint(endpoint),
+		internaloption.WithDefaultMTLSEndpoint(mtlsEndpoint),
 		option.WithScopes(Scope),
 		option.WithGRPCDialOption(
 			grpc.WithDefaultCallOptions(
