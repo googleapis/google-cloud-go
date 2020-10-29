@@ -716,6 +716,19 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// Create a sample UDF so we can verify adding authorized UDFs
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+
+	sql := fmt.Sprintf(`
+			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
 	origAccess := append([]*AccessEntry(nil), md.Access...)
 	newEntries := []*AccessEntry{
 		{
@@ -727,6 +740,10 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			Role:       ReaderRole,
 			Entity:     "allUsers",
 			EntityType: IAMMemberEntity,
+		},
+		{
+			EntityType: RoutineEntity,
+			Routine:    routine,
 		},
 	}
 
@@ -743,7 +760,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		}
 	}()
 
-	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{})); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
 }
