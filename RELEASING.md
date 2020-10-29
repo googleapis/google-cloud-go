@@ -70,7 +70,7 @@ proceeding with the release.
 
 If there are changes that have not yet been released a pull request should be
 automatically opened with a title like "chore: release 0.XX.0", where XX is the
-next version to be released. To cut a release approve and merge this pull
+next version to be released. To cut a release, approve and merge this pull
 request. Doing so will update the `CHANGES.md`, tag the merged commit with the
 appropriate version , and draft a GitHub release.
 
