@@ -17,13 +17,12 @@ import (
 	"context"
 
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
-// AdminClient provides admin operations for Google Pub/Sub Lite resources
+// AdminClient provides admin operations for Cloud Pub/Sub Lite resources
 // within a Google Cloud region. An AdminClient may be shared by multiple
 // goroutines.
 type AdminClient struct {
@@ -33,14 +32,12 @@ type AdminClient struct {
 // NewAdminClient creates a new Cloud Pub/Sub Lite client to perform admin
 // operations for resources within a given region.
 // See https://cloud.google.com/pubsub/lite/docs/locations for the list of
-// regions and zones where Google Pub/Sub Lite is available.
+// regions and zones where Cloud Pub/Sub Lite is available.
 func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*AdminClient, error) {
 	if err := validateRegion(region); err != nil {
 		return nil, err
 	}
-	options := []option.ClientOption{internaloption.WithDefaultEndpoint(region + "-pubsublite.googleapis.com:443")}
-	options = append(options, opts...)
-	admin, err := vkit.NewAdminClient(ctx, options...)
+	admin, err := newAdminClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
