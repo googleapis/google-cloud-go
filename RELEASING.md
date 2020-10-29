@@ -64,6 +64,17 @@ the failures have been resolved.
    [continuous Kokoro build](http://go/google-cloud-go-continuous). If there are any
    failures in the most recent build, address them before proceeding with the
    release.
+
+## Automated Release
+
+If there are changes that have not yet been released a pull request should be
+automatically opened with a title like "chore: release 0.XX.0", where XX is the
+next version to be released. To cut a release approve and merge this pull
+request. Doing so will update the `CHANGES.md`, tag the merged commit with the
+appropriate version , and draft a GitHub release.
+
+## Manual Release
+
 1. Navigate to `google-cloud-go/` and switch to master.
 1. `git pull`
 1. Run `git tag -l | grep -v beta | grep -v alpha` to see all existing releases.
