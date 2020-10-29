@@ -777,6 +777,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/billing/budgets/v1",
+		pkg:                   "budgets",
+		importPath:            "cloud.google.com/go/billing/budgets/apiv1",
+		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1/billingbudgets_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/billing/budgets/v1/billingbudgets.yaml",
+		// GA after 2020/11/27
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/billing/budgets/v1beta1",
 		pkg:                   "budgets",
 		importPath:            "cloud.google.com/go/billing/budgets/apiv1beta1",
@@ -839,7 +848,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/websecurityscanner/apiv1",
 		gRPCServiceConfigPath: "google/cloud/websecurityscanner/v1/websecurityscanner_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/websecurityscanner/v1/websecurityscanner_v1.yaml",
-		// GA after 2020/13/12
+		// GA after 2020/11/13
 		releaseLevel: "beta",
 	},
 	{
@@ -848,7 +857,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/managedidentities/apiv1",
 		gRPCServiceConfigPath: "google/cloud/managedidentities/v1/managedidentities_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/managedidentities/v1/managedidentities_v1.yaml",
-		// GA after 2020/15/12
+		// GA after 2020/11/15
 		releaseLevel: "beta",
 	},
 
