@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
 	"google.golang.org/grpc"
@@ -47,7 +48,8 @@ type BudgetCallOptions struct {
 
 func defaultBudgetClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("billingbudgets.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("billingbudgets.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("billingbudgets.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -116,6 +118,9 @@ type BudgetClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	budgetClient budgetspb.BudgetServiceClient
 
@@ -141,13 +146,19 @@ func NewBudgetClient(ctx context.Context, opts ...option.ClientOption) (*BudgetC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &BudgetClient{
-		connPool:    connPool,
-		CallOptions: defaultBudgetCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultBudgetCallOptions(),
 
 		budgetClient: budgetspb.NewBudgetServiceClient(connPool),
 	}
@@ -182,6 +193,11 @@ func (c *BudgetClient) setGoogleClientInfo(keyval ...string) {
 // Quotas and limits (at https://cloud.google.com/billing/quotas)
 // for more information on the limits of the number of budgets you can create.
 func (c *BudgetClient) CreateBudget(ctx context.Context, req *budgetspb.CreateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateBudget[0:len(c.CallOptions.CreateBudget):len(c.CallOptions.CreateBudget)], opts...)
@@ -203,6 +219,11 @@ func (c *BudgetClient) CreateBudget(ctx context.Context, req *budgetspb.CreateBu
 // aren’t available on this API. Budget fields that are not exposed in
 // this API will not be changed by this method.
 func (c *BudgetClient) UpdateBudget(ctx context.Context, req *budgetspb.UpdateBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "budget.name", url.QueryEscape(req.GetBudget().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateBudget[0:len(c.CallOptions.UpdateBudget):len(c.CallOptions.UpdateBudget)], opts...)
@@ -225,6 +246,11 @@ func (c *BudgetClient) UpdateBudget(ctx context.Context, req *budgetspb.UpdateBu
 // see these fields in the return value, though they may have been set
 // in the Cloud Console.
 func (c *BudgetClient) GetBudget(ctx context.Context, req *budgetspb.GetBudgetRequest, opts ...gax.CallOption) (*budgetspb.Budget, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetBudget[0:len(c.CallOptions.GetBudget):len(c.CallOptions.GetBudget)], opts...)
@@ -270,7 +296,7 @@ func (c *BudgetClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudge
 		}
 
 		it.Response = resp
-		return resp.Budgets, resp.NextPageToken, nil
+		return resp.GetBudgets(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -281,13 +307,18 @@ func (c *BudgetClient) ListBudgets(ctx context.Context, req *budgetspb.ListBudge
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // DeleteBudget deletes a budget. Returns successfully if already deleted.
 func (c *BudgetClient) DeleteBudget(ctx context.Context, req *budgetspb.DeleteBudgetRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteBudget[0:len(c.CallOptions.DeleteBudget):len(c.CallOptions.DeleteBudget)], opts...)
