@@ -14,11 +14,18 @@
 package pubsublite
 
 import (
+	"context"
+	"fmt"
+	"net/url"
 	"time"
 
+	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 
+	vkit "cloud.google.com/go/pubsublite/apiv1"
 	gax "github.com/googleapis/gax-go/v2"
 )
 
@@ -97,4 +104,71 @@ func isRetryableStreamError(err error, isEligible func(codes.Code) bool) bool {
 		return true
 	}
 	return isEligible(s.Code())
+}
+
+const (
+	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+	routingMetadataHeader     = "x-goog-request-params"
+)
+
+func defaultClientOptions(region string) []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
+	}
+}
+
+func newAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.AdminClient, error) {
+	if err := validateRegion(region); err != nil {
+		return nil, err
+	}
+	options := append(defaultClientOptions(region), opts...)
+	return vkit.NewAdminClient(ctx, options...)
+}
+
+func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
+	if err := validateRegion(region); err != nil {
+		return nil, err
+	}
+	options := append(defaultClientOptions(region), opts...)
+	return vkit.NewPublisherClient(ctx, options...)
+}
+
+func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
+	if err := validateRegion(region); err != nil {
+		return nil, err
+	}
+	options := append(defaultClientOptions(region), opts...)
+	return vkit.NewSubscriberClient(ctx, options...)
+}
+
+func newCursorClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.CursorClient, error) {
+	if err := validateRegion(region); err != nil {
+		return nil, err
+	}
+	options := append(defaultClientOptions(region), opts...)
+	return vkit.NewCursorClient(ctx, options...)
+}
+
+func newPartitionAssignmentClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PartitionAssignmentClient, error) {
+	if err := validateRegion(region); err != nil {
+		return nil, err
+	}
+	options := append(defaultClientOptions(region), opts...)
+	return vkit.NewPartitionAssignmentClient(ctx, options...)
+}
+
+func addTopicRoutingMetadata(ctx context.Context, topic TopicPath, partition int) context.Context {
+	md, _ := metadata.FromOutgoingContext(ctx)
+	md = md.Copy()
+	val := fmt.Sprintf("partition=%d&topic=%s", partition, url.QueryEscape(topic.String()))
+	md[routingMetadataHeader] = append(md[routingMetadataHeader], val)
+	return metadata.NewOutgoingContext(ctx, md)
+}
+
+func addSubscriptionRoutingMetadata(ctx context.Context, subs SubscriptionPath, partition int) context.Context {
+	md, _ := metadata.FromOutgoingContext(ctx)
+	md = md.Copy()
+	val := fmt.Sprintf("partition=%d&subscription=%s", partition, url.QueryEscape(subs.String()))
+	md[routingMetadataHeader] = append(md[routingMetadataHeader], val)
+	return metadata.NewOutgoingContext(ctx, md)
 }
