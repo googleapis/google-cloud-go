@@ -47,7 +47,6 @@ import (
 	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/ptypes"
 	structpb "github.com/golang/protobuf/ptypes/struct"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
@@ -174,26 +173,20 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 	return client, nil
 }
 
-var unixZeroTimestamp *tspb.Timestamp
-
-func init() {
-	var err error
-	unixZeroTimestamp, err = ptypes.TimestampProto(time.Unix(0, 0))
-	if err != nil {
-		panic(err)
-	}
-}
-
 // Ping reports whether the client's connection to the logging service and the
 // authentication configuration are valid. To accomplish this, Ping writes a
 // log entry "ping" to a log named "ping".
 func (c *Client) Ping(ctx context.Context) error {
+	unixZeroTimestamp, err := ptypes.TimestampProto(time.Unix(0, 0))
+	if err != nil {
+		return err
+	}
 	ent := &logpb.LogEntry{
 		Payload:   &logpb.LogEntry_TextPayload{TextPayload: "ping"},
 		Timestamp: unixZeroTimestamp, // Identical timestamps and insert IDs are both
 		InsertId:  "ping",            // necessary for the service to dedup these entries.
 	}
-	_, err := c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
+	_, err = c.client.WriteLogEntries(ctx, &logpb.WriteLogEntriesRequest{
 		LogName:  internal.LogPath(c.parent, "ping"),
 		Resource: monitoredResource(c.parent),
 		Entries:  []*logpb.LogEntry{ent},
@@ -695,12 +688,12 @@ type HTTPRequest struct {
 	CacheLookup bool
 }
 
-func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
+func fromHTTPRequest(r *HTTPRequest) (*logtypepb.HttpRequest, error) {
 	if r == nil {
-		return nil
+		return nil, nil
 	}
 	if r.Request == nil {
-		panic("HTTPRequest must have a non-nil Request")
+		return nil, errors.New("logging: HTTPRequest must have a non-nil Request")
 	}
 	u := *r.Request.URL
 	u.Fragment = ""
@@ -723,7 +716,7 @@ func fromHTTPRequest(r *HTTPRequest) *logtypepb.HttpRequest {
 	if r.Latency != 0 {
 		pb.Latency = ptypes.DurationProto(r.Latency)
 	}
-	return pb
+	return pb, nil
 }
 
 // fixUTF8 is a helper that fixes an invalid UTF-8 string by replacing
@@ -803,7 +796,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 		}
 		return &structpb.Value{Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: vals}}}
 	default:
-		panic(fmt.Sprintf("bad type %T for JSON value", v))
+		return &structpb.Value{Kind: &structpb.Value_NullValue{}}
 	}
 }
 
@@ -933,11 +926,15 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 			e.TraceSampled = e.TraceSampled || traceSampled
 		}
 	}
+	req, err := fromHTTPRequest(e.HTTPRequest)
+	if err != nil {
+		l.client.error(err)
+	}
 	ent := &logpb.LogEntry{
 		Timestamp:      ts,
 		Severity:       logtypepb.LogSeverity(e.Severity),
 		InsertId:       e.InsertID,
-		HttpRequest:    fromHTTPRequest(e.HTTPRequest),
+		HttpRequest:    req,
 		Operation:      e.Operation,
 		Labels:         e.Labels,
 		Trace:          e.Trace,

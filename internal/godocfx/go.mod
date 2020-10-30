@@ -8,7 +8,7 @@ require (
 	cloud.google.com/go/datastore v1.1.0
 	cloud.google.com/go/storage v1.11.0
 	github.com/kr/pretty v0.2.1 // indirect
-	golang.org/x/tools v0.0.0-20201028111035-eafbe7b904eb
+	golang.org/x/tools v0.0.0-20201030143252-cf7a54d06671
 	google.golang.org/protobuf v1.25.0 // indirect
 	gopkg.in/yaml.v2 v2.3.0
 )
