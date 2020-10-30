@@ -480,8 +480,8 @@ func TestDeleteLog(t *testing.T) {
 	defer c.Close()
 	defer a.Close()
 	lg := c.Logger(testLogID)
-	err := lg.LogSync(ctx, logging.Entry{Payload: "hello"})
-	if err != nil {
+
+	if err := lg.LogSync(ctx, logging.Entry{Payload: "hello"}); err != nil {
 		t.Fatal(err)
 	}
 
