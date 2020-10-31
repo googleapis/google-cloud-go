@@ -206,8 +206,8 @@ func (rn resourceNames) set(r *logpb.ListLogEntriesRequest) {
 // "projects/PROJECT-ID/logs/LOG-ID". Forward slashes in LOG-ID must be
 // replaced by %2F before calling Filter.
 //
-// Timestamps in the filter string must be written in RFC 3339 format. See the
-// timestamp example.
+// Timestamps in the filter string must be written in RFC 3339 format. By default,
+// timestamp filters for the past 24 hours.
 func Filter(f string) EntriesOption { return filter(f) }
 
 type filter string
@@ -243,7 +243,22 @@ func listLogEntriesRequest(parent string, opts []EntriesOption) *logpb.ListLogEn
 	for _, opt := range opts {
 		opt.set(req)
 	}
+	req.Filter = defaultTimestamp(req.Filter)
 	return req
+}
+
+func defaultTimestamp(filter string) string {
+	dayAgo := time.Now().Add(-24 * time.Hour).UTC()
+	switch {
+	case len(filter) == 0:
+		return fmt.Sprintf(`timestamp >= "%s"`, dayAgo.Format(time.RFC3339))
+	// This heuristic is consistent with gcloud CLI logic.
+	// Note: user filters like `textPayload: "timestamp"` disables default timestamp
+	case !strings.Contains(strings.ToLower(filter), "timestamp"):
+		return fmt.Sprintf(`%s AND timestamp >= "%s"`, filter, dayAgo.Format(time.RFC3339))
+	default:
+		return filter
+	}
 }
 
 // An EntryIterator iterates over log entries.
