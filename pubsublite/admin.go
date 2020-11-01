@@ -16,6 +16,7 @@ package pubsublite
 import (
 	"context"
 
+	"cloud.google.com/go/pubsublite/internal/wire"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -37,7 +38,7 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 	if err := validateRegion(region); err != nil {
 		return nil, err
 	}
-	admin, err := newAdminClient(ctx, region, opts...)
+	admin, err := wire.NewAdminClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}

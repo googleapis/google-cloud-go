@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package pubsublite
+package wire
 
 import (
 	"context"
@@ -117,7 +117,8 @@ func defaultClientOptions(region string) []option.ClientOption {
 	}
 }
 
-func newAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.AdminClient, error) {
+// NewAdminClient creates a new gapic AdminClient.
+func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.AdminClient, error) {
 	if err := validateRegion(region); err != nil {
 		return nil, err
 	}
