@@ -17,12 +17,6 @@ import (
 	"fmt"
 	"math/rand"
 	"testing"
-	"time"
-
-	"github.com/golang/protobuf/proto"
-
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
 type fakeSource struct {
@@ -43,63 +37,6 @@ func (f *fakeMsgRouter) SetPartitionCount(count int) {
 
 func (f *fakeMsgRouter) Route(orderingKey []byte) int {
 	return f.partitionCount * f.multiplier
-}
-
-func TestMessageToProto(t *testing.T) {
-	for _, tc := range []struct {
-		desc string
-		msg  *Message
-		want *pb.PubSubMessage
-	}{
-		{
-			desc: "valid: minimal",
-			msg: &Message{
-				Data: []byte("Hello world"),
-			},
-			want: &pb.PubSubMessage{
-				Data: []byte("Hello world"),
-			},
-		},
-		{
-			desc: "valid: filled",
-			msg: &Message{
-				Data: []byte("foo"),
-				Attributes: map[string]AttributeValues{
-					"attr1": [][]byte{
-						[]byte("val1"),
-						[]byte("val2"),
-					},
-				},
-				EventTime:   time.Unix(1555593697, 154358*1000),
-				OrderingKey: []byte("order"),
-			},
-			want: &pb.PubSubMessage{
-				Data: []byte("foo"),
-				Attributes: map[string]*pb.AttributeValues{
-					"attr1": {
-						Values: [][]byte{
-							[]byte("val1"),
-							[]byte("val2"),
-						},
-					},
-				},
-				EventTime: &tspb.Timestamp{
-					Seconds: 1555593697,
-					Nanos:   154358 * 1000,
-				},
-				Key: []byte("order"),
-			},
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			got, err := tc.msg.toProto()
-			if err != nil {
-				t.Errorf("toProto() err = %v", err)
-			} else if !proto.Equal(got, tc.want) {
-				t.Errorf("toProto() got = %v\nwant = %v", got, tc.want)
-			}
-		})
-	}
 }
 
 func TestRoundRobinMsgRouter(t *testing.T) {

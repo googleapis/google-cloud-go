@@ -117,59 +117,44 @@ func defaultClientOptions(region string) []option.ClientOption {
 	}
 }
 
-// NewAdminClient creates a new gapic AdminClient.
+// NewAdminClient creates a new gapic AdminClient for a region.
 func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.AdminClient, error) {
-	if err := validateRegion(region); err != nil {
-		return nil, err
-	}
 	options := append(defaultClientOptions(region), opts...)
 	return vkit.NewAdminClient(ctx, options...)
 }
 
 func newPublisherClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PublisherClient, error) {
-	if err := validateRegion(region); err != nil {
-		return nil, err
-	}
 	options := append(defaultClientOptions(region), opts...)
 	return vkit.NewPublisherClient(ctx, options...)
 }
 
 func newSubscriberClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.SubscriberClient, error) {
-	if err := validateRegion(region); err != nil {
-		return nil, err
-	}
 	options := append(defaultClientOptions(region), opts...)
 	return vkit.NewSubscriberClient(ctx, options...)
 }
 
 func newCursorClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.CursorClient, error) {
-	if err := validateRegion(region); err != nil {
-		return nil, err
-	}
 	options := append(defaultClientOptions(region), opts...)
 	return vkit.NewCursorClient(ctx, options...)
 }
 
 func newPartitionAssignmentClient(ctx context.Context, region string, opts ...option.ClientOption) (*vkit.PartitionAssignmentClient, error) {
-	if err := validateRegion(region); err != nil {
-		return nil, err
-	}
 	options := append(defaultClientOptions(region), opts...)
 	return vkit.NewPartitionAssignmentClient(ctx, options...)
 }
 
-func addTopicRoutingMetadata(ctx context.Context, topic TopicPath, partition int) context.Context {
+func addTopicRoutingMetadata(ctx context.Context, topic topicPartition) context.Context {
 	md, _ := metadata.FromOutgoingContext(ctx)
 	md = md.Copy()
-	val := fmt.Sprintf("partition=%d&topic=%s", partition, url.QueryEscape(topic.String()))
+	val := fmt.Sprintf("partition=%d&topic=%s", topic.Partition, url.QueryEscape(topic.Path))
 	md[routingMetadataHeader] = append(md[routingMetadataHeader], val)
 	return metadata.NewOutgoingContext(ctx, md)
 }
 
-func addSubscriptionRoutingMetadata(ctx context.Context, subs SubscriptionPath, partition int) context.Context {
+func addSubscriptionRoutingMetadata(ctx context.Context, subscription subscriptionPartition) context.Context {
 	md, _ := metadata.FromOutgoingContext(ctx)
 	md = md.Copy()
-	val := fmt.Sprintf("partition=%d&subscription=%s", partition, url.QueryEscape(subs.String()))
+	val := fmt.Sprintf("partition=%d&subscription=%s", subscription.Partition, url.QueryEscape(subscription.Path))
 	md[routingMetadataHeader] = append(md[routingMetadataHeader], val)
 	return metadata.NewOutgoingContext(ctx, md)
 }

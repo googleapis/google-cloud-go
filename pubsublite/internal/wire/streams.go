@@ -172,8 +172,8 @@ func (rs *retryableStream) currentStream() grpc.ClientStream {
 	return rs.stream
 }
 
-// clearStream must be called with the retryableStream.mu locked.
-func (rs *retryableStream) clearStream() {
+// unsafeClearStream must be called with the retryableStream.mu locked.
+func (rs *retryableStream) unsafeClearStream() {
 	if rs.cancelStream != nil {
 		// If the stream did not already abort due to error, this will abort it.
 		rs.cancelStream()
@@ -210,7 +210,7 @@ func (rs *retryableStream) reconnect() {
 			return false
 		}
 		rs.status = streamReconnecting
-		rs.clearStream()
+		rs.unsafeClearStream()
 		return true
 	}
 	if !canReconnect() {
@@ -229,7 +229,7 @@ func (rs *retryableStream) reconnect() {
 		defer rs.mu.Unlock()
 
 		if rs.status == streamTerminated {
-			rs.clearStream()
+			rs.unsafeClearStream()
 			return false
 		}
 		rs.status = streamConnected
@@ -330,7 +330,7 @@ func (rs *retryableStream) terminate(err error) {
 	}
 	rs.status = streamTerminated
 	rs.finalErr = err
-	rs.clearStream()
+	rs.unsafeClearStream()
 
 	// terminate can be called from within a streamHandler method with a lock
 	// held. So notify from a goroutine to prevent deadlock.
