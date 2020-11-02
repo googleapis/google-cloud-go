@@ -45,6 +45,7 @@ func (r *rpcMetadata) wait() error {
 	}
 	select {
 	case <-time.After(blockWaitTimeout):
+		// Note: avoid returning a retryable code to quickly terminate the test.
 		return status.Errorf(codes.FailedPrecondition, "mockserver: test did not unblock response within %v", blockWaitTimeout)
 	case <-r.blockResponse:
 		return nil
