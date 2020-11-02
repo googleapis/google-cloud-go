@@ -452,6 +452,8 @@ func TestConvertAccessEntry(t *testing.T) {
 		{Role: ReaderRole, Entity: "e", EntityType: IAMMemberEntity},
 		{Role: ReaderRole, EntityType: ViewEntity,
 			View: &Table{ProjectID: "p", DatasetID: "d", TableID: "t", c: c}},
+		{Role: ReaderRole, EntityType: RoutineEntity,
+			Routine: &Routine{ProjectID: "p", DatasetID: "d", RoutineID: "r", c: c}},
 	} {
 		q, err := e.toBQ()
 		if err != nil {
@@ -461,7 +463,7 @@ func TestConvertAccessEntry(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if diff := testutil.Diff(got, e, cmp.AllowUnexported(Table{}, Client{})); diff != "" {
+		if diff := testutil.Diff(got, e, cmp.AllowUnexported(Table{}, Client{}, Routine{})); diff != "" {
 			t.Errorf("got=-, want=+:\n%s", diff)
 		}
 	}

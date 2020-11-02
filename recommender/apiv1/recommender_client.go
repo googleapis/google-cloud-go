@@ -62,8 +62,30 @@ func defaultClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListInsights:        []gax.CallOption{},
-		GetInsight:          []gax.CallOption{},
+		ListInsights: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetInsight: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		MarkInsightAccepted: []gax.CallOption{},
 		ListRecommendations: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
@@ -220,6 +242,11 @@ func (c *Client) ListInsights(ctx context.Context, req *recommenderpb.ListInsigh
 // GetInsight gets the requested insight. Requires the recommender.*.get IAM permission
 // for the specified insight type.
 func (c *Client) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetInsight[0:len(c.CallOptions.GetInsight):len(c.CallOptions.GetInsight)], opts...)
@@ -242,6 +269,11 @@ func (c *Client) GetInsight(ctx context.Context, req *recommenderpb.GetInsightRe
 // MarkInsightAccepted can be applied to insights in ACTIVE state. Requires
 // the recommender.*.update IAM permission for the specified insight.
 func (c *Client) MarkInsightAccepted(ctx context.Context, req *recommenderpb.MarkInsightAcceptedRequest, opts ...gax.CallOption) (*recommenderpb.Insight, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.MarkInsightAccepted[0:len(c.CallOptions.MarkInsightAccepted):len(c.CallOptions.MarkInsightAccepted)], opts...)

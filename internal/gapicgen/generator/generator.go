@@ -16,11 +16,13 @@
 package generator
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 )
 
@@ -34,10 +36,41 @@ func Generate(ctx context.Context, googleapisDir, genprotoDir, gocloudDir, proto
 		return fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
 	}
 
+	if err := recordGoogleapisHash(googleapisDir, genprotoDir); err != nil {
+		return fmt.Errorf("error recording most recent googleapis hash: %v", err)
+	}
+
 	return nil
 }
 
-// build attemps to build all packages recursively from the given directory.
+// recordGoogleapisHash parses the latest commit in googleapis and records it to
+// regen.txt in go-genproto.
+func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
+	out := bytes.NewBuffer(nil)
+	c := command("git", "rev-list", "HEAD^..")
+	c.Stdout = out
+	c.Stderr = os.Stderr
+	c.Dir = googleapisDir
+	if err := c.Run(); err != nil {
+		return err
+	}
+	commits := strings.Split(strings.TrimSpace(out.String()), "\n")
+	if len(commits) != 1 {
+		return fmt.Errorf("only expected one commit, got %d", len(commits))
+	}
+
+	f, err := os.OpenFile(filepath.Join(genprotoDir, "regen.txt"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	if _, err := f.WriteString(commits[0]); err != nil {
+		return err
+	}
+	return nil
+}
+
+// build attempts to build all packages recursively from the given directory.
 func build(dir string) error {
 	c := command("go", "build", "./...")
 	c.Stdout = os.Stdout
