@@ -209,7 +209,11 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 // iterator.
 func (r *RowIterator) Stop() {
 	if r.streamd != nil {
-		defer trace.EndSpan(r.streamd.ctx, r.err)
+		if r.err != nil && r.err != iterator.Done {
+			defer trace.EndSpan(r.streamd.ctx, r.err)
+		} else {
+			defer trace.EndSpan(r.streamd.ctx, nil)
+		}
 	}
 	if r.cancel != nil {
 		r.cancel()
@@ -220,7 +224,6 @@ func (r *RowIterator) Stop() {
 			r.err = spannerErrorf(codes.FailedPrecondition, "Next called after Stop")
 		}
 		r.release = nil
-
 	}
 }
 
