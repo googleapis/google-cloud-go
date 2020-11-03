@@ -148,8 +148,8 @@ type subscriberOffsetTracker struct {
 }
 
 // RequestForRestart returns the seek request to send when a new subscribe
-// stream reconnects. Returns if the subscriber has just started, in which case
-// the server returns the offset of the last committed cursor.
+// stream reconnects. Returns nil if the subscriber has just started, in which
+// case the server returns the offset of the last committed cursor.
 func (ot *subscriberOffsetTracker) RequestForRestart() *pb.SeekRequest {
 	if ot.minNextOffset <= 0 {
 		return nil
@@ -162,7 +162,7 @@ func (ot *subscriberOffsetTracker) RequestForRestart() *pb.SeekRequest {
 }
 
 // OnMessages verifies that messages are delivered in order and updates the next
-// expected offset .
+// expected offset.
 func (ot *subscriberOffsetTracker) OnMessages(msgs []*pb.SequencedMessage) error {
 	nextOffset := ot.minNextOffset
 	for i, msg := range msgs {

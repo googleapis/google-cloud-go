@@ -146,6 +146,11 @@ func TestTokenCounterToFlowControlRequest(t *testing.T) {
 			counter: tokenCounter{Messages: 1},
 			want:    &pb.FlowControlRequest{AllowedMessages: 1},
 		},
+		{
+			desc:    "Messages and bytes",
+			counter: tokenCounter{Bytes: 56, Messages: 32},
+			want:    &pb.FlowControlRequest{AllowedBytes: 56, AllowedMessages: 32},
+		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			got := tc.counter.ToFlowControlRequest()
