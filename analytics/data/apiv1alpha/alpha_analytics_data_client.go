@@ -288,7 +288,7 @@ func (c *AlphaAnalyticsDataClient) GetUniversalMetadata(ctx context.Context, req
 
 // GetMetadata returns metadata for dimensions and metrics available in reporting methods.
 // Used to explore the dimensions and metrics. In this method, a Google
-// Analytics App + Web Property Identifier is specified in the request, and
+// Analytics 4 (GA4) Property Identifier is specified in the request, and
 // the metadata response includes Custom dimensions and metrics as well as
 // Universal metadata.
 //
