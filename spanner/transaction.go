@@ -489,7 +489,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 				rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
 			}
 		} else {
-			err = toSpannerError(err)
+			err = ToSpannerError(err)
 		}
 		break
 	}
@@ -827,7 +827,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	}
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
 	if err != nil {
-		return 0, toSpannerError(err)
+		return 0, ToSpannerError(err)
 	}
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
@@ -876,7 +876,7 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
 	})
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 
 	var counts []int64
@@ -1209,7 +1209,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 			break
 		}
 	}
-	return ts, toSpannerError(err)
+	return ts, ToSpannerError(err)
 }
 
 // isAbortedErr returns true if the error indicates that an gRPC call is

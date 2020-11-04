@@ -1033,13 +1033,13 @@ func (p *sessionPool) takeWriteSession(ctx context.Context) (*sessionHandle, err
 					s.destroy(false)
 					trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 						"Session not found for write")
-					return nil, toSpannerError(err)
+					return nil, ToSpannerError(err)
 				}
 
 				s.recycle()
 				trace.TracePrintf(ctx, map[string]interface{}{"sessionID": s.getID()},
 					"Error preparing session for write")
-				return nil, toSpannerError(err)
+				return nil, ToSpannerError(err)
 			}
 		}
 		p.incNumInUse(ctx)
@@ -1506,7 +1506,7 @@ func (hc *healthChecker) worker(i int) {
 				// cycle.
 				// Don't log about permission errors, which may be expected
 				// (e.g. using read-only auth).
-				serr := toSpannerError(err).(*Error)
+				serr := ToSpannerError(err).(*Error)
 				if serr.Code != codes.PermissionDenied {
 					logf(hc.pool.sc.logger, "Failed to prepare session, error: %v", serr)
 				}
