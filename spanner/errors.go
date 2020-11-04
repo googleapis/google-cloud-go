@@ -122,7 +122,7 @@ func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 // returned status of a RPC. This method can also be used to create Spanner
 // errors for use in tests. The recommended way to create test errors is
 // calling this method with a status error, e.g.
-// ToSpannerError(status.Newf(codes.NotFound, "Table not found").Err())
+// ToSpannerError(status.New(codes.NotFound, "Table not found").Err())
 func ToSpannerError(err error) error {
 	return toSpannerErrorWithCommitInfo(err, false)
 }
