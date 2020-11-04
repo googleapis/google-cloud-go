@@ -117,7 +117,7 @@ type ClientConfig struct {
 
 // errDial returns error for dialing to Cloud Spanner.
 func errDial(ci int, err error) error {
-	e := toSpannerError(err).(*Error)
+	e := ToSpannerError(err).(*Error)
 	e.decorate(fmt.Sprintf("dialing fails for channel[%v]", ci))
 	return e
 }
@@ -341,7 +341,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		},
 	})
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 	tx = res.Id
 	if res.ReadTimestamp != nil {
