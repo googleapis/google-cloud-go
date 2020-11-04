@@ -537,7 +537,7 @@ func TestClient_ReadOnlyTransaction_SessionNotFoundOnExecuteStreamingSql(t *test
 	err := testReadOnlyTransaction(t, map[string]SimulatedExecutionTime{
 		MethodExecuteStreamingSql: {Errors: []error{newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s")}},
 	})
-	want := toSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
+	want := ToSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
 	if err == nil {
 		t.Fatalf("missing expected error\nGot: nil\nWant: %v", want)
 	}
