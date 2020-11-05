@@ -24,7 +24,9 @@ type AckConsumer interface {
 	Ack()
 }
 
-// ackedFunc is invoked when a message has been acked by the user.
+// ackedFunc is invoked when a message has been acked by the user. Note: if the
+// ackedFunc implementation calls any ackConsumer methods, it needs to run in a
+// goroutine to avoid a deadlock.
 type ackedFunc func(*ackConsumer)
 
 // ackConsumer is used for handling message acks. It is attached to a Message
@@ -171,9 +173,9 @@ type commitCursorTracker struct {
 	// Used to obtain the desired commit offset based on messages acked by the
 	// user.
 	acks *ackTracker
-	// Last offset for which the server acknowledged the commit.
+	// Last offset for which the server confirmed (acknowledged) the commit.
 	lastConfirmedOffset int64
-	// Queue of unacknowledged committed offsets.
+	// Queue of committed offsets awaiting confirmation from the server.
 	pendingOffsets *list.List // Value = int64
 }
 
@@ -203,31 +205,32 @@ func (ct *commitCursorTracker) NextOffset() int64 {
 	}
 	if desiredCommitOffset <= extractOffsetFromElem(ct.pendingOffsets.Back()) {
 		// The commit offset has already been sent to the commit stream and is
-		// awaiting acknowledgment.
+		// awaiting confirmation.
 		return nilCursorOffset
 	}
 	return desiredCommitOffset
 }
 
-// AddPending adds a sent, but not yet acknowledged, committed offset.
+// AddPending adds a sent, but not yet confirmed, committed offset.
 func (ct *commitCursorTracker) AddPending(offset int64) {
 	ct.pendingOffsets.PushBack(offset)
 }
 
 // ClearPending discards old pending offsets. Should be called when the commit
-// stream reconnects, as the acknowledgments for these would not be received.
+// stream reconnects, as the server acknowledgments for these would not be
+// received.
 func (ct *commitCursorTracker) ClearPending() {
 	ct.pendingOffsets.Init()
 }
 
-// AcknowledgeOffsets processes the server's acknowledgment of the first
-// `numAcked` pending offsets.
-func (ct *commitCursorTracker) AcknowledgeOffsets(numAcked int64) error {
-	if numPending := int64(ct.pendingOffsets.Len()); numPending < numAcked {
-		return fmt.Errorf("pubsublite: server acknowledged %d cursor commits, but only %d were sent", numAcked, numPending)
+// ConfirmOffsets processes the server's acknowledgment of the first
+// `numConfirmed` pending offsets.
+func (ct *commitCursorTracker) ConfirmOffsets(numConfirmed int64) error {
+	if numPending := int64(ct.pendingOffsets.Len()); numPending < numConfirmed {
+		return fmt.Errorf("pubsublite: server acknowledged %d cursor commits, but only %d were sent", numConfirmed, numPending)
 	}
 
-	for i := int64(0); i < numAcked; i++ {
+	for i := int64(0); i < numConfirmed; i++ {
 		front := ct.pendingOffsets.Front()
 		ct.lastConfirmedOffset = extractOffsetFromElem(front)
 		ct.pendingOffsets.Remove(front)
