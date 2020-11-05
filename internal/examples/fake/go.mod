@@ -7,6 +7,6 @@ require (
 	github.com/golang/protobuf v1.4.3 // indirect
 	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
 	google.golang.org/api v0.34.0
-	google.golang.org/genproto v0.0.0-20201103154000-415bd0cd5df6
+	google.golang.org/genproto v0.0.0-20201105153401-9d023cd09d72
 	google.golang.org/grpc v1.32.0
 )
