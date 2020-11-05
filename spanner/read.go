@@ -157,7 +157,7 @@ func (r *RowIterator) Next() (*Row, error) {
 		return row, nil
 	}
 	if err := r.streamd.lastErr(); err != nil {
-		r.err = toSpannerError(err)
+		r.err = ToSpannerError(err)
 	} else if !r.rowd.done() {
 		r.err = errEarlyReadEnd()
 	} else {
