@@ -56,6 +56,7 @@ type service interface {
 	AddStatusChangeReceiver(serviceHandle, serviceStatusChangeFunc)
 	RemoveStatusChangeReceiver(serviceHandle)
 	Handle() serviceHandle
+	Error() error
 }
 
 // abstractService can be embedded into other structs to provide common

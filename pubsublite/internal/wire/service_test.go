@@ -70,7 +70,6 @@ func (sr *testStatusChangeReceiver) VerifyNoStatusChanges(t *testing.T) {
 
 type testService struct {
 	receiver *testStatusChangeReceiver
-
 	abstractService
 }
 
@@ -192,7 +191,6 @@ func TestServiceAddRemoveStatusChangeReceiver(t *testing.T) {
 
 type testCompositeService struct {
 	receiver *testStatusChangeReceiver
-
 	compositeService
 }
 
