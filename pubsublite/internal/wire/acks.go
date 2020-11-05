@@ -57,6 +57,7 @@ func (ac *ackConsumer) Ack() {
 	}
 	ac.acked = true
 	if ac.onAck != nil {
+		// Not invoked in a goroutine here for ease of testing.
 		ac.onAck(ac)
 	}
 }
@@ -120,12 +121,14 @@ func (at *ackTracker) Push(ack *ackConsumer) error {
 	return nil
 }
 
-// Pop processes outstanding acks and updates `ackedPrefixOffset` until an
-// unacked message is found.
-func (at *ackTracker) Pop() {
+// CommitOffset returns the cursor offset that should be committed. May return
+// nilCursorOffset if no messages have been acked thus far.
+func (at *ackTracker) CommitOffset() int64 {
 	at.mu.Lock()
 	defer at.mu.Unlock()
 
+	// Process outstanding acks and update `ackedPrefixOffset` until an unacked
+	// message is found.
 	for {
 		elem := at.outstandingAcks.Front()
 		if elem == nil {
@@ -139,13 +142,6 @@ func (at *ackTracker) Pop() {
 		at.outstandingAcks.Remove(elem)
 		ack.Clear()
 	}
-}
-
-// CommitOffset returns the cursor offset that should be committed. May return
-// nilCursorOffset if no messages have been acked thus far.
-func (at *ackTracker) CommitOffset() int64 {
-	at.mu.Lock()
-	defer at.mu.Unlock()
 
 	if at.ackedPrefixOffset == nilCursorOffset {
 		return nilCursorOffset

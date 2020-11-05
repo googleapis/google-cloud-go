@@ -57,11 +57,7 @@ func TestAckTrackerProcessing(t *testing.T) {
 	}
 
 	onAck := func(ac *ackConsumer) {
-		// This callback is occuring within ackConsumer while holding a locked
-		// mutex. In non-test code, it occurs asynchronously.
-		ac.mu.Unlock()
-		ackTracker.Pop()
-		ac.mu.Lock()
+		// Nothing to do.
 	}
 	ack1 := newAckConsumer(1, 0, onAck)
 	ack2 := newAckConsumer(2, 0, onAck)
@@ -145,11 +141,7 @@ func TestCommitCursorTrackerProcessing(t *testing.T) {
 	}
 
 	onAck := func(ac *ackConsumer) {
-		// This callback is occuring within ackConsumer while holding a locked
-		// mutex. In non-test code, it occurs asynchronously.
-		ac.mu.Unlock()
-		ackTracker.Pop()
-		ac.mu.Lock()
+		// Nothing to do.
 	}
 	ack1 := newAckConsumer(1, 0, onAck)
 	ack2 := newAckConsumer(2, 0, onAck)
@@ -216,11 +208,7 @@ func TestCommitCursorTrackerStreamReconnects(t *testing.T) {
 	commitTracker := newCommitCursorTracker(ackTracker)
 
 	onAck := func(ac *ackConsumer) {
-		// This callback is occuring within ackConsumer while holding a locked
-		// mutex. In non-test code, it occurs asynchronously.
-		ac.mu.Unlock()
-		ackTracker.Pop()
-		ac.mu.Lock()
+		// Nothing to do.
 	}
 	ack1 := newAckConsumer(1, 0, onAck)
 	ack2 := newAckConsumer(2, 0, onAck)
