@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.14.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.13.0...v1.14.0) (2020-11-05)
+
+
+### Features
+
+* **all:** auto-regenerate gapics ([#3142](https://www.github.com/googleapis/google-cloud-go/issues/3142)) ([472b731](https://www.github.com/googleapis/google-cloud-go/commit/472b7312287869df8a4da4304020f21ed1d7f90b))
+
 ## v1.13.0
 
 * Support retries for specific http2 transport race.
