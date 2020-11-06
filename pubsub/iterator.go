@@ -395,8 +395,8 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 		for {
 			// Use context.Background() as the call's context, not it.ctx. We don't
 			// want to cancel this RPC when the iterator is stopped.
-			cctx2, cancel := context.WithTimeout(context.Background(), 60*time.Second)
-			defer cancel()
+			cctx2, cancel2 := context.WithTimeout(context.Background(), 60*time.Second)
+			defer cancel2()
 			err := it.subc.Acknowledge(cctx2, &pb.AcknowledgeRequest{
 				Subscription: it.subName,
 				AckIds:       ids,
@@ -421,7 +421,12 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 				// not captured by the previous case causes fatal errors.
 				// See https://github.com/googleapis/google-cloud-go/issues/3060
 				if strings.Contains(err.Error(), "context deadline exceeded") {
-					return nil
+					// Context deadline exceeded errors here should be transient
+					// to prevent the iterator from shutting down.
+					if err := gax.Sleep(cctx, bo.Pause()); err != nil {
+						return nil
+					}
+					continue
 				}
 				// Any other error is fatal.
 				return err
