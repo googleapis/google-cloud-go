@@ -11,10 +11,6 @@ assign_issues_by:
   to:
   - shollyman
 - labels:
-  - 'api: logging'
-  to:
-  - nicoleczhu
-- labels:
   - 'api: pubsub'
   to:
   - hongalex
