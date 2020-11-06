@@ -35,7 +35,8 @@ func newPeriodicTask(period time.Duration, task func()) *periodicTask {
 	}
 }
 
-// Start the polling goroutine.
+// Start the polling goroutine. Note that the caller is responsible for
+// ensuring that Start is only called once.
 func (pt *periodicTask) Start() {
 	go pt.poll()
 }
