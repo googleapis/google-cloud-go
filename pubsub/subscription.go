@@ -489,9 +489,9 @@ type ReceiveSettings struct {
 	// for unprocessed messages.
 	MaxOutstandingBytes int
 
-	// if UseLegacyFlowControl is true, then enforcing flow control settings at
-	// the Cloud PubSub server is disabled and the less accurate method of only
-	// enforcing flow control at the client side is used.
+	// UseLegacyFlowControl disables enforcing flow control settings at the Cloud
+	// PubSub server and the less accurate method of only enforcing flow control
+	// at the client side is used.
 	// The default is false.
 	UseLegacyFlowControl bool
 
