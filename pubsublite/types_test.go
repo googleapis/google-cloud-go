@@ -129,68 +129,6 @@ func TestParseSubscriptionPath(t *testing.T) {
 	}
 }
 
-func TestValidateZone(t *testing.T) {
-	for _, tc := range []struct {
-		desc    string
-		input   string
-		wantErr bool
-	}{
-		{
-			desc:    "valid",
-			input:   "us-central1-a",
-			wantErr: false,
-		},
-		{
-			desc:    "invalid: insufficient dashes",
-			input:   "us-central1",
-			wantErr: true,
-		},
-		{
-			desc:    "invalid: excess dashes",
-			input:   "us-central1-a-b",
-			wantErr: true,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := validateZone(tc.input)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("validateZone(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
-			}
-		})
-	}
-}
-
-func TestValidateRegion(t *testing.T) {
-	for _, tc := range []struct {
-		desc    string
-		input   string
-		wantErr bool
-	}{
-		{
-			desc:    "valid",
-			input:   "europe-west1",
-			wantErr: false,
-		},
-		{
-			desc:    "invalid: insufficient dashes",
-			input:   "europewest1",
-			wantErr: true,
-		},
-		{
-			desc:    "invalid: excess dashes",
-			input:   "europe-west1-b",
-			wantErr: true,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := validateRegion(tc.input)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("validateRegion(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
-			}
-		})
-	}
-}
-
 func TestZoneToRegion(t *testing.T) {
 	for _, tc := range []struct {
 		desc       string
