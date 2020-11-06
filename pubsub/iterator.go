@@ -408,7 +408,7 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 			switch status.Code(err) {
 			case codes.DeadlineExceeded:
 				// Use the outer context with timeout here. Errors from gax, including
-				// context deadline exceeded should be transient, as unacked messages
+				// context deadline exceeded should be transparent, as unacked messages
 				// will be redelivered.
 				if err := gax.Sleep(cctx, bo.Pause()); err != nil {
 					return nil
@@ -421,7 +421,7 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 				// not captured by the previous case causes fatal errors.
 				// See https://github.com/googleapis/google-cloud-go/issues/3060
 				if strings.Contains(err.Error(), "context deadline exceeded") {
-					// Context deadline exceeded errors here should be transient
+					// Context deadline exceeded errors here should be transparent
 					// to prevent the iterator from shutting down.
 					if err := gax.Sleep(cctx, bo.Pause()); err != nil {
 						return nil
