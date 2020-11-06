@@ -27,15 +27,19 @@ func TestPeriodicTask(t *testing.T) {
 	}
 	ptask := newPeriodicTask(10*time.Millisecond, task)
 
-	t.Run("Start", func(t *testing.T) {
+	t.Run("Start1", func(t *testing.T) {
 		ptask.Start()
+		ptask.Start() // Tests duplicate start
+
 		if got, want := <-values, int32(1); got != want {
 			t.Errorf("got %d, want %d", got, want)
 		}
 	})
 
-	t.Run("Pause", func(t *testing.T) {
-		ptask.Pause()
+	t.Run("Stop1", func(t *testing.T) {
+		ptask.Stop()
+		ptask.Stop() // Tests duplicate stop
+
 		select {
 		case got := <-values:
 			t.Errorf("got unexpected value %d", got)
@@ -43,22 +47,21 @@ func TestPeriodicTask(t *testing.T) {
 		}
 	})
 
-	t.Run("Resume", func(t *testing.T) {
-		ptask.Resume()
+	t.Run("Start2", func(t *testing.T) {
+		ptask.Start()
+
 		if got, want := <-values, int32(2); got != want {
 			t.Errorf("got %d, want %d", got, want)
 		}
 	})
 
-	t.Run("Stop", func(t *testing.T) {
+	t.Run("Stop2", func(t *testing.T) {
 		ptask.Stop()
+
 		select {
 		case got := <-values:
 			t.Errorf("got unexpected value %d", got)
 		default:
 		}
-
-		// Duplicate Stop() doesn't panic.
-		ptask.Stop()
 	})
 }

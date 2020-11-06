@@ -19,54 +19,51 @@ import (
 
 // periodicTask manages a recurring background task.
 type periodicTask struct {
-	period  time.Duration
-	ticker  *time.Ticker
-	stop    chan struct{}
-	stopped bool
-	task    func()
+	period time.Duration
+	task   func()
+	ticker *time.Ticker
+	stop   chan struct{}
 }
 
 func newPeriodicTask(period time.Duration, task func()) *periodicTask {
 	return &periodicTask{
-		ticker: time.NewTicker(period),
-		stop:   make(chan struct{}),
 		period: period,
 		task:   task,
 	}
 }
 
-// Start the polling goroutine. Note that the caller is responsible for
-// ensuring that Start is only called once.
+// Start the polling goroutine. No-op if the goroutine is already running.
+// The task is executed after the polling period.
 func (pt *periodicTask) Start() {
-	go pt.poll()
-}
-
-// Resume polling. The task is executed after the polling period.
-func (pt *periodicTask) Resume() {
-	pt.ticker.Reset(pt.period)
-}
-
-// Pause temporarily suspends the polling.
-func (pt *periodicTask) Pause() {
-	pt.ticker.Stop()
-}
-
-// Stop permanently stops the periodic task.
-func (pt *periodicTask) Stop() {
-	// Prevent a panic if the stop channel has already been closed.
-	if !pt.stopped {
-		close(pt.stop)
-		pt.stopped = true
+	if pt.ticker != nil {
+		return
 	}
+
+	pt.ticker = time.NewTicker(pt.period)
+	pt.stop = make(chan struct{})
+	go pt.poll(pt.ticker, pt.stop)
 }
 
-func (pt *periodicTask) poll() {
+// Stop/pause the periodic task.
+func (pt *periodicTask) Stop() {
+	if pt.ticker == nil {
+		return
+	}
+
+	pt.ticker.Stop()
+	close(pt.stop)
+
+	pt.ticker = nil
+	pt.stop = nil
+}
+
+func (pt *periodicTask) poll(ticker *time.Ticker, stop chan struct{}) {
 	for {
 		select {
-		case <-pt.stop:
+		case <-stop:
 			// Ends the goroutine.
 			return
-		case <-pt.ticker.C:
+		case <-ticker.C:
 			pt.task()
 		}
 	}
