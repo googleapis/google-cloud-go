@@ -14,6 +14,8 @@
 package test
 
 import (
+	"strings"
+
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/grpc/codes"
@@ -34,6 +36,11 @@ func ErrorHasCode(got error, wantCode codes.Code) bool {
 		return s.Code() == wantCode
 	}
 	return false
+}
+
+// ErrorHasMsg returns true if an error message contains the desired substring.
+func ErrorHasMsg(got error, wantStr string) bool {
+	return strings.Index(got.Error(), wantStr) >= 0
 }
 
 // FakeSource is a fake source that returns a configurable constant.
