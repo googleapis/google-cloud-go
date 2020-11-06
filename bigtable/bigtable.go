@@ -39,6 +39,7 @@ import (
 )
 
 const prodAddr = "bigtable.googleapis.com:443"
+const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -65,7 +66,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
-	o, err := btopt.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
