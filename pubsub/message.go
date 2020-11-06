@@ -119,5 +119,7 @@ func (m *Message) done(ack bool) {
 		return
 	}
 	m.calledDone = true
-	m.doneFunc(m.ackID, ack, m.receiveTime)
+	if m.doneFunc != nil {
+		m.doneFunc(m.ackID, ack, m.receiveTime)
+	}
 }
