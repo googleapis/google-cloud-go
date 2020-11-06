@@ -16,6 +16,7 @@ package pubsublite
 import (
 	"context"
 
+	"cloud.google.com/go/pubsublite/internal/wire"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -34,10 +35,10 @@ type AdminClient struct {
 // See https://cloud.google.com/pubsub/lite/docs/locations for the list of
 // regions and zones where Cloud Pub/Sub Lite is available.
 func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOption) (*AdminClient, error) {
-	if err := validateRegion(region); err != nil {
+	if err := wire.ValidateRegion(region); err != nil {
 		return nil, err
 	}
-	admin, err := newAdminClient(ctx, region, opts...)
+	admin, err := wire.NewAdminClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}

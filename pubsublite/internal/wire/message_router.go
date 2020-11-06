@@ -11,65 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package pubsublite
+package wire
 
 import (
 	"crypto/sha256"
-	"fmt"
 	"math/big"
 	"math/rand"
-	"time"
-
-	"github.com/golang/protobuf/ptypes"
-
-	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
-
-// AttributeValues is a slice of strings.
-type AttributeValues [][]byte
-
-// Message represents a Pub/Sub message.
-type Message struct {
-	// Data is the actual data in the message.
-	Data []byte
-
-	// Attributes can be used to label the message. A key may have multiple
-	// values.
-	Attributes map[string]AttributeValues
-
-	// EventTime is an optional, user-specified event time for this message.
-	EventTime time.Time
-
-	// OrderingKey identifies related messages for which publish order should
-	// be respected. Messages with the same ordering key are published to the
-	// same topic partition and subscribers will receive the messages in order.
-	// If the ordering key is empty, the message will be sent to an arbitrary
-	// partition.
-	OrderingKey []byte
-}
-
-func (m *Message) toProto() (*pb.PubSubMessage, error) {
-	msgpb := &pb.PubSubMessage{
-		Data: m.Data,
-		Key:  m.OrderingKey,
-	}
-
-	if len(m.Attributes) > 0 {
-		msgpb.Attributes = make(map[string]*pb.AttributeValues)
-		for key, values := range m.Attributes {
-			msgpb.Attributes[key] = &pb.AttributeValues{Values: values}
-		}
-	}
-
-	if !m.EventTime.IsZero() {
-		ts, err := ptypes.TimestampProto(m.EventTime)
-		if err != nil {
-			return nil, fmt.Errorf("pubsublite: error converting message timestamp: %v", err)
-		}
-		msgpb.EventTime = ts
-	}
-	return msgpb, nil
-}
 
 // messageRouter outputs a partition number, given an ordering key. Results are
 // undefined when:
