@@ -403,6 +403,8 @@ func (it *messageIterator) sendAck(m map[string]bool) bool {
 			})
 			// Retry DeadlineExceeded errors a few times before giving up and
 			// allowing the message to expire and be redelivered.
+			// The underlying library handles other retries, currently only
+			// codes.Unavailable.
 			switch status.Code(err) {
 			case codes.DeadlineExceeded:
 				// Use the outer context with timeout here. Deadline exceeded errors
