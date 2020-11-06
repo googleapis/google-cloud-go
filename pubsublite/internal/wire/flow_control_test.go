@@ -25,25 +25,6 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
-func flowControlReq(tokens flowControlTokens) *pb.FlowControlRequest {
-	return &pb.FlowControlRequest{
-		AllowedBytes:    tokens.Bytes,
-		AllowedMessages: tokens.Messages,
-	}
-}
-
-func seqMsgWithOffset(offset int64) *pb.SequencedMessage {
-	return &pb.SequencedMessage{
-		Cursor: &pb.Cursor{Offset: offset},
-	}
-}
-
-func seqMsgWithSizeBytes(size int64) *pb.SequencedMessage {
-	return &pb.SequencedMessage{
-		SizeBytes: size,
-	}
-}
-
 func TestTokenCounterAdd(t *testing.T) {
 	// Note: tests are applied to this counter instance in order.
 	counter := tokenCounter{}
