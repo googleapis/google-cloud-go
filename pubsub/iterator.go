@@ -76,7 +76,13 @@ type messageIterator struct {
 func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensionPeriod *time.Duration, po *pullOptions) *messageIterator {
 	var ps *pullStream
 	if !po.synchronous {
-		ps = newPullStream(context.Background(), subc.StreamingPull, subName, po.maxOutstandingMessages, po.maxOutstandingBytes)
+		maxMessages = po.maxOutstandingMessages
+		maxBytes = po.maxOutstandingBytes
+		if po.UseLegacyFlowControl {
+			maxMessages = 0
+			maxBytes = 0
+		}
+		ps = newPullStream(context.Background(), subc.StreamingPull, subName, maxMessages, maxBytes)
 	}
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
