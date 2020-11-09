@@ -10,8 +10,8 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	go.opencensus.io v0.22.5
 	golang.org/x/oauth2 v0.0.0-20200902213428-5d25da1a8d43
-	golang.org/x/tools v0.0.0-20201105001634-bc3cf281b174 // indirect
-	google.golang.org/api v0.34.0
-	google.golang.org/genproto v0.0.0-20201105153401-9d023cd09d72
-	google.golang.org/grpc v1.33.1
+	golang.org/x/tools v0.0.0-20201109182053-3db8fd265862 // indirect
+	google.golang.org/api v0.35.0
+	google.golang.org/genproto v0.0.0-20201109203340-2640f1f9cdfb
+	google.golang.org/grpc v1.33.2
 )
