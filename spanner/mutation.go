@@ -179,7 +179,7 @@ func structToMutationParams(in interface{}) ([]string, []interface{}, error) {
 	}
 	fields, err := fieldCache.Fields(t)
 	if err != nil {
-		return nil, nil, toSpannerError(err)
+		return nil, nil, ToSpannerError(err)
 	}
 	var cols []string
 	var vals []interface{}

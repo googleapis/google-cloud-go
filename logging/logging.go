@@ -141,7 +141,6 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 		parent = "projects/" + parent
 	}
 	opts = append([]option.ClientOption{
-		option.WithEndpoint(internal.ProdAddr),
 		option.WithScopes(WriteScope),
 	}, opts...)
 	c, err := vkit.NewClient(ctx, opts...)

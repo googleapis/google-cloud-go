@@ -135,7 +135,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		Session:  &sppb.Session{Labels: sc.sessionLabels},
 	})
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 	return &session{valid: true, client: client, id: sid.Name, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
 }
@@ -227,7 +227,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		}
 		if ctx.Err() != nil {
 			trace.TracePrintf(ctx, nil, "Context error while creating a batch of %d sessions: %v", createCount, ctx.Err())
-			consumer.sessionCreationFailed(toSpannerError(ctx.Err()), remainingCreateCount)
+			consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), remainingCreateCount)
 			break
 		}
 		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
@@ -237,7 +237,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		})
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
-			consumer.sessionCreationFailed(toSpannerError(err), remainingCreateCount)
+			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)
 			break
 		}
 		actuallyCreated := int32(len(response.Session))
