@@ -1,5 +1,10 @@
 # Changes
 
+## v1.8.3
+
+- Fixes:
+  - fix(pubsub): retry deadline exceeded errors in Acknowledge (#3157)
+
 ## v1.8.2
 
 - Fixes:
