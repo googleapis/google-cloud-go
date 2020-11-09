@@ -400,7 +400,10 @@ func TestFromHTTPRequest(t *testing.T) {
 		CacheHit:                       true,
 		CacheValidatedWithOriginServer: true,
 	}
-	got := fromHTTPRequest(req)
+	got, err := fromHTTPRequest(req)
+	if err != nil {
+		t.Errorf("got %v", err)
+	}
 	want := &logtypepb.HttpRequest{
 		RequestMethod: "GET",
 
@@ -428,6 +431,15 @@ func TestFromHTTPRequest(t *testing.T) {
 	// doesn't not regress.
 	if _, err := proto.Marshal(got); err != nil {
 		t.Fatalf("Unexpected proto.Marshal error: %v", err)
+	}
+
+	// fromHTTPRequest returns nil if there is no Request property (but does not panic)
+	reqNil := &HTTPRequest{
+		RequestSize: 100,
+	}
+	got, err = fromHTTPRequest(reqNil)
+	if got != nil && err == nil {
+		t.Errorf("got  %+v\nwant %+v", got, want)
 	}
 }
 

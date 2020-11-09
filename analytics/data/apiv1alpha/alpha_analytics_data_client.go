@@ -43,6 +43,7 @@ type AlphaAnalyticsDataCallOptions struct {
 	BatchRunPivotReports []gax.CallOption
 	GetUniversalMetadata []gax.CallOption
 	GetMetadata          []gax.CallOption
+	RunRealtimeReport    []gax.CallOption
 }
 
 func defaultAlphaAnalyticsDataClientOptions() []option.ClientOption {
@@ -74,6 +75,17 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 			}),
 		},
 		GetMetadata: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RunRealtimeReport: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -288,7 +300,7 @@ func (c *AlphaAnalyticsDataClient) GetUniversalMetadata(ctx context.Context, req
 
 // GetMetadata returns metadata for dimensions and metrics available in reporting methods.
 // Used to explore the dimensions and metrics. In this method, a Google
-// Analytics App + Web Property Identifier is specified in the request, and
+// Analytics 4 (GA4) Property Identifier is specified in the request, and
 // the metadata response includes Custom dimensions and metrics as well as
 // Universal metadata.
 //
@@ -309,6 +321,30 @@ func (c *AlphaAnalyticsDataClient) GetMetadata(ctx context.Context, req *datapb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.alphaAnalyticsDataClient.GetMetadata(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// RunRealtimeReport the Google Analytics Realtime API returns a customized report of realtime
+// event data for your property. These reports show events and usage from the
+// last 30 minutes.
+func (c *AlphaAnalyticsDataClient) RunRealtimeReport(ctx context.Context, req *datapb.RunRealtimeReportRequest, opts ...gax.CallOption) (*datapb.RunRealtimeReportResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "property", url.QueryEscape(req.GetProperty())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.RunRealtimeReport[0:len(c.CallOptions.RunRealtimeReport):len(c.CallOptions.RunRealtimeReport)], opts...)
+	var resp *datapb.RunRealtimeReportResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alphaAnalyticsDataClient.RunRealtimeReport(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
