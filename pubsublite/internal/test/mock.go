@@ -47,6 +47,13 @@ type MockServer interface {
 	OnTestEnd()
 	// AddPublishStream adds a verifier for a publish stream of a topic partition.
 	AddPublishStream(topic string, partition int, streamVerifier *RPCVerifier)
+	// AddSubscribeStream adds a verifier for a subscribe stream of a partition.
+	AddSubscribeStream(subscription string, partition int, streamVerifier *RPCVerifier)
+	// AddCommitStream adds a verifier for a commit stream of a partition.
+	AddCommitStream(subscription string, partition int, streamVerifier *RPCVerifier)
+	// AddAssignmentStream adds a verifier for a partition assignment stream for a
+	// subscription.
+	AddAssignmentStream(subscription string, streamVerifier *RPCVerifier)
 }
 
 // NewServer creates a new mock Pub/Sub Lite server.
@@ -58,6 +65,9 @@ func NewServer() (*Server, error) {
 	liteServer := newMockLiteServer()
 	pb.RegisterAdminServiceServer(srv.Gsrv, liteServer)
 	pb.RegisterPublisherServiceServer(srv.Gsrv, liteServer)
+	pb.RegisterSubscriberServiceServer(srv.Gsrv, liteServer)
+	pb.RegisterCursorServiceServer(srv.Gsrv, liteServer)
+	pb.RegisterPartitionAssignmentServiceServer(srv.Gsrv, liteServer)
 	srv.Start()
 	return &Server{LiteServer: liteServer, gRPCServer: srv}, nil
 }
@@ -81,6 +91,9 @@ type streamHolder struct {
 type mockLiteServer struct {
 	pb.AdminServiceServer
 	pb.PublisherServiceServer
+	pb.SubscriberServiceServer
+	pb.CursorServiceServer
+	pb.PartitionAssignmentServiceServer
 
 	mu sync.Mutex
 
@@ -88,8 +101,11 @@ type mockLiteServer struct {
 	// test begins.
 	globalVerifier *RPCVerifier
 
-	// Publish stream verifiers by topic & partition.
-	publishVerifiers *keyedStreamVerifiers
+	// Stream verifiers by key.
+	publishVerifiers    *keyedStreamVerifiers
+	subscribeVerifiers  *keyedStreamVerifiers
+	commitVerifiers     *keyedStreamVerifiers
+	assignmentVerifiers *keyedStreamVerifiers
 
 	nextStreamID  int
 	activeStreams map[int]*streamHolder
@@ -102,8 +118,11 @@ func key(path string, partition int) string {
 
 func newMockLiteServer() *mockLiteServer {
 	return &mockLiteServer{
-		publishVerifiers: newKeyedStreamVerifiers(),
-		activeStreams:    make(map[int]*streamHolder),
+		publishVerifiers:    newKeyedStreamVerifiers(),
+		subscribeVerifiers:  newKeyedStreamVerifiers(),
+		commitVerifiers:     newKeyedStreamVerifiers(),
+		assignmentVerifiers: newKeyedStreamVerifiers(),
+		activeStreams:       make(map[int]*streamHolder),
 	}
 }
 
@@ -188,6 +207,9 @@ func (s *mockLiteServer) OnTestStart(globalVerifier *RPCVerifier) {
 	s.testActive = true
 	s.globalVerifier = globalVerifier
 	s.publishVerifiers.Reset()
+	s.subscribeVerifiers.Reset()
+	s.commitVerifiers.Reset()
+	s.assignmentVerifiers.Reset()
 	s.activeStreams = make(map[int]*streamHolder)
 }
 
@@ -211,6 +233,24 @@ func (s *mockLiteServer) AddPublishStream(topic string, partition int, streamVer
 	s.publishVerifiers.Push(key(topic, partition), streamVerifier)
 }
 
+func (s *mockLiteServer) AddSubscribeStream(subscription string, partition int, streamVerifier *RPCVerifier) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.subscribeVerifiers.Push(key(subscription, partition), streamVerifier)
+}
+
+func (s *mockLiteServer) AddCommitStream(subscription string, partition int, streamVerifier *RPCVerifier) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.commitVerifiers.Push(key(subscription, partition), streamVerifier)
+}
+
+func (s *mockLiteServer) AddAssignmentStream(subscription string, streamVerifier *RPCVerifier) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.assignmentVerifiers.Push(subscription, streamVerifier)
+}
+
 // PublisherService implementation.
 
 func (s *mockLiteServer) Publish(stream pb.PublisherService_PublishServer) error {
@@ -225,6 +265,53 @@ func (s *mockLiteServer) Publish(stream pb.PublisherService_PublishServer) error
 	initReq := req.GetInitialRequest()
 	k := key(initReq.GetTopic(), int(initReq.GetPartition()))
 	return s.handleStream(stream, req, reflect.TypeOf(pb.PublishRequest{}), k, s.publishVerifiers)
+}
+
+// SubscriberService implementation.
+
+func (s *mockLiteServer) Subscribe(stream pb.SubscriberService_SubscribeServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return status.Errorf(codes.FailedPrecondition, "mockserver: stream recv error before initial request: %v", err)
+	}
+	if len(req.GetInitial().GetSubscription()) == 0 {
+		return status.Errorf(codes.InvalidArgument, "mockserver: received invalid initial subscribe request: %v", req)
+	}
+
+	initReq := req.GetInitial()
+	k := key(initReq.GetSubscription(), int(initReq.GetPartition()))
+	return s.handleStream(stream, req, reflect.TypeOf(pb.SubscribeRequest{}), k, s.subscribeVerifiers)
+}
+
+// CursorService implementation.
+
+func (s *mockLiteServer) StreamingCommitCursor(stream pb.CursorService_StreamingCommitCursorServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return status.Errorf(codes.FailedPrecondition, "mockserver: stream recv error before initial request: %v", err)
+	}
+	if len(req.GetInitial().GetSubscription()) == 0 {
+		return status.Errorf(codes.InvalidArgument, "mockserver: received invalid initial streaming commit cursor request: %v", req)
+	}
+
+	initReq := req.GetInitial()
+	k := key(initReq.GetSubscription(), int(initReq.GetPartition()))
+	return s.handleStream(stream, req, reflect.TypeOf(pb.StreamingCommitCursorRequest{}), k, s.commitVerifiers)
+}
+
+// PartitionAssignmentService implementation.
+
+func (s *mockLiteServer) AssignPartitions(stream pb.PartitionAssignmentService_AssignPartitionsServer) error {
+	req, err := stream.Recv()
+	if err != nil {
+		return status.Errorf(codes.FailedPrecondition, "mockserver: stream recv error before initial request: %v", err)
+	}
+	if len(req.GetInitial().GetSubscription()) == 0 {
+		return status.Errorf(codes.InvalidArgument, "mockserver: received invalid initial partition assignment request: %v", req)
+	}
+
+	k := req.GetInitial().GetSubscription()
+	return s.handleStream(stream, req, reflect.TypeOf(pb.PartitionAssignmentRequest{}), k, s.assignmentVerifiers)
 }
 
 // AdminService implementation.
