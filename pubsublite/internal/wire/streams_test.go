@@ -139,7 +139,7 @@ func TestRetryableStreamStartOnce(t *testing.T) {
 		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 	if gotErr := pub.Stream.Error(); gotErr != nil {
-		t.Errorf("Stream final err: (%v), want: <nil>", gotErr)
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
 	}
 }
 
@@ -171,7 +171,7 @@ func TestRetryableStreamStopWhileConnecting(t *testing.T) {
 		t.Error("Client stream should be nil")
 	}
 	if gotErr := pub.Stream.Error(); gotErr != nil {
-		t.Errorf("Stream final err: (%v), want: <nil>", gotErr)
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
 	}
 }
 
@@ -205,7 +205,7 @@ func TestRetryableStreamStopAbortsRetries(t *testing.T) {
 		t.Error("Client stream should be nil")
 	}
 	if gotErr := pub.Stream.Error(); gotErr != nil {
-		t.Errorf("Stream final err: (%v), want: <nil>", gotErr)
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
 	}
 }
 
@@ -270,7 +270,7 @@ func TestRetryableStreamConnectPermanentFailure(t *testing.T) {
 		t.Error("Client stream should be nil")
 	}
 	if gotErr := pub.Stream.Error(); !test.ErrorEqual(gotErr, permanentErr) {
-		t.Errorf("Stream final err: (%v), want: (%v)", gotErr, permanentErr)
+		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, permanentErr)
 	}
 }
 
@@ -278,7 +278,7 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	// Set a very low timeout to ensure no retries.
 	timeout := time.Millisecond
 	pub := newTestStreamHandler(t, timeout)
-	wantErr := status.Error(codes.DeadlineExceeded, "too slow")
+	wantErr := status.Error(codes.DeadlineExceeded, "timeout")
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
@@ -304,7 +304,7 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 		t.Error("Client stream should be nil")
 	}
 	if gotErr := pub.Stream.Error(); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("Stream final err: (%v), want: (%v)", gotErr, wantErr)
+		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, wantErr)
 	}
 }
 
@@ -328,8 +328,8 @@ func TestRetryableStreamSendReceive(t *testing.T) {
 	}
 
 	// While the stream is reconnecting, requests are discarded.
-	if pub.Stream.Send(req) {
-		t.Error("Stream send should return false")
+	if got, want := pub.Stream.Send(req), false; got != want {
+		t.Errorf("Stream send: got %v, want %v", got, want)
 	}
 
 	barrier.Release()
@@ -337,8 +337,8 @@ func TestRetryableStreamSendReceive(t *testing.T) {
 		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 
-	if !pub.Stream.Send(req) {
-		t.Error("Stream send should return true")
+	if got, want := pub.Stream.Send(req), true; got != want {
+		t.Errorf("Stream send: got %v, want %v", got, want)
 	}
 	if gotResp := pub.NextResponse(); !testutil.Equal(gotResp, wantResp) {
 		t.Errorf("Stream response: got %v, want %v", gotResp, wantResp)
@@ -349,6 +349,6 @@ func TestRetryableStreamSendReceive(t *testing.T) {
 		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 	if gotErr := pub.Stream.Error(); gotErr != nil {
-		t.Errorf("Stream final err: (%v), want: <nil>", gotErr)
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
 	}
 }

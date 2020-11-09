@@ -164,7 +164,9 @@ func (s *mockLiteServer) handleStream(stream grpc.ServerStream, req interface{},
 	}
 
 	// Check whether the stream ended prematurely.
-	verifier.Flush()
+	if testID == s.currentTest() {
+		verifier.Flush()
+	}
 	return
 }
 
