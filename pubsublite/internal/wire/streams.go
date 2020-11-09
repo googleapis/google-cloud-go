@@ -51,7 +51,9 @@ type streamHandler interface {
 	// newStream implementations must create the client stream with the given
 	// (cancellable) context.
 	newStream(context.Context) (grpc.ClientStream, error)
-	initialRequest() interface{}
+	// initialRequest should return the initial request and whether an initial
+	// response is expected.
+	initialRequest() (interface{}, bool)
 	validateInitialResponse(interface{}) error
 
 	// onStreamStatusChange is used to notify stream handlers when the stream has
@@ -270,16 +272,19 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 			if err != nil {
 				return r.RetryRecv(err)
 			}
-			if err = newStream.SendMsg(rs.handler.initialRequest()); err != nil {
+			initReq, needsResponse := rs.handler.initialRequest()
+			if err = newStream.SendMsg(initReq); err != nil {
 				return r.RetrySend(err)
 			}
-			response := reflect.New(rs.responseType).Interface()
-			if err = newStream.RecvMsg(response); err != nil {
-				return r.RetryRecv(err)
-			}
-			if err = rs.handler.validateInitialResponse(response); err != nil {
-				// An unexpected initial response from the server is a permanent error.
-				return 0, false
+			if needsResponse {
+				response := reflect.New(rs.responseType).Interface()
+				if err = newStream.RecvMsg(response); err != nil {
+					return r.RetryRecv(err)
+				}
+				if err = rs.handler.validateInitialResponse(response); err != nil {
+					// An unexpected initial response from the server is a permanent error.
+					return 0, false
+				}
 			}
 
 			// We have a valid connection and should break from the outer loop.

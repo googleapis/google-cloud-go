@@ -99,8 +99,8 @@ func (sh *testStreamHandler) validateInitialResponse(response interface{}) error
 	return nil
 }
 
-func (sh *testStreamHandler) initialRequest() interface{} {
-	return sh.InitialReq
+func (sh *testStreamHandler) initialRequest() (interface{}, bool) {
+	return sh.InitialReq, true
 }
 
 func (sh *testStreamHandler) onStreamStatusChange(status streamStatus) {
