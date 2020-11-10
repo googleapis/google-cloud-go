@@ -44,7 +44,6 @@ import (
 	"regexp"
 	"runtime"
 	"runtime/pprof"
-	"strings"
 	"sync"
 	"time"
 
@@ -334,14 +333,7 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
-			// Certificate errors are not retried by gax.Invoke(). Print log
-			// message and return error. Caller must handle this error.
-			// See https://github.com/googleapis/google-cloud-go/issues/3158
-			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
-				debugLog("encountered certificate error, will delay retry: %v", err)
-			} else {
-				debugLog("failed to create profile, will retry: %v", err)
-			}
+			debugLog("failed to create profile, will retry: %v", err)
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -621,18 +613,20 @@ func pollProfilerService(ctx context.Context, a *agent) {
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p, err := a.createProfile(ctx)
 		if err != nil {
-			// Employ exponential backoff on errors.
+			// gax.Invoke() may not retry in some cases.
+			// See https://github.com/googleapis/google-cloud-go/issues/3158
+			// Use exponential backoff to prevent spinning on the CPU.
 			timeToSleep := initialBackoff * time.Duration(backoffCount)
 			if timeToSleep >= maxBackoff {
 				timeToSleep = initialBackoff
 			}
-			debugLog("profiler agent sleeping for %v, encountered error: %v", timeToSleep, err)
+			debugLog("profiler agent delaying retry for %v, encountered error: %v", timeToSleep, err)
 			sleep(ctx, timeToSleep)
 			backoffCount = backoffCount * 2
 			continue
 		}
 		a.profileAndUpload(ctx, p)
-		// Reset backoffCount on every successful attempt.
+		// Reset on every successful attempt.
 		backoffCount = 1
 	}
 
