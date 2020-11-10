@@ -315,10 +315,10 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 }
 
 // createProfile talks to the profiler server to create profile. In
-// case of error, the goroutine will sleep and retry. Sleep duration may
-// be specified by the server. Otherwise it will be an exponentially
-// increasing value, bounded by maxBackoff. On errors, returns a nil
-// profile and error.
+// case of errors except certificate errors, the goroutine will sleep
+// and retry. Sleep duration may be specified by the server. Otherwise
+// it will be an exponentially increasing value, bounded by maxBackoff.
+// Certificate errors are not retried and must be handled by the caller.
 func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
@@ -335,7 +335,7 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
 			// Certificate errors are not retried by gax.Invoke(). Print log
-			// message and return error. Caller must handle the error.
+			// message and return error. Caller must handle this error.
 			// See https://github.com/googleapis/google-cloud-go/issues/3158
 			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
 				debugLog("encountered certificate error, will delay retry: %v", err)
