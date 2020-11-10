@@ -78,7 +78,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensio
 	if !po.synchronous {
 		maxMessages = po.maxOutstandingMessages
 		maxBytes = po.maxOutstandingBytes
-		if po.UseLegacyFlowControl {
+		if po.useLegacyFlowControl {
 			maxMessages = 0
 			maxBytes = 0
 		}
