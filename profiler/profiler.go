@@ -44,6 +44,7 @@ import (
 	"regexp"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 	"sync"
 	"time"
 
@@ -316,7 +317,7 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 // case of error, the goroutine will sleep and retry. Sleep duration may
 // be specified by the server. Otherwise it will be an exponentially
 // increasing value, bounded by maxBackoff.
-func (a *agent) createProfile(ctx context.Context) *pb.Profile {
+func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
 		Deployment:  a.deployment,
@@ -326,12 +327,16 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	var p *pb.Profile
 	md := grpcmd.New(map[string]string{})
 
-	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
-			debugLog("failed to create profile, will retry: %v", err)
+			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
+				debugLog("encountered permanent error, will not retry: %v", err)
+			} else {
+				debugLog("failed to create profile, will retry: %v", err)
+			}
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -345,8 +350,12 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 		}
 	}))
 
+	if err != nil {
+		return nil, err
+	}
+
 	debugLog("successfully created profile %v", p.GetProfileType())
-	return p
+	return p, nil
 }
 
 func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
@@ -604,7 +613,11 @@ func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
-		p := a.createProfile(ctx)
+		p, err := a.createProfile(ctx)
+		if err != nil {
+			debugLog("Cloud Profiler Go Agent encountered permanenet error, profiling will be disabled.")
+			return
+		}
 		a.profileAndUpload(ctx, p)
 	}
 

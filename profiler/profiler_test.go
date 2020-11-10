@@ -104,7 +104,10 @@ func TestCreateProfile(t *testing.T) {
 
 	mpc.EXPECT().CreateProfile(ctx, gomock.Eq(&wantRequest), gomock.Any()).Times(1).Return(p, nil)
 
-	gotP := a.createProfile(ctx)
+	gotP, err := a.createProfile(ctx)
+	if err != nil {
+		t.Errorf("CreateProfile() got err, want no err")
+	}
 
 	if !testutil.Equal(gotP, p) {
 		t.Errorf("CreateProfile() got wrong profile, got %v, want %v", gotP, p)
