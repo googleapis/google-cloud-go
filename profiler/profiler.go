@@ -317,7 +317,8 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 // case of errors except certificate errors, the goroutine will sleep
 // and retry. Sleep duration may be specified by the server. Otherwise
 // it will be an exponentially increasing value, bounded by maxBackoff.
-// Certificate errors are not retried and must be handled by the caller.
+// Certificate errors are not retried by gax.Invoke() and must be
+// handled by the caller. See https://github.com/googleapis/google-cloud-go/issues/3158.
 func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
@@ -613,9 +614,7 @@ func pollProfilerService(ctx context.Context, a *agent) {
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p, err := a.createProfile(ctx)
 		if err != nil {
-			// gax.Invoke() may not retry in some cases.
-			// See https://github.com/googleapis/google-cloud-go/issues/3158
-			// Use exponential backoff to prevent spinning on the CPU.
+			// On errors, use exponential backoff to prevent spinning on the CPU.
 			timeToSleep := initialBackoff * time.Duration(backoffCount)
 			if timeToSleep >= maxBackoff {
 				timeToSleep = initialBackoff
