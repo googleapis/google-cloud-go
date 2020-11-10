@@ -262,6 +262,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 
 func debugLog(format string, e ...interface{}) {
 	if config.DebugLogging {
+		log.SetPrefix("Cloud Profiler Go Agent: ")
 		log.Printf(format, e...)
 	}
 }
@@ -316,7 +317,8 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 // createProfile talks to the profiler server to create profile. In
 // case of error, the goroutine will sleep and retry. Sleep duration may
 // be specified by the server. Otherwise it will be an exponentially
-// increasing value, bounded by maxBackoff.
+// increasing value, bounded by maxBackoff. On errors, returns a nil
+// profile and error.
 func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
@@ -332,10 +334,11 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
-			// Certificate errors are permanent errors, agent should
-			// exit the profiling loop to avoid spinning on the CPU.
+			// Certificate errors are not retried by gax.Invoke(). Print log
+			// message and return error. Caller must handle the error.
+			// See https://github.com/googleapis/google-cloud-go/issues/3158
 			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
-				debugLog("encountered permanent error, will not retry: %v", err)
+				debugLog("encountered certificate error, will delay retry: %v", err)
 			} else {
 				debugLog("failed to create profile, will retry: %v", err)
 			}
@@ -352,12 +355,12 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 		}
 	}))
 
-	if err != nil {
-		return nil, err
+	if err == nil {
+		debugLog("successfully created profile %v", p.GetProfileType())
+		return p, nil
 	}
 
-	debugLog("successfully created profile %v", p.GetProfileType())
-	return p, nil
+	return nil, err
 }
 
 func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
@@ -614,13 +617,23 @@ func initializeConfig(cfg Config) error {
 func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
+	backoffCount := 1
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p, err := a.createProfile(ctx)
 		if err != nil {
-			debugLog("Cloud Profiler Go Agent encountered permanent error, profiling will be disabled.")
-			return
+			// Employ exponential backoff on errors.
+			timeToSleep := initialBackoff * time.Duration(backoffCount)
+			if timeToSleep >= maxBackoff {
+				timeToSleep = initialBackoff
+			}
+			debugLog("profiler agent sleeping for %v, encountered error: %v", timeToSleep, err)
+			sleep(ctx, timeToSleep)
+			backoffCount = backoffCount * 2
+			continue
 		}
 		a.profileAndUpload(ctx, p)
+		// Reset backoffCount on every successful attempt.
+		backoffCount = 1
 	}
 
 	if profilingDone != nil {
