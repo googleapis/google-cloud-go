@@ -617,7 +617,7 @@ func pollProfilerService(ctx context.Context, a *agent) {
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p, err := a.createProfile(ctx)
 		if err != nil {
-			debugLog("Cloud Profiler Go Agent encountered permanenet error, profiling will be disabled.")
+			debugLog("Cloud Profiler Go Agent encountered permanent error, profiling will be disabled.")
 			return
 		}
 		a.profileAndUpload(ctx, p)
