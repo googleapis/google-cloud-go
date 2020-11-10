@@ -181,13 +181,13 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 // hasCorrespondingPR indicates that there is a corresponding google-cloud-go PR.
 func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string, hasCorrespondingPR bool, changes []*generator.ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating genproto PR")
-	var body strings.Builder
-	body.WriteString(genprotoCommitBody)
+	var bodyBuilder strings.Builder
+	bodyBuilder.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
-		body.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
-		body.WriteString(formatChanges(changes, false))
+		bodyBuilder.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
+		bodyBuilder.WriteString(formatChanges(changes, false))
 	}
-	sBody := body.String()
+	sBody := bodyBuilder.String()
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex

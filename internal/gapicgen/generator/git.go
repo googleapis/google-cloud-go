@@ -28,66 +28,85 @@ type ChangeInfo struct {
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir, hash string) (*ChangeInfo, error) {
-	// Get commit title and body
-	rawBody := bytes.NewBuffer(nil)
-	c := command("git", "show", "--pretty=format:%B", "-s", hash)
-	c.Stdout = rawBody
-	c.Dir = googleapisDir
-	if err := c.Run(); err != nil {
-		return nil, err
+func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, error) {
+	var changes []*ChangeInfo
+	// gapicPkgs is a map of googleapis inputDirectoryPath to the gapic package
+	// name used for conventional commits.
+	gapicPkgs := make(map[string]string)
+	for _, v := range microgenGapicConfigs {
+		gapicPkgs[v.inputDirectoryPath] = parseConventionalCommitPkg(v.importPath)
 	}
 
-	// Add link so corresponding googleapis commit.
-	body := fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", strings.TrimSpace(rawBody.String()), hash)
+	for _, hash := range hashes {
+		// Get commit title and body
+		rawBody := bytes.NewBuffer(nil)
+		c := command("git", "show", "--pretty=format:%B", "-s", hash)
+		c.Stdout = rawBody
+		c.Dir = googleapisDir
+		if err := c.Run(); err != nil {
+			return nil, err
+		}
 
-	// Try to map files updated to a package in google-cloud-go. Assumes only
-	// one servies protos are updated per commit. Multile versions are okay.
-	files, err := filesChanged(googleapisDir, hash)
-	if err != nil {
-		return nil, err
-	}
-	var pkg string
-	for _, file := range files {
-		ss := strings.Split(file, "/")
-		if len(ss) == 0 {
+		// Add link so corresponding googleapis commit.
+		body := fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", strings.TrimSpace(rawBody.String()), hash)
+
+		// Try to map files updated to a package in google-cloud-go. Assumes only
+		// one servies protos are updated per commit. Multile versions are okay.
+		files, err := filesChanged(googleapisDir, hash)
+		if err != nil {
+			return nil, err
+		}
+		var pkg string
+		for _, file := range files {
+			ss := strings.Split(file, "/")
+			if len(ss) == 0 {
+				continue
+			}
+			// remove filename from path
+			strings.Join(ss[:len(ss)-1], "/")
+			tempPkg := gapicPkgs[strings.Join(ss[:len(ss)-1], "/")]
+			if tempPkg != "" {
+				pkg = tempPkg
+				break
+			}
+		}
+		if pkg == "" {
+			changes = append(changes, &ChangeInfo{
+				Body:           body,
+				GoogleapisHash: hash,
+			})
 			continue
 		}
-		// remove filename from path
-		strings.Join(ss[:len(ss)-1], "/")
-		tempPkg := gapicPkgs[strings.Join(ss[:len(ss)-1], "/")]
-		if tempPkg != "" {
-			pkg = tempPkg
-			break
-		}
-	}
-	if pkg == "" {
-		return &ChangeInfo{
-			Body:           body,
-			GoogleapisHash: hash,
-		}, nil
-	}
 
-	// Try to add in pkg affected into conventional commit scope.
-	bodyParts := strings.SplitN(body, "\n", 2)
-	if len(bodyParts) > 0 {
-		titleParts := strings.SplitN(bodyParts[0], ":", 2)
-		if len(titleParts) == 2 {
-			// If a scope is already provided, remove it.
-			if i := strings.Index(titleParts[0], "("); i > 0 {
-				titleParts[0] = titleParts[0][:i]
+		// Try to add in pkg affected into conventional commit scope.
+		bodyParts := strings.SplitN(body, "\n", 2)
+		if len(bodyParts) > 0 {
+			titleParts := strings.SplitN(bodyParts[0], ":", 2)
+			if len(titleParts) == 2 {
+				// If a scope is already provided, remove it.
+				if i := strings.Index(titleParts[0], "("); i > 0 {
+					titleParts[0] = titleParts[0][:i]
+				}
+				titleParts[0] = fmt.Sprintf("%s(%s)", titleParts[0], pkg)
+				bodyParts[0] = strings.Join(titleParts, ":")
 			}
-			titleParts[0] = fmt.Sprintf("%s(%s)", titleParts[0], pkg)
-			bodyParts[0] = strings.Join(titleParts, ":")
+			body = strings.Join(bodyParts, "\n")
 		}
-		body = strings.Join(bodyParts, "\n")
-	}
 
-	return &ChangeInfo{
-		Body:            body,
-		GoogleapisHash:  hash,
-		HasGapicChanges: true,
-	}, nil
+		changes = append(changes, &ChangeInfo{
+			Body:            body,
+			GoogleapisHash:  hash,
+			HasGapicChanges: true,
+		})
+	}
+	return changes, nil
+}
+
+func parseConventionalCommitPkg(importPath string) string {
+	s := strings.TrimPrefix(importPath, "cloud.google.com/go/")
+	ss := strings.Split(s, "/")
+	// remove the version, i.e /apiv1
+	return strings.Join(ss[:len(ss)-1], "/")
 }
 
 // CommitsSinceHash gathers all of the commits since the provided hash for the

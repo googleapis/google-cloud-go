@@ -146,7 +146,7 @@ func gitClone(repo, dir string) error {
 func hasChanges(dir string) (bool, error) {
 	// Write command output to both os.Stderr and local, so that we can check
 	// whether there are modified files.
-	inmem := bytes.NewBuffer(nil)
+	inmem := &bytes.Buffer{}
 	w := io.MultiWriter(os.Stderr, inmem)
 
 	c := exec.Command("bash", "-c", "git status --short")

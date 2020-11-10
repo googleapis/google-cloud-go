@@ -59,13 +59,9 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*ChangeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	var changes []*ChangeInfo
-	for _, v := range commits {
-		c, err := ParseChangeInfo(googleapisDir, v)
-		if err != nil {
-			return nil, err
-		}
-		changes = append(changes, c)
+	changes, err := ParseChangeInfo(googleapisDir, commits)
+	if err != nil {
+		return nil, err
 	}
 
 	return changes, nil
@@ -84,7 +80,7 @@ func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
 
 	f, err := os.OpenFile(filepath.Join(genprotoDir, "regen.txt"), os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Fatal(err)
+		return err
 	}
 	defer f.Close()
 	if _, err := f.WriteString(commits[0]); err != nil {

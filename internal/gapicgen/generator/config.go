@@ -14,26 +14,6 @@
 
 package generator
 
-import "strings"
-
-// gapicPkgs is a map of googleapis inputDirectoryPath to the gapic package name
-// used for conventional commits.
-var gapicPkgs map[string]string
-
-func init() {
-	gapicPkgs = make(map[string]string)
-	for _, v := range microgenGapicConfigs {
-		gapicPkgs[v.inputDirectoryPath] = parseConventionalCommitPkg(v.importPath)
-	}
-}
-
-func parseConventionalCommitPkg(importPath string) string {
-	s := strings.TrimPrefix(importPath, "cloud.google.com/go/")
-	ss := strings.Split(s, "/")
-	// remove the version, i.e /apiv1
-	return strings.Join(ss[:len(ss)-1], "/")
-}
-
 // microgenConfig represents a single microgen target.
 type microgenConfig struct {
 	// inputDirectoryPath is the path to the input (.proto, etc) files, relative
