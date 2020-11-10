@@ -181,13 +181,13 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 // hasCorrespondingPR indicates that there is a corresponding google-cloud-go PR.
 func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string, hasCorrespondingPR bool, changes []*generator.ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating genproto PR")
-	var bodyBuilder strings.Builder
-	bodyBuilder.WriteString(genprotoCommitBody)
+	var sb strings.Builder
+	sb.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
-		bodyBuilder.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
-		bodyBuilder.WriteString(formatChanges(changes, false))
+		sb.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
+		sb.WriteString(formatChanges(changes, false))
 	}
-	sBody := bodyBuilder.String()
+	body := sb.String()
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
@@ -209,7 +209,7 @@ git push origin $BRANCH_NAME
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("COMMIT_TITLE=%s", genprotoCommitTitle),
-		fmt.Sprintf("COMMIT_BODY=%s", sBody),
+		fmt.Sprintf("COMMIT_BODY=%s", body),
 		fmt.Sprintf("BRANCH_NAME=%s", genprotoBranchName),
 	}
 	c.Dir = genprotoDir
@@ -222,7 +222,7 @@ git push origin $BRANCH_NAME
 	t := genprotoCommitTitle // Because we have to take the address.
 	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "go-genproto", &github.NewPullRequest{
 		Title: &t,
-		Body:  &sBody,
+		Body:  &body,
 		Head:  &head,
 		Base:  &base,
 		Draft: github.Bool(true),
@@ -254,17 +254,17 @@ git push origin $BRANCH_NAME
 func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, genprotoPRNum int, changes []*generator.ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating google-cloud-go PR")
 
-	body := &strings.Builder{}
+	var sb strings.Builder
 	var draft bool
-	body.WriteString(gocloudCommitBody)
+	sb.WriteString(gocloudCommitBody)
 	if genprotoPRNum > 0 {
-		body.WriteString(fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum))
+		sb.WriteString(fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum))
 		draft = true
 	} else {
-		body.WriteString("\n\nThere is no corresponding genproto PR.\n")
+		sb.WriteString("\n\nThere is no corresponding genproto PR.\n")
 	}
-	body.WriteString(formatChanges(changes, true))
-	sBody := body.String()
+	sb.WriteString(formatChanges(changes, true))
+	body := sb.String()
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
@@ -286,7 +286,7 @@ git push origin $BRANCH_NAME
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("COMMIT_TITLE=%s", gocloudCommitTitle),
-		fmt.Sprintf("COMMIT_BODY=%s", sBody),
+		fmt.Sprintf("COMMIT_BODY=%s", body),
 		fmt.Sprintf("BRANCH_NAME=%s", gocloudBranchName),
 	}
 	c.Dir = gocloudDir
@@ -297,7 +297,7 @@ git push origin $BRANCH_NAME
 	t := gocloudCommitTitle // Because we have to take the address.
 	pr, _, err := gc.cV3.PullRequests.Create(ctx, "googleapis", "google-cloud-go", &github.NewPullRequest{
 		Title: &t,
-		Body:  &sBody,
+		Body:  &body,
 		Head:  github.String(fmt.Sprintf("googleapis:" + gocloudBranchName)),
 		Base:  github.String("master"),
 		Draft: github.Bool(draft),
