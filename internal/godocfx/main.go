@@ -212,12 +212,12 @@ func write(outDir string, r *result) error {
 		}
 	}
 
-	for _, path := range r.extraFiles {
-		src, err := os.Open(filepath.Join(r.module.Dir, path))
+	for _, ef := range r.extraFiles {
+		src, err := os.Open(filepath.Join(r.module.Dir, ef.srcRelativePath))
 		if err != nil {
 			return err
 		}
-		dst, err := os.Create(filepath.Join(outDir, path))
+		dst, err := os.Create(filepath.Join(outDir, ef.dstRelativePath))
 		if err != nil {
 			return err
 		}
