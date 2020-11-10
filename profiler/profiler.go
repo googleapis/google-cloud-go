@@ -332,6 +332,8 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
+			// Certificate errors are permanent errors, agent should
+			// exit the profiling loop to avoid spinning on the CPU.
 			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
 				debugLog("encountered permanent error, will not retry: %v", err)
 			} else {
