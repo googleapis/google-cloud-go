@@ -3,4 +3,4 @@
   name: cloud.google.com/go/storage
   items:
   - name: README
-    href: README.md
+    href: pkg-readme.md
