@@ -453,6 +453,17 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	result := []pkgInfo{}
 
 	for _, pkgPath := range pkgNames {
+		// Check if pkgPath has prefix of skipped module.
+		skip := false
+		for skipModule := range skippedModules {
+			if strings.HasPrefix(pkgPath, skipModule) {
+				skip = true
+				break
+			}
+		}
+		if skip {
+			continue
+		}
 		parsedFiles := []*ast.File{}
 		fset := token.NewFileSet()
 		for _, f := range pkgFiles[pkgPath] {
