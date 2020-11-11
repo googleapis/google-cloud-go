@@ -21,6 +21,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"cloud.google.com/go/civil"
 	timepb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	llpb "google.golang.org/genproto/googleapis/type/latlng"
@@ -53,6 +54,35 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 	switch x := v.Interface().(type) {
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
+	case civil.Date, civil.DateTime, civil.Time:
+		dateVal, ok := v.Interface().(civil.Date)
+		if ok {
+			p.Value = dateVal.In(time.Now().Location())
+			*props = append(*props, p)
+			return nil
+		}
+		timeVal, ok := v.Interface().(civil.Time)
+		if ok {
+			var format string
+			if timeVal.Nanosecond == 0 {
+				format = "15:04:05"
+			} else {
+				format = "15:04:05.000000000"
+			}
+			val, err := time.Parse(format, timeVal.String())
+			if err != nil {
+				return fmt.Errorf("datastore: error while parsing time: %v", err)
+			}
+			p.Value = val
+			*props = append(*props, p)
+			return nil
+		}
+		dateTimeVal, ok := v.Interface().(civil.DateTime)
+		if ok {
+			p.Value = dateTimeVal.In(time.Now().Location())
+			*props = append(*props, p)
+			return nil
+		}
 	default:
 		switch v.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:

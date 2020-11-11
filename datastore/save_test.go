@@ -18,6 +18,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
@@ -321,6 +322,27 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 		N2 interface{}
 	}
 
+	civDateVal := civil.Date{
+		Year:  2020,
+		Month: 11,
+		Day:   10,
+	}
+	civTimeValNano := civil.Time{
+		Hour:       1,
+		Minute:     1,
+		Second:     1,
+		Nanosecond: 1,
+	}
+	civTimeVal := civil.Time{
+		Hour:   1,
+		Minute: 1,
+		Second: 1,
+	}
+	timeValNano, _ := time.Parse("15:04:05.000000000", "01:01:01.000000001")
+	timeVal, _ := time.Parse("15:04:05", "01:01:01")
+	loc := time.Now().Location()
+	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", "2020-11-10 01:01:01", loc)
+
 	cases := []struct {
 		name string
 		in   interface{}
@@ -369,6 +391,65 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			in:   &Struct{},
 			want: []Property{
 				{Name: "Map", Value: []Property{}},
+			},
+		},
+		{
+			name: "civil.Date",
+			in: &struct {
+				CivDate civil.Date
+			}{
+				CivDate: civDateVal,
+			},
+			want: []Property{
+				{
+					Name:  "CivDate",
+					Value: civDateVal.In(time.Now().Location()),
+				},
+			},
+		},
+		{
+			name: "civil.Time-nano",
+			in: &struct {
+				CivDate civil.Time
+			}{
+				CivDate: civTimeValNano,
+			},
+			want: []Property{
+				{
+					Name:  "CivDate",
+					Value: timeValNano,
+				},
+			},
+		},
+		{
+			name: "civil.Time",
+			in: &struct {
+				CivDate civil.Time
+			}{
+				CivDate: civTimeVal,
+			},
+			want: []Property{
+				{
+					Name:  "CivDate",
+					Value: timeVal,
+				},
+			},
+		},
+		{
+			name: "civil.DateTime",
+			in: &struct {
+				CivDateTime civil.DateTime
+			}{
+				CivDateTime: civil.DateTime{
+					Date: civDateVal,
+					Time: civTimeVal,
+				},
+			},
+			want: []Property{
+				{
+					Name:  "CivDateTime",
+					Value: dateTimeVal,
+				},
 			},
 		},
 		{
