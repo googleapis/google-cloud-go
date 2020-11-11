@@ -234,6 +234,14 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 	parent.AddServices(child1, child2)
 
 	t.Run("Starting", func(t *testing.T) {
+		wantState := serviceUninitialized
+		if child1.Status() != wantState {
+			t.Errorf("child1: current service status: got %d, want %d", child1.Status(), wantState)
+		}
+		if child2.Status() != wantState {
+			t.Errorf("child2: current service status: got %d, want %d", child2.Status(), wantState)
+		}
+
 		parent.Start()
 
 		child1.receiver.VerifyStatus(t, serviceStarting)
@@ -241,6 +249,9 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 		parent.receiver.VerifyStatus(t, serviceStarting)
 
 		// child3 is added after Start() and should be automatically started.
+		if child3.Status() != wantState {
+			t.Errorf("child3: current service status: got %d, want %d", child3.Status(), wantState)
+		}
 		parent.AddServices(child3)
 		child3.receiver.VerifyStatus(t, serviceStarting)
 	})

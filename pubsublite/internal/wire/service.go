@@ -62,8 +62,7 @@ type service interface {
 // abstractService can be embedded into other structs to provide common
 // functionality for managing service status and status change receivers.
 type abstractService struct {
-	mu sync.Mutex
-
+	mu                    sync.Mutex
 	statusChangeReceivers []*statusChangeReceiver
 	status                serviceStatus
 	// The error that cause the service to terminate.
