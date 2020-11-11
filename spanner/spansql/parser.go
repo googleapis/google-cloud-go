@@ -1281,7 +1281,13 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		DELETE [FROM] target_name [[AS] alias]
 		WHERE condition
 
-		TODO: Insert, Update.
+		UPDATE target_name [[AS] alias]
+		SET update_item [, ...]
+		WHERE condition
+
+		update_item: path_expression = expression | path_expression = DEFAULT
+
+		TODO: Insert.
 	*/
 
 	if p.eat("DELETE") {
@@ -1304,7 +1310,62 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		}, nil
 	}
 
+	if p.eat("UPDATE") {
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		u := &Update{
+			Table: tname,
+		}
+		// TODO: parse alias.
+		if err := p.expect("SET"); err != nil {
+			return nil, err
+		}
+		for {
+			ui, err := p.parseUpdateItem()
+			if err != nil {
+				return nil, err
+			}
+			u.Items = append(u.Items, ui)
+			if p.eat(",") {
+				continue
+			}
+			break
+		}
+		if err := p.expect("WHERE"); err != nil {
+			return nil, err
+		}
+		where, err := p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+		u.Where = where
+		return u, nil
+	}
+
 	return nil, p.errorf("unknown DML statement")
+}
+
+func (p *parser) parseUpdateItem() (UpdateItem, *parseError) {
+	col, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	ui := UpdateItem{
+		Column: col,
+	}
+	if err := p.expect("="); err != nil {
+		return UpdateItem{}, err
+	}
+	if p.eat("DEFAULT") {
+		return ui, nil
+	}
+	ui.Value, err = p.parseExpr()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	return ui, nil
 }
 
 func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
