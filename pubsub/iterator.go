@@ -76,8 +76,8 @@ type messageIterator struct {
 func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensionPeriod *time.Duration, po *pullOptions) *messageIterator {
 	var ps *pullStream
 	if !po.synchronous {
-		maxMessages = po.maxOutstandingMessages
-		maxBytes = po.maxOutstandingBytes
+		maxMessages := po.maxOutstandingMessages
+		maxBytes := po.maxOutstandingBytes
 		if po.useLegacyFlowControl {
 			maxMessages = 0
 			maxBytes = 0
