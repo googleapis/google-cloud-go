@@ -134,13 +134,17 @@ func (s *mockLiteServer) handleStream(stream grpc.ServerStream, req interface{},
 	var ok bool
 
 	for {
+		// See comments for RPCVerifier.Push for valid stream request/response
+		// combinations.
 		if retErr != nil {
 			err = retErr
 			break
 		}
-		if err = stream.SendMsg(retResponse); err != nil {
-			err = status.Errorf(codes.FailedPrecondition, "mockserver: stream send error: %v", err)
-			break
+		if retResponse != nil {
+			if err = stream.SendMsg(retResponse); err != nil {
+				err = status.Errorf(codes.FailedPrecondition, "mockserver: stream send error: %v", err)
+				break
+			}
 		}
 
 		// Check whether the next response isn't blocked on a request.
