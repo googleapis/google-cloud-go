@@ -999,6 +999,65 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 			i++
 		}
 		return n, nil
+	case *spansql.Update:
+		t, err := d.table(stmt.Table)
+		if err != nil {
+			return 0, err
+		}
+
+		t.mu.Lock()
+		defer t.mu.Unlock()
+
+		ec := evalContext{
+			cols:   t.cols,
+			params: params,
+		}
+
+		// Build parallel slices of destination column index and expressions to evaluate.
+		var dstIndex []int
+		var expr []spansql.Expr
+		for _, ui := range stmt.Items {
+			i, err := ec.resolveColumnIndex(ui.Column)
+			if err != nil {
+				return 0, err
+			}
+			// TODO: Enforce "A column can appear only once in the SET clause.".
+			if i < t.pkCols {
+				return 0, status.Errorf(codes.InvalidArgument, "cannot update primary key %s", ui.Column)
+			}
+			dstIndex = append(dstIndex, i)
+			expr = append(expr, ui.Value)
+		}
+
+		n := 0
+		values := make(row, len(stmt.Items)) // scratch space for new values
+		for i := 0; i < len(t.rows); i++ {
+			ec.row = t.rows[i]
+			b, err := ec.evalBoolExpr(stmt.Where)
+			if err != nil {
+				return 0, err
+			}
+			if b != nil && *b {
+				// Compute every update item.
+				for j := range dstIndex {
+					if expr[j] == nil { // DEFAULT
+						values[j] = nil
+						continue
+					}
+					v, err := ec.evalExpr(expr[j])
+					if err != nil {
+						return 0, err
+					}
+					values[j] = v
+				}
+				// Write them to the row.
+				for j, v := range values {
+					t.rows[i][dstIndex[j]] = v
+				}
+				n++
+			}
+		}
+		return n, nil
 	}
 }
 
