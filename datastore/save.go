@@ -55,14 +55,12 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
 	case civil.Date, civil.DateTime, civil.Time:
-		dateVal, ok := v.Interface().(civil.Date)
-		if ok {
+		if dateVal, ok := v.Interface().(civil.Date); ok {
 			p.Value = dateVal.In(time.Now().Location())
 			*props = append(*props, p)
 			return nil
 		}
-		timeVal, ok := v.Interface().(civil.Time)
-		if ok {
+		if timeVal, ok := v.Interface().(civil.Time); ok {
 			var format string
 			if timeVal.Nanosecond == 0 {
 				format = "15:04:05"
@@ -77,8 +75,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 			*props = append(*props, p)
 			return nil
 		}
-		dateTimeVal, ok := v.Interface().(civil.DateTime)
-		if ok {
+		if dateTimeVal, ok := v.Interface().(civil.DateTime); ok {
 			p.Value = dateTimeVal.In(time.Now().Location())
 			*props = append(*props, p)
 			return nil
