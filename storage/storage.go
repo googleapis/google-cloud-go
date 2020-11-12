@@ -106,13 +106,13 @@ type Client struct {
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var host, readHost, scheme string
 
-	// In general, it is recommended to use NewService instead of NewClient, since NewService
-	// configures the correct default endpoints when initializing the internal http client.
-	// However, in our case, reader.go needs to access the client directly, so the client
-	// gets created manually here so it can be re-used by both reader.go and NewService.
-	// This means we need to manually configure the default endpoint options on the http client.
-	// Furthermore, we need to account for STORAGE_EMULATOR_HOST override when setting
-	// the default endpoints.
+	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
+	// since raw.NewService configures the correct default endpoints when initializing the
+	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
+	// access the http client directly to make requests, so we create the client manually
+	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
+	// manually configure the default endpoint options on the http client. Furthermore, we
+	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
 	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		scheme = "https"
 		readHost = "storage.googleapis.com"
@@ -145,7 +145,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// Update readHost with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
-		return nil, fmt.Errorf("supplied endpoint %v is not valid: %v", ep, err)
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
 	readHost = u.Host
 
