@@ -15,6 +15,7 @@
 package datastore
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -338,10 +339,11 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 		Minute: 1,
 		Second: 1,
 	}
-	timeValNano, _ := time.Parse("15:04:05.000000000", "01:01:01.000000001")
-	timeVal, _ := time.Parse("15:04:05", "01:01:01")
+	timeValNano, _ := time.Parse("15:04:05.000000000", civTimeValNano.String())
+	timeVal, _ := time.Parse("15:04:05", civTimeVal.String())
 	loc := time.Now().Location()
-	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", "2020-11-10 01:01:01", loc)
+	dateTimeStr := fmt.Sprintf("%v %v", civDateVal.String(), civTimeVal.String())
+	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", dateTimeStr, loc)
 
 	cases := []struct {
 		name string
