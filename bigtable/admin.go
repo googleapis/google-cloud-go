@@ -1665,8 +1665,8 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	return err
 }
 
-// GetIamPolicy gets the IAM access control policy for the specified backup.
-func (ac *AdminClient) GetIamPolicy(ctx context.Context, cluster, backup string) *v1.Policy {
+// GetIAMPolicy gets the IAM access control policy for the specified backup.
+func (ac *AdminClient) GetIAMPolicy(ctx context.Context, cluster, backup string) (*v1.Policy, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
@@ -1674,7 +1674,43 @@ func (ac *AdminClient) GetIamPolicy(ctx context.Context, cluster, backup string)
 	req := v1.GetIamPolicyRequest{Resource: backupPath}
 	policy, err := ac.tClient.GetIamPolicy(ctx, &req)
 	if err != nil {
-		// Handle err
+		return nil, err
 	}
-	return policy
+	return policy, nil
+}
+
+// SetIAMPolicy sets the IAM access control policy for the specified backup.
+// Replaces any existing policy.
+func (ac *AdminClient) SetIAMPolicy(ctx context.Context, cluster, backup string, policy *v1.Policy) (*v1.Policy, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+
+	req := v1.SetIamPolicyRequest{
+		Resource: backupPath,
+		Policy:   policy,
+	}
+	policy, err := ac.tClient.SetIamPolicy(ctx, &req)
+	if err != nil {
+		return nil, err
+	}
+	return policy, nil
+}
+
+// TestIAMPermissions tests whether the caller has the given permissions for this backup.
+// Returns the permissions that the caller has.
+func (ac *AdminClient) TestIAMPermissions(ctx context.Context, cluster, backup string, permissions []string) ([]string, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+
+	req := v1.TestIamPermissionsRequest{
+		Resource:    backupPath,
+		Permissions: permissions,
+	}
+	resp, err := ac.tClient.TestIamPermissions(ctx, &req)
+	if err != nil {
+		return nil, err
+	}
+	return resp.GetPermissions(), nil
 }
