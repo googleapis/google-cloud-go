@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -1662,4 +1663,18 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	}
 	_, err = ac.tClient.UpdateBackup(ctx, req)
 	return err
+}
+
+// GetIamPolicy gets the IAM access control policy for the specified backup.
+func (ac *AdminClient) GetIamPolicy(ctx context.Context, cluster, backup string) *v1.Policy {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+
+	req := v1.GetIamPolicyRequest{Resource: backupPath}
+	policy, err := ac.tClient.GetIamPolicy(ctx, &req)
+	if err != nil {
+		// Handle err
+	}
+	return policy
 }
