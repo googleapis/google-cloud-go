@@ -120,7 +120,7 @@ project's service account.
 Firestore project's service account.
 - `GCLOUD_TESTS_API_KEY`: API key for using the Translate API created above.
 
-As part of the setup that follows, the following variables will  be configured:
+As part of the setup that follows, the following variables will be configured:
 
 - `GCLOUD_TESTS_GOLANG_KEYRING`: The full name of the keyring for the tests,
 in the form
