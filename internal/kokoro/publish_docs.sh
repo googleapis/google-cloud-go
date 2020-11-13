@@ -27,13 +27,17 @@ cd github/google-cloud-go/internal/godocfx
 go install
 cd -
 
-cd $(mktemp -d)
-
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
 # Keep GCLOUD_TESTS_GOLANG_PROJECT_ID in sync with continuous.sh.
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=dulcet-port-762
-# Generate the YAML and a docs.metadata file.
-godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
+
+if [[ -n "$FORCE_GENERATE_ALL" ]]; then
+  for m in $(find . -name go.mod -execdir go list -m \; | grep -v internal); do
+    godocfx -out obj/api/$m@latest $m
+  done
+else
+  godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
+fi
 
 for f in $(find obj/api -name docs.metadata); do
   d=$(dirname $f)

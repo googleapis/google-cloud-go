@@ -19,4 +19,17 @@ var (
 	// ErrOverflow indicates that the publish buffers have overflowed. See
 	// comments for PublishSettings.BufferedByteLimit.
 	ErrOverflow = errors.New("pubsublite: client-side publish buffers have overflowed")
+
+	// ErrServiceUninitialized indicates that a service (e.g. publisher or
+	// subscriber) cannot perform an operation because it is uninitialized.
+	ErrServiceUninitialized = errors.New("pubsublite: service must be started")
+
+	// ErrServiceStarting indicates that a service (e.g. publisher or subscriber)
+	// cannot perform an operation because it is starting up.
+	ErrServiceStarting = errors.New("pubsublite: service is starting up")
+
+	// ErrServiceStopped indicates that a service (e.g. publisher or subscriber)
+	// cannot perform an operation because it has stoped or is in the process of
+	// stopping.
+	ErrServiceStopped = errors.New("pubsublite: service has stopped or is stopping")
 )
