@@ -174,8 +174,9 @@ $ gsutil kms authorize -p $GCLOUD_TESTS_GOLANG_PROJECT_ID -k $GCLOUD_TESTS_GOLAN
 ```
 
 It may be useful to add exports to your shell initialization for future use.
+For instance, in `.zshrc`:
 
-```
+```sh
 #### START GO SDK Test Variables
 # Developers Console project's ID (e.g. bamboo-shift-455) for the general project.
 export GCLOUD_TESTS_GOLANG_PROJECT_ID=your-project
