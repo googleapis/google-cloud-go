@@ -470,6 +470,13 @@ type PublishResult struct {
 	err      error
 }
 
+// NewPublishResult returns the set() function to enable callers from outside
+// this package to store and call it (e.g. unit tests).
+func NewPublishResult() (*PublishResult, func(string, error)) {
+	result := &PublishResult{ready: make(chan struct{})}
+	return result, result.set
+}
+
 // Ready returns a channel that is closed when the result is ready.
 // When the Ready channel is closed, Get is guaranteed not to block.
 func (r *PublishResult) Ready() <-chan struct{} { return r.ready }
