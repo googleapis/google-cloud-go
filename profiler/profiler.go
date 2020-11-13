@@ -44,6 +44,7 @@ import (
 	"regexp"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 	"sync"
 	"time"
 
@@ -314,12 +315,11 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 }
 
 // createProfile talks to the profiler server to create profile. In
-// case of errors except certificate errors, the goroutine will sleep
-// and retry. Sleep duration may be specified by the server. Otherwise
-// it will be an exponentially increasing value, bounded by maxBackoff.
-// Certificate errors are not retried by gax.Invoke() and must be
-// handled by the caller. See https://github.com/googleapis/google-cloud-go/issues/3158.
-func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
+// case of error, the goroutine will sleep and retry. Sleep duration may
+// be specified by the server. Otherwise it will be an exponentially
+// increasing value, bounded by maxBackoff. Special handling for
+// certificate errors is described below.
+func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
 		Deployment:  a.deployment,
@@ -329,12 +329,17 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 	var p *pb.Profile
 	md := grpcmd.New(map[string]string{})
 
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
 		var err error
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
 			debugLog("failed to create profile, will retry: %v", err)
+			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
+				// gax.Invoke does not retry missing certificate error. Force a retry by returning
+				// a different error. See https://github.com/googleapis/google-cloud-go/issues/3158.
+				err = errors.New("retry the certificate error")
+			}
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -348,12 +353,8 @@ func (a *agent) createProfile(ctx context.Context) (*pb.Profile, error) {
 		}
 	}))
 
-	if err == nil {
-		debugLog("successfully created profile %v", p.GetProfileType())
-		return p, nil
-	}
-
-	return nil, err
+	debugLog("successfully created profile %v", p.GetProfileType())
+	return p
 }
 
 func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
@@ -610,23 +611,9 @@ func initializeConfig(cfg Config) error {
 func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
-	backoffCount := 1
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
-		p, err := a.createProfile(ctx)
-		if err != nil {
-			// On errors, use exponential backoff to prevent spinning on the CPU.
-			timeToSleep := initialBackoff * time.Duration(backoffCount)
-			if timeToSleep >= maxBackoff {
-				timeToSleep = initialBackoff
-			}
-			debugLog("profiler agent delaying retry for %v, encountered error: %v", timeToSleep, err)
-			sleep(ctx, timeToSleep)
-			backoffCount = backoffCount * 2
-			continue
-		}
+		p := a.createProfile(ctx)
 		a.profileAndUpload(ctx, p)
-		// Reset on every successful attempt.
-		backoffCount = 1
 	}
 
 	if profilingDone != nil {
