@@ -54,32 +54,28 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 	switch x := v.Interface().(type) {
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
-	case civil.Date, civil.DateTime, civil.Time:
-		if dateVal, ok := v.Interface().(civil.Date); ok {
-			p.Value = dateVal.In(time.Now().Location())
-			*props = append(*props, p)
-			return nil
+	case civil.Date:
+		p.Value = x.In(time.Now().Location())
+		*props = append(*props, p)
+		return nil
+	case civil.Time:
+		var format string
+		if x.Nanosecond == 0 {
+			format = "15:04:05"
+		} else {
+			format = "15:04:05.000000000"
 		}
-		if timeVal, ok := v.Interface().(civil.Time); ok {
-			var format string
-			if timeVal.Nanosecond == 0 {
-				format = "15:04:05"
-			} else {
-				format = "15:04:05.000000000"
-			}
-			val, err := time.Parse(format, timeVal.String())
-			if err != nil {
-				return fmt.Errorf("datastore: error while parsing time: %v", err)
-			}
-			p.Value = val
-			*props = append(*props, p)
-			return nil
+		val, err := time.Parse(format, x.String())
+		if err != nil {
+			return fmt.Errorf("datastore: error while parsing civil.Time: %v", err)
 		}
-		if dateTimeVal, ok := v.Interface().(civil.DateTime); ok {
-			p.Value = dateTimeVal.In(time.Now().Location())
-			*props = append(*props, p)
-			return nil
-		}
+		p.Value = val
+		*props = append(*props, p)
+		return nil
+	case civil.DateTime:
+		p.Value = x.In(time.Now().Location())
+		*props = append(*props, p)
+		return nil
 	default:
 		switch v.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:

@@ -412,13 +412,13 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 		{
 			name: "civil.Time-nano",
 			in: &struct {
-				CivDate civil.Time
+				CivTimeNano civil.Time
 			}{
-				CivDate: civTimeValNano,
+				CivTimeNano: civTimeValNano,
 			},
 			want: []Property{
 				{
-					Name:  "CivDate",
+					Name:  "CivTimeNano",
 					Value: timeValNano,
 				},
 			},
@@ -426,13 +426,13 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 		{
 			name: "civil.Time",
 			in: &struct {
-				CivDate civil.Time
+				CivTime civil.Time
 			}{
-				CivDate: civTimeVal,
+				CivTime: civTimeVal,
 			},
 			want: []Property{
 				{
-					Name:  "CivDate",
+					Name:  "CivTime",
 					Value: timeVal,
 				},
 			},
