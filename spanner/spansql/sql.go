@@ -158,6 +158,23 @@ func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
 
+func (u *Update) SQL() string {
+	str := "UPDATE " + u.Table.SQL() + " SET "
+	for i, item := range u.Items {
+		if i > 0 {
+			str += ", "
+		}
+		str += item.Column.SQL() + " = "
+		if item.Value != nil {
+			str += item.Value.SQL()
+		} else {
+			str += "DEFAULT"
+		}
+	}
+	str += " WHERE " + u.Where.SQL()
+	return str
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {

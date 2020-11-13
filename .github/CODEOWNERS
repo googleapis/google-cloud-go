@@ -6,6 +6,7 @@
 /datastore/         @tritone @googleapis/yoshi-go-admins
 /firestore/         @tritone @googleapis/yoshi-go-admins
 /pubsub/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
+/pubsublite/        @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /spanner/           @skuruppu @googleapis/yoshi-go-admins
 /storage/           @tritone @googleapis/yoshi-go-admins
 /errorreporting/    @googleapis/api-logging @googleapis/yoshi-go-admins
