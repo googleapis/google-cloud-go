@@ -213,7 +213,7 @@ running:
 $ go test -v cloud.google.com/go/...
 ```
 
-You can also run a specific test suite, for instance datastore be running: 
+You can also run a specific test suite, for instance in order to run datastore:
 ``` sh
 $ go test -v cloud.google.com/go/datastore
 ```
