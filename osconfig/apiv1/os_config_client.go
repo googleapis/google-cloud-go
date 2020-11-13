@@ -165,7 +165,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// Client is a client for interacting with Cloud OS Config API.
+// Client is a client for interacting with OS Config API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
