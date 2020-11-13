@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 	"google.golang.org/grpc"
@@ -56,7 +57,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("bigquerydatatransfer.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("bigquerydatatransfer.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("bigquerydatatransfer.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -200,6 +202,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client datatransferpb.DataTransferServiceClient
 
@@ -227,13 +232,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: datatransferpb.NewDataTransferServiceClient(connPool),
 	}
@@ -267,6 +278,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // GetDataSource retrieves a supported data source and returns its settings,
 // which can be used for UI rendering.
 func (c *Client) GetDataSource(ctx context.Context, req *datatransferpb.GetDataSourceRequest, opts ...gax.CallOption) (*datatransferpb.DataSource, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetDataSource[0:len(c.CallOptions.GetDataSource):len(c.CallOptions.GetDataSource)], opts...)
@@ -308,7 +324,7 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 		}
 
 		it.Response = resp
-		return resp.DataSources, resp.NextPageToken, nil
+		return resp.GetDataSources(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -319,13 +335,18 @@ func (c *Client) ListDataSources(ctx context.Context, req *datatransferpb.ListDa
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // CreateTransferConfig creates a new data transfer configuration.
 func (c *Client) CreateTransferConfig(ctx context.Context, req *datatransferpb.CreateTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTransferConfig[0:len(c.CallOptions.CreateTransferConfig):len(c.CallOptions.CreateTransferConfig)], opts...)
@@ -344,6 +365,11 @@ func (c *Client) CreateTransferConfig(ctx context.Context, req *datatransferpb.C
 // UpdateTransferConfig updates a data transfer configuration.
 // All fields must be set, even if they are not updated.
 func (c *Client) UpdateTransferConfig(ctx context.Context, req *datatransferpb.UpdateTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "transfer_config.name", url.QueryEscape(req.GetTransferConfig().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTransferConfig[0:len(c.CallOptions.UpdateTransferConfig):len(c.CallOptions.UpdateTransferConfig)], opts...)
@@ -362,6 +388,11 @@ func (c *Client) UpdateTransferConfig(ctx context.Context, req *datatransferpb.U
 // DeleteTransferConfig deletes a data transfer configuration,
 // including any associated transfer runs and logs.
 func (c *Client) DeleteTransferConfig(ctx context.Context, req *datatransferpb.DeleteTransferConfigRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTransferConfig[0:len(c.CallOptions.DeleteTransferConfig):len(c.CallOptions.DeleteTransferConfig)], opts...)
@@ -375,6 +406,11 @@ func (c *Client) DeleteTransferConfig(ctx context.Context, req *datatransferpb.D
 
 // GetTransferConfig returns information about a data transfer config.
 func (c *Client) GetTransferConfig(ctx context.Context, req *datatransferpb.GetTransferConfigRequest, opts ...gax.CallOption) (*datatransferpb.TransferConfig, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTransferConfig[0:len(c.CallOptions.GetTransferConfig):len(c.CallOptions.GetTransferConfig)], opts...)
@@ -415,7 +451,7 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 		}
 
 		it.Response = resp
-		return resp.TransferConfigs, resp.NextPageToken, nil
+		return resp.GetTransferConfigs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -426,8 +462,8 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -437,6 +473,11 @@ func (c *Client) ListTransferConfigs(ctx context.Context, req *datatransferpb.Li
 // Note that runs are created per UTC time in the time range.
 // DEPRECATED: use StartManualTransferRuns instead.
 func (c *Client) ScheduleTransferRuns(ctx context.Context, req *datatransferpb.ScheduleTransferRunsRequest, opts ...gax.CallOption) (*datatransferpb.ScheduleTransferRunsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ScheduleTransferRuns[0:len(c.CallOptions.ScheduleTransferRuns):len(c.CallOptions.ScheduleTransferRuns)], opts...)
@@ -474,6 +515,11 @@ func (c *Client) StartManualTransferRuns(ctx context.Context, req *datatransferp
 
 // GetTransferRun returns information about the particular transfer run.
 func (c *Client) GetTransferRun(ctx context.Context, req *datatransferpb.GetTransferRunRequest, opts ...gax.CallOption) (*datatransferpb.TransferRun, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTransferRun[0:len(c.CallOptions.GetTransferRun):len(c.CallOptions.GetTransferRun)], opts...)
@@ -491,6 +537,11 @@ func (c *Client) GetTransferRun(ctx context.Context, req *datatransferpb.GetTran
 
 // DeleteTransferRun deletes the specified transfer run.
 func (c *Client) DeleteTransferRun(ctx context.Context, req *datatransferpb.DeleteTransferRunRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTransferRun[0:len(c.CallOptions.DeleteTransferRun):len(c.CallOptions.DeleteTransferRun)], opts...)
@@ -527,7 +578,7 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 		}
 
 		it.Response = resp
-		return resp.TransferRuns, resp.NextPageToken, nil
+		return resp.GetTransferRuns(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -538,8 +589,8 @@ func (c *Client) ListTransferRuns(ctx context.Context, req *datatransferpb.ListT
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -568,7 +619,7 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 		}
 
 		it.Response = resp
-		return resp.TransferMessages, resp.NextPageToken, nil
+		return resp.GetTransferMessages(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -579,8 +630,8 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -591,6 +642,11 @@ func (c *Client) ListTransferLogs(ctx context.Context, req *datatransferpb.ListT
 // token for the particular user, which is a pre-requisite before user can
 // create a transfer config.
 func (c *Client) CheckValidCreds(ctx context.Context, req *datatransferpb.CheckValidCredsRequest, opts ...gax.CallOption) (*datatransferpb.CheckValidCredsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CheckValidCreds[0:len(c.CallOptions.CheckValidCreds):len(c.CallOptions.CheckValidCreds)], opts...)

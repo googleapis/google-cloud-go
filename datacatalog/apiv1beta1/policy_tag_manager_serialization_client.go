@@ -24,6 +24,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 	"google.golang.org/grpc"
@@ -40,7 +41,8 @@ type PolicyTagManagerSerializationCallOptions struct {
 
 func defaultPolicyTagManagerSerializationClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("datacatalog.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("datacatalog.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -61,6 +63,9 @@ func defaultPolicyTagManagerSerializationCallOptions() *PolicyTagManagerSerializ
 type PolicyTagManagerSerializationClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	policyTagManagerSerializationClient datacatalogpb.PolicyTagManagerSerializationClient
@@ -87,13 +92,19 @@ func NewPolicyTagManagerSerializationClient(ctx context.Context, opts ...option.
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PolicyTagManagerSerializationClient{
-		connPool:    connPool,
-		CallOptions: defaultPolicyTagManagerSerializationCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultPolicyTagManagerSerializationCallOptions(),
 
 		policyTagManagerSerializationClient: datacatalogpb.NewPolicyTagManagerSerializationClient(connPool),
 	}

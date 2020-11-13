@@ -21,9 +21,11 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
 	"google.golang.org/grpc"
@@ -39,7 +41,8 @@ type PhishingProtectionServiceV1Beta1CallOptions struct {
 
 func defaultPhishingProtectionServiceV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("phishingprotection.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("phishingprotection.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("phishingprotection.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -59,6 +62,9 @@ func defaultPhishingProtectionServiceV1Beta1CallOptions() *PhishingProtectionSer
 type PhishingProtectionServiceV1Beta1Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	phishingProtectionServiceV1Beta1Client phishingprotectionpb.PhishingProtectionServiceV1Beta1Client
@@ -84,13 +90,19 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PhishingProtectionServiceV1Beta1Client{
-		connPool:    connPool,
-		CallOptions: defaultPhishingProtectionServiceV1Beta1CallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultPhishingProtectionServiceV1Beta1CallOptions(),
 
 		phishingProtectionServiceV1Beta1Client: phishingprotectionpb.NewPhishingProtectionServiceV1Beta1Client(connPool),
 	}
@@ -129,6 +141,11 @@ func (c *PhishingProtectionServiceV1Beta1Client) setGoogleClientInfo(keyval ...s
 // lists (at https://support.google.com/webmasters/answer/6350487/) in order to
 // protect users that could get exposed to this threat in the future.
 func (c *PhishingProtectionServiceV1Beta1Client) ReportPhishing(ctx context.Context, req *phishingprotectionpb.ReportPhishingRequest, opts ...gax.CallOption) (*phishingprotectionpb.ReportPhishingResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ReportPhishing[0:len(c.CallOptions.ReportPhishing):len(c.CallOptions.ReportPhishing)], opts...)

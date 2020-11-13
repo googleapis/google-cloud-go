@@ -36,17 +36,11 @@ type Message struct {
 	// labelled with.
 	Attributes map[string]string
 
-	// ackID is the identifier to acknowledge this message.
-	ackID string
-
 	// PublishTime is the time at which the message was published. This is
 	// populated by the server for Messages obtained from a subscription.
 	//
 	// This field is read-only.
 	PublishTime time.Time
-
-	// receiveTime is the time the message was received by the client.
-	receiveTime time.Time
 
 	// DeliveryAttempt is the number of times a message has been delivered.
 	// This is part of the dead lettering feature that forwards messages that
@@ -59,19 +53,23 @@ type Message struct {
 	// size is the approximate size of the message's data and attributes.
 	size int
 
-	calledDone bool
-
-	// The done method of the iterator that created this Message.
-	doneFunc func(string, bool, time.Time)
-
 	// OrderingKey identifies related messages for which publish order should
 	// be respected. If empty string is used, message will be sent unordered.
 	OrderingKey string
+
+	// ackh handles Ack() or Nack().
+	ackh ackHandler
+}
+
+// NewMessage creates a message with a custom ack/nack handler, which should not
+// be nil.
+func NewMessage(ackh ackHandler) *Message {
+	return &Message{ackh: ackh}
 }
 
 func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 	if resp.Message == nil {
-		return &Message{ackID: resp.AckId}, nil
+		return &Message{ackh: &psAckHandler{ackID: resp.AckId}}, nil
 	}
 
 	pubTime, err := ptypes.Timestamp(resp.Message.PublishTime)
@@ -86,13 +84,13 @@ func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 	}
 
 	return &Message{
-		ackID:           resp.AckId,
 		Data:            resp.Message.Data,
 		Attributes:      resp.Message.Attributes,
 		ID:              resp.Message.MessageId,
 		PublishTime:     pubTime,
 		DeliveryAttempt: deliveryAttempt,
 		OrderingKey:     resp.Message.OrderingKey,
+		ackh:            &psAckHandler{ackID: resp.AckId},
 	}, nil
 }
 
@@ -102,7 +100,9 @@ func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 // Client code must call Ack or Nack when finished for each received Message.
 // Calls to Ack or Nack have no effect after the first call.
 func (m *Message) Ack() {
-	m.done(true)
+	if m.ackh != nil {
+		m.ackh.OnAck()
+	}
 }
 
 // Nack indicates that the client will not or cannot process a Message passed to the Subscriber.Receive callback.
@@ -111,13 +111,58 @@ func (m *Message) Ack() {
 // Client code must call Ack or Nack when finished for each received Message.
 // Calls to Ack or Nack have no effect after the first call.
 func (m *Message) Nack() {
-	m.done(false)
+	if m.ackh != nil {
+		m.ackh.OnNack()
+	}
 }
 
-func (m *Message) done(ack bool) {
-	if m.calledDone {
+// ackHandler performs a safe cast of the message's ack handler to psAckHandler.
+func (m *Message) ackHandler() (*psAckHandler, bool) {
+	ackh, ok := m.ackh.(*psAckHandler)
+	return ackh, ok
+}
+
+func (m *Message) ackID() string {
+	if ackh, ok := m.ackh.(*psAckHandler); ok {
+		return ackh.ackID
+	}
+	return ""
+}
+
+// ackHandler implements ack/nack handling.
+type ackHandler interface {
+	OnAck()
+	OnNack()
+}
+
+// psAckHandler handles ack/nack for the pubsub package.
+type psAckHandler struct {
+	// ackID is the identifier to acknowledge this message.
+	ackID string
+
+	// receiveTime is the time the message was received by the client.
+	receiveTime time.Time
+
+	calledDone bool
+
+	// The done method of the iterator that created this Message.
+	doneFunc func(string, bool, time.Time)
+}
+
+func (ah *psAckHandler) OnAck() {
+	ah.done(true)
+}
+
+func (ah *psAckHandler) OnNack() {
+	ah.done(false)
+}
+
+func (ah *psAckHandler) done(ack bool) {
+	if ah.calledDone {
 		return
 	}
-	m.calledDone = true
-	m.doneFunc(m.ackID, ack, m.receiveTime)
+	ah.calledDone = true
+	if ah.doneFunc != nil {
+		ah.doneFunc(ah.ackID, ack, ah.receiveTime)
+	}
 }

@@ -27,9 +27,13 @@ import (
 )
 
 // generateGapics generates gapics.
-func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
+func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string, gapicToGenerate string) error {
 	for _, c := range microgenGapicConfigs {
-		if c.stopGeneration {
+		// Skip generation if generating all of the gapics and the associated
+		// config has a block on it. Or if generating a single gapic and it does
+		// not match the specified import path.
+		if (c.stopGeneration && gapicToGenerate == "") ||
+			(gapicToGenerate != "" && gapicToGenerate != c.importPath) {
 			continue
 		}
 		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
@@ -222,10 +226,18 @@ var manualEntries = []manifestEntry{
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
 		ReleaseLevel:      "ga",
 	},
+	{
+		DistributionName:  "cloud.google.com/go/profiler",
+		Description:       "Cloud Profiler",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
+		ReleaseLevel:      "ga",
+	},
 	// Manuals with a GAPIC.
 	{
 		DistributionName:  "cloud.google.com/go/errorreporting",
-		Description:       "Stackdriver Error Reporting API",
+		Description:       "Cloud Error Reporting API",
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
@@ -241,7 +253,7 @@ var manualEntries = []manifestEntry{
 	},
 	{
 		DistributionName:  "cloud.google.com/go/logging",
-		Description:       "Stackdriver Logging API",
+		Description:       "Cloud Logging API",
 		Language:          "Go",
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/logging",

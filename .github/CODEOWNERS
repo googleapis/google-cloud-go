@@ -1,0 +1,13 @@
+# Default owner for all directories not owned by others
+*                   @googleapis/yoshi-go-admins
+
+/bigtable/          @tritone @googleapis/yoshi-go-admins
+/bigquery/          @googleapis/api-bigquery @googleapis/yoshi-go-admins
+/datastore/         @tritone @googleapis/yoshi-go-admins
+/firestore/         @tritone @googleapis/yoshi-go-admins
+/pubsub/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
+/pubsublite/        @googleapis/api-pubsub @googleapis/yoshi-go-admins
+/spanner/           @skuruppu @googleapis/yoshi-go-admins
+/storage/           @tritone @googleapis/yoshi-go-admins
+/errorreporting/    @googleapis/api-logging @googleapis/yoshi-go-admins
+/logging/           @googleapis/api-logging @googleapis/yoshi-go-admins

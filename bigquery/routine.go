@@ -36,6 +36,14 @@ type Routine struct {
 	c *Client
 }
 
+func (r *Routine) toBQ() *bq.RoutineReference {
+	return &bq.RoutineReference{
+		ProjectId: r.ProjectID,
+		DatasetId: r.DatasetID,
+		RoutineId: r.RoutineID,
+	}
+}
+
 // FullyQualifiedName returns an identifer for the routine in project.dataset.routine format.
 func (r *Routine) FullyQualifiedName() string {
 	return fmt.Sprintf("%s.%s.%s", r.ProjectID, r.DatasetID, r.RoutineID)
@@ -156,6 +164,11 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 	r.Language = rm.Language
 	r.RoutineType = rm.Type
 	r.DefinitionBody = rm.Body
+	rt, err := rm.ReturnType.toBQ()
+	if err != nil {
+		return nil, err
+	}
+	r.ReturnType = rt
 
 	var args []*bq.Argument
 	for _, v := range rm.Arguments {

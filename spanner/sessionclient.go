@@ -20,11 +20,14 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"reflect"
 	"sync"
 	"time"
 
 	"cloud.google.com/go/internal/trace"
+	"cloud.google.com/go/internal/version"
 	vkit "cloud.google.com/go/spanner/apiv1"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -89,10 +92,11 @@ type sessionClient struct {
 	md            metadata.MD
 	batchTimeout  time.Duration
 	logger        *log.Logger
+	callOptions   *vkit.CallOptions
 }
 
 // newSessionClient creates a session client to use for a database.
-func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger) *sessionClient {
+func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabels map[string]string, md metadata.MD, logger *log.Logger, callOptions *vkit.CallOptions) *sessionClient {
 	return &sessionClient{
 		connPool:      connPool,
 		database:      database,
@@ -101,6 +105,7 @@ func newSessionClient(connPool gtransport.ConnPool, database string, sessionLabe
 		md:            md,
 		batchTimeout:  time.Minute,
 		logger:        logger,
+		callOptions:   callOptions,
 	}
 }
 
@@ -130,7 +135,7 @@ func (sc *sessionClient) createSession(ctx context.Context) (*session, error) {
 		Session:  &sppb.Session{Labels: sc.sessionLabels},
 	})
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 	return &session{valid: true, client: client, id: sid.Name, createTime: time.Now(), md: sc.md, logger: sc.logger}, nil
 }
@@ -222,7 +227,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		}
 		if ctx.Err() != nil {
 			trace.TracePrintf(ctx, nil, "Context error while creating a batch of %d sessions: %v", createCount, ctx.Err())
-			consumer.sessionCreationFailed(toSpannerError(ctx.Err()), remainingCreateCount)
+			consumer.sessionCreationFailed(ToSpannerError(ctx.Err()), remainingCreateCount)
 			break
 		}
 		response, err := client.BatchCreateSessions(ctx, &sppb.BatchCreateSessionsRequest{
@@ -232,7 +237,7 @@ func (sc *sessionClient) executeBatchCreateSessions(client *vkit.Client, createC
 		})
 		if err != nil {
 			trace.TracePrintf(ctx, nil, "Error creating a batch of %d sessions: %v", remainingCreateCount, err)
-			consumer.sessionCreationFailed(toSpannerError(err), remainingCreateCount)
+			consumer.sessionCreationFailed(ToSpannerError(err), remainingCreateCount)
 			break
 		}
 		actuallyCreated := int32(len(response.Session))
@@ -272,5 +277,31 @@ func (sc *sessionClient) nextClient() (*vkit.Client, error) {
 	if err != nil {
 		return nil, err
 	}
+	client.SetGoogleClientInfo("gccl", version.Repo)
+	if sc.callOptions != nil {
+		client.CallOptions = mergeCallOptions(client.CallOptions, sc.callOptions)
+	}
 	return client, nil
+}
+
+// mergeCallOptions merges two CallOptions into one and the first argument has
+// a lower order of precedence than the second one.
+func mergeCallOptions(a *vkit.CallOptions, b *vkit.CallOptions) *vkit.CallOptions {
+	res := &vkit.CallOptions{}
+	resVal := reflect.ValueOf(res).Elem()
+	aVal := reflect.ValueOf(a).Elem()
+	bVal := reflect.ValueOf(b).Elem()
+
+	t := aVal.Type()
+
+	for i := 0; i < aVal.NumField(); i++ {
+		fieldName := t.Field(i).Name
+
+		aFieldVal := aVal.Field(i).Interface().([]gax.CallOption)
+		bFieldVal := bVal.Field(i).Interface().([]gax.CallOption)
+
+		merged := append(aFieldVal, bFieldVal...)
+		resVal.FieldByName(fieldName).Set(reflect.ValueOf(merged))
+	}
+	return res
 }

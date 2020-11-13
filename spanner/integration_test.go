@@ -23,6 +23,7 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"math/big"
 	"os"
 	"reflect"
 	"regexp"
@@ -255,7 +256,6 @@ func initIntegrationTests() (cleanup func()) {
 }
 
 func TestIntegration_InitSessionPool(t *testing.T) {
-	skipEmulatorTest(t)
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	// Set up an empty testing environment.
@@ -964,6 +964,98 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	}
 }
 
+func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
+		outBalance, err := getBalance(txn, Key{1})
+		if err != nil {
+			return err
+		}
+		const transferAmt = 20
+		if outBalance >= transferAmt {
+			inBalance, err := getBalance(txn, Key{2})
+			if err != nil {
+				return err
+			}
+			inBalance += transferAmt
+			outBalance -= transferAmt
+			cols := []string{"AccountId", "Balance"}
+			txn.BufferWrite([]*Mutation{
+				Update("Accounts", cols, []interface{}{1, outBalance}),
+				Update("Accounts", cols, []interface{}{2, inBalance}),
+			})
+		}
+		return nil
+	}
+
+	for {
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			t.Fatalf("failed to begin a transaction: %v", err)
+		}
+		err = statements(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			t.Fatalf("failed to execute statements: %v", err)
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				t.Fatalf("failed to commit a transaction: %v", err)
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+
+	// Query the updated values.
+	stmt := Statement{SQL: `SELECT AccountId, Nickname, Balance FROM Accounts ORDER BY AccountId`}
+	iter := client.Single().Query(ctx, stmt)
+	got, err := readAllAccountsTable(iter)
+	if err != nil {
+		t.Fatalf("failed to read data: %v", err)
+	}
+	want := [][]interface{}{
+		{int64(1), "Foo", int64(30)},
+		{int64(2), "Bar", int64(21)},
+	}
+	if !testEqual(got, want) {
+		t.Errorf("\ngot %v\nwant%v", got, want)
+	}
+}
+
 func TestIntegration_Reads(t *testing.T) {
 	t.Parallel()
 
@@ -1227,7 +1319,44 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	stmts := singerDBStatements
+	if !isEmulatorEnvSet() {
+		stmts = []string{
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+			`CREATE TABLE Accounts (
+					AccountId	INT64 NOT NULL,
+					Nickname	STRING(100),
+					Balance		INT64 NOT NULL,
+				) PRIMARY KEY (AccountId)`,
+			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+			`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					String		STRING(MAX),
+					StringArray	ARRAY<STRING(MAX)>,
+					Bytes		BYTES(MAX),
+					BytesArray	ARRAY<BYTES(MAX)>,
+					Int64a		INT64,
+					Int64Array	ARRAY<INT64>,
+					Bool		BOOL,
+					BoolArray	ARRAY<BOOL>,
+					Float64		FLOAT64,
+					Float64Array	ARRAY<FLOAT64>,
+					Date		DATE,
+					DateArray	ARRAY<DATE>,
+					Timestamp	TIMESTAMP,
+					TimestampArray	ARRAY<TIMESTAMP>,
+					Numeric		NUMERIC,
+					NumericArray	ARRAY<NUMERIC>
+				) PRIMARY KEY (RowID)`,
+		}
+	}
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
 
 	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
@@ -1238,6 +1367,12 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	// Boundaries
 	d2, _ := civil.ParseDate("0001-01-01")
 	d3, _ := civil.ParseDate("9999-12-31")
+
+	n0 := big.Rat{}
+	n1p, _ := (&big.Rat{}).SetString("123456789")
+	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
+	n1 := *n1p
+	n2 := *n2p
 
 	tests := []struct {
 		col  string
@@ -1327,6 +1462,31 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
+	}
+
+	if !isEmulatorEnvSet() {
+		for _, tc := range []struct {
+			col  string
+			val  interface{}
+			want interface{}
+		}{
+			{col: "Numeric", val: n1},
+			{col: "Numeric", val: n2},
+			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+			{col: "Numeric", val: NullNumeric{n0, false}},
+			{col: "Numeric", val: nil, want: NullNumeric{}},
+			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+			{col: "NumericArray", val: []NullNumeric(nil)},
+			{col: "NumericArray", val: []NullNumeric{}},
+			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		} {
+			tests = append(tests, tc)
+		}
 	}
 
 	// Write rows into table first.
@@ -1742,7 +1902,7 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 			}
 			// Verify that we received and are able to extract retry info from
 			// the aborted error.
-			if _, hasRetryInfo := extractRetryDelay(e); !hasRetryInfo {
+			if _, hasRetryInfo := ExtractRetryDelay(e); !hasRetryInfo {
 				t.Errorf("Got Abort error without RetryInfo\nGot: %v", e)
 			}
 			return b, e
@@ -1828,7 +1988,6 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 // serialize and deserialize both transaction and partition to be used in
 // execution on another client, and compare results.
 func TestIntegration_BatchQuery(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -1915,7 +2074,6 @@ func TestIntegration_BatchQuery(t *testing.T) {
 
 // Test PartitionRead of BatchReadOnlyTransaction, similar to TestBatchQuery
 func TestIntegration_BatchRead(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment.
@@ -2001,7 +2159,6 @@ func TestIntegration_BatchRead(t *testing.T) {
 
 // Test normal txReadEnv method on BatchReadOnlyTransaction.
 func TestIntegration_BROTNormal(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	// Set up testing environment and create txn.
@@ -2157,7 +2314,11 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Umm", "Kulthum")`,
 		})
 		defer iter.Stop()
-		if row, err := iter.Next(); err != iterator.Done {
+		row, err := iter.Next()
+		if ErrCode(err) == codes.Aborted {
+			return err
+		}
+		if err != iterator.Done {
 			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
 		}
 		if iter.RowCount != 1 {
@@ -2183,7 +2344,7 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
 		})
 		if err != nil {
-			t.Fatal(err)
+			return err
 		}
 		if count != 1 {
 			t.Errorf("row count: got %d, want 1", count)
@@ -2445,7 +2606,6 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2996,6 +3156,11 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 	for {
 		row, err := iter.Next()
 		if err == iterator.Done {
+			if iter.Metadata == nil {
+				// All queries should always return metadata, regardless whether
+				// they return any rows or not.
+				return nil, errors.New("missing metadata from query")
+			}
 			return vals, nil
 		}
 		if err != nil {
@@ -3009,6 +3174,27 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 	}
 }
 
+func readAllAccountsTable(iter *RowIterator) ([][]interface{}, error) {
+	defer iter.Stop()
+	var vals [][]interface{}
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var id, balance int64
+		var nickname string
+		err = row.Columns(&id, &nickname, &balance)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, []interface{}{id, nickname, balance})
+	}
+}
+
 func maxDuration(a, b time.Duration) time.Duration {
 	if a > b {
 		return a
@@ -3016,8 +3202,12 @@ func maxDuration(a, b time.Duration) time.Duration {
 	return b
 }
 
+func isEmulatorEnvSet() bool {
+	return os.Getenv("SPANNER_EMULATOR_HOST") != ""
+}
+
 func skipEmulatorTest(t *testing.T) {
-	if os.Getenv("SPANNER_EMULATOR_HOST") != "" {
+	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
 	}
 }

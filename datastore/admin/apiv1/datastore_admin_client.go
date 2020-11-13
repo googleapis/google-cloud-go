@@ -18,7 +18,9 @@ package admin
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -27,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -47,7 +50,8 @@ type DatastoreAdminCallOptions struct {
 
 func defaultDatastoreAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("datastore.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("datastore.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("datastore.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -92,6 +96,9 @@ func defaultDatastoreAdminCallOptions() *DatastoreAdminCallOptions {
 type DatastoreAdminClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	datastoreAdminClient adminpb.DatastoreAdminClient
@@ -169,13 +176,19 @@ func NewDatastoreAdminClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &DatastoreAdminClient{
-		connPool:    connPool,
-		CallOptions: defaultDatastoreAdminCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultDatastoreAdminCallOptions(),
 
 		datastoreAdminClient: adminpb.NewDatastoreAdminClient(connPool),
 	}
@@ -225,7 +238,13 @@ func (c *DatastoreAdminClient) setGoogleClientInfo(keyval ...string) {
 // cancelled before completion it may leave partial data behind in Google
 // Cloud Storage.
 func (c *DatastoreAdminClient) ExportEntities(ctx context.Context, req *adminpb.ExportEntitiesRequest, opts ...gax.CallOption) (*ExportEntitiesOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportEntities[0:len(c.CallOptions.ExportEntities):len(c.CallOptions.ExportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -247,7 +266,13 @@ func (c *DatastoreAdminClient) ExportEntities(ctx context.Context, req *adminpb.
 // created. If an ImportEntities operation is cancelled, it is possible
 // that a subset of the data has already been imported to Cloud Datastore.
 func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.ImportEntitiesRequest, opts ...gax.CallOption) (*ImportEntitiesOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportEntities[0:len(c.CallOptions.ImportEntities):len(c.CallOptions.ImportEntities)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -265,7 +290,13 @@ func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.
 
 // GetIndex gets an index.
 func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIndex[0:len(c.CallOptions.GetIndex):len(c.CallOptions.GetIndex)], opts...)
 	var resp *adminpb.Index
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -283,7 +314,8 @@ func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetInd
 // eventually consistent query to fetch the list of indexes and may
 // occasionally return stale results.
 func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.ListIndexesRequest, opts ...gax.CallOption) *IndexIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListIndexes[0:len(c.CallOptions.ListIndexes):len(c.CallOptions.ListIndexes)], opts...)
 	it := &IndexIterator{}
 	req = proto.Clone(req).(*adminpb.ListIndexesRequest)
@@ -305,7 +337,7 @@ func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Indexes, resp.NextPageToken, nil
+		return resp.GetIndexes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -316,8 +348,8 @@ func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

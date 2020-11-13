@@ -716,6 +716,19 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// Create a sample UDF so we can verify adding authorized UDFs
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+
+	sql := fmt.Sprintf(`
+			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
 	origAccess := append([]*AccessEntry(nil), md.Access...)
 	newEntries := []*AccessEntry{
 		{
@@ -727,6 +740,10 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			Role:       ReaderRole,
 			Entity:     "allUsers",
 			EntityType: IAMMemberEntity,
+		},
+		{
+			EntityType: RoutineEntity,
+			Routine:    routine,
 		},
 	}
 
@@ -743,7 +760,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		}
 	}()
 
-	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{})); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -954,12 +971,18 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			want:        [][]Value{},
 		},
 		{
-			// Note: currently CTAS returns the rows due to the destination table reference,
-			// but it's not clear that it should.
-			// https://github.com/googleapis/google-cloud-go/issues/1467 for followup.
+			// Previously this would return rows due to the destination reference being present
+			// in the job config, but switching to relying on jobs.getQueryResults allows the
+			// service to decide the behavior.
 			description: "ctas ddl",
 			query:       fmt.Sprintf("CREATE TABLE %s.%s AS SELECT 17 as foo", dataset.DatasetID, tableIDs.New()),
-			want:        [][]Value{{int64(17)}},
+			want:        nil,
+		},
+		{
+			// This is a longer running query to ensure probing works as expected.
+			description: "long running",
+			query:       "select count(*) from unnest(generate_array(1,1000000)), unnest(generate_array(1, 1000)) as foo",
+			want:        [][]Value{{int64(1000000000)}},
 		},
 	}
 	for _, tc := range testCases {
@@ -973,6 +996,149 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			}
 			checkReadAndTotalRows(t, curCase.description, it, curCase.want)
 		})
+	}
+}
+
+func TestIntegration_QueryIterationPager(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	sql := `
+	SELECT
+		num,
+		num * 2 as double
+	FROM
+		UNNEST(GENERATE_ARRAY(1,5)) as num`
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("Read: %v", err)
+	}
+	pager := iterator.NewPager(it, 2, "")
+	rowsFetched := 0
+	for {
+		var rows [][]Value
+		nextPageToken, err := pager.NextPage(&rows)
+		if err != nil {
+			t.Fatalf("NextPage: %v", err)
+		}
+		rowsFetched = rowsFetched + len(rows)
+
+		if nextPageToken == "" {
+			break
+		}
+	}
+
+	wantRows := 5
+	if rowsFetched != wantRows {
+		t.Errorf("Expected %d rows, got %d", wantRows, rowsFetched)
+	}
+}
+
+func TestIntegration_RoutineStoredProcedure(t *testing.T) {
+	// Verifies we're exhibiting documented behavior, where we're expected
+	// to return the last resultset in a script as the response from a script
+	// job.
+	// https://github.com/googleapis/google-cloud-go/issues/1974
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Define a simple stored procedure via DDL.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	sql := fmt.Sprintf(`
+		CREATE OR REPLACE PROCEDURE `+"`%s`"+`(val INT64)
+		BEGIN
+			SELECT CURRENT_TIMESTAMP() as ts;
+			SELECT val * 2 as f2;
+		END`,
+		routine.FullyQualifiedName())
+
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	// Invoke the stored procedure.
+	sql = fmt.Sprintf(`
+	CALL `+"`%s`"+`(5)`,
+		routine.FullyQualifiedName())
+
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("query.Read: %v", err)
+	}
+
+	checkReadAndTotalRows(t,
+		"expect result set from procedure",
+		it, [][]Value{{int64(10)}})
+}
+
+func TestIntegration_InsertErrors(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	ins := table.Inserter()
+	var saverRows []*ValuesSaver
+
+	// badSaver represents an excessively sized (>5Mb) row message for insertion.
+	badSaver := &ValuesSaver{
+		Schema:   schema,
+		InsertID: NoDedupeID,
+		Row:      []Value{strings.Repeat("X", 5242881), []Value{int64(1)}, []Value{true}},
+	}
+
+	// Case 1: A single oversized row.
+	saverRows = append(saverRows, badSaver)
+	err := ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted row size error, got successful insert.")
+	}
+	if _, ok := err.(PutMultiError); !ok {
+		t.Errorf("Wanted PutMultiError, but wasn't: %v", err)
+	}
+	got := putError(err)
+	want := "Maximum allowed row size exceeded"
+	if !strings.Contains(got, want) {
+		t.Errorf("Error didn't contain expected substring (%s): %s", want, got)
+	}
+	// Case 2: The overall request size > 10MB)
+	// 2x 5MB rows
+	saverRows = append(saverRows, badSaver)
+	err = ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted structured size error, got successful insert.")
+	}
+	e, ok := err.(*googleapi.Error)
+	if !ok {
+		t.Errorf("Wanted googleapi.Error, got: %v", err)
+	}
+	want = "Request payload size exceeds the limit"
+	if !strings.Contains(e.Message, want) {
+		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	}
+	// Case 3: Very Large Request
+	// Request so large it gets rejected by an intermediate (4x 5MB rows)
+	saverRows = append(saverRows, saverRows...)
+	err = ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted error, got successful insert.")
+	}
+	e, ok = err.(*googleapi.Error)
+	if !ok {
+		t.Errorf("wanted googleapi.Error, got: %v", err)
+	}
+	if e.Code != http.StatusBadRequest {
+		t.Errorf("Wanted HTTP 400, got %d", e.Code)
 	}
 }
 
@@ -2623,6 +2789,29 @@ func TestIntegration_RoutineScalarUDF(t *testing.T) {
 				},
 			},
 		},
+	})
+	if err != nil {
+		t.Fatalf("Create: %v", err)
+	}
+}
+
+func TestIntegration_RoutineJSUDF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Create a scalar UDF routine via API.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	err := routine.Create(ctx, &RoutineMetadata{
+		Language: "JAVASCRIPT", Type: "SCALAR_FUNCTION",
+		Description: "capitalizes using javascript",
+		Arguments: []*RoutineArgument{
+			{Name: "instr", Kind: "FIXED_TYPE", DataType: &StandardSQLDataType{TypeKind: "STRING"}},
+		},
+		ReturnType: &StandardSQLDataType{TypeKind: "STRING"},
+		Body:       "return instr.toUpperCase();",
 	})
 	if err != nil {
 		t.Fatalf("Create: %v", err)

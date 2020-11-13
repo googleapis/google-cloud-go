@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
 	"google.golang.org/grpc"
@@ -44,7 +45,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("webrisk.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -101,6 +103,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client webriskpb.WebRiskServiceClient
 
@@ -126,13 +131,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: webriskpb.NewWebRiskServiceClient(connPool),
 	}
@@ -170,6 +181,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // update multiple ThreatList databases, this method needs to be called once
 // for each list.
 func (c *Client) ComputeThreatListDiff(ctx context.Context, req *webriskpb.ComputeThreatListDiffRequest, opts ...gax.CallOption) (*webriskpb.ComputeThreatListDiffResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ComputeThreatListDiff[0:len(c.CallOptions.ComputeThreatListDiff):len(c.CallOptions.ComputeThreatListDiff)], opts...)
 	var resp *webriskpb.ComputeThreatListDiffResponse
@@ -190,6 +206,11 @@ func (c *Client) ComputeThreatListDiff(ctx context.Context, req *webriskpb.Compu
 // match. If the URI is not found on any of the requested ThreatList an
 // empty response will be returned.
 func (c *Client) SearchUris(ctx context.Context, req *webriskpb.SearchUrisRequest, opts ...gax.CallOption) (*webriskpb.SearchUrisResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SearchUris[0:len(c.CallOptions.SearchUris):len(c.CallOptions.SearchUris)], opts...)
 	var resp *webriskpb.SearchUrisResponse
@@ -210,6 +231,11 @@ func (c *Client) SearchUris(ctx context.Context, req *webriskpb.SearchUrisReques
 // so the client must query this method to determine if there is a full
 // hash match of a threat.
 func (c *Client) SearchHashes(ctx context.Context, req *webriskpb.SearchHashesRequest, opts ...gax.CallOption) (*webriskpb.SearchHashesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SearchHashes[0:len(c.CallOptions.SearchHashes):len(c.CallOptions.SearchHashes)], opts...)
 	var resp *webriskpb.SearchHashesResponse
@@ -231,6 +257,11 @@ func (c *Client) SearchHashes(ctx context.Context, req *webriskpb.SearchHashesRe
 // protect users that could get exposed to this threat in the future. Only
 // projects with CREATE_SUBMISSION_USERS visibility can use this method.
 func (c *Client) CreateSubmission(ctx context.Context, req *webriskpb.CreateSubmissionRequest, opts ...gax.CallOption) (*webriskpb.Submission, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateSubmission[0:len(c.CallOptions.CreateSubmission):len(c.CallOptions.CreateSubmission)], opts...)

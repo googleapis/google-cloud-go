@@ -23,6 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 	"google.golang.org/grpc"
@@ -40,7 +41,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("texttospeech.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("texttospeech.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("texttospeech.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -84,6 +86,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client texttospeechpb.TextToSpeechClient
 
@@ -108,13 +113,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: texttospeechpb.NewTextToSpeechClient(connPool),
 	}
@@ -147,6 +158,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // ListVoices returns a list of Voice supported for synthesis.
 func (c *Client) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesRequest, opts ...gax.CallOption) (*texttospeechpb.ListVoicesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ListVoices[0:len(c.CallOptions.ListVoices):len(c.CallOptions.ListVoices)], opts...)
 	var resp *texttospeechpb.ListVoicesResponse
@@ -164,6 +180,11 @@ func (c *Client) ListVoices(ctx context.Context, req *texttospeechpb.ListVoicesR
 // SynthesizeSpeech synthesizes speech synchronously: receive results after all text input
 // has been processed.
 func (c *Client) SynthesizeSpeech(ctx context.Context, req *texttospeechpb.SynthesizeSpeechRequest, opts ...gax.CallOption) (*texttospeechpb.SynthesizeSpeechResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SynthesizeSpeech[0:len(c.CallOptions.SynthesizeSpeech):len(c.CallOptions.SynthesizeSpeech)], opts...)
 	var resp *texttospeechpb.SynthesizeSpeechResponse

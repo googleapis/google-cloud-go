@@ -18,7 +18,9 @@ package dataproc
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -27,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -50,7 +53,8 @@ type JobControllerCallOptions struct {
 
 func defaultJobControllerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -153,6 +157,9 @@ type JobControllerClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	jobControllerClient dataprocpb.JobControllerClient
 
@@ -182,13 +189,19 @@ func NewJobControllerClient(ctx context.Context, opts ...option.ClientOption) (*
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &JobControllerClient{
-		connPool:    connPool,
-		CallOptions: defaultJobControllerCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultJobControllerCallOptions(),
 
 		jobControllerClient: dataprocpb.NewJobControllerClient(connPool),
 	}
@@ -231,7 +244,13 @@ func (c *JobControllerClient) setGoogleClientInfo(keyval ...string) {
 
 // SubmitJob submits a job to a cluster.
 func (c *JobControllerClient) SubmitJob(ctx context.Context, req *dataprocpb.SubmitJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SubmitJob[0:len(c.CallOptions.SubmitJob):len(c.CallOptions.SubmitJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -247,7 +266,13 @@ func (c *JobControllerClient) SubmitJob(ctx context.Context, req *dataprocpb.Sub
 
 // SubmitJobAsOperation submits job to a cluster.
 func (c *JobControllerClient) SubmitJobAsOperation(ctx context.Context, req *dataprocpb.SubmitJobRequest, opts ...gax.CallOption) (*SubmitJobAsOperationOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SubmitJobAsOperation[0:len(c.CallOptions.SubmitJobAsOperation):len(c.CallOptions.SubmitJobAsOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -265,7 +290,13 @@ func (c *JobControllerClient) SubmitJobAsOperation(ctx context.Context, req *dat
 
 // GetJob gets the resource representation for a job in a project.
 func (c *JobControllerClient) GetJob(ctx context.Context, req *dataprocpb.GetJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetJob[0:len(c.CallOptions.GetJob):len(c.CallOptions.GetJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -281,7 +312,8 @@ func (c *JobControllerClient) GetJob(ctx context.Context, req *dataprocpb.GetJob
 
 // ListJobs lists regions/{region}/jobs in a project.
 func (c *JobControllerClient) ListJobs(ctx context.Context, req *dataprocpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListJobs[0:len(c.CallOptions.ListJobs):len(c.CallOptions.ListJobs)], opts...)
 	it := &JobIterator{}
 	req = proto.Clone(req).(*dataprocpb.ListJobsRequest)
@@ -303,7 +335,7 @@ func (c *JobControllerClient) ListJobs(ctx context.Context, req *dataprocpb.List
 		}
 
 		it.Response = resp
-		return resp.Jobs, resp.NextPageToken, nil
+		return resp.GetJobs(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -314,14 +346,20 @@ func (c *JobControllerClient) ListJobs(ctx context.Context, req *dataprocpb.List
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // UpdateJob updates a job in a project.
 func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.UpdateJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateJob[0:len(c.CallOptions.UpdateJob):len(c.CallOptions.UpdateJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -341,7 +379,13 @@ func (c *JobControllerClient) UpdateJob(ctx context.Context, req *dataprocpb.Upd
 // or
 // regions/{region}/jobs.get (at https://cloud.google.com/dataproc/docs/reference/rest/v1beta2/projects.regions.jobs/get).
 func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.CancelJobRequest, opts ...gax.CallOption) (*dataprocpb.Job, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CancelJob[0:len(c.CallOptions.CancelJob):len(c.CallOptions.CancelJob)], opts...)
 	var resp *dataprocpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -358,7 +402,13 @@ func (c *JobControllerClient) CancelJob(ctx context.Context, req *dataprocpb.Can
 // DeleteJob deletes the job from the project. If the job is active, the delete fails,
 // and the response returns FAILED_PRECONDITION.
 func (c *JobControllerClient) DeleteJob(ctx context.Context, req *dataprocpb.DeleteJobRequest, opts ...gax.CallOption) error {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 900000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "job_id", url.QueryEscape(req.GetJobId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteJob[0:len(c.CallOptions.DeleteJob):len(c.CallOptions.DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

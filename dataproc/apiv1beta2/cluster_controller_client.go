@@ -18,7 +18,9 @@ package dataproc
 
 import (
 	"context"
+	"fmt"
 	"math"
+	"net/url"
 	"time"
 
 	"cloud.google.com/go/longrunning"
@@ -27,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -49,7 +52,8 @@ type ClusterControllerCallOptions struct {
 
 func defaultClusterControllerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -139,6 +143,9 @@ type ClusterControllerClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	clusterControllerClient dataprocpb.ClusterControllerClient
 
@@ -169,13 +176,19 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ClusterControllerClient{
-		connPool:    connPool,
-		CallOptions: defaultClusterControllerCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultClusterControllerCallOptions(),
 
 		clusterControllerClient: dataprocpb.NewClusterControllerClient(connPool),
 	}
@@ -220,7 +233,13 @@ func (c *ClusterControllerClient) setGoogleClientInfo(keyval ...string) {
 // Operation.metadata will be
 // ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCluster[0:len(c.CallOptions.CreateCluster):len(c.CallOptions.CreateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -240,7 +259,13 @@ func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *datapr
 // Operation.metadata will be
 // ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCluster[0:len(c.CallOptions.UpdateCluster):len(c.CallOptions.UpdateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -260,7 +285,13 @@ func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *datapr
 // Operation.metadata will be
 // ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
 func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteCluster[0:len(c.CallOptions.DeleteCluster):len(c.CallOptions.DeleteCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -278,7 +309,13 @@ func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *datapr
 
 // GetCluster gets the resource representation for a cluster in a project.
 func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocpb.GetClusterRequest, opts ...gax.CallOption) (*dataprocpb.Cluster, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCluster[0:len(c.CallOptions.GetCluster):len(c.CallOptions.GetCluster)], opts...)
 	var resp *dataprocpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -294,7 +331,8 @@ func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocp
 
 // ListClusters lists all regions/{region}/clusters in a project alphabetically.
 func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListClusters[0:len(c.CallOptions.ListClusters):len(c.CallOptions.ListClusters)], opts...)
 	it := &ClusterIterator{}
 	req = proto.Clone(req).(*dataprocpb.ListClustersRequest)
@@ -316,7 +354,7 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 		}
 
 		it.Response = resp
-		return resp.Clusters, resp.NextPageToken, nil
+		return resp.GetClusters(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -327,8 +365,8 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -340,7 +378,13 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 // contains
 // Empty.
 func (c *ClusterControllerClient) DiagnoseCluster(ctx context.Context, req *dataprocpb.DiagnoseClusterRequest, opts ...gax.CallOption) (*DiagnoseClusterOperation, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DiagnoseCluster[0:len(c.CallOptions.DiagnoseCluster):len(c.CallOptions.DiagnoseCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

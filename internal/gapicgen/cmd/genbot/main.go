@@ -72,6 +72,18 @@ func main() {
 
 	flag.Usage = usage
 	flag.Parse()
+	if *githubAccessToken == "" {
+		*githubAccessToken = os.Getenv("GITHUB_ACCESS_TOKEN")
+	}
+	if *githubUsername == "" {
+		*githubUsername = os.Getenv("GITHUB_USERNAME")
+	}
+	if *githubName == "" {
+		*githubName = os.Getenv("GITHUB_NAME")
+	}
+	if *githubEmail == "" {
+		*githubEmail = os.Getenv("GITHUB_EMAIL")
+	}
 
 	for k, v := range map[string]string{
 		"githubAccessToken": *githubAccessToken,
@@ -114,17 +126,26 @@ func main() {
 	log.Println("checking if a pull request was already opened and merged today")
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "closed"); err != nil {
 		log.Fatal(err)
-	} else if pr != nil {
-		now := time.Now()
-		today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Local().Location())
-		log.Printf("Times -- Now: %v\tToday: %v\tPR: %v", now, today, pr)
-		if pr.Created.After(today) {
-			log.Println("skipping generation, already ran today")
-			return
-		}
+	} else if pr != nil && hasCreatedPRToday(pr.Created) {
+		log.Println("skipping generation, already created and merged a go-genproto PR today")
+		return
+	}
+	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "closed"); err != nil {
+		log.Fatal(err)
+	} else if pr != nil && hasCreatedPRToday(pr.Created) {
+		log.Println("skipping generation, already created and merged a google-cloud-go PR today")
+		return
 	}
 
 	if err := generate(ctx, githubClient); err != nil {
 		log.Fatal(err)
 	}
+}
+
+// hasCreatedPRToday checks if the created time of a PR is from today.
+func hasCreatedPRToday(created time.Time) bool {
+	now := time.Now()
+	today := time.Date(now.Year(), now.Month(), now.Day(), 0, 0, 0, 0, now.Location())
+	log.Printf("Times -- Now: %v\tToday: %v\tPR Created: %v", now, today, created)
+	return created.After(today)
 }

@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
@@ -47,7 +48,8 @@ type MetricsCallOptions struct {
 
 func defaultMetricsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -60,8 +62,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		ListLogMetrics: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -72,8 +75,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		GetLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -85,8 +89,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		UpdateLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -97,8 +102,9 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 		DeleteLogMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -109,12 +115,15 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 	}
 }
 
-// MetricsClient is a client for interacting with Stackdriver Logging API.
+// MetricsClient is a client for interacting with Cloud Logging API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type MetricsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	metricsClient loggingpb.MetricsServiceV2Client
@@ -140,13 +149,19 @@ func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*Metric
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &MetricsClient{
-		connPool:    connPool,
-		CallOptions: defaultMetricsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultMetricsCallOptions(),
 
 		metricsClient: loggingpb.NewMetricsServiceV2Client(connPool),
 	}
@@ -202,7 +217,7 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListL
 		}
 
 		it.Response = resp
-		return resp.Metrics, resp.NextPageToken, nil
+		return resp.GetMetrics(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -213,13 +228,18 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListL
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetLogMetric gets a logs-based metric.
 func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metric_name", url.QueryEscape(req.GetMetricName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetLogMetric[0:len(c.CallOptions.GetLogMetric):len(c.CallOptions.GetLogMetric)], opts...)
@@ -237,6 +257,11 @@ func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogM
 
 // CreateLogMetric creates a logs-based metric.
 func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.CreateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateLogMetric[0:len(c.CallOptions.CreateLogMetric):len(c.CallOptions.CreateLogMetric)], opts...)
@@ -254,6 +279,11 @@ func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.Crea
 
 // UpdateLogMetric creates or updates a logs-based metric.
 func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.UpdateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metric_name", url.QueryEscape(req.GetMetricName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateLogMetric[0:len(c.CallOptions.UpdateLogMetric):len(c.CallOptions.UpdateLogMetric)], opts...)
@@ -271,6 +301,11 @@ func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.Upda
 
 // DeleteLogMetric deletes a logs-based metric.
 func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *loggingpb.DeleteLogMetricRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metric_name", url.QueryEscape(req.GetMetricName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteLogMetric[0:len(c.CallOptions.DeleteLogMetric):len(c.CallOptions.DeleteLogMetric)], opts...)

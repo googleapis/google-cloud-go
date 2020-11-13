@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 	"google.golang.org/grpc"
@@ -48,7 +49,8 @@ type ProfileCallOptions struct {
 
 func defaultProfileClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -107,6 +109,9 @@ type ProfileClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	profileClient talentpb.ProfileServiceClient
 
@@ -132,13 +137,19 @@ func NewProfileClient(ctx context.Context, opts ...option.ClientOption) (*Profil
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ProfileClient{
-		connPool:    connPool,
-		CallOptions: defaultProfileCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultProfileCallOptions(),
 
 		profileClient: talentpb.NewProfileServiceClient(connPool),
 	}
@@ -194,7 +205,7 @@ func (c *ProfileClient) ListProfiles(ctx context.Context, req *talentpb.ListProf
 		}
 
 		it.Response = resp
-		return resp.Profiles, resp.NextPageToken, nil
+		return resp.GetProfiles(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -205,13 +216,18 @@ func (c *ProfileClient) ListProfiles(ctx context.Context, req *talentpb.ListProf
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // CreateProfile creates and returns a new profile.
 func (c *ProfileClient) CreateProfile(ctx context.Context, req *talentpb.CreateProfileRequest, opts ...gax.CallOption) (*talentpb.Profile, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateProfile[0:len(c.CallOptions.CreateProfile):len(c.CallOptions.CreateProfile)], opts...)
@@ -229,6 +245,11 @@ func (c *ProfileClient) CreateProfile(ctx context.Context, req *talentpb.CreateP
 
 // GetProfile gets the specified profile.
 func (c *ProfileClient) GetProfile(ctx context.Context, req *talentpb.GetProfileRequest, opts ...gax.CallOption) (*talentpb.Profile, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetProfile[0:len(c.CallOptions.GetProfile):len(c.CallOptions.GetProfile)], opts...)
@@ -246,6 +267,11 @@ func (c *ProfileClient) GetProfile(ctx context.Context, req *talentpb.GetProfile
 
 // UpdateProfile updates the specified profile and returns the updated result.
 func (c *ProfileClient) UpdateProfile(ctx context.Context, req *talentpb.UpdateProfileRequest, opts ...gax.CallOption) (*talentpb.Profile, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "profile.name", url.QueryEscape(req.GetProfile().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateProfile[0:len(c.CallOptions.UpdateProfile):len(c.CallOptions.UpdateProfile)], opts...)
@@ -265,6 +291,11 @@ func (c *ProfileClient) UpdateProfile(ctx context.Context, req *talentpb.UpdateP
 // Prerequisite: The profile has no associated applications or assignments
 // associated.
 func (c *ProfileClient) DeleteProfile(ctx context.Context, req *talentpb.DeleteProfileRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteProfile[0:len(c.CallOptions.DeleteProfile):len(c.CallOptions.DeleteProfile)], opts...)
@@ -283,6 +314,11 @@ func (c *ProfileClient) DeleteProfile(ctx context.Context, req *talentpb.DeleteP
 //
 // See SearchProfilesRequest for more information.
 func (c *ProfileClient) SearchProfiles(ctx context.Context, req *talentpb.SearchProfilesRequest, opts ...gax.CallOption) (*talentpb.SearchProfilesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SearchProfiles[0:len(c.CallOptions.SearchProfiles):len(c.CallOptions.SearchProfiles)], opts...)

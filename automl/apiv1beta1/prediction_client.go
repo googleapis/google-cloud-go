@@ -27,6 +27,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -44,7 +45,8 @@ type PredictionCallOptions struct {
 
 func defaultPredictionClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("automl.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("automl.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("automl.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -65,6 +67,9 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 type PredictionClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	predictionClient automlpb.PredictionServiceClient
@@ -98,13 +103,19 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &PredictionClient{
-		connPool:    connPool,
-		CallOptions: defaultPredictionCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultPredictionCallOptions(),
 
 		predictionClient: automlpb.NewPredictionServiceClient(connPool),
 	}
@@ -172,6 +183,11 @@ func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
 //   Text Sentiment - TextSnippet, content up 500 characters, UTF-8
 //   encoded.
 func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictRequest, opts ...gax.CallOption) (*automlpb.PredictResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.Predict[0:len(c.CallOptions.Predict):len(c.CallOptions.Predict)], opts...)
@@ -205,6 +221,11 @@ func (c *PredictionClient) Predict(ctx context.Context, req *automlpb.PredictReq
 //
 //   Tables
 func (c *PredictionClient) BatchPredict(ctx context.Context, req *automlpb.BatchPredictRequest, opts ...gax.CallOption) (*BatchPredictOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchPredict[0:len(c.CallOptions.BatchPredict):len(c.CallOptions.BatchPredict)], opts...)

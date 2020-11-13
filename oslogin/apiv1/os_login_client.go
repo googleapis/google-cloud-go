@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	commonpb "google.golang.org/genproto/googleapis/cloud/oslogin/common"
 	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
@@ -47,7 +48,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("oslogin.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("oslogin.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("oslogin.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -139,6 +141,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client osloginpb.OsLoginServiceClient
 
@@ -166,13 +171,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: osloginpb.NewOsLoginServiceClient(connPool),
 	}
@@ -205,6 +216,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // DeletePosixAccount deletes a POSIX account.
 func (c *Client) DeletePosixAccount(ctx context.Context, req *osloginpb.DeletePosixAccountRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeletePosixAccount[0:len(c.CallOptions.DeletePosixAccount):len(c.CallOptions.DeletePosixAccount)], opts...)
@@ -218,6 +234,11 @@ func (c *Client) DeletePosixAccount(ctx context.Context, req *osloginpb.DeletePo
 
 // DeleteSshPublicKey deletes an SSH public key.
 func (c *Client) DeleteSshPublicKey(ctx context.Context, req *osloginpb.DeleteSshPublicKeyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteSshPublicKey[0:len(c.CallOptions.DeleteSshPublicKey):len(c.CallOptions.DeleteSshPublicKey)], opts...)
@@ -232,6 +253,11 @@ func (c *Client) DeleteSshPublicKey(ctx context.Context, req *osloginpb.DeleteSs
 // GetLoginProfile retrieves the profile information used for logging in to a virtual machine
 // on Google Compute Engine.
 func (c *Client) GetLoginProfile(ctx context.Context, req *osloginpb.GetLoginProfileRequest, opts ...gax.CallOption) (*osloginpb.LoginProfile, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetLoginProfile[0:len(c.CallOptions.GetLoginProfile):len(c.CallOptions.GetLoginProfile)], opts...)
@@ -249,6 +275,11 @@ func (c *Client) GetLoginProfile(ctx context.Context, req *osloginpb.GetLoginPro
 
 // GetSshPublicKey retrieves an SSH public key.
 func (c *Client) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSshPublicKey[0:len(c.CallOptions.GetSshPublicKey):len(c.CallOptions.GetSshPublicKey)], opts...)
@@ -268,6 +299,11 @@ func (c *Client) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshPubli
 // account information is set when no username and UID exist as part of the
 // login profile.
 func (c *Client) ImportSshPublicKey(ctx context.Context, req *osloginpb.ImportSshPublicKeyRequest, opts ...gax.CallOption) (*osloginpb.ImportSshPublicKeyResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportSshPublicKey[0:len(c.CallOptions.ImportSshPublicKey):len(c.CallOptions.ImportSshPublicKey)], opts...)
@@ -286,6 +322,11 @@ func (c *Client) ImportSshPublicKey(ctx context.Context, req *osloginpb.ImportSs
 // UpdateSshPublicKey updates an SSH public key and returns the profile information. This method
 // supports patch semantics.
 func (c *Client) UpdateSshPublicKey(ctx context.Context, req *osloginpb.UpdateSshPublicKeyRequest, opts ...gax.CallOption) (*commonpb.SshPublicKey, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateSshPublicKey[0:len(c.CallOptions.UpdateSshPublicKey):len(c.CallOptions.UpdateSshPublicKey)], opts...)

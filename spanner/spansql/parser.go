@@ -184,9 +184,13 @@ type token struct {
 	line, offset int
 
 	typ     tokenType
-	int64   int64
 	float64 float64
 	string  string // unquoted form for stringToken/bytesToken/quotedID
+
+	// int64Token is parsed as a number only when it is known to be a literal.
+	// This permits correct handling of operators preceding such a token,
+	// which cannot be identified as part of the int64 until later.
+	int64Base int
 }
 
 type tokenType int
@@ -197,6 +201,7 @@ const (
 	float64Token
 	stringToken
 	bytesToken
+	unquotedID
 	quotedID
 )
 
@@ -414,7 +419,9 @@ digitLoop:
 		p.cur.float64, err = strconv.ParseFloat(sign+p.cur.value[d0:], 64)
 	} else {
 		p.cur.typ = int64Token
-		p.cur.int64, err = strconv.ParseInt(sign+p.cur.value[d0:], base, 64)
+		p.cur.value = sign + p.cur.value[d0:]
+		p.cur.int64Base = base
+		// This is parsed on demand.
 	}
 	if err != nil {
 		p.errorf("bad numeric literal %q: %v", p.cur.value, err)
@@ -735,6 +742,12 @@ func (p *parser) skipSpace() bool {
 			p.line++
 		}
 		i += ti + len(term)
+
+		// A non-isolated comment is always complete and doesn't get
+		// combined with any future comment.
+		if !com.isolated {
+			com = nil
+		}
 	}
 	p.s = p.s[i:]
 	p.offset += i
@@ -746,16 +759,30 @@ func (p *parser) skipSpace() bool {
 
 // advance moves the parser to the next token, which will be available in p.cur.
 func (p *parser) advance() {
+	prevID := p.cur.typ == quotedID || p.cur.typ == unquotedID
+
 	p.skipSpace()
 	if p.done {
 		return
 	}
+
+	// If the previous token was an identifier (quoted or unquoted),
+	// the next token being a dot means this is a path expression (not a number).
+	if prevID && p.s[0] == '.' {
+		p.cur.err = nil
+		p.cur.line, p.cur.offset = p.line, p.offset
+		p.cur.typ = unknownToken
+		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
+		return
+	}
+
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '*':
+	case ',', ';', '(', ')', '{', '}', '*', '+', '-':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		p.offset++
@@ -800,11 +827,12 @@ func (p *parser) advance() {
 			i++
 		}
 		p.cur.value, p.s = p.s[:i], p.s[i:]
+		p.cur.typ = unquotedID
 		p.offset += i
 		return
 	}
-	if len(p.s) >= 2 && (p.s[0] == '+' || p.s[0] == '-' || p.s[0] == '.') && ('0' <= p.s[1] && p.s[1] <= '9') {
-		// [-+.] followed by a digit.
+	if len(p.s) >= 2 && p.s[0] == '.' && ('0' <= p.s[1] && p.s[1] <= '9') {
+		// dot followed by a digit.
 		p.consumeNumber()
 		return
 	}
@@ -1038,11 +1066,11 @@ func (p *parser) sniffTableConstraint() bool {
 	// could be the start of a declaration of a column called "CONSTRAINT" of boolean type,
 	// or it could be the start of a foreign key constraint called "BOOL".
 	// We have to sniff up to the third token to see what production it is.
-	// If we have "FOREIGN" and "KEY", this is an unnamed table constraint.
-	// If we have "CONSTRAINT", an identifier and "FOREIGN", this is a table constraint.
+	// If we have "FOREIGN" and "KEY" (or "CHECK"), this is an unnamed table constraint.
+	// If we have "CONSTRAINT", an identifier and "FOREIGN" (or "CHECK"), this is a table constraint.
 	// Otherwise, this is a column definition.
 
-	if p.sniff("FOREIGN", "KEY") {
+	if p.sniff("FOREIGN", "KEY") || p.sniff("CHECK") {
 		return true
 	}
 
@@ -1057,7 +1085,7 @@ func (p *parser) sniffTableConstraint() bool {
 	if _, err := p.parseTableOrIndexOrColumnName(); err != nil {
 		return false
 	}
-	return p.eat("FOREIGN")
+	return p.sniff("FOREIGN") || p.sniff("CHECK")
 }
 
 func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
@@ -1173,7 +1201,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	default:
 		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
 	case "ADD":
-		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") {
+		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") || p.sniff("CHECK") {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
 				return nil, err
@@ -1230,11 +1258,18 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
 		}
-		cd, err := p.parseColumnDef()
+		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return nil, err
 		}
-		a.Alteration = AlterColumn{Def: cd}
+		ca, err := p.parseColumnAlteration()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AlterColumn{
+			Name:       name,
+			Alteration: ca,
+		}
 		return a, nil
 	}
 }
@@ -1246,7 +1281,13 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		DELETE [FROM] target_name [[AS] alias]
 		WHERE condition
 
-		TODO: Insert, Update.
+		UPDATE target_name [[AS] alias]
+		SET update_item [, ...]
+		WHERE condition
+
+		update_item: path_expression = expression | path_expression = DEFAULT
+
+		TODO: Insert.
 	*/
 
 	if p.eat("DELETE") {
@@ -1269,7 +1310,62 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		}, nil
 	}
 
+	if p.eat("UPDATE") {
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		u := &Update{
+			Table: tname,
+		}
+		// TODO: parse alias.
+		if err := p.expect("SET"); err != nil {
+			return nil, err
+		}
+		for {
+			ui, err := p.parseUpdateItem()
+			if err != nil {
+				return nil, err
+			}
+			u.Items = append(u.Items, ui)
+			if p.eat(",") {
+				continue
+			}
+			break
+		}
+		if err := p.expect("WHERE"); err != nil {
+			return nil, err
+		}
+		where, err := p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+		u.Where = where
+		return u, nil
+	}
+
 	return nil, p.errorf("unknown DML statement")
+}
+
+func (p *parser) parseUpdateItem() (UpdateItem, *parseError) {
+	col, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	ui := UpdateItem{
+		Column: col,
+	}
+	if err := p.expect("="); err != nil {
+		return UpdateItem{}, err
+	}
+	if p.eat("DEFAULT") {
+		return ui, nil
+	}
+	ui.Value, err = p.parseExpr()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	return ui, nil
 }
 
 func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
@@ -1296,8 +1392,9 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 		cd.NotNull = true
 	}
 
-	if p.eat("OPTIONS") {
-		if cd.AllowCommitTimestamp, err = p.parseColumnOptions(); err != nil {
+	if p.sniff("OPTIONS") {
+		cd.Options, err = p.parseColumnOptions()
+		if err != nil {
 			return ColumnDef{}, err
 		}
 	}
@@ -1305,39 +1402,70 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 	return cd, nil
 }
 
-// parseColumnOptions returns allow_commit_timestamp.
-func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err *parseError) {
+func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
+	debugf("parseColumnAlteration: %v", p)
+	/*
+		{ data_type } [ NOT NULL ] | SET [ options_def ]
+	*/
+
+	if p.eat("SET") {
+		co, err := p.parseColumnOptions()
+		if err != nil {
+			return nil, err
+		}
+		return SetColumnOptions{Options: co}, nil
+	}
+
+	typ, err := p.parseType()
+	if err != nil {
+		return nil, err
+	}
+	sct := SetColumnType{Type: typ}
+
+	if p.eat("NOT", "NULL") {
+		sct.NotNull = true
+	}
+
+	return sct, nil
+}
+
+func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 	debugf("parseColumnOptions: %v", p)
 	/*
 		options_def:
 			OPTIONS (allow_commit_timestamp = { true | null })
 	*/
 
-	if err = p.expect("("); err != nil {
-		return nil, err
+	if err := p.expect("OPTIONS"); err != nil {
+		return ColumnOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return ColumnOptions{}, err
 	}
 
+	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
 		if tok.err != nil {
-			return nil, tok.err
+			return ColumnOptions{}, tok.err
 		}
-		allowCommitTimestamp = new(bool)
+		allowCommitTimestamp := new(bool)
 		switch tok.value {
 		case "true":
 			*allowCommitTimestamp = true
 		case "null":
 			*allowCommitTimestamp = false
 		default:
-			return nil, p.errorf("got %q, want true or null", tok.value)
+			return ColumnOptions{}, p.errorf("got %q, want true or null", tok.value)
 		}
+		co.AllowCommitTimestamp = allowCommitTimestamp
 	}
 
 	if err := p.expect(")"); err != nil {
-		return nil, err
+		return ColumnOptions{}, err
 	}
 
-	return
+	return co, nil
 }
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
@@ -1391,36 +1519,45 @@ func (p *parser) parseTableConstraint() (TableConstraint, *parseError) {
 	/*
 		table_constraint:
 			[ CONSTRAINT constraint_name ]
-			foreign_key
+			{ check | foreign_key }
 	*/
 
 	if p.eat("CONSTRAINT") {
 		pos := p.Pos()
-		// Named foreign key.
+		// Named constraint.
 		cname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return TableConstraint{}, err
 		}
-		fk, err := p.parseForeignKey()
+		c, err := p.parseConstraint()
 		if err != nil {
 			return TableConstraint{}, err
 		}
 		return TableConstraint{
 			Name:       cname,
-			ForeignKey: fk,
+			Constraint: c,
 			Position:   pos,
 		}, nil
 	}
 
-	// Unnamed foreign key.
-	fk, err := p.parseForeignKey()
+	// Unnamed constraint.
+	c, err := p.parseConstraint()
 	if err != nil {
 		return TableConstraint{}, err
 	}
 	return TableConstraint{
-		ForeignKey: fk,
-		Position:   fk.Position,
+		Constraint: c,
+		Position:   c.Pos(),
 	}, nil
+}
+
+func (p *parser) parseConstraint() (Constraint, *parseError) {
+	if p.sniff("FOREIGN") {
+		fk, err := p.parseForeignKey()
+		return fk, err
+	}
+	c, err := p.parseCheck()
+	return c, err
 }
 
 func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
@@ -1457,8 +1594,34 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 	return fk, nil
 }
 
-func (p *parser) parseColumnNameList() ([]string, *parseError) {
-	var list []string
+func (p *parser) parseCheck() (Check, *parseError) {
+	debugf("parseCheck: %v", p)
+
+	/*
+		check:
+			CHECK ( expression )
+	*/
+
+	if err := p.expect("CHECK"); err != nil {
+		return Check{}, err
+	}
+	c := Check{Position: p.Pos()}
+	if err := p.expect("("); err != nil {
+		return Check{}, err
+	}
+	var err *parseError
+	c.Expr, err = p.parseBoolExpr()
+	if err != nil {
+		return Check{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return Check{}, err
+	}
+	return c, nil
+}
+
+func (p *parser) parseColumnNameList() ([]ID, *parseError) {
+	var list []ID
 	err := p.parseCommaList(func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
@@ -1527,7 +1690,11 @@ func (p *parser) parseType() (Type, *parseError) {
 		if tok.value == "MAX" {
 			t.Len = MaxLen
 		} else if tok.typ == int64Token {
-			t.Len = tok.int64
+			n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+			if err != nil {
+				return Type{}, p.errorf("%v", err)
+			}
+			t.Len = n
 		} else {
 			return Type{}, p.errorf("got %q, want MAX or int64", tok.value)
 		}
@@ -1641,24 +1808,36 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	sel.List, sel.ListAliases = list, aliases
 
 	if p.eat("FROM") {
+		padTS := func() {
+			for len(sel.TableSamples) < len(sel.From) {
+				sel.TableSamples = append(sel.TableSamples, nil)
+			}
+		}
+
 		for {
 			from, err := p.parseSelectFrom()
 			if err != nil {
 				return Select{}, err
 			}
+			sel.From = append(sel.From, from)
+
 			if p.sniff("TABLESAMPLE") {
 				ts, err := p.parseTableSample()
 				if err != nil {
 					return Select{}, err
 				}
-				from.TableSample = &ts
+				padTS()
+				sel.TableSamples[len(sel.TableSamples)-1] = &ts
 			}
-			sel.From = append(sel.From, from)
 
 			if p.eat(",") {
 				continue
 			}
 			break
+		}
+
+		if sel.TableSamples != nil {
+			padTS()
 		}
 	}
 
@@ -1683,9 +1862,9 @@ func (p *parser) parseSelect() (Select, *parseError) {
 	return sel, nil
 }
 
-func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
+func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 	var list []Expr
-	var aliases []string // Only set if any aliases are seen.
+	var aliases []ID // Only set if any aliases are seen.
 	padAliases := func() {
 		for len(aliases) < len(list) {
 			aliases = append(aliases, "")
@@ -1722,23 +1901,155 @@ func (p *parser) parseSelectList() ([]Expr, []string, *parseError) {
 }
 
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
-	// TODO: support more than a single table name.
+	debugf("parseSelectFrom: %v", p)
+
+	/*
+		from_item: {
+			table_name [ table_hint_expr ] [ [ AS ] alias ] |
+			join |
+			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
+			field_path |
+			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
+				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
+			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
+		}
+
+		join:
+			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
+				[ ON bool_expression | USING ( join_column [, ...] ) ]
+
+		join_type:
+			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
+	*/
+
+	// A join starts with a from_item, so that can't be detected in advance.
+	// TODO: Support more than table name or join.
+	// TODO: Verify associativity of multile joins.
+
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return SelectFrom{}, err
+		return nil, err
 	}
-	sf := SelectFrom{Table: tname}
+	sf := SelectFromTable{Table: tname}
 
 	// TODO: The "AS" keyword is optional.
 	if p.eat("AS") {
 		alias, err := p.parseAlias()
 		if err != nil {
-			return SelectFrom{}, err
+			return nil, err
 		}
 		sf.Alias = alias
 	}
 
-	return sf, nil
+	// Look ahead to see if this is a join.
+	tok := p.next()
+	if tok.err != nil {
+		p.back()
+		return sf, nil
+	}
+	var hashJoin bool // Special case for "HASH JOIN" syntax.
+	if tok.value == "HASH" {
+		hashJoin = true
+		tok = p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+	}
+	var jt JoinType
+	if tok.value == "JOIN" {
+		// This is implicitly an inner join.
+		jt = InnerJoin
+	} else if j, ok := joinKeywords[tok.value]; ok {
+		jt = j
+		switch jt {
+		case FullJoin, LeftJoin, RightJoin:
+			// These join types are implicitly "outer" joins,
+			// so the "OUTER" keyword is optional.
+			p.eat("OUTER")
+		}
+		if err := p.expect("JOIN"); err != nil {
+			return nil, err
+		}
+	} else {
+		p.back()
+		return sf, nil
+	}
+
+	sfj := SelectFromJoin{
+		Type: jt,
+		LHS:  sf,
+	}
+	setHint := func(k, v string) {
+		if sfj.Hints == nil {
+			sfj.Hints = make(map[string]string)
+		}
+		sfj.Hints[k] = v
+	}
+	if hashJoin {
+		setHint("JOIN_METHOD", "HASH_JOIN")
+	}
+
+	if p.eat("@") {
+		if err := p.expect("{"); err != nil {
+			return nil, err
+		}
+		for {
+			if p.sniff("}") {
+				break
+			}
+			tok := p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			k := tok.value
+			if err := p.expect("="); err != nil {
+				return nil, err
+			}
+			tok = p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			v := tok.value
+			setHint(k, v)
+			if !p.eat(",") {
+				break
+			}
+		}
+		if err := p.expect("}"); err != nil {
+			return nil, err
+		}
+	}
+
+	sfj.RHS, err = p.parseSelectFrom()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.eat("ON") {
+		sfj.On, err = p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if p.eat("USING") {
+		if sfj.On != nil {
+			return nil, p.errorf("join may not have both ON and USING clauses")
+		}
+		sfj.Using, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return sfj, nil
+}
+
+var joinKeywords = map[string]JoinType{
+	"INNER": InnerJoin,
+	"CROSS": CrossJoin,
+	"FULL":  FullJoin,
+	"LEFT":  LeftJoin,
+	"RIGHT": RightJoin,
 }
 
 func (p *parser) parseTableSample() (TableSample, *parseError) {
@@ -1820,7 +2131,11 @@ func (p *parser) parseLiteralOrParam() (LiteralOrParam, *parseError) {
 		return nil, tok.err
 	}
 	if tok.typ == int64Token {
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	}
 	// TODO: check character sets.
 	if strings.HasPrefix(tok.value, "@") {
@@ -2138,6 +2453,7 @@ func (p *parser) parseArithOp() (Expr, *parseError) {
 var unaryArithOperators = map[string]ArithOperator{
 	"-": Neg,
 	"~": BitNot,
+	"+": Plus,
 }
 
 func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
@@ -2145,7 +2461,35 @@ func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
 	if tok.err != nil {
 		return nil, tok.err
 	}
-	if op, ok := unaryArithOperators[tok.value]; ok {
+
+	op := tok.value
+
+	if op == "-" || op == "+" {
+		// If the next token is a numeric token, combine and parse as a literal.
+		ntok := p.next()
+		if ntok.err == nil {
+			switch ntok.typ {
+			case int64Token:
+				comb := op + ntok.value
+				n, err := strconv.ParseInt(comb, ntok.int64Base, 64)
+				if err != nil {
+					return nil, p.errorf("%v", err)
+				}
+				return IntegerLiteral(n), nil
+			case float64Token:
+				f := ntok.float64
+				if op == "-" {
+					f = -f
+				}
+				return FloatLiteral(f), nil
+			}
+		}
+		// It is not possible for the p.back() lower down to fire
+		// because - and + are in unaryArithOperators.
+		p.back()
+	}
+
+	if op, ok := unaryArithOperators[op]; ok {
 		e, err := p.parseLit()
 		if err != nil {
 			return nil, err
@@ -2165,15 +2509,17 @@ func (p *parser) parseLit() (Expr, *parseError) {
 
 	switch tok.typ {
 	case int64Token:
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	case float64Token:
 		return FloatLiteral(tok.float64), nil
 	case stringToken:
 		return StringLiteral(tok.string), nil
 	case bytesToken:
 		return BytesLiteral(tok.string), nil
-	case quotedID: // Unquoted identifers are handled below.
-		return ID(tok.string), nil
 	}
 
 	// Handle parenthesized expressions.
@@ -2225,7 +2571,40 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	if strings.HasPrefix(tok.value, "@") {
 		return Param(tok.value[1:]), nil
 	}
-	return ID(tok.value), nil
+
+	// Only thing left is a path expression or standalone identifier.
+	p.back()
+	pe, err := p.parsePathExp()
+	if err != nil {
+		return nil, err
+	}
+	if len(pe) == 1 {
+		return pe[0], nil // identifier
+	}
+	return pe, nil
+}
+
+func (p *parser) parsePathExp() (PathExp, *parseError) {
+	var pe PathExp
+	for {
+		tok := p.next()
+		if tok.err != nil {
+			return nil, tok.err
+		}
+		switch tok.typ {
+		case quotedID:
+			pe = append(pe, ID(tok.string))
+		case unquotedID:
+			pe = append(pe, ID(tok.value))
+		default:
+			// TODO: Is this correct?
+			return nil, p.errorf("expected identifer")
+		}
+		if !p.eat(".") {
+			break
+		}
+	}
+	return pe, nil
 }
 
 func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
@@ -2240,13 +2619,13 @@ func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 	return be, nil
 }
 
-func (p *parser) parseAlias() (string, *parseError) {
+func (p *parser) parseAlias() (ID, *parseError) {
 	// The docs don't specify what lexical token is valid for an alias,
 	// but it seems likely that it is an identifier.
 	return p.parseTableOrIndexOrColumnName()
 }
 
-func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
+func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
 		table_name and column_name and index_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
@@ -2256,11 +2635,15 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, *parseError) {
 	if tok.err != nil {
 		return "", tok.err
 	}
-	if tok.typ == quotedID {
-		return tok.string, nil
+	switch tok.typ {
+	case quotedID:
+		return ID(tok.string), nil
+	case unquotedID:
+		// TODO: enforce restrictions
+		return ID(tok.value), nil
+	default:
+		return "", p.errorf("expected identifier")
 	}
-	// TODO: enforce restrictions
-	return tok.value, nil
 }
 
 func (p *parser) parseOnDelete() (OnDelete, *parseError) {

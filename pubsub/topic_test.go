@@ -289,3 +289,21 @@ func mustCreateTopicWithConfig(t *testing.T, c *Client, id string, tc *TopicConf
 	}
 	return topic
 }
+
+func TestDetachSubscription(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "some-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	c.CreateSubscription(ctx, "some-sub", SubscriptionConfig{
+		Topic: topic,
+	})
+	if _, err := c.DetachSubscription(ctx, "projects/P/subscriptions/some-sub"); err != nil {
+		t.Errorf("DetachSubscription failed: %v", err)
+	}
+}

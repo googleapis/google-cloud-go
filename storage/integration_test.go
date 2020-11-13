@@ -265,14 +265,25 @@ func TestIntegration_BucketMethods(t *testing.T) {
 				},
 			}, {
 				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   20,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
-					AgeInDays:             30,
-					Liveness:              Live,
-					CreatedBefore:         time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
-					MatchesStorageClasses: []string{"NEARLINE"},
-					NumNewerVersions:      10,
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 1, 0, 0, 0, 0, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
 				},
 			}},
 		},
@@ -674,6 +685,44 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectIterator(t, bkt, objects)
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
+	testObjectIteratorWithOffset(t, bkt, objects)
+	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
+		query := &Query{Prefix: "", Delimiter: "/"}
+		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
+			t.Fatalf("selecting query attrs: %v", err)
+		}
+
+		var gotNames []string
+		var gotPrefixes []string
+		it := bkt.Objects(context.Background(), query)
+		for {
+			attrs, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				t.Fatalf("iterator.Next: %v", err)
+			}
+			if attrs.Name != "" {
+				gotNames = append(gotNames, attrs.Name)
+			} else if attrs.Prefix != "" {
+				gotPrefixes = append(gotPrefixes, attrs.Prefix)
+			}
+
+			if attrs.Bucket != "" {
+				t.Errorf("Bucket field not selected, want empty, got = %v", attrs.Bucket)
+			}
+		}
+
+		sortedNames := []string{"obj1", "obj2"}
+		if !cmp.Equal(sortedNames, gotNames) {
+			t.Errorf("names = %v, want %v", gotNames, sortedNames)
+		}
+		sortedPrefixes := []string{"obj/"}
+		if !cmp.Equal(sortedPrefixes, gotPrefixes) {
+			t.Errorf("prefixes = %v, want %v", gotPrefixes, sortedPrefixes)
+		}
+	})
 
 	// Test Reader.
 	for _, obj := range objects {
@@ -1072,6 +1121,44 @@ func testObjectIterator(t *testing.T, bkt *BucketHandle, objects []string) {
 	// TODO(jba): test query.Delimiter != ""
 }
 
+func testObjectIteratorWithOffset(t *testing.T, bkt *BucketHandle, objects []string) {
+	ctx := context.Background()
+	h := testHelper{t}
+	// Collect the list of items we expect: ObjectAttrs in lexical order by name.
+	names := make([]string, len(objects))
+	copy(names, objects)
+	sort.Strings(names)
+	var attrs []*ObjectAttrs
+	for _, name := range names {
+		attrs = append(attrs, h.mustObjectAttrs(bkt.Object(name)))
+	}
+	m := make(map[string][]*ObjectAttrs)
+	for i, name := range names {
+		// StartOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: obj/with/slashes, obj1, obj2
+		// ― obj1: obj1, obj2
+		// ― obj2: obj2.
+		m[name] = attrs[i:]
+		msg, ok := itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{StartOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+		// EndOffset takes the value of object names, the result must be for:
+		// ― obj/with/slashes: ""
+		// ― obj1: obj/with/slashes
+		// ― obj2: obj/with/slashes, obj1.
+		m[name] = attrs[:i]
+		msg, ok = itesting.TestIterator(m[name],
+			func() interface{} { return bkt.Objects(ctx, &Query{EndOffset: name}) },
+			func(it interface{}) (interface{}, error) { return it.(*ObjectIterator).Next() })
+		if !ok {
+			t.Errorf("ObjectIterator.Next: %s", msg)
+		}
+	}
+}
+
 func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Create a query that will only select the "Name" attr of objects, and
 	// invoke object listing.
@@ -1086,7 +1173,7 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		gotNames = append(gotNames, attrs.Name)
 
@@ -1108,7 +1195,11 @@ func testObjectsIterateSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []
 func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects []string) {
 	// Tests that all selected attributes work - query succeeds (without actually
 	// verifying the returned results).
-	query := &Query{Prefix: ""}
+	query := &Query{
+		Prefix:      "",
+		StartOffset: "obj/with/slashes",
+		EndOffset:   "obj2",
+	}
 	var selectedAttrs []string
 	for k := range attrToFieldMap {
 		selectedAttrs = append(selectedAttrs, k)
@@ -1123,13 +1214,13 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 			break
 		}
 		if err != nil {
-			log.Fatal(err)
+			t.Fatalf("iterator.Next: %v", err)
 		}
 		count++
 	}
 
-	if count != len(objects) {
-		t.Errorf("count = %v, want %v", count, len(objects))
+	if count != len(objects)-1 {
+		t.Errorf("count = %v, want %v", count, len(objects)-1)
 	}
 }
 
@@ -1228,8 +1319,6 @@ func TestIntegration_SignedURL(t *testing.T) {
 }
 
 func TestIntegration_SignedURL_WithEncryptionKeys(t *testing.T) {
-	t.Skip("Internal bug 128647687")
-
 	if testing.Short() { // do not test during replay
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -1382,15 +1471,15 @@ func TestIntegration_ACL(t *testing.T) {
 		t.Errorf("default ACL missing %#v", rule)
 	}
 	aclObjects := []string{"acl1", "acl2"}
-	for _, obj := range aclObjects {
-		c := randomContents()
-		if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
-			t.Errorf("Write for %v failed with %v", obj, err)
-		}
-	}
 	name := aclObjects[0]
 	o := bkt.Object(name)
 	err = retry(ctx, func() error {
+		for _, obj := range aclObjects {
+			c := randomContents()
+			if err := writeObject(ctx, bkt.Object(obj), "", c); err != nil {
+				t.Errorf("Write for %v failed with %v", obj, err)
+			}
+		}
 		acl, err = o.ACL().List(ctx)
 		if err != nil {
 			return fmt.Errorf("ACL.List: can't retrieve ACL of %v", name)
@@ -1786,7 +1875,7 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-	bkt := client.Bucket("storage-library-test-bucket")
+	bkt := client.Bucket(bucketName)
 	h := testHelper{t}
 
 	for _, tst := range []struct {
@@ -1796,6 +1885,8 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 		{`"Cafe\u0301"`, "Normalization Form D"},
 	} {
 		name, err := strconv.Unquote(tst.nameQuoted)
+		w := bkt.Object(name).NewWriter(ctx)
+		h.mustWrite(w, []byte(tst.content))
 		if err != nil {
 			t.Fatalf("invalid name: %s: %v", tst.nameQuoted, err)
 		}
@@ -2264,15 +2355,30 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		uncompressedBucket = "gcp-public-data-landsat"
 		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
 
-		gzippedBucket = "storage-library-test-bucket"
 		gzippedObject = "gzipped-text.txt"
 	)
 	ctx := context.Background()
-	client, err := newTestClient(ctx, option.WithoutAuthentication())
+	client, err := newTestClient(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
+	h := testHelper{t}
 	defer client.Close()
+
+	// Create gzipped object.
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
+	zw.Name = gzippedObject
+	if _, err := zw.Write([]byte("gzipped object data")); err != nil {
+		t.Fatalf("creating gzip: %v", err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatalf("closing gzip writer: %v", err)
+	}
+	w := client.Bucket(bucketName).Object(gzippedObject).NewWriter(ctx)
+	w.ContentEncoding = "gzip"
+	w.ContentType = "text/plain"
+	h.mustWrite(w, buf.Bytes())
 
 	for _, test := range []struct {
 		desc           string
@@ -2320,7 +2426,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			// because it was computed against the zipped contents. We can detect
 			// this case using http.Response.Uncompressed.
 			desc:           "compressed, entire file, unzipped",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
@@ -2330,7 +2436,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			// When we read a gzipped file uncompressed, it's like reading a regular file:
 			// the served content and the CRC match.
 			desc:           "compressed, entire file, read compressed",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
@@ -2338,7 +2444,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		},
 		{
 			desc:           "compressed, partial, server unzips",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         1,
 			length:         8,
 			readCompressed: false,
@@ -2347,7 +2453,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		},
 		{
 			desc:           "compressed, partial, read compressed",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         1,
 			length:         8,
 			readCompressed: true,
@@ -2602,8 +2708,58 @@ func TestIntegration_UpdateRetentionExpirationTime(t *testing.T) {
 	}
 }
 
+func TestIntegration_CustomTime(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	// Create object with CustomTime.
+	bkt := client.Bucket(bucketName)
+	obj := bkt.Object("custom-time-obj")
+	w := obj.NewWriter(ctx)
+	ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
+	w.ObjectAttrs.CustomTime = ct
+	h.mustWrite(w, randomContents())
+
+	// Validate that CustomTime has been set
+	checkCustomTime := func(want time.Time) error {
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("failed to get object attrs: %v", err)
+		}
+		if got := attrs.CustomTime; got != want {
+			return fmt.Errorf("CustomTime not set correctly: got %+v, want %+v", got, ct)
+		}
+		return nil
+	}
+
+	if err := checkCustomTime(ct); err != nil {
+		t.Fatalf("checking CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the future should succeed.
+	laterTime := ct.Add(10 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: laterTime}); err != nil {
+		t.Fatalf("updating CustomTime: %v", err)
+	}
+
+	// Update CustomTime to the past should give error.
+	earlierTime := ct.Add(5 * time.Hour)
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{CustomTime: earlierTime}); err == nil {
+		t.Fatalf("backdating CustomTime: expected error, got none")
+	}
+
+	// Zero value for CustomTime should be ignored.
+	if _, err := obj.Update(ctx, ObjectAttrsToUpdate{}); err != nil {
+		t.Fatalf("empty update: %v", err)
+	}
+	if err := checkCustomTime(laterTime); err != nil {
+		t.Fatalf("after sending zero value: %v", err)
+	}
+}
+
 func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1632")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2652,7 +2808,6 @@ func TestIntegration_UpdateRetentionPolicy(t *testing.T) {
 }
 
 func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1565")
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
@@ -2671,8 +2826,15 @@ func TestIntegration_DeleteObjectInBucketWithRetentionPolicy(t *testing.T) {
 	}
 
 	// Remove the retention period
-	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{RetentionPeriod: 0}})
-	h.mustDeleteObject(oh)
+	h.mustUpdateBucket(bkt, BucketAttrsToUpdate{RetentionPolicy: &RetentionPolicy{}})
+	// Deleting with retry, as bucket metadata changes
+	// can take some time to propagate.
+	err := retry(ctx, func() error {
+		return oh.Delete(ctx)
+	}, nil)
+	if err != nil {
+		h.t.Fatalf("%s: object delete: %v", loc(), err)
+	}
 	h.mustDeleteBucket(bkt)
 }
 
@@ -3244,7 +3406,7 @@ func TestIntegration_PostPolicyV4(t *testing.T) {
 	}
 	if g, w := res.StatusCode, statusCodeToRespond; g != w {
 		blob, _ := httputil.DumpResponse(res, true)
-		t.Errorf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
+		t.Fatalf("Status code in response mismatch: got %d want %d\nBody: %s", g, w, blob)
 	}
 	io.Copy(ioutil.Discard, res.Body)
 
@@ -3391,20 +3553,16 @@ func (h testHelper) mustNewReader(obj *ObjectHandle) *Reader {
 }
 
 func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, contents []byte) error {
-	// TODO: remove retry once retry logic in the client has been improved.
-	// https://github.com/googleapis/google-cloud-go/issues/2395
-	return retry(ctx, func() error {
-		w := obj.NewWriter(ctx)
-		w.ContentType = contentType
-		w.CacheControl = "public, max-age=60"
-		if contents != nil {
-			if _, err := w.Write(contents); err != nil {
-				_ = w.Close()
-				return err
-			}
+	w := obj.NewWriter(ctx)
+	w.ContentType = contentType
+	w.CacheControl = "public, max-age=60"
+	if contents != nil {
+		if _, err := w.Write(contents); err != nil {
+			_ = w.Close()
+			return err
 		}
-		return w.Close()
-	}, nil)
+	}
+	return w.Close()
 }
 
 // loc returns a string describing the file and line of its caller's call site. In

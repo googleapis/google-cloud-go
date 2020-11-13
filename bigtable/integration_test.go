@@ -22,15 +22,19 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 	"sort"
 	"strings"
 	"sync"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/proto"
+	"github.com/google/go-cmp/cmp"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 )
@@ -791,7 +795,8 @@ func TestIntegration_Read(t *testing.T) {
 
 		// We do the read, grab all the cells, turn them into "<row>-<col>-<val>",
 		// and join with a comma.
-		want string
+		want       string
+		wantLabels []string
 	}{
 		{
 			desc: "read all, unfiltered",
@@ -878,6 +883,14 @@ func TestIntegration_Read(t *testing.T) {
 			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
 			limit:  LimitRows(2),
 			want:   "gwashington-jadams-1,jadams-tjefferson-1",
+		},
+		{
+			desc:       "apply labels to the result rows",
+			rr:         RowRange{},
+			filter:     LabelFilter("test-label"),
+			limit:      LimitRows(2),
+			want:       "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			wantLabels: []string{"test-label", "test-label", "test-label"},
 		},
 		{
 			desc:   "read all, strip values",
@@ -967,10 +980,11 @@ func TestIntegration_Read(t *testing.T) {
 			if test.limit != nil {
 				opts = append(opts, test.limit)
 			}
-			var elt []string
+			var elt, labels []string
 			err := table.ReadRows(ctx, test.rr, func(r Row) bool {
 				for _, ris := range r {
 					for _, ri := range ris {
+						labels = append(labels, ri.Labels...)
 						elt = append(elt, formatReadItem(ri))
 					}
 				}
@@ -981,6 +995,9 @@ func TestIntegration_Read(t *testing.T) {
 			}
 			if got := strings.Join(elt, ","); got != test.want {
 				t.Fatalf("got %q\nwant %q", got, test.want)
+			}
+			if got, want := labels, test.wantLabels; !reflect.DeepEqual(got, want) {
+				t.Fatalf("got %q\nwant %q", got, want)
 			}
 		})
 	}
@@ -1076,13 +1093,13 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
-	defer adminClient.DeleteTable(ctx, "mytable")
+	defer deleteTable(ctx, t, adminClient, "mytable")
 
 	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	defer adminClient.DeleteTable(ctx, "myothertable")
+	defer deleteTable(ctx, t, adminClient, "myothertable")
 
 	if err := adminClient.CreateTable(ctx, "myothertable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
@@ -1115,7 +1132,7 @@ func TestIntegration_Admin(t *testing.T) {
 	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
 		t.Fatalf("Creating table from TableConf: %v", err)
 	}
-	defer adminClient.DeleteTable(ctx, tblConf.TableID)
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
 
 	tblInfo, err := adminClient.TableInfo(ctx, tblConf.TableID)
 	if err != nil {
@@ -1207,7 +1224,7 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	defer adminClient.DeleteTable(ctx, "mytable")
+	defer deleteTable(ctx, t, adminClient, "mytable")
 	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
@@ -1259,6 +1276,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
@@ -1272,7 +1290,10 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	// Basic return values are tested elsewhere, check instance type
 	if iInfo.InstanceType != DEVELOPMENT {
-		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
 	// Update everything we can about the instance in one call.
@@ -1280,8 +1301,9 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceID:   instanceToCreate,
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
+		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5, StorageType: HDD}},
+			{ClusterID: clusterID, NumNodes: 5}},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1294,7 +1316,10 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	}
 
 	if iInfo.InstanceType != PRODUCTION {
-		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, confWithClusters.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
 		t.Fatalf("Display name: %q, want: %q", got, want)
@@ -1308,9 +1333,98 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
 	}
+}
 
-	if cInfo.StorageType != HDD {
-		t.Fatalf("StorageType: %v, want: %v", cInfo.StorageType, HDD)
+func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
+
+	// Check the environments
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	// Create an instance admin client
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	// Create a test instance
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    instanceToCreate + "-cluster",
+		DisplayName:  "test instance",
+		InstanceType: DEVELOPMENT,
+		Zone:         instanceToCreateZone,
+	}
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	// Check the created test instances
+	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
+	}
+
+	// Test patterns to update instance labels
+	tests := []struct {
+		name string
+		in   map[string]string
+		out  map[string]string
+	}{
+		{
+			name: "update labels",
+			in:   map[string]string{"test-label-key": "test-label-value"},
+			out:  map[string]string{"test-label-key": "test-label-value"},
+		},
+		{
+			name: "update multiple labels",
+			in:   map[string]string{"update-label-key-a": "update-label-value-a", "update-label-key-b": "update-label-value-b"},
+			out:  map[string]string{"update-label-key-a": "update-label-value-a", "update-label-key-b": "update-label-value-b"},
+		},
+		{
+			name: "not update existing labels",
+			in:   nil, // nil map
+			out:  map[string]string{"update-label-key-a": "update-label-value-a", "update-label-key-b": "update-label-value-b"},
+		},
+		{
+			name: "delete labels",
+			in:   map[string]string{}, // empty map
+			out:  nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			confWithClusters := &InstanceWithClustersConfig{
+				InstanceID: instanceToCreate,
+				Labels:     tt.in,
+			}
+			if err := iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
+				t.Fatalf("UpdateInstanceWithClusters: %v", err)
+			}
+			iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+			if err != nil {
+				t.Fatalf("InstanceInfo: %v", err)
+			}
+			if got, want := iInfo.Labels, tt.out; !cmp.Equal(got, want) {
+				t.Fatalf("Labels: %v, want: %v", got, want)
+			}
+		})
 	}
 }
 
@@ -1347,6 +1461,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		DisplayName:  "test instance",
 		Zone:         instanceToCreateZone,
 		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
@@ -1360,7 +1475,10 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 
 	// Basic return values are tested elsewhere, check instance type
 	if iInfo.InstanceType != DEVELOPMENT {
-		t.Fatalf("Instance is not DEVELOPMENT: %v", err)
+		t.Fatalf("Instance is not DEVELOPMENT: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, conf.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 
 	// Update everything we can about the instance in one call.
@@ -1368,6 +1486,7 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		InstanceID:   instanceToCreate,
 		DisplayName:  "new display name",
 		InstanceType: PRODUCTION,
+		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID, NumNodes: 5}},
 	}
@@ -1391,7 +1510,10 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 
 	if iInfo.InstanceType != PRODUCTION {
-		t.Fatalf("Instance type is not PRODUCTION: %v", err)
+		t.Fatalf("Instance type is not PRODUCTION: %v", iInfo.InstanceType)
+	}
+	if got, want := iInfo.Labels, confWithClusters.Labels; !cmp.Equal(got, want) {
+		t.Fatalf("Labels: %v, want: %v", got, want)
 	}
 	if got, want := iInfo.DisplayName, confWithClusters.DisplayName; got != want {
 		t.Fatalf("Display name: %q, want: %q", got, want)
@@ -1517,7 +1639,7 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
-	defer adminClient.DeleteTable(ctx, table)
+	defer deleteTable(ctx, t, adminClient, table)
 
 	if err := adminClient.CreateTable(ctx, table); err != nil {
 		t.Fatalf("Creating table: %v", err)
@@ -1568,7 +1690,7 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 
 	// Restore
 	restoredTable := table + "-restored"
-	defer adminClient.DeleteTable(ctx, restoredTable)
+	defer deleteTable(ctx, t, adminClient, restoredTable)
 	if err = adminClient.CreateTableFromSnapshot(ctx, restoredTable, cluster, "mysnapshot"); err != nil {
 		t.Fatalf("CreateTableFromSnapshot: %v", err)
 	}
@@ -1630,7 +1752,7 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
-	defer adminClient.DeleteTable(ctx, "mytable")
+	defer deleteTable(ctx, t, adminClient, "mytable")
 
 	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
 		t.Fatalf("Creating table: %v", err)
@@ -1865,6 +1987,138 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 }
 
+func TestIntegration_AdminBackup(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support backups")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	cluster := testEnv.Config().Cluster
+
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, table)
+
+	list := func(cluster string) ([]*BackupInfo, error) {
+		infos := []*BackupInfo(nil)
+
+		it := adminClient.Backups(ctx, cluster)
+		for {
+			s, err := it.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return nil, err
+			}
+			infos = append(infos, s)
+		}
+		return infos, err
+	}
+
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	// Precondition: no backups
+	backups, err := list(cluster)
+	if err != nil {
+		t.Fatalf("Initial backup list: %v", err)
+	}
+	if got, want := len(backups), 0; got != want {
+		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
+	}
+
+	// Create backup
+	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
+
+	if err = adminClient.CreateBackup(ctx, table, cluster, "mybackup", time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+
+	// List backup
+	backups, err = list(cluster)
+	if err != nil {
+		t.Fatalf("Listing backups: %v", err)
+	}
+	if got, want := len(backups), 1; got != want {
+		t.Fatalf("Listing backup count: %d, want: %d", got, want)
+	}
+	if got, want := backups[0].Name, "mybackup"; got != want {
+		t.Fatalf("Backup name: %s, want: %s", got, want)
+	}
+	if got, want := backups[0].SourceTable, table; got != want {
+		t.Fatalf("Backup SourceTable: %s, want: %s", got, want)
+	}
+	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
+		t.Fatalf("Backup ExpireTime: %s, want: %s", got, want)
+	}
+
+	// Get backup
+	backup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", backup)
+	}
+	if got, want := *backup, *backups[0]; got != want {
+		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	}
+
+	// Update backup
+	newExpireTime := time.Now().Add(10 * time.Hour)
+	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
+	if err != nil {
+		t.Fatalf("UpdateBackup failed: %v", err)
+	}
+
+	// Check that updated backup has the correct expire time
+	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", err)
+	}
+	backup.ExpireTime = newExpireTime
+	// Server clock and local clock may not be perfectly sync'ed.
+	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
+		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	}
+
+	// Restore backup
+	restoredTable := table + "-restored"
+	defer deleteTable(ctx, t, adminClient, restoredTable)
+	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
+		t.Fatalf("RestoreTable: %v", err)
+	}
+	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
+		t.Fatalf("Restored TableInfo: %v", err)
+	}
+
+	// Delete backup
+	if err = adminClient.DeleteBackup(ctx, cluster, "mybackup"); err != nil {
+		t.Fatalf("DeleteBackup: %v", err)
+	}
+	backups, err = list(cluster)
+	if err != nil {
+		t.Fatalf("List after Delete: %v", err)
+	}
+	if got, want := len(backups), 0; got != want {
+		t.Fatalf("List after delete len: %d, want: %d", got, want)
+	}
+}
+
 func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1936,5 +2190,25 @@ func clearTimestamps(r Row) {
 		for i := range ris {
 			ris[i].Timestamp = 0
 		}
+	}
+}
+
+func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string) {
+	bo := gax.Backoff{
+		Initial:    100 * time.Millisecond,
+		Max:        2 * time.Second,
+		Multiplier: 1.2,
+	}
+	ctx, _ = context.WithTimeout(ctx, time.Second*30)
+
+	err := internal.Retry(ctx, bo, func() (bool, error) {
+		err := ac.DeleteTable(ctx, name)
+		if err != nil {
+			return true, err
+		}
+		return false, nil
+	})
+	if err != nil {
+		t.Logf("DeleteTable: %v", err)
 	}
 }

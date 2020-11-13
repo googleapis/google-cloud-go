@@ -223,6 +223,24 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 	}
 }
 
+// DetachSubscriptionResult is the response for the DetachSubscription method.
+// Reserved for future use.
+type DetachSubscriptionResult struct{}
+
+// DetachSubscription detaches a subscription from its topic. All messages
+// retained in the subscription are dropped. Subsequent `Pull` and `StreamingPull`
+// requests will return FAILED_PRECONDITION. If the subscription is a push
+// subscription, pushes to the endpoint will stop.
+func (c *Client) DetachSubscription(ctx context.Context, sub string) (*DetachSubscriptionResult, error) {
+	_, err := c.pubc.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: sub,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &DetachSubscriptionResult{}, nil
+}
+
 // MessageStoragePolicy constrains how messages published to the topic may be stored. It
 // is determined when the topic is created based on the policy configured at
 // the project level.
@@ -392,8 +410,10 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	r := &PublishResult{ready: make(chan struct{})}
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		return &PublishResult{err: errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering")}
+		r.set("", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		return r
 	}
 
 	// Use a PublishRequest with only the Messages field to calculate the size
@@ -410,7 +430,6 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 			},
 		},
 	})
-	r := &PublishResult{ready: make(chan struct{})}
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -449,6 +468,13 @@ type PublishResult struct {
 	ready    chan struct{}
 	serverID string
 	err      error
+}
+
+// NewPublishResult returns the set() function to enable callers from outside
+// this package to store and call it (e.g. unit tests).
+func NewPublishResult() (*PublishResult, func(string, error)) {
+	result := &PublishResult{ready: make(chan struct{})}
+	return result, result.set
 }
 
 // Ready returns a channel that is closed when the result is ready.
@@ -550,19 +576,16 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
+	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
 		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
 	} else {
-		start := time.Now()
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
-		end := time.Now()
-		stats.Record(ctx,
-			PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
-			PublishedMessages.M(int64(len(bms))))
 	}
+	end := time.Now()
 	if err != nil {
 		t.scheduler.Pause(orderingKey)
 		// Update context with error tag for OpenCensus,
@@ -570,6 +593,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		ctx, _ = tag.New(ctx, tag.Upsert(keyStatus, "ERROR"),
 			tag.Upsert(keyError, err.Error()))
 	}
+	stats.Record(ctx,
+		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
+		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
 		if err != nil {
 			bm.res.set("", err)

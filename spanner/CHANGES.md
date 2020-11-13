@@ -1,6 +1,114 @@
 # Changes
 
+## [1.12.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.11.0...v1.12.0) (2020-11-10)
+
+
+### Features
+
+* **spanner:** add metadata to RowIterator ([#3050](https://www.github.com/googleapis/google-cloud-go/issues/3050)) ([9a2289c](https://www.github.com/googleapis/google-cloud-go/commit/9a2289c3a38492bc2e84e0f4000c68a8718f5c11)), closes [#1805](https://www.github.com/googleapis/google-cloud-go/issues/1805)
+* **spanner:** export ToSpannerError ([#3133](https://www.github.com/googleapis/google-cloud-go/issues/3133)) ([b951d8b](https://www.github.com/googleapis/google-cloud-go/commit/b951d8bd194b76da0a8bf2ce7cf85b546d2e051c)), closes [#3122](https://www.github.com/googleapis/google-cloud-go/issues/3122)
+* **spanner:** support rw-transaction with options ([#3058](https://www.github.com/googleapis/google-cloud-go/issues/3058)) ([5130694](https://www.github.com/googleapis/google-cloud-go/commit/51306948eef9d26cff70453efc3eb500ddef9117))
+* **spanner/spannertest:** make SELECT list aliases visible to ORDER BY ([#3054](https://www.github.com/googleapis/google-cloud-go/issues/3054)) ([7d2d83e](https://www.github.com/googleapis/google-cloud-go/commit/7d2d83ee1cce58d4014d5570bc599bcef1ed9c22)), closes [#3043](https://www.github.com/googleapis/google-cloud-go/issues/3043)
+
+## v1.11.0
+
+* Features:
+  - feat(spanner): add KeySetFromKeys function (#2837)
+* Misc:
+  - test(spanner): check for Aborted error (#3039)
+  - test(spanner): fix potential race condition in TestRsdBlockingStates (#3017)
+  - test(spanner): compare data instead of struct (#3013)
+  - test(spanner): fix flaky oc_test.go (#2838)
+  - docs(spanner): document NULL value (#2885)
+* spansql/spannertest:
+  - Support JOINs (all but FULL JOIN) (#2936, #2924, #2896, #3042, #3037, #2995, #2945, #2931)
+  - feat(spanner/spansql): parse CHECK constraints (#3046)
+  - fix(spanner/spansql): fix parsing of unary minus and plus (#2997)
+  - fix(spanner/spansql): fix parsing of adjacent inline and leading comments (#2851)
+  - fix(spanner/spannertest): fix ORDER BY combined with SELECT aliases (#3043)
+  - fix(spanner/spannertest): generate query output columns in construction order (#2990)
+  - fix(spanner/spannertest): correct handling of NULL AND FALSE (#2991)
+  - fix(spanner/spannertest): correct handling of tri-state boolean expression evaluation (#2983)
+  - fix(spanner/spannertest): fix handling of NULL with LIKE operator (#2982)
+  - test(spanner/spannertest): migrate most test code to integration_test.go (#2977)
+  - test(spanner/spansql): add fuzz target for ParseQuery (#2909)
+  - doc(spanner/spannertest): document the implementation (#2996)
+  - perf(spanner/spannertest): speed up no-wait DDL changes (#2994)
+  - perf(spanner/spansql): make fewer allocations during SQL (#2969)
+* Backward Incompatible Changes
+  - chore(spanner/spansql): use ID type for identifiers throughout (#2889)
+  - chore(spanner/spansql): restructure FROM, TABLESAMPLE (#2888)
+
+## v1.10.0
+
+* feat(spanner): add support for NUMERIC data type (#2415)
+* feat(spanner): add custom type support to spanner.Key (#2748)
+* feat(spanner/spannertest): add support for bool parameter types (#2674)
+* fix(spanner): update PDML to take sessions from pool (#2736)
+* spanner/spansql: update docs on TableAlteration, ColumnAlteration (#2825)
+* spanner/spannertest: support dropping columns (#2823)
+* spanner/spannertest: implement GetDatabase (#2802)
+* spanner/spannertest: fix aggregation in query evaluation for empty inputs (#2803)
+
+## v1.9.0
+
+* Features:
+  - feat(spanner): support custom field type (#2614)
+* Bugfixes:
+  - fix(spanner): call ctx.cancel after stats have been recorded (#2728)
+  - fix(spanner): retry session not found for read (#2724)
+  - fix(spanner): specify credentials with SPANNER_EMULATOR_HOST (#2701)
+  - fix(spanner): update pdml to retry EOS internal error (#2678)
+* Misc:
+  - test(spanner): unskip tests for emulator (#2675)
+* spansql/spannertest:
+  - spanner/spansql: restructure types and parsing for column options (#2656)
+  - spanner/spannertest: return error for Read with no keys (#2655)
+
+## v1.8.0
+
+* Features:
+  - feat(spanner): support of client-level custom retry settings (#2599)
+  - feat(spanner): add a statement-based way to run read-write transaction. (#2545)
+* Bugfixes:
+  - fix(spanner): set 'gccl' to the request header. (#2609)
+  - fix(spanner): add the missing resource prefix (#2605)
+  - fix(spanner): fix the upgrade of protobuf. (#2583)
+  - fix(spanner): do not copy protobuf messages by value. (#2581)
+  - fix(spanner): fix the required resource prefix. (#2580)
+  - fix(spanner): add extra field to ignore with cmp (#2577)
+  - fix(spanner): remove appengine-specific numChannels. (#2513)
+* Misc:
+  - test(spanner): log warning instead of fail for stress test (#2559)
+  - test(spanner): fix failed TestRsdBlockingStates test (#2597)
+  - chore(spanner): cleanup mockserver and mockclient (#2414)
+
+## v1.7.0
+
+* Retry:
+  - Only retry certain types of internal errors. (#2460)
+* Tracing/metrics:
+  - Never sample `ping()` trace spans (#2520)
+  - Add oc tests for session pool metrics. (#2416)
+* Encoding:
+  - Allow encoding struct with custom types to mutation (#2529)
+* spannertest:
+  - Fix evaluation on IN (#2479)
+  - Support MIN/MAX aggregation functions (#2411)
+* Misc:
+  - Fix TestClient_WithGRPCConnectionPoolAndNumChannels_Misconfigured test (#2539)
+  - Cleanup backoff files and rename a variable (#2526)
+  - Fix TestIntegration_DML test to return err from tx (#2509)
+  - Unskip tests for emulator 0.8.0. (#2494)
+  - Fix TestIntegration_StartBackupOperation test. (#2418)
+  - Fix flakiness in TestIntegration_BatchDML_Error
+  - Unskip TestIntegration_BatchDML and TestIntegration_BatchDML_TwoStatements
+    for emulator by checking the existence of status.
+  - Fix TestStressSessionPool test by taking lock while getting sessions from
+    hc.
+
 ## v1.6.0
+
 * Sessions:
   - Increase the number of sessions in batches instead of one by one when
     additional sessions are needed. The step size is set to 25, which means

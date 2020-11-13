@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
@@ -57,7 +58,8 @@ type ConfigCallOptions struct {
 
 func defaultConfigClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -73,8 +75,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListSinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -85,8 +88,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		GetSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -98,8 +102,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		UpdateSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -110,8 +115,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		DeleteSink: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -122,8 +128,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		ListExclusions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -134,8 +141,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		GetExclusion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -148,8 +156,9 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 		DeleteExclusion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
 					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -162,12 +171,15 @@ func defaultConfigCallOptions() *ConfigCallOptions {
 	}
 }
 
-// ConfigClient is a client for interacting with Stackdriver Logging API.
+// ConfigClient is a client for interacting with Cloud Logging API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ConfigClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	configClient loggingpb.ConfigServiceV2Client
@@ -193,13 +205,19 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ConfigClient{
-		connPool:    connPool,
-		CallOptions: defaultConfigCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultConfigCallOptions(),
 
 		configClient: loggingpb.NewConfigServiceV2Client(connPool),
 	}
@@ -255,7 +273,7 @@ func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucke
 		}
 
 		it.Response = resp
-		return resp.Buckets, resp.NextPageToken, nil
+		return resp.GetBuckets(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -266,8 +284,8 @@ func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucke
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -340,7 +358,7 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 		}
 
 		it.Response = resp
-		return resp.Sinks, resp.NextPageToken, nil
+		return resp.GetSinks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -351,13 +369,18 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetSink gets a sink.
 func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSink[0:len(c.CallOptions.GetSink):len(c.CallOptions.GetSink)], opts...)
@@ -378,6 +401,11 @@ func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkReques
 // writer_identity is not permitted to write to the destination. A sink can
 // export log entries only from the resource owning the sink.
 func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateSink[0:len(c.CallOptions.CreateSink):len(c.CallOptions.CreateSink)], opts...)
@@ -399,6 +427,11 @@ func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSink
 // The updated sink might also have a new writer_identity; see the
 // unique_writer_identity field.
 func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateSink[0:len(c.CallOptions.UpdateSink):len(c.CallOptions.UpdateSink)], opts...)
@@ -417,6 +450,11 @@ func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSink
 // DeleteSink deletes a sink. If the sink has a unique writer_identity, then that
 // service account is also deleted.
 func (c *ConfigClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSinkRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteSink[0:len(c.CallOptions.DeleteSink):len(c.CallOptions.DeleteSink)], opts...)
@@ -453,7 +491,7 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 		}
 
 		it.Response = resp
-		return resp.Exclusions, resp.NextPageToken, nil
+		return resp.GetExclusions(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -464,13 +502,18 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetExclusion gets the description of an exclusion.
 func (c *ConfigClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetExclusion[0:len(c.CallOptions.GetExclusion):len(c.CallOptions.GetExclusion)], opts...)
@@ -490,6 +533,11 @@ func (c *ConfigClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclu
 // Only log entries belonging to that resource can be excluded.
 // You can have up to 10 exclusions in a resource.
 func (c *ConfigClient) CreateExclusion(ctx context.Context, req *loggingpb.CreateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateExclusion[0:len(c.CallOptions.CreateExclusion):len(c.CallOptions.CreateExclusion)], opts...)
@@ -507,6 +555,11 @@ func (c *ConfigClient) CreateExclusion(ctx context.Context, req *loggingpb.Creat
 
 // UpdateExclusion changes one or more properties of an existing exclusion.
 func (c *ConfigClient) UpdateExclusion(ctx context.Context, req *loggingpb.UpdateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateExclusion[0:len(c.CallOptions.UpdateExclusion):len(c.CallOptions.UpdateExclusion)], opts...)
@@ -524,6 +577,11 @@ func (c *ConfigClient) UpdateExclusion(ctx context.Context, req *loggingpb.Updat
 
 // DeleteExclusion deletes an exclusion.
 func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.DeleteExclusionRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteExclusion[0:len(c.CallOptions.DeleteExclusion):len(c.CallOptions.DeleteExclusion)], opts...)
@@ -542,7 +600,8 @@ func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.Delet
 // the GCP organization.
 //
 // See Enabling CMEK for Logs
-// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
 func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -572,7 +631,8 @@ func (c *ConfigClient) GetCmekSettings(ctx context.Context, req *loggingpb.GetCm
 // 3) access to the key is disabled.
 //
 // See Enabling CMEK for Logs
-// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+// Router (at https://cloud.google.com/logging/docs/routing/managed-encryption)
+// for more information.
 func (c *ConfigClient) UpdateCmekSettings(ctx context.Context, req *loggingpb.UpdateCmekSettingsRequest, opts ...gax.CallOption) (*loggingpb.CmekSettings, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

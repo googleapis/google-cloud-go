@@ -21,20 +21,24 @@
     `cd google-cloud-go`
 
 1. Fork the repo.
-   
+
 1. Set your fork as a remote:
     `git remote add fork git@github.com:GITHUB_USERNAME/google-cloud-go.git`
 
-1. Make changes (see [Formatting](#formatting) and [Style](#style)), commit to
-   your fork.
+1. Make changes, commit to your fork.
 
    Commit messages should follow the
-   [Go project style](https://github.com/golang/go/wiki/CommitMessage). For example:
+   [Conventional Commits Style](https://www.conventionalcommits.org). The scope
+   portion should always be filled with the name of the package affected by the
+   changes being made. For example:
    ```
-   functions: add gophers codelab
+   feat(functions): add gophers codelab
    ```
 
 1. Send a pull request with your changes.
+
+   To minimize friction, consider setting `Allow edits from maintainers` on the
+   PR, which will enable project committers and automation to update your PR.
 
 1. A maintainer will review the pull request and make comments.
 
@@ -43,7 +47,13 @@
 
    Commits will be squashed when they're merged.
 
-## Integration Tests
+## Testing
+
+We test code against two versions of Go, the minimum and maximum versions
+supported by our clients. To see which versions these are checkout our
+[README](README.md#supported-versions).
+
+### Integration Tests
 
 In addition to the unit tests, you may run the integration test suite. These
 directions describe setting up your environment to run integration tests for
@@ -93,7 +103,8 @@ Next, ensure the following APIs are enabled in the general project:
 - Google Compute Engine Instance Group Updater API
 - Google Compute Engine Instance Groups API
 - Kubernetes Engine API
-- Stackdriver Error Reporting API
+- Cloud Error Reporting API
+- Pub/Sub Lite API
 
 Next, create a Datastore database in the general project, and a Firestore
 database in the Firestore project.
@@ -143,7 +154,7 @@ $ gcloud auth login
 $ gcloud datastore indexes create datastore/testdata/index.yaml
 
 # Creates a Google Cloud storage bucket with the same name as your test project,
-# and with the Stackdriver Logging service account as owner, for the sink
+# and with the Cloud Logging service account as owner, for the sink
 # integration tests in logging.
 $ gsutil mb gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID
 $ gsutil acl ch -g cloud-logs@google.com:O gs://$GCLOUD_TESTS_GOLANG_PROJECT_ID

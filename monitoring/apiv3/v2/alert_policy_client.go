@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 	"google.golang.org/grpc"
@@ -47,7 +48,8 @@ type AlertPolicyCallOptions struct {
 
 func defaultAlertPolicyClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -105,6 +107,9 @@ type AlertPolicyClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	alertPolicyClient monitoringpb.AlertPolicyServiceClient
 
@@ -137,13 +142,19 @@ func NewAlertPolicyClient(ctx context.Context, opts ...option.ClientOption) (*Al
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &AlertPolicyClient{
-		connPool:    connPool,
-		CallOptions: defaultAlertPolicyCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultAlertPolicyCallOptions(),
 
 		alertPolicyClient: monitoringpb.NewAlertPolicyServiceClient(connPool),
 	}
@@ -199,7 +210,7 @@ func (c *AlertPolicyClient) ListAlertPolicies(ctx context.Context, req *monitori
 		}
 
 		it.Response = resp
-		return resp.AlertPolicies, resp.NextPageToken, nil
+		return resp.GetAlertPolicies(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -210,13 +221,18 @@ func (c *AlertPolicyClient) ListAlertPolicies(ctx context.Context, req *monitori
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetAlertPolicy gets a single alerting policy.
 func (c *AlertPolicyClient) GetAlertPolicy(ctx context.Context, req *monitoringpb.GetAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAlertPolicy[0:len(c.CallOptions.GetAlertPolicy):len(c.CallOptions.GetAlertPolicy)], opts...)
@@ -234,6 +250,11 @@ func (c *AlertPolicyClient) GetAlertPolicy(ctx context.Context, req *monitoringp
 
 // CreateAlertPolicy creates a new alerting policy.
 func (c *AlertPolicyClient) CreateAlertPolicy(ctx context.Context, req *monitoringpb.CreateAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateAlertPolicy[0:len(c.CallOptions.CreateAlertPolicy):len(c.CallOptions.CreateAlertPolicy)], opts...)
@@ -251,6 +272,11 @@ func (c *AlertPolicyClient) CreateAlertPolicy(ctx context.Context, req *monitori
 
 // DeleteAlertPolicy deletes an alerting policy.
 func (c *AlertPolicyClient) DeleteAlertPolicy(ctx context.Context, req *monitoringpb.DeleteAlertPolicyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAlertPolicy[0:len(c.CallOptions.DeleteAlertPolicy):len(c.CallOptions.DeleteAlertPolicy)], opts...)
@@ -267,6 +293,11 @@ func (c *AlertPolicyClient) DeleteAlertPolicy(ctx context.Context, req *monitori
 // specifying the fields to be updated via updateMask. Returns the
 // updated alerting policy.
 func (c *AlertPolicyClient) UpdateAlertPolicy(ctx context.Context, req *monitoringpb.UpdateAlertPolicyRequest, opts ...gax.CallOption) (*monitoringpb.AlertPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "alert_policy.name", url.QueryEscape(req.GetAlertPolicy().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateAlertPolicy[0:len(c.CallOptions.UpdateAlertPolicy):len(c.CallOptions.UpdateAlertPolicy)], opts...)

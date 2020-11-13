@@ -44,8 +44,11 @@ const (
 )
 
 var (
-	logtimeRE     = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
-	backoffTimeRE = regexp.MustCompile(`(\d+(h|m|s|ms|us))+`)
+	logtimeRE = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
+
+	// "ms" must be specified before "m" in the regexp, to ensure "ms" is fully
+	// matched.
+	backoffTimeRE = regexp.MustCompile(`(\d+(\.\d+)?(ms|h|m|s|us))+`)
 )
 
 // BaseStartupTmpl is the common part of the startup script that
@@ -190,7 +193,7 @@ func (pr *ProfileResponse) HasFunction(functionName string) error {
 	return fmt.Errorf("failed to find function name %s in profile", functionName)
 }
 
-// HasFunctionInFile returns nil if function is present in the specifed file, and an
+// HasFunctionInFile returns nil if function is present in the specified file, and an
 // error if the function/file combination is not present in the profile.
 func (pr *ProfileResponse) HasFunctionInFile(functionName string, filename string) error {
 	if err := pr.CheckNonEmpty(); err != nil {

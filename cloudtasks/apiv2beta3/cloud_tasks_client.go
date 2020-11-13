@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -59,7 +60,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudtasks.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudtasks.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudtasks.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -183,6 +185,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client taskspb.CloudTasksClient
 
@@ -208,13 +213,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: taskspb.NewCloudTasksClient(connPool),
 	}
@@ -272,7 +283,7 @@ func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest,
 		}
 
 		it.Response = resp
-		return resp.Queues, resp.NextPageToken, nil
+		return resp.GetQueues(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -283,13 +294,18 @@ func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest,
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetQueue gets a queue.
 func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetQueue[0:len(c.CallOptions.GetQueue):len(c.CallOptions.GetQueue)], opts...)
@@ -318,6 +334,11 @@ func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opt
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
 func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateQueue[0:len(c.CallOptions.CreateQueue):len(c.CallOptions.CreateQueue)], opts...)
@@ -349,6 +370,11 @@ func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueReques
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
 func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "queue.name", url.QueryEscape(req.GetQueue().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateQueue[0:len(c.CallOptions.UpdateQueue):len(c.CallOptions.UpdateQueue)], opts...)
@@ -378,6 +404,11 @@ func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueReques
 // queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
 // this method.
 func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteQueue[0:len(c.CallOptions.DeleteQueue):len(c.CallOptions.DeleteQueue)], opts...)
@@ -396,6 +427,11 @@ func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueReques
 // Purge operations can take up to one minute to take effect. Tasks
 // might be dispatched before the purge takes effect. A purge is irreversible.
 func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.PurgeQueue[0:len(c.CallOptions.PurgeQueue):len(c.CallOptions.PurgeQueue)], opts...)
@@ -419,6 +455,11 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 // when the queue is paused. A queue is paused if its
 // state is PAUSED.
 func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.PauseQueue[0:len(c.CallOptions.PauseQueue):len(c.CallOptions.PauseQueue)], opts...)
@@ -448,6 +489,11 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 // Managing Cloud Tasks Scaling
 // Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
 func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ResumeQueue[0:len(c.CallOptions.ResumeQueue):len(c.CallOptions.ResumeQueue)], opts...)
@@ -473,6 +519,11 @@ func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueReques
 //
 //   cloudtasks.queues.getIamPolicy
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
@@ -500,6 +551,11 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //
 //   cloudtasks.queues.setIamPolicy
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
@@ -523,6 +579,11 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 // UIs and command-line tools, not for authorization checking. This operation
 // may “fail open” without warning.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
@@ -571,7 +632,7 @@ func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, o
 		}
 
 		it.Response = resp
-		return resp.Tasks, resp.NextPageToken, nil
+		return resp.GetTasks(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -582,13 +643,18 @@ func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, o
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetTask gets a task.
 func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTask[0:len(c.CallOptions.GetTask):len(c.CallOptions.GetTask)], opts...)
@@ -610,6 +676,11 @@ func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts 
 //
 //   The maximum task size is 100KB.
 func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTask[0:len(c.CallOptions.CreateTask):len(c.CallOptions.CreateTask)], opts...)
@@ -631,6 +702,11 @@ func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest,
 // cannot be deleted if it has executed successfully or permanently
 // failed.
 func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTask[0:len(c.CallOptions.DeleteTask):len(c.CallOptions.DeleteTask)], opts...)
@@ -667,6 +743,11 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 // NOT_FOUND when it is called on a
 // task that has already succeeded or permanently failed.
 func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.RunTask[0:len(c.CallOptions.RunTask):len(c.CallOptions.RunTask)], opts...)

@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
@@ -42,7 +43,8 @@ type ErrorGroupCallOptions struct {
 
 func defaultErrorGroupClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -79,12 +81,15 @@ func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 	}
 }
 
-// ErrorGroupClient is a client for interacting with Stackdriver Error Reporting API.
+// ErrorGroupClient is a client for interacting with Cloud Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ErrorGroupClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	errorGroupClient clouderrorreportingpb.ErrorGroupServiceClient
@@ -110,13 +115,19 @@ func NewErrorGroupClient(ctx context.Context, opts ...option.ClientOption) (*Err
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ErrorGroupClient{
-		connPool:    connPool,
-		CallOptions: defaultErrorGroupCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultErrorGroupCallOptions(),
 
 		errorGroupClient: clouderrorreportingpb.NewErrorGroupServiceClient(connPool),
 	}
@@ -149,6 +160,11 @@ func (c *ErrorGroupClient) setGoogleClientInfo(keyval ...string) {
 
 // GetGroup get the specified group.
 func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportingpb.GetGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group_name", url.QueryEscape(req.GetGroupName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGroup[0:len(c.CallOptions.GetGroup):len(c.CallOptions.GetGroup)], opts...)
@@ -167,6 +183,11 @@ func (c *ErrorGroupClient) GetGroup(ctx context.Context, req *clouderrorreportin
 // UpdateGroup replace the data for the specified group.
 // Fails if the group does not exist.
 func (c *ErrorGroupClient) UpdateGroup(ctx context.Context, req *clouderrorreportingpb.UpdateGroupRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ErrorGroup, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "group.name", url.QueryEscape(req.GetGroup().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateGroup[0:len(c.CallOptions.UpdateGroup):len(c.CallOptions.UpdateGroup)], opts...)

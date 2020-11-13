@@ -1,5 +1,20 @@
 # Changes
 
+## v1.6.0
+- Add support partial results in InstanceAdminClient.Instances. In the case of
+  partial availability, available instances will be returned along with an
+  ErrPartiallyUnavailable error.
+- Add support for label filters.
+- Fix max valid timestamp in the emulator to allow reversed timestamp support.
+
+## v1.5.0
+- Add support for managed backups.
+
+## v1.4.0
+- Add support for instance state and labels to the admin API.
+- Add metadata header to all data requests.
+- Fix bug in timestamp to time conversion.
+
 ## v1.3.0
 
 - Clients now use transport/grpc.DialPool rather than Dial.

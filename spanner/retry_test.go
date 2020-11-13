@@ -36,7 +36,7 @@ func TestRetryInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error setting retry details: %v", err)
 	}
-	gotDelay, ok := extractRetryDelay(toSpannerErrorWithCommitInfo(s.Err(), true))
+	gotDelay, ok := ExtractRetryDelay(toSpannerErrorWithCommitInfo(s.Err(), true))
 	if !ok || !testEqual(time.Second, gotDelay) {
 		t.Errorf("<ok, retryDelay> = <%t, %v>, want <true, %v>", ok, gotDelay, time.Second)
 	}
@@ -50,7 +50,7 @@ func TestRetryInfoInWrappedError(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Error setting retry details: %v", err)
 	}
-	gotDelay, ok := extractRetryDelay(
+	gotDelay, ok := ExtractRetryDelay(
 		&wrappedTestError{wrapped: toSpannerErrorWithCommitInfo(s.Err(), true), msg: "Error that is wrapping a Spanner error"},
 	)
 	if !ok || !testEqual(time.Second, gotDelay) {
@@ -60,7 +60,7 @@ func TestRetryInfoInWrappedError(t *testing.T) {
 
 func TestRetryInfoTransactionOutcomeUnknownError(t *testing.T) {
 	err := toSpannerErrorWithCommitInfo(context.DeadlineExceeded, true)
-	if gotDelay, ok := extractRetryDelay(err); ok {
+	if gotDelay, ok := ExtractRetryDelay(err); ok {
 		t.Errorf("Got unexpected delay\nGot: %v\nWant: %v", gotDelay, 0)
 	}
 	if !testEqual(err.(*Error).err, &TransactionOutcomeUnknownError{status.FromContextError(context.DeadlineExceeded).Err()}) {

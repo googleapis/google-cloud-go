@@ -23,6 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
 	"google.golang.org/grpc"
@@ -41,7 +42,8 @@ type WebRiskServiceV1Beta1CallOptions struct {
 
 func defaultWebRiskServiceV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("webrisk.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -97,6 +99,9 @@ type WebRiskServiceV1Beta1Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	webRiskServiceV1Beta1Client webriskpb.WebRiskServiceV1Beta1Client
 
@@ -122,13 +127,19 @@ func NewWebRiskServiceV1Beta1Client(ctx context.Context, opts ...option.ClientOp
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &WebRiskServiceV1Beta1Client{
-		connPool:    connPool,
-		CallOptions: defaultWebRiskServiceV1Beta1CallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultWebRiskServiceV1Beta1CallOptions(),
 
 		webRiskServiceV1Beta1Client: webriskpb.NewWebRiskServiceV1Beta1Client(connPool),
 	}
@@ -161,6 +172,11 @@ func (c *WebRiskServiceV1Beta1Client) setGoogleClientInfo(keyval ...string) {
 
 // ComputeThreatListDiff gets the most recent threat list diffs.
 func (c *WebRiskServiceV1Beta1Client) ComputeThreatListDiff(ctx context.Context, req *webriskpb.ComputeThreatListDiffRequest, opts ...gax.CallOption) (*webriskpb.ComputeThreatListDiffResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ComputeThreatListDiff[0:len(c.CallOptions.ComputeThreatListDiff):len(c.CallOptions.ComputeThreatListDiff)], opts...)
 	var resp *webriskpb.ComputeThreatListDiffResponse
@@ -177,6 +193,11 @@ func (c *WebRiskServiceV1Beta1Client) ComputeThreatListDiff(ctx context.Context,
 
 // SearchUris this method is used to check whether a URI is on a given threatList.
 func (c *WebRiskServiceV1Beta1Client) SearchUris(ctx context.Context, req *webriskpb.SearchUrisRequest, opts ...gax.CallOption) (*webriskpb.SearchUrisResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SearchUris[0:len(c.CallOptions.SearchUris):len(c.CallOptions.SearchUris)], opts...)
 	var resp *webriskpb.SearchUrisResponse
@@ -197,6 +218,11 @@ func (c *WebRiskServiceV1Beta1Client) SearchUris(ctx context.Context, req *webri
 // so the client must query this method to determine if there is a full
 // hash match of a threat.
 func (c *WebRiskServiceV1Beta1Client) SearchHashes(ctx context.Context, req *webriskpb.SearchHashesRequest, opts ...gax.CallOption) (*webriskpb.SearchHashesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.SearchHashes[0:len(c.CallOptions.SearchHashes):len(c.CallOptions.SearchHashes)], opts...)
 	var resp *webriskpb.SearchHashesResponse

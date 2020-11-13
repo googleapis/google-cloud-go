@@ -246,6 +246,13 @@ type SubscriptionConfig struct {
 
 	// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
 	RetryPolicy *RetryPolicy
+
+	// Detached indicates whether the subscription is detached from its topic.
+	// Detached subscriptions don't receive messages from their topic and don't
+	// retain any backlog. `Pull` and `StreamingPull` requests will return
+	// FAILED_PRECONDITION. If the subscription is a push subscription, pushes to
+	// the endpoint will not be made.
+	Detached bool
 }
 
 func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
@@ -278,6 +285,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 		DeadLetterPolicy:         pbDeadLetter,
 		Filter:                   cfg.Filter,
 		RetryPolicy:              pbRetryPolicy,
+		Detached:                 cfg.Detached,
 	}
 }
 
@@ -300,15 +308,17 @@ func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionC
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
 	subC := SubscriptionConfig{
-		Topic:               newTopic(c, pbSub.Topic),
-		AckDeadline:         time.Second * time.Duration(pbSub.AckDeadlineSeconds),
-		RetainAckedMessages: pbSub.RetainAckedMessages,
-		RetentionDuration:   rd,
-		Labels:              pbSub.Labels,
-		ExpirationPolicy:    expirationPolicy,
-		DeadLetterPolicy:    dlp,
-		Filter:              pbSub.Filter,
-		RetryPolicy:         rp,
+		Topic:                 newTopic(c, pbSub.Topic),
+		AckDeadline:           time.Second * time.Duration(pbSub.AckDeadlineSeconds),
+		RetainAckedMessages:   pbSub.RetainAckedMessages,
+		RetentionDuration:     rd,
+		Labels:                pbSub.Labels,
+		ExpirationPolicy:      expirationPolicy,
+		EnableMessageOrdering: pbSub.EnableMessageOrdering,
+		DeadLetterPolicy:      dlp,
+		Filter:                pbSub.Filter,
+		RetryPolicy:           rp,
+		Detached:              pbSub.Detached,
 	}
 	pc := protoToPushConfig(pbSub.PushConfig)
 	if pc != nil {
@@ -478,6 +488,12 @@ type ReceiveSettings struct {
 	// the value is negative, then there will be no limit on the number of bytes
 	// for unprocessed messages.
 	MaxOutstandingBytes int
+
+	// UseLegacyFlowControl disables enforcing flow control settings at the Cloud
+	// PubSub server and the less accurate method of only enforcing flow control
+	// at the client side is used.
+	// The default is false.
+	UseLegacyFlowControl bool
 
 	// NumGoroutines is the number of goroutines that each datastructure along
 	// the Receive path will spawn. Adjusting this value adjusts concurrency
@@ -805,9 +821,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	}
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
-		maxExtension: maxExt,
-		maxPrefetch:  trunc32(int64(maxCount)),
-		synchronous:  s.ReceiveSettings.Synchronous,
+		maxExtension:           maxExt,
+		maxPrefetch:            trunc32(int64(maxCount)),
+		synchronous:            s.ReceiveSettings.Synchronous,
+		maxOutstandingMessages: maxCount,
+		maxOutstandingBytes:    maxBytes,
+		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -891,9 +910,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					old := msg.doneFunc
+					ackh, _ := msg.ackHandler()
+					old := ackh.doneFunc
 					msgLen := len(msg.Data)
-					msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
 						defer fc.release(msgLen)
 						old(ackID, ack, receiveTime)
 					}
@@ -935,5 +955,8 @@ type pullOptions struct {
 	maxPrefetch  int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
-	synchronous bool
+	synchronous            bool
+	maxOutstandingMessages int
+	maxOutstandingBytes    int
+	useLegacyFlowControl   bool
 }

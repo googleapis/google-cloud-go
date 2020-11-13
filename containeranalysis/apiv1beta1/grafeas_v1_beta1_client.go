@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 	"google.golang.org/grpc"
@@ -57,7 +58,8 @@ type GrafeasV1Beta1CallOptions struct {
 
 func defaultGrafeasV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -191,6 +193,9 @@ type GrafeasV1Beta1Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	grafeasV1Beta1Client grafeaspb.GrafeasV1Beta1Client
 
@@ -228,13 +233,19 @@ func NewGrafeasV1Beta1Client(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &GrafeasV1Beta1Client{
-		connPool:    connPool,
-		CallOptions: defaultGrafeasV1Beta1CallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultGrafeasV1Beta1CallOptions(),
 
 		grafeasV1Beta1Client: grafeaspb.NewGrafeasV1Beta1Client(connPool),
 	}
@@ -267,6 +278,11 @@ func (c *GrafeasV1Beta1Client) setGoogleClientInfo(keyval ...string) {
 
 // GetOccurrence gets the specified occurrence.
 func (c *GrafeasV1Beta1Client) GetOccurrence(ctx context.Context, req *grafeaspb.GetOccurrenceRequest, opts ...gax.CallOption) (*grafeaspb.Occurrence, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetOccurrence[0:len(c.CallOptions.GetOccurrence):len(c.CallOptions.GetOccurrence)], opts...)
@@ -307,7 +323,7 @@ func (c *GrafeasV1Beta1Client) ListOccurrences(ctx context.Context, req *grafeas
 		}
 
 		it.Response = resp
-		return resp.Occurrences, resp.NextPageToken, nil
+		return resp.GetOccurrences(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -318,8 +334,8 @@ func (c *GrafeasV1Beta1Client) ListOccurrences(ctx context.Context, req *grafeas
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -327,6 +343,11 @@ func (c *GrafeasV1Beta1Client) ListOccurrences(ctx context.Context, req *grafeas
 // occurrence when the occurrence is no longer applicable for the given
 // resource.
 func (c *GrafeasV1Beta1Client) DeleteOccurrence(ctx context.Context, req *grafeaspb.DeleteOccurrenceRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteOccurrence[0:len(c.CallOptions.DeleteOccurrence):len(c.CallOptions.DeleteOccurrence)], opts...)
@@ -340,6 +361,11 @@ func (c *GrafeasV1Beta1Client) DeleteOccurrence(ctx context.Context, req *grafea
 
 // CreateOccurrence creates a new occurrence.
 func (c *GrafeasV1Beta1Client) CreateOccurrence(ctx context.Context, req *grafeaspb.CreateOccurrenceRequest, opts ...gax.CallOption) (*grafeaspb.Occurrence, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateOccurrence[0:len(c.CallOptions.CreateOccurrence):len(c.CallOptions.CreateOccurrence)], opts...)
@@ -357,6 +383,11 @@ func (c *GrafeasV1Beta1Client) CreateOccurrence(ctx context.Context, req *grafea
 
 // BatchCreateOccurrences creates new occurrences in batch.
 func (c *GrafeasV1Beta1Client) BatchCreateOccurrences(ctx context.Context, req *grafeaspb.BatchCreateOccurrencesRequest, opts ...gax.CallOption) (*grafeaspb.BatchCreateOccurrencesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCreateOccurrences[0:len(c.CallOptions.BatchCreateOccurrences):len(c.CallOptions.BatchCreateOccurrences)], opts...)
@@ -374,6 +405,11 @@ func (c *GrafeasV1Beta1Client) BatchCreateOccurrences(ctx context.Context, req *
 
 // UpdateOccurrence updates the specified occurrence.
 func (c *GrafeasV1Beta1Client) UpdateOccurrence(ctx context.Context, req *grafeaspb.UpdateOccurrenceRequest, opts ...gax.CallOption) (*grafeaspb.Occurrence, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateOccurrence[0:len(c.CallOptions.UpdateOccurrence):len(c.CallOptions.UpdateOccurrence)], opts...)
@@ -392,6 +428,11 @@ func (c *GrafeasV1Beta1Client) UpdateOccurrence(ctx context.Context, req *grafea
 // GetOccurrenceNote gets the note attached to the specified occurrence. Consumer projects can
 // use this method to get a note that belongs to a provider project.
 func (c *GrafeasV1Beta1Client) GetOccurrenceNote(ctx context.Context, req *grafeaspb.GetOccurrenceNoteRequest, opts ...gax.CallOption) (*grafeaspb.Note, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetOccurrenceNote[0:len(c.CallOptions.GetOccurrenceNote):len(c.CallOptions.GetOccurrenceNote)], opts...)
@@ -409,6 +450,11 @@ func (c *GrafeasV1Beta1Client) GetOccurrenceNote(ctx context.Context, req *grafe
 
 // GetNote gets the specified note.
 func (c *GrafeasV1Beta1Client) GetNote(ctx context.Context, req *grafeaspb.GetNoteRequest, opts ...gax.CallOption) (*grafeaspb.Note, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetNote[0:len(c.CallOptions.GetNote):len(c.CallOptions.GetNote)], opts...)
@@ -449,7 +495,7 @@ func (c *GrafeasV1Beta1Client) ListNotes(ctx context.Context, req *grafeaspb.Lis
 		}
 
 		it.Response = resp
-		return resp.Notes, resp.NextPageToken, nil
+		return resp.GetNotes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -460,13 +506,18 @@ func (c *GrafeasV1Beta1Client) ListNotes(ctx context.Context, req *grafeaspb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // DeleteNote deletes the specified note.
 func (c *GrafeasV1Beta1Client) DeleteNote(ctx context.Context, req *grafeaspb.DeleteNoteRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteNote[0:len(c.CallOptions.DeleteNote):len(c.CallOptions.DeleteNote)], opts...)
@@ -480,6 +531,11 @@ func (c *GrafeasV1Beta1Client) DeleteNote(ctx context.Context, req *grafeaspb.De
 
 // CreateNote creates a new note.
 func (c *GrafeasV1Beta1Client) CreateNote(ctx context.Context, req *grafeaspb.CreateNoteRequest, opts ...gax.CallOption) (*grafeaspb.Note, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateNote[0:len(c.CallOptions.CreateNote):len(c.CallOptions.CreateNote)], opts...)
@@ -497,6 +553,11 @@ func (c *GrafeasV1Beta1Client) CreateNote(ctx context.Context, req *grafeaspb.Cr
 
 // BatchCreateNotes creates new notes in batch.
 func (c *GrafeasV1Beta1Client) BatchCreateNotes(ctx context.Context, req *grafeaspb.BatchCreateNotesRequest, opts ...gax.CallOption) (*grafeaspb.BatchCreateNotesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCreateNotes[0:len(c.CallOptions.BatchCreateNotes):len(c.CallOptions.BatchCreateNotes)], opts...)
@@ -514,6 +575,11 @@ func (c *GrafeasV1Beta1Client) BatchCreateNotes(ctx context.Context, req *grafea
 
 // UpdateNote updates the specified note.
 func (c *GrafeasV1Beta1Client) UpdateNote(ctx context.Context, req *grafeaspb.UpdateNoteRequest, opts ...gax.CallOption) (*grafeaspb.Note, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateNote[0:len(c.CallOptions.UpdateNote):len(c.CallOptions.UpdateNote)], opts...)
@@ -556,7 +622,7 @@ func (c *GrafeasV1Beta1Client) ListNoteOccurrences(ctx context.Context, req *gra
 		}
 
 		it.Response = resp
-		return resp.Occurrences, resp.NextPageToken, nil
+		return resp.GetOccurrences(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -567,13 +633,18 @@ func (c *GrafeasV1Beta1Client) ListNoteOccurrences(ctx context.Context, req *gra
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetVulnerabilityOccurrencesSummary gets a summary of the number and severity of occurrences.
 func (c *GrafeasV1Beta1Client) GetVulnerabilityOccurrencesSummary(ctx context.Context, req *grafeaspb.GetVulnerabilityOccurrencesSummaryRequest, opts ...gax.CallOption) (*grafeaspb.VulnerabilityOccurrencesSummary, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetVulnerabilityOccurrencesSummary[0:len(c.CallOptions.GetVulnerabilityOccurrencesSummary):len(c.CallOptions.GetVulnerabilityOccurrencesSummary)], opts...)

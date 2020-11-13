@@ -35,6 +35,11 @@ var goPkgOptRe = regexp.MustCompile(`(?m)^option go_package = (.*);`)
 var denylist = map[string]bool{
 	// TODO(codyoss): re-enable after issue is resolve -- https://github.com/googleapis/go-genproto/issues/357
 	"google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1": true,
+
+	// These two container APIs are currently frozen. They should not be updated
+	// due to manual layer built on top of them.
+	"google.golang.org/genproto/googleapis/grafeas/v1":                    true,
+	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1": true,
 }
 
 // regenGenproto regenerates the genproto repository.
@@ -137,25 +142,6 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	c.Dir = genprotoDir
 	if err := c.Run(); err != nil {
 		return err
-	}
-
-	// Throw away changes to some special libs.
-	for _, lib := range []string{"googleapis/grafeas/v1", "googleapis/devtools/containeranalysis/v1"} {
-		c = command("git", "checkout", lib)
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Dir = genprotoDir
-		if err := c.Run(); err != nil {
-			return err
-		}
-
-		c = command("git", "clean", "-df", lib)
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Dir = genprotoDir
-		if err := c.Run(); err != nil {
-			return err
-		}
 	}
 
 	// Clean up and check it all compiles.

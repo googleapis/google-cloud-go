@@ -21,12 +21,15 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -40,7 +43,8 @@ type SessionsCallOptions struct {
 
 func defaultSessionsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -50,7 +54,17 @@ func defaultSessionsClientOptions() []option.ClientOption {
 
 func defaultSessionsCallOptions() *SessionsCallOptions {
 	return &SessionsCallOptions{
-		DetectIntent:          []gax.CallOption{},
+		DetectIntent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		StreamingDetectIntent: []gax.CallOption{},
 	}
 }
@@ -61,6 +75,9 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 type SessionsClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	sessionsClient dialogflowpb.SessionsClient
@@ -74,10 +91,10 @@ type SessionsClient struct {
 
 // NewSessionsClient creates a new sessions client.
 //
-// A session represents an interaction with a user. You retrieve user input
-// and pass it to the DetectIntent (or
-// StreamingDetectIntent) method to determine
-// user intent and respond.
+// A service used for session interactions.
+//
+// For more information, see the API interactions
+// guide (at https://cloud.google.com/dialogflow/docs/api-overview).
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := defaultSessionsClientOptions()
 
@@ -89,13 +106,19 @@ func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*Sessi
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &SessionsClient{
-		connPool:    connPool,
-		CallOptions: defaultSessionsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultSessionsCallOptions(),
 
 		sessionsClient: dialogflowpb.NewSessionsClient(connPool),
 	}
@@ -131,6 +154,11 @@ func (c *SessionsClient) setGoogleClientInfo(keyval ...string) {
 // and session entity types to be updated, which in turn might affect
 // results of future queries.
 func (c *SessionsClient) DetectIntent(ctx context.Context, req *dialogflowpb.DetectIntentRequest, opts ...gax.CallOption) (*dialogflowpb.DetectIntentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetectIntent[0:len(c.CallOptions.DetectIntent):len(c.CallOptions.DetectIntent)], opts...)
