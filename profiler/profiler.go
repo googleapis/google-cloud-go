@@ -68,6 +68,7 @@ var (
 	config       Config
 	startOnce    allowUntilSuccess
 	mutexEnabled bool
+	logger       *log.Logger
 	// The functions below are stubbed to be overrideable for testing.
 	getProjectID     = gcemd.ProjectID
 	getInstanceName  = gcemd.InstanceName
@@ -216,6 +217,7 @@ func (o *allowUntilSuccess) do(f func() error) (err error) {
 // Config for details. Start should only be called once. Any
 // additional calls will be ignored.
 func Start(cfg Config, options ...option.ClientOption) error {
+	logger = log.New(os.Stderr, "Cloud Profiler: ", log.LstdFlags|log.Lmsgprefix)
 	startError := startOnce.do(func() error {
 		return start(cfg, options...)
 	})
@@ -262,8 +264,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 
 func debugLog(format string, e ...interface{}) {
 	if config.DebugLogging {
-		log.SetPrefix("Cloud Profiler Go Agent: ")
-		log.Printf(format, e...)
+		logger.Printf(format, e...)
 	}
 }
 
