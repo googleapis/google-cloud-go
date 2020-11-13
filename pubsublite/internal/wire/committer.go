@@ -102,8 +102,10 @@ func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
 	return c.cursorClient.StreamingCommitCursor(ctx)
 }
 
-func (c *committer) initialRequest() (interface{}, bool) {
-	return c.initialReq, true
+func (c *committer) initialRequest() (req interface{}, needsResp bool) {
+	req = c.initialReq
+	needsResp = true
+	return
 }
 
 func (c *committer) validateInitialResponse(response interface{}) error {
@@ -205,7 +207,7 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 func (c *committer) unsafeCheckDone() {
 	// If the user stops the subscriber, they will no longer receive messages, but
 	// the commit stream remains open to process acks for outstanding messages.
-	if c.status == serviceTerminating && c.cursorTracker.Done() {
+	if c.status == serviceTerminating && c.cursorTracker.Done() && c.acks.Empty() {
 		c.unsafeTerminate()
 	}
 }
