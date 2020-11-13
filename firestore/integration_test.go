@@ -651,6 +651,13 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 	}{
 		{q, wants},
 		{q.Where("q", ">", 1), wants[2:]},
+		{q.Where("q", "<", 1), wants[:1]},
+		{q.Where("q", "==", 1), wants[1:2]},
+		{q.Where("q", "!=", 0), wants[1:]},
+		{q.Where("q", ">=", 1), wants[1:]},
+		{q.Where("q", "<=", 1), wants[:2]},
+		{q.Where("q", "in", [0, 1]), wants[:2]},
+		{q.Where("q", "not-in", [0, 1]), wants[2:]},
 		{q.WherePath([]string{"q"}, ">", 1), wants[2:]},
 		{q.Offset(1).Limit(1), wants[1:2]},
 		{q.StartAt(1), wants[1:]},
