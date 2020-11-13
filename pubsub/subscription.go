@@ -910,9 +910,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					old := msg.doneFunc
+					ackh, _ := msg.ackHandler()
+					old := ackh.doneFunc
 					msgLen := len(msg.Data)
-					msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
 						defer fc.release(msgLen)
 						old(ackID, ack, receiveTime)
 					}
