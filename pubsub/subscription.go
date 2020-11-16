@@ -489,6 +489,12 @@ type ReceiveSettings struct {
 	// for unprocessed messages.
 	MaxOutstandingBytes int
 
+	// UseLegacyFlowControl disables enforcing flow control settings at the Cloud
+	// PubSub server and the less accurate method of only enforcing flow control
+	// at the client side is used.
+	// The default is false.
+	UseLegacyFlowControl bool
+
 	// NumGoroutines is the number of goroutines that each datastructure along
 	// the Receive path will spawn. Adjusting this value adjusts concurrency
 	// along the receive path.
@@ -820,6 +826,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		synchronous:            s.ReceiveSettings.Synchronous,
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
+		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -903,9 +910,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					old := msg.doneFunc
+					ackh, _ := msg.ackHandler()
+					old := ackh.doneFunc
 					msgLen := len(msg.Data)
-					msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
 						defer fc.release(msgLen)
 						old(ackID, ack, receiveTime)
 					}
@@ -950,4 +958,5 @@ type pullOptions struct {
 	synchronous            bool
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
+	useLegacyFlowControl   bool
 }

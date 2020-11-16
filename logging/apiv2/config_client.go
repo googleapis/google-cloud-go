@@ -41,7 +41,15 @@ var newConfigClientHook clientHook
 type ConfigCallOptions struct {
 	ListBuckets        []gax.CallOption
 	GetBucket          []gax.CallOption
+	CreateBucket       []gax.CallOption
 	UpdateBucket       []gax.CallOption
+	DeleteBucket       []gax.CallOption
+	UndeleteBucket     []gax.CallOption
+	ListViews          []gax.CallOption
+	GetView            []gax.CallOption
+	CreateView         []gax.CallOption
+	UpdateView         []gax.CallOption
+	DeleteView         []gax.CallOption
 	ListSinks          []gax.CallOption
 	GetSink            []gax.CallOption
 	CreateSink         []gax.CallOption
@@ -69,9 +77,17 @@ func defaultConfigClientOptions() []option.ClientOption {
 
 func defaultConfigCallOptions() *ConfigCallOptions {
 	return &ConfigCallOptions{
-		ListBuckets:  []gax.CallOption{},
-		GetBucket:    []gax.CallOption{},
-		UpdateBucket: []gax.CallOption{},
+		ListBuckets:    []gax.CallOption{},
+		GetBucket:      []gax.CallOption{},
+		CreateBucket:   []gax.CallOption{},
+		UpdateBucket:   []gax.CallOption{},
+		DeleteBucket:   []gax.CallOption{},
+		UndeleteBucket: []gax.CallOption{},
+		ListViews:      []gax.CallOption{},
+		GetView:        []gax.CallOption{},
+		CreateView:     []gax.CallOption{},
+		UpdateView:     []gax.CallOption{},
+		DeleteView:     []gax.CallOption{},
 		ListSinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -248,7 +264,7 @@ func (c *ConfigClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListBuckets lists buckets (Beta).
+// ListBuckets lists buckets.
 func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -289,7 +305,7 @@ func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucke
 	return it
 }
 
-// GetBucket gets a bucket (Beta).
+// GetBucket gets a bucket.
 func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -298,6 +314,24 @@ func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRe
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.configClient.GetBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateBucket creates a bucket that can be used to store log entries. Once a bucket has
+// been created, the region cannot be changed.
+func (c *ConfigClient) CreateBucket(ctx context.Context, req *loggingpb.CreateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateBucket[0:len(c.CallOptions.CreateBucket):len(c.CallOptions.CreateBucket)], opts...)
+	var resp *loggingpb.LogBucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.CreateBucket(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -316,7 +350,6 @@ func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRe
 // will be returned.
 //
 // A buckets region may not be modified after it is created.
-// This method is in Beta.
 func (c *ConfigClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -331,6 +364,143 @@ func (c *ConfigClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBu
 		return nil, err
 	}
 	return resp, nil
+}
+
+// DeleteBucket deletes a bucket.
+// Moves the bucket to the DELETE_REQUESTED state. After 7 days, the
+// bucket will be purged and all logs in the bucket will be permanently
+// deleted.
+func (c *ConfigClient) DeleteBucket(ctx context.Context, req *loggingpb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteBucket[0:len(c.CallOptions.DeleteBucket):len(c.CallOptions.DeleteBucket)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.configClient.DeleteBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// UndeleteBucket undeletes a bucket. A bucket that has been deleted may be undeleted within
+// the grace period of 7 days.
+func (c *ConfigClient) UndeleteBucket(ctx context.Context, req *loggingpb.UndeleteBucketRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UndeleteBucket[0:len(c.CallOptions.UndeleteBucket):len(c.CallOptions.UndeleteBucket)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.configClient.UndeleteBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// ListViews lists views on a bucket.
+func (c *ConfigClient) ListViews(ctx context.Context, req *loggingpb.ListViewsRequest, opts ...gax.CallOption) *LogViewIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListViews[0:len(c.CallOptions.ListViews):len(c.CallOptions.ListViews)], opts...)
+	it := &LogViewIterator{}
+	req = proto.Clone(req).(*loggingpb.ListViewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogView, string, error) {
+		var resp *loggingpb.ListViewsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.configClient.ListViews(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// GetView gets a view.
+func (c *ConfigClient) GetView(ctx context.Context, req *loggingpb.GetViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetView[0:len(c.CallOptions.GetView):len(c.CallOptions.GetView)], opts...)
+	var resp *loggingpb.LogView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.GetView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateView creates a view over logs in a bucket. A bucket may contain a maximum of
+// 50 views.
+func (c *ConfigClient) CreateView(ctx context.Context, req *loggingpb.CreateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateView[0:len(c.CallOptions.CreateView):len(c.CallOptions.CreateView)], opts...)
+	var resp *loggingpb.LogView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.CreateView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateView updates a view. This method replaces the following fields in the existing
+// view with values from the new view: filter.
+func (c *ConfigClient) UpdateView(ctx context.Context, req *loggingpb.UpdateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateView[0:len(c.CallOptions.UpdateView):len(c.CallOptions.UpdateView)], opts...)
+	var resp *loggingpb.LogView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.UpdateView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteView deletes a view from a bucket.
+func (c *ConfigClient) DeleteView(ctx context.Context, req *loggingpb.DeleteViewRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteView[0:len(c.CallOptions.DeleteView):len(c.CallOptions.DeleteView)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.configClient.DeleteView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // ListSinks lists sinks.
@@ -785,6 +955,53 @@ func (it *LogSinkIterator) bufLen() int {
 }
 
 func (it *LogSinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LogViewIterator manages a stream of *loggingpb.LogView.
+type LogViewIterator struct {
+	items    []*loggingpb.LogView
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogView, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LogViewIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LogViewIterator) Next() (*loggingpb.LogView, error) {
+	var item *loggingpb.LogView
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LogViewIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LogViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
