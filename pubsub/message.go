@@ -58,12 +58,12 @@ type Message struct {
 	OrderingKey string
 
 	// ackh handles Ack() or Nack().
-	ackh ackHandler
+	ackh AckHandler
 }
 
 // NewMessage creates a message with a custom ack/nack handler, which should not
 // be nil.
-func NewMessage(ackh ackHandler) *Message {
+func NewMessage(ackh AckHandler) *Message {
 	return &Message{ackh: ackh}
 }
 
@@ -129,9 +129,12 @@ func (m *Message) ackID() string {
 	return ""
 }
 
-// ackHandler implements ack/nack handling.
-type ackHandler interface {
+// AckHandler implements ack/nack handling.
+type AckHandler interface {
+	// OnAck processes a message ack.
 	OnAck()
+
+	// OnNack processes a message nack.
 	OnNack()
 }
 
