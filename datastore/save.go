@@ -55,7 +55,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
 	case civil.Date:
-		p.Value = x.In(time.Now().Location())
+		p.Value = x.In(time.UTC)
 		*props = append(*props, p)
 		return nil
 	case civil.Time:
@@ -73,7 +73,7 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		*props = append(*props, p)
 		return nil
 	case civil.DateTime:
-		p.Value = x.In(time.Now().Location())
+		p.Value = x.In(time.UTC)
 		*props = append(*props, p)
 		return nil
 	default:

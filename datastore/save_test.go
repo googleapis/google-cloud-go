@@ -341,9 +341,8 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 	}
 	timeValNano, _ := time.Parse("15:04:05.000000000", civTimeValNano.String())
 	timeVal, _ := time.Parse("15:04:05", civTimeVal.String())
-	loc := time.Now().Location()
 	dateTimeStr := fmt.Sprintf("%v %v", civDateVal.String(), civTimeVal.String())
-	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", dateTimeStr, loc)
+	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", dateTimeStr, time.UTC)
 
 	cases := []struct {
 		name string
@@ -405,7 +404,7 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			want: []Property{
 				{
 					Name:  "CivDate",
-					Value: civDateVal.In(time.Now().Location()),
+					Value: civDateVal.In(time.UTC),
 				},
 			},
 		},
