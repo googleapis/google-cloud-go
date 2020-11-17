@@ -470,6 +470,13 @@ type PublishResult struct {
 	err      error
 }
 
+// NewPublishResult returns the set() function to enable callers from outside
+// this package to store and call it (e.g. unit tests).
+func NewPublishResult() (*PublishResult, func(string, error)) {
+	result := &PublishResult{ready: make(chan struct{})}
+	return result, result.set
+}
+
 // Ready returns a channel that is closed when the result is ready.
 // When the Ready channel is closed, Get is guaranteed not to block.
 func (r *PublishResult) Ready() <-chan struct{} { return r.ready }
@@ -569,19 +576,16 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
+	start := time.Now()
 	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
 		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
 	} else {
-		start := time.Now()
 		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
 			Topic:    t.name,
 			Messages: pbMsgs,
 		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
-		end := time.Now()
-		stats.Record(ctx,
-			PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
-			PublishedMessages.M(int64(len(bms))))
 	}
+	end := time.Now()
 	if err != nil {
 		t.scheduler.Pause(orderingKey)
 		// Update context with error tag for OpenCensus,
@@ -589,6 +593,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		ctx, _ = tag.New(ctx, tag.Upsert(keyStatus, "ERROR"),
 			tag.Upsert(keyError, err.Error()))
 	}
+	stats.Record(ctx,
+		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
+		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
 		if err != nil {
 			bm.res.set("", err)

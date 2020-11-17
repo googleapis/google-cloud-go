@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 	"google.golang.org/grpc"
@@ -45,7 +46,8 @@ type CursorCallOptions struct {
 
 func defaultCursorClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -61,6 +63,9 @@ func defaultCursorCallOptions() *CursorCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
 					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -73,6 +78,9 @@ func defaultCursorCallOptions() *CursorCallOptions {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
 					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
 				}, gax.Backoff{
 					Initial:    100 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
@@ -89,6 +97,9 @@ func defaultCursorCallOptions() *CursorCallOptions {
 type CursorClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	cursorClient pubsublitepb.CursorServiceClient
@@ -116,13 +127,19 @@ func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CursorClient{
-		connPool:    connPool,
-		CallOptions: defaultCursorCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCursorCallOptions(),
 
 		cursorClient: pubsublitepb.NewCursorServiceClient(connPool),
 	}
@@ -171,6 +188,11 @@ func (c *CursorClient) StreamingCommitCursor(ctx context.Context, opts ...gax.Ca
 
 // CommitCursor updates the committed cursor.
 func (c *CursorClient) CommitCursor(ctx context.Context, req *pubsublitepb.CommitCursorRequest, opts ...gax.CallOption) (*pubsublitepb.CommitCursorResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.CommitCursor[0:len(c.CallOptions.CommitCursor):len(c.CallOptions.CommitCursor)], opts...)
 	var resp *pubsublitepb.CommitCursorResponse

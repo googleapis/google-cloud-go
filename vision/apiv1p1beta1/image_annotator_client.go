@@ -23,6 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
 	"google.golang.org/grpc"
@@ -39,7 +40,8 @@ type ImageAnnotatorCallOptions struct {
 
 func defaultImageAnnotatorClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("vision.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("vision.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -71,6 +73,9 @@ type ImageAnnotatorClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	imageAnnotatorClient visionpb.ImageAnnotatorClient
 
@@ -97,13 +102,19 @@ func NewImageAnnotatorClient(ctx context.Context, opts ...option.ClientOption) (
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ImageAnnotatorClient{
-		connPool:    connPool,
-		CallOptions: defaultImageAnnotatorCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultImageAnnotatorCallOptions(),
 
 		imageAnnotatorClient: visionpb.NewImageAnnotatorClient(connPool),
 	}
@@ -136,6 +147,11 @@ func (c *ImageAnnotatorClient) setGoogleClientInfo(keyval ...string) {
 
 // BatchAnnotateImages run image detection and annotation for a batch of images.
 func (c *ImageAnnotatorClient) BatchAnnotateImages(ctx context.Context, req *visionpb.BatchAnnotateImagesRequest, opts ...gax.CallOption) (*visionpb.BatchAnnotateImagesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.BatchAnnotateImages[0:len(c.CallOptions.BatchAnnotateImages):len(c.CallOptions.BatchAnnotateImages)], opts...)
 	var resp *visionpb.BatchAnnotateImagesResponse

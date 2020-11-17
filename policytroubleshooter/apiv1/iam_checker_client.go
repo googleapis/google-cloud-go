@@ -19,9 +19,11 @@ package policytroubleshooter
 import (
 	"context"
 	"math"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
 	"google.golang.org/grpc"
@@ -37,7 +39,8 @@ type IamCheckerCallOptions struct {
 
 func defaultIamCheckerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("policytroubleshooter.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("policytroubleshooter.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("policytroubleshooter.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -57,6 +60,9 @@ func defaultIamCheckerCallOptions() *IamCheckerCallOptions {
 type IamCheckerClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	iamCheckerClient policytroubleshooterpb.IamCheckerClient
@@ -84,13 +90,19 @@ func NewIamCheckerClient(ctx context.Context, opts ...option.ClientOption) (*Iam
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IamCheckerClient{
-		connPool:    connPool,
-		CallOptions: defaultIamCheckerCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultIamCheckerCallOptions(),
 
 		iamCheckerClient: policytroubleshooterpb.NewIamCheckerClient(connPool),
 	}
@@ -124,6 +136,11 @@ func (c *IamCheckerClient) setGoogleClientInfo(keyval ...string) {
 // TroubleshootIamPolicy checks whether a member has a specific permission for a specific resource,
 // and explains why the member does or does not have that permission.
 func (c *IamCheckerClient) TroubleshootIamPolicy(ctx context.Context, req *policytroubleshooterpb.TroubleshootIamPolicyRequest, opts ...gax.CallOption) (*policytroubleshooterpb.TroubleshootIamPolicyResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.TroubleshootIamPolicy[0:len(c.CallOptions.TroubleshootIamPolicy):len(c.CallOptions.TroubleshootIamPolicy)], opts...)
 	var resp *policytroubleshooterpb.TroubleshootIamPolicyResponse

@@ -21,9 +21,11 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 	"google.golang.org/grpc"
@@ -39,7 +41,8 @@ type EventCallOptions struct {
 
 func defaultEventClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -59,6 +62,9 @@ func defaultEventCallOptions() *EventCallOptions {
 type EventClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	eventClient talentpb.EventServiceClient
@@ -84,13 +90,19 @@ func NewEventClient(ctx context.Context, opts ...option.ClientOption) (*EventCli
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &EventClient{
-		connPool:    connPool,
-		CallOptions: defaultEventCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultEventCallOptions(),
 
 		eventClient: talentpb.NewEventServiceClient(connPool),
 	}
@@ -129,6 +141,11 @@ func (c *EventClient) setGoogleClientInfo(keyval ...string) {
 // more (at https://cloud.google.com/talent-solution/docs/management-tools)
 // about self service tools.
 func (c *EventClient) CreateClientEvent(ctx context.Context, req *talentpb.CreateClientEventRequest, opts ...gax.CallOption) (*talentpb.ClientEvent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateClientEvent[0:len(c.CallOptions.CreateClientEvent):len(c.CallOptions.CreateClientEvent)], opts...)

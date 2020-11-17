@@ -138,7 +138,7 @@ var headersInterceptor = testutil.DefaultHeadersEnforcer()
 
 // NewAdminClient builds a new connected admin client for this environment
 func (e *EmulatedEnv) NewAdminClient() (*AdminClient, error) {
-	o, err := btopt.DefaultClientOptions(e.server.Addr, AdminScope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(e.server.Addr, e.server.Addr, AdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +170,7 @@ func (e *EmulatedEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a new connected data client for this environment
 func (e *EmulatedEnv) NewClient() (*Client, error) {
-	o, err := btopt.DefaultClientOptions(e.server.Addr, Scope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(e.server.Addr, e.server.Addr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}

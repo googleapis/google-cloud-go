@@ -289,16 +289,52 @@ func TestToLogEntryTrace(t *testing.T) {
 			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000", SpanId: "000000000000004a", TraceSampled: true},
 		},
 		{
+			"X-Trace-Context header with blank trace",
+			Entry{
+				HTTPRequest: &HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"/0;o=1"}},
+					},
+				},
+			},
+			logging.LogEntry{TraceSampled: true},
+		},
+		{
 			"X-Trace-Context header with blank span",
 			Entry{
 				HTTPRequest: &HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0;o=0"}},
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
 					},
 				},
 			},
 			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
+		},
+		{
+			"X-Trace-Context header with missing traceSampled aka ?o=*",
+			Entry{
+				HTTPRequest: &HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+					},
+				},
+			},
+			logging.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
+		},
+		{
+			"X-Trace-Context header with all blank fields",
+			Entry{
+				HTTPRequest: &HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {""}},
+					},
+				},
+			},
+			logging.LogEntry{},
 		},
 		{
 			"Invalid X-Trace-Context header but already set TraceID",
@@ -364,7 +400,10 @@ func TestFromHTTPRequest(t *testing.T) {
 		CacheHit:                       true,
 		CacheValidatedWithOriginServer: true,
 	}
-	got := fromHTTPRequest(req)
+	got, err := fromHTTPRequest(req)
+	if err != nil {
+		t.Errorf("got %v", err)
+	}
 	want := &logtypepb.HttpRequest{
 		RequestMethod: "GET",
 
@@ -392,6 +431,15 @@ func TestFromHTTPRequest(t *testing.T) {
 	// doesn't not regress.
 	if _, err := proto.Marshal(got); err != nil {
 		t.Fatalf("Unexpected proto.Marshal error: %v", err)
+	}
+
+	// fromHTTPRequest returns nil if there is no Request property (but does not panic)
+	reqNil := &HTTPRequest{
+		RequestSize: 100,
+	}
+	got, err = fromHTTPRequest(reqNil)
+	if got != nil && err == nil {
+		t.Errorf("got  %+v\nwant %+v", got, want)
 	}
 }
 

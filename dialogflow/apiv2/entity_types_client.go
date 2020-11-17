@@ -30,6 +30,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -56,7 +57,8 @@ type EntityTypesCallOptions struct {
 
 func defaultEntityTypesClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -186,6 +188,9 @@ type EntityTypesClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	entityTypesClient dialogflowpb.EntityTypesClient
 
@@ -215,13 +220,19 @@ func NewEntityTypesClient(ctx context.Context, opts ...option.ClientOption) (*En
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &EntityTypesClient{
-		connPool:    connPool,
-		CallOptions: defaultEntityTypesCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultEntityTypesCallOptions(),
 
 		entityTypesClient: dialogflowpb.NewEntityTypesClient(connPool),
 	}
@@ -305,6 +316,11 @@ func (c *EntityTypesClient) ListEntityTypes(ctx context.Context, req *dialogflow
 
 // GetEntityType retrieves the specified entity type.
 func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb.GetEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetEntityType[0:len(c.CallOptions.GetEntityType):len(c.CallOptions.GetEntityType)], opts...)
@@ -322,6 +338,11 @@ func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb
 
 // CreateEntityType creates an entity type in the specified agent.
 func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateEntityType[0:len(c.CallOptions.CreateEntityType):len(c.CallOptions.CreateEntityType)], opts...)
@@ -339,6 +360,11 @@ func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflo
 
 // UpdateEntityType updates the specified entity type.
 func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entity_type.name", url.QueryEscape(req.GetEntityType().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateEntityType[0:len(c.CallOptions.UpdateEntityType):len(c.CallOptions.UpdateEntityType)], opts...)
@@ -356,6 +382,11 @@ func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflo
 
 // DeleteEntityType deletes the specified entity type.
 func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteEntityType[0:len(c.CallOptions.DeleteEntityType):len(c.CallOptions.DeleteEntityType)], opts...)
@@ -371,6 +402,11 @@ func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflo
 //
 // Operation <response: BatchUpdateEntityTypesResponse>
 func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchUpdateEntityTypes[0:len(c.CallOptions.BatchUpdateEntityTypes):len(c.CallOptions.BatchUpdateEntityTypes)], opts...)
@@ -392,6 +428,11 @@ func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dia
 //
 // Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchDeleteEntityTypes[0:len(c.CallOptions.BatchDeleteEntityTypes):len(c.CallOptions.BatchDeleteEntityTypes)], opts...)
@@ -413,6 +454,11 @@ func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dia
 //
 // Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchCreateEntities[0:len(c.CallOptions.BatchCreateEntities):len(c.CallOptions.BatchCreateEntities)], opts...)
@@ -436,6 +482,11 @@ func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialog
 //
 // Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchUpdateEntities[0:len(c.CallOptions.BatchUpdateEntities):len(c.CallOptions.BatchUpdateEntities)], opts...)
@@ -457,6 +508,11 @@ func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialog
 //
 // Operation <response: google.protobuf.Empty>
 func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchDeleteEntities[0:len(c.CallOptions.BatchDeleteEntities):len(c.CallOptions.BatchDeleteEntities)], opts...)

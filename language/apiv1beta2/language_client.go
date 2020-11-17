@@ -23,6 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
 	"google.golang.org/grpc"
@@ -44,7 +45,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("language.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("language.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("language.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -136,6 +138,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client languagepb.LanguageServiceClient
 
@@ -161,13 +166,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: languagepb.NewLanguageServiceClient(connPool),
 	}
@@ -200,6 +211,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // AnalyzeSentiment analyzes the sentiment of the provided text.
 func (c *Client) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSentimentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AnalyzeSentiment[0:len(c.CallOptions.AnalyzeSentiment):len(c.CallOptions.AnalyzeSentiment)], opts...)
 	var resp *languagepb.AnalyzeSentimentResponse
@@ -218,6 +234,11 @@ func (c *Client) AnalyzeSentiment(ctx context.Context, req *languagepb.AnalyzeSe
 // along with entity types, salience, mentions for each entity, and
 // other properties.
 func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEntitiesRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitiesResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AnalyzeEntities[0:len(c.CallOptions.AnalyzeEntities):len(c.CallOptions.AnalyzeEntities)], opts...)
 	var resp *languagepb.AnalyzeEntitiesResponse
@@ -235,6 +256,11 @@ func (c *Client) AnalyzeEntities(ctx context.Context, req *languagepb.AnalyzeEnt
 // AnalyzeEntitySentiment finds entities, similar to AnalyzeEntities in the text and analyzes
 // sentiment associated with each entity and its mentions.
 func (c *Client) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.AnalyzeEntitySentimentRequest, opts ...gax.CallOption) (*languagepb.AnalyzeEntitySentimentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AnalyzeEntitySentiment[0:len(c.CallOptions.AnalyzeEntitySentiment):len(c.CallOptions.AnalyzeEntitySentiment)], opts...)
 	var resp *languagepb.AnalyzeEntitySentimentResponse
@@ -253,6 +279,11 @@ func (c *Client) AnalyzeEntitySentiment(ctx context.Context, req *languagepb.Ana
 // tokenization along with part-of-speech tags, dependency trees, and other
 // properties.
 func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSyntaxRequest, opts ...gax.CallOption) (*languagepb.AnalyzeSyntaxResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AnalyzeSyntax[0:len(c.CallOptions.AnalyzeSyntax):len(c.CallOptions.AnalyzeSyntax)], opts...)
 	var resp *languagepb.AnalyzeSyntaxResponse
@@ -269,6 +300,11 @@ func (c *Client) AnalyzeSyntax(ctx context.Context, req *languagepb.AnalyzeSynta
 
 // ClassifyText classifies a document into categories.
 func (c *Client) ClassifyText(ctx context.Context, req *languagepb.ClassifyTextRequest, opts ...gax.CallOption) (*languagepb.ClassifyTextResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.ClassifyText[0:len(c.CallOptions.ClassifyText):len(c.CallOptions.ClassifyText)], opts...)
 	var resp *languagepb.ClassifyTextResponse
@@ -286,6 +322,11 @@ func (c *Client) ClassifyText(ctx context.Context, req *languagepb.ClassifyTextR
 // AnnotateText a convenience method that provides all syntax, sentiment, entity, and
 // classification features in one call.
 func (c *Client) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextRequest, opts ...gax.CallOption) (*languagepb.AnnotateTextResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.AnnotateText[0:len(c.CallOptions.AnnotateText):len(c.CallOptions.AnnotateText)], opts...)
 	var resp *languagepb.AnnotateTextResponse

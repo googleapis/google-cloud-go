@@ -40,12 +40,22 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
+const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
+
+// ErrPartiallyUnavailable is returned when some locations (clusters) are
+// unavailable. Both partial results (retrieved from available locations)
+// and the error are returned when this exception occurred.
+type ErrPartiallyUnavailable struct {
+	Locations []string // unavailable locations
+}
+
+func (e ErrPartiallyUnavailable) Error() string {
+	return fmt.Sprintf("Unavailable locations: %v", e.Locations)
+}
 
 // AdminClient is a client type for performing admin operations within a specific instance.
 type AdminClient struct {
@@ -61,7 +71,7 @@ type AdminClient struct {
 
 // NewAdminClient creates a new AdminClient for a given project and instance.
 func NewAdminClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*AdminClient, error) {
-	o, err := btopt.DefaultClientOptions(adminAddr, AdminScope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(adminAddr, mtlsAdminAddr, AdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -594,6 +604,7 @@ func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
+const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
 // These operations can be substantially more dangerous than those provided by AdminClient.
@@ -610,7 +621,7 @@ type InstanceAdminClient struct {
 
 // NewInstanceAdminClient creates a new InstanceAdminClient for a given project.
 func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.ClientOption) (*InstanceAdminClient, error) {
-	o, err := btopt.DefaultClientOptions(instanceAdminAddr, InstanceAdminScope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(instanceAdminAddr, mtlsInstanceAdminAddr, InstanceAdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -865,7 +876,10 @@ func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceID s
 	return err
 }
 
-// Instances returns a list of instances in the project.
+// Instances returns a list of instances in the project. If any location
+// (cluster) is unavailable due to some transient conditions, Instances
+// returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
 func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListInstancesRequest{
@@ -879,11 +893,6 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 	}, retryOptions...)
 	if err != nil {
 		return nil, err
-	}
-	if len(res.FailedLocations) > 0 {
-		// We don't have a good way to return a partial result in the face of some zones being unavailable.
-		// Fail the entire request.
-		return nil, status.Errorf(codes.Unavailable, "Failed locations: %v", res.FailedLocations)
 	}
 
 	var is []*InstanceInfo
@@ -899,6 +908,11 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 			InstanceType:  InstanceType(i.Type),
 			Labels:        i.Labels,
 		})
+	}
+	if len(res.FailedLocations) > 0 {
+		// Return partial results and an error in
+		// case of some locations are unavailable.
+		return is, ErrPartiallyUnavailable{res.FailedLocations}
 	}
 	return is, nil
 }

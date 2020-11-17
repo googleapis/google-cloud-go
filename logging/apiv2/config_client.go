@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"google.golang.org/grpc"
@@ -40,7 +41,15 @@ var newConfigClientHook clientHook
 type ConfigCallOptions struct {
 	ListBuckets        []gax.CallOption
 	GetBucket          []gax.CallOption
+	CreateBucket       []gax.CallOption
 	UpdateBucket       []gax.CallOption
+	DeleteBucket       []gax.CallOption
+	UndeleteBucket     []gax.CallOption
+	ListViews          []gax.CallOption
+	GetView            []gax.CallOption
+	CreateView         []gax.CallOption
+	UpdateView         []gax.CallOption
+	DeleteView         []gax.CallOption
 	ListSinks          []gax.CallOption
 	GetSink            []gax.CallOption
 	CreateSink         []gax.CallOption
@@ -57,7 +66,8 @@ type ConfigCallOptions struct {
 
 func defaultConfigClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -67,9 +77,17 @@ func defaultConfigClientOptions() []option.ClientOption {
 
 func defaultConfigCallOptions() *ConfigCallOptions {
 	return &ConfigCallOptions{
-		ListBuckets:  []gax.CallOption{},
-		GetBucket:    []gax.CallOption{},
-		UpdateBucket: []gax.CallOption{},
+		ListBuckets:    []gax.CallOption{},
+		GetBucket:      []gax.CallOption{},
+		CreateBucket:   []gax.CallOption{},
+		UpdateBucket:   []gax.CallOption{},
+		DeleteBucket:   []gax.CallOption{},
+		UndeleteBucket: []gax.CallOption{},
+		ListViews:      []gax.CallOption{},
+		GetView:        []gax.CallOption{},
+		CreateView:     []gax.CallOption{},
+		UpdateView:     []gax.CallOption{},
+		DeleteView:     []gax.CallOption{},
 		ListSinks: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -176,6 +194,9 @@ type ConfigClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	configClient loggingpb.ConfigServiceV2Client
 
@@ -200,13 +221,19 @@ func NewConfigClient(ctx context.Context, opts ...option.ClientOption) (*ConfigC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &ConfigClient{
-		connPool:    connPool,
-		CallOptions: defaultConfigCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultConfigCallOptions(),
 
 		configClient: loggingpb.NewConfigServiceV2Client(connPool),
 	}
@@ -237,7 +264,7 @@ func (c *ConfigClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListBuckets lists buckets (Beta).
+// ListBuckets lists buckets.
 func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucketsRequest, opts ...gax.CallOption) *LogBucketIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -278,7 +305,7 @@ func (c *ConfigClient) ListBuckets(ctx context.Context, req *loggingpb.ListBucke
 	return it
 }
 
-// GetBucket gets a bucket (Beta).
+// GetBucket gets a bucket.
 func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -287,6 +314,24 @@ func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRe
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.configClient.GetBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateBucket creates a bucket that can be used to store log entries. Once a bucket has
+// been created, the region cannot be changed.
+func (c *ConfigClient) CreateBucket(ctx context.Context, req *loggingpb.CreateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateBucket[0:len(c.CallOptions.CreateBucket):len(c.CallOptions.CreateBucket)], opts...)
+	var resp *loggingpb.LogBucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.CreateBucket(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
@@ -305,7 +350,6 @@ func (c *ConfigClient) GetBucket(ctx context.Context, req *loggingpb.GetBucketRe
 // will be returned.
 //
 // A buckets region may not be modified after it is created.
-// This method is in Beta.
 func (c *ConfigClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBucketRequest, opts ...gax.CallOption) (*loggingpb.LogBucket, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -320,6 +364,143 @@ func (c *ConfigClient) UpdateBucket(ctx context.Context, req *loggingpb.UpdateBu
 		return nil, err
 	}
 	return resp, nil
+}
+
+// DeleteBucket deletes a bucket.
+// Moves the bucket to the DELETE_REQUESTED state. After 7 days, the
+// bucket will be purged and all logs in the bucket will be permanently
+// deleted.
+func (c *ConfigClient) DeleteBucket(ctx context.Context, req *loggingpb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteBucket[0:len(c.CallOptions.DeleteBucket):len(c.CallOptions.DeleteBucket)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.configClient.DeleteBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// UndeleteBucket undeletes a bucket. A bucket that has been deleted may be undeleted within
+// the grace period of 7 days.
+func (c *ConfigClient) UndeleteBucket(ctx context.Context, req *loggingpb.UndeleteBucketRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UndeleteBucket[0:len(c.CallOptions.UndeleteBucket):len(c.CallOptions.UndeleteBucket)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.configClient.UndeleteBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// ListViews lists views on a bucket.
+func (c *ConfigClient) ListViews(ctx context.Context, req *loggingpb.ListViewsRequest, opts ...gax.CallOption) *LogViewIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListViews[0:len(c.CallOptions.ListViews):len(c.CallOptions.ListViews)], opts...)
+	it := &LogViewIterator{}
+	req = proto.Clone(req).(*loggingpb.ListViewsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogView, string, error) {
+		var resp *loggingpb.ListViewsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.configClient.ListViews(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetViews(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// GetView gets a view.
+func (c *ConfigClient) GetView(ctx context.Context, req *loggingpb.GetViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetView[0:len(c.CallOptions.GetView):len(c.CallOptions.GetView)], opts...)
+	var resp *loggingpb.LogView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.GetView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateView creates a view over logs in a bucket. A bucket may contain a maximum of
+// 50 views.
+func (c *ConfigClient) CreateView(ctx context.Context, req *loggingpb.CreateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateView[0:len(c.CallOptions.CreateView):len(c.CallOptions.CreateView)], opts...)
+	var resp *loggingpb.LogView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.CreateView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateView updates a view. This method replaces the following fields in the existing
+// view with values from the new view: filter.
+func (c *ConfigClient) UpdateView(ctx context.Context, req *loggingpb.UpdateViewRequest, opts ...gax.CallOption) (*loggingpb.LogView, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateView[0:len(c.CallOptions.UpdateView):len(c.CallOptions.UpdateView)], opts...)
+	var resp *loggingpb.LogView
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.configClient.UpdateView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteView deletes a view from a bucket.
+func (c *ConfigClient) DeleteView(ctx context.Context, req *loggingpb.DeleteViewRequest, opts ...gax.CallOption) error {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteView[0:len(c.CallOptions.DeleteView):len(c.CallOptions.DeleteView)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.configClient.DeleteView(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
 }
 
 // ListSinks lists sinks.
@@ -365,6 +546,11 @@ func (c *ConfigClient) ListSinks(ctx context.Context, req *loggingpb.ListSinksRe
 
 // GetSink gets a sink.
 func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSink[0:len(c.CallOptions.GetSink):len(c.CallOptions.GetSink)], opts...)
@@ -385,6 +571,11 @@ func (c *ConfigClient) GetSink(ctx context.Context, req *loggingpb.GetSinkReques
 // writer_identity is not permitted to write to the destination. A sink can
 // export log entries only from the resource owning the sink.
 func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateSink[0:len(c.CallOptions.CreateSink):len(c.CallOptions.CreateSink)], opts...)
@@ -406,6 +597,11 @@ func (c *ConfigClient) CreateSink(ctx context.Context, req *loggingpb.CreateSink
 // The updated sink might also have a new writer_identity; see the
 // unique_writer_identity field.
 func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSinkRequest, opts ...gax.CallOption) (*loggingpb.LogSink, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateSink[0:len(c.CallOptions.UpdateSink):len(c.CallOptions.UpdateSink)], opts...)
@@ -424,6 +620,11 @@ func (c *ConfigClient) UpdateSink(ctx context.Context, req *loggingpb.UpdateSink
 // DeleteSink deletes a sink. If the sink has a unique writer_identity, then that
 // service account is also deleted.
 func (c *ConfigClient) DeleteSink(ctx context.Context, req *loggingpb.DeleteSinkRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "sink_name", url.QueryEscape(req.GetSinkName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteSink[0:len(c.CallOptions.DeleteSink):len(c.CallOptions.DeleteSink)], opts...)
@@ -478,6 +679,11 @@ func (c *ConfigClient) ListExclusions(ctx context.Context, req *loggingpb.ListEx
 
 // GetExclusion gets the description of an exclusion.
 func (c *ConfigClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetExclusion[0:len(c.CallOptions.GetExclusion):len(c.CallOptions.GetExclusion)], opts...)
@@ -497,6 +703,11 @@ func (c *ConfigClient) GetExclusion(ctx context.Context, req *loggingpb.GetExclu
 // Only log entries belonging to that resource can be excluded.
 // You can have up to 10 exclusions in a resource.
 func (c *ConfigClient) CreateExclusion(ctx context.Context, req *loggingpb.CreateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateExclusion[0:len(c.CallOptions.CreateExclusion):len(c.CallOptions.CreateExclusion)], opts...)
@@ -514,6 +725,11 @@ func (c *ConfigClient) CreateExclusion(ctx context.Context, req *loggingpb.Creat
 
 // UpdateExclusion changes one or more properties of an existing exclusion.
 func (c *ConfigClient) UpdateExclusion(ctx context.Context, req *loggingpb.UpdateExclusionRequest, opts ...gax.CallOption) (*loggingpb.LogExclusion, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 120000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateExclusion[0:len(c.CallOptions.UpdateExclusion):len(c.CallOptions.UpdateExclusion)], opts...)
@@ -531,6 +747,11 @@ func (c *ConfigClient) UpdateExclusion(ctx context.Context, req *loggingpb.Updat
 
 // DeleteExclusion deletes an exclusion.
 func (c *ConfigClient) DeleteExclusion(ctx context.Context, req *loggingpb.DeleteExclusionRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteExclusion[0:len(c.CallOptions.DeleteExclusion):len(c.CallOptions.DeleteExclusion)], opts...)
@@ -734,6 +955,53 @@ func (it *LogSinkIterator) bufLen() int {
 }
 
 func (it *LogSinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// LogViewIterator manages a stream of *loggingpb.LogView.
+type LogViewIterator struct {
+	items    []*loggingpb.LogView
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*loggingpb.LogView, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *LogViewIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *LogViewIterator) Next() (*loggingpb.LogView, error) {
+	var item *loggingpb.LogView
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *LogViewIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *LogViewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

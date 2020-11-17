@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -53,7 +54,8 @@ type TranslationCallOptions struct {
 
 func defaultTranslationClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("translate.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("translate.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("translate.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -125,6 +127,9 @@ type TranslationClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	translationClient translatepb.TranslationServiceClient
 
@@ -154,13 +159,19 @@ func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*Tr
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &TranslationClient{
-		connPool:    connPool,
-		CallOptions: defaultTranslationCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultTranslationCallOptions(),
 
 		translationClient: translatepb.NewTranslationServiceClient(connPool),
 	}
@@ -203,6 +214,11 @@ func (c *TranslationClient) setGoogleClientInfo(keyval ...string) {
 
 // TranslateText translates input text and returns translated text.
 func (c *TranslationClient) TranslateText(ctx context.Context, req *translatepb.TranslateTextRequest, opts ...gax.CallOption) (*translatepb.TranslateTextResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.TranslateText[0:len(c.CallOptions.TranslateText):len(c.CallOptions.TranslateText)], opts...)
@@ -220,6 +236,11 @@ func (c *TranslationClient) TranslateText(ctx context.Context, req *translatepb.
 
 // DetectLanguage detects the language of text within a request.
 func (c *TranslationClient) DetectLanguage(ctx context.Context, req *translatepb.DetectLanguageRequest, opts ...gax.CallOption) (*translatepb.DetectLanguageResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetectLanguage[0:len(c.CallOptions.DetectLanguage):len(c.CallOptions.DetectLanguage)], opts...)
@@ -237,6 +258,11 @@ func (c *TranslationClient) DetectLanguage(ctx context.Context, req *translatepb
 
 // GetSupportedLanguages returns a list of supported languages for translation.
 func (c *TranslationClient) GetSupportedLanguages(ctx context.Context, req *translatepb.GetSupportedLanguagesRequest, opts ...gax.CallOption) (*translatepb.SupportedLanguages, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetSupportedLanguages[0:len(c.CallOptions.GetSupportedLanguages):len(c.CallOptions.GetSupportedLanguages)], opts...)
@@ -260,6 +286,11 @@ func (c *TranslationClient) GetSupportedLanguages(ctx context.Context, req *tran
 // This call returns immediately and you can
 // use google.longrunning.Operation.name (at http://google.longrunning.Operation.name) to poll the status of the call.
 func (c *TranslationClient) BatchTranslateText(ctx context.Context, req *translatepb.BatchTranslateTextRequest, opts ...gax.CallOption) (*BatchTranslateTextOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.BatchTranslateText[0:len(c.CallOptions.BatchTranslateText):len(c.CallOptions.BatchTranslateText)], opts...)
@@ -280,6 +311,11 @@ func (c *TranslationClient) BatchTranslateText(ctx context.Context, req *transla
 // CreateGlossary creates a glossary and returns the long-running operation. Returns
 // NOT_FOUND, if the project doesn’t exist.
 func (c *TranslationClient) CreateGlossary(ctx context.Context, req *translatepb.CreateGlossaryRequest, opts ...gax.CallOption) (*CreateGlossaryOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateGlossary[0:len(c.CallOptions.CreateGlossary):len(c.CallOptions.CreateGlossary)], opts...)
@@ -342,6 +378,11 @@ func (c *TranslationClient) ListGlossaries(ctx context.Context, req *translatepb
 // GetGlossary gets a glossary. Returns NOT_FOUND, if the glossary doesn’t
 // exist.
 func (c *TranslationClient) GetGlossary(ctx context.Context, req *translatepb.GetGlossaryRequest, opts ...gax.CallOption) (*translatepb.Glossary, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetGlossary[0:len(c.CallOptions.GetGlossary):len(c.CallOptions.GetGlossary)], opts...)
@@ -361,6 +402,11 @@ func (c *TranslationClient) GetGlossary(ctx context.Context, req *translatepb.Ge
 // if the glossary isn’t created yet.
 // Returns NOT_FOUND, if the glossary doesn’t exist.
 func (c *TranslationClient) DeleteGlossary(ctx context.Context, req *translatepb.DeleteGlossaryRequest, opts ...gax.CallOption) (*DeleteGlossaryOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteGlossary[0:len(c.CallOptions.DeleteGlossary):len(c.CallOptions.DeleteGlossary)], opts...)

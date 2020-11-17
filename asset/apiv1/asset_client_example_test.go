@@ -249,7 +249,7 @@ func ExampleClient_AnalyzeIamPolicy() {
 	_ = resp
 }
 
-func ExampleClient_ExportIamPolicyAnalysis() {
+func ExampleClient_AnalyzeIamPolicyLongrunning() {
 	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 
 	ctx := context.Background()
@@ -258,10 +258,10 @@ func ExampleClient_ExportIamPolicyAnalysis() {
 		// TODO: Handle error.
 	}
 
-	req := &assetpb.ExportIamPolicyAnalysisRequest{
+	req := &assetpb.AnalyzeIamPolicyLongrunningRequest{
 		// TODO: Fill request struct fields.
 	}
-	op, err := c.ExportIamPolicyAnalysis(ctx, req)
+	op, err := c.AnalyzeIamPolicyLongrunning(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

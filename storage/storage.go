@@ -43,6 +43,7 @@ import (
 	"cloud.google.com/go/internal/version"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
 	htransport "google.golang.org/api/transport/http"
 )
@@ -105,41 +106,48 @@ type Client struct {
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var host, readHost, scheme string
 
+	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
+	// since raw.NewService configures the correct default endpoints when initializing the
+	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
+	// access the http client directly to make requests, so we create the client manually
+	// here so it can be re-used by both reader.go and raw.NewService. This means we need to
+	// manually configure the default endpoint options on the http client. Furthermore, we
+	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
 	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		scheme = "https"
 		readHost = "storage.googleapis.com"
 
 		// Prepend default options to avoid overriding options passed by the user.
 		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
+
+		opts = append(opts, internaloption.WithDefaultEndpoint("https://storage.googleapis.com/storage/v1/"))
+		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
 	} else {
 		scheme = "http"
 		readHost = host
 
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
+
+		opts = append(opts, internaloption.WithDefaultEndpoint(host))
+		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(host))
 	}
 
+	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
 	hc, ep, err := htransport.NewClient(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
-	rawService, err := raw.NewService(ctx, option.WithHTTPClient(hc))
+	// RawService should be created with the chosen endpoint to take account of user override.
+	rawService, err := raw.NewService(ctx, option.WithEndpoint(ep), option.WithHTTPClient(hc))
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
-	if ep == "" {
-		// Override the default value for BasePath from the raw client.
-		// TODO: remove when the raw client uses this endpoint as its default (~end of 2020)
-		rawService.BasePath = "https://storage.googleapis.com/storage/v1/"
-	} else {
-		// If the endpoint has been set explicitly, use this for the BasePath
-		// as well as readHost
-		rawService.BasePath = ep
-		u, err := url.Parse(ep)
-		if err != nil {
-			return nil, fmt.Errorf("supplied endpoint %v is not valid: %v", ep, err)
-		}
-		readHost = u.Host
+	// Update readHost with the chosen endpoint.
+	u, err := url.Parse(ep)
+	if err != nil {
+		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
+	readHost = u.Host
 
 	return &Client{
 		hc:       hc,
@@ -587,8 +595,10 @@ func signedURLV4(bucket, name string, opts *SignedURLOptions, now time.Time) (st
 	for k, v := range opts.QueryParameters {
 		canonicalQueryString[k] = append(canonicalQueryString[k], v...)
 	}
-
-	fmt.Fprintf(buf, "%s\n", canonicalQueryString.Encode())
+	// url.Values.Encode escaping is correct, except that a space must be replaced
+	// by `%20` rather than `+`.
+	escapedQuery := strings.Replace(canonicalQueryString.Encode(), "+", "%20", -1)
+	fmt.Fprintf(buf, "%s\n", escapedQuery)
 
 	// Fill in the hostname based on the desired URL style.
 	u.Host = opts.Style.host(bucket)
@@ -872,6 +882,10 @@ func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (
 		attrs.TemporaryHold = optional.ToBool(uattrs.TemporaryHold)
 		forceSendFields = append(forceSendFields, "TemporaryHold")
 	}
+	if !uattrs.CustomTime.IsZero() {
+		attrs.CustomTime = uattrs.CustomTime
+		forceSendFields = append(forceSendFields, "CustomTime")
+	}
 	if uattrs.Metadata != nil {
 		attrs.Metadata = uattrs.Metadata
 		if len(attrs.Metadata) == 0 {
@@ -944,6 +958,7 @@ type ObjectAttrsToUpdate struct {
 	ContentEncoding    optional.String
 	ContentDisposition optional.String
 	CacheControl       optional.String
+	CustomTime         time.Time
 	Metadata           map[string]string // set to map[string]string{} to delete
 	ACL                []ACLRule
 
@@ -1051,6 +1066,10 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 	if !o.RetentionExpirationTime.IsZero() {
 		ret = o.RetentionExpirationTime.Format(time.RFC3339)
 	}
+	var ct string
+	if !o.CustomTime.IsZero() {
+		ct = o.CustomTime.Format(time.RFC3339)
+	}
 	return &raw.Object{
 		Bucket:                  bucket,
 		Name:                    o.Name,
@@ -1065,6 +1084,7 @@ func (o *ObjectAttrs) toRawObject(bucket string) *raw.Object {
 		StorageClass:            o.StorageClass,
 		Acl:                     toRawObjectACL(o.ACL),
 		Metadata:                o.Metadata,
+		CustomTime:              ct,
 	}
 }
 
@@ -1203,6 +1223,14 @@ type ObjectAttrs struct {
 	// Etag is the HTTP/1.1 Entity tag for the object.
 	// This field is read-only.
 	Etag string
+
+	// A user-specified timestamp which can be applied to an object. This is
+	// typically set in order to use the CustomTimeBefore and DaysSinceCustomTime
+	// LifecycleConditions to manage object lifecycles.
+	//
+	// CustomTime cannot be removed once set on an object. It can be updated to a
+	// later value but not to an earlier one.
+	CustomTime time.Time
 }
 
 // convertTime converts a time in RFC3339 format to time.Time.
@@ -1256,6 +1284,7 @@ func newObject(o *raw.Object) *ObjectAttrs {
 		Deleted:                 convertTime(o.TimeDeleted),
 		Updated:                 convertTime(o.Updated),
 		Etag:                    o.Etag,
+		CustomTime:              convertTime(o.CustomTime),
 	}
 }
 
@@ -1344,6 +1373,7 @@ var attrToFieldMap = map[string]string{
 	"Deleted":                 "timeDeleted",
 	"Updated":                 "updated",
 	"Etag":                    "etag",
+	"CustomTime":              "customTime",
 }
 
 // SetAttrSelection makes the query populate only specific attributes of
@@ -1366,7 +1396,7 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 
 	if len(fieldSet) > 0 {
 		var b bytes.Buffer
-		b.WriteString("items(")
+		b.WriteString("prefixes,items(")
 		first := true
 		for field := range fieldSet {
 			if !first {

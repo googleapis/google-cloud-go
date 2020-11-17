@@ -109,6 +109,28 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*
 	return bqToJob(res, c)
 }
 
+// runQuery invokes the optimized query path.
+// Due to differences in options it supports, it cannot be used for all existing
+// jobs.insert requests that are query jobs.
+func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*bq.QueryResponse, error) {
+	call := c.bqs.Jobs.Query(c.projectID, queryRequest)
+	setClientHeader(call.Header())
+
+	var res *bq.QueryResponse
+	var err error
+	invoke := func() error {
+		res, err = call.Do()
+		return err
+	}
+
+	// We control request ID, so we can always runWithRetry.
+	err = runWithRetry(ctx, invoke)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
 // Convert a number of milliseconds since the Unix epoch to a time.Time.
 // Treat an input of zero specially: convert it to the zero time,
 // rather than the start of the epoch.
@@ -144,6 +166,14 @@ func runWithRetry(ctx context.Context, call func() error) error {
 // retryable; these are returned by systems between the client and the BigQuery
 // service.
 func retryableError(err error) bool {
+	// Special case due to http2: https://github.com/googleapis/google-cloud-go/issues/1793
+	// Due to Go's default being higher for streams-per-connection than is accepted by the
+	// BQ backend, it's possible to get streams refused immediately after a connection is
+	// started but before we receive SETTINGS frame from the backend.  This generally only
+	// happens when we try to enqueue > 100 requests onto a newly initiated connection.
+	if err.Error() == "http2: stream closed" {
+		return true
+	}
 	e, ok := err.(*googleapi.Error)
 	if !ok {
 		return false

@@ -253,9 +253,9 @@ it as well, and call its Run method.
     // Poll the job for completion if desired, as above.
 
 To upload, first define a type that implements the ValueSaver interface, which has a single method named Save.
-Then create an Uploader, and call its Put method with a slice of values.
+Then create an Inserter, and call its Put method with a slice of values.
 
-    u := table.Uploader()
+    u := table.Inserter()
     // Item implements the ValueSaver interface.
     items := []*Item{
         {Name: "n1", Size: 32.6, Count: 7},
@@ -285,6 +285,9 @@ directly and the schema will be inferred:
         // TODO: Handle error.
     }
 
+BigQuery allows for higher throughput when omitting insertion IDs.  To enable this,
+specify the sentinel `NoDedupeID` value for the insertion ID when implementing a ValueSaver.
+
 Extracting
 
 If you've been following so far, extracting data from a BigQuery table
@@ -298,11 +301,16 @@ Extractor, then optionally configure it, and lastly call its Run method.
 
 Errors
 
-Errors returned by this client are often of the type [`googleapi.Error`](https://godoc.org/google.golang.org/api/googleapi#Error).
-These errors can be introspected for more information by type asserting to the richer `googleapi.Error` type. For example:
+Errors returned by this client are often of the type googleapi.Error: https://godoc.org/google.golang.org/api/googleapi#Error
+
+These errors can be introspected for more information by type asserting to the richer *googleapi.Error type. For example:
 
 	if e, ok := err.(*googleapi.Error); ok {
 		  if e.Code = 409 { ... }
-	}
+    }
+
+In some cases, your client may received unstructured googleapi.Error error responses.  In such cases, it is likely that
+you have exceeded BigQuery request limits, documented at: https://cloud.google.com/bigquery/quotas
+
 */
 package bigquery // import "cloud.google.com/go/bigquery"

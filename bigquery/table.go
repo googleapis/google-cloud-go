@@ -73,7 +73,7 @@ type TableMetadata struct {
 	// time partitioning or range partitioning can be specified.
 	TimePartitioning *TimePartitioning
 
-	// It non-nil, the table is partitioned by integer range.  Only one of
+	// If non-nil, the table is partitioned by integer range.  Only one of
 	// time partitioning or range partitioning can be specified.
 	RangePartitioning *RangePartitioning
 
@@ -232,12 +232,19 @@ const (
 
 	// HourPartitioningType uses an hour-based interval for time partitioning.
 	HourPartitioningType TimePartitioningType = "HOUR"
+
+	// MonthPartitioningType uses a month-based interval for time partitioning.
+	MonthPartitioningType TimePartitioningType = "MONTH"
+
+	// YearPartitioningType uses a year-based interval for time partitioning.
+	YearPartitioningType TimePartitioningType = "YEAR"
 )
 
 // TimePartitioning describes the time-based date partitioning on a table.
 // For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables.
 type TimePartitioning struct {
-	// Defines the partition interval type.  Supported values are "DAY" or "HOUR".
+	// Defines the partition interval type.  Supported values are "HOUR", "DAY", "MONTH", and "YEAR".
+	// When the interval type is not specified, default behavior is DAY.
 	Type TimePartitioningType
 
 	// The amount of time to keep the storage for a partition.
@@ -603,9 +610,13 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
-	setClientHeader(req.Header())
-	return req.Do()
+	call := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
+	setClientHeader(call.Header())
+
+	return runWithRetry(ctx, func() (err error) {
+		err = call.Do()
+		return err
+	})
 }
 
 // Read fetches the contents of the table.
