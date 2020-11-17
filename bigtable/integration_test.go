@@ -2047,9 +2047,10 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Create backup
+	backupName := "mybackup"
 	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
 
-	if err = adminClient.CreateBackup(ctx, table, cluster, "mybackup", time.Now().Add(8*time.Hour)); err != nil {
+	if err = adminClient.CreateBackup(ctx, table, cluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
@@ -2061,7 +2062,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	if got, want := len(backups), 1; got != want {
 		t.Fatalf("Listing backup count: %d, want: %d", got, want)
 	}
-	if got, want := backups[0].Name, "mybackup"; got != want {
+	if got, want := backups[0].Name, backupName; got != want {
 		t.Fatalf("Backup name: %s, want: %s", got, want)
 	}
 	if got, want := backups[0].SourceTable, table; got != want {
@@ -2072,7 +2073,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	backup, err := adminClient.BackupInfo(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
@@ -2083,9 +2084,9 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	// Mock setup.
 	policy := &v1.Policy{}
 	role := "roles/bigtable.viewer"
-	members := []string{"user:user1@test.com"}
+	members := []string{"serviceAccount:service_acc1@test.com", "user:user1@test.com"}
 	policy.Version = 1
-	policy.Etag = []byte("my-etag")
+	policy.Etag = []byte("etag_v1")
 	policy.Bindings = append(policy.Bindings, &v1.Binding{
 		Role:    role,
 		Members: members,
@@ -2098,7 +2099,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		Permissions: permissions,
 	}
 	// Set backup policy.
-	newPolicy, err := adminClient.SetIAMPolicy(ctx, cluster, "mybackup", policy)
+	newPolicy, err := adminClient.SetIAMPolicy(ctx, cluster, backupName, policy)
 	if err != nil {
 		t.Fatalf("SetIAMPolicy: %v", err)
 	}
@@ -2106,31 +2107,31 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("SetIAMPolicy: got - want +\n%s", diff)
 	}
 	// Get backup policy.
-	got, err := adminClient.GetIAMPolicy(ctx, cluster, "mybackup")
+	gotPolicy, err := adminClient.GetIAMPolicy(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("GetIAMPolicy: %v", err)
 	}
-	if diff := testutil.Diff(got, policy); diff != "" {
+	if diff := testutil.Diff(gotPolicy, policy); diff != "" {
 		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
 	}
 	// Test backup permissions.
-	p, err := adminClient.TestIAMPermissions(ctx, cluster, "mybackup", permissions)
+	gotPermissions, err := adminClient.TestIAMPermissions(ctx, cluster, backupName, permissions)
 	if err != nil {
 		t.Fatalf("TestIAMPermissions: %v", err)
 	}
-	if !testutil.Equal(p, permissions) {
-		t.Fatalf("TestIAMPermissions: got %#v\nwant %#v", p, permissions)
+	if !testutil.Equal(gotPermissions, permissions) {
+		t.Fatalf("TestIAMPermissions: got %#v\nwant %#v", gotPermissions, permissions)
 	}
 	// Update backup
 	adminClient.tClient = tClient
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
+	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
@@ -2143,7 +2144,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	// Restore backup
 	restoredTable := table + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, backupName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
@@ -2151,7 +2152,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, cluster, "mybackup"); err != nil {
+	if err = adminClient.DeleteBackup(ctx, cluster, backupName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
 	backups, err = list(cluster)
