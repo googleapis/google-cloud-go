@@ -38,6 +38,7 @@ import (
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
+	"google.golang.org/grpc"
 )
 
 var (
@@ -2104,7 +2105,49 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("BackupInfo: %v, want: %v", got, want)
 	}
 
+	// Mock setup.
+	policy := &v1.Policy{}
+	role := "roles/bigtable.viewer"
+	members := []string{"user:user1@test.com"}
+	policy.Version = 1
+	policy.Etag = []byte("my-etag")
+	policy.Bindings = append(policy.Bindings, &v1.Binding{
+		Role:    role,
+		Members: members,
+	})
+	permissions := []string{"bigtable.backups.create", "bigtable.backups.list"}
+
+	tClient := adminClient.tClient
+	adminClient.tClient = &adminClientMock{
+		Policy:      policy,
+		Permissions: permissions,
+	}
+	// Set backup policy.
+	newPolicy, err := adminClient.SetIAMPolicy(ctx, cluster, "mybackup", policy)
+	if err != nil {
+		t.Fatalf("SetIAMPolicy: %v", err)
+	}
+	if diff := testutil.Diff(newPolicy, policy); diff != "" {
+		t.Fatalf("SetIAMPolicy: got - want +\n%s", diff)
+	}
+	// Get backup policy.
+	got, err := adminClient.GetIAMPolicy(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("GetIAMPolicy: %v", err)
+	}
+	if diff := testutil.Diff(got, policy); diff != "" {
+		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
+	}
+	// Test backup permissions.
+	p, err := adminClient.TestIAMPermissions(ctx, cluster, "mybackup", permissions)
+	if err != nil {
+		t.Fatalf("TestIAMPermissions: %v", err)
+	}
+	if !testutil.Equal(p, permissions) {
+		t.Fatalf("TestIAMPermissions: got %#v\nwant %#v", p, permissions)
+	}
 	// Update backup
+	adminClient.tClient = tClient
 	newExpireTime := time.Now().Add(10 * time.Hour)
 	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
 	if err != nil {
@@ -2130,36 +2173,6 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
-	}
-	// Set backup policy.
-	// Get Etag first from GetIAMPolicy.
-	gotPolicy, err := adminClient.GetIAMPolicy(ctx, cluster, "mybackup")
-	if err != nil {
-		t.Fatalf("GetIAMPolicy: %v", err)
-	}
-	policy := &v1.Policy{}
-	role := "roles/bigtable.viewer"
-	members := []string{"user:user1@test.com"}
-	policy.Version = 1
-	policy.Etag = gotPolicy.GetEtag()
-	policy.Bindings = append(policy.Bindings, &v1.Binding{
-		Role:    role,
-		Members: members,
-	})
-	newPolicy, err := adminClient.SetIAMPolicy(ctx, cluster, "mybackup", policy)
-	if err != nil {
-		t.Fatalf("SetIAMPolicy: %v", err)
-	}
-	if diff := testutil.Diff(newPolicy, policy); diff != "" {
-		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
-	}
-	// Get backup policy.
-	got, err := adminClient.GetIAMPolicy(ctx, cluster, "mybackup")
-	if err != nil {
-		t.Fatalf("GetIAMPolicy: %v", err)
-	}
-	if diff := testutil.Diff(got, policy); diff != "" {
-		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
 	}
 
 	// Delete backup
@@ -2267,4 +2280,22 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)
 	}
+}
+
+type adminClientMock struct {
+	btapb.BigtableTableAdminClient
+	Policy      *v1.Policy
+	Permissions []string
+}
+
+func (acm *adminClientMock) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+	return acm.Policy, nil
+}
+
+func (acm *adminClientMock) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+	return acm.Policy, nil
+}
+
+func (acm *adminClientMock) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
+	return &v1.TestIamPermissionsResponse{Permissions: acm.Permissions}, nil
 }
