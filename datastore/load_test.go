@@ -501,7 +501,7 @@ func TestLoadToInterface(t *testing.T) {
 				Date: civil.Date{
 					Year:  2020,
 					Month: 11,
-					Day:   16,
+					Day:   15,
 				},
 			},
 		},
@@ -524,7 +524,7 @@ func TestLoadToInterface(t *testing.T) {
 						Day:   16,
 					},
 					Time: civil.Time{
-						Hour:   8,
+						Hour:   5,
 						Minute: 30,
 					},
 				},
@@ -543,7 +543,7 @@ func TestLoadToInterface(t *testing.T) {
 			},
 			want: &struct{ Time civil.Time }{
 				Time: civil.Time{
-					Hour:   8,
+					Hour:   5,
 					Minute: 30,
 				},
 			},
