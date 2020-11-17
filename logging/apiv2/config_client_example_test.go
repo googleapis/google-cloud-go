@@ -81,6 +81,26 @@ func ExampleConfigClient_GetBucket() {
 	_ = resp
 }
 
+func ExampleConfigClient_CreateBucket() {
+	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.CreateBucketRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleConfigClient_UpdateBucket() {
 	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 
@@ -99,6 +119,141 @@ func ExampleConfigClient_UpdateBucket() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleConfigClient_DeleteBucket() {
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.DeleteBucketRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleConfigClient_UndeleteBucket() {
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.UndeleteBucketRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.UndeleteBucket(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleConfigClient_ListViews() {
+	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.ListViewsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListViews(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleConfigClient_GetView() {
+	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.GetViewRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_CreateView() {
+	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.CreateViewRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_UpdateView() {
+	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.UpdateViewRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleConfigClient_DeleteView() {
+	ctx := context.Background()
+	c, err := logging.NewConfigClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &loggingpb.DeleteViewRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteView(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
 
 func ExampleConfigClient_ListSinks() {
