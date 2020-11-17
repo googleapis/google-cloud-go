@@ -2099,7 +2099,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		Permissions: permissions,
 	}
 	// Set backup policy.
-	newPolicy, err := adminClient.SetIAMPolicy(ctx, cluster, backupName, policy)
+	newPolicy, err := adminClient.SetIamPolicy(ctx, cluster, backupName, policy)
 	if err != nil {
 		t.Fatalf("SetIAMPolicy: %v", err)
 	}
@@ -2107,7 +2107,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("SetIAMPolicy: got - want +\n%s", diff)
 	}
 	// Get backup policy.
-	gotPolicy, err := adminClient.GetIAMPolicy(ctx, cluster, backupName)
+	gotPolicy, err := adminClient.GetIamPolicy(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("GetIAMPolicy: %v", err)
 	}
@@ -2115,7 +2115,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
 	}
 	// Test backup permissions.
-	gotPermissions, err := adminClient.TestIAMPermissions(ctx, cluster, backupName, permissions)
+	gotPermissions, err := adminClient.TestIamPermissions(ctx, cluster, backupName, permissions)
 	if err != nil {
 		t.Fatalf("TestIAMPermissions: %v", err)
 	}

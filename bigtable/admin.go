@@ -1665,8 +1665,8 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	return err
 }
 
-// GetIAMPolicy gets the IAM access control policy for the specified backup.
-func (ac *AdminClient) GetIAMPolicy(ctx context.Context, cluster, backup string) (*iampb.Policy, error) {
+// GetIamPolicy gets the IAM access control policy for the specified backup.
+func (ac *AdminClient) GetIamPolicy(ctx context.Context, cluster, backup string) (*iampb.Policy, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
@@ -1679,9 +1679,9 @@ func (ac *AdminClient) GetIAMPolicy(ctx context.Context, cluster, backup string)
 	return policy, nil
 }
 
-// SetIAMPolicy sets the IAM access control policy for the specified backup.
+// SetIamPolicy sets the IAM access control policy for the specified backup.
 // Replaces any existing policy.
-func (ac *AdminClient) SetIAMPolicy(ctx context.Context, cluster, backup string, policy *iampb.Policy) (*iampb.Policy, error) {
+func (ac *AdminClient) SetIamPolicy(ctx context.Context, cluster, backup string, policy *iampb.Policy) (*iampb.Policy, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
@@ -1697,9 +1697,9 @@ func (ac *AdminClient) SetIAMPolicy(ctx context.Context, cluster, backup string,
 	return policy, nil
 }
 
-// TestIAMPermissions tests whether the caller has the given permissions for this backup.
+// TestIamPermissions tests whether the caller has the given permissions for this backup.
 // Returns the permissions that the caller has.
-func (ac *AdminClient) TestIAMPermissions(ctx context.Context, cluster, backup string, permissions []string) ([]string, error) {
+func (ac *AdminClient) TestIamPermissions(ctx context.Context, cluster, backup string, permissions []string) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
