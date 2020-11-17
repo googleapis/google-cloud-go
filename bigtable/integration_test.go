@@ -1990,11 +1990,6 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 }
 
 func TestIntegration_AdminBackup(t *testing.T) {
-	if instanceToCreate == "" {
-		t.Skip("instanceToCreate not set, skipping instance creation testing")
-	}
-	clusterID := instanceToCreate + "-cluster"
-
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -2005,28 +2000,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
-	iAdminClient, err := testEnv.NewInstanceAdminClient()
-	if err != nil {
-		t.Fatalf("NewInstanceAdminClient: %v", err)
-	}
-	defer iAdminClient.Close()
-
-	// Create a development instance
-	conf := &InstanceConf{
-		InstanceId:   instanceToCreate,
-		ClusterId:    clusterID,
-		DisplayName:  "test instance",
-		Zone:         instanceToCreateZone,
-		InstanceType: DEVELOPMENT,
-		Labels:       map[string]string{"test-label-key": "test-label-value"},
-	}
 	timeout := 5 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
-
-	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
-		t.Fatalf("CreateInstance: %v", err)
-	}
-	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
