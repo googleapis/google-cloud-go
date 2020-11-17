@@ -39,7 +39,7 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -1666,12 +1666,12 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 }
 
 // GetIAMPolicy gets the IAM access control policy for the specified backup.
-func (ac *AdminClient) GetIAMPolicy(ctx context.Context, cluster, backup string) (*v1.Policy, error) {
+func (ac *AdminClient) GetIAMPolicy(ctx context.Context, cluster, backup string) (*iampb.Policy, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
 
-	req := v1.GetIamPolicyRequest{Resource: backupPath}
+	req := iampb.GetIamPolicyRequest{Resource: backupPath}
 	policy, err := ac.tClient.GetIamPolicy(ctx, &req)
 	if err != nil {
 		return nil, err
@@ -1681,12 +1681,12 @@ func (ac *AdminClient) GetIAMPolicy(ctx context.Context, cluster, backup string)
 
 // SetIAMPolicy sets the IAM access control policy for the specified backup.
 // Replaces any existing policy.
-func (ac *AdminClient) SetIAMPolicy(ctx context.Context, cluster, backup string, policy *v1.Policy) (*v1.Policy, error) {
+func (ac *AdminClient) SetIAMPolicy(ctx context.Context, cluster, backup string, policy *iampb.Policy) (*iampb.Policy, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
 
-	req := v1.SetIamPolicyRequest{
+	req := iampb.SetIamPolicyRequest{
 		Resource: backupPath,
 		Policy:   policy,
 	}
@@ -1704,7 +1704,7 @@ func (ac *AdminClient) TestIAMPermissions(ctx context.Context, cluster, backup s
 	prefix := ac.instancePrefix()
 	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
 
-	req := v1.TestIamPermissionsRequest{
+	req := iampb.TestIamPermissionsRequest{
 		Resource:    backupPath,
 		Permissions: permissions,
 	}

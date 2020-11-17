@@ -37,7 +37,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	v1 "google.golang.org/genproto/googleapis/iam/v1"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
 )
 
@@ -2082,12 +2082,12 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Mock setup.
-	policy := &v1.Policy{}
+	policy := &iampb.Policy{}
 	role := "roles/bigtable.viewer"
 	members := []string{"serviceAccount:service_acc1@test.com", "user:user1@test.com"}
 	policy.Version = 1
 	policy.Etag = []byte("etag_v1")
-	policy.Bindings = append(policy.Bindings, &v1.Binding{
+	policy.Bindings = append(policy.Bindings, &iampb.Binding{
 		Role:    role,
 		Members: members,
 	})
@@ -2258,20 +2258,21 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	}
 }
 
+// adminClientMock is used to test backup level IAM.
 type adminClientMock struct {
 	btapb.BigtableTableAdminClient
-	Policy      *v1.Policy
+	Policy      *iampb.Policy
 	Permissions []string
 }
 
-func (acm *adminClientMock) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+func (acm *adminClientMock) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
 	return acm.Policy, nil
 }
 
-func (acm *adminClientMock) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+func (acm *adminClientMock) SetIamPolicy(ctx context.Context, in *iampb.SetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
 	return acm.Policy, nil
 }
 
-func (acm *adminClientMock) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
-	return &v1.TestIamPermissionsResponse{Permissions: acm.Permissions}, nil
+func (acm *adminClientMock) TestIamPermissions(ctx context.Context, in *iampb.TestIamPermissionsRequest, opts ...grpc.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return &iampb.TestIamPermissionsResponse{Permissions: acm.Permissions}, nil
 }
