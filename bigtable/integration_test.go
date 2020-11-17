@@ -37,6 +37,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	v1 "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 var (
@@ -1988,6 +1989,11 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 }
 
 func TestIntegration_AdminBackup(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+	clusterID := instanceToCreate + "-cluster"
+
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -1998,8 +2004,28 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Skip("emulator doesn't support backups")
 	}
 
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	// Create a development instance
+	conf := &InstanceConf{
+		InstanceId:   instanceToCreate,
+		ClusterId:    clusterID,
+		DisplayName:  "test instance",
+		Zone:         instanceToCreateZone,
+		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
+	}
 	timeout := 5 * time.Minute
 	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
@@ -2104,6 +2130,36 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
+	}
+	// Set backup policy.
+	// Get Etag first from GetIAMPolicy.
+	gotPolicy, err := adminClient.GetIAMPolicy(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("GetIAMPolicy: %v", err)
+	}
+	policy := &v1.Policy{}
+	role := "roles/bigtable.viewer"
+	members := []string{"user:user1@test.com"}
+	policy.Version = 1
+	policy.Etag = gotPolicy.GetEtag()
+	policy.Bindings = append(policy.Bindings, &v1.Binding{
+		Role:    role,
+		Members: members,
+	})
+	newPolicy, err := adminClient.SetIAMPolicy(ctx, cluster, "mybackup", policy)
+	if err != nil {
+		t.Fatalf("SetIAMPolicy: %v", err)
+	}
+	if diff := testutil.Diff(newPolicy, policy); diff != "" {
+		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
+	}
+	// Get backup policy.
+	got, err := adminClient.GetIAMPolicy(ctx, cluster, "mybackup")
+	if err != nil {
+		t.Fatalf("GetIAMPolicy: %v", err)
+	}
+	if diff := testutil.Diff(got, policy); diff != "" {
+		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
 	}
 
 	// Delete backup
