@@ -113,26 +113,6 @@ func ExampleAlphaAnalyticsDataClient_BatchRunPivotReports() {
 	_ = resp
 }
 
-func ExampleAlphaAnalyticsDataClient_GetUniversalMetadata() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
-	ctx := context.Background()
-	c, err := data.NewAlphaAnalyticsDataClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &datapb.GetUniversalMetadataRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetUniversalMetadata(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleAlphaAnalyticsDataClient_GetMetadata() {
 	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
 
