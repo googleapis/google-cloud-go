@@ -83,7 +83,7 @@ const nilCursorOffset int64 = -1
 
 // ackTracker manages outstanding message acks, i.e. messages that have been
 // delivered to the user, but not yet acked. It is used by the committer and
-// wireSubscriber, so requires its own mutex.
+// subscribeStream, so requires its own mutex.
 type ackTracker struct {
 	// Guards access to fields below.
 	mu sync.Mutex
@@ -161,6 +161,13 @@ func (at *ackTracker) Release() {
 		ack.Clear()
 	}
 	at.outstandingAcks.Init()
+}
+
+// Empty when there are no outstanding acks.
+func (at *ackTracker) Empty() bool {
+	at.mu.Lock()
+	defer at.mu.Unlock()
+	return at.outstandingAcks.Len() == 0
 }
 
 // commitCursorTracker tracks pending and last successful committed offsets.
