@@ -61,8 +61,8 @@ type Message struct {
 	ackh AckHandler
 }
 
-// NewMessage creates a message with a custom ack/nack handler, which should not
-// be nil.
+// NewMessage creates a message with a custom ack/nack handler (e.g. for unit
+// tests), which should not be nil.
 func NewMessage(ackh AckHandler) *Message {
 	return &Message{ackh: ackh}
 }
