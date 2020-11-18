@@ -39,7 +39,6 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -602,6 +601,13 @@ func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) err
 func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient,
 		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
+}
+
+// BackupIAM creates an IAM client specific to a given Cluster and Backup.
+func (ac *AdminClient) BackupIAM(ctx context.Context, cluster, backup string) *iam.Handle {
+	prefix := ac.instancePrefix()
+	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+	return iam.InternalNewHandleGRPCClient(ac.tClient, backupPath)
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
@@ -1663,54 +1669,4 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 	}
 	_, err = ac.tClient.UpdateBackup(ctx, req)
 	return err
-}
-
-// GetIamPolicy gets the IAM access control policy for the specified backup.
-func (ac *AdminClient) GetIamPolicy(ctx context.Context, cluster, backup string) (*iampb.Policy, error) {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
-
-	req := iampb.GetIamPolicyRequest{Resource: backupPath}
-	policy, err := ac.tClient.GetIamPolicy(ctx, &req)
-	if err != nil {
-		return nil, err
-	}
-	return policy, nil
-}
-
-// SetIamPolicy sets the IAM access control policy for the specified backup.
-// Replaces any existing policy.
-func (ac *AdminClient) SetIamPolicy(ctx context.Context, cluster, backup string, policy *iampb.Policy) (*iampb.Policy, error) {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
-
-	req := iampb.SetIamPolicyRequest{
-		Resource: backupPath,
-		Policy:   policy,
-	}
-	policy, err := ac.tClient.SetIamPolicy(ctx, &req)
-	if err != nil {
-		return nil, err
-	}
-	return policy, nil
-}
-
-// TestIamPermissions tests whether the caller has the given permissions for this backup.
-// Returns the permissions that the caller has.
-func (ac *AdminClient) TestIamPermissions(ctx context.Context, cluster, backup string, permissions []string) ([]string, error) {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
-
-	req := iampb.TestIamPermissionsRequest{
-		Resource:    backupPath,
-		Permissions: permissions,
-	}
-	resp, err := ac.tClient.TestIamPermissions(ctx, &req)
-	if err != nil {
-		return nil, err
-	}
-	return resp.GetPermissions(), nil
 }

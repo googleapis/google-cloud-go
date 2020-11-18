@@ -29,6 +29,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -38,7 +39,9 @@ import (
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
+	"google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 var (
@@ -1245,6 +1248,88 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 }
 
+func TestIntegration_BackupIAM(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	cluster := testEnv.Config().Cluster
+
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	// Create backup.
+	backup := "backup"
+	defer adminClient.DeleteBackup(ctx, cluster, backup)
+	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	// Mock setup.
+	iamPolicy := &iam.Policy{
+		InternalProto: &iampb.Policy{
+			Version: 1,
+			Bindings: []*iampb.Binding{
+				{
+					Role:    "roles/bigtable.viewer",
+					Members: []string{"serviceAccount:service_acc1@test.com", "user:user1@test.com"},
+				},
+			},
+			Etag: []byte("etag_v1"),
+		},
+	}
+	permissions := []string{"bigtable.backups.create", "bigtable.backups.list"}
+
+	adminClient.tClient = &adminClientMock{
+		Policy:      iamPolicy.InternalProto,
+		Permissions: permissions,
+	}
+	iamHandle := adminClient.BackupIAM(ctx, cluster, backup)
+	// Get backup policy.
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if diff := testutil.Diff(p, iamPolicy); diff != "" {
+		t.Fatalf("iamHandle.Policy: got - want +\n%s", diff)
+	}
+	// Set backup policy.
+	p.Add("user:user2@test.com", "roles/bigtable.viewer")
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("iamHandle.SetPolicy: %v", err)
+	}
+	newPolicy, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if diff := testutil.Diff(newPolicy, p); diff != "" {
+		t.Fatalf("iamHandle.Policy: got - want +\n%s", diff)
+	}
+	// Test backup permissions.
+	gotPermissions, err := iamHandle.TestPermissions(ctx, permissions)
+	if err != nil {
+		t.Errorf("iamHandle.TestPermissions: %v", err)
+	}
+	if !testutil.Equal(gotPermissions, permissions) {
+		t.Fatalf("TestIAMPermissions: got %#v\nwant %#v", gotPermissions, permissions)
+	}
+}
+
 func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
@@ -2081,49 +2166,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("BackupInfo: %v, want: %v", got, want)
 	}
 
-	// Mock setup.
-	policy := &iampb.Policy{}
-	role := "roles/bigtable.viewer"
-	members := []string{"serviceAccount:service_acc1@test.com", "user:user1@test.com"}
-	policy.Version = 1
-	policy.Etag = []byte("etag_v1")
-	policy.Bindings = append(policy.Bindings, &iampb.Binding{
-		Role:    role,
-		Members: members,
-	})
-	permissions := []string{"bigtable.backups.create", "bigtable.backups.list"}
-
-	tClient := adminClient.tClient
-	adminClient.tClient = &adminClientMock{
-		Policy:      policy,
-		Permissions: permissions,
-	}
-	// Set backup policy.
-	newPolicy, err := adminClient.SetIamPolicy(ctx, cluster, backupName, policy)
-	if err != nil {
-		t.Fatalf("SetIAMPolicy: %v", err)
-	}
-	if diff := testutil.Diff(newPolicy, policy); diff != "" {
-		t.Fatalf("SetIAMPolicy: got - want +\n%s", diff)
-	}
-	// Get backup policy.
-	gotPolicy, err := adminClient.GetIamPolicy(ctx, cluster, backupName)
-	if err != nil {
-		t.Fatalf("GetIAMPolicy: %v", err)
-	}
-	if diff := testutil.Diff(gotPolicy, policy); diff != "" {
-		t.Fatalf("GetIAMPolicy: got - want +\n%s", diff)
-	}
-	// Test backup permissions.
-	gotPermissions, err := adminClient.TestIamPermissions(ctx, cluster, backupName, permissions)
-	if err != nil {
-		t.Fatalf("TestIAMPermissions: %v", err)
-	}
-	if !testutil.Equal(gotPermissions, permissions) {
-		t.Fatalf("TestIAMPermissions: got %#v\nwant %#v", gotPermissions, permissions)
-	}
 	// Update backup
-	adminClient.tClient = tClient
 	newExpireTime := time.Now().Add(10 * time.Hour)
 	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
 	if err != nil {
@@ -2260,9 +2303,84 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 
 // adminClientMock is used to test backup level IAM.
 type adminClientMock struct {
-	btapb.BigtableTableAdminClient
 	Policy      *iampb.Policy
 	Permissions []string
+}
+
+func (acm *adminClientMock) CreateTable(ctx context.Context, in *btapb.CreateTableRequest, opts ...grpc.CallOption) (*btapb.Table, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) CreateTableFromSnapshot(ctx context.Context, in *btapb.CreateTableFromSnapshotRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) ListTables(ctx context.Context, in *btapb.ListTablesRequest, opts ...grpc.CallOption) (*btapb.ListTablesResponse, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) GetTable(ctx context.Context, in *btapb.GetTableRequest, opts ...grpc.CallOption) (*btapb.Table, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) DeleteTable(ctx context.Context, in *btapb.DeleteTableRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) ModifyColumnFamilies(ctx context.Context, in *btapb.ModifyColumnFamiliesRequest, opts ...grpc.CallOption) (*btapb.Table, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) DropRowRange(ctx context.Context, in *btapb.DropRowRangeRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) GenerateConsistencyToken(ctx context.Context, in *btapb.GenerateConsistencyTokenRequest, opts ...grpc.CallOption) (*btapb.GenerateConsistencyTokenResponse, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) CheckConsistency(ctx context.Context, in *btapb.CheckConsistencyRequest, opts ...grpc.CallOption) (*btapb.CheckConsistencyResponse, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) SnapshotTable(ctx context.Context, in *btapb.SnapshotTableRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) GetSnapshot(ctx context.Context, in *btapb.GetSnapshotRequest, opts ...grpc.CallOption) (*btapb.Snapshot, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) ListSnapshots(ctx context.Context, in *btapb.ListSnapshotsRequest, opts ...grpc.CallOption) (*btapb.ListSnapshotsResponse, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) DeleteSnapshot(ctx context.Context, in *btapb.DeleteSnapshotRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) CreateBackup(ctx context.Context, in *btapb.CreateBackupRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) GetBackup(ctx context.Context, in *btapb.GetBackupRequest, opts ...grpc.CallOption) (*btapb.Backup, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) UpdateBackup(ctx context.Context, in *btapb.UpdateBackupRequest, opts ...grpc.CallOption) (*btapb.Backup, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) DeleteBackup(ctx context.Context, in *btapb.DeleteBackupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) ListBackups(ctx context.Context, in *btapb.ListBackupsRequest, opts ...grpc.CallOption) (*btapb.ListBackupsResponse, error) {
+	return nil, nil
+}
+
+func (acm *adminClientMock) RestoreTable(ctx context.Context, in *btapb.RestoreTableRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
 }
 
 func (acm *adminClientMock) GetIamPolicy(ctx context.Context, in *iampb.GetIamPolicyRequest, opts ...grpc.CallOption) (*iampb.Policy, error) {
