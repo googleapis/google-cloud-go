@@ -143,6 +143,8 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 		// Reinitialize the offset and flow control tokens when a new subscribe
 		// stream instance is connected.
 		if seekReq := s.offsetTracker.RequestForRestart(); seekReq != nil {
+			// Note: If Send() returns false, the subscriber will either terminate or
+			// the stream will be reconnected.
 			if s.stream.Send(&pb.SubscribeRequest{
 				Request: &pb.SubscribeRequest_Seek{Seek: seekReq},
 			}) {
