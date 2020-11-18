@@ -226,7 +226,8 @@ $ go test -v cloud.google.com/go/...
 
 You can also run a specific test suite, for instance in order to run datastore:
 ``` sh
-$ go test -v cloud.google.com/go/datastore
+$ cd datastore
+$ go test -v ./...
 ```
 
 #### Replay
