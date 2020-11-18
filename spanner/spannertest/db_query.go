@@ -741,7 +741,10 @@ func newJoinIter(lhs, rhs *rawIter, lhsEC, rhsEC evalContext, sfj spansql.Select
 		ji.primary, ji.secondaryOrig = rhs, lhs
 		ji.primaryOffset, ji.secondaryOffset = len(rhsEC.cols), 0
 	case spansql.FullJoin:
-		return nil, evalContext{}, fmt.Errorf("TODO: can't yet evaluate FULL JOIN")
+		// FULL JOIN is implemented as a LEFT JOIN with tracking for which rows of the RHS
+		// have been used. Then, at the end of the iteration, the unused RHS rows are emitted.
+		ji.nullPad = true
+		ji.used = make([]bool, 0, 10) // arbitrary preallocation
 	}
 	ji.ec.cols, ji.ec.row = nil, nil
 
@@ -781,11 +784,12 @@ func (ji *joinIter) prepNonUsing(on spansql.BoolExpr, lhsEC, rhsEC evalContext) 
 		}
 		return b != nil && *b, nil
 	}
-	ji.zero = func(primary row) {
+	ji.zero = func(primary, secondary row) {
 		for i := range ji.ec.row {
 			ji.ec.row[i] = nil
 		}
 		copy(ji.ec.row[ji.primaryOffset:], primary)
+		copy(ji.ec.row[ji.secondaryOffset:], secondary)
 	}
 }
 
@@ -844,11 +848,18 @@ func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext, flip
 		return r[i]
 	}
 	// populate writes the data to ji.ec.row in the correct positions.
-	populate := func(primary, secondary row) { // secondary may be nil
+	populate := func(primary, secondary row) { // either may be nil
 		j := 0
-		for _, pi := range primaryUsing {
-			ji.ec.row[j] = primary[pi]
-			j++
+		if primary != nil {
+			for _, pi := range primaryUsing {
+				ji.ec.row[j] = primary[pi]
+				j++
+			}
+		} else {
+			for _, si := range secondaryUsing {
+				ji.ec.row[j] = secondary[si]
+				j++
+			}
 		}
 		lhs, rhs := primary, secondary
 		if flipped {
@@ -873,8 +884,8 @@ func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext, flip
 		populate(primary, secondary)
 		return true, nil
 	}
-	ji.zero = func(primary row) {
-		populate(primary, nil)
+	ji.zero = func(primary, secondary row) {
+		populate(primary, secondary)
 	}
 	return nil
 }
@@ -894,16 +905,24 @@ type joinIter struct {
 	// should be yielded with null padding (e.g. OUTER JOINs).
 	nullPad bool
 
-	primaryRow row      // current row from primary, or nil if it is time to advance
-	secondary  *rawIter // current clone of secondary
-	any        bool     // true if any secondary rows have matched primaryRow
+	primaryRow    row      // current row from primary, or nil if it is time to advance
+	secondary     *rawIter // current clone of secondary
+	secondaryRead int      // number of rows already read from secondary
+	any           bool     // true if any secondary rows have matched primaryRow
 
 	// cond reports whether the primary and secondary rows "join" (e.g. the ON clause is true).
 	// It populates ec.row with the output.
 	cond func(primary, secondary row) (bool, error)
-	// zero populates ec.row with the primary row and sets the remainder to NULL.
-	// This is used when nullPad is true and a primary row doesn't match any secondary row.
-	zero func(primary row)
+	// zero populates ec.row with the primary or secondary row data (either of which may be nil),
+	// and sets the remainder to NULL.
+	// This is used when nullPad is true and a primary or secondary row doesn't match.
+	zero func(primary, secondary row)
+
+	// For FULL JOIN, this tracks the secondary rows that have been used.
+	// It is non-nil when being used.
+	used        []bool
+	zeroUnused  bool // set when emitting unused secondary rows
+	unusedIndex int  // next index of used to check
 }
 
 func (ji *joinIter) Cols() []colInfo { return ji.ec.cols }
@@ -915,15 +934,48 @@ func (ji *joinIter) nextPrimary() error {
 		return err
 	}
 	ji.secondary = ji.secondaryOrig.clone()
+	ji.secondaryRead = 0
 	ji.any = false
 	return nil
 }
 
 func (ji *joinIter) Next() (row, error) {
-	if ji.primaryRow == nil {
-		if err := ji.nextPrimary(); err != nil {
+	if ji.primaryRow == nil && !ji.zeroUnused {
+		err := ji.nextPrimary()
+		if err == io.EOF && ji.used != nil {
+			// Drop down to emitting unused secondary rows.
+			ji.zeroUnused = true
+			ji.secondary = nil
+			goto scanJiUsed
+		}
+		if err != nil {
 			return nil, err
 		}
+	}
+scanJiUsed:
+	if ji.zeroUnused {
+		if ji.secondary == nil {
+			ji.secondary = ji.secondaryOrig.clone()
+			ji.secondaryRead = 0
+		}
+		for ji.unusedIndex < len(ji.used) && ji.used[ji.unusedIndex] {
+			ji.unusedIndex++
+		}
+		if ji.unusedIndex >= len(ji.used) || ji.secondaryRead >= len(ji.used) {
+			// Truly finished.
+			return nil, io.EOF
+		}
+		var secondaryRow row
+		for ji.secondaryRead <= ji.unusedIndex {
+			var err error
+			secondaryRow, err = ji.secondary.Next()
+			if err != nil {
+				return nil, err
+			}
+			ji.secondaryRead++
+		}
+		ji.zero(nil, secondaryRow)
+		return ji.ec.row, nil
 	}
 
 	for {
@@ -932,19 +984,31 @@ func (ji *joinIter) Next() (row, error) {
 			// Finished the current primary row.
 
 			if !ji.any && ji.nullPad {
-				ji.zero(ji.primaryRow)
+				ji.zero(ji.primaryRow, nil)
 				ji.primaryRow = nil
 				return ji.ec.row, nil
 			}
 
 			// Advance to next one.
-			if err := ji.nextPrimary(); err != nil {
+			err := ji.nextPrimary()
+			if err == io.EOF && ji.used != nil {
+				ji.zeroUnused = true
+				ji.secondary = nil
+				goto scanJiUsed
+			}
+			if err != nil {
 				return nil, err
 			}
 			continue
 		}
 		if err != nil {
 			return nil, err
+		}
+		ji.secondaryRead++
+		if ji.used != nil {
+			for len(ji.used) < ji.secondaryRead {
+				ji.used = append(ji.used, false)
+			}
 		}
 
 		// We have a pair of rows to consider.
@@ -956,6 +1020,10 @@ func (ji *joinIter) Next() (row, error) {
 			continue
 		}
 		ji.any = true
+		if ji.used != nil {
+			// Make a note that we used this secondary row.
+			ji.used[ji.secondaryRead-1] = true
+		}
 		return ji.ec.row, nil
 	}
 }
