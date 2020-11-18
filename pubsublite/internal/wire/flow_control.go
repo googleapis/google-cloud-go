@@ -32,7 +32,7 @@ type flowControlTokens struct {
 	Messages int64
 }
 
-// A TokenCounter stores the amount of outstanding byte and message flow control
+// A tokenCounter stores the amount of outstanding byte and message flow control
 // tokens that the client believes exists for the stream.
 type tokenCounter struct {
 	Bytes    int64
