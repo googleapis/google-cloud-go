@@ -221,10 +221,12 @@ Once you've done the necessary setup, you can run the integration tests by
 running:
 
 ``` sh
-$ go test -v cloud.google.com/go/...
+$ go test -v ./...
 ```
 
-You can also run a specific test suite, for instance in order to run datastore:
+Note that the above command will not run the tests in other modules. To run
+tests on other modules, first navigate to the appropriate
+subdirectory. For instance, to run only the tests for datastore:
 ``` sh
 $ cd datastore
 $ go test -v ./...
