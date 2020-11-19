@@ -412,7 +412,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		"Staff",
 		"PlayerStats",
 		"JoinA", "JoinB", "JoinC", "JoinD", "JoinE", "JoinF",
-		"SomeStrings",
+		"SomeStrings", "Updateable",
 	}
 	errc := make(chan error)
 	for _, table := range allTables {
@@ -618,6 +618,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		`CREATE TABLE JoinF ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
 		// Some other test tables.
 		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
+		`CREATE TABLE Updateable (
+			id INT64,
+			first STRING(MAX),
+			last STRING(MAX),
+		) PRIMARY KEY (id)`,
 	)
 	if err != nil {
 		t.Fatalf("Creating sample tables: %v", err)
@@ -661,9 +666,37 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{3, "bbar"}),
+
+		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{0, "joe", nil}),
+		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{1, "doe", "joan"}),
+		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{2, "wong", "wong"}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
+	}
+
+	// Perform UPDATE DML; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		for _, u := range []string{
+			`UPDATE Updateable SET last = "bloggs" WHERE id = 0`,
+			`UPDATE Updateable SET first = last, last = first WHERE id = 1`,
+			`UPDATE Updateable SET last = DEFAULT WHERE id = 2`,
+			`UPDATE Updateable SET first = "noname" WHERE id = 3`, // no id=3
+		} {
+			nr, err := tx.Update(ctx, spanner.NewStatement(u))
+			if err != nil {
+				return err
+			}
+			n += nr
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Updating with DML: %v", err)
+	}
+	if n != 3 {
+		t.Errorf("Updating with DML affected %d rows, want 3", n)
 	}
 
 	// Do some complex queries.
@@ -927,6 +960,34 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
+			`SELECT * FROM JoinA FULL OUTER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w IS NULL, w, x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", nil, nil},
+				{int64(2), "b", int64(2), "k"},
+				{int64(3), "c", int64(3), "m"},
+				{int64(3), "c", int64(3), "n"},
+				{int64(3), "d", int64(3), "m"},
+				{int64(3), "d", int64(3), "n"},
+				{nil, nil, int64(4), "p"},
+			},
+		},
+		{
+			// Same as the previous, but using a USING clause instead of an ON clause.
+			`SELECT * FROM JoinC FULL OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", nil},
+				{int64(2), "b", "k"},
+				{int64(3), "c", "m"},
+				{int64(3), "c", "n"},
+				{int64(3), "d", "m"},
+				{int64(3), "d", "n"},
+				{int64(4), nil, "p"},
+			},
+		},
+		{
 			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
 			nil,
 			[][]interface{}{
@@ -974,6 +1035,16 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(3), "d", "m"},
 				{int64(3), "d", "n"},
 				{int64(4), nil, "p"},
+			},
+		},
+		// Check the output of the UPDATE DML.
+		{
+			`SELECT id, first, last FROM Updateable ORDER BY id`,
+			nil,
+			[][]interface{}{
+				{int64(0), "joe", "bloggs"},
+				{int64(1), "joan", "doe"},
+				{int64(2), "wong", nil},
 			},
 		},
 		// Regression test for aggregating no rows; it used to return an empty row.

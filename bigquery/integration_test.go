@@ -716,6 +716,19 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// Create a sample UDF so we can verify adding authorized UDFs
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+
+	sql := fmt.Sprintf(`
+			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
 	origAccess := append([]*AccessEntry(nil), md.Access...)
 	newEntries := []*AccessEntry{
 		{
@@ -727,6 +740,10 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			Role:       ReaderRole,
 			Entity:     "allUsers",
 			EntityType: IAMMemberEntity,
+		},
+		{
+			EntityType: RoutineEntity,
+			Routine:    routine,
 		},
 	}
 
@@ -743,7 +760,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		}
 	}()
 
-	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{})); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -1417,6 +1434,7 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
+	rat2 := big.NewRat(66, 100)
 	geo := "POINT(-122.198939 47.669865)"
 
 	// Nil fields in the struct.
@@ -1438,20 +1456,21 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 
 	// Populate the struct with values.
 	testInsertAndReadNullable(t, testStructNullable{
-		String:    NullString{"x", true},
-		Bytes:     []byte{1, 2, 3},
-		Integer:   NullInt64{1, true},
-		Float:     NullFloat64{2.3, true},
-		Boolean:   NullBool{true, true},
-		Timestamp: NullTimestamp{testTimestamp, true},
-		Date:      NullDate{testDate, true},
-		Time:      NullTime{ctm, true},
-		DateTime:  NullDateTime{cdt, true},
-		Numeric:   rat,
-		Geography: NullGeography{geo, true},
-		Record:    &subNullable{X: NullInt64{4, true}},
+		String:     NullString{"x", true},
+		Bytes:      []byte{1, 2, 3},
+		Integer:    NullInt64{1, true},
+		Float:      NullFloat64{2.3, true},
+		Boolean:    NullBool{true, true},
+		Timestamp:  NullTimestamp{testTimestamp, true},
+		Date:       NullDate{testDate, true},
+		Time:       NullTime{ctm, true},
+		DateTime:   NullDateTime{cdt, true},
+		Numeric:    rat,
+		BigNumeric: rat2,
+		Geography:  NullGeography{geo, true},
+		Record:     &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, geo, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, rat2, geo, []Value{int64(4)}})
 }
 
 func testInsertAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {

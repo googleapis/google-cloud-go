@@ -64,9 +64,9 @@ func TestParseTopicPath(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotPath, gotErr := ParseTopicPath(tc.input)
+			gotPath, gotErr := parseTopicPath(tc.input)
 			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
-				t.Errorf("ParseTopicPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+				t.Errorf("parseTopicPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
 			}
 		})
 	}
@@ -121,71 +121,9 @@ func TestParseSubscriptionPath(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotPath, gotErr := ParseSubscriptionPath(tc.input)
+			gotPath, gotErr := parseSubscriptionPath(tc.input)
 			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
-				t.Errorf("ParseSubscriptionPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
-			}
-		})
-	}
-}
-
-func TestValidateZone(t *testing.T) {
-	for _, tc := range []struct {
-		desc    string
-		input   string
-		wantErr bool
-	}{
-		{
-			desc:    "valid",
-			input:   "us-central1-a",
-			wantErr: false,
-		},
-		{
-			desc:    "invalid: insufficient dashes",
-			input:   "us-central1",
-			wantErr: true,
-		},
-		{
-			desc:    "invalid: excess dashes",
-			input:   "us-central1-a-b",
-			wantErr: true,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := ValidateZone(tc.input)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("ValidateZone(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
-			}
-		})
-	}
-}
-
-func TestValidateRegion(t *testing.T) {
-	for _, tc := range []struct {
-		desc    string
-		input   string
-		wantErr bool
-	}{
-		{
-			desc:    "valid",
-			input:   "europe-west1",
-			wantErr: false,
-		},
-		{
-			desc:    "invalid: insufficient dashes",
-			input:   "europewest1",
-			wantErr: true,
-		},
-		{
-			desc:    "invalid: excess dashes",
-			input:   "europe-west1-b",
-			wantErr: true,
-		},
-	} {
-		t.Run(tc.desc, func(t *testing.T) {
-			err := ValidateRegion(tc.input)
-			if (err != nil) != tc.wantErr {
-				t.Errorf("ValidateRegion(%q) = %v, want err=%v", tc.input, err, tc.wantErr)
+				t.Errorf("parseSubscriptionPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
 			}
 		})
 	}
