@@ -3,7 +3,6 @@ module cloud.google.com/go
 go 1.11
 
 require (
-	cloud.google.com/go/pubsublite v0.3.0 // indirect
 	cloud.google.com/go/storage v1.10.0
 	github.com/golang/mock v1.4.4
 	github.com/golang/protobuf v1.4.3
