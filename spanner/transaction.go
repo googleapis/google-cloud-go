@@ -76,6 +76,10 @@ type txReadOnly struct {
 
 // TransactionOptions provides options for a transaction.
 type TransactionOptions struct {
+	// The transaction tag to use for a read/write transaction.
+	// This tag is automatically included with each statement and the commit
+	// request of a read/write transaction.
+	TransactionTag string
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -104,6 +108,9 @@ type ReadOptions struct {
 	// The maximum number of rows to read. A limit value less than 1 means no
 	// limit.
 	Limit int
+
+	// The request tag to use for this read request.
+	RequestTag string
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -131,11 +138,13 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	}
 	index := ""
 	limit := 0
+	requestTag := ""
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
 			limit = opts.Limit
 		}
+		requestTag = opts.RequestTag
 	}
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
@@ -151,6 +160,10 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					KeySet:      kset,
 					ResumeToken: resumeToken,
 					Limit:       int64(limit),
+					RequestOptions: &sppb.RequestOptions{
+						RequestTag:     requestTag,
+						TransactionTag: t.qo.transactionTag,
+					},
 				})
 		},
 		t.replaceSessionFunc,
@@ -223,25 +236,44 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 	}
 }
 
-// QueryOptions provides options for executing a sql query from a database.
+// QueryOptions provides options for executing a sql query or update statement.
 type QueryOptions struct {
-	Mode    *sppb.ExecuteSqlRequest_QueryMode
-	Options *sppb.ExecuteSqlRequest_QueryOptions
+	Mode       *sppb.ExecuteSqlRequest_QueryMode
+	Options    *sppb.ExecuteSqlRequest_QueryOptions
+	RequestTag string
+	// transactionTag is unexported as applications should set this on the transaction and
+	// the transaction will then set this field for each request during the transaction.
+	transactionTag string
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:    qo.Mode,
-		Options: &sppb.ExecuteSqlRequest_QueryOptions{},
+		Mode:           qo.Mode,
+		Options:        &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag:     qo.RequestTag,
+		transactionTag: qo.transactionTag,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
 	}
+	if opts.RequestTag != "" {
+		merged.RequestTag = opts.RequestTag
+	}
+	if opts.transactionTag != "" {
+		merged.transactionTag = opts.transactionTag
+	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
 	return merged
+}
+
+func (qo QueryOptions) createRequestOptions() *sppb.RequestOptions {
+	return &sppb.RequestOptions{
+		RequestTag:     qo.RequestTag,
+		TransactionTag: qo.transactionTag,
+	}
 }
 
 // Query executes a query against the database. It returns a RowIterator for
@@ -340,14 +372,15 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:      sid,
-		Transaction:  ts,
-		Sql:          stmt.SQL,
-		QueryMode:    mode,
-		Seqno:        atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:       params,
-		ParamTypes:   paramTypes,
-		QueryOptions: options.Options,
+		Session:        sid,
+		Transaction:    ts,
+		Sql:            stmt.SQL,
+		QueryMode:      mode,
+		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:         params,
+		ParamTypes:     paramTypes,
+		QueryOptions:   options.Options,
+		RequestOptions: options.createRequestOptions(),
 	}
 	return req, sh, nil
 }
@@ -806,14 +839,15 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowCount int64, err error) {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.update(ctx, stmt, QueryOptions{
-		Mode:    &mode,
-		Options: t.qo.Options,
+		Mode:           &mode,
+		Options:        t.qo.Options,
+		transactionTag: t.qo.transactionTag,
 	})
 }
 
 // UpdateWithOptions executes a DML statement against the database. It returns
-// the number of affected rows. The sql query execution will be optimized
-// based on the given query options.
+// the number of affected rows. The given QueryOptions will be used for the
+// execution of this statement.
 func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
 	return t.update(ctx, stmt, t.qo.merge(opts))
 }
@@ -842,6 +876,20 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 // affected rows for the given query at the same index. If an error occurs,
 // counts will be returned up to the query that encountered the error.
 func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statement) (_ []int64, err error) {
+	return t.BatchUpdateWithOptions(ctx, stmts, QueryOptions{})
+}
+
+// BatchUpdateWithOptions groups one or more DML statements and sends them to
+// Spanner in a single RPC. This is an efficient way to execute multiple DML
+// statements.
+//
+// A slice of counts is returned, where each count represents the number of
+// affected rows for the given query at the same index. If an error occurs,
+// counts will be returned up to the query that encountered the error.
+//
+// The request tag given in the QueryOptions will be included with the RPC.
+// Any other options that are set in the QueryOptions struct will be ignored.
+func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -874,6 +922,10 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 		Transaction: ts,
 		Statements:  sppbStmts,
 		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
+		RequestOptions: &sppb.RequestOptions{
+			RequestTag:     opts.RequestTag,
+			TransactionTag: t.qo.transactionTag,
+		},
 	})
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -987,7 +1039,8 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (CommitResponse, erro
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
-		Mutations: mPb,
+		Mutations:      mPb,
+		RequestOptions: &sppb.RequestOptions{TransactionTag: t.txReadOnly.qo.transactionTag},
 	})
 	if e != nil {
 		return resp, toSpannerErrorWithCommitInfo(e, true)
@@ -1114,6 +1167,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txReadOnly.qo.transactionTag = options.TransactionTag
 
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {

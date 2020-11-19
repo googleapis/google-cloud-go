@@ -405,7 +405,7 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 			defer teardown()
 
 			var iter *RowIterator
-			if tt.query.Options == nil {
+			if tt.query.Options == nil && tt.query.RequestTag == "" {
 				iter = client.Single().Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
 			} else {
 				iter = client.Single().QueryWithOptions(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), tt.query)
@@ -2237,5 +2237,171 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	s := te.Spans[len(te.Spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
+	}
+}
+
+func TestClient_ReadOnlyTransaction_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, qo := range []QueryOptions{
+		{},
+		{RequestTag: "tag-1"},
+	} {
+		for _, tx := range []*ReadOnlyTransaction{
+			client.Single(),
+			client.ReadOnlyTransaction(),
+		} {
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			if tx.singleUse {
+				tx = client.Single()
+			}
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{RequestTag: qo.RequestTag})
+			iter.Next()
+			iter.Stop()
+
+			checkRequestsForTags(t, server.TestSpanner, 2, qo)
+			tx.Close()
+		}
+	}
+}
+
+func TestClient_ReadWriteTransaction_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{TransactionTag: "tx-tag-1"},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{RequestTag: "request-tag-1"},
+		} {
+			client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+				iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+				iter.Next()
+				iter.Stop()
+
+				iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{RequestTag: qo.RequestTag})
+				iter.Next()
+				iter.Stop()
+
+				tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+				tx.BatchUpdateWithOptions(context.Background(), []Statement{
+					NewStatement(UpdateBarSetFoo),
+				}, qo)
+
+				// Check for SQL requests inside the transaction to prevent the check to
+				// drain the commit request from the server.
+				checkRequestsForTags(t, server.TestSpanner, 4, QueryOptions{
+					RequestTag:     qo.RequestTag,
+					transactionTag: to.TransactionTag,
+				})
+				return nil
+			}, to)
+			checkCommitRequestForTags(t, server.TestSpanner, QueryOptions{
+				RequestTag:     "", // Should never be set
+				transactionTag: to.TransactionTag,
+			})
+		}
+	}
+}
+
+func TestClient_StmtBasedReadWriteTransaction_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{TransactionTag: "tx-tag-1"},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{RequestTag: "request-tag-1"},
+		} {
+			tx, _ := NewReadWriteStmtBasedTransactionWithOptions(context.Background(), client, to)
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{RequestTag: qo.RequestTag})
+			iter.Next()
+			iter.Stop()
+
+			tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+			tx.BatchUpdateWithOptions(context.Background(), []Statement{
+				NewStatement(UpdateBarSetFoo),
+			}, qo)
+			checkRequestsForTags(t, server.TestSpanner, 4, QueryOptions{
+				RequestTag:     qo.RequestTag,
+				transactionTag: to.TransactionTag,
+			})
+
+			tx.Commit(context.Background())
+			checkCommitRequestForTags(t, server.TestSpanner, QueryOptions{
+				RequestTag:     "", // Should never be set
+				transactionTag: to.TransactionTag,
+			})
+		}
+	}
+}
+
+func checkRequestsForTags(t *testing.T, server InMemSpannerServer, reqCount int, qo QueryOptions) {
+	reqs := drainRequestsFromServer(server)
+	reqOptions := []*sppb.RequestOptions{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			reqOptions = append(reqOptions, sqlReq.RequestOptions)
+		}
+		if batchReq, ok := req.(*sppb.ExecuteBatchDmlRequest); ok {
+			reqOptions = append(reqOptions, batchReq.RequestOptions)
+		}
+		if readReq, ok := req.(*sppb.ReadRequest); ok {
+			reqOptions = append(reqOptions, readReq.RequestOptions)
+		}
+	}
+
+	if got, want := len(reqOptions), reqCount; got != want {
+		t.Fatalf("Requests length mismatch\nGot: %v\nWant: %v", got, want)
+	}
+
+	for _, opts := range reqOptions {
+		if got, want := opts.RequestTag, qo.RequestTag; got != want {
+			t.Fatalf("Request tag mismatch\nGot: %v\nWant: %v", got, want)
+		}
+		if got, want := opts.TransactionTag, qo.transactionTag; got != want {
+			t.Fatalf("Transaction tag mismatch\nGot: %v\nWant: %v", got, want)
+		}
+	}
+}
+
+func checkCommitRequestForTags(t *testing.T, server InMemSpannerServer, qo QueryOptions) {
+	reqs := drainRequestsFromServer(server)
+	var commit *sppb.CommitRequest
+	var ok bool
+
+	for _, req := range reqs {
+		if commit, ok = req.(*sppb.CommitRequest); ok {
+			break
+		}
+	}
+
+	if commit == nil {
+		t.Fatalf("Missing commit request")
+	}
+
+	if got, want := commit.RequestOptions.RequestTag, qo.RequestTag; got != want {
+		t.Fatalf("Commit request tag mismatch\nGot: %v\nWant: %v", got, want)
+	}
+	if got, want := commit.RequestOptions.TransactionTag, qo.transactionTag; got != want {
+		t.Fatalf("Commit transaction tag mismatch\nGot: %v\nWant: %v", got, want)
 	}
 }
