@@ -234,7 +234,9 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 		return res, nil
 
 	case typeOfRat:
-		// TODO: blerg. Need an explicit destination type to disambiguate if we should send a numeric or bignumeric string.
+		// big.Rat types don't communicate scale or precision, so we cannot
+		// disambiguate between NUMERIC and BIGNUMERIC.  For now, we'll continue
+		// to honor previous behavior and send as Numeric type.
 		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
 	}

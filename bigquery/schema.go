@@ -350,9 +350,10 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 	case typeOfDateTime:
 		return &FieldSchema{Required: true, Type: DateTimeFieldType}, nil
 	case typeOfRat:
-		// TODO: big.Rat has arbitrary precision, so we can't discrimate without
-		// more input.  Do we want another contract for schema inference or
-		// do we simply show how to amend the types in the inferred schema?
+		// We automatically infer big.Rat values as NUMERIC as we cannot
+		// determine precision/scale from the type.  Users who want the
+		// larger precision of BIGNUMERIC need to manipulate the inferred
+		// schema.
 		return &FieldSchema{Required: !nullable, Type: NumericFieldType}, nil
 	}
 	if ft := nullableFieldType(rt); ft != "" {

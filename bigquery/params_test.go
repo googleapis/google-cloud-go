@@ -51,7 +51,6 @@ var scalarTests = []struct {
 		"2016-03-20 04:05:06.789000",
 		dateTimeParamType},
 	{big.NewRat(12345, 1000), "12.345000000", numericParamType},
-	{big.NewRat(1, 3), "0.33333333333333333333333333333333333333", bigNumericParamType},
 }
 
 type (

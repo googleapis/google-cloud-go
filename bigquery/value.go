@@ -817,6 +817,8 @@ func NumericString(r *big.Rat) string {
 	return r.FloatString(NumericScaleDigits)
 }
 
+// BigNumericString returns a string representing a *big.Rat in a format compatible with BigQuery
+// SQL.  It returns a floating point literal with 38 digits after the decimal point.
 func BigNumericString(r *big.Rat) string {
 	return r.FloatString(BigNumericScaleDigits)
 }

@@ -745,7 +745,7 @@ func TestStructSaverErrors(t *testing.T) {
 }
 
 func TestNumericStrings(t *testing.T) {
-	for _, test := range []struct {
+	for n, test := range []struct {
 		in             *big.Rat
 		wantNumeric    string
 		wantBigNumeric string
@@ -757,10 +757,10 @@ func TestNumericStrings(t *testing.T) {
 		{big.NewRat(-5, 1e10), "-0.000000001", "-0.00000000050000000000000000000000000000"}, // rounding only for numeric
 	} {
 		if got := NumericString(test.in); got != test.wantNumeric {
-			t.Errorf("%v as numeric: got %q, want %q", test.in, got, test.wantNumeric)
+			t.Errorf("#%d %v as numeric: got %q, want %q", n, test.in, got, test.wantNumeric)
 		}
 		if got := BigNumericString(test.in); got != test.wantBigNumeric {
-			t.Errorf("%v as bignumeric: got %q, want %q", test.in, got, test.wantBigNumeric)
+			t.Errorf("#%d %v as bignumeric: got %q, want %q", n, test.in, got, test.wantBigNumeric)
 		}
 	}
 }
