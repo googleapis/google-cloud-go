@@ -14,16 +14,16 @@
 package wire
 
 import (
-  "context"
-  "errors"
-  "fmt"
-  "reflect"
+	"context"
+	"errors"
+	"fmt"
+	"reflect"
 
-  "github.com/google/uuid"
-  "google.golang.org/grpc"
+	"github.com/google/uuid"
+	"google.golang.org/grpc"
 
-  vkit "cloud.google.com/go/pubsublite/apiv1"
-  pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	vkit "cloud.google.com/go/pubsublite/apiv1"
+	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
 var void struct{}
@@ -32,23 +32,23 @@ var void struct{}
 type partitionSet map[int]struct{}
 
 func newPartitionSet(assignmentpb *pb.PartitionAssignment) partitionSet {
-  partitions := make(map[int]struct{})
-  for _, p := range assignmentpb.Partitions {
-    partitions[int(p)] = void
-  }
-  return partitionSet(partitions)
+	partitions := make(map[int]struct{})
+	for _, p := range assignmentpb.Partitions {
+		partitions[int(p)] = void
+	}
+	return partitionSet(partitions)
 }
 
 func (ps partitionSet) Ints() (partitions []int) {
-  for p := range ps {
-    partitions = append(partitions, p)
-  }
-  return
+	for p := range ps {
+		partitions = append(partitions, p)
+	}
+	return
 }
 
 func (ps partitionSet) Contains(partition int) bool {
-  _, exists := ps[partition]
-  return exists
+	_, exists := ps[partition]
+	return exists
 }
 
 // A function that generates a 16-byte UUID.
@@ -62,112 +62,112 @@ type partitionAssignmentReceiver func(partitionSet) error
 // assigner wraps the partition assignment stream and notifies a receiver when
 // the server sends a new set of partition assignments for a subscriber.
 type assigner struct {
-  // Immutable after creation.
-  assignmentClient  *vkit.PartitionAssignmentClient
-  initialReq        *pb.PartitionAssignmentRequest
-  receiveAssignment partitionAssignmentReceiver
+	// Immutable after creation.
+	assignmentClient  *vkit.PartitionAssignmentClient
+	initialReq        *pb.PartitionAssignmentRequest
+	receiveAssignment partitionAssignmentReceiver
 
-  // Fields below must be guarded with mutex.
-  stream *retryableStream
+	// Fields below must be guarded with mutex.
+	stream *retryableStream
 
-  abstractService
+	abstractService
 }
 
 func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, settings ReceiveSettings, subscriptionPath string, receiver partitionAssignmentReceiver) (*assigner, error) {
-  clientID, err := genUUID()
-  if err != nil {
-    return nil, fmt.Errorf("pubsublite: failed to generate client UUID: %v", err)
-  }
+	clientID, err := genUUID()
+	if err != nil {
+		return nil, fmt.Errorf("pubsublite: failed to generate client UUID: %v", err)
+	}
 
-  a := &assigner{
-    assignmentClient: assignmentClient,
-    initialReq: &pb.PartitionAssignmentRequest{
-      Request: &pb.PartitionAssignmentRequest_Initial{
-        Initial: &pb.InitialPartitionAssignmentRequest{
-          Subscription: subscriptionPath,
-          ClientId:     clientID[:],
-        },
-      },
-    },
-    receiveAssignment: receiver,
-  }
-  a.stream = newRetryableStream(ctx, a, settings.Timeout, reflect.TypeOf(pb.PartitionAssignment{}))
-  return a, nil
+	a := &assigner{
+		assignmentClient: assignmentClient,
+		initialReq: &pb.PartitionAssignmentRequest{
+			Request: &pb.PartitionAssignmentRequest_Initial{
+				Initial: &pb.InitialPartitionAssignmentRequest{
+					Subscription: subscriptionPath,
+					ClientId:     clientID[:],
+				},
+			},
+		},
+		receiveAssignment: receiver,
+	}
+	a.stream = newRetryableStream(ctx, a, settings.Timeout, reflect.TypeOf(pb.PartitionAssignment{}))
+	return a, nil
 }
 
 func (a *assigner) Start() {
-  a.mu.Lock()
-  defer a.mu.Unlock()
+	a.mu.Lock()
+	defer a.mu.Unlock()
 
-  if a.unsafeUpdateStatus(serviceStarting, nil) {
-    a.stream.Start()
-  }
+	if a.unsafeUpdateStatus(serviceStarting, nil) {
+		a.stream.Start()
+	}
 }
 
 func (a *assigner) Stop() {
-  a.mu.Lock()
-  defer a.mu.Unlock()
-  a.unsafeInitiateShutdown(serviceTerminating, nil)
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	a.unsafeInitiateShutdown(serviceTerminating, nil)
 }
 
 func (a *assigner) newStream(ctx context.Context) (grpc.ClientStream, error) {
-  return a.assignmentClient.AssignPartitions(ctx)
+	return a.assignmentClient.AssignPartitions(ctx)
 }
 
 func (a *assigner) initialRequest() (interface{}, bool) {
-  // No initial response expected.
-  return a.initialReq, false
+	// No initial response expected.
+	return a.initialReq, false
 }
 
 func (a *assigner) validateInitialResponse(_ interface{}) error {
-  // Should not be called.
-  return errors.New("pubsublite: unexpected initial response")
+	// Should not be called.
+	return errors.New("pubsublite: unexpected initial response")
 }
 
 func (a *assigner) onStreamStatusChange(status streamStatus) {
-  a.mu.Lock()
-  defer a.mu.Unlock()
+	a.mu.Lock()
+	defer a.mu.Unlock()
 
-  switch status {
-  case streamConnected:
-    a.unsafeUpdateStatus(serviceActive, nil)
+	switch status {
+	case streamConnected:
+		a.unsafeUpdateStatus(serviceActive, nil)
 
-  case streamTerminated:
-    a.unsafeInitiateShutdown(serviceTerminated, a.stream.Error())
-  }
+	case streamTerminated:
+		a.unsafeInitiateShutdown(serviceTerminated, a.stream.Error())
+	}
 }
 
 func (a *assigner) onResponse(response interface{}) {
-  a.mu.Lock()
-  defer a.mu.Unlock()
+	a.mu.Lock()
+	defer a.mu.Unlock()
 
-  if a.status >= serviceTerminating {
-    return
-  }
+	if a.status >= serviceTerminating {
+		return
+	}
 
-  assignment, _ := response.(*pb.PartitionAssignment)
-  if err := a.handleAssignment(assignment); err != nil {
-    a.unsafeInitiateShutdown(serviceTerminated, err)
-  }
+	assignment, _ := response.(*pb.PartitionAssignment)
+	if err := a.handleAssignment(assignment); err != nil {
+		a.unsafeInitiateShutdown(serviceTerminated, err)
+	}
 }
 
 func (a *assigner) handleAssignment(assignment *pb.PartitionAssignment) error {
-  if err := a.receiveAssignment(newPartitionSet(assignment)); err != nil {
-    return err
-  }
+	if err := a.receiveAssignment(newPartitionSet(assignment)); err != nil {
+		return err
+	}
 
-  a.stream.Send(&pb.PartitionAssignmentRequest{
-    Request: &pb.PartitionAssignmentRequest_Ack{
-      Ack: &pb.PartitionAssignmentAck{},
-    },
-  })
-  return nil
+	a.stream.Send(&pb.PartitionAssignmentRequest{
+		Request: &pb.PartitionAssignmentRequest_Ack{
+			Ack: &pb.PartitionAssignmentAck{},
+		},
+	})
+	return nil
 }
 
 func (a *assigner) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-  if !a.unsafeUpdateStatus(targetStatus, err) {
-    return
-  }
-  // No data to send. Immediately terminate the stream.
-  a.stream.Stop()
+	if !a.unsafeUpdateStatus(targetStatus, err) {
+		return
+	}
+	// No data to send. Immediately terminate the stream.
+	a.stream.Stop()
 }
