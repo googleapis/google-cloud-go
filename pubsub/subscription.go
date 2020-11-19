@@ -910,7 +910,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					ackh, _ := msg.ackHandler()
+					ackh, _ := msgAckHandler(msg)
 					old := ackh.doneFunc
 					msgLen := len(msg.Data)
 					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {

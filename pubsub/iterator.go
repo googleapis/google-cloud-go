@@ -207,7 +207,8 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 		return nil, it.fail(err)
 	}
 	recordStat(it.ctx, PullCount, int64(len(rmsgs)))
-	msgs, err := convertMessages(rmsgs)
+	now := time.Now()
+	msgs, err := convertMessages(rmsgs, now, it.done)
 	if err != nil {
 		return nil, it.fail(err)
 	}
@@ -216,17 +217,14 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	maxExt := time.Now().Add(it.po.maxExtension)
 	ackIDs := map[string]bool{}
 	it.mu.Lock()
-	now := time.Now()
 	for _, m := range msgs {
-		ackh, _ := m.ackHandler()
-		ackh.receiveTime = now
-		addRecv(m.ID, ackh.ackID, now)
-		ackh.doneFunc = it.done
-		it.keepAliveDeadlines[ackh.ackID] = maxExt
+		ackID := msgAckID(m)
+		addRecv(m.ID, ackID, now)
+		it.keepAliveDeadlines[ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
-		if !it.pendingNacks[ackh.ackID] {
-			ackIDs[ackh.ackID] = true
+		if !it.pendingNacks[ackID] {
+			ackIDs[ackID] = true
 		}
 	}
 	deadline := it.ackDeadline()
