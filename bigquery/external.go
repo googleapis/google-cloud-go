@@ -424,11 +424,11 @@ func bqToBigtableColumn(q *bq.BigtableColumn) (*BigtableColumn, error) {
 type HivePartitioningMode string
 
 var (
-	// AUTO
+	// AutoHivePartitioningMode automatically infers partitioning key and types.
 	AutoHivePartitioningMode HivePartitioningMode = "AUTO"
-	// STRINGS
+	// StringHivePartitioningMode automatically infers partitioning keys and treats values as string.
 	StringHivePartitioningMode HivePartitioningMode = "STRINGS"
-	// CUSTOM
+	// CustomHivePartitioningMode allows custom definition of the external partitioning.
 	CustomHivePartitioningMode HivePartitioningMode = "CUSTOM"
 )
 
