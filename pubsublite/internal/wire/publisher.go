@@ -51,7 +51,7 @@ type singlePartitionPublisher struct {
 	topic      topicPartition
 	initialReq *pb.PublishRequest
 
-	// Fields below must be guarded with mutex.
+	// Fields below must be guarded with mu.
 	stream             *retryableStream
 	batcher            *publishMessageBatcher
 	enableSendToStream bool
@@ -254,7 +254,7 @@ func (pp *singlePartitionPublisher) unsafeInitiateShutdown(targetStatus serviceS
 // unsafeCheckDone closes the stream once all pending messages have been
 // published during shutdown.
 func (pp *singlePartitionPublisher) unsafeCheckDone() {
-	if pp.status == serviceTerminating && pp.batcher.Done() {
+	if pp.status == serviceTerminating && pp.batcher.InFlightBatchesEmpty() {
 		pp.stream.Stop()
 	}
 }

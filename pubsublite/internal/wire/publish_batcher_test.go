@@ -19,6 +19,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/pubsublite/common"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
@@ -34,7 +35,7 @@ type testPublishResultReceiver struct {
 	done   chan struct{}
 	msg    string
 	t      *testing.T
-	got    *PublishMetadata
+	got    *common.PublishMetadata
 	gotErr error
 }
 
@@ -46,7 +47,7 @@ func newTestPublishResultReceiver(t *testing.T, msg *pb.PubSubMessage) *testPubl
 	}
 }
 
-func (r *testPublishResultReceiver) set(pm *PublishMetadata, err error) {
+func (r *testPublishResultReceiver) set(pm *common.PublishMetadata, err error) {
 	r.got = pm
 	r.gotErr = err
 	close(r.done)

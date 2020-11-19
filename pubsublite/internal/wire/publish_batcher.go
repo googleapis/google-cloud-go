@@ -18,6 +18,7 @@ import (
 	"errors"
 	"fmt"
 
+	"cloud.google.com/go/pubsublite/common"
 	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/support/bundler"
 
@@ -26,18 +27,8 @@ import (
 
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")
 
-// PublishMetadata holds the results of a published message.
-type PublishMetadata struct {
-	Partition int
-	Offset    int64
-}
-
-func (pm *PublishMetadata) String() string {
-	return fmt.Sprintf("%d:%d", pm.Partition, pm.Offset)
-}
-
 // PublishResultFunc receives the result of a publish.
-type PublishResultFunc func(*PublishMetadata, error)
+type PublishResultFunc func(*common.PublishMetadata, error)
 
 // messageHolder stores a message to be published, with associated metadata.
 type messageHolder struct {
@@ -71,7 +62,7 @@ func (b *publishBatch) ToPublishRequest() *pb.PublishRequest {
 // published batches. It is owned by singlePartitionPublisher.
 type publishMessageBatcher struct {
 	partition int
-	// Used to batch messages.
+	// Used to batch messages. Setting HandlerLimit=1 results in ordered batches.
 	msgBundler *bundler.Bundler
 	// FIFO queue of in-flight batches of published messages. Results have not yet
 	// been received from the server.
@@ -150,7 +141,7 @@ func (b *publishMessageBatcher) OnPublishResponse(firstOffset int64) error {
 	batch, _ := frontElem.Value.(*publishBatch)
 	for i, msgHolder := range batch.msgHolders {
 		// Messages are ordered, so the offset of each message is firstOffset + i.
-		pm := &PublishMetadata{Partition: b.partition, Offset: firstOffset + int64(i)}
+		pm := &common.PublishMetadata{Partition: b.partition, Offset: firstOffset + int64(i)}
 		msgHolder.onResult(pm, nil)
 		b.availableBufferBytes += msgHolder.size
 	}
@@ -185,6 +176,6 @@ func (b *publishMessageBatcher) Flush() {
 	b.msgBundler.Flush()
 }
 
-func (b *publishMessageBatcher) Done() bool {
+func (b *publishMessageBatcher) InFlightBatchesEmpty() bool {
 	return b.publishQueue.Len() == 0
 }
