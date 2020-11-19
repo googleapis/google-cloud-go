@@ -1859,6 +1859,59 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	autoTable := dataset.Table(tableIDs.New())
+	customTable := dataset.Table(tableIDs.New())
+
+	err := autoTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: &ExternalDataConfig{
+			SourceFormat: Parquet,
+			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
+			AutoDetect:   true,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   AutoHivePartitioningMode,
+				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/",
+				RequirePartitionFilter: true,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("table.Create(auto): %v", err)
+	}
+	defer autoTable.Delete(ctx)
+
+	err = customTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: &ExternalDataConfig{
+			SourceFormat: Parquet,
+			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
+			AutoDetect:   true,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   CustomHivePartitioningMode,
+				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/{pkey:STRING}/",
+				RequirePartitionFilter: true,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("table.Create(custom): %v", err)
+	}
+	defer customTable.Delete(ctx)
+
+	// Issue a test query that prunes based on the custom hive partitioning key, and verify the result is as expected.
+	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM `%s`.%s.%s WHERE pkey=\"foo\"", customTable.ProjectID, customTable.DatasetID, customTable.TableID)
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("Error querying: %v", err)
+	}
+	checkReadAndTotalRows(t, "HiveQuery", it, [][]Value{{int64(50)}})
+}
+
 func TestIntegration_QueryParameters(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
