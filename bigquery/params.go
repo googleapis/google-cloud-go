@@ -65,16 +65,17 @@ func (e invalidFieldNameError) Error() string {
 var fieldCache = fields.NewCache(bqTagParser, nil, nil)
 
 var (
-	int64ParamType     = &bq.QueryParameterType{Type: "INT64"}
-	float64ParamType   = &bq.QueryParameterType{Type: "FLOAT64"}
-	boolParamType      = &bq.QueryParameterType{Type: "BOOL"}
-	stringParamType    = &bq.QueryParameterType{Type: "STRING"}
-	bytesParamType     = &bq.QueryParameterType{Type: "BYTES"}
-	dateParamType      = &bq.QueryParameterType{Type: "DATE"}
-	timeParamType      = &bq.QueryParameterType{Type: "TIME"}
-	dateTimeParamType  = &bq.QueryParameterType{Type: "DATETIME"}
-	timestampParamType = &bq.QueryParameterType{Type: "TIMESTAMP"}
-	numericParamType   = &bq.QueryParameterType{Type: "NUMERIC"}
+	int64ParamType      = &bq.QueryParameterType{Type: "INT64"}
+	float64ParamType    = &bq.QueryParameterType{Type: "FLOAT64"}
+	boolParamType       = &bq.QueryParameterType{Type: "BOOL"}
+	stringParamType     = &bq.QueryParameterType{Type: "STRING"}
+	bytesParamType      = &bq.QueryParameterType{Type: "BYTES"}
+	dateParamType       = &bq.QueryParameterType{Type: "DATE"}
+	timeParamType       = &bq.QueryParameterType{Type: "TIME"}
+	dateTimeParamType   = &bq.QueryParameterType{Type: "DATETIME"}
+	timestampParamType  = &bq.QueryParameterType{Type: "TIMESTAMP"}
+	numericParamType    = &bq.QueryParameterType{Type: "NUMERIC"}
+	bigNumericParamType = &bq.QueryParameterType{Type: "BIGNUMERIC"}
 )
 
 var (
@@ -233,6 +234,9 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 		return res, nil
 
 	case typeOfRat:
+		// big.Rat types don't communicate scale or precision, so we cannot
+		// disambiguate between NUMERIC and BIGNUMERIC.  For now, we'll continue
+		// to honor previous behavior and send as Numeric type.
 		res.Value = NumericString(v.Interface().(*big.Rat))
 		return res, nil
 	}
@@ -304,14 +308,15 @@ func bqToQueryParameter(q *bq.QueryParameter) (QueryParameter, error) {
 }
 
 var paramTypeToFieldType = map[string]FieldType{
-	int64ParamType.Type:   IntegerFieldType,
-	float64ParamType.Type: FloatFieldType,
-	boolParamType.Type:    BooleanFieldType,
-	stringParamType.Type:  StringFieldType,
-	bytesParamType.Type:   BytesFieldType,
-	dateParamType.Type:    DateFieldType,
-	timeParamType.Type:    TimeFieldType,
-	numericParamType.Type: NumericFieldType,
+	int64ParamType.Type:      IntegerFieldType,
+	float64ParamType.Type:    FloatFieldType,
+	boolParamType.Type:       BooleanFieldType,
+	stringParamType.Type:     StringFieldType,
+	bytesParamType.Type:      BytesFieldType,
+	dateParamType.Type:       DateFieldType,
+	timeParamType.Type:       TimeFieldType,
+	numericParamType.Type:    NumericFieldType,
+	bigNumericParamType.Type: BigNumericFieldType,
 }
 
 // Convert a parameter value from the service to a Go value. This is similar to, but
