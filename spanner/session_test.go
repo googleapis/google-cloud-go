@@ -1557,7 +1557,7 @@ func TestMaintainer(t *testing.T) {
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
-		if sp.numOpened != 5 {
+		if sp.numOpened != minOpened {
 			return fmt.Errorf("Replenish. Expect %d open, got %d", sp.MinOpened, sp.numOpened)
 		}
 		return nil
@@ -1574,12 +1574,20 @@ func TestMaintainer(t *testing.T) {
 			t.Fatalf("cannot get session from session pool: %v", err)
 		}
 	}
-	sp.mu.Lock()
-	g, w := sp.numOpened, sp.MinOpened+sp.incStep
-	sp.mu.Unlock()
-	if g != w {
-		t.Fatalf("numOpened sessions mismatch\nGot: %d\nWant: %d", g, w)
-	}
+	// It is possible that we need to wait a little before all sessions have been created.
+	// We requested 20 sessions, but the default step that BatchCreateSessions will use is
+	// 25 sessions. It is therefore possible that 20 sessions have been returned to the
+	// test, without all the sessions that have been requested from the server have been
+	// added to the pool.
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		g, w := sp.numOpened, sp.MinOpened+sp.incStep
+		if g != w {
+			return fmt.Errorf("numOpened sessions mismatch\nGot: %d\nWant: %d", g, w)
+		}
+		return nil
+	})
 
 	// Return 14 sessions to the pool. There are still 6 sessions checked out.
 	for _, sh := range shs[:14] {
