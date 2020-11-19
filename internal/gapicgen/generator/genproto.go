@@ -42,6 +42,19 @@ var denylist = map[string]bool{
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1": true,
 }
 
+var skipPrefixes = []string{
+	"google.golang.org/genproto/googleapis/ads",
+}
+
+func hasPrefix(s string, prefixes []string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 // regenGenproto regenerates the genproto repository.
 //
 // regenGenproto recursively walks through each directory named by given
@@ -110,7 +123,7 @@ func regenGenproto(ctx context.Context, genprotoDir, googleapisDir, protoDir str
 	// Run protoc on all protos of all packages.
 	grp, _ := errgroup.WithContext(ctx)
 	for pkg, fnames := range pkgFiles {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, skipPrefixes) {
 			continue
 		}
 		pk := pkg
