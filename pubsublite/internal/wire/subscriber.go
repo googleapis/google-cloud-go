@@ -191,7 +191,6 @@ func (s *subscribeStream) onResponse(response interface{}) {
 		s.receiver(receivedMsgs)
 		return
 	}
-
 	if err != nil {
 		s.unsafeInitiateShutdown(serviceTerminated, err)
 	}
@@ -216,6 +215,7 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 	if err := s.flowControl.OnMessages(response.Messages); err != nil {
 		return nil, err
 	}
+
 	var receivedMsgs []*ReceivedMessage
 	for _, msg := range response.Messages {
 		// Register outstanding acks, which are primarily handled by the
@@ -237,6 +237,7 @@ func (s *subscribeStream) onAck(ac *ackConsumer) {
 func (s *subscribeStream) onAckAsync(msgBytes int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
+
 	if s.status == serviceActive {
 		s.unsafeAllowFlow(flowControlTokens{Bytes: msgBytes, Messages: 1})
 	}
@@ -260,6 +261,7 @@ func (s *subscribeStream) unsafeSendFlowControl(req *pb.FlowControlRequest) {
 	if req == nil {
 		return
 	}
+
 	// Note: If Send() returns false, the stream will be reconnected and
 	// flowControlBatcher.RequestForRestart() will be sent when the stream
 	// reconnects. So its return value is ignored.
@@ -272,6 +274,7 @@ func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err
 	if !s.unsafeUpdateStatus(targetStatus, err) {
 		return
 	}
+
 	// No data to send. Immediately terminate the stream.
 	s.pollFlowControl.Stop()
 	s.stream.Stop()

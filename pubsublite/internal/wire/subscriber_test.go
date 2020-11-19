@@ -331,7 +331,7 @@ func TestSubscribeStreamMessagesOutOfOrder(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
 	acks := newAckTracker()
 	msg1 := seqMsgWithOffsetAndSize(56, 100)
-	msg2 := seqMsgWithOffsetAndSize(55, 100)
+	msg2 := seqMsgWithOffsetAndSize(55, 100) // Offset before msg1
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
