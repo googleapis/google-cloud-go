@@ -802,11 +802,9 @@ const (
 	NumericScaleDigits = 9
 
 	// BigNumericPrecisionDigits is the maximum number of full digits in a BIGNUMERIC value.
-	// BigNumeric does support a partial digit beyond this.
 	BigNumericPrecisionDigits = 76
 
 	// BigNumericScaleDigits is the maximum number of full digits in a BIGNUMERIC value.
-	// BigNumeric does support a partial 39th digit.
 	BigNumericScaleDigits = 38
 )
 
