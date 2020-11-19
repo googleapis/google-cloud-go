@@ -745,22 +745,23 @@ func TestStructSaverErrors(t *testing.T) {
 }
 
 func TestNumericStrings(t *testing.T) {
-	for n, test := range []struct {
+	for _, test := range []struct {
+		description    string
 		in             *big.Rat
 		wantNumeric    string
 		wantBigNumeric string
 	}{
-		{big.NewRat(2, 3), "0.666666667", "0.66666666666666666666666666666666666667"}, // rounding last digit for both numeric/bignumeric
-		{big.NewRat(1, 2), "0.500000000", "0.50000000000000000000000000000000000000"},
-		{big.NewRat(1, 2*1e8), "0.000000005", "0.00000000500000000000000000000000000000"},
-		{big.NewRat(5, 1e10), "0.000000001", "0.00000000050000000000000000000000000000"},    // rounding only for numeric
-		{big.NewRat(-5, 1e10), "-0.000000001", "-0.00000000050000000000000000000000000000"}, // rounding only for numeric
+		{"repeating with rounding", big.NewRat(2, 3), "0.666666667", "0.66666666666666666666666666666666666667"},
+		{"all zero padding", big.NewRat(1, 2), "0.500000000", "0.50000000000000000000000000000000000000"},
+		{"zero pad with digit", big.NewRat(1, 2*1e8), "0.000000005", "0.00000000500000000000000000000000000000"},
+		{"smaller rounding case 1", big.NewRat(5, 1e10), "0.000000001", "0.00000000050000000000000000000000000000"},
+		{"smaller rounding case 2", big.NewRat(-5, 1e10), "-0.000000001", "-0.00000000050000000000000000000000000000"},
 	} {
 		if got := NumericString(test.in); got != test.wantNumeric {
-			t.Errorf("#%d %v as numeric: got %q, want %q", n, test.in, got, test.wantNumeric)
+			t.Errorf("case %q, val %v as numeric: got %q, want %q", test.description, test.in, got, test.wantNumeric)
 		}
 		if got := BigNumericString(test.in); got != test.wantBigNumeric {
-			t.Errorf("#%d %v as bignumeric: got %q, want %q", n, test.in, got, test.wantBigNumeric)
+			t.Errorf("case %q, val %v as bignumeric: got %q, want %q", test.description, test.in, got, test.wantBigNumeric)
 		}
 	}
 }
