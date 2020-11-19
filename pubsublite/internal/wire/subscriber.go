@@ -19,6 +19,8 @@ import (
 	"reflect"
 	"time"
 
+	"github.com/google/uuid"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -60,7 +62,7 @@ type subscribeStream struct {
 	initialReq   *pb.SubscribeRequest
 	receiver     MessageReceiverFunc
 
-	// Fields below must be guarded with mutex.
+	// Fields below must be guarded with mu.
 	stream          *retryableStream
 	acks            *ackTracker
 	offsetTracker   subscriberOffsetTracker
@@ -175,6 +177,11 @@ func (s *subscribeStream) onResponse(response interface{}) {
 	var err error
 	s.mu.Lock()
 
+	if s.status >= serviceTerminating {
+		s.mu.Unlock()
+		return
+	}
+
 	subscribeResponse, _ := response.(*pb.SubscribeResponse)
 	switch {
 	case subscribeResponse.GetMessages() != nil:
@@ -285,6 +292,9 @@ func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err
 // - subscribeStream to receive messages from the subscribe stream.
 // - committer to commit cursor offsets to the streaming commit cursor stream.
 type singlePartitionSubscriber struct {
+	subscriber *subscribeStream
+	committer  *committer
+
 	compositeService
 }
 
@@ -303,7 +313,10 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 	acks := newAckTracker()
 	commit := newCommitter(f.ctx, f.cursorClient, f.settings, subscription, acks, f.disableTasks)
 	sub := newSubscribeStream(f.ctx, f.subClient, f.settings, f.receiver, subscription, acks, f.disableTasks)
-	ps := new(singlePartitionSubscriber)
+	ps := &singlePartitionSubscriber{
+		subscriber: sub,
+		committer:  commit,
+	}
 	ps.init()
 	ps.unsafeAddServices(sub, commit)
 	return ps
@@ -324,4 +337,108 @@ func newMultiPartitionSubscriber(subFactory *singlePartitionSubscriberFactory) *
 		ms.unsafeAddServices(subscriber)
 	}
 	return ms
+}
+
+// assigningSubscriber uses the Pub/Sub Lite partition assignment service to
+// listen to its assigned partition numbers and dynamically add/remove
+// singlePartitionSubscribers.
+type assigningSubscriber struct {
+	// Immutable after creation.
+	subFactory *singlePartitionSubscriberFactory
+	assigner   *assigner
+
+	// Fields below must be guarded with mu.
+	// Subscribers keyed by partition number. Updated as assignments change.
+	subscribers map[int]*singlePartitionSubscriber
+
+	compositeService
+}
+
+func newAssigningSubscriber(assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
+	as := &assigningSubscriber{
+		subFactory:  subFactory,
+		subscribers: make(map[int]*singlePartitionSubscriber),
+	}
+	as.init()
+
+	assigner, err := newAssigner(subFactory.ctx, assignmentClient, genUUID, subFactory.settings, subFactory.subscriptionPath, as.handleAssignment)
+	if err != nil {
+		return nil, err
+	}
+	as.assigner = assigner
+	as.unsafeAddServices(assigner)
+	return as, nil
+}
+
+func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
+	as.mu.Lock()
+	defer as.mu.Unlock()
+
+	// Handle new partitions.
+	for _, partition := range partitions.Ints() {
+		if _, exists := as.subscribers[partition]; !exists {
+			subscriber := as.subFactory.New(partition)
+			if err := as.unsafeAddServices(subscriber); err != nil {
+				// Occurs when the assigningSubscriber is stopping/stopped.
+				return err
+			}
+			as.subscribers[partition] = subscriber
+		}
+	}
+
+	// Handle removed partitions.
+	for partition, subscriber := range as.subscribers {
+		if !partitions.Contains(partition) {
+			as.unsafeRemoveService(subscriber)
+			// Safe to delete map entry during range loop:
+			// https://golang.org/ref/spec#For_statements
+			delete(as.subscribers, partition)
+		}
+	}
+	return nil
+}
+
+// Subscriber is the client interface exported from this package for receiving
+// messages.
+type Subscriber interface {
+	Start()
+	WaitStarted() error
+	Stop()
+	WaitStopped() error
+}
+
+// NewSubscriber creates a new client for receiving messages.
+func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver MessageReceiverFunc, region, subscriptionPath string, opts ...option.ClientOption) (Subscriber, error) {
+	if err := ValidateRegion(region); err != nil {
+		return nil, err
+	}
+	if err := validateReceiveSettings(settings); err != nil {
+		return nil, err
+	}
+	subClient, err := newSubscriberClient(ctx, region, opts...)
+	if err != nil {
+		return nil, err
+	}
+	cursorClient, err := newCursorClient(ctx, region, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	subFactory := &singlePartitionSubscriberFactory{
+		ctx:              ctx,
+		subClient:        subClient,
+		cursorClient:     cursorClient,
+		settings:         settings,
+		subscriptionPath: subscriptionPath,
+		receiver:         receiver,
+	}
+
+	if len(settings.Partitions) > 0 {
+		return newMultiPartitionSubscriber(subFactory), nil
+	}
+	partitionClient, err := newPartitionAssignmentClient(ctx, region, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return newAssigningSubscriber(partitionClient, uuid.NewRandom, subFactory)
 }
