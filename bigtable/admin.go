@@ -603,10 +603,9 @@ func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
 }
 
-// BackupIAM creates an IAM client specific to a given Cluster and Backup.
+// BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
 func (ac *AdminClient) BackupIAM(ctx context.Context, cluster, backup string) *iam.Handle {
-	prefix := ac.instancePrefix()
-	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+	backupPath := ac.instancePrefix() + "/clusters/" + cluster + "/backups/" + backup
 	return iam.InternalNewHandleGRPCClient(ac.tClient, backupPath)
 }
 
