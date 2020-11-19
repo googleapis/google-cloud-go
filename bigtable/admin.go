@@ -597,7 +597,7 @@ func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) err
 	}
 }
 
-// TableIAM creates an IAM client specific to a given Instance and Table within the configured project.
+// TableIAM creates an IAM Handle specific to a given Instance and Table within the configured project.
 func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient,
 		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
