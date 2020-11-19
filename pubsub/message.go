@@ -18,7 +18,7 @@ import (
 	"fmt"
 	"time"
 
-	internalpubsub "cloud.google.com/go/pubsub/internal/pubsub"
+	internalpubsub "cloud.google.com/go/internal/pubsub"
 	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )

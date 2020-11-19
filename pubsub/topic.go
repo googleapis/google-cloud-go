@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
-	internalpubsub "cloud.google.com/go/pubsub/internal/pubsub"
+	internalpubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
