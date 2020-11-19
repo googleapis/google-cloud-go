@@ -32,9 +32,16 @@ var (
 	errNoInFlightSeek                  = errors.New("pubsublite: received seek response for no in-flight seek")
 )
 
-// MessageReceiverFunc receives a Pub/Sub message from a topic partition and an
-// AckConsumer for acknowledging the message.
-type MessageReceiverFunc func(*pb.SequencedMessage, AckConsumer)
+// ReceivedMessage stores a received Pub/Sub message and AckConsumer for
+// acknowledging the message.
+type ReceivedMessage struct {
+	Msg *pb.SequencedMessage
+	Ack AckConsumer
+}
+
+// MessageReceiverFunc receives a batch of Pub/Sub messages from a topic
+// partition.
+type MessageReceiverFunc func([]*ReceivedMessage)
 
 // The frequency of sending batch flow control requests.
 const batchFlowControlPeriod = 100 * time.Millisecond
@@ -164,27 +171,31 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 }
 
 func (s *subscribeStream) onResponse(response interface{}) {
+	var receivedMsgs []*ReceivedMessage
+	var err error
 	s.mu.Lock()
-	defer s.mu.Unlock()
 
-	if s.status >= serviceTerminating {
+	subscribeResponse, _ := response.(*pb.SubscribeResponse)
+	switch {
+	case subscribeResponse.GetMessages() != nil:
+		receivedMsgs, err = s.unsafeOnMessageResponse(subscribeResponse.GetMessages())
+	case subscribeResponse.GetSeek() != nil:
+		err = s.unsafeOnSeekResponse(subscribeResponse.GetSeek())
+	default:
+		err = errInvalidSubscribeResponse
+	}
+
+	if receivedMsgs != nil {
+		// Deliver messages without holding the mutex to prevent deadlocks.
+		s.mu.Unlock()
+		s.receiver(receivedMsgs)
 		return
 	}
 
-	processResponse := func() error {
-		subscribeResponse, _ := response.(*pb.SubscribeResponse)
-		switch {
-		case subscribeResponse.GetMessages() != nil:
-			return s.unsafeOnMessageResponse(subscribeResponse.GetMessages())
-		case subscribeResponse.GetSeek() != nil:
-			return s.unsafeOnSeekResponse(subscribeResponse.GetSeek())
-		default:
-			return errInvalidSubscribeResponse
-		}
-	}
-	if err := processResponse(); err != nil {
+	if err != nil {
 		s.unsafeInitiateShutdown(serviceTerminated, err)
 	}
+	s.mu.Unlock()
 }
 
 func (s *subscribeStream) unsafeOnSeekResponse(response *pb.SeekResponse) error {
@@ -195,37 +206,27 @@ func (s *subscribeStream) unsafeOnSeekResponse(response *pb.SeekResponse) error 
 	return nil
 }
 
-func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) error {
+func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) ([]*ReceivedMessage, error) {
 	if len(response.Messages) == 0 {
-		return errServerNoMessages
+		return nil, errServerNoMessages
 	}
 	if err := s.offsetTracker.OnMessages(response.Messages); err != nil {
-		return err
+		return nil, err
 	}
 	if err := s.flowControl.OnMessages(response.Messages); err != nil {
-		return err
+		return nil, err
 	}
+	var receivedMsgs []*ReceivedMessage
 	for _, msg := range response.Messages {
 		// Register outstanding acks, which are primarily handled by the
 		// `committer`.
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
 		if err := s.acks.Push(ack); err != nil {
-			return err
+			return nil, err
 		}
-
-		// Release the mutex before delivering the message to the receiver. This
-		// allows the user to stop the subscriber (which would discard remaining
-		// messages) and other operations (e.g. ack processing, batch flow control)
-		// to occur.
-		s.mu.Unlock()
-		s.receiver(msg, ack)
-
-		s.mu.Lock()
-		if s.status >= serviceTerminating {
-			break
-		}
+		receivedMsgs = append(receivedMsgs, &ReceivedMessage{Msg: msg, Ack: ack})
 	}
-	return nil
+	return receivedMsgs, nil
 }
 
 func (s *subscribeStream) onAck(ac *ackConsumer) {

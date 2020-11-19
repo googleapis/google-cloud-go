@@ -16,7 +16,6 @@ package wire
 import (
 	"context"
 	"sort"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -42,25 +41,22 @@ func initFlowControlReq() *pb.SubscribeRequest {
 	return flowControlSubReq(flowControlTokens{Bytes: 1000, Messages: 10})
 }
 
-type testMessageHolder struct {
-	Msg *pb.SequencedMessage
-	Ack AckConsumer
-}
-
 type testMessageReceiver struct {
 	t        *testing.T
-	received chan *testMessageHolder
+	received chan *ReceivedMessage
 }
 
 func newTestMessageReceiver(t *testing.T) *testMessageReceiver {
 	return &testMessageReceiver{
 		t:        t,
-		received: make(chan *testMessageHolder, 5),
+		received: make(chan *ReceivedMessage, 5),
 	}
 }
 
-func (tr *testMessageReceiver) onMessages(msg *pb.SequencedMessage, ack AckConsumer) {
-	tr.received <- &testMessageHolder{Msg: msg, Ack: ack}
+func (tr *testMessageReceiver) onMessages(msgs []*ReceivedMessage) {
+	for _, msg := range msgs {
+		tr.received <- msg
+	}
 }
 
 func (tr *testMessageReceiver) ValidateMsg(want *pb.SequencedMessage) AckConsumer {
@@ -469,52 +465,6 @@ func TestSinglePartitionSubscriberSimpleMsgAck(t *testing.T) {
 	sub.Stop()
 	if gotErr := sub.WaitStopped(); gotErr != nil {
 		t.Errorf("Stop() got err: (%v)", gotErr)
-	}
-}
-
-func TestSinglePartitionSubscriberStopBetweenMessages(t *testing.T) {
-	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	msg1 := seqMsgWithOffsetAndSize(22, 100)
-	msg2 := seqMsgWithOffsetAndSize(33, 200)
-
-	verifiers := test.NewVerifiers(t)
-
-	subStream := test.NewRPCVerifier(t)
-	subStream.Push(initSubReq(subscription), initSubResp(), nil)
-	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
-	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
-
-	cmtStream := test.NewRPCVerifier(t)
-	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
-	// Note: msg2 never delivered to the client and never acked.
-	cmtStream.Push(commitReq(23), commitResp(1), nil)
-	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
-
-	mockServer.OnTestStart(verifiers)
-	defer mockServer.OnTestEnd()
-
-	var aSub atomic.Value // Stores a *singlePartitionSubscriber
-	var msgCount int32
-	onMessage := func(gotMsg *pb.SequencedMessage, ack AckConsumer) {
-		atomic.AddInt32(&msgCount, 1)
-		ack.Ack()
-
-		// Stop the subscriber directly in the message receiver func to terminate
-		// in the middle of processing a received message batch.
-		sub := aSub.Load().(*singlePartitionSubscriber)
-		sub.Stop()
-	}
-
-	sub := newTestSinglePartitionSubscriber(t, onMessage, subscription)
-	aSub.Store(sub)
-	if gotErr := sub.WaitStarted(); gotErr != nil {
-		t.Errorf("Start() got err: (%v)", gotErr)
-	}
-	if gotErr := sub.WaitStopped(); gotErr != nil {
-		t.Errorf("Stop() got err: (%v)", gotErr)
-	}
-	if got, want := atomic.LoadInt32(&msgCount), int32(1); got != want {
-		t.Errorf("Received message count: got %d, want %d", got, want)
 	}
 }
 
