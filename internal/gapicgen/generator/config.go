@@ -694,7 +694,8 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/pubsublite/apiv1",
 		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
-		releaseLevel:          "ga",
+		// Change this to "ga" for the generated client after the manual client (beta) is released.
+		releaseLevel:          "unspecified",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
