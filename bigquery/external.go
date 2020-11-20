@@ -423,7 +423,7 @@ func bqToBigtableColumn(q *bq.BigtableColumn) (*BigtableColumn, error) {
 // HivePartitioningMode is used in conjunction with HivePartitioningOptions.
 type HivePartitioningMode string
 
-var (
+const (
 	// AutoHivePartitioningMode automatically infers partitioning key and types.
 	AutoHivePartitioningMode HivePartitioningMode = "AUTO"
 	// StringHivePartitioningMode automatically infers partitioning keys and treats values as string.
@@ -439,10 +439,9 @@ type HivePartitioningOptions struct {
 	// Mode defines which hive partitioning mode to use when reading data.
 	Mode HivePartitioningMode
 
-	// When hive partition detection is
-	// requested, a common prefix for all source uris should be supplied.
-	// The prefix must end immediately before the partition key encoding
-	// begins.
+	// When hive partition detection is requested, a common prefix for
+	// all source uris should be supplied.  The prefix must end immediately
+	// before the partition key encoding begins.
 	//
 	// For example, consider files following this data layout.
 	//   gs://bucket/path_to_table/dt=2019-01-01/country=BR/id=7/file.avro
