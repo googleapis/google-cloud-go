@@ -688,15 +688,16 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/pubsub/v1/pubsub_v1.yaml",
 		releaseLevel:          "ga",
 	},
-	{
-		inputDirectoryPath:    "google/cloud/pubsublite/v1",
-		pkg:                   "pubsublite",
-		importPath:            "cloud.google.com/go/pubsublite/apiv1",
-		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
-		// Change this to "ga" for the generated client after the manual client (beta) is released.
-		releaseLevel:          "unspecified",
-	},
+	// Uncomment after the manual client (beta) for pubsublite is released.
+	// Also make sure the manual client is included in .repo-metadata-full.json.
+	// {
+	// 	inputDirectoryPath:    "google/cloud/pubsublite/v1",
+	// 	pkg:                   "pubsublite",
+	// 	importPath:            "cloud.google.com/go/pubsublite/apiv1",
+	// 	gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
+	// 	apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
+	// 	releaseLevel:          "ga",
+	// },
 	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
 		pkg:                   "automl",
