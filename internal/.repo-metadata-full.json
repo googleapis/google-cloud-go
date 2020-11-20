@@ -577,7 +577,7 @@
   },
   "cloud.google.com/go/pubsub": {
     "distribution_name": "cloud.google.com/go/pubsub",
-    "description": "Cloud PubSub",
+    "description": "Cloud Pub/Sub",
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/pubsub",
@@ -589,14 +589,6 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/pubsub/apiv1",
-    "release_level": "ga"
-  },
-  "cloud.google.com/go/pubsublite/apiv1": {
-    "distribution_name": "cloud.google.com/go/pubsublite/apiv1",
-    "description": "",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://pkg.go.dev/cloud.google.com/go/pubsublite/apiv1",
     "release_level": "ga"
   },
   "cloud.google.com/go/recaptchaenterprise/apiv1": {
