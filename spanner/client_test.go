@@ -2264,7 +2264,7 @@ func TestClient_ReadOnlyTransaction_Tag(t *testing.T) {
 			iter.Next()
 			iter.Stop()
 
-			checkRequestsForTags(t, server.TestSpanner, 2, qo)
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, qo)
 			tx.Close()
 		}
 	}
@@ -2299,13 +2299,13 @@ func TestClient_ReadWriteTransaction_Tag(t *testing.T) {
 
 				// Check for SQL requests inside the transaction to prevent the check to
 				// drain the commit request from the server.
-				checkRequestsForTags(t, server.TestSpanner, 4, QueryOptions{
+				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, QueryOptions{
 					RequestTag:     qo.RequestTag,
 					transactionTag: to.TransactionTag,
 				})
 				return nil
 			}, to)
-			checkCommitRequestForTags(t, server.TestSpanner, QueryOptions{
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, QueryOptions{
 				RequestTag:     "", // Should never be set
 				transactionTag: to.TransactionTag,
 			})
@@ -2339,13 +2339,13 @@ func TestClient_StmtBasedReadWriteTransaction_Tag(t *testing.T) {
 			tx.BatchUpdateWithOptions(context.Background(), []Statement{
 				NewStatement(UpdateBarSetFoo),
 			}, qo)
-			checkRequestsForTags(t, server.TestSpanner, 4, QueryOptions{
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, QueryOptions{
 				RequestTag:     qo.RequestTag,
 				transactionTag: to.TransactionTag,
 			})
 
 			tx.Commit(context.Background())
-			checkCommitRequestForTags(t, server.TestSpanner, QueryOptions{
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, QueryOptions{
 				RequestTag:     "", // Should never be set
 				transactionTag: to.TransactionTag,
 			})
@@ -2353,7 +2353,22 @@ func TestClient_StmtBasedReadWriteTransaction_Tag(t *testing.T) {
 	}
 }
 
-func checkRequestsForTags(t *testing.T, server InMemSpannerServer, reqCount int, qo QueryOptions) {
+func TestClient_PDML_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, qo := range []QueryOptions{
+		{},
+		{RequestTag: "request-tag-1"},
+	} {
+		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, qo)
+	}
+}
+
+func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, qo QueryOptions) {
 	reqs := drainRequestsFromServer(server)
 	reqOptions := []*sppb.RequestOptions{}
 
@@ -2383,7 +2398,7 @@ func checkRequestsForTags(t *testing.T, server InMemSpannerServer, reqCount int,
 	}
 }
 
-func checkCommitRequestForTags(t *testing.T, server InMemSpannerServer, qo QueryOptions) {
+func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, qo QueryOptions) {
 	reqs := drainRequestsFromServer(server)
 	var commit *sppb.CommitRequest
 	var ok bool
