@@ -1574,11 +1574,13 @@ func TestMaintainer(t *testing.T) {
 			t.Fatalf("cannot get session from session pool: %v", err)
 		}
 	}
-	// It is possible that we need to wait a little before all sessions have been created.
-	// We requested 20 sessions, but the default step that BatchCreateSessions will use is
-	// 25 sessions. It is therefore possible that 20 sessions have been returned to the
-	// test, without all the sessions that have been requested from the server have been
-	// added to the pool.
+	// Wait for all sessions to be added to the pool.
+	// The pool already contained 5 sessions (MinOpened=5).
+	// The test took 20 sessions from the pool. That initiated the creation of
+	// additional sessions, and that is done in batches of 25 sessions, so the
+	// pool should contain 30 sessions (with 20 currently checked out). It
+	// could take a couple of milliseconds before all sessions have been
+	// created and added to the pool.
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
