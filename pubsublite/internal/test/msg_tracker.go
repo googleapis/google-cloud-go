@@ -21,6 +21,13 @@ import (
 
 // MsgTracker is a helper for checking whether a set of messages make a full
 // round trip from publisher to subscriber.
+//
+// Add() registers published messages. Remove() should be called when messages
+// are received by subscribers. Call Wait() to block until all tracked messages
+// are received. The same MsgTracker instance can be reused to repeat this
+// sequence for multiple test cycles.
+//
+// Add() and Remove() calls should not be interleaved.
 type MsgTracker struct {
 	msgMap map[string]bool
 	done   chan struct{}
