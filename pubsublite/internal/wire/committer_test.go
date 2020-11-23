@@ -50,8 +50,8 @@ func (tc *testCommitter) SendBatchCommit() {
 
 func TestCommitterStreamReconnect(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
-	ack1 := newAckConsumer(33, 0, nil)
-	ack2 := newAckConsumer(55, 0, nil)
+	ack1 := newAckConsumer(33, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(55, 0, emptyAckConsumer)
 	acks := newAckTracker()
 	acks.Push(ack1)
 	acks.Push(ack2)
@@ -92,8 +92,8 @@ func TestCommitterStreamReconnect(t *testing.T) {
 
 func TestCommitterStopFlushesCommits(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
-	ack1 := newAckConsumer(33, 0, nil)
-	ack2 := newAckConsumer(55, 0, nil)
+	ack1 := newAckConsumer(33, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(55, 0, emptyAckConsumer)
 	acks := newAckTracker()
 	acks.Push(ack1)
 	acks.Push(ack2)
@@ -121,6 +121,33 @@ func TestCommitterStopFlushesCommits(t *testing.T) {
 	if gotErr := cmt.FinalError(); gotErr != nil {
 		t.Errorf("Final err: (%v), want: <nil>", gotErr)
 	}
+}
+
+func TestCommitterDiscardOutstandingAcks(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack1 := newAckConsumer(33, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(55, 0, emptyAckConsumer)
+	acks := newAckTracker()
+	acks.Push(ack1)
+	acks.Push(ack2)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	ack1.Cancel()
+	ack2.Cancel()
+	// Committer terminates without waiting for acks to be fulfilled.
+	cmt.StopVerifyNoError()
 }
 
 func TestCommitterPermanentStreamError(t *testing.T) {
@@ -167,7 +194,7 @@ func TestCommitterInvalidInitialResponse(t *testing.T) {
 
 func TestCommitterInvalidCommitResponse(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
-	ack := newAckConsumer(33, 0, nil)
+	ack := newAckConsumer(33, 0, emptyAckConsumer)
 	acks := newAckTracker()
 	acks.Push(ack)
 
@@ -195,7 +222,7 @@ func TestCommitterInvalidCommitResponse(t *testing.T) {
 
 func TestCommitterExcessConfirmedOffsets(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
-	ack := newAckConsumer(33, 0, nil)
+	ack := newAckConsumer(33, 0, emptyAckConsumer)
 	acks := newAckTracker()
 	acks.Push(ack)
 
@@ -224,7 +251,7 @@ func TestCommitterExcessConfirmedOffsets(t *testing.T) {
 
 func TestCommitterZeroConfirmedOffsets(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
-	ack := newAckConsumer(33, 0, nil)
+	ack := newAckConsumer(33, 0, emptyAckConsumer)
 	acks := newAckTracker()
 	acks.Push(ack)
 

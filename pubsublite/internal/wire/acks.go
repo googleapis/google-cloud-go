@@ -21,7 +21,10 @@ import (
 
 // AckConsumer is the interface exported from this package for acking messages.
 type AckConsumer interface {
+	// Ack the message.
 	Ack()
+	// Cancel ack processing for this message.
+	Cancel()
 }
 
 // ackedFunc is invoked when a message has been acked by the user. Note: if the
@@ -68,16 +71,22 @@ func (ac *ackConsumer) IsAcked() bool {
 	return ac.acked
 }
 
-// Clear onAck when the ack can no longer be processed. The user's ack would be
-// ignored.
-func (ac *ackConsumer) Clear() {
+func (ac *ackConsumer) IsDone() bool {
+	ac.mu.Lock()
+	defer ac.mu.Unlock()
+	return ac.acked || ac.onAck == nil
+}
+
+// Cancel clears onAck when the ack can no longer be processed. The user's ack
+// would be ignored.
+func (ac *ackConsumer) Cancel() {
 	ac.mu.Lock()
 	defer ac.mu.Unlock()
 	ac.onAck = nil
 }
 
 // Represents an uninitialized cursor offset. A sentinel value is used instead
-// if an optional to simplify cursor comparisons (i.e. -1 works without the need
+// of an optional to simplify cursor comparisons (i.e. -1 works without the need
 // to check for nil and then convert to int64).
 const nilCursorOffset int64 = -1
 
@@ -135,12 +144,14 @@ func (at *ackTracker) CommitOffset() int64 {
 			break
 		}
 		ack, _ := elem.Value.(*ackConsumer)
-		if !ack.IsAcked() {
+		if !ack.IsDone() {
 			break
 		}
-		at.ackedPrefixOffset = ack.Offset
+		if ack.IsAcked() {
+			at.ackedPrefixOffset = ack.Offset
+		}
 		at.outstandingAcks.Remove(elem)
-		ack.Clear()
+		ack.Cancel()
 	}
 
 	if at.ackedPrefixOffset == nilCursorOffset {
@@ -158,7 +169,7 @@ func (at *ackTracker) Release() {
 
 	for elem := at.outstandingAcks.Front(); elem != nil; elem = elem.Next() {
 		ack, _ := elem.Value.(*ackConsumer)
-		ack.Clear()
+		ack.Cancel()
 	}
 	at.outstandingAcks.Init()
 }
@@ -241,7 +252,7 @@ func (ct *commitCursorTracker) ConfirmOffsets(numConfirmed int64) error {
 	return nil
 }
 
-// Done when the server has confirmed the desired commit offset.
-func (ct *commitCursorTracker) Done() bool {
+// UpToDate when the server has confirmed the desired commit offset.
+func (ct *commitCursorTracker) UpToDate() bool {
 	return ct.acks.CommitOffset() <= ct.lastConfirmedOffset
 }

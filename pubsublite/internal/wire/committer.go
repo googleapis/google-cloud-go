@@ -207,7 +207,7 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 func (c *committer) unsafeCheckDone() {
 	// If the user stops the subscriber, they will no longer receive messages, but
 	// the commit stream remains open to process acks for outstanding messages.
-	if c.status == serviceTerminating && c.cursorTracker.Done() && c.acks.Empty() {
+	if c.status == serviceTerminating && c.cursorTracker.UpToDate() && c.acks.Empty() {
 		c.unsafeTerminate()
 	}
 }
