@@ -164,9 +164,18 @@ func (dm *DuplicateMsgDetector) Status() string {
 	return fmt.Sprintf("duplicate publish count = %d, receive count = %d", dm.duplicatePublishCount, dm.duplicateReceiveCount)
 }
 
-// HasDuplicates returns true if duplicate messages were detected.
-func (dm *DuplicateMsgDetector) HasDuplicates() bool {
+// HasPublishDuplicates returns true if duplicate published messages were
+// detected.
+func (dm *DuplicateMsgDetector) HasPublishDuplicates() bool {
 	dm.mu.Lock()
 	defer dm.mu.Unlock()
-	return (dm.duplicateReceiveCount + dm.duplicatePublishCount) > 0
+	return dm.duplicatePublishCount > 0
+}
+
+// HasReceiveDuplicates returns true if duplicate received messages were
+// detected.
+func (dm *DuplicateMsgDetector) HasReceiveDuplicates() bool {
+	dm.mu.Lock()
+	defer dm.mu.Unlock()
+	return dm.duplicateReceiveCount > 0
 }

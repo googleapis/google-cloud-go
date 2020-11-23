@@ -82,8 +82,11 @@ func TestDuplicateMsgDetector(t *testing.T) {
 		if got, want := duplicateDetector.duplicateReceiveCount, int64(0); got != want {
 			t.Errorf("DuplicateMsgDetector.duplicateReceiveCount got %v, want %v", got, want)
 		}
-		if got, want := duplicateDetector.HasDuplicates(), false; got != want {
-			t.Errorf("DuplicateMsgDetector.HasDuplicates() got %v, want %v", got, want)
+		if got, want := duplicateDetector.HasPublishDuplicates(), false; got != want {
+			t.Errorf("DuplicateMsgDetector.HasPublishDuplicates() got %v, want %v", got, want)
+		}
+		if got, want := duplicateDetector.HasReceiveDuplicates(), false; got != want {
+			t.Errorf("DuplicateMsgDetector.HasReceiveDuplicates() got %v, want %v", got, want)
 		}
 		if got, want := duplicateDetector.Status(), ""; got != want {
 			t.Errorf("DuplicateMsgDetector.Status() got %q, want %q", got, want)
@@ -102,8 +105,11 @@ func TestDuplicateMsgDetector(t *testing.T) {
 		if got, want := duplicateDetector.duplicateReceiveCount, int64(0); got != want {
 			t.Errorf("DuplicateMsgDetector.duplicateReceiveCount got %v, want %v", got, want)
 		}
-		if got, want := duplicateDetector.HasDuplicates(), true; got != want {
-			t.Errorf("DuplicateMsgDetector.HasDuplicates() got %v, want %v", got, want)
+		if got, want := duplicateDetector.HasPublishDuplicates(), true; got != want {
+			t.Errorf("DuplicateMsgDetector.HasPublishDuplicates() got %v, want %v", got, want)
+		}
+		if got, want := duplicateDetector.HasReceiveDuplicates(), false; got != want {
+			t.Errorf("DuplicateMsgDetector.HasReceiveDuplicates() got %v, want %v", got, want)
 		}
 		if got := duplicateDetector.Status(); got == "" {
 			t.Errorf("DuplicateMsgDetector.Status() got %q, want status string", got)
@@ -121,8 +127,11 @@ func TestDuplicateMsgDetector(t *testing.T) {
 		if got, want := duplicateDetector.duplicateReceiveCount, int64(1); got != want {
 			t.Errorf("DuplicateMsgDetector.duplicateReceiveCount got %v, want %v", got, want)
 		}
-		if got, want := duplicateDetector.HasDuplicates(), true; got != want {
-			t.Errorf("DuplicateMsgDetector.HasDuplicates() got %v, want %v", got, want)
+		if got, want := duplicateDetector.HasPublishDuplicates(), false; got != want {
+			t.Errorf("DuplicateMsgDetector.HasPublishDuplicates() got %v, want %v", got, want)
+		}
+		if got, want := duplicateDetector.HasReceiveDuplicates(), true; got != want {
+			t.Errorf("DuplicateMsgDetector.HasReceiveDuplicates() got %v, want %v", got, want)
 		}
 		if got := duplicateDetector.Status(); got == "" {
 			t.Errorf("DuplicateMsgDetector.Status() got %q, want status string", got)
