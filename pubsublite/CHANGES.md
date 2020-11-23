@@ -1,5 +1,16 @@
 # Changes
 
+## [0.4.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.3.0...v0.4.0) (2020-11-23)
+
+
+### Features
+
+* **pubsublite:** Abstraction for leaf and composite services ([#3143](https://www.github.com/googleapis/google-cloud-go/issues/3143)) ([869bd24](https://www.github.com/googleapis/google-cloud-go/commit/869bd24e213e7cdb4bca76dd382b57717271f192))
+* **pubsublite:** Committer implementation ([#3198](https://www.github.com/googleapis/google-cloud-go/issues/3198)) ([ecc706b](https://www.github.com/googleapis/google-cloud-go/commit/ecc706b03079c6521a31e1066b00677aaf51e7dd))
+* **pubsublite:** Receive settings ([#3195](https://www.github.com/googleapis/google-cloud-go/issues/3195)) ([bd837fc](https://www.github.com/googleapis/google-cloud-go/commit/bd837fc9aad4181b8aa574e41341000755875eca))
+* **pubsublite:** Refactoring and unit tests for retryableStream ([#3160](https://www.github.com/googleapis/google-cloud-go/issues/3160)) ([82945ce](https://www.github.com/googleapis/google-cloud-go/commit/82945ce613a19b741207ef3328ace6dce6827baf))
+* **pubsublite:** Single and multi partition subscribers ([#3221](https://www.github.com/googleapis/google-cloud-go/issues/3221)) ([299b803](https://www.github.com/googleapis/google-cloud-go/commit/299b803aaee9a0dc0b2ec8c81fac66341045b8b2))
+
 ## [0.3.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.2.0...v0.3.0) (2020-11-10)
 
 
