@@ -1,5 +1,14 @@
 # Changes
 
+## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.12.0...v1.13.0) (2020-11-24)
+
+
+### Features
+
+* **spanner/spannertest:** implement FULL JOIN ([#3218](https://www.github.com/googleapis/google-cloud-go/issues/3218)) ([99f7212](https://www.github.com/googleapis/google-cloud-go/commit/99f7212bd70bb333c1aa1c7a57348b4dfd80d31b))
+* **spanner/spannertest:** support UPDATE DML ([#3201](https://www.github.com/googleapis/google-cloud-go/issues/3201)) ([1dec6f6](https://www.github.com/googleapis/google-cloud-go/commit/1dec6f6a31768a3f70bfec7274828301c22ea10b)), closes [#3162](https://www.github.com/googleapis/google-cloud-go/issues/3162)
+* **spanner/spansql:** define structures and parse UPDATE DML statements ([#3192](https://www.github.com/googleapis/google-cloud-go/issues/3192)) ([23b6904](https://www.github.com/googleapis/google-cloud-go/commit/23b69042c58489df512703259f54d075ba0c0722)), closes [#3162](https://www.github.com/googleapis/google-cloud-go/issues/3162)
+
 ## [1.12.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.11.0...v1.12.0) (2020-11-10)
 
 
