@@ -19,8 +19,8 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/pubsublite/common"
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/api/support/bundler"
+	"google.golang.org/protobuf/proto"
 
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
@@ -97,10 +97,10 @@ func newPublishMessageBatcher(settings *PublishSettings, partition int, onNewBat
 	})
 	msgBundler.DelayThreshold = settings.DelayThreshold
 	msgBundler.BundleCountThreshold = settings.CountThreshold
-	msgBundler.BundleByteThreshold = settings.ByteThreshold       // Soft limit
-	msgBundler.BundleByteLimit = MaxPublishRequestBytes           // Hard limit
-	msgBundler.HandlerLimit = 1                                   // Handle batches serially for ordering
-	msgBundler.BufferedByteLimit = settings.BufferedByteLimit * 2 // Effectively disabled, handled in the batcher
+	msgBundler.BundleByteThreshold = settings.ByteThreshold   // Soft limit
+	msgBundler.BundleByteLimit = MaxPublishRequestBytes       // Hard limit
+	msgBundler.HandlerLimit = 1                               // Handle batches serially for ordering
+	msgBundler.BufferedByteLimit = settings.BufferedByteLimit // Actually handled in the batcher
 
 	batcher.msgBundler = msgBundler
 	return batcher
