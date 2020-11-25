@@ -21,25 +21,7 @@ import (
 	"cloud.google.com/go/pubsublite/internal/test"
 )
 
-type fakeMsgRouter struct {
-	multiplier     int
-	partitionCount int
-}
-
-func (f *fakeMsgRouter) SetPartitionCount(count int) {
-	f.partitionCount = count
-}
-
-func (f *fakeMsgRouter) Route(orderingKey []byte) int {
-	return f.partitionCount * f.multiplier
-}
-
 func TestRoundRobinMsgRouter(t *testing.T) {
-	// Using the same msgRouter for each test run ensures that it reinitializes
-	// when the partition count changes.
-	source := &test.FakeSource{}
-	msgRouter := &roundRobinMsgRouter{rng: rand.New(source)}
-
 	for _, tc := range []struct {
 		partitionCount int
 		source         int64
@@ -57,8 +39,9 @@ func TestRoundRobinMsgRouter(t *testing.T) {
 		},
 	} {
 		t.Run(fmt.Sprintf("partitionCount=%d", tc.partitionCount), func(t *testing.T) {
-			source.Ret = tc.source
-			msgRouter.SetPartitionCount(tc.partitionCount)
+			source := &test.FakeSource{Ret: tc.source}
+			msgRouter := newRoundRobinMsgRouter(rand.New(source), tc.partitionCount)
+
 			for i, want := range tc.want {
 				got := msgRouter.Route([]byte("IGNORED"))
 				if got != want {
@@ -70,10 +53,6 @@ func TestRoundRobinMsgRouter(t *testing.T) {
 }
 
 func TestHashingMsgRouter(t *testing.T) {
-	// Using the same msgRouter for each test run ensures that it reinitializes
-	// when the partition count changes.
-	msgRouter := &hashingMsgRouter{}
-
 	keys := [][]byte{
 		[]byte("foo1"),
 		[]byte("foo2"),
@@ -89,7 +68,7 @@ func TestHashingMsgRouter(t *testing.T) {
 		{partitionCount: 5},
 	} {
 		t.Run(fmt.Sprintf("partitionCount=%d", tc.partitionCount), func(t *testing.T) {
-			msgRouter.SetPartitionCount(tc.partitionCount)
+			msgRouter := newHashingMsgRouter(tc.partitionCount)
 			for _, key := range keys {
 				p1 := msgRouter.Route(key)
 				p2 := msgRouter.Route(key)
@@ -104,14 +83,16 @@ func TestHashingMsgRouter(t *testing.T) {
 	}
 }
 
-func TestCompositeMsgRouter(t *testing.T) {
-	keyedRouter := &fakeMsgRouter{multiplier: 10}
-	keylessRouter := &fakeMsgRouter{multiplier: 100}
-	msgRouter := &compositeMsgRouter{
-		keyedRouter:   keyedRouter,
-		keylessRouter: keylessRouter,
-	}
+type fakeMsgRouter struct {
+	multiplier     int
+	partitionCount int
+}
 
+func (f *fakeMsgRouter) Route(orderingKey []byte) int {
+	return f.partitionCount * f.multiplier
+}
+
+func TestCompositeMsgRouter(t *testing.T) {
 	for _, tc := range []struct {
 		desc           string
 		partitionCount int
@@ -138,7 +119,17 @@ func TestCompositeMsgRouter(t *testing.T) {
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			msgRouter.SetPartitionCount(tc.partitionCount)
+			msgRouter := &compositeMsgRouter{
+				keyedRouter: &fakeMsgRouter{
+					multiplier:     10,
+					partitionCount: tc.partitionCount,
+				},
+				keylessRouter: &fakeMsgRouter{
+					multiplier:     100,
+					partitionCount: tc.partitionCount,
+				},
+			}
+
 			if got := msgRouter.Route(tc.key); got != tc.want {
 				t.Errorf("Route() = %d, want = %d", got, tc.want)
 			}

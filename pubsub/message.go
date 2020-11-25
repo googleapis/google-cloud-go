@@ -61,12 +61,6 @@ type Message struct {
 	ackh ackHandler
 }
 
-// NewMessage creates a message with a custom ack/nack handler, which should not
-// be nil.
-func NewMessage(ackh ackHandler) *Message {
-	return &Message{ackh: ackh}
-}
-
 func toMessage(resp *pb.ReceivedMessage) (*Message, error) {
 	if resp.Message == nil {
 		return &Message{ackh: &psAckHandler{ackID: resp.AckId}}, nil
