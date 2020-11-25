@@ -66,6 +66,10 @@ type PublishSettings struct {
 	// throughput capacity can cause the buffers to overflow. For more
 	// information, see https://cloud.google.com/pubsub/lite/docs/topics.
 	BufferedByteLimit int
+
+	// The polling interval to watch for topic partition count updates. Set to 0
+	// to disable polling if the number of partitions will never update.
+	ConfigPollPeriod time.Duration
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -77,6 +81,7 @@ var DefaultPublishSettings = PublishSettings{
 	// By default set to a high limit that is not likely to occur, but prevents
 	// OOM errors in clients.
 	BufferedByteLimit: 1 << 30, // 1 GiB
+	ConfigPollPeriod:  10 * time.Minute,
 }
 
 func validatePublishSettings(settings PublishSettings) error {
