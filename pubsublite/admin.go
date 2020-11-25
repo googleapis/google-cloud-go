@@ -93,9 +93,10 @@ func (ac *AdminClient) TopicPartitions(ctx context.Context, topic TopicPath) (in
 }
 
 // TopicSubscriptions retrieves the list of subscription paths for a topic.
-func (ac *AdminClient) TopicSubscriptions(ctx context.Context, topic TopicPath) (*SubscriptionPathIterator, error) {
-	subsPathIt := ac.admin.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{Name: topic.String()})
-	return &SubscriptionPathIterator{it: subsPathIt}, nil
+func (ac *AdminClient) TopicSubscriptions(ctx context.Context, topic TopicPath) *SubscriptionPathIterator {
+	return &SubscriptionPathIterator{
+		it: ac.admin.ListTopicSubscriptions(ctx, &pb.ListTopicSubscriptionsRequest{Name: topic.String()}),
+	}
 }
 
 // Topics retrieves the list of topic configs for a given project and zone.
