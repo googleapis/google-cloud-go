@@ -23,6 +23,7 @@ differences:
 - Pub/Sub Lite does not support nack for messages.
 - Pub/Sub Lite has publish and subscribe throughput limits. Thus publishing can
   be more sensitive to buffer overflow.
+- Pub/Sub Lite publisher clients can terminate when an unretryable error occurs.
 - DefaultPublishSettings and DefaultReceiveSettings should be used for default
   settings rather than their empty types.
 
