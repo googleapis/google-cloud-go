@@ -108,6 +108,37 @@ func (tr *testMessageReceiver) VerifyNoMsgs() {
 	}
 }
 
+func TestNewMessageDeliveryQueue(t *testing.T) {
+	receiver := newTestMessageReceiver(t)
+	messageQueue := newMessageDeliveryQueue(receiver.onMessages, 10)
+
+	t.Run("Add before start", func(t *testing.T) {
+		messageQueue.Add([]*ReceivedMessage{{Msg: seqMsgWithOffset(3)}})
+
+		receiver.VerifyNoMsgs()
+	})
+
+	t.Run("Add after start", func(t *testing.T) {
+		msg1 := seqMsgWithOffset(1)
+		msg2 := seqMsgWithOffset(2)
+
+		messageQueue.Start()
+		messageQueue.Start() // Check duplicate starts
+		messageQueue.Add([]*ReceivedMessage{{Msg: msg1}, {Msg: msg2}})
+
+		receiver.ValidateMsg(msg1)
+		receiver.ValidateMsg(msg2)
+	})
+
+	t.Run("Add after stop", func(t *testing.T) {
+		messageQueue.Stop()
+		messageQueue.Stop() // Check duplicate stop
+		messageQueue.Add([]*ReceivedMessage{{Msg: seqMsgWithOffset(4)}})
+
+		receiver.VerifyNoMsgs()
+	})
+}
+
 // testSubscribeStream wraps a subscribeStream for ease of testing.
 type testSubscribeStream struct {
 	Receiver *testMessageReceiver
