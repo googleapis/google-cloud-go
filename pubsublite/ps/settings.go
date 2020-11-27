@@ -39,8 +39,8 @@ const (
 // KeyExtractorFunc is a function that extracts an ordering key from a Message.
 type KeyExtractorFunc func(*pubsub.Message) []byte
 
-// PublishMessageTransformerFunc transforms a pubsub.Message to a PubSubMessage
-// API proto. If this returns an error, the pubsub.PublishResult will be
+// PublishMessageTransformerFunc transforms a pubsub.Message to a Pub/Sub Lite
+// PubSubMessage. If this returns an error, the pubsub.PublishResult will be
 // errored and the PublisherClient will consider this a fatal error and
 // terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message) (*pb.PubSubMessage, error)
@@ -126,13 +126,14 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 // be able to handle messages.
 type NackHandler func(*pubsub.Message) error
 
-// ReceiveMessageTransformerFunc transforms a PubSubMessage API proto to a
+// ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage to a
 // pubsub.Message. If this returns an error, the SubscriberClient will consider
 // this a fatal error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
 // ReceiveSettings configure the Receive method. These settings apply per
-// partition.
+// partition. If MaxOutstandingBytes is being used to bound memory usage, keep
+// in mind the number of partitions in the associated topic.
 //
 // Use DefaultReceiveSettings for defaults, as an empty ReceiveSettings will
 // fail validation.
@@ -180,6 +181,7 @@ func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
 		MaxOutstandingMessages: s.MaxOutstandingMessages,
 		MaxOutstandingBytes:    s.MaxOutstandingBytes,
 		Timeout:                s.Timeout,
+		Partitions:             s.Partitions,
 		Framework:              wire.FrameworkCloudPubSubShim,
 	}
 }
