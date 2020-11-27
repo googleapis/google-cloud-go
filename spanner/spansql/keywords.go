@@ -135,6 +135,7 @@ var funcs = map[string]bool{
 	"MAX":       true,
 	"MIN":       true,
 	"SUM":       true,
+	"AVG":       true,
 
 	// Mathematical functions.
 	"ABS": true,

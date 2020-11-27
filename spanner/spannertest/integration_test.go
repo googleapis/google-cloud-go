@@ -890,6 +890,42 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,
+			// but nothing documented seems to guarantee that.
+			`SELECT LastName, AVG(PointsScored) FROM PlayerStats GROUP BY LastName`,
+			nil,
+			[][]interface{}{
+				{"Adams", float64(3.5)},
+				{"Buchanan", float64(6.5)},
+				{"Coolidge", float64(1)},
+			},
+		},
+		{
+			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,
+			// but nothing documented seems to guarantee that.
+			`SELECT LastName, AVG(PointsScored) FROM PlayerStats GROUP BY LastName`,
+			nil,
+			[][]interface{}{
+				{"Adams", float64(3.5)},
+				{"Buchanan", float64(6.5)},
+				{"Coolidge", float64(1)},
+			},
+		},
+		{
+			`SELECT AVG(Height) FROM Staff WHERE ID <= 2`,
+			nil,
+			[][]interface{}{
+				{float64(1.84)},
+			},
+		},
+		{
+			`SELECT AVG(Height) FROM Staff WHERE ID >= 7`,
+			nil,
+			[][]interface{}{
+				{nil},
+			},
+		},
+		{
 			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
 			map[string]interface{}{"lim": "Teal'c"},
 			[][]interface{}{

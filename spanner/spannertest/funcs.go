@@ -109,6 +109,48 @@ var aggregateFuncs = map[string]aggregateFunc{
 			return sum, typ, nil
 		},
 	},
+	"AVG": {
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+			if typ.Array || !(typ.Base == spansql.Int64 || typ.Base == spansql.Float64) {
+				return nil, spansql.Type{}, fmt.Errorf("AVG only supports arguments of INT64 or FLOAT64 type, not %s", typ.SQL())
+			}
+			if typ.Base == spansql.Int64 {
+				var sum int64
+				var n float64
+				for _, v := range values {
+					if v == nil {
+						continue
+					}
+					sum += v.(int64)
+					n++
+				}
+				if n == 0 {
+					// "Returns NULL if the input contains only NULLs".
+					return nil, typ, nil
+				}
+				// floating point handling is non-deterministic
+				// type of the result from INT64 input is Float64
+				// https://cloud.google.com/spanner/docs/functions-and-operators#avg
+				return (float64(sum) / n), float64Type, nil
+			}
+			var sum float64
+			var n float64
+			for _, v := range values {
+				if v == nil {
+					continue
+				}
+				sum += v.(float64)
+				n++
+			}
+			if n == 0 {
+				// "Returns NULL if the input contains only NULLs".
+				return nil, typ, nil
+			}
+			// floating point handling is non-deterministic
+			// https://cloud.google.com/spanner/docs/functions-and-operators#avg
+			return (sum / n), typ, nil
+		},
+	},
 }
 
 func evalMinMax(name string, isMin bool, values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
