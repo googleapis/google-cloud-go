@@ -41,7 +41,8 @@ type KeyExtractorFunc func(*pubsub.Message) []byte
 
 // PublishMessageTransformerFunc transforms a pubsub.Message to a PubSubMessage
 // API proto. If this returns an error, the pubsub.PublishResult will be
-// errored and the PublisherClient will be stopped.
+// errored and the PublisherClient will consider this a fatal error and
+// terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message) (*pb.PubSubMessage, error)
 
 // PublishSettings control the batching of published messages. These settings
@@ -118,16 +119,20 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 // NackHandler is invoked when pubsub.Message.Nack() is called. Cloud Pub/Sub
 // Lite does not have a concept of 'nack'. If the nack handler implementation
 // returns nil, the message is acknowledged. If an error is returned, the
-// SubscriberClient will be stopped with error.
+// SubscriberClient will will consider this a fatal error and terminate.
+//
+// In Cloud Pub/Sub Lite, only a single subscriber for a given subscription is
+// connected to any partition at a time, and there is no other client that may
+// be able to handle messages.
 type NackHandler func(*pubsub.Message) error
 
 // ReceiveMessageTransformerFunc transforms a PubSubMessage API proto to a
-// pubsub.Message. If this returns an error, the SubscriberClient will be
-// stopped with error.
+// pubsub.Message. If this returns an error, the SubscriberClient will consider
+// this a fatal error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
-// ReceiveSettings configure the Receive method. These settings apply
-//// per partition.
+// ReceiveSettings configure the Receive method. These settings apply per
+// partition.
 //
 // Use DefaultReceiveSettings for defaults, as an empty ReceiveSettings will
 // fail validation.
@@ -143,22 +148,19 @@ type ReceiveSettings struct {
 	// The maximum time that the client will attempt to establish a subscribe
 	// stream connection to the server. Must be > 0.
 	//
-	// The timeout is exceeded, the subscriber will terminate with the last error
-	// that occurred while trying to reconnect.
+	// The timeout is exceeded, the SubscriberClient will terminate with the last
+	// error that occurred while trying to reconnect.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.
 	// Values must be less than the number of partitions for the topic. If not
-	// specified, the client will use the partition assignment service to
-	// determine which partitions it should connect to.
+	// specified, the SubscriberClient will use the partition assignment service
+	// to determine which partitions it should connect to.
 	Partitions []int
 
 	// Optional custom function to handle pubsub.Message.Nack() calls. If not set,
-	// the default behavior is to immediately fail the SubscriberClient.
-	//
-	// In Cloud Pub/Sub Lite, only a single subscriber for a given subscription is
-	// connected to any partition at a time, and there is no other client that may
-	// be able to handle messages.
+	// the default behavior is to immediately terminate the SubscriberClient with
+	// a fatal error.
 	NackHandler NackHandler
 
 	// Optional custom function that transforms a PubSubMessage API proto to a
