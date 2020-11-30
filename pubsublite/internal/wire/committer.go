@@ -90,8 +90,8 @@ func (c *committer) Start() {
 	}
 }
 
-// Stop initiates shutdown of the committer. The commit stream remains open to
-// process all outstanding acks and send the final commit offset.
+// Stop initiates shutdown of the committer. The final commit offset will be
+// send to the server, but acks that arrive afterward will be discarded.
 func (c *committer) Stop() {
 	c.mu.Lock()
 	defer c.mu.Unlock()
@@ -194,6 +194,9 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 		return
 	}
 
+	// Discard outstanding acks.
+	c.acks.Release()
+
 	// If it's a graceful shutdown, expedite sending final commits to the stream.
 	if targetStatus == serviceTerminating {
 		c.unsafeCommitOffsetToStream()
@@ -205,15 +208,14 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 }
 
 func (c *committer) unsafeCheckDone() {
-	// If the user stops the subscriber, they will no longer receive messages, but
-	// the commit stream remains open to process acks for outstanding messages.
-	if c.status == serviceTerminating && c.cursorTracker.Done() && c.acks.Empty() {
+	// The commit stream can be closed once the final commit offset has been
+	// confirmed.
+	if c.status == serviceTerminating && c.cursorTracker.UpToDate() {
 		c.unsafeTerminate()
 	}
 }
 
 func (c *committer) unsafeTerminate() {
-	c.acks.Release()
 	c.pollCommits.Stop()
 	c.stream.Stop()
 }
