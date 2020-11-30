@@ -300,7 +300,7 @@ func entryForTesting(payload interface{}) *logging.Entry {
 	}
 }
 
-// Call this function sparingly. It takes ~10s to get logs, even with indexed filters.
+// allTestLogEntries should be called sparingly. It takes ~10s to get logs, even with indexed filters.
 func allTestLogEntries(ctx context.Context) ([]*logging.Entry, error) {
 	return allEntries(ctx, aclient, testFilter)
 }
