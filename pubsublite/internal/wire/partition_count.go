@@ -95,6 +95,8 @@ func (p *partitionCountWatcher) updatePartitionCount() {
 		defer p.mu.Unlock()
 
 		if p.status >= serviceTerminating {
+			// Returning the current partition count here ensures that the receiver
+			// func will not be invoked below.
 			return p.partitionCount, nil
 		}
 		if err != nil {
@@ -125,7 +127,7 @@ func (p *partitionCountWatcher) onStartupComplete() {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 
-	// Notify the service as active and start background polling updates after the
+	// Set the watcher as active and start background polling updates after the
 	// initial partition count has been processed.
 	if p.unsafeUpdateStatus(serviceActive, nil) {
 		p.pollUpdate.Start()
