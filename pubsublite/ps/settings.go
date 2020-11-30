@@ -43,7 +43,7 @@ type KeyExtractorFunc func(*pubsub.Message) []byte
 // PubSubMessage. If this returns an error, the pubsub.PublishResult will be
 // errored and the PublisherClient will consider this a fatal error and
 // terminate.
-type PublishMessageTransformerFunc func(*pubsub.Message) (*pb.PubSubMessage, error)
+type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) error
 
 // PublishSettings control the batching of published messages. These settings
 // apply per partition.

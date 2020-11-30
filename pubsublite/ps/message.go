@@ -66,27 +66,25 @@ func extractOrderingKey(msg *pubsub.Message) []byte {
 
 // transformPublishedMessage is the default PublishMessageTransformerFunc
 // implementation.
-func transformPublishedMessage(from *pubsub.Message, extractKey KeyExtractorFunc) (*pb.PubSubMessage, error) {
-	msgpb := &pb.PubSubMessage{
-		Data: from.Data,
-		Key:  extractKey(from),
-	}
+func transformPublishedMessage(from *pubsub.Message, to *pb.PubSubMessage, extractKey KeyExtractorFunc) error {
+	to.Data = from.Data
+	to.Key = extractKey(from)
 
 	if len(from.Attributes) > 0 {
-		msgpb.Attributes = make(map[string]*pb.AttributeValues)
+		to.Attributes = make(map[string]*pb.AttributeValues)
 		for key, value := range from.Attributes {
 			if key == eventTimestampAttributeKey {
 				eventpb, err := decodeEventTimestamp(value)
 				if err != nil {
-					return nil, err
+					return err
 				}
-				msgpb.EventTime = eventpb
+				to.EventTime = eventpb
 			} else {
-				msgpb.Attributes[key] = &pb.AttributeValues{Values: [][]byte{[]byte(value)}}
+				to.Attributes[key] = &pb.AttributeValues{Values: [][]byte{[]byte(value)}}
 			}
 		}
 	}
-	return msgpb, nil
+	return nil
 }
 
 // transformReceivedMessage is the default ReceiveMessageTransformerFunc

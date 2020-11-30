@@ -131,7 +131,8 @@ func TestMessageTransforms(t *testing.T) {
 				}
 
 				// Check reverse conversion equals input.
-				gotPubMsg, gotErr := transformPublishedMessage(tc.wantMsg, extractOrderingKey)
+				gotPubMsg := new(pb.PubSubMessage)
+				gotErr := transformPublishedMessage(tc.wantMsg, gotPubMsg, extractOrderingKey)
 				if gotErr != nil {
 					t.Errorf("transformPublishedMessage() err = (%v)", gotErr)
 				}
