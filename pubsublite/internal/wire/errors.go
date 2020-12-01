@@ -13,12 +13,20 @@
 
 package wire
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
+// Errors exported from this package.
 var (
 	// ErrOverflow indicates that the publish buffers have overflowed. See
 	// comments for PublishSettings.BufferedByteLimit.
 	ErrOverflow = errors.New("pubsublite: client-side publish buffers have overflowed")
+
+	// ErrOversizedMessage indicates that the user published a message over the
+	// allowed serialized byte size limit. It is wrapped in another error.
+	ErrOversizedMessage = fmt.Errorf("maximum allowed message size is MaxPublishMessageBytes (%d)", MaxPublishMessageBytes)
 
 	// ErrServiceUninitialized indicates that a service (e.g. publisher or
 	// subscriber) cannot perform an operation because it is uninitialized.

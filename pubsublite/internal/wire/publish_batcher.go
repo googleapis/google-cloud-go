@@ -19,6 +19,7 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/pubsublite/common"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
 
@@ -110,7 +111,7 @@ func (b *publishMessageBatcher) AddMessage(msg *pb.PubSubMessage, onResult Publi
 	msgSize := proto.Size(msg)
 	switch {
 	case msgSize > MaxPublishMessageBytes:
-		return fmt.Errorf("pubsublite: serialized message size is %d bytes, maximum allowed size is MaxPublishMessageBytes (%d)", msgSize, MaxPublishMessageBytes)
+		return xerrors.Errorf("pubsublite: serialized message size is %d bytes: %w", msgSize, ErrOversizedMessage)
 	case msgSize > b.availableBufferBytes:
 		return ErrOverflow
 	}
