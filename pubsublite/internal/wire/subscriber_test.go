@@ -764,15 +764,6 @@ func (as *assigningSubscriber) Partitions() []int {
 	return partitions
 }
 
-func (as *assigningSubscriber) FlushCommits() {
-	as.mu.Lock()
-	defer as.mu.Unlock()
-
-	for _, sub := range as.subscribers {
-		sub.committer.commitOffsetToStream()
-	}
-}
-
 func newTestAssigningSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string) *assigningSubscriber {
 	ctx := context.Background()
 	subClient, err := newSubscriberClient(ctx, "ignored", testClientOpts...)
@@ -832,7 +823,6 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	cmtStream3 := test.NewRPCVerifier(t)
 	cmtStream3.Push(initCommitReq(subscriptionPartition{Path: subscription, Partition: 3}), initCommitResp(), nil)
-	cmtStream3.Push(commitReq(34), commitResp(1), nil)
 	cmtStream3.Push(commitReq(35), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription, 3, cmtStream3)
 
@@ -883,7 +873,6 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	// msg2 is from partition 3 and should be received. msg4 is from partition 6
 	// (removed) and should be discarded.
-	sub.FlushCommits()
 	msg2Barrier.Release()
 	msg4Barrier.Release()
 	receiver.ValidateMsgs([]*pb.SequencedMessage{msg2})

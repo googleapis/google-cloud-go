@@ -361,9 +361,6 @@ func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err
 // - subscribeStream to receive messages from the subscribe stream.
 // - committer to commit cursor offsets to the streaming commit cursor stream.
 type singlePartitionSubscriber struct {
-	subscriber *subscribeStream
-	committer  *committer
-
 	compositeService
 }
 
@@ -382,10 +379,7 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 	acks := newAckTracker()
 	commit := newCommitter(f.ctx, f.cursorClient, f.settings, subscription, acks, f.disableTasks)
 	sub := newSubscribeStream(f.ctx, f.subClient, f.settings, f.receiver, subscription, acks, f.disableTasks)
-	ps := &singlePartitionSubscriber{
-		subscriber: sub,
-		committer:  commit,
-	}
+	ps := new(singlePartitionSubscriber)
 	ps.init()
 	ps.unsafeAddServices(sub, commit)
 	return ps

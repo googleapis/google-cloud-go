@@ -26,14 +26,13 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
-var void struct{}
-
 // partitionSet is a set of partition numbers.
 type partitionSet map[int]struct{}
 
 func newPartitionSet(assignmentpb *pb.PartitionAssignment) partitionSet {
+	var void struct{}
 	partitions := make(map[int]struct{})
-	for _, p := range assignmentpb.Partitions {
+	for _, p := range assignmentpb.GetPartitions() {
 		partitions[int(p)] = void
 	}
 	return partitionSet(partitions)
@@ -98,7 +97,6 @@ func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignment
 func (a *assigner) Start() {
 	a.mu.Lock()
 	defer a.mu.Unlock()
-
 	if a.unsafeUpdateStatus(serviceStarting, nil) {
 		a.stream.Start()
 	}
@@ -115,8 +113,7 @@ func (a *assigner) newStream(ctx context.Context) (grpc.ClientStream, error) {
 }
 
 func (a *assigner) initialRequest() (interface{}, bool) {
-	// No initial response expected.
-	return a.initialReq, false
+	return a.initialReq, false // No initial response expected
 }
 
 func (a *assigner) validateInitialResponse(_ interface{}) error {
@@ -131,7 +128,6 @@ func (a *assigner) onStreamStatusChange(status streamStatus) {
 	switch status {
 	case streamConnected:
 		a.unsafeUpdateStatus(serviceActive, nil)
-
 	case streamTerminated:
 		a.unsafeInitiateShutdown(serviceTerminated, a.stream.Error())
 	}
