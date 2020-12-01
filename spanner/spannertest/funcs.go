@@ -128,9 +128,6 @@ var aggregateFuncs = map[string]aggregateFunc{
 					// "Returns NULL if the input contains only NULLs".
 					return nil, typ, nil
 				}
-				// floating point handling is non-deterministic
-				// type of the result from INT64 input is Float64
-				// https://cloud.google.com/spanner/docs/functions-and-operators#avg
 				return (float64(sum) / n), float64Type, nil
 			}
 			var sum float64
@@ -146,8 +143,6 @@ var aggregateFuncs = map[string]aggregateFunc{
 				// "Returns NULL if the input contains only NULLs".
 				return nil, typ, nil
 			}
-			// floating point handling is non-deterministic
-			// https://cloud.google.com/spanner/docs/functions-and-operators#avg
 			return (sum / n), typ, nil
 		},
 	},
