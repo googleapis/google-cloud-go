@@ -1491,37 +1491,27 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 }
 
 func TestPartionQuery(t *testing.T) {
+	coll := collectionIDs.New()
 	ctx := context.Background()
+	h := testHelper{t}
 	client := integrationClient(t)
-	// use h := testHelper{t}
-
-	// delete using mustDelete
-	collectionID := collectionIDs.New()
-
+	cr := client.Collection(coll)
+	subColl := coll + "-sub"
 	// Minimum partition size is 128.
 	documentCount := 128*2 + 127
-	collection := client.Collection(collectionID)
-	collectionGroupID := collectionID + "-subcollection"
 	for i := 0; i < documentCount; i++ {
 		doc := fmt.Sprintf("doc-" + strconv.Itoa(i+1))
-		// Set using mustSet
-		if _, err := collection.Doc(doc).Collection(collectionGroupID).NewDoc().Set(ctx, map[string]int{
-			"id": i,
-		}); err != nil {
-			t.Errorf("Set: %v", err)
-		}
+		dr1 := cr.Doc(doc)
+		h.mustCreate(dr1, integrationTestMap)
+		defer h.mustDelete(dr1)
+
+		scr := dr1.Collection(subColl)
+		dr2 := scr.NewDoc()
+		h.mustSet(dr2, map[string]int{"id": i})
+		defer h.mustDelete(dr2)
 	}
-	collectionGroup := client.Collection(collectionGroupID)
-	parent := collection.parentPath
-	_, err := collectionGroup.PartitionQuery(ctx, parent, 3)
-	if err != nil {
-		t.Fatalf("collectionGroup.PartitionQuery: %v", err)
-	}
-	docs, err := client.Collection(collectionID).DocumentRefs(ctx).GetAll()
-	if err == nil {
-		for _, d := range docs {
-			d.Delete(ctx)
-		}
+	if _, err := client.Collection(subColl).PartitionQuery(ctx, cr.parentPath, 3); err != nil {
+		t.Fatalf("Collection.PartitionQuery: %v", err)
 	}
 }
 
