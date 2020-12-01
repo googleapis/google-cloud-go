@@ -108,6 +108,68 @@ func (tr *testMessageReceiver) VerifyNoMsgs() {
 	}
 }
 
+// testBlockingMessageReceiver can be used to simulate a client message receiver
+// func that is blocking due to slow message processing.
+type testBlockingMessageReceiver struct {
+	blockReceive chan struct{}
+
+	testMessageReceiver
+}
+
+func newTestBlockingMessageReceiver(t *testing.T) *testBlockingMessageReceiver {
+	return &testBlockingMessageReceiver{
+		testMessageReceiver: testMessageReceiver{
+			t:        t,
+			received: make(chan *ReceivedMessage, 5),
+		},
+		blockReceive: make(chan struct{}),
+	}
+}
+
+// onMessages is the message receiver func and blocks until there is a call to
+// Return().
+func (tr *testBlockingMessageReceiver) onMessages(msgs []*ReceivedMessage) {
+	tr.testMessageReceiver.onMessages(msgs)
+	<-tr.blockReceive
+}
+
+// Return signals onMessages to return.
+func (tr *testBlockingMessageReceiver) Return() {
+	var void struct{}
+	tr.blockReceive <- void
+}
+
+func TestNewMessageDeliveryQueue(t *testing.T) {
+	receiver := newTestMessageReceiver(t)
+	messageQueue := newMessageDeliveryQueue(receiver.onMessages, 10)
+
+	t.Run("Add before start", func(t *testing.T) {
+		messageQueue.Add([]*ReceivedMessage{{Msg: seqMsgWithOffset(3)}})
+
+		receiver.VerifyNoMsgs()
+	})
+
+	t.Run("Add after start", func(t *testing.T) {
+		msg1 := seqMsgWithOffset(1)
+		msg2 := seqMsgWithOffset(2)
+
+		messageQueue.Start()
+		messageQueue.Start() // Check duplicate starts
+		messageQueue.Add([]*ReceivedMessage{{Msg: msg1}, {Msg: msg2}})
+
+		receiver.ValidateMsg(msg1)
+		receiver.ValidateMsg(msg2)
+	})
+
+	t.Run("Add after stop", func(t *testing.T) {
+		messageQueue.Stop()
+		messageQueue.Stop() // Check duplicate stop
+		messageQueue.Add([]*ReceivedMessage{{Msg: seqMsgWithOffset(4)}})
+
+		receiver.VerifyNoMsgs()
+	})
+}
+
 // testSubscribeStream wraps a subscribeStream for ease of testing.
 type testSubscribeStream struct {
 	Receiver *testMessageReceiver
@@ -466,6 +528,102 @@ func TestSinglePartitionSubscriberSimpleMsgAck(t *testing.T) {
 	if gotErr := sub.WaitStopped(); gotErr != nil {
 		t.Errorf("Stop() got err: (%v)", gotErr)
 	}
+}
+
+func TestSinglePartitionSubscriberMessageQueue(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	receiver := newTestBlockingMessageReceiver(t)
+	msg1 := seqMsgWithOffsetAndSize(1, 100)
+	msg2 := seqMsgWithOffsetAndSize(2, 100)
+	msg3 := seqMsgWithOffsetAndSize(3, 100)
+	retryableErr := status.Error(codes.Unavailable, "should retry")
+
+	verifiers := test.NewVerifiers(t)
+
+	subStream1 := test.NewRPCVerifier(t)
+	subStream1.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
+	subStream1.Push(nil, msgSubResp(msg2), nil)
+	subStream1.Push(nil, nil, retryableErr)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
+
+	// When reconnected, the subscribeStream should seek to msg3 and have
+	// subtracted flow control tokens for msg1 and msg2.
+	subStream2 := test.NewRPCVerifier(t)
+	subStream2.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream2.Push(seekReq(3), nil, nil)
+	subStream2.Push(flowControlSubReq(flowControlTokens{Bytes: 800, Messages: 8}), msgSubResp(msg3), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream2)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessages, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	// Verifies that messageDeliveryQueue delivers messages sequentially and waits
+	// for the client message receiver func to return.
+	receiver.ValidateMsg(msg1)
+	receiver.VerifyNoMsgs()
+	receiver.Return()
+
+	receiver.ValidateMsg(msg2)
+	receiver.VerifyNoMsgs()
+	receiver.Return()
+
+	receiver.ValidateMsg(msg3)
+	receiver.VerifyNoMsgs()
+	receiver.Return()
+
+	sub.Stop()
+	if gotErr := sub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
+}
+
+func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	receiver := newTestBlockingMessageReceiver(t)
+	msg1 := seqMsgWithOffsetAndSize(1, 100)
+	msg2 := seqMsgWithOffsetAndSize(2, 100)
+
+	verifiers := test.NewVerifiers(t)
+
+	subStream := test.NewRPCVerifier(t)
+	subStream.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream.Push(initFlowControlReq(), msgSubResp(msg1), nil)
+	subStream.Push(nil, msgSubResp(msg2), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessages, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	receiver.ValidateMsg(msg1)
+	receiver.VerifyNoMsgs()
+
+	// Stop the subscriber before returning from the message receiver func.
+	sub.Stop()
+	receiver.Return()
+
+	if gotErr := sub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
+	receiver.VerifyNoMsgs() // msg2 should not be received
 }
 
 func newTestMultiPartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string, partitions []int) *multiPartitionSubscriber {
