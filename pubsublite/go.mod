@@ -9,7 +9,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/tools v0.0.0-20201201064407-fd09bd90d85c // indirect
 	google.golang.org/api v0.35.0
-	google.golang.org/genproto v0.0.0-20201119123407-9b1e624d6bc4
+	google.golang.org/genproto v0.0.0-20201201144952-b05cb90ed32e
 	google.golang.org/grpc v1.33.2
 	google.golang.org/protobuf v1.25.0
 )

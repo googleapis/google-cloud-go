@@ -47,6 +47,9 @@ const (
 // streamHandler methods must not be called while holding retryableStream.mu in
 // order to prevent the streamHandler calling back into the retryableStream and
 // deadlocking.
+//
+// If any streamHandler method implementations block, this will block the
+// retryableStream.connectStream goroutine processing the underlying stream.
 type streamHandler interface {
 	// newStream implementations must create the client stream with the given
 	// (cancellable) context.
