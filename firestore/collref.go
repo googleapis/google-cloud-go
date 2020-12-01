@@ -18,6 +18,10 @@ import (
 	"context"
 	"crypto/rand"
 	"fmt"
+
+	firestore "cloud.google.com/go/firestore/apiv1"
+	"google.golang.org/api/iterator"
+	pb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 // A CollectionRef is a reference to Firestore collection.
@@ -135,4 +139,42 @@ func uniqueID() string {
 		b[i] = alphanum[int(byt)%len(alphanum)]
 	}
 	return string(b)
+}
+
+// PartitionQuery comment
+func (c *CollectionRef) PartitionQuery(ctx context.Context, parent string, partitionCount int) ([]*pb.Cursor, error) {
+	client, err := firestore.NewClient(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("firestore.NewClient: %v", err)
+	}
+	defer client.Close()
+
+	q := c.OrderBy(DocumentID, Asc)
+	q.allDescendants = true
+	strQuery, err := q.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.PartitionQueryRequest{
+		Parent:         parent,
+		PartitionCount: int64(partitionCount),
+		QueryType: &pb.PartitionQueryRequest_StructuredQuery{
+			StructuredQuery: strQuery,
+		},
+	}
+
+	it := client.PartitionQuery(ctx, req)
+	var cursors []*pb.Cursor
+	for {
+		cursor, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			return nil, fmt.Errorf("PartitionQuery: %v", err)
+		}
+		cursors = append(cursors, cursor)
+	}
+	return cursors, nil
 }

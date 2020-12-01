@@ -26,6 +26,7 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
+	"strconv"
 	"testing"
 	"time"
 
@@ -1486,6 +1487,41 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 	}
 	if snaps[1].Ref.ID != "should-be-found-2" {
 		t.Fatalf("expected ID 'should-be-found-2', got %s", snaps[1].Ref.ID)
+	}
+}
+
+func TestPartionQuery(t *testing.T) {
+	ctx := context.Background()
+	client := integrationClient(t)
+	// use h := testHelper{t}
+
+	// delete using mustDelete
+	collectionID := collectionIDs.New()
+
+	// Minimum partition size is 128.
+	documentCount := 128*2 + 127
+	collection := client.Collection(collectionID)
+	collectionGroupID := collectionID + "-subcollection"
+	for i := 0; i < documentCount; i++ {
+		doc := fmt.Sprintf("doc-" + strconv.Itoa(i+1))
+		// Set using mustSet
+		if _, err := collection.Doc(doc).Collection(collectionGroupID).NewDoc().Set(ctx, map[string]int{
+			"id": i,
+		}); err != nil {
+			t.Errorf("Set: %v", err)
+		}
+	}
+	collectionGroup := client.Collection(collectionGroupID)
+	parent := collection.parentPath
+	_, err := collectionGroup.PartitionQuery(ctx, parent, 3)
+	if err != nil {
+		t.Fatalf("collectionGroup.PartitionQuery: %v", err)
+	}
+	docs, err := client.Collection(collectionID).DocumentRefs(ctx).GetAll()
+	if err == nil {
+		for _, d := range docs {
+			d.Delete(ctx)
+		}
 	}
 }
 
