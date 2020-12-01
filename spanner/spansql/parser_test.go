@@ -111,20 +111,6 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT AVG(PointsScored) AS total_points, FirstName, LastName AS surname FROM PlayerStats GROUP BY FirstName, LastName`,
-			Query{
-				Select: Select{
-					List: []Expr{
-						Func{Name: "AVG", Args: []Expr{ID("PointsScored")}},
-						ID("FirstName"),
-						ID("LastName"),
-					},
-					From:        []SelectFrom{SelectFromTable{Table: "PlayerStats"}},
-					GroupBy:     []Expr{ID("FirstName"), ID("LastName")},
-					ListAliases: []ID{"total_points", "", "surname"},
-				},
-			},
-		},
 		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
 			Query{
 				Select: Select{
