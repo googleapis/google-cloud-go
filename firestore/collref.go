@@ -141,29 +141,33 @@ func uniqueID() string {
 	return string(b)
 }
 
-// PartitionQuery comment
-func (c *CollectionRef) PartitionQuery(ctx context.Context, parent string, partitionCount int) ([]*pb.Cursor, error) {
+// PartitionQuery partitions a query by returning partition cursors that can be used to run
+// the query in parallel. The returned partition cursors are split points that
+// can be used by RunQuery as starting/end points for the query results.
+//
+// count is the desired maximum number of partition points. The number must be
+// strictly positive.
+func (c *CollectionRef) PartitionQuery(ctx context.Context, parent string, count int) ([]*pb.Cursor, error) {
 	client, err := firestore.NewClient(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("firestore.NewClient: %v", err)
 	}
 	defer client.Close()
-
+	// Partition queries require explicit ordering by __name__ and
+	// select all descendant collections.
 	q := c.OrderBy(DocumentID, Asc)
 	q.allDescendants = true
 	strQuery, err := q.toProto()
 	if err != nil {
 		return nil, err
 	}
-
 	req := &pb.PartitionQueryRequest{
 		Parent:         parent,
-		PartitionCount: int64(partitionCount),
+		PartitionCount: int64(count),
 		QueryType: &pb.PartitionQueryRequest_StructuredQuery{
 			StructuredQuery: strQuery,
 		},
 	}
-
 	it := client.PartitionQuery(ctx, req)
 	var cursors []*pb.Cursor
 	for {
