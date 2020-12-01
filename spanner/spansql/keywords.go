@@ -130,12 +130,12 @@ var keywords = map[string]bool{
 var funcs = map[string]bool{
 	// Aggregate functions.
 	"ARRAY_AGG": true,
+	"AVG":       true,
 	"BIT_XOR":   true,
 	"COUNT":     true,
 	"MAX":       true,
 	"MIN":       true,
 	"SUM":       true,
-	"AVG":       true,
 
 	// Mathematical functions.
 	"ABS": true,
