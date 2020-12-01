@@ -59,10 +59,16 @@ func (pt *periodicTask) Stop() {
 
 func (pt *periodicTask) poll(ticker *time.Ticker, stop chan struct{}) {
 	for {
+		// stop has higher priority.
 		select {
 		case <-stop:
-			// Ends the goroutine.
-			return
+			return // Ends the goroutine.
+		default:
+		}
+
+		select {
+		case <-stop:
+			return // Ends the goroutine.
 		case <-ticker.C:
 			pt.task()
 		}
