@@ -696,7 +696,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
 		// Update to "ga" after the manual client (beta) for pubsublite is released.
 		// Also make sure the manual client is generated in .repo-metadata-full.json.
-		releaseLevel:          "beta",
+		releaseLevel: "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
