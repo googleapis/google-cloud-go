@@ -1499,8 +1499,11 @@ func TestPartionQuery(t *testing.T) {
 	subColl := coll + "-sub"
 	// Minimum partition size is 128.
 	documentCount := 128*2 + 127
+	var want []string
 	for i := 0; i < documentCount; i++ {
 		doc := fmt.Sprintf("doc-" + strconv.Itoa(i+1))
+		want = append(want, doc)
+
 		dr1 := cr.Doc(doc)
 		h.mustCreate(dr1, integrationTestMap)
 		defer h.mustDelete(dr1)
@@ -1510,8 +1513,29 @@ func TestPartionQuery(t *testing.T) {
 		h.mustSet(dr2, map[string]int{"id": i})
 		defer h.mustDelete(dr2)
 	}
-	if _, err := client.Collection(subColl).PartitionQuery(ctx, cr.parentPath, 3); err != nil {
+	cg := client.CollectionGroup(subColl)
+	_, partitions, err := cg.PartitionQuery(ctx, 3)
+	if err != nil {
 		t.Fatalf("Collection.PartitionQuery: %v", err)
+	}
+	var got []string
+	for _, partition := range partitions {
+		it := partition.Documents(ctx)
+		ds, err := it.GetAll()
+		if err != nil {
+			t.Fatalf("partition.Documents(ctx).GetAll(): %v", err)
+		}
+		for _, partitionDoc := range ds {
+			got = append(got, partitionDoc.Ref.ID)
+		}
+	}
+	sort.Strings(got)
+	sort.Strings(want)
+	if len(got) != len(want) {
+		t.Fatalf("got lenght:%v, want lenght:%v", len(got), len(want))
+	}
+	if !testutil.Equal(got, want) {
+		t.Errorf("got %v, want %v", got, want)
 	}
 }
 
