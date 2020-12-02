@@ -43,7 +43,7 @@ type ReceivedMessage struct {
 // MessageReceiverFunc receives a Pub/Sub message from a topic partition.
 type MessageReceiverFunc func(*ReceivedMessage)
 
-const maxMessagesBufferSize = 1000
+const maxMessageBufferSize = 10000
 
 // messageDeliveryQueue delivers received messages to the client-provided
 // MessageReceiverFunc sequentially.
@@ -59,11 +59,11 @@ type messageDeliveryQueue struct {
 }
 
 func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
-	// The buffer size is based on ReceiveSettings.MaxOutstandingMessages to
-	// handle the worst case of single messages. But ensure there's a reasonable
-	// limit as channel buffer capacity is allocated on creation.
-	if bufferSize > maxMessagesBufferSize {
-		bufferSize = maxMessagesBufferSize
+	// The buffer size is based on ReceiveSettings.MaxOutstandingMessages. But
+	// ensure there's a reasonable limit as channel buffer capacity is allocated
+	// on creation.
+	if bufferSize > maxMessageBufferSize {
+		bufferSize = maxMessageBufferSize
 	}
 	return &messageDeliveryQueue{
 		acks:      acks,
