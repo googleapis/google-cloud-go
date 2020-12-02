@@ -119,6 +119,8 @@ const (
 //     []time.Time, []*time.Time, []NullTime - TIMESTAMP ARRAY
 //     Date, *Date, NullDate - DATE
 //     []Date, []*Date, []NullDate - DATE ARRAY
+//     big.Rat, *big.Rat, NullNumeric - NUMERIC
+//     []big.Rat, []*big.Rat, []NullNumeric - NUMERIC ARRAY
 //
 // To compare two Mutations for testing purposes, use reflect.DeepEqual.
 type Mutation struct {
