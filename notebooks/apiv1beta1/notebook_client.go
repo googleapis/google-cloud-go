@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -63,7 +64,8 @@ type NotebookCallOptions struct {
 
 func defaultNotebookClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("notebooks.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("notebooks.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("notebooks.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -122,7 +124,7 @@ type NotebookClient struct {
 
 // NewNotebookClient creates a new notebook service client.
 //
-// API service for Cloud AI Platform Notebooks.
+// API v1beta1 service for Cloud AI Platform Notebooks.
 func NewNotebookClient(ctx context.Context, opts ...option.ClientOption) (*NotebookClient, error) {
 	clientOpts := defaultNotebookClientOptions()
 

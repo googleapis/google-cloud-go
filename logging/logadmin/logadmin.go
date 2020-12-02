@@ -15,7 +15,7 @@
 // These features are missing now, but will likely be added:
 // - There is no way to specify CallOptions.
 
-// Package logadmin contains a Stackdriver Logging client that can be used
+// Package logadmin contains a Cloud Logging client that can be used
 // for reading logs and working with sinks, metrics and monitored resources.
 // For a client that can write logs, see package cloud.google.com/go/logging.
 //
@@ -66,7 +66,6 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 		parent = "projects/" + parent
 	}
 	opts = append([]option.ClientOption{
-		option.WithEndpoint(internal.ProdAddr),
 		option.WithScopes(logging.AdminScope),
 	}, opts...)
 	lc, err := vkit.NewClient(ctx, opts...)

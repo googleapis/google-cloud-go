@@ -54,10 +54,11 @@ type table struct {
 
 	// Information about the table columns.
 	// They are reordered on table creation so the primary key columns come first.
-	cols     []colInfo
-	colIndex map[spansql.ID]int // col name to index
-	pkCols   int                // number of primary key columns (may be 0)
-	pkDesc   []bool             // whether each primary key column is in descending order
+	cols      []colInfo
+	colIndex  map[spansql.ID]int // col name to index
+	origIndex map[spansql.ID]int // original index of each column upon construction
+	pkCols    int                // number of primary key columns (may be 0)
+	pkDesc    []bool             // whether each primary key column is in descending order
 
 	// Rows are stored in primary key order.
 	rows []row
@@ -67,7 +68,8 @@ type table struct {
 type colInfo struct {
 	Name     spansql.ID
 	Type     spansql.Type
-	AggIndex int // Index+1 of SELECT list for which this is an aggregate value.
+	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
+	Alias    spansql.PathExp // an alternate name for this column (result sets only)
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
@@ -258,6 +260,12 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 
 		// TODO: check stmt.Interleave details.
 
+		// Record original column ordering.
+		orig := make(map[spansql.ID]int)
+		for i, col := range stmt.Columns {
+			orig[col.Name] = i
+		}
+
 		// Move primary keys first, preserving their order.
 		pk := make(map[spansql.ID]int)
 		var pkDesc []bool
@@ -271,9 +279,10 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		})
 
 		t := &table{
-			colIndex: make(map[spansql.ID]int),
-			pkCols:   len(pk),
-			pkDesc:   pkDesc,
+			colIndex:  make(map[spansql.ID]int),
+			origIndex: orig,
+			pkCols:    len(pk),
+			pkDesc:    pkDesc,
 		}
 		for _, cd := range stmt.Columns {
 			if st := t.addColumn(cd, true); st.Code() != codes.OK {
@@ -627,6 +636,9 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 		Type: cd.Type,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
+	if !newTable {
+		t.origIndex[cd.Name] = len(t.cols) - 1
+	}
 
 	return nil
 }
@@ -648,11 +660,18 @@ func (t *table) dropColumn(name spansql.ID) *status.Status {
 		return status.Newf(codes.InvalidArgument, "can't drop primary key column %q", name)
 	}
 
-	// Remove from cols and colIndex, and renumber colIndex.
+	// Remove from cols and colIndex, and renumber colIndex and origIndex.
 	t.cols = append(t.cols[:ci], t.cols[ci+1:]...)
 	delete(t.colIndex, name)
 	for i, col := range t.cols {
 		t.colIndex[col.Name] = i
+	}
+	pre := t.origIndex[name]
+	delete(t.origIndex, name)
+	for n, i := range t.origIndex {
+		if i > pre {
+			t.origIndex[n]--
+		}
 	}
 
 	// Drop data.
@@ -971,13 +990,72 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 			if err != nil {
 				return 0, err
 			}
-			if b {
+			if b != nil && *b {
 				copy(t.rows[i:], t.rows[i+1:])
 				t.rows = t.rows[:len(t.rows)-1]
 				n++
 				continue
 			}
 			i++
+		}
+		return n, nil
+	case *spansql.Update:
+		t, err := d.table(stmt.Table)
+		if err != nil {
+			return 0, err
+		}
+
+		t.mu.Lock()
+		defer t.mu.Unlock()
+
+		ec := evalContext{
+			cols:   t.cols,
+			params: params,
+		}
+
+		// Build parallel slices of destination column index and expressions to evaluate.
+		var dstIndex []int
+		var expr []spansql.Expr
+		for _, ui := range stmt.Items {
+			i, err := ec.resolveColumnIndex(ui.Column)
+			if err != nil {
+				return 0, err
+			}
+			// TODO: Enforce "A column can appear only once in the SET clause.".
+			if i < t.pkCols {
+				return 0, status.Errorf(codes.InvalidArgument, "cannot update primary key %s", ui.Column)
+			}
+			dstIndex = append(dstIndex, i)
+			expr = append(expr, ui.Value)
+		}
+
+		n := 0
+		values := make(row, len(stmt.Items)) // scratch space for new values
+		for i := 0; i < len(t.rows); i++ {
+			ec.row = t.rows[i]
+			b, err := ec.evalBoolExpr(stmt.Where)
+			if err != nil {
+				return 0, err
+			}
+			if b != nil && *b {
+				// Compute every update item.
+				for j := range dstIndex {
+					if expr[j] == nil { // DEFAULT
+						values[j] = nil
+						continue
+					}
+					v, err := ec.evalExpr(expr[j])
+					if err != nil {
+						return 0, err
+					}
+					values[j] = v
+				}
+				// Write them to the row.
+				for j, v := range values {
+					t.rows[i][dstIndex[j]] = v
+				}
+				n++
+			}
 		}
 		return n, nil
 	}

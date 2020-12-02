@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 	"google.golang.org/grpc"
@@ -51,7 +52,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("osconfig.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("osconfig.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("osconfig.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -163,7 +165,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// Client is a client for interacting with Cloud OS Config API.
+// Client is a client for interacting with OS Config API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {

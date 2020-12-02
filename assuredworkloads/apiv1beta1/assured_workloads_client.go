@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -50,7 +51,8 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("assuredworkloads.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("assuredworkloads.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("assuredworkloads.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -105,6 +107,9 @@ type Client struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	client assuredworkloadspb.AssuredWorkloadsServiceClient
 
@@ -134,13 +139,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &Client{
-		connPool:    connPool,
-		CallOptions: defaultCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCallOptions(),
 
 		client: assuredworkloadspb.NewAssuredWorkloadsServiceClient(connPool),
 	}
@@ -183,6 +194,11 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 
 // CreateWorkload creates Assured Workload.
 func (c *Client) CreateWorkload(ctx context.Context, req *assuredworkloadspb.CreateWorkloadRequest, opts ...gax.CallOption) (*CreateWorkloadOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateWorkload[0:len(c.CallOptions.CreateWorkload):len(c.CallOptions.CreateWorkload)], opts...)
@@ -205,6 +221,11 @@ func (c *Client) CreateWorkload(ctx context.Context, req *assuredworkloadspb.Cre
 // For force updates don’t set etag field in the Workload.
 // Only one update operation per workload can be in progress.
 func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.UpdateWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "workload.name", url.QueryEscape(req.GetWorkload().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateWorkload[0:len(c.CallOptions.UpdateWorkload):len(c.CallOptions.UpdateWorkload)], opts...)
@@ -224,6 +245,11 @@ func (c *Client) UpdateWorkload(ctx context.Context, req *assuredworkloadspb.Upd
 // in a deleted state, otherwise the request will fail with a
 // FAILED_PRECONDITION error.
 func (c *Client) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.DeleteWorkloadRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteWorkload[0:len(c.CallOptions.DeleteWorkload):len(c.CallOptions.DeleteWorkload)], opts...)
@@ -237,6 +263,11 @@ func (c *Client) DeleteWorkload(ctx context.Context, req *assuredworkloadspb.Del
 
 // GetWorkload gets Assured Workload associated with a CRM Node
 func (c *Client) GetWorkload(ctx context.Context, req *assuredworkloadspb.GetWorkloadRequest, opts ...gax.CallOption) (*assuredworkloadspb.Workload, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetWorkload[0:len(c.CallOptions.GetWorkload):len(c.CallOptions.GetWorkload)], opts...)
@@ -277,7 +308,7 @@ func (c *Client) ListWorkloads(ctx context.Context, req *assuredworkloadspb.List
 		}
 
 		it.Response = resp
-		return resp.Workloads, resp.NextPageToken, nil
+		return resp.GetWorkloads(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -288,8 +319,8 @@ func (c *Client) ListWorkloads(ctx context.Context, req *assuredworkloadspb.List
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

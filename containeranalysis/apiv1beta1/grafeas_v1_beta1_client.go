@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 	"google.golang.org/grpc"
@@ -57,7 +58,8 @@ type GrafeasV1Beta1CallOptions struct {
 
 func defaultGrafeasV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("containeranalysis.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

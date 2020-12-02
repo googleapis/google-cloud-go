@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 	"google.golang.org/grpc"
@@ -47,7 +48,8 @@ type CompanyCallOptions struct {
 
 func defaultCompanyClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -105,6 +107,9 @@ type CompanyClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	companyClient talentpb.CompanyServiceClient
 
@@ -129,13 +134,19 @@ func NewCompanyClient(ctx context.Context, opts ...option.ClientOption) (*Compan
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CompanyClient{
-		connPool:    connPool,
-		CallOptions: defaultCompanyCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCompanyCallOptions(),
 
 		companyClient: talentpb.NewCompanyServiceClient(connPool),
 	}
@@ -168,6 +179,11 @@ func (c *CompanyClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateCompany creates a new company entity.
 func (c *CompanyClient) CreateCompany(ctx context.Context, req *talentpb.CreateCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateCompany[0:len(c.CallOptions.CreateCompany):len(c.CallOptions.CreateCompany)], opts...)
@@ -185,6 +201,11 @@ func (c *CompanyClient) CreateCompany(ctx context.Context, req *talentpb.CreateC
 
 // GetCompany retrieves specified company.
 func (c *CompanyClient) GetCompany(ctx context.Context, req *talentpb.GetCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetCompany[0:len(c.CallOptions.GetCompany):len(c.CallOptions.GetCompany)], opts...)
@@ -202,6 +223,11 @@ func (c *CompanyClient) GetCompany(ctx context.Context, req *talentpb.GetCompany
 
 // UpdateCompany updates specified company.
 func (c *CompanyClient) UpdateCompany(ctx context.Context, req *talentpb.UpdateCompanyRequest, opts ...gax.CallOption) (*talentpb.Company, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "company.name", url.QueryEscape(req.GetCompany().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateCompany[0:len(c.CallOptions.UpdateCompany):len(c.CallOptions.UpdateCompany)], opts...)
@@ -220,6 +246,11 @@ func (c *CompanyClient) UpdateCompany(ctx context.Context, req *talentpb.UpdateC
 // DeleteCompany deletes specified company.
 // Prerequisite: The company has no jobs associated with it.
 func (c *CompanyClient) DeleteCompany(ctx context.Context, req *talentpb.DeleteCompanyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteCompany[0:len(c.CallOptions.DeleteCompany):len(c.CallOptions.DeleteCompany)], opts...)
@@ -256,7 +287,7 @@ func (c *CompanyClient) ListCompanies(ctx context.Context, req *talentpb.ListCom
 		}
 
 		it.Response = resp
-		return resp.Companies, resp.NextPageToken, nil
+		return resp.GetCompanies(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -267,8 +298,8 @@ func (c *CompanyClient) ListCompanies(ctx context.Context, req *talentpb.ListCom
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

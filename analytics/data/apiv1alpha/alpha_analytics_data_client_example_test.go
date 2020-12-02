@@ -132,3 +132,23 @@ func ExampleAlphaAnalyticsDataClient_GetMetadata() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleAlphaAnalyticsDataClient_RunRealtimeReport() {
+	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
+
+	ctx := context.Background()
+	c, err := data.NewAlphaAnalyticsDataClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datapb.RunRealtimeReportRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.RunRealtimeReport(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

@@ -17,7 +17,7 @@ limitations under the License.
 /*
 Package spannertest contains test helpers for working with Cloud Spanner.
 
-This package is EXPERIMENTAL, and is lacking many features. See the README.md
+This package is EXPERIMENTAL, and is lacking several features. See the README.md
 file in this directory for more details.
 
 In-memory fake
@@ -55,6 +55,7 @@ import (
 	"net"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -145,9 +146,26 @@ func timestampProto(t time.Time) *timestamppb.Timestamp {
 
 // lro represents a Long-Running Operation, generally a schema change.
 type lro struct {
-	mu      sync.Mutex
-	state   *lropb.Operation
-	waiters bool // Whether anyone appears to be waiting.
+	mu    sync.Mutex
+	state *lropb.Operation
+
+	// waitc is closed when anyone starts waiting on the LRO.
+	// waitatom is CAS'd from 0 to 1 to make that closing safe.
+	waitc    chan struct{}
+	waitatom int32
+}
+
+func newLRO(initState *lropb.Operation) *lro {
+	return &lro{
+		state: initState,
+		waitc: make(chan struct{}),
+	}
+}
+
+func (l *lro) noWait() {
+	if atomic.CompareAndSwapInt32(&l.waitatom, 0, 1) {
+		close(l.waitc)
+	}
 }
 
 func (l *lro) State() *lropb.Operation {
@@ -229,9 +247,7 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	}
 
 	// Someone is waiting on this LRO. Disable sleeping in its Run method.
-	lro.mu.Lock()
-	lro.waiters = true
-	lro.mu.Unlock()
+	lro.noWait()
 
 	return lro.State(), nil
 }
@@ -276,11 +292,7 @@ func (s *server) UpdateDatabaseDdl(ctx context.Context, req *adminpb.UpdateDatab
 	// Nothing should be depending on the exact structure of this,
 	// but it is specified in google/spanner/admin/database/v1/spanner_database_admin.proto.
 	id := "projects/fake-proj/instances/fake-instance/databases/fake-db/operations/" + genRandomOperation()
-	lro := &lro{
-		state: &lropb.Operation{
-			Name: id,
-		},
-	}
+	lro := newLRO(&lropb.Operation{Name: id})
 	s.mu.Lock()
 	s.lros[id] = lro
 	s.mu.Unlock()
@@ -293,12 +305,10 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 	ctx := context.Background()
 
 	for _, stmt := range stmts {
-		l.mu.Lock()
-		waiters := l.waiters
-		l.mu.Unlock()
-		if !waiters {
-			// Simulate delayed DDL application, but only if nobody is waiting.
-			time.Sleep(100 * time.Millisecond)
+		// Simulate delayed DDL application, but only if nobody is waiting.
+		select {
+		case <-time.After(100 * time.Millisecond):
+		case <-l.waitc:
 		}
 
 		if st := s.runOneDDL(ctx, stmt); st.Code() != codes.OK {

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"sort"
+	"strings"
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
@@ -56,15 +57,28 @@ func (ct *CreateTable) clearOffset() {
 // TableConstraint represents a constraint on a table.
 type TableConstraint struct {
 	Name       ID // may be empty
-	ForeignKey ForeignKey
+	Constraint Constraint
 
-	Position Position // position of the "CONSTRAINT" or "FOREIGN" token
+	Position Position // position of the "CONSTRAINT" token, or Constraint.Pos()
 }
 
 func (tc TableConstraint) Pos() Position { return tc.Position }
 func (tc *TableConstraint) clearOffset() {
+	switch c := tc.Constraint.(type) {
+	case ForeignKey:
+		c.clearOffset()
+		tc.Constraint = c
+	case Check:
+		c.clearOffset()
+		tc.Constraint = c
+	}
 	tc.Position.Offset = 0
-	tc.ForeignKey.clearOffset()
+}
+
+type Constraint interface {
+	isConstraint()
+	SQL() string
+	Node
 }
 
 // Interleave represents an interleave clause of a CREATE TABLE statement.
@@ -203,7 +217,25 @@ type Delete struct {
 func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
 func (*Delete) isDMLStmt()       {}
 
-// TODO: Insert, Update.
+// TODO: Insert.
+
+// Update represents an UPDATE statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#update-statement
+type Update struct {
+	Table ID
+	Items []UpdateItem
+	Where BoolExpr
+
+	// TODO: Alias
+}
+
+func (u *Update) String() string { return fmt.Sprintf("%#v", u) }
+func (*Update) isDMLStmt()       {}
+
+type UpdateItem struct {
+	Column ID
+	Value  Expr // or nil for DEFAULT
+}
 
 // ColumnDef represents a column definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
@@ -242,6 +274,19 @@ type ForeignKey struct {
 
 func (fk ForeignKey) Pos() Position { return fk.Position }
 func (fk *ForeignKey) clearOffset() { fk.Position.Offset = 0 }
+func (ForeignKey) isConstraint()    {}
+
+// Check represents a check constraint as part of a CREATE TABLE
+// or ALTER TABLE statement.
+type Check struct {
+	Expr BoolExpr
+
+	Position Position // position of the "CHECK" token
+}
+
+func (c Check) Pos() Position { return c.Position }
+func (c *Check) clearOffset() { c.Position.Offset = 0 }
+func (Check) isConstraint()   {}
 
 // Type represents a column type.
 type Type struct {
@@ -316,7 +361,35 @@ type SelectFromTable struct {
 
 func (SelectFromTable) isSelectFrom() {}
 
-// TODO: SelectFromJoin, SelectFromSubquery, etc.
+// SelectFromJoin is a SelectFrom that joins two other SelectFroms.
+// https://cloud.google.com/spanner/docs/query-syntax#join_types
+type SelectFromJoin struct {
+	Type     JoinType
+	LHS, RHS SelectFrom
+
+	// Join condition.
+	// At most one of {On,Using} may be set.
+	On    BoolExpr
+	Using []ID
+
+	// Hints are suggestions for how to evaluate a join.
+	// https://cloud.google.com/spanner/docs/query-syntax#join-hints
+	Hints map[string]string
+}
+
+func (SelectFromJoin) isSelectFrom() {}
+
+type JoinType int
+
+const (
+	InnerJoin JoinType = iota
+	CrossJoin
+	FullJoin
+	LeftJoin
+	RightJoin
+)
+
+// TODO: SelectFromSubquery, etc.
 
 type Order struct {
 	Expr Expr
@@ -351,6 +424,7 @@ type BoolExpr interface {
 type Expr interface {
 	isExpr()
 	SQL() string
+	addSQL(*strings.Builder)
 }
 
 // LiteralOrParam is implemented by integer literal and parameter values.
@@ -361,7 +435,7 @@ type LiteralOrParam interface {
 
 type ArithOp struct {
 	Op       ArithOperator
-	LHS, RHS Expr // only RHS is set for Neg, BitNot
+	LHS, RHS Expr // only RHS is set for Neg, Plus, BitNot
 }
 
 func (ArithOp) isExpr() {}
@@ -370,6 +444,7 @@ type ArithOperator int
 
 const (
 	Neg    ArithOperator = iota // unary -
+	Plus                        // unary +
 	BitNot                      // unary ~
 	Mul                         // *
 	Div                         // /
@@ -385,7 +460,7 @@ const (
 
 type LogicalOp struct {
 	Op       LogicalOperator
-	LHS, RHS BoolExpr // only RHS is set for Neg, BitNot
+	LHS, RHS BoolExpr // only RHS is set for Not
 }
 
 func (LogicalOp) isBoolExpr() {}
@@ -449,9 +524,16 @@ func (IsOp) isExpr()     {}
 
 type IsExpr interface {
 	isIsExpr()
-	isExpr()
-	SQL() string
+	Expr
 }
+
+// PathExp represents a path expression.
+//
+// The grammar for path expressions is not defined (see b/169017423 internally),
+// so this captures the most common form only, namely a dotted sequence of identifiers.
+type PathExp []ID
+
+func (PathExp) isExpr() {}
 
 // Func represents a function call.
 type Func struct {

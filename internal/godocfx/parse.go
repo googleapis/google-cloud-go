@@ -26,6 +26,8 @@ import (
 	"go/printer"
 	"go/token"
 	"log"
+	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -41,6 +43,7 @@ type tocItem struct {
 	UID   string     `yaml:"uid,omitempty"`
 	Name  string     `yaml:"name,omitempty"`
 	Items []*tocItem `yaml:"items,omitempty"`
+	Href  string     `yaml:"href,omitempty"`
 }
 
 func (t *tocItem) addItem(i *tocItem) {
@@ -92,176 +95,124 @@ func (i *item) addChild(c child) {
 
 var onlyGo = []string{"go"}
 
+type extraFile struct{ srcRelativePath, dstRelativePath, name string }
+
+type result struct {
+	pages      map[string]*page
+	toc        tableOfContents
+	module     *packages.Module
+	extraFiles []extraFile
+}
+
 // parse parses the directory into a map of import path -> page and a TOC.
 //
 // glob is the path to parse, usually ending in `...`. glob is passed directly
 // to packages.Load as-is.
-func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, error) {
-	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
-		Tests: true,
-	}
-
-	pkgs, err := packages.Load(config, glob)
-	if err != nil {
-		return nil, nil, nil, fmt.Errorf("packages.Load: %v", err)
-	}
-	packages.PrintErrors(pkgs) // Don't fail everything because of one package.
-
-	if len(pkgs) == 0 {
-		return nil, nil, nil, fmt.Errorf("pattern %q matched 0 packages", glob)
-	}
-
+//
+// workingDir is the directory to use to run go commands.
+//
+// optionalExtraFiles is a list of paths relative to the module root to include.
+func parse(glob string, workingDir string, optionalExtraFiles []string) (*result, error) {
 	pages := map[string]*page{}
-	toc := tableOfContents{}
 
-	module := pkgs[0].Module
-	skippedModules := map[string]struct{}{}
+	pkgInfos, err := loadPackages(glob, workingDir)
+	if err != nil {
+		return nil, err
+	}
+	module := pkgInfos[0].pkg.Module
 
-	log.Printf("Processing %s@%s", module.Path, module.Version)
-
-	// First, collect all of the files grouped by package, including test
-	// packages.
-	allPkgFiles := map[string][]string{}
-	for _, pkg := range pkgs {
-		id := pkg.ID
-		// See https://pkg.go.dev/golang.org/x/tools/go/packages#Config.
-		// The uncompiled test package shows up as "foo_test [foo.test]".
-		if strings.HasSuffix(id, ".test") ||
-			strings.Contains(id, "internal") ||
-			(strings.Contains(id, " [") && !strings.Contains(id, "_test [")) {
-			continue
-		}
-		if strings.Contains(id, "_test") {
-			id = id[0:strings.Index(id, "_test [")]
-		} else {
-			// The test package doesn't have Module set.
-			if pkg.Module.Path != module.Path {
-				skippedModules[pkg.Module.Path] = struct{}{}
-				continue
+	// Filter out extra files that don't exist because some modules don't have a
+	// README.
+	extraFiles := []extraFile{}
+	for _, f := range optionalExtraFiles {
+		if _, err := os.Stat(filepath.Join(module.Dir, f)); err == nil {
+			dst := f
+			dir := filepath.Dir(f)
+			base := filepath.Base(f)
+			name := strings.TrimSuffix(base, filepath.Ext(base))
+			name = strings.Title(name)
+			if name == "README" {
+				dst = filepath.Join(dir, "pkg-readme.md")
 			}
-		}
-		for _, f := range pkg.Syntax {
-			name := pkg.Fset.File(f.Pos()).Name()
-			if strings.HasSuffix(name, ".go") {
-				allPkgFiles[id] = append(allPkgFiles[id], name)
-			}
+			extraFiles = append(extraFiles, extraFile{
+				srcRelativePath: f,
+				dstRelativePath: dst,
+				name:            name,
+			})
 		}
 	}
 
-	// Test files don't have Module set. Filter out packages in skipped modules.
-	pkgFiles := map[string][]string{}
-	pkgNames := []string{}
-	for pkgPath, files := range allPkgFiles {
-		skip := false
-		for skipped := range skippedModules {
-			if strings.HasPrefix(pkgPath, skipped) {
-				skip = true
-				break
-			}
-		}
-		if !skip {
-			pkgFiles[pkgPath] = files
-			pkgNames = append(pkgNames, pkgPath)
-		}
-	}
-	sort.Strings(pkgNames)
+	toc := buildTOC(module.Path, pkgInfos, extraFiles)
 
 	// Once the files are grouped by package, process each package
 	// independently.
-	for _, pkgPath := range pkgNames {
-		parsedFiles := []*ast.File{}
-		fset := token.NewFileSet()
-		for _, f := range pkgFiles[pkgPath] {
-			pf, err := parser.ParseFile(fset, f, nil, parser.ParseComments)
-			if err != nil {
-				return nil, nil, nil, fmt.Errorf("ParseFile: %v", err)
-			}
-			parsedFiles = append(parsedFiles, pf)
-		}
-
-		// Parse out GoDoc.
-		docPkg, err := doc.NewFromFiles(fset, parsedFiles, pkgPath)
-		if err != nil {
-			return nil, nil, nil, fmt.Errorf("doc.NewFromFiles: %v", err)
-		}
-
-		// Extra filter in case the file filtering didn't catch everything.
-		if !strings.HasPrefix(docPkg.ImportPath, module.Path) {
-			continue
-		}
-
-		toc = append(toc, &tocItem{
-			UID:  docPkg.ImportPath,
-			Name: docPkg.ImportPath,
-		})
+	for _, pi := range pkgInfos {
 
 		pkgItem := &item{
-			UID:      docPkg.ImportPath,
-			Name:     docPkg.ImportPath,
-			ID:       docPkg.Name,
-			Summary:  docPkg.Doc,
+			UID:      pi.doc.ImportPath,
+			Name:     pi.doc.ImportPath,
+			ID:       pi.doc.Name,
+			Summary:  toHTML(pi.doc.Doc),
 			Langs:    onlyGo,
 			Type:     "package",
-			Examples: processExamples(docPkg.Examples, fset),
+			Examples: processExamples(pi.doc.Examples, pi.fset),
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
-		pages[pkgPath] = pkgPage
+		pages[pi.doc.ImportPath] = pkgPage
 
-		for _, c := range docPkg.Consts {
+		for _, c := range pi.doc.Consts {
 			name := strings.Join(c.Names, ", ")
 			id := strings.Join(c.Names, ",")
-			uid := docPkg.ImportPath + "." + id
+			uid := pi.doc.ImportPath + "." + id
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
 				UID:     uid,
 				Name:    name,
 				ID:      id,
-				Parent:  docPkg.ImportPath,
+				Parent:  pi.doc.ImportPath,
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(fset, c.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
 			})
 		}
-		for _, v := range docPkg.Vars {
+		for _, v := range pi.doc.Vars {
 			name := strings.Join(v.Names, ", ")
 			id := strings.Join(v.Names, ",")
-			uid := docPkg.ImportPath + "." + id
+			uid := pi.doc.ImportPath + "." + id
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
 				UID:     uid,
 				Name:    name,
 				ID:      id,
-				Parent:  docPkg.ImportPath,
+				Parent:  pi.doc.ImportPath,
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(fset, v.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
 			})
 		}
-		for _, t := range docPkg.Types {
-			uid := docPkg.ImportPath + "." + t.Name
+		for _, t := range pi.doc.Types {
+			uid := pi.doc.ImportPath + "." + t.Name
 			pkgItem.addChild(child(uid))
 			typeItem := &item{
 				UID:      uid,
 				Name:     t.Name,
 				ID:       t.Name,
-				Parent:   docPkg.ImportPath,
+				Parent:   pi.doc.ImportPath,
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(fset, t.Decl)},
-				Examples: processExamples(t.Examples, fset),
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl)},
+				Examples: processExamples(t.Examples, pi.fset),
 			}
-			// TODO: items are added as page.Children, rather than
+			// Note: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
-			// That also means methods are called functions.
 			pkgPage.addItem(typeItem)
 			for _, c := range t.Consts {
 				name := strings.Join(c.Names, ", ")
 				id := strings.Join(c.Names, ",")
-				cUID := docPkg.ImportPath + "." + id
+				cUID := pi.doc.ImportPath + "." + id
 				pkgItem.addChild(child(cUID))
 				pkgPage.addItem(&item{
 					UID:     cUID,
@@ -271,13 +222,13 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(fset, c.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
 				})
 			}
 			for _, v := range t.Vars {
 				name := strings.Join(v.Names, ", ")
 				id := strings.Join(v.Names, ",")
-				cUID := docPkg.ImportPath + "." + id
+				cUID := pi.doc.ImportPath + "." + id
 				pkgItem.addChild(child(cUID))
 				pkgPage.addItem(&item{
 					UID:     cUID,
@@ -287,7 +238,7 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(fset, v.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
 				})
 			}
 
@@ -302,8 +253,8 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Type:     "function",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
-					Examples: processExamples(fn.Examples, fset),
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+					Examples: processExamples(fn.Examples, pi.fset),
 				})
 			}
 			for _, fn := range t.Methods {
@@ -314,39 +265,37 @@ func parse(glob string) (map[string]*page, tableOfContents, *packages.Module, er
 					Name:     fmt.Sprintf("func (%s) %s\n", fn.Recv, fn.Name),
 					ID:       fn.Name,
 					Parent:   uid,
-					Type:     "function", // Note: this is actually a method.
+					Type:     "method",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
-					Examples: processExamples(fn.Examples, fset),
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+					Examples: processExamples(fn.Examples, pi.fset),
 				})
 			}
 		}
-		for _, fn := range docPkg.Funcs {
-			uid := docPkg.ImportPath + "." + fn.Name
+		for _, fn := range pi.doc.Funcs {
+			uid := pi.doc.ImportPath + "." + fn.Name
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
 				UID:      uid,
 				Name:     fmt.Sprintf("func %s\n", fn.Name),
 				ID:       fn.Name,
-				Parent:   docPkg.ImportPath,
+				Parent:   pi.doc.ImportPath,
 				Type:     "function",
 				Summary:  fn.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.Synopsis(fset, fn.Decl)},
-				Examples: processExamples(fn.Examples, fset),
+				Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+				Examples: processExamples(fn.Examples, pi.fset),
 			})
 		}
 	}
-	if len(skippedModules) > 0 {
-		skipped := []string{}
-		for s := range skippedModules {
-			skipped = append(skipped, "* "+s)
-		}
-		sort.Strings(skipped)
-		log.Printf("Warning: Only processed %s@%s, skipped:\n%s\n", module.Path, module.Version, strings.Join(skipped, "\n"))
-	}
-	return pages, toc, module, nil
+
+	return &result{
+		pages:      pages,
+		toc:        toc,
+		module:     module,
+		extraFiles: extraFiles,
+	}, nil
 }
 
 // processExamples converts the examples to []example.
@@ -382,4 +331,166 @@ func processExamples(exs []*doc.Example, fset *token.FileSet) []example {
 		})
 	}
 	return result
+}
+
+func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents {
+	toc := tableOfContents{}
+
+	modTOC := &tocItem{
+		UID:  mod, // Assume the module root has a package.
+		Name: mod,
+	}
+	for _, ef := range extraFiles {
+		modTOC.addItem(&tocItem{
+			Href: ef.dstRelativePath,
+			Name: ef.name,
+		})
+	}
+
+	toc = append(toc, modTOC)
+
+	if len(pis) == 1 {
+		// The module only has one package.
+		return toc
+	}
+
+	trimmedPkgs := []string{}
+	for _, pi := range pis {
+		importPath := pi.doc.ImportPath
+		if importPath == mod {
+			continue
+		}
+		if !strings.HasPrefix(importPath, mod) {
+			panic(fmt.Sprintf("Package %q does not start with %q, should never happen", importPath, mod))
+		}
+		trimmed := strings.TrimPrefix(importPath, mod+"/")
+		trimmedPkgs = append(trimmedPkgs, trimmed)
+	}
+
+	sort.Strings(trimmedPkgs)
+
+	for _, trimmed := range trimmedPkgs {
+		uid := mod + "/" + trimmed
+		pkgTOCItem := &tocItem{
+			UID:  uid,
+			Name: trimmed,
+		}
+		modTOC.addItem(pkgTOCItem)
+	}
+
+	return toc
+}
+
+func toHTML(s string) string {
+	buf := &bytes.Buffer{}
+	doc.ToHTML(buf, s, nil)
+	return buf.String()
+}
+
+type pkgInfo struct {
+	pkg  *packages.Package
+	doc  *doc.Package
+	fset *token.FileSet
+}
+
+func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
+	config := &packages.Config{
+		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
+		Tests: true,
+		Dir:   workingDir,
+	}
+
+	allPkgs, err := packages.Load(config, glob)
+	if err != nil {
+		return nil, fmt.Errorf("packages.Load: %v", err)
+	}
+	packages.PrintErrors(allPkgs) // Don't fail everything because of one package.
+
+	if len(allPkgs) == 0 {
+		return nil, fmt.Errorf("pattern %q matched 0 packages", glob)
+	}
+
+	module := allPkgs[0].Module
+	skippedModules := map[string]struct{}{}
+
+	// First, collect all of the files grouped by package, including test
+	// packages.
+	pkgFiles := map[string][]string{}
+
+	idToPkg := map[string]*packages.Package{}
+	pkgNames := []string{}
+	for _, pkg := range allPkgs {
+		id := pkg.ID
+		// See https://pkg.go.dev/golang.org/x/tools/go/packages#Config.
+		// The uncompiled test package shows up as "foo_test [foo.test]".
+		if strings.HasSuffix(id, ".test") ||
+			strings.Contains(id, "internal") ||
+			strings.Contains(id, "third_party") ||
+			(strings.Contains(id, " [") && !strings.Contains(id, "_test [")) {
+			continue
+		}
+		if strings.Contains(id, "_test") {
+			id = id[0:strings.Index(id, "_test [")]
+		} else {
+			idToPkg[pkg.PkgPath] = pkg
+			pkgNames = append(pkgNames, pkg.PkgPath)
+			// The test package doesn't have Module set.
+			if pkg.Module.Path != module.Path {
+				skippedModules[pkg.Module.Path] = struct{}{}
+				continue
+			}
+		}
+		for _, f := range pkg.Syntax {
+			name := pkg.Fset.File(f.Pos()).Name()
+			if strings.HasSuffix(name, ".go") {
+				pkgFiles[id] = append(pkgFiles[id], name)
+			}
+		}
+	}
+
+	sort.Strings(pkgNames)
+
+	result := []pkgInfo{}
+
+	for _, pkgPath := range pkgNames {
+		// Check if pkgPath has prefix of skipped module.
+		skip := false
+		for skipModule := range skippedModules {
+			if strings.HasPrefix(pkgPath, skipModule) {
+				skip = true
+				break
+			}
+		}
+		if skip {
+			continue
+		}
+		parsedFiles := []*ast.File{}
+		fset := token.NewFileSet()
+		for _, f := range pkgFiles[pkgPath] {
+			pf, err := parser.ParseFile(fset, f, nil, parser.ParseComments)
+			if err != nil {
+				return nil, fmt.Errorf("ParseFile: %v", err)
+			}
+			parsedFiles = append(parsedFiles, pf)
+		}
+
+		// Parse out GoDoc.
+		docPkg, err := doc.NewFromFiles(fset, parsedFiles, pkgPath)
+		if err != nil {
+			return nil, fmt.Errorf("doc.NewFromFiles: %v", err)
+		}
+
+		// Extra filter in case the file filtering didn't catch everything.
+		if !strings.HasPrefix(docPkg.ImportPath, module.Path) {
+			continue
+		}
+
+		result = append(result, pkgInfo{
+			pkg:  idToPkg[pkgPath],
+			doc:  docPkg,
+			fset: fset,
+		})
+	}
+
+	return result, nil
 }

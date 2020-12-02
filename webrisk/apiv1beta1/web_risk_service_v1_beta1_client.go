@@ -23,6 +23,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
 	"google.golang.org/grpc"
@@ -41,7 +42,8 @@ type WebRiskServiceV1Beta1CallOptions struct {
 
 func defaultWebRiskServiceV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("webrisk.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("webrisk.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

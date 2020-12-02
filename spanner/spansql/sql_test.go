@@ -233,6 +233,21 @@ func TestSQL(t *testing.T) {
 			reparseDML,
 		},
 		{
+			&Update{
+				Table: "Ta",
+				Items: []UpdateItem{
+					{Column: "Cb", Value: IntegerLiteral(4)},
+					{Column: "Ce", Value: StringLiteral("wow")},
+					{Column: "Cf", Value: ID("Cg")},
+					{Column: "Cg", Value: Null},
+					{Column: "Ch", Value: nil},
+				},
+				Where: ID("Ca"),
+			},
+			`UPDATE Ta SET Cb = 4, Ce = "wow", Cf = Cg, Cg = NULL, Ch = DEFAULT WHERE Ca`,
+			reparseDML,
+		},
+		{
 			Query{
 				Select: Select{
 					List: []Expr{ID("A"), ID("B")},
@@ -291,7 +306,7 @@ func TestSQL(t *testing.T) {
 			continue
 		}
 
-		// As a sanity check, confirm that parsing the SQL produces the original input.
+		// As a confidence check, confirm that parsing the SQL produces the original input.
 		data, err := test.reparse(sql)
 		if err != nil {
 			t.Errorf("Reparsing %q: %v", sql, err)

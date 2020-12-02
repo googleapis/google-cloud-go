@@ -584,7 +584,7 @@ nextTest:
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
-			rs, err := p.add(v)
+			rs, _, err := p.add(v)
 			if err != nil {
 				t.Errorf("test %d.%d: partialResultSetDecoder.add(%v) = %v; want nil", i, j, v, err)
 				continue nextTest
@@ -929,6 +929,11 @@ func TestRsdBlockingStates(t *testing.T) {
 			name:         "unConnected -> queueingRetryable",
 			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			stateHistory: []resumableStreamDecoderState{queueingRetryable},
+			want: []*sppb.PartialResultSet{
+				{
+					Metadata: kvMeta,
+				},
+			},
 		},
 		{
 			// unConnected->queueingRetryable->queueingRetryable
@@ -1143,10 +1148,12 @@ func TestRsdBlockingStates(t *testing.T) {
 			}
 			var mutex = &sync.Mutex{}
 			var rs []*sppb.PartialResultSet
+			rowsFetched := make(chan int)
 			go func() {
 				for {
 					if !r.next() {
 						// Note that r.Next also exits on context cancel/timeout.
+						close(rowsFetched)
 						return
 					}
 					mutex.Lock()
@@ -1154,9 +1161,17 @@ func TestRsdBlockingStates(t *testing.T) {
 					mutex.Unlock()
 				}
 			}()
+			// Wait until all rows have been fetched.
+			if len(test.want) > 0 {
+				select {
+				case <-rowsFetched:
+				case <-time.After(1 * time.Second):
+					t.Fatal("Timeout in waiting for rows to be fetched")
+				}
+			}
 			// Verify that resumableStreamDecoder reaches expected state.
 			select {
-			case <-stateDone: // Note that at this point, receiver is still blockingon r.next().
+			case <-stateDone: // Note that at this point, receiver is still blocking on r.next().
 				// Check if resumableStreamDecoder carried out expected state
 				// transitions.
 				if !testEqual(st, test.stateHistory) {
@@ -1167,7 +1182,7 @@ func TestRsdBlockingStates(t *testing.T) {
 				mutex.Lock()
 				defer mutex.Unlock()
 				if !testEqual(rs, test.want) {
-					t.Fatalf("received PartialResultSets: \n%v\n, want \n%v\n", rs, test.want)
+					t.Fatalf("%s: received PartialResultSets: \n%v\n, want \n%v\n", test.name, rs, test.want)
 				}
 				// Verify that resumableStreamDecoder's internal buffering is also
 				// correct.

@@ -30,6 +30,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -53,7 +54,8 @@ type AgentsCallOptions struct {
 
 func defaultAgentsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -360,7 +362,7 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentReq
 	return err
 }
 
-// ExportAgent exports the specified agent to a ZIP file.
+// ExportAgent exports the specified agent to a binary file.
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -384,10 +386,10 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentReq
 	}, nil
 }
 
-// RestoreAgent restores the specified agent from a ZIP file.
+// RestoreAgent restores the specified agent from a binary file.
 //
-// Note that all existing intents, intent routes, entity types, pages and
-// webhooks in the agent will be deleted.
+// Replaces the current agent with a new one. Note that all existing resources
+// in agent (e.g. intents, entity types, flows) will be removed.
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)

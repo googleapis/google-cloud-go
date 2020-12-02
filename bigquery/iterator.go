@@ -268,11 +268,11 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	// reduce data transfered by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location)
-	call = call.Fields(projectedFields...)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
-		call = call.Fields("schema")
+		projectedFields = append(projectedFields, "schema")
 	}
+	call = call.Fields(projectedFields...)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -294,7 +294,6 @@ func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, star
 	if schema == nil {
 		schema = bqToSchema(res.Schema)
 	}
-
 	rows, err := convertRows(res.Rows, schema)
 	if err != nil {
 		return nil, err
