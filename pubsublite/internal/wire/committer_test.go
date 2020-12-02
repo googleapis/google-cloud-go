@@ -102,6 +102,7 @@ func TestCommitterStopFlushesCommits(t *testing.T) {
 	stream := test.NewRPCVerifier(t)
 	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
 	stream.Push(commitReq(34), commitResp(1), nil)
+	stream.Push(commitReq(56), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
@@ -114,7 +115,7 @@ func TestCommitterStopFlushesCommits(t *testing.T) {
 
 	ack1.Ack()
 	cmt.Stop() // Stop should flush the first offset
-	ack2.Ack() // Acks after Stop() are discarded
+	ack2.Ack() // Acks after Stop() are processed
 	cmt.SendBatchCommit()
 	// Committer terminates when all acks are processed.
 	if gotErr := cmt.FinalError(); gotErr != nil {
