@@ -67,7 +67,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscription("S")
 	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
-		id, err := strconv.Atoi(m.ackID)
+		id, err := strconv.Atoi(m.ackID())
 		if err != nil {
 			panic(err)
 		}
@@ -83,20 +83,21 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 	}
 	gotMap := map[string]*Message{}
 	for _, m := range gotMsgs {
-		gotMap[m.ackID] = m
+		gotMap[m.ackID()] = m
 	}
 	for i, msg := range msgs {
 		want, err := toMessage(msg)
 		if err != nil {
 			t.Fatal(err)
 		}
-		want.calledDone = true
-		got := gotMap[want.ackID]
+		wantAckh, _ := want.ackHandler()
+		wantAckh.calledDone = true
+		got := gotMap[wantAckh.ackID]
 		if got == nil {
-			t.Errorf("%d: no message for ackID %q", i, want.ackID)
+			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
 			continue
 		}
-		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
+		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}, psAckHandler{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
@@ -235,10 +236,10 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	}
 	seen := map[string]bool{}
 	for _, gm := range gotMsgs {
-		if seen[gm.ackID] {
-			t.Fatalf("duplicate ID %q", gm.ackID)
+		if seen[gm.ackID()] {
+			t.Fatalf("duplicate ID %q", gm.ackID())
 		}
-		seen[gm.ackID] = true
+		seen[gm.ackID()] = true
 	}
 	if len(seen) != nMessages {
 		t.Fatalf("got %d messages, want %d", len(seen), nMessages)

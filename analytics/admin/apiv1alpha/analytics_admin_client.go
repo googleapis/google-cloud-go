@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 	"google.golang.org/grpc"
@@ -90,7 +91,8 @@ type AnalyticsAdminCallOptions struct {
 
 func defaultAnalyticsAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -206,7 +208,7 @@ type AnalyticsAdminClient struct {
 
 // NewAnalyticsAdminClient creates a new analytics admin service client.
 //
-// Service Interface for the Analytics Admin API (App+Web).
+// Service Interface for the Analytics Admin API (GA4).
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := defaultAnalyticsAdminClientOptions()
 
@@ -287,7 +289,7 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have App+Web properties.
+// Note that these accounts might not currently have GA4 properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -440,10 +442,10 @@ func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *ad
 	return it
 }
 
-// GetProperty lookup for a single “App+Web” Property.
+// GetProperty lookup for a single “GA4” Property.
 //
 // Throws “Target not found” if no such property found, if property is not
-// of the type “App+Web”, or if caller does not have permissions to access it.
+// of the type “GA4”, or if caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -467,7 +469,7 @@ func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.Get
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “App+Web” properties will be returned.
+// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -510,7 +512,7 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 	return it
 }
 
-// CreateProperty creates an “App+Web” property with the specified location and attributes.
+// CreateProperty creates an “GA4” property with the specified location and attributes.
 func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -541,7 +543,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not an App+Web Property.
+// Returns an error if the target is not found, or is not an GA4 Property.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)

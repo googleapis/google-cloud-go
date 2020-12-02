@@ -584,7 +584,7 @@ nextTest:
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
-			rs, err := p.add(v)
+			rs, _, err := p.add(v)
 			if err != nil {
 				t.Errorf("test %d.%d: partialResultSetDecoder.add(%v) = %v; want nil", i, j, v, err)
 				continue nextTest
@@ -929,6 +929,11 @@ func TestRsdBlockingStates(t *testing.T) {
 			name:         "unConnected -> queueingRetryable",
 			sql:          "SELECT t.key key, t.value value FROM t_mock t",
 			stateHistory: []resumableStreamDecoderState{queueingRetryable},
+			want: []*sppb.PartialResultSet{
+				{
+					Metadata: kvMeta,
+				},
+			},
 		},
 		{
 			// unConnected->queueingRetryable->queueingRetryable
@@ -1177,7 +1182,7 @@ func TestRsdBlockingStates(t *testing.T) {
 				mutex.Lock()
 				defer mutex.Unlock()
 				if !testEqual(rs, test.want) {
-					t.Fatalf("received PartialResultSets: \n%v\n, want \n%v\n", rs, test.want)
+					t.Fatalf("%s: received PartialResultSets: \n%v\n, want \n%v\n", test.name, rs, test.want)
 				}
 				// Verify that resumableStreamDecoder's internal buffering is also
 				// correct.

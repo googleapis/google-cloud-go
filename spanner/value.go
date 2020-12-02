@@ -2389,7 +2389,7 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) er
 
 	fields, err := fieldCache.Fields(t)
 	if err != nil {
-		return toSpannerError(err)
+		return ToSpannerError(err)
 	}
 	seen := map[string]bool{}
 	for i, f := range ty.Fields {

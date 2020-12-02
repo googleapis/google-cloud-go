@@ -1,5 +1,44 @@
 # Changes
 
+## [1.12.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.11.0...v1.12.0) (2020-11-10)
+
+
+### Features
+
+* **spanner:** add metadata to RowIterator ([#3050](https://www.github.com/googleapis/google-cloud-go/issues/3050)) ([9a2289c](https://www.github.com/googleapis/google-cloud-go/commit/9a2289c3a38492bc2e84e0f4000c68a8718f5c11)), closes [#1805](https://www.github.com/googleapis/google-cloud-go/issues/1805)
+* **spanner:** export ToSpannerError ([#3133](https://www.github.com/googleapis/google-cloud-go/issues/3133)) ([b951d8b](https://www.github.com/googleapis/google-cloud-go/commit/b951d8bd194b76da0a8bf2ce7cf85b546d2e051c)), closes [#3122](https://www.github.com/googleapis/google-cloud-go/issues/3122)
+* **spanner:** support rw-transaction with options ([#3058](https://www.github.com/googleapis/google-cloud-go/issues/3058)) ([5130694](https://www.github.com/googleapis/google-cloud-go/commit/51306948eef9d26cff70453efc3eb500ddef9117))
+* **spanner/spannertest:** make SELECT list aliases visible to ORDER BY ([#3054](https://www.github.com/googleapis/google-cloud-go/issues/3054)) ([7d2d83e](https://www.github.com/googleapis/google-cloud-go/commit/7d2d83ee1cce58d4014d5570bc599bcef1ed9c22)), closes [#3043](https://www.github.com/googleapis/google-cloud-go/issues/3043)
+
+## v1.11.0
+
+* Features:
+  - feat(spanner): add KeySetFromKeys function (#2837)
+* Misc:
+  - test(spanner): check for Aborted error (#3039)
+  - test(spanner): fix potential race condition in TestRsdBlockingStates (#3017)
+  - test(spanner): compare data instead of struct (#3013)
+  - test(spanner): fix flaky oc_test.go (#2838)
+  - docs(spanner): document NULL value (#2885)
+* spansql/spannertest:
+  - Support JOINs (all but FULL JOIN) (#2936, #2924, #2896, #3042, #3037, #2995, #2945, #2931)
+  - feat(spanner/spansql): parse CHECK constraints (#3046)
+  - fix(spanner/spansql): fix parsing of unary minus and plus (#2997)
+  - fix(spanner/spansql): fix parsing of adjacent inline and leading comments (#2851)
+  - fix(spanner/spannertest): fix ORDER BY combined with SELECT aliases (#3043)
+  - fix(spanner/spannertest): generate query output columns in construction order (#2990)
+  - fix(spanner/spannertest): correct handling of NULL AND FALSE (#2991)
+  - fix(spanner/spannertest): correct handling of tri-state boolean expression evaluation (#2983)
+  - fix(spanner/spannertest): fix handling of NULL with LIKE operator (#2982)
+  - test(spanner/spannertest): migrate most test code to integration_test.go (#2977)
+  - test(spanner/spansql): add fuzz target for ParseQuery (#2909)
+  - doc(spanner/spannertest): document the implementation (#2996)
+  - perf(spanner/spannertest): speed up no-wait DDL changes (#2994)
+  - perf(spanner/spansql): make fewer allocations during SQL (#2969)
+* Backward Incompatible Changes
+  - chore(spanner/spansql): use ID type for identifiers throughout (#2889)
+  - chore(spanner/spansql): restructure FROM, TABLESAMPLE (#2888)
+
 ## v1.10.0
 
 * feat(spanner): add support for NUMERIC data type (#2415)

@@ -158,6 +158,23 @@ func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
 
+func (u *Update) SQL() string {
+	str := "UPDATE " + u.Table.SQL() + " SET "
+	for i, item := range u.Items {
+		if i > 0 {
+			str += ", "
+		}
+		str += item.Column.SQL() + " = "
+		if item.Value != nil {
+			str += item.Value.SQL()
+		} else {
+			str += "DEFAULT"
+		}
+	}
+	str += " WHERE " + u.Where.SQL()
+	return str
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
@@ -174,7 +191,7 @@ func (tc TableConstraint) SQL() string {
 	if tc.Name != "" {
 		str += "CONSTRAINT " + tc.Name.SQL() + " "
 	}
-	str += tc.ForeignKey.SQL()
+	str += tc.Constraint.SQL()
 	return str
 }
 
@@ -183,6 +200,10 @@ func (fk ForeignKey) SQL() string {
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
 	str += idList(fk.RefColumns, ", ") + ")"
 	return str
+}
+
+func (c Check) SQL() string {
+	return "CHECK (" + c.Expr.SQL() + ")"
 }
 
 func (t Type) SQL() string {

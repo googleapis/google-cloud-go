@@ -716,6 +716,19 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	// Create a sample UDF so we can verify adding authorized UDFs
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+
+	sql := fmt.Sprintf(`
+			CREATE FUNCTION `+"`%s`"+`(x INT64) AS (x * 3);`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
 	origAccess := append([]*AccessEntry(nil), md.Access...)
 	newEntries := []*AccessEntry{
 		{
@@ -727,6 +740,10 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 			Role:       ReaderRole,
 			Entity:     "allUsers",
 			EntityType: IAMMemberEntity,
+		},
+		{
+			EntityType: RoutineEntity,
+			Routine:    routine,
 		},
 	}
 
@@ -743,7 +760,7 @@ func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 		}
 	}()
 
-	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries)); diff != "" {
+	if diff := testutil.Diff(md.Access, newAccess, cmpopts.SortSlices(lessAccessEntries), cmpopts.IgnoreUnexported(Routine{})); diff != "" {
 		t.Fatalf("got=-, want=+:\n%s", diff)
 	}
 }
@@ -1062,6 +1079,69 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		it, [][]Value{{int64(10)}})
 }
 
+func TestIntegration_InsertErrors(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+	table := newTable(t, schema)
+	defer table.Delete(ctx)
+
+	ins := table.Inserter()
+	var saverRows []*ValuesSaver
+
+	// badSaver represents an excessively sized (>5Mb) row message for insertion.
+	badSaver := &ValuesSaver{
+		Schema:   schema,
+		InsertID: NoDedupeID,
+		Row:      []Value{strings.Repeat("X", 5242881), []Value{int64(1)}, []Value{true}},
+	}
+
+	// Case 1: A single oversized row.
+	saverRows = append(saverRows, badSaver)
+	err := ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted row size error, got successful insert.")
+	}
+	if _, ok := err.(PutMultiError); !ok {
+		t.Errorf("Wanted PutMultiError, but wasn't: %v", err)
+	}
+	got := putError(err)
+	want := "Maximum allowed row size exceeded"
+	if !strings.Contains(got, want) {
+		t.Errorf("Error didn't contain expected substring (%s): %s", want, got)
+	}
+	// Case 2: The overall request size > 10MB)
+	// 2x 5MB rows
+	saverRows = append(saverRows, badSaver)
+	err = ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted structured size error, got successful insert.")
+	}
+	e, ok := err.(*googleapi.Error)
+	if !ok {
+		t.Errorf("Wanted googleapi.Error, got: %v", err)
+	}
+	want = "Request payload size exceeds the limit"
+	if !strings.Contains(e.Message, want) {
+		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	}
+	// Case 3: Very Large Request
+	// Request so large it gets rejected by an intermediate (4x 5MB rows)
+	saverRows = append(saverRows, saverRows...)
+	err = ins.Put(ctx, saverRows)
+	if err == nil {
+		t.Errorf("Wanted error, got successful insert.")
+	}
+	e, ok = err.(*googleapi.Error)
+	if !ok {
+		t.Errorf("wanted googleapi.Error, got: %v", err)
+	}
+	if e.Code != http.StatusBadRequest {
+		t.Errorf("Wanted HTTP 400, got %d", e.Code)
+	}
+}
+
 func TestIntegration_InsertAndRead(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -1354,6 +1434,7 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
+	rat2 := big.NewRat(66, 100)
 	geo := "POINT(-122.198939 47.669865)"
 
 	// Nil fields in the struct.
@@ -1375,20 +1456,21 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 
 	// Populate the struct with values.
 	testInsertAndReadNullable(t, testStructNullable{
-		String:    NullString{"x", true},
-		Bytes:     []byte{1, 2, 3},
-		Integer:   NullInt64{1, true},
-		Float:     NullFloat64{2.3, true},
-		Boolean:   NullBool{true, true},
-		Timestamp: NullTimestamp{testTimestamp, true},
-		Date:      NullDate{testDate, true},
-		Time:      NullTime{ctm, true},
-		DateTime:  NullDateTime{cdt, true},
-		Numeric:   rat,
-		Geography: NullGeography{geo, true},
-		Record:    &subNullable{X: NullInt64{4, true}},
+		String:     NullString{"x", true},
+		Bytes:      []byte{1, 2, 3},
+		Integer:    NullInt64{1, true},
+		Float:      NullFloat64{2.3, true},
+		Boolean:    NullBool{true, true},
+		Timestamp:  NullTimestamp{testTimestamp, true},
+		Date:       NullDate{testDate, true},
+		Time:       NullTime{ctm, true},
+		DateTime:   NullDateTime{cdt, true},
+		Numeric:    rat,
+		BigNumeric: rat2,
+		Geography:  NullGeography{geo, true},
+		Record:     &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, geo, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, rat2, geo, []Value{int64(4)}})
 }
 
 func testInsertAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
@@ -1775,6 +1857,59 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 		}
 		checkRead(t, "LegacyQuery", it, [][]Value{c.wantRow})
 	}
+}
+
+func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	autoTable := dataset.Table(tableIDs.New())
+	customTable := dataset.Table(tableIDs.New())
+
+	err := autoTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: &ExternalDataConfig{
+			SourceFormat: Parquet,
+			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
+			AutoDetect:   true,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   AutoHivePartitioningMode,
+				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/",
+				RequirePartitionFilter: true,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("table.Create(auto): %v", err)
+	}
+	defer autoTable.Delete(ctx)
+
+	err = customTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: &ExternalDataConfig{
+			SourceFormat: Parquet,
+			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
+			AutoDetect:   true,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   CustomHivePartitioningMode,
+				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/{pkey:STRING}/",
+				RequirePartitionFilter: true,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("table.Create(custom): %v", err)
+	}
+	defer customTable.Delete(ctx)
+
+	// Issue a test query that prunes based on the custom hive partitioning key, and verify the result is as expected.
+	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM `%s`.%s.%s WHERE pkey=\"foo\"", customTable.ProjectID, customTable.DatasetID, customTable.TableID)
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("Error querying: %v", err)
+	}
+	checkReadAndTotalRows(t, "HiveQuery", it, [][]Value{{int64(50)}})
 }
 
 func TestIntegration_QueryParameters(t *testing.T) {

@@ -113,7 +113,7 @@ func ExampleAlphaAnalyticsDataClient_BatchRunPivotReports() {
 	_ = resp
 }
 
-func ExampleAlphaAnalyticsDataClient_GetUniversalMetadata() {
+func ExampleAlphaAnalyticsDataClient_GetMetadata() {
 	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
 
 	ctx := context.Background()
@@ -122,10 +122,30 @@ func ExampleAlphaAnalyticsDataClient_GetUniversalMetadata() {
 		// TODO: Handle error.
 	}
 
-	req := &datapb.GetUniversalMetadataRequest{
+	req := &datapb.GetMetadataRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetUniversalMetadata(ctx, req)
+	resp, err := c.GetMetadata(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAlphaAnalyticsDataClient_RunRealtimeReport() {
+	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
+
+	ctx := context.Background()
+	c, err := data.NewAlphaAnalyticsDataClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datapb.RunRealtimeReportRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.RunRealtimeReport(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

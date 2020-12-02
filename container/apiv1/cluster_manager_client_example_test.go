@@ -370,6 +370,26 @@ func ExampleClusterManagerClient_GetServerConfig() {
 	_ = resp
 }
 
+func ExampleClusterManagerClient_GetJSONWebKeys() {
+	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
+
+	ctx := context.Background()
+	c, err := container.NewClusterManagerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &containerpb.GetJSONWebKeysRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetJSONWebKeys(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClusterManagerClient_ListNodePools() {
 	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
 
