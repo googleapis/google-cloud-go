@@ -17,7 +17,6 @@ import (
 	"context"
 	"errors"
 	"reflect"
-	"sync"
 	"time"
 
 	"google.golang.org/grpc"
@@ -52,10 +51,7 @@ type messageDeliveryQueue struct {
 	messagesC chan *ReceivedMessage
 	stopC     chan struct{}
 	acks      *ackTracker
-
-	// Fields below must be guarded with mu.
-	mu     sync.Mutex
-	status serviceStatus
+	status    serviceStatus
 }
 
 func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
@@ -74,9 +70,6 @@ func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, buf
 }
 
 func (mq *messageDeliveryQueue) Start() {
-	mq.mu.Lock()
-	defer mq.mu.Unlock()
-
 	if mq.status == serviceUninitialized {
 		go mq.deliverMessages()
 		mq.status = serviceActive
@@ -84,9 +77,6 @@ func (mq *messageDeliveryQueue) Start() {
 }
 
 func (mq *messageDeliveryQueue) Stop() {
-	mq.mu.Lock()
-	defer mq.mu.Unlock()
-
 	if mq.status < serviceTerminated {
 		close(mq.stopC)
 		mq.status = serviceTerminated
@@ -94,9 +84,6 @@ func (mq *messageDeliveryQueue) Stop() {
 }
 
 func (mq *messageDeliveryQueue) Add(messages []*ReceivedMessage) {
-	mq.mu.Lock()
-	defer mq.mu.Unlock()
-
 	if mq.status == serviceActive {
 		for _, msg := range messages {
 			mq.messagesC <- msg
