@@ -32,13 +32,14 @@ import (
 // call.
 type mockWirePublisher struct {
 	Verifier *test.RPCVerifier
-	FakeErr  error
 	Stopped  bool
+	err      error
 }
 
 func (mp *mockWirePublisher) Publish(msg *pb.PubSubMessage, onResult wire.PublishResultFunc) {
 	resp, err := mp.Verifier.Pop(msg)
 	if err != nil {
+		mp.err = err
 		onResult(nil, err)
 		return
 	}
@@ -48,9 +49,9 @@ func (mp *mockWirePublisher) Publish(msg *pb.PubSubMessage, onResult wire.Publis
 
 func (mp *mockWirePublisher) Start()             {}
 func (mp *mockWirePublisher) Stop()              { mp.Stopped = true }
-func (mp *mockWirePublisher) WaitStarted() error { return mp.FakeErr }
-func (mp *mockWirePublisher) WaitStopped() error { return mp.FakeErr }
-func (mp *mockWirePublisher) Error() error       { return mp.FakeErr }
+func (mp *mockWirePublisher) WaitStarted() error { return mp.err }
+func (mp *mockWirePublisher) WaitStopped() error { return mp.err }
+func (mp *mockWirePublisher) Error() error       { return mp.err }
 
 func newTestPublisherClient(verifier *test.RPCVerifier, settings PublishSettings) *PublisherClient {
 	return &PublisherClient{
@@ -219,6 +220,12 @@ func TestPublisherClientTranslatePublishResultErrors(t *testing.T) {
 			_, gotErr := result.Get(ctx)
 			if !test.ErrorEqual(gotErr, tc.wantErr) {
 				t.Errorf("Publish() got err: (%v), want err: (%v)", gotErr, tc.wantErr)
+			}
+			if !test.ErrorEqual(pubClient.Error(), tc.wireErr) {
+				t.Errorf("PublisherClient.Error() got: (%v), want: (%v)", pubClient.Error(), tc.wireErr)
+			}
+			if got, want := pubClient.wirePub.(*mockWirePublisher).Stopped, false; got != want {
+				t.Errorf("Publisher.Stopped: got %v, want %v", got, want)
 			}
 		})
 	}
