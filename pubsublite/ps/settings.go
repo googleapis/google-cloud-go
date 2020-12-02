@@ -81,10 +81,6 @@ type PublishSettings struct {
 	// information, see https://cloud.google.com/pubsub/lite/docs/topics.
 	BufferedByteLimit int
 
-	// The polling interval to watch for topic partition count updates. Set to 0
-	// to disable polling if the number of partitions will never update.
-	ConfigPollPeriod time.Duration
-
 	// Optional custom function that extracts an ordering key from a Message. The
 	// default implementation extracts the key from Message.OrderingKey.
 	KeyExtractor KeyExtractorFunc
@@ -101,7 +97,6 @@ var DefaultPublishSettings = PublishSettings{
 	ByteThreshold:     wire.DefaultPublishSettings.ByteThreshold,
 	Timeout:           wire.DefaultPublishSettings.Timeout,
 	BufferedByteLimit: wire.DefaultPublishSettings.BufferedByteLimit,
-	ConfigPollPeriod:  wire.DefaultPublishSettings.ConfigPollPeriod,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -111,7 +106,7 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 		ByteThreshold:     s.ByteThreshold,
 		Timeout:           s.Timeout,
 		BufferedByteLimit: s.BufferedByteLimit,
-		ConfigPollPeriod:  s.ConfigPollPeriod,
+		ConfigPollPeriod:  wire.DefaultPublishSettings.ConfigPollPeriod,
 		Framework:         wire.FrameworkCloudPubSubShim,
 	}
 }
@@ -119,7 +114,8 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 // NackHandler is invoked when pubsub.Message.Nack() is called. Cloud Pub/Sub
 // Lite does not have a concept of 'nack'. If the nack handler implementation
 // returns nil, the message is acknowledged. If an error is returned, the
-// SubscriberClient will will consider this a fatal error and terminate.
+// SubscriberClient will consider this a fatal error and terminate once all
+// outstanding message receivers have finished.
 //
 // In Cloud Pub/Sub Lite, only a single subscriber for a given subscription is
 // connected to any partition at a time, and there is no other client that may
@@ -160,8 +156,7 @@ type ReceiveSettings struct {
 	Partitions []int
 
 	// Optional custom function to handle pubsub.Message.Nack() calls. If not set,
-	// the default behavior is to immediately terminate the SubscriberClient with
-	// a fatal error.
+	// the default behavior is to terminate the SubscriberClient.
 	NackHandler NackHandler
 
 	// Optional custom function that transforms a PubSubMessage API proto to a
