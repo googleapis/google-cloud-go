@@ -16,8 +16,12 @@ package wire
 import (
 	"context"
 	"errors"
+	"fmt"
+	"math/rand"
 	"reflect"
+	"time"
 
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -27,6 +31,7 @@ import (
 var (
 	errInvalidInitialPubResponse = errors.New("pubsublite: first response from server was not an initial response for publish")
 	errInvalidMsgPubResponse     = errors.New("pubsublite: received invalid publish response from server")
+	errDecreasingPartitions      = errors.New("pubsublite: publisher does not support decreasing topic partition count")
 )
 
 // singlePartitionPublisher publishes messages to a single topic partition.
@@ -109,9 +114,17 @@ func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publ
 	defer pp.mu.Unlock()
 
 	processMessage := func() error {
-		if err := pp.unsafeCheckServiceStatus(); err != nil {
-			return err
+		// Messages are accepted while the service is starting up or active. During
+		// startup, messages are queued in the batcher and will be published once
+		// the stream connects. If startup fails, the error will be set for the
+		// queued messages.
+		switch {
+		case pp.status == serviceUninitialized:
+			return ErrServiceUninitialized
+		case pp.status >= serviceTerminating:
+			return ErrServiceStopped
 		}
+
 		if err := pp.batcher.AddMessage(msg, onResult); err != nil {
 			return err
 		}
@@ -256,4 +269,126 @@ func (pp *singlePartitionPublisher) unsafeCheckDone() {
 	if pp.status == serviceTerminating && pp.batcher.InFlightBatchesEmpty() {
 		pp.stream.Stop()
 	}
+}
+
+// routingPublisher publishes messages to multiple topic partitions, each
+// managed by a singlePartitionPublisher. It supports increasing topic partition
+// count, but not decreasing.
+type routingPublisher struct {
+	// Immutable after creation.
+	msgRouterFactory *messageRouterFactory
+	pubFactory       *singlePartitionPublisherFactory
+	partitionWatcher *partitionCountWatcher
+
+	// Fields below must be guarded with mu.
+	msgRouter  messageRouter
+	publishers []*singlePartitionPublisher
+
+	compositeService
+}
+
+func newRoutingPublisher(adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
+	pub := &routingPublisher{
+		msgRouterFactory: msgRouterFactory,
+		pubFactory:       pubFactory,
+	}
+	pub.init()
+	pub.partitionWatcher = newPartitionCountWatcher(pubFactory.ctx, adminClient, pubFactory.settings, pubFactory.topicPath, pub.onPartitionCountChanged)
+	pub.unsafeAddServices(pub.partitionWatcher)
+	return pub
+}
+
+func (rp *routingPublisher) onPartitionCountChanged(partitionCount int) {
+	rp.mu.Lock()
+	defer rp.mu.Unlock()
+
+	if rp.status >= serviceTerminating {
+		return
+	}
+	if partitionCount == len(rp.publishers) {
+		return
+	}
+	if partitionCount < len(rp.publishers) {
+		rp.unsafeInitiateShutdown(serviceTerminating, errDecreasingPartitions)
+		return
+	}
+
+	prevPartitionCount := len(rp.publishers)
+	for i := prevPartitionCount; i < partitionCount; i++ {
+		pub := rp.pubFactory.New(i)
+		rp.publishers = append(rp.publishers, pub)
+		rp.unsafeAddServices(pub)
+	}
+	rp.msgRouter = rp.msgRouterFactory.New(partitionCount)
+}
+
+func (rp *routingPublisher) Publish(msg *pb.PubSubMessage, onResult PublishResultFunc) {
+	pub, err := rp.routeToPublisher(msg)
+	if err != nil {
+		onResult(nil, err)
+		return
+	}
+	pub.Publish(msg, onResult)
+}
+
+func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*singlePartitionPublisher, error) {
+	rp.mu.Lock()
+	defer rp.mu.Unlock()
+
+	if err := rp.unsafeCheckServiceStatus(); err != nil {
+		return nil, err
+	}
+	if rp.msgRouter == nil {
+		// Should not occur.
+		rp.unsafeInitiateShutdown(serviceTerminating, ErrServiceUninitialized)
+		return nil, ErrServiceUninitialized
+	}
+
+	partition := rp.msgRouter.Route(msg.GetKey())
+	if partition >= len(rp.publishers) {
+		// Should not occur.
+		err := fmt.Errorf("pubsublite: publisher not found for partition %d", partition)
+		rp.unsafeInitiateShutdown(serviceTerminating, err)
+		return nil, err
+	}
+	return rp.publishers[partition], nil
+}
+
+// Publisher is the client interface exported from this package for publishing
+// messages.
+type Publisher interface {
+	Publish(*pb.PubSubMessage, PublishResultFunc)
+
+	Start()
+	WaitStarted() error
+	Stop()
+	WaitStopped() error
+	Error() error
+}
+
+// NewPublisher creates a new client for publishing messages.
+func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPath string, opts ...option.ClientOption) (Publisher, error) {
+	if err := ValidateRegion(region); err != nil {
+		return nil, err
+	}
+	if err := validatePublishSettings(settings); err != nil {
+		return nil, err
+	}
+	pubClient, err := newPublisherClient(ctx, region, opts...)
+	if err != nil {
+		return nil, err
+	}
+	adminClient, err := NewAdminClient(ctx, region, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
+	pubFactory := &singlePartitionPublisherFactory{
+		ctx:       ctx,
+		pubClient: pubClient,
+		settings:  settings,
+		topicPath: topicPath,
+	}
+	return newRoutingPublisher(adminClient, msgRouterFactory, pubFactory), nil
 }
