@@ -21,9 +21,9 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
-	"github.com/golang/protobuf/proto"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
@@ -53,10 +53,8 @@ func newTestMessageReceiver(t *testing.T) *testMessageReceiver {
 	}
 }
 
-func (tr *testMessageReceiver) onMessages(msgs []*ReceivedMessage) {
-	for _, msg := range msgs {
-		tr.received <- msg
-	}
+func (tr *testMessageReceiver) onMessage(msg *ReceivedMessage) {
+	tr.received <- msg
 }
 
 func (tr *testMessageReceiver) ValidateMsg(want *pb.SequencedMessage) AckConsumer {
@@ -126,45 +124,56 @@ func newTestBlockingMessageReceiver(t *testing.T) *testBlockingMessageReceiver {
 	}
 }
 
-// onMessages is the message receiver func and blocks until there is a call to
+// onMessage is the message receiver func and blocks until there is a call to
 // Return().
-func (tr *testBlockingMessageReceiver) onMessages(msgs []*ReceivedMessage) {
-	tr.testMessageReceiver.onMessages(msgs)
+func (tr *testBlockingMessageReceiver) onMessage(msg *ReceivedMessage) {
+	tr.testMessageReceiver.onMessage(msg)
 	<-tr.blockReceive
 }
 
-// Return signals onMessages to return.
+// Return signals onMessage to return.
 func (tr *testBlockingMessageReceiver) Return() {
 	var void struct{}
 	tr.blockReceive <- void
 }
 
-func TestNewMessageDeliveryQueue(t *testing.T) {
+func TestMessageDeliveryQueue(t *testing.T) {
+	acks := newAckTracker()
 	receiver := newTestMessageReceiver(t)
-	messageQueue := newMessageDeliveryQueue(receiver.onMessages, 10)
+	messageQueue := newMessageDeliveryQueue(acks, receiver.onMessage, 10)
 
 	t.Run("Add before start", func(t *testing.T) {
-		messageQueue.Add([]*ReceivedMessage{{Msg: seqMsgWithOffset(3)}})
+		msg1 := seqMsgWithOffset(1)
+		ack1 := newAckConsumer(1, 0, nil)
+		messageQueue.Add([]*ReceivedMessage{{Msg: msg1, Ack: ack1}})
 
 		receiver.VerifyNoMsgs()
 	})
 
 	t.Run("Add after start", func(t *testing.T) {
-		msg1 := seqMsgWithOffset(1)
 		msg2 := seqMsgWithOffset(2)
+		ack2 := newAckConsumer(2, 0, nil)
+		msg3 := seqMsgWithOffset(3)
+		ack3 := newAckConsumer(3, 0, nil)
 
 		messageQueue.Start()
 		messageQueue.Start() // Check duplicate starts
-		messageQueue.Add([]*ReceivedMessage{{Msg: msg1}, {Msg: msg2}})
+		messageQueue.Add([]*ReceivedMessage{
+			{Msg: msg2, Ack: ack2},
+			{Msg: msg3, Ack: ack3},
+		})
 
-		receiver.ValidateMsg(msg1)
 		receiver.ValidateMsg(msg2)
+		receiver.ValidateMsg(msg3)
 	})
 
 	t.Run("Add after stop", func(t *testing.T) {
+		msg4 := seqMsgWithOffset(4)
+		ack4 := newAckConsumer(4, 0, nil)
+
 		messageQueue.Stop()
 		messageQueue.Stop() // Check duplicate stop
-		messageQueue.Add([]*ReceivedMessage{{Msg: seqMsgWithOffset(4)}})
+		messageQueue.Add([]*ReceivedMessage{{Msg: msg4, Ack: ack4}})
 
 		receiver.VerifyNoMsgs()
 	})
@@ -189,7 +198,7 @@ func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, se
 		Receiver: newTestMessageReceiver(t),
 		t:        t,
 	}
-	ts.sub = newSubscribeStream(ctx, subClient, settings, ts.Receiver.onMessages, subscription, acks, true)
+	ts.sub = newSubscribeStream(ctx, subClient, settings, ts.Receiver.onMessage, subscription, acks, true)
 	ts.initAndStart(t, ts.sub, "Subscriber")
 	return ts
 }
@@ -486,7 +495,7 @@ func TestSinglePartitionSubscriberStartStop(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSinglePartitionSubscriber(t, receiver.onMessages, subscription)
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -518,7 +527,7 @@ func TestSinglePartitionSubscriberSimpleMsgAck(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSinglePartitionSubscriber(t, receiver.onMessages, subscription)
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -557,29 +566,32 @@ func TestSinglePartitionSubscriberMessageQueue(t *testing.T) {
 
 	cmtStream := test.NewRPCVerifier(t)
 	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	cmtStream.Push(commitReq(4), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSinglePartitionSubscriber(t, receiver.onMessages, subscription)
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
 
 	// Verifies that messageDeliveryQueue delivers messages sequentially and waits
-	// for the client message receiver func to return.
-	receiver.ValidateMsg(msg1)
-	receiver.VerifyNoMsgs()
-	receiver.Return()
+	// for the client message receiver func to return before delivering the next
+	// message.
+	var acks []AckConsumer
+	for _, msg := range []*pb.SequencedMessage{msg1, msg2, msg3} {
+		ack := receiver.ValidateMsg(msg)
+		acks = append(acks, ack)
+		receiver.VerifyNoMsgs()
+		receiver.Return()
+	}
 
-	receiver.ValidateMsg(msg2)
-	receiver.VerifyNoMsgs()
-	receiver.Return()
-
-	receiver.ValidateMsg(msg3)
-	receiver.VerifyNoMsgs()
-	receiver.Return()
+	// Ack all messages so that the committer terminates.
+	for _, ack := range acks {
+		ack.Ack()
+	}
 
 	sub.Stop()
 	if gotErr := sub.WaitStopped(); gotErr != nil {
@@ -603,17 +615,18 @@ func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
 
 	cmtStream := test.NewRPCVerifier(t)
 	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	cmtStream.Push(commitReq(2), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSinglePartitionSubscriber(t, receiver.onMessages, subscription)
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
 
-	receiver.ValidateMsg(msg1)
+	receiver.ValidateMsg(msg1).Ack()
 	receiver.VerifyNoMsgs()
 
 	// Stop the subscriber before returning from the message receiver func.
@@ -653,7 +666,7 @@ func newTestMultiPartitionSubscriber(t *testing.T, receiverFunc MessageReceiverF
 }
 
 func TestMultiPartitionSubscriberMultipleMessages(t *testing.T) {
-	subscription := "projects/123456/locations/us-central1-b/subscriptions/my-sub"
+	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
 	receiver := newTestMessageReceiver(t)
 	msg1 := seqMsgWithOffsetAndSize(22, 100)
 	msg2 := seqMsgWithOffsetAndSize(23, 200)
@@ -689,7 +702,7 @@ func TestMultiPartitionSubscriberMultipleMessages(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestMultiPartitionSubscriber(t, receiver.onMessages, subscription, []int{1, 2})
+	sub := newTestMultiPartitionSubscriber(t, receiver.onMessage, subscription, []int{1, 2})
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -701,7 +714,7 @@ func TestMultiPartitionSubscriberMultipleMessages(t *testing.T) {
 }
 
 func TestMultiPartitionSubscriberPermanentError(t *testing.T) {
-	subscription := "projects/123456/locations/us-central1-b/subscriptions/my-sub"
+	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
 	receiver := newTestMessageReceiver(t)
 	msg1 := seqMsgWithOffsetAndSize(22, 100)
 	msg2 := seqMsgWithOffsetAndSize(23, 200)
@@ -737,12 +750,12 @@ func TestMultiPartitionSubscriberPermanentError(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestMultiPartitionSubscriber(t, receiver.onMessages, subscription, []int{1, 2})
+	sub := newTestMultiPartitionSubscriber(t, receiver.onMessage, subscription, []int{1, 2})
 	if gotErr := sub.WaitStarted(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
 	receiver.ValidateMsgs([]*pb.SequencedMessage{msg1, msg3})
-	errorBarrier.Release() // Send server error
+	errorBarrier.Release() // Release server error now to ensure test is deterministic
 	if gotErr := sub.WaitStopped(); !test.ErrorEqual(gotErr, serverErr) {
 		t.Errorf("Final error got: (%v), want: (%v)", gotErr, serverErr)
 	}

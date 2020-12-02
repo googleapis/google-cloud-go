@@ -40,9 +40,8 @@ type ReceivedMessage struct {
 	Ack AckConsumer
 }
 
-// MessageReceiverFunc receives a batch of Pub/Sub messages from a topic
-// partition.
-type MessageReceiverFunc func([]*ReceivedMessage)
+// MessageReceiverFunc receives a Pub/Sub message from a topic partition.
+type MessageReceiverFunc func(*ReceivedMessage)
 
 const maxMessagesBufferSize = 1000
 
@@ -50,15 +49,16 @@ const maxMessagesBufferSize = 1000
 // MessageReceiverFunc sequentially.
 type messageDeliveryQueue struct {
 	receiver  MessageReceiverFunc
-	messagesC chan []*ReceivedMessage
+	messagesC chan *ReceivedMessage
 	stopC     chan struct{}
+	acks      *ackTracker
 
 	// Fields below must be guarded with mu.
 	mu     sync.Mutex
 	status serviceStatus
 }
 
-func newMessageDeliveryQueue(receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
+func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
 	// The buffer size is based on ReceiveSettings.MaxOutstandingMessages to
 	// handle the worst case of single messages. But ensure there's a reasonable
 	// limit as channel buffer capacity is allocated on creation.
@@ -66,8 +66,9 @@ func newMessageDeliveryQueue(receiver MessageReceiverFunc, bufferSize int) *mess
 		bufferSize = maxMessagesBufferSize
 	}
 	return &messageDeliveryQueue{
+		acks:      acks,
 		receiver:  receiver,
-		messagesC: make(chan []*ReceivedMessage, bufferSize),
+		messagesC: make(chan *ReceivedMessage, bufferSize),
 		stopC:     make(chan struct{}),
 	}
 }
@@ -97,7 +98,9 @@ func (mq *messageDeliveryQueue) Add(messages []*ReceivedMessage) {
 	defer mq.mu.Unlock()
 
 	if mq.status == serviceActive {
-		mq.messagesC <- messages
+		for _, msg := range messages {
+			mq.messagesC <- msg
+		}
 	}
 }
 
@@ -113,8 +116,11 @@ func (mq *messageDeliveryQueue) deliverMessages() {
 		select {
 		case <-mq.stopC:
 			return // Ends the goroutine.
-		case msgs := <-mq.messagesC:
-			mq.receiver(msgs)
+		case msg := <-mq.messagesC:
+			// Register outstanding acks, which are primarily handled by the
+			// `committer`.
+			mq.acks.Push(msg.Ack.(*ackConsumer))
+			mq.receiver(msg)
 		}
 	}
 }
@@ -138,7 +144,6 @@ type subscribeStream struct {
 
 	// Fields below must be guarded with mu.
 	stream          *retryableStream
-	acks            *ackTracker
 	offsetTracker   subscriberOffsetTracker
 	flowControl     flowControlBatcher
 	pollFlowControl *periodicTask
@@ -162,8 +167,7 @@ func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, s
 				},
 			},
 		},
-		messageQueue: newMessageDeliveryQueue(receiver, settings.MaxOutstandingMessages),
-		acks:         acks,
+		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
 	}
 	s.stream = newRetryableStream(ctx, s, settings.Timeout, reflect.TypeOf(pb.SubscribeResponse{}))
 
@@ -290,12 +294,7 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 
 	var receivedMsgs []*ReceivedMessage
 	for _, msg := range response.Messages {
-		// Register outstanding acks, which are primarily handled by the
-		// `committer`.
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
-		if err := s.acks.Push(ack); err != nil {
-			return err
-		}
 		receivedMsgs = append(receivedMsgs, &ReceivedMessage{Msg: msg, Ack: ack})
 	}
 	s.messageQueue.Add(receivedMsgs)
