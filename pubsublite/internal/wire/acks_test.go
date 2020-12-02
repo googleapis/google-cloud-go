@@ -15,12 +15,19 @@ package wire
 
 import "testing"
 
+func emptyAckConsumer(_ *ackConsumer) {
+	// Nothing to do.
+}
+
 func TestAckConsumerAck(t *testing.T) {
 	numAcks := 0
 	onAck := func(ac *ackConsumer) {
 		numAcks++
 	}
 	ackConsumer := newAckConsumer(0, 0, onAck)
+	if got, want := ackConsumer.IsAcked(), false; got != want {
+		t.Errorf("ackConsumer.IsAcked() got %v, want %v", got, want)
+	}
 
 	// Test duplicate acks.
 	for i := 0; i < 3; i++ {
@@ -56,12 +63,9 @@ func TestAckTrackerProcessing(t *testing.T) {
 		t.Errorf("ackTracker.CommitOffset() got %v, want %v", got, want)
 	}
 
-	onAck := func(ac *ackConsumer) {
-		// Nothing to do.
-	}
-	ack1 := newAckConsumer(1, 0, onAck)
-	ack2 := newAckConsumer(2, 0, onAck)
-	ack3 := newAckConsumer(3, 0, onAck)
+	ack1 := newAckConsumer(1, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(2, 0, emptyAckConsumer)
+	ack3 := newAckConsumer(3, 0, emptyAckConsumer)
 	if err := ackTracker.Push(ack1); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
 	}
@@ -95,7 +99,7 @@ func TestAckTrackerProcessing(t *testing.T) {
 	}
 
 	// Newly received message.
-	ack4 := newAckConsumer(4, 0, onAck)
+	ack4 := newAckConsumer(4, 0, emptyAckConsumer)
 	if err := ackTracker.Push(ack4); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
 	}
@@ -107,12 +111,12 @@ func TestAckTrackerProcessing(t *testing.T) {
 
 func TestAckTrackerRelease(t *testing.T) {
 	ackTracker := newAckTracker()
-	onAck := func(ac *ackConsumer) {
+	onAckAfterRelease := func(ac *ackConsumer) {
 		t.Error("onAck should not be called")
 	}
-	ack1 := newAckConsumer(1, 0, onAck)
-	ack2 := newAckConsumer(2, 0, onAck)
-	ack3 := newAckConsumer(3, 0, onAck)
+	ack1 := newAckConsumer(1, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(2, 0, onAckAfterRelease)
+	ack3 := newAckConsumer(3, 0, onAckAfterRelease)
 
 	if err := ackTracker.Push(ack1); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
@@ -124,11 +128,17 @@ func TestAckTrackerRelease(t *testing.T) {
 		t.Errorf("ackTracker.Push() got err %v", err)
 	}
 
+	// First ack is called before Release and should be processed.
+	ack1.Ack()
+
 	// After clearing outstanding acks, onAck should not be called.
 	ackTracker.Release()
-	ack1.Ack()
 	ack2.Ack()
 	ack3.Ack()
+
+	if got, want := ackTracker.CommitOffset(), int64(2); got != want {
+		t.Errorf("ackTracker.CommitOffset() got %v, want %v", got, want)
+	}
 }
 
 func TestCommitCursorTrackerProcessing(t *testing.T) {
@@ -140,12 +150,9 @@ func TestCommitCursorTrackerProcessing(t *testing.T) {
 		t.Errorf("commitCursorTracker.NextOffset() got %v, want %v", got, want)
 	}
 
-	onAck := func(ac *ackConsumer) {
-		// Nothing to do.
-	}
-	ack1 := newAckConsumer(1, 0, onAck)
-	ack2 := newAckConsumer(2, 0, onAck)
-	ack3 := newAckConsumer(3, 0, onAck)
+	ack1 := newAckConsumer(1, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(2, 0, emptyAckConsumer)
+	ack3 := newAckConsumer(3, 0, emptyAckConsumer)
 	if err := ackTracker.Push(ack1); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
 	}
@@ -184,8 +191,8 @@ func TestCommitCursorTrackerProcessing(t *testing.T) {
 	if got, want := commitTracker.NextOffset(), nilCursorOffset; got != want {
 		t.Errorf("commitCursorTracker.NextOffset() got %v, want %v", got, want)
 	}
-	if got, want := commitTracker.Done(), false; got != want {
-		t.Errorf("commitCursorTracker.Done() got %v, want %v", got, want)
+	if got, want := commitTracker.UpToDate(), false; got != want {
+		t.Errorf("commitCursorTracker.UpToDate() got %v, want %v", got, want)
 	}
 
 	// First 2 pending commits acknowledged.
@@ -198,8 +205,8 @@ func TestCommitCursorTrackerProcessing(t *testing.T) {
 	if got, want := commitTracker.lastConfirmedOffset, int64(4); got != want {
 		t.Errorf("commitCursorTracker.lastConfirmedOffset got %v, want %v", got, want)
 	}
-	if got, want := commitTracker.Done(), true; got != want {
-		t.Errorf("commitCursorTracker.Done() got %v, want %v", got, want)
+	if got, want := commitTracker.UpToDate(), true; got != want {
+		t.Errorf("commitCursorTracker.UpToDate() got %v, want %v", got, want)
 	}
 }
 
@@ -207,12 +214,9 @@ func TestCommitCursorTrackerStreamReconnects(t *testing.T) {
 	ackTracker := newAckTracker()
 	commitTracker := newCommitCursorTracker(ackTracker)
 
-	onAck := func(ac *ackConsumer) {
-		// Nothing to do.
-	}
-	ack1 := newAckConsumer(1, 0, onAck)
-	ack2 := newAckConsumer(2, 0, onAck)
-	ack3 := newAckConsumer(3, 0, onAck)
+	ack1 := newAckConsumer(1, 0, emptyAckConsumer)
+	ack2 := newAckConsumer(2, 0, emptyAckConsumer)
+	ack3 := newAckConsumer(3, 0, emptyAckConsumer)
 	if err := ackTracker.Push(ack1); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
 	}
@@ -250,8 +254,8 @@ func TestCommitCursorTrackerStreamReconnects(t *testing.T) {
 
 	// Stream breaks and pending offsets are cleared.
 	commitTracker.ClearPending()
-	if got, want := commitTracker.Done(), false; got != want {
-		t.Errorf("commitCursorTracker.Done() got %v, want %v", got, want)
+	if got, want := commitTracker.UpToDate(), false; got != want {
+		t.Errorf("commitCursorTracker.UpToDate() got %v, want %v", got, want)
 	}
 	// When the stream reconnects the next offset should be 3 (offset 2 skipped).
 	if got, want := commitTracker.NextOffset(), int64(3); got != want {
@@ -282,8 +286,8 @@ func TestCommitCursorTrackerStreamReconnects(t *testing.T) {
 	if got, want := commitTracker.lastConfirmedOffset, int64(3); got != want {
 		t.Errorf("commitCursorTracker.lastConfirmedOffset got %v, want %v", got, want)
 	}
-	if got, want := commitTracker.Done(), false; got != want {
-		t.Errorf("commitCursorTracker.Done() got %v, want %v", got, want)
+	if got, want := commitTracker.UpToDate(), false; got != want {
+		t.Errorf("commitCursorTracker.UpToDate() got %v, want %v", got, want)
 	}
 
 	// Final pending commit confirmed.
@@ -293,17 +297,17 @@ func TestCommitCursorTrackerStreamReconnects(t *testing.T) {
 	if got, want := commitTracker.lastConfirmedOffset, int64(4); got != want {
 		t.Errorf("commitCursorTracker.lastConfirmedOffset got %v, want %v", got, want)
 	}
-	if got, want := commitTracker.Done(), true; got != want {
-		t.Errorf("commitCursorTracker.Done() got %v, want %v", got, want)
+	if got, want := commitTracker.UpToDate(), true; got != want {
+		t.Errorf("commitCursorTracker.UpToDate() got %v, want %v", got, want)
 	}
 
-	// Note: Done() returns true even though there are unacked messages.
-	ack4 := newAckConsumer(4, 0, onAck)
+	// Note: UpToDate() returns true even though there are unacked messages.
+	ack4 := newAckConsumer(4, 0, emptyAckConsumer)
 	if err := ackTracker.Push(ack4); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
 	}
-	if got, want := commitTracker.Done(), true; got != want {
-		t.Errorf("commitCursorTracker.Done() got %v, want %v", got, want)
+	if got, want := commitTracker.UpToDate(), true; got != want {
+		t.Errorf("commitCursorTracker.UpToDate() got %v, want %v", got, want)
 	}
 	if got, want := commitTracker.NextOffset(), nilCursorOffset; got != want {
 		t.Errorf("commitCursorTracker.NextOffset() got %v, want %v", got, want)

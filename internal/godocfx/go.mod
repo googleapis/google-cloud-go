@@ -8,8 +8,8 @@ require (
 	cloud.google.com/go/datastore v1.1.0
 	cloud.google.com/go/storage v1.11.0
 	github.com/kr/pretty v0.2.1 // indirect
-	golang.org/x/tools v0.0.0-20201119132711-4783bc9bebf0
-	gopkg.in/yaml.v2 v2.3.0
+	golang.org/x/tools v0.0.0-20201201171514-ae829c33831c
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 replace cloud.google.com/go => ../..
