@@ -76,7 +76,13 @@ type messageIterator struct {
 func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensionPeriod *time.Duration, po *pullOptions) *messageIterator {
 	var ps *pullStream
 	if !po.synchronous {
-		ps = newPullStream(context.Background(), subc.StreamingPull, subName, po.maxOutstandingMessages, po.maxOutstandingBytes)
+		maxMessages := po.maxOutstandingMessages
+		maxBytes := po.maxOutstandingBytes
+		if po.useLegacyFlowControl {
+			maxMessages = 0
+			maxBytes = 0
+		}
+		ps = newPullStream(context.Background(), subc.StreamingPull, subName, maxMessages, maxBytes)
 	}
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
@@ -212,14 +218,15 @@ func (it *messageIterator) receive(maxToPull int32) ([]*Message, error) {
 	it.mu.Lock()
 	now := time.Now()
 	for _, m := range msgs {
-		m.receiveTime = now
-		addRecv(m.ID, m.ackID, now)
-		m.doneFunc = it.done
-		it.keepAliveDeadlines[m.ackID] = maxExt
+		ackh, _ := m.ackHandler()
+		ackh.receiveTime = now
+		addRecv(m.ID, ackh.ackID, now)
+		ackh.doneFunc = it.done
+		it.keepAliveDeadlines[ackh.ackID] = maxExt
 		// Don't change the mod-ack if the message is going to be nacked. This is
 		// possible if there are retries.
-		if !it.pendingNacks[m.ackID] {
-			ackIDs[m.ackID] = true
+		if !it.pendingNacks[ackh.ackID] {
+			ackIDs[ackh.ackID] = true
 		}
 	}
 	deadline := it.ackDeadline()

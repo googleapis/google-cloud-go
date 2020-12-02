@@ -241,23 +241,20 @@ func TestResourceAdminOperations(t *testing.T) {
 		t.Errorf("Subscriptions() found config: -, want: +\n%s", diff)
 	}
 
-	if subsPathIt, err := admin.TopicSubscriptions(ctx, topicPath); err != nil {
-		t.Errorf("Failed to list topic subscriptions: %v", err)
-	} else {
-		foundSubsPath := false
-		for {
-			subsPath, err := subsPathIt.Next()
-			if err == iterator.Done {
-				break
-			}
-			if testutil.Equal(subsPath, subscriptionPath) {
-				foundSubsPath = true
-				break
-			}
+	subsPathIt := admin.TopicSubscriptions(ctx, topicPath)
+	foundSubsPath := false
+	for {
+		subsPath, err := subsPathIt.Next()
+		if err == iterator.Done {
+			break
 		}
-		if !foundSubsPath {
-			t.Error("TopicSubscriptions() did not return subscription path")
+		if testutil.Equal(subsPath, subscriptionPath) {
+			foundSubsPath = true
+			break
 		}
+	}
+	if !foundSubsPath {
+		t.Error("TopicSubscriptions() did not return subscription path")
 	}
 
 	subsUpdate := SubscriptionConfigToUpdate{

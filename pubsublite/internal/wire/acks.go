@@ -77,13 +77,13 @@ func (ac *ackConsumer) Clear() {
 }
 
 // Represents an uninitialized cursor offset. A sentinel value is used instead
-// if an optional to simplify cursor comparisons (i.e. -1 works without the need
+// of an optional to simplify cursor comparisons (i.e. -1 works without the need
 // to check for nil and then convert to int64).
 const nilCursorOffset int64 = -1
 
 // ackTracker manages outstanding message acks, i.e. messages that have been
 // delivered to the user, but not yet acked. It is used by the committer and
-// wireSubscriber, so requires its own mutex.
+// subscribeStream, so requires its own mutex.
 type ackTracker struct {
 	// Guards access to fields below.
 	mu sync.Mutex
@@ -127,21 +127,7 @@ func (at *ackTracker) CommitOffset() int64 {
 	at.mu.Lock()
 	defer at.mu.Unlock()
 
-	// Process outstanding acks and update `ackedPrefixOffset` until an unacked
-	// message is found.
-	for {
-		elem := at.outstandingAcks.Front()
-		if elem == nil {
-			break
-		}
-		ack, _ := elem.Value.(*ackConsumer)
-		if !ack.IsAcked() {
-			break
-		}
-		at.ackedPrefixOffset = ack.Offset
-		at.outstandingAcks.Remove(elem)
-		ack.Clear()
-	}
+	at.unsafeProcessAcks()
 
 	if at.ackedPrefixOffset == nilCursorOffset {
 		return nilCursorOffset
@@ -156,11 +142,31 @@ func (at *ackTracker) Release() {
 	at.mu.Lock()
 	defer at.mu.Unlock()
 
+	at.unsafeProcessAcks()
+
 	for elem := at.outstandingAcks.Front(); elem != nil; elem = elem.Next() {
 		ack, _ := elem.Value.(*ackConsumer)
 		ack.Clear()
 	}
 	at.outstandingAcks.Init()
+}
+
+// Process outstanding acks and update `ackedPrefixOffset` until an unacked
+// message is found.
+func (at *ackTracker) unsafeProcessAcks() {
+	for {
+		elem := at.outstandingAcks.Front()
+		if elem == nil {
+			break
+		}
+		ack, _ := elem.Value.(*ackConsumer)
+		if !ack.IsAcked() {
+			break
+		}
+		at.ackedPrefixOffset = ack.Offset
+		at.outstandingAcks.Remove(elem)
+		ack.Clear()
+	}
 }
 
 // commitCursorTracker tracks pending and last successful committed offsets.
@@ -234,7 +240,7 @@ func (ct *commitCursorTracker) ConfirmOffsets(numConfirmed int64) error {
 	return nil
 }
 
-// Done when the server has confirmed the desired commit offset.
-func (ct *commitCursorTracker) Done() bool {
+// UpToDate when the server has confirmed the desired commit offset.
+func (ct *commitCursorTracker) UpToDate() bool {
 	return ct.acks.CommitOffset() <= ct.lastConfirmedOffset
 }

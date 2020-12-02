@@ -217,7 +217,25 @@ type Delete struct {
 func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
 func (*Delete) isDMLStmt()       {}
 
-// TODO: Insert, Update.
+// TODO: Insert.
+
+// Update represents an UPDATE statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#update-statement
+type Update struct {
+	Table ID
+	Items []UpdateItem
+	Where BoolExpr
+
+	// TODO: Alias
+}
+
+func (u *Update) String() string { return fmt.Sprintf("%#v", u) }
+func (*Update) isDMLStmt()       {}
+
+type UpdateItem struct {
+	Column ID
+	Value  Expr // or nil for DEFAULT
+}
 
 // ColumnDef represents a column definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
