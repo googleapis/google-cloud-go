@@ -609,8 +609,7 @@ func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
 
 	subStream := test.NewRPCVerifier(t)
 	subStream.Push(initSubReq(subscription), initSubResp(), nil)
-	subStream.Push(initFlowControlReq(), msgSubResp(msg1), nil)
-	subStream.Push(nil, msgSubResp(msg2), nil)
+	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
 
 	cmtStream := test.NewRPCVerifier(t)
@@ -627,7 +626,6 @@ func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
 	}
 
 	receiver.ValidateMsg(msg1).Ack()
-	receiver.VerifyNoMsgs()
 
 	// Stop the subscriber before returning from the message receiver func.
 	sub.Stop()
