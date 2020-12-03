@@ -56,6 +56,10 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	if sh != nil {
 		defer sh.recycle()
 	}
+	var ro *sppb.RequestOptions
+	if options.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		ro = &sppb.RequestOptions{Priority: options.Priority}
+	}
 
 	// Create the parameters and the SQL request, but without a transaction.
 	// The transaction reference will be added by the executePdml method.
@@ -64,14 +68,12 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 		return 0, ToSpannerError(err)
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:      sh.getID(),
-		Sql:          statement.SQL,
-		Params:       params,
-		ParamTypes:   paramTypes,
-		QueryOptions: options.Options,
-		RequestOptions: &sppb.RequestOptions{
-			Priority: options.Priority,
-		},
+		Session:        sh.getID(),
+		Sql:            statement.SQL,
+		Params:         params,
+		ParamTypes:     paramTypes,
+		QueryOptions:   options.Options,
+		RequestOptions: ro,
 	}
 
 	// Make a retryer for Aborted and certain Internal errors.
