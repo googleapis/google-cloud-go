@@ -1011,7 +1011,6 @@ type CommitResponse struct {
 // returns the commit response for the transactions.
 func (t *ReadWriteTransaction) commit(ctx context.Context) (CommitResponse, error) {
 	resp := CommitResponse{}
-
 	t.mu.Lock()
 	t.state = txClosed // No further operations after commit.
 	mPb, err := mutationsProto(t.wb)
