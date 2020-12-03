@@ -91,7 +91,7 @@ func NewMessage(ackh AckHandler) *Message {
 	return &Message{ackh: ackh}
 }
 
-// AckHandler provides access to the internal field Message.ackh.
+// MessageAckHandler provides access to the internal field Message.ackh.
 func MessageAckHandler(m *Message) AckHandler {
 	return m.ackh
 }
