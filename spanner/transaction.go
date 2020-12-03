@@ -1207,6 +1207,9 @@ type writeOnlyTransaction struct {
 	// sp is the session pool which writeOnlyTransaction uses to get Cloud
 	// Spanner sessions for blind writes.
 	sp *sessionPool
+	// transactionTag is the tag that will be included with the CommitRequest
+	// of the write-only transaction.
+	transactionTag string
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1217,13 +1220,17 @@ type writeOnlyTransaction struct {
 //     3) There is a malformed Mutation object.
 func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Mutation) (time.Time, error) {
 	var (
-		ts time.Time
-		sh *sessionHandle
+		ts   time.Time
+		sh   *sessionHandle
+		opts *sppb.RequestOptions
 	)
 	mPb, err := mutationsProto(ms)
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
+	}
+	if t.transactionTag != "" {
+		opts = &sppb.RequestOptions{TransactionTag: t.transactionTag}
 	}
 
 	// Retry-loop for aborted transactions.
@@ -1248,7 +1255,8 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					},
 				},
 			},
-			Mutations: mPb,
+			Mutations:      mPb,
+			RequestOptions: opts,
 		})
 		if err != nil && !isAbortedErr(err) {
 			if isSessionNotFoundError(err) {

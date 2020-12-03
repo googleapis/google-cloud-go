@@ -2368,6 +2368,25 @@ func TestClient_PDML_Tag(t *testing.T) {
 	}
 }
 
+func TestClient_Apply_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, QueryOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, TransactionTag("tx-tag"))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, QueryOptions{transactionTag: "tx-tag"})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce())
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, QueryOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), TransactionTag("tx-tag"))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, QueryOptions{transactionTag: "tx-tag"})
+}
+
 func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, qo QueryOptions) {
 	reqs := drainRequestsFromServer(server)
 	reqOptions := []*sppb.RequestOptions{}
@@ -2413,10 +2432,16 @@ func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServe
 		t.Fatalf("Missing commit request")
 	}
 
-	if got, want := commit.RequestOptions.RequestTag, qo.RequestTag; got != want {
+	var requestTag string
+	var transactionTag string
+	if commit.RequestOptions != nil {
+		requestTag = commit.RequestOptions.RequestTag
+		transactionTag = commit.RequestOptions.TransactionTag
+	}
+	if got, want := requestTag, qo.RequestTag; got != want {
 		t.Fatalf("Commit request tag mismatch\nGot: %v\nWant: %v", got, want)
 	}
-	if got, want := commit.RequestOptions.TransactionTag, qo.transactionTag; got != want {
+	if got, want := transactionTag, qo.transactionTag; got != want {
 		t.Fatalf("Commit transaction tag mismatch\nGot: %v\nWant: %v", got, want)
 	}
 }

@@ -492,6 +492,8 @@ type applyOption struct {
 	// If atLeastOnce == true, Client.Apply will execute the mutations on Cloud
 	// Spanner at least once.
 	atLeastOnce bool
+	// transactionTag will be included with the CommitRequest.
+	transactionTag string
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -514,6 +516,14 @@ func ApplyAtLeastOnce() ApplyOption {
 	}
 }
 
+// TransactionTag returns an ApplyOption that will include the given tag as a
+// transaction tag for a write-only transaction.
+func TransactionTag(tag string) ApplyOption {
+	return func(ao *applyOption) {
+		ao.transactionTag = tag
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -525,11 +535,12 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if !ao.atLeastOnce {
-		return c.ReadWriteTransaction(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
+		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		})
+		}, TransactionOptions{TransactionTag: ao.transactionTag})
+		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{c.idleSessions}
+	t := &writeOnlyTransaction{sp: c.idleSessions, transactionTag: ao.transactionTag}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
