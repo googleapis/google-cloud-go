@@ -169,6 +169,13 @@ func (at *ackTracker) unsafeProcessAcks() {
 	}
 }
 
+// Empty returns true if there are no outstanding acks.
+func (at *ackTracker) Empty() bool {
+	at.mu.Lock()
+	defer at.mu.Unlock()
+	return at.outstandingAcks.Front() == nil
+}
+
 // commitCursorTracker tracks pending and last successful committed offsets.
 // It is only accessed by the committer.
 type commitCursorTracker struct {
