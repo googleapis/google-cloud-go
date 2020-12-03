@@ -19,16 +19,16 @@ by ascending esotericism:
 
 - expression functions
 - more aggregation functions
-- INSERT/UPDATE DML statements
 - SELECT HAVING
 - case insensitivity
-- FULL JOIN
+- multiple joins
 - alternate literal types (esp. strings)
 - STRUCT types
 - transaction simulation
 - expression type casting, coercion
 - subselects
 - FOREIGN KEY and CHECK constraints
+- INSERT DML statements
 - set operations (UNION, INTERSECT, EXCEPT)
 - partition support
 - conditional expressions

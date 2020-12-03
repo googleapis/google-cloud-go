@@ -47,18 +47,28 @@ const (
 // streamHandler methods must not be called while holding retryableStream.mu in
 // order to prevent the streamHandler calling back into the retryableStream and
 // deadlocking.
+//
+// If any streamHandler method implementations block, this will block the
+// retryableStream.connectStream goroutine processing the underlying stream.
 type streamHandler interface {
 	// newStream implementations must create the client stream with the given
 	// (cancellable) context.
 	newStream(context.Context) (grpc.ClientStream, error)
-	initialRequest() interface{}
+	// initialRequest should return the initial request and whether an initial
+	// response is expected.
+	initialRequest() (interface{}, bool)
 	validateInitialResponse(interface{}) error
 
 	// onStreamStatusChange is used to notify stream handlers when the stream has
-	// changed state. In particular, the `streamTerminated` state must be handled.
-	// retryableStream.Error() returns the error that caused the stream to
-	// terminate. Stream handlers should perform any necessary reset of state upon
-	// `streamConnected`.
+	// changed state. A `streamReconnecting` status change is fired before
+	// attempting to connect a new stream. A `streamConnected` status change is
+	// fired when the stream is successfully connected. These are followed by
+	// onResponse() calls when responses are received from the server. These
+	// events are guaranteed to occur in this order.
+	//
+	// A final `streamTerminated` status change is fired when a permanent error
+	// occurs. retryableStream.Error() returns the error that caused the stream to
+	// terminate.
 	onStreamStatusChange(streamStatus)
 	// onResponse forwards a response received on the stream to the stream
 	// handler.
@@ -68,10 +78,9 @@ type streamHandler interface {
 // retryableStream is a wrapper around a bidirectional gRPC client stream to
 // handle automatic reconnection when the stream breaks.
 //
-// A retryableStream cycles between the following goroutines:
-//   Start() --> reconnect() <--> listen()
-// terminate() can be called at any time, either by the client to force stream
-// closure, or as a result of an unretryable error.
+// The connectStream() goroutine handles each stream connection. terminate() can
+// be called at any time, either by the client to force stream closure, or as a
+// result of an unretryable error.
 //
 // Safe to call capitalized methods from multiple goroutines. All other methods
 // are private implementation.
@@ -114,7 +123,7 @@ func (rs *retryableStream) Start() {
 	if rs.status != streamUninitialized {
 		return
 	}
-	go rs.reconnect()
+	go rs.connectStream()
 }
 
 // Stop gracefully closes the stream without error.
@@ -139,7 +148,7 @@ func (rs *retryableStream) Send(request interface{}) (sent bool) {
 			// stream. Nothing to do here.
 			break
 		case isRetryableSendError(err):
-			go rs.reconnect()
+			go rs.connectStream()
 		default:
 			rs.mu.Unlock() // terminate acquires the mutex.
 			rs.terminate(err)
@@ -190,14 +199,13 @@ func (rs *retryableStream) setCancel(cancel context.CancelFunc) {
 	rs.cancelStream = cancel
 }
 
-// reconnect attempts to establish a valid connection with the server. Due to
-// the potential high latency, initNewStream() should not be done while holding
-// retryableStream.mu. Hence we need to handle the stream being force terminated
-// during reconnection.
+// connectStream attempts to establish a valid connection with the server. Due
+// to the potential high latency, initNewStream() should not be done while
+// holding retryableStream.mu. Hence we need to handle the stream being force
+// terminated during reconnection.
 //
-// Intended to be called in a goroutine. It ends once the connection has been
-// established or the stream terminated.
-func (rs *retryableStream) reconnect() {
+// Intended to be called in a goroutine. It ends once the client stream closes.
+func (rs *retryableStream) connectStream() {
 	canReconnect := func() bool {
 		rs.mu.Lock()
 		defer rs.mu.Unlock()
@@ -235,13 +243,14 @@ func (rs *retryableStream) reconnect() {
 		rs.status = streamConnected
 		rs.stream = newStream
 		rs.cancelStream = cancelFunc
-		go rs.listen(newStream)
 		return true
 	}
 	if !connected() {
 		return
 	}
+
 	rs.handler.onStreamStatusChange(streamConnected)
+	rs.listen(newStream)
 }
 
 func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelFunc context.CancelFunc, err error) {
@@ -266,16 +275,19 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 			if err != nil {
 				return r.RetryRecv(err)
 			}
-			if err = newStream.SendMsg(rs.handler.initialRequest()); err != nil {
+			initReq, needsResponse := rs.handler.initialRequest()
+			if err = newStream.SendMsg(initReq); err != nil {
 				return r.RetrySend(err)
 			}
-			response := reflect.New(rs.responseType).Interface()
-			if err = newStream.RecvMsg(response); err != nil {
-				return r.RetryRecv(err)
-			}
-			if err = rs.handler.validateInitialResponse(response); err != nil {
-				// An unexpected initial response from the server is a permanent error.
-				return 0, false
+			if needsResponse {
+				response := reflect.New(rs.responseType).Interface()
+				if err = newStream.RecvMsg(response); err != nil {
+					return r.RetryRecv(err)
+				}
+				if err = rs.handler.validateInitialResponse(response); err != nil {
+					// An unexpected initial response from the server is a permanent error.
+					return 0, false
+				}
 			}
 
 			// We have a valid connection and should break from the outer loop.
@@ -283,6 +295,9 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 		}()
 
 		if !shouldRetry {
+			break
+		}
+		if rs.Status() == streamTerminated {
 			break
 		}
 		if err = gax.Sleep(rs.ctx, backoff); err != nil {
@@ -294,8 +309,6 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 
 // listen receives responses from the current stream. It initiates reconnection
 // upon retryable errors or terminates the stream upon permanent error.
-//
-// Intended to be called in a goroutine. It ends when recvStream has closed.
 func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 	for {
 		response := reflect.New(rs.responseType).Interface()
@@ -309,7 +322,7 @@ func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 		}
 		if err != nil {
 			if isRetryableRecvError(err) {
-				go rs.reconnect()
+				go rs.connectStream()
 			} else {
 				rs.terminate(err)
 			}

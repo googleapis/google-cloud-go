@@ -29,11 +29,13 @@ const (
 	MaxPublishMessageBytes = 1000000
 
 	// MaxPublishRequestBytes is the maximum allowed serialized size of a single
-	// publish request (containing a batch of messages) in bytes.
+	// publish request (containing a batch of messages) in bytes. Must be lower
+	// than the gRPC limit of 4 MiB.
 	MaxPublishRequestBytes = 3500000
 )
 
-// PublishSettings control the batching of published messages.
+// PublishSettings control the batching of published messages. These settings
+// apply per partition.
 type PublishSettings struct {
 	// Publish a non-empty batch after this delay has passed. Must be > 0.
 	DelayThreshold time.Duration
@@ -64,6 +66,10 @@ type PublishSettings struct {
 	// throughput capacity can cause the buffers to overflow. For more
 	// information, see https://cloud.google.com/pubsub/lite/docs/topics.
 	BufferedByteLimit int
+
+	// The polling interval to watch for topic partition count updates. Set to 0
+	// to disable polling if the number of partitions will never update.
+	ConfigPollPeriod time.Duration
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -71,10 +77,11 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold: 10 * time.Millisecond,
 	CountThreshold: 100,
 	ByteThreshold:  1e6,
-	Timeout:        60 * time.Second,
+	Timeout:        10 * time.Minute,
 	// By default set to a high limit that is not likely to occur, but prevents
 	// OOM errors in clients.
 	BufferedByteLimit: 1 << 30, // 1 GiB
+	ConfigPollPeriod:  10 * time.Minute,
 }
 
 func validatePublishSettings(settings PublishSettings) error {
@@ -98,6 +105,64 @@ func validatePublishSettings(settings PublishSettings) error {
 	}
 	if settings.BufferedByteLimit <= 0 {
 		return errors.New("pubsublite: invalid publish settings. BufferedByteLimit must be > 0")
+	}
+	return nil
+}
+
+// ReceiveSettings control the receiving of messages. These settings apply
+// per partition.
+type ReceiveSettings struct {
+	// MaxOutstandingMessages is the maximum number of unacknowledged messages.
+	// Must be > 0.
+	MaxOutstandingMessages int
+
+	// MaxOutstandingBytes is the maximum size (in quota bytes) of unacknowledged
+	// messages. Must be > 0.
+	MaxOutstandingBytes int
+
+	// The maximum time that the client will attempt to establish a subscribe
+	// stream connection to the server. Must be > 0.
+	//
+	// The timeout is exceeded, the subscriber will terminate with the last error
+	// that occurred while trying to reconnect.
+	Timeout time.Duration
+
+	// The topic partition numbers (zero-indexed) to receive messages from.
+	// Values must be less than the number of partitions for the topic. If not
+	// specified, the client will use the partition assignment service to
+	// determine which partitions it should connect to.
+	Partitions []int
+}
+
+// DefaultReceiveSettings holds the default values for ReceiveSettings.
+var DefaultReceiveSettings = ReceiveSettings{
+	MaxOutstandingMessages: 1000,
+	MaxOutstandingBytes:    1e9,
+	Timeout:                10 * time.Minute,
+}
+
+func validateReceiveSettings(settings ReceiveSettings) error {
+	if settings.MaxOutstandingMessages <= 0 {
+		return errors.New("pubsublite: invalid receive settings. MaxOutstandingMessages must be > 0")
+	}
+	if settings.MaxOutstandingBytes <= 0 {
+		return errors.New("pubsublite: invalid receive settings. MaxOutstandingBytes must be > 0")
+	}
+	if settings.Timeout <= 0 {
+		return errors.New("pubsublite: invalid receive settings. Timeout duration must be > 0")
+	}
+	if len(settings.Partitions) > 0 {
+		var void struct{}
+		partitionMap := make(map[int]struct{})
+		for _, p := range settings.Partitions {
+			if p < 0 {
+				return fmt.Errorf("pubsublite: invalid partition number %d in receive settings. Partition numbers are zero-indexed", p)
+			}
+			if _, exists := partitionMap[p]; exists {
+				return fmt.Errorf("pubsublite: invalid receive settings. Duplicate partition number %d", p)
+			}
+			partitionMap[p] = void
+		}
 	}
 	return nil
 }

@@ -41,7 +41,6 @@ type AlphaAnalyticsDataCallOptions struct {
 	RunPivotReport       []gax.CallOption
 	BatchRunReports      []gax.CallOption
 	BatchRunPivotReports []gax.CallOption
-	GetUniversalMetadata []gax.CallOption
 	GetMetadata          []gax.CallOption
 	RunRealtimeReport    []gax.CallOption
 }
@@ -63,17 +62,6 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 		RunPivotReport:       []gax.CallOption{},
 		BatchRunReports:      []gax.CallOption{},
 		BatchRunPivotReports: []gax.CallOption{},
-		GetUniversalMetadata: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
 		GetMetadata: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -272,35 +260,9 @@ func (c *AlphaAnalyticsDataClient) BatchRunPivotReports(ctx context.Context, req
 	return resp, nil
 }
 
-// GetUniversalMetadata returns metadata for dimensions and metrics available in reporting methods.
-// Used to explore the dimensions and metrics. Dimensions and metrics will be
-// mostly added over time, but renames and deletions may occur.
-//
-// This method returns Universal Metadata. Universal Metadata are dimensions
-// and metrics applicable to any property such as country and totalUsers.
-func (c *AlphaAnalyticsDataClient) GetUniversalMetadata(ctx context.Context, req *datapb.GetUniversalMetadataRequest, opts ...gax.CallOption) (*datapb.UniversalMetadata, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.GetUniversalMetadata[0:len(c.CallOptions.GetUniversalMetadata):len(c.CallOptions.GetUniversalMetadata)], opts...)
-	var resp *datapb.UniversalMetadata
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.alphaAnalyticsDataClient.GetUniversalMetadata(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 // GetMetadata returns metadata for dimensions and metrics available in reporting methods.
 // Used to explore the dimensions and metrics. In this method, a Google
-// Analytics 4 (GA4) Property Identifier is specified in the request, and
+// Analytics GA4 Property Identifier is specified in the request, and
 // the metadata response includes Custom dimensions and metrics as well as
 // Universal metadata.
 //

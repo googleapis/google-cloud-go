@@ -57,7 +57,21 @@ func NewGenprotoGenerator(genprotoDir, googleapisDir, protoDir string) *Genproto
 	}
 }
 
+var skipPrefixes = []string{
+	"google.golang.org/genproto/googleapis/ads",
+}
+
+func hasPrefix(s string, prefixes []string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
+			return true
+		}
+	}
+	return false
+}
+
 // Regen regenerates the genproto repository.
+// regenGenproto regenerates the genproto repository.
 //
 // regenGenproto recursively walks through each directory named by given
 // arguments, looking for all .proto files. (Symlinks are not followed.) Any
@@ -97,7 +111,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	log.Println("generating from protos")
 	grp, _ := errgroup.WithContext(ctx)
 	for pkg, fileNames := range pkgFiles {
-		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] {
+		if !strings.HasPrefix(pkg, "google.golang.org/genproto") || denylist[pkg] || hasPrefix(pkg, skipPrefixes) {
 			continue
 		}
 		pk := pkg

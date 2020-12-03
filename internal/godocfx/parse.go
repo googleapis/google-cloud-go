@@ -95,11 +95,13 @@ func (i *item) addChild(c child) {
 
 var onlyGo = []string{"go"}
 
+type extraFile struct{ srcRelativePath, dstRelativePath, name string }
+
 type result struct {
 	pages      map[string]*page
 	toc        tableOfContents
 	module     *packages.Module
-	extraFiles []string
+	extraFiles []extraFile
 }
 
 // parse parses the directory into a map of import path -> page and a TOC.
@@ -107,7 +109,9 @@ type result struct {
 // glob is the path to parse, usually ending in `...`. glob is passed directly
 // to packages.Load as-is.
 //
-// extraFiles is a list of paths relative to the module root to include.
+// workingDir is the directory to use to run go commands.
+//
+// optionalExtraFiles is a list of paths relative to the module root to include.
 func parse(glob string, workingDir string, optionalExtraFiles []string) (*result, error) {
 	pages := map[string]*page{}
 
@@ -119,10 +123,22 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 
 	// Filter out extra files that don't exist because some modules don't have a
 	// README.
-	extraFiles := []string{}
+	extraFiles := []extraFile{}
 	for _, f := range optionalExtraFiles {
 		if _, err := os.Stat(filepath.Join(module.Dir, f)); err == nil {
-			extraFiles = append(extraFiles, f)
+			dst := f
+			dir := filepath.Dir(f)
+			base := filepath.Base(f)
+			name := strings.TrimSuffix(base, filepath.Ext(base))
+			name = strings.Title(name)
+			if name == "README" {
+				dst = filepath.Join(dir, "pkg-readme.md")
+			}
+			extraFiles = append(extraFiles, extraFile{
+				srcRelativePath: f,
+				dstRelativePath: dst,
+				name:            name,
+			})
 		}
 	}
 
@@ -317,20 +333,17 @@ func processExamples(exs []*doc.Example, fset *token.FileSet) []example {
 	return result
 }
 
-func buildTOC(mod string, pis []pkgInfo, extraFiles []string) tableOfContents {
+func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents {
 	toc := tableOfContents{}
 
 	modTOC := &tocItem{
 		UID:  mod, // Assume the module root has a package.
 		Name: mod,
 	}
-	for _, path := range extraFiles {
-		base := filepath.Base(path)
-		name := strings.TrimSuffix(base, filepath.Ext(base))
-		name = strings.Title(name)
+	for _, ef := range extraFiles {
 		modTOC.addItem(&tocItem{
-			Href: path,
-			Name: name,
+			Href: ef.dstRelativePath,
+			Name: ef.name,
 		})
 	}
 
@@ -440,6 +453,17 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	result := []pkgInfo{}
 
 	for _, pkgPath := range pkgNames {
+		// Check if pkgPath has prefix of skipped module.
+		skip := false
+		for skipModule := range skippedModules {
+			if strings.HasPrefix(pkgPath, skipModule) {
+				skip = true
+				break
+			}
+		}
+		if skip {
+			continue
+		}
 		parsedFiles := []*ast.File{}
 		fset := token.NewFileSet()
 		for _, f := range pkgFiles[pkgPath] {
