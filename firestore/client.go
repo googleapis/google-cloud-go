@@ -293,7 +293,7 @@ func (c *Client) Batch() *WriteBatch {
 
 // commit calls the Commit RPC outside of a transaction.
 func (c *Client) commit(ctx context.Context, ws []*pb.Write) (_ []*WriteResult, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.Commit")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	req := &pb.CommitRequest{
