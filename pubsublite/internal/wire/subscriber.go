@@ -39,9 +39,78 @@ type ReceivedMessage struct {
 	Ack AckConsumer
 }
 
-// MessageReceiverFunc receives a batch of Pub/Sub messages from a topic
-// partition.
-type MessageReceiverFunc func([]*ReceivedMessage)
+// MessageReceiverFunc receives a Pub/Sub message from a topic partition.
+type MessageReceiverFunc func(*ReceivedMessage)
+
+const maxMessageBufferSize = 10000
+
+// messageDeliveryQueue delivers received messages to the client-provided
+// MessageReceiverFunc sequentially.
+type messageDeliveryQueue struct {
+	receiver  MessageReceiverFunc
+	messagesC chan *ReceivedMessage
+	stopC     chan struct{}
+	acks      *ackTracker
+	status    serviceStatus
+}
+
+func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
+	// The buffer size is based on ReceiveSettings.MaxOutstandingMessages. But
+	// ensure there's a reasonable limit as channel buffer capacity is allocated
+	// on creation.
+	if bufferSize > maxMessageBufferSize {
+		bufferSize = maxMessageBufferSize
+	}
+	return &messageDeliveryQueue{
+		acks:      acks,
+		receiver:  receiver,
+		messagesC: make(chan *ReceivedMessage, bufferSize),
+		stopC:     make(chan struct{}),
+	}
+}
+
+func (mq *messageDeliveryQueue) Start() {
+	if mq.status == serviceUninitialized {
+		go mq.deliverMessages()
+		mq.status = serviceActive
+	}
+}
+
+func (mq *messageDeliveryQueue) Stop() {
+	if mq.status < serviceTerminated {
+		close(mq.stopC)
+		mq.status = serviceTerminated
+	}
+}
+
+func (mq *messageDeliveryQueue) Add(messages []*ReceivedMessage) {
+	if mq.status == serviceActive {
+		for _, msg := range messages {
+			mq.messagesC <- msg
+		}
+	}
+}
+
+func (mq *messageDeliveryQueue) deliverMessages() {
+	for {
+		// stopC has higher priority.
+		select {
+		case <-mq.stopC:
+			return // Ends the goroutine.
+		default:
+		}
+
+		select {
+		case <-mq.stopC:
+			return // Ends the goroutine.
+		case msg := <-mq.messagesC:
+			// Register outstanding acks, which are primarily handled by the
+			// `committer`.
+			mq.acks.Push(msg.Ack.(*ackConsumer))
+			mq.receiver(msg)
+		}
+	}
+}
 
 // The frequency of sending batch flow control requests.
 const batchFlowControlPeriod = 100 * time.Millisecond
@@ -58,11 +127,10 @@ type subscribeStream struct {
 	settings     ReceiveSettings
 	subscription subscriptionPartition
 	initialReq   *pb.SubscribeRequest
-	receiver     MessageReceiverFunc
+	messageQueue *messageDeliveryQueue
 
-	// Fields below must be guarded with mutex.
+	// Fields below must be guarded with mu.
 	stream          *retryableStream
-	acks            *ackTracker
 	offsetTracker   subscriberOffsetTracker
 	flowControl     flowControlBatcher
 	pollFlowControl *periodicTask
@@ -86,8 +154,7 @@ func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, s
 				},
 			},
 		},
-		receiver: receiver,
-		acks:     acks,
+		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
 	}
 	s.stream = newRetryableStream(ctx, s, settings.Timeout, reflect.TypeOf(pb.SubscribeResponse{}))
 
@@ -108,6 +175,7 @@ func (s *subscribeStream) Start() {
 	if s.unsafeUpdateStatus(serviceStarting, nil) {
 		s.stream.Start()
 		s.pollFlowControl.Start()
+		s.messageQueue.Start()
 
 		s.flowControl.OnClientFlow(flowControlTokens{
 			Bytes:    int64(s.settings.MaxOutstandingBytes),
@@ -150,13 +218,12 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 		// Reinitialize the offset and flow control tokens when a new subscribe
 		// stream instance is connected.
 		if seekReq := s.offsetTracker.RequestForRestart(); seekReq != nil {
-			// Note: If Send() returns false, the subscriber will either terminate or
-			// the stream will be reconnected.
-			if s.stream.Send(&pb.SubscribeRequest{
+			if !s.stream.Send(&pb.SubscribeRequest{
 				Request: &pb.SubscribeRequest_Seek{Seek: seekReq},
 			}) {
-				s.seekInFlight = true
+				return
 			}
+			s.seekInFlight = true
 		}
 		s.unsafeSendFlowControl(s.flowControl.RequestForRestart())
 		s.pollFlowControl.Start()
@@ -171,30 +238,26 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 }
 
 func (s *subscribeStream) onResponse(response interface{}) {
-	var receivedMsgs []*ReceivedMessage
-	var err error
 	s.mu.Lock()
+	defer s.mu.Unlock()
 
+	if s.status >= serviceTerminating {
+		return
+	}
+
+	var err error
 	subscribeResponse, _ := response.(*pb.SubscribeResponse)
 	switch {
 	case subscribeResponse.GetMessages() != nil:
-		receivedMsgs, err = s.unsafeOnMessageResponse(subscribeResponse.GetMessages())
+		err = s.unsafeOnMessageResponse(subscribeResponse.GetMessages())
 	case subscribeResponse.GetSeek() != nil:
 		err = s.unsafeOnSeekResponse(subscribeResponse.GetSeek())
 	default:
 		err = errInvalidSubscribeResponse
 	}
-
-	if receivedMsgs != nil {
-		// Deliver messages without holding the mutex to prevent deadlocks.
-		s.mu.Unlock()
-		s.receiver(receivedMsgs)
-		return
-	}
 	if err != nil {
 		s.unsafeInitiateShutdown(serviceTerminated, err)
 	}
-	s.mu.Unlock()
 }
 
 func (s *subscribeStream) unsafeOnSeekResponse(response *pb.SeekResponse) error {
@@ -205,28 +268,24 @@ func (s *subscribeStream) unsafeOnSeekResponse(response *pb.SeekResponse) error 
 	return nil
 }
 
-func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) ([]*ReceivedMessage, error) {
+func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) error {
 	if len(response.Messages) == 0 {
-		return nil, errServerNoMessages
+		return errServerNoMessages
 	}
 	if err := s.offsetTracker.OnMessages(response.Messages); err != nil {
-		return nil, err
+		return err
 	}
 	if err := s.flowControl.OnMessages(response.Messages); err != nil {
-		return nil, err
+		return err
 	}
 
 	var receivedMsgs []*ReceivedMessage
 	for _, msg := range response.Messages {
-		// Register outstanding acks, which are primarily handled by the
-		// `committer`.
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
-		if err := s.acks.Push(ack); err != nil {
-			return nil, err
-		}
 		receivedMsgs = append(receivedMsgs, &ReceivedMessage{Msg: msg, Ack: ack})
 	}
-	return receivedMsgs, nil
+	s.messageQueue.Add(receivedMsgs)
+	return nil
 }
 
 func (s *subscribeStream) onAck(ac *ackConsumer) {
@@ -276,6 +335,7 @@ func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err
 	}
 
 	// No data to send. Immediately terminate the stream.
+	s.messageQueue.Stop()
 	s.pollFlowControl.Stop()
 	s.stream.Stop()
 }
