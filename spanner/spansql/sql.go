@@ -180,6 +180,9 @@ func (cd ColumnDef) SQL() string {
 	if cd.NotNull {
 		str += " NOT NULL"
 	}
+	if cd.Generated != nil {
+		str += " AS (" + cd.Generated.SQL() + ") STORED"
+	}
 	if cd.Options != (ColumnOptions{}) {
 		str += " " + cd.Options.SQL()
 	}
