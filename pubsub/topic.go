@@ -25,7 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
-	internalpubsub "cloud.google.com/go/internal/pubsub"
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
@@ -402,7 +402,14 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 
 // A PublishResult holds the result from a call to Publish.
-type PublishResult = internalpubsub.PublishResult
+//
+// Call Get to obtain the result of the Publish call. Example:
+//   // Get blocks until Publish completes or ctx is done.
+//   id, err := r.Get(ctx)
+//   if err != nil {
+//       // TODO: Handle error.
+//   }
+type PublishResult = ipubsub.PublishResult
 
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
@@ -414,9 +421,9 @@ type PublishResult = internalpubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	r := internalpubsub.NewPublishResult()
+	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		internalpubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
 		return r
 	}
 
@@ -439,7 +446,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
-		internalpubsub.SetPublishResult(r, "", errTopicStopped)
+		ipubsub.SetPublishResult(r, "", errTopicStopped)
 		return r
 	}
 
@@ -448,7 +455,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
-		internalpubsub.SetPublishResult(r, "", err)
+		ipubsub.SetPublishResult(r, "", err)
 	}
 	return r
 }
@@ -561,9 +568,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
 		if err != nil {
-			internalpubsub.SetPublishResult(bm.res, "", err)
+			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {
-			internalpubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
+			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
 		}
 	}
 }

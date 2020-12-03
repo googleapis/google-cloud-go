@@ -18,17 +18,28 @@ import (
 	"fmt"
 	"time"
 
-	internalpubsub "cloud.google.com/go/internal/pubsub"
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 // Message represents a Pub/Sub message.
-type Message = internalpubsub.Message
+//
+// Message can be passed to Topic.Publish for publishing.
+//
+// If received in the callback passed to Subscription.Receive, client code must
+// call Message.Ack or Message.Nack when finished processing the Message. Calls
+// to Ack or Nack have no effect after the first call.
+//
+// Ack indicates successful processing of a Message. If message acknowledgement
+// fails, the Message will be redelivered. Nack indicates that the client will
+// not or cannot process a Message. Nack will result in the Message being
+// redelivered more quickly than if it were allowed to expire.
+type Message = ipubsub.Message
 
 // msgAckHandler performs a safe cast of the message's ack handler to psAckHandler.
 func msgAckHandler(m *Message) (*psAckHandler, bool) {
-	ackh, ok := internalpubsub.MessageAckHandler(m).(*psAckHandler)
+	ackh, ok := ipubsub.MessageAckHandler(m).(*psAckHandler)
 	return ackh, ok
 }
 
@@ -56,7 +67,7 @@ func convertMessages(rms []*pb.ReceivedMessage, receiveTime time.Time, doneFunc 
 
 func toMessage(resp *pb.ReceivedMessage, receiveTime time.Time, doneFunc iterDoneFunc) (*Message, error) {
 	ackh := &psAckHandler{ackID: resp.AckId}
-	msg := internalpubsub.NewMessage(ackh)
+	msg := ipubsub.NewMessage(ackh)
 	if resp.Message == nil {
 		return msg, nil
 	}
