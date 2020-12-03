@@ -76,6 +76,9 @@ type txReadOnly struct {
 
 // TransactionOptions provides options for a transaction.
 type TransactionOptions struct {
+	// CommitPriority is the priority to use for the Commit RPC for the
+	// transaction.
+	CommitPriority sppb.RequestOptions_Priority
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -104,6 +107,9 @@ type ReadOptions struct {
 	// The maximum number of rows to read. A limit value less than 1 means no
 	// limit.
 	Limit int
+
+	// Priority is the RPC priority to use for the read operation.
+	Priority sppb.RequestOptions_Priority
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -131,10 +137,14 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	}
 	index := ""
 	limit := 0
+	var ro *sppb.RequestOptions
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
 			limit = opts.Limit
+		}
+		if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+			ro = &sppb.RequestOptions{Priority: opts.Priority}
 		}
 	}
 	return streamWithReplaceSessionFunc(
@@ -143,14 +153,15 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:     t.sh.getID(),
-					Transaction: ts,
-					Table:       table,
-					Index:       index,
-					Columns:     columns,
-					KeySet:      kset,
-					ResumeToken: resumeToken,
-					Limit:       int64(limit),
+					Session:        t.sh.getID(),
+					Transaction:    ts,
+					Table:          table,
+					Index:          index,
+					Columns:        columns,
+					KeySet:         kset,
+					ResumeToken:    resumeToken,
+					Limit:          int64(limit),
+					RequestOptions: ro,
 				})
 		},
 		t.replaceSessionFunc,
@@ -223,25 +234,39 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 	}
 }
 
-// QueryOptions provides options for executing a sql query from a database.
+// QueryOptions provides options for executing a sql query or update statement.
 type QueryOptions struct {
 	Mode    *sppb.ExecuteSqlRequest_QueryMode
 	Options *sppb.ExecuteSqlRequest_QueryOptions
+
+	// Priority is the RPC priority to use for the query/update.
+	Priority sppb.RequestOptions_Priority
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:    qo.Mode,
-		Options: &sppb.ExecuteSqlRequest_QueryOptions{},
+		Mode:     qo.Mode,
+		Options:  &sppb.ExecuteSqlRequest_QueryOptions{},
+		Priority: qo.Priority,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
 	}
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
+	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
 	return merged
+}
+
+func (qo QueryOptions) createRequestOptions() (ro *sppb.RequestOptions) {
+	if qo.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		ro = &sppb.RequestOptions{Priority: qo.Priority}
+	}
+	return ro
 }
 
 // Query executes a query against the database. It returns a RowIterator for
@@ -340,14 +365,15 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:      sid,
-		Transaction:  ts,
-		Sql:          stmt.SQL,
-		QueryMode:    mode,
-		Seqno:        atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:       params,
-		ParamTypes:   paramTypes,
-		QueryOptions: options.Options,
+		Session:        sid,
+		Transaction:    ts,
+		Sql:            stmt.SQL,
+		QueryMode:      mode,
+		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:         params,
+		ParamTypes:     paramTypes,
+		QueryOptions:   options.Options,
+		RequestOptions: options.createRequestOptions(),
 	}
 	return req, sh, nil
 }
@@ -777,6 +803,8 @@ type ReadWriteTransaction struct {
 	state txState
 	// wb is the set of buffered mutations waiting to be committed.
 	wb []*Mutation
+	// options contains additional options for the read/write transaction.
+	options TransactionOptions
 }
 
 // BufferWrite adds a list of mutations to the set of updates that will be
@@ -812,8 +840,8 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 }
 
 // UpdateWithOptions executes a DML statement against the database. It returns
-// the number of affected rows. The sql query execution will be optimized
-// based on the given query options.
+// the number of affected rows. The given QueryOptions will be used for the
+// execution of this statement.
 func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
 	return t.update(ctx, stmt, t.qo.merge(opts))
 }
@@ -842,6 +870,20 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 // affected rows for the given query at the same index. If an error occurs,
 // counts will be returned up to the query that encountered the error.
 func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statement) (_ []int64, err error) {
+	return t.BatchUpdateWithOptions(ctx, stmts, QueryOptions{})
+}
+
+// BatchUpdateWithOptions groups one or more DML statements and sends them to
+// Spanner in a single RPC. This is an efficient way to execute multiple DML
+// statements.
+//
+// A slice of counts is returned, where each count represents the number of
+// affected rows for the given query at the same index. If an error occurs,
+// counts will be returned up to the query that encountered the error.
+//
+// The priority given in the QueryOptions will be included with the RPC.
+// Any other options that are set in the QueryOptions struct will be ignored.
+func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -870,10 +912,11 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 	}
 
 	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
-		Session:     sh.getID(),
-		Transaction: ts,
-		Statements:  sppbStmts,
-		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
+		Session:        sh.getID(),
+		Transaction:    ts,
+		Statements:     sppbStmts,
+		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
+		RequestOptions: opts.createRequestOptions(),
 	})
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -968,12 +1011,18 @@ type CommitResponse struct {
 // returns the commit response for the transactions.
 func (t *ReadWriteTransaction) commit(ctx context.Context) (CommitResponse, error) {
 	resp := CommitResponse{}
+
 	t.mu.Lock()
 	t.state = txClosed // No further operations after commit.
 	mPb, err := mutationsProto(t.wb)
 	t.mu.Unlock()
 	if err != nil {
 		return resp, err
+	}
+
+	var opts *sppb.RequestOptions
+	if t.options.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		opts = &sppb.RequestOptions{Priority: t.options.CommitPriority}
 	}
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
@@ -987,7 +1036,8 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (CommitResponse, erro
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
-		Mutations: mPb,
+		Mutations:      mPb,
+		RequestOptions: opts,
 	})
 	if e != nil {
 		return resp, toSpannerErrorWithCommitInfo(e, true)
@@ -1108,7 +1158,8 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	}
 	t = &ReadWriteStmtBasedTransaction{
 		ReadWriteTransaction: ReadWriteTransaction{
-			tx: sh.getTransactionID(),
+			tx:      sh.getTransactionID(),
+			options: options,
 		},
 	}
 	t.txReadOnly.sh = sh
@@ -1153,6 +1204,8 @@ type writeOnlyTransaction struct {
 	// sp is the session pool which writeOnlyTransaction uses to get Cloud
 	// Spanner sessions for blind writes.
 	sp *sessionPool
+	// commitPriority is the RPC priority to use for the commit operation.
+	commitPriority sppb.RequestOptions_Priority
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1163,13 +1216,17 @@ type writeOnlyTransaction struct {
 //     3) There is a malformed Mutation object.
 func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Mutation) (time.Time, error) {
 	var (
-		ts time.Time
-		sh *sessionHandle
+		ts   time.Time
+		sh   *sessionHandle
+		opts *sppb.RequestOptions
 	)
 	mPb, err := mutationsProto(ms)
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
+	}
+	if t.commitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		opts = &sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_UNSPECIFIED}
 	}
 
 	// Retry-loop for aborted transactions.
@@ -1194,7 +1251,8 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					},
 				},
 			},
-			Mutations: mPb,
+			Mutations:      mPb,
+			RequestOptions: opts,
 		})
 		if err != nil && !isAbortedErr(err) {
 			if isSessionNotFoundError(err) {

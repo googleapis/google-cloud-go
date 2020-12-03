@@ -2239,3 +2239,174 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
 	}
 }
+
+func TestClient_ReadOnlyTransaction_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, qo := range []QueryOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_HIGH},
+	} {
+		for _, tx := range []*ReadOnlyTransaction{
+			client.Single(),
+			client.ReadOnlyTransaction(),
+		} {
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			if tx.singleUse {
+				tx = client.Single()
+			}
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{Priority: qo.Priority})
+			iter.Next()
+			iter.Stop()
+
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, sppb.RequestOptions{Priority: qo.Priority})
+			tx.Close()
+		}
+	}
+}
+
+func TestClient_ReadWriteTransaction_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{Priority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		} {
+			client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+				iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+				iter.Next()
+				iter.Stop()
+
+				iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{Priority: qo.Priority})
+				iter.Next()
+				iter.Stop()
+
+				tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+				tx.BatchUpdateWithOptions(context.Background(), []Statement{
+					NewStatement(UpdateBarSetFoo),
+				}, qo)
+				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{Priority: qo.Priority})
+
+				return nil
+			}, to)
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: to.CommitPriority})
+		}
+	}
+}
+
+func TestClient_StmtBasedReadWriteTransaction_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{Priority: sppb.RequestOptions_PRIORITY_LOW},
+		} {
+			tx, _ := NewReadWriteStmtBasedTransactionWithOptions(context.Background(), client, to)
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{Priority: qo.Priority})
+			iter.Next()
+			iter.Stop()
+
+			tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+			tx.BatchUpdateWithOptions(context.Background(), []Statement{
+				NewStatement(UpdateBarSetFoo),
+			}, qo)
+
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{Priority: qo.Priority})
+			tx.Commit(context.Background())
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: to.CommitPriority})
+		}
+	}
+}
+
+func TestClient_PDML_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, qo := range []QueryOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_HIGH},
+	} {
+		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{Priority: qo.Priority})
+	}
+}
+
+func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, ro sppb.RequestOptions) {
+	reqs := drainRequestsFromServer(server)
+	reqOptions := []*sppb.RequestOptions{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			reqOptions = append(reqOptions, sqlReq.RequestOptions)
+		}
+		if batchReq, ok := req.(*sppb.ExecuteBatchDmlRequest); ok {
+			reqOptions = append(reqOptions, batchReq.RequestOptions)
+		}
+		if readReq, ok := req.(*sppb.ReadRequest); ok {
+			reqOptions = append(reqOptions, readReq.RequestOptions)
+		}
+	}
+
+	if got, want := len(reqOptions), reqCount; got != want {
+		t.Fatalf("Requests length mismatch\nGot: %v\nWant: %v", got, want)
+	}
+
+	for _, opts := range reqOptions {
+		var got sppb.RequestOptions_Priority
+		if opts != nil {
+			got = opts.Priority
+		}
+		want := ro.Priority
+		if got != want {
+			t.Fatalf("Request priority mismatch\nGot: %v\nWant: %v", got, want)
+		}
+	}
+}
+
+func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, ro sppb.RequestOptions) {
+	reqs := drainRequestsFromServer(server)
+	var commit *sppb.CommitRequest
+	var ok bool
+
+	for _, req := range reqs {
+		if commit, ok = req.(*sppb.CommitRequest); ok {
+			break
+		}
+	}
+
+	if commit == nil {
+		t.Fatalf("Missing commit request")
+	}
+
+	var got sppb.RequestOptions_Priority
+	if commit.RequestOptions != nil {
+		got = commit.RequestOptions.Priority
+	}
+	want := ro.Priority
+	if got != want {
+		t.Fatalf("Commit priority mismatch\nGot: %v\nWant: %v", got, want)
+	}
+}

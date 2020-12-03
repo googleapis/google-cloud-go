@@ -469,6 +469,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		} else {
 			t = &ReadWriteTransaction{}
 		}
+		t.options = options
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
@@ -491,6 +492,8 @@ type applyOption struct {
 	// If atLeastOnce == true, Client.Apply will execute the mutations on Cloud
 	// Spanner at least once.
 	atLeastOnce bool
+	// priority is the RPC priority that is used for the commit operation.
+	priority sppb.RequestOptions_Priority
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -513,6 +516,14 @@ func ApplyAtLeastOnce() ApplyOption {
 	}
 }
 
+// Priority returns an ApplyOptions that sets the RPC priority to use for the
+// commit operation.
+func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
+	return func(ao *applyOption) {
+		ao.priority = priority
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -524,11 +535,12 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if !ao.atLeastOnce {
-		return c.ReadWriteTransaction(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
+		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		})
+		}, TransactionOptions{CommitPriority: ao.priority})
+		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{c.idleSessions}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 
