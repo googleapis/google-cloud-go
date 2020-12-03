@@ -182,23 +182,27 @@ const (
 	// GeographyFieldType is a string field type.  Geography types represent a set of points
 	// on the Earth's surface, represented in Well Known Text (WKT) format.
 	GeographyFieldType FieldType = "GEOGRAPHY"
+	// BigNumericFieldType is a numeric field type that supports values of larger precision
+	// and scale than the NumericFieldType.
+	BigNumericFieldType FieldType = "BIGNUMERIC"
 )
 
 var (
 	errEmptyJSONSchema = errors.New("bigquery: empty JSON schema")
 	fieldTypes         = map[FieldType]bool{
-		StringFieldType:    true,
-		BytesFieldType:     true,
-		IntegerFieldType:   true,
-		FloatFieldType:     true,
-		BooleanFieldType:   true,
-		TimestampFieldType: true,
-		RecordFieldType:    true,
-		DateFieldType:      true,
-		TimeFieldType:      true,
-		DateTimeFieldType:  true,
-		NumericFieldType:   true,
-		GeographyFieldType: true,
+		StringFieldType:     true,
+		BytesFieldType:      true,
+		IntegerFieldType:    true,
+		FloatFieldType:      true,
+		BooleanFieldType:    true,
+		TimestampFieldType:  true,
+		RecordFieldType:     true,
+		DateFieldType:       true,
+		TimeFieldType:       true,
+		DateTimeFieldType:   true,
+		NumericFieldType:    true,
+		GeographyFieldType:  true,
+		BigNumericFieldType: true,
 	}
 	// The API will accept alias names for the types based on the Standard SQL type names.
 	fieldAliases = map[FieldType]FieldType{
@@ -346,6 +350,10 @@ func inferFieldSchema(fieldName string, rt reflect.Type, nullable bool) (*FieldS
 	case typeOfDateTime:
 		return &FieldSchema{Required: true, Type: DateTimeFieldType}, nil
 	case typeOfRat:
+		// We automatically infer big.Rat values as NUMERIC as we cannot
+		// determine precision/scale from the type.  Users who want the
+		// larger precision of BIGNUMERIC need to manipulate the inferred
+		// schema.
 		return &FieldSchema{Required: !nullable, Type: NumericFieldType}, nil
 	}
 	if ft := nullableFieldType(rt); ft != "" {

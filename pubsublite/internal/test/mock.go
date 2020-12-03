@@ -25,6 +25,7 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
@@ -268,12 +269,116 @@ func (s *mockLiteServer) AssignPartitions(stream pb.PartitionAssignmentService_A
 
 // AdminService implementation.
 
+func (s *mockLiteServer) doTopicResponse(ctx context.Context, req interface{}) (*pb.Topic, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.Topic)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) doSubscriptionResponse(ctx context.Context, req interface{}) (*pb.Subscription, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.Subscription)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) doEmptyResponse(ctx context.Context, req interface{}) (*emptypb.Empty, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*emptypb.Empty)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) CreateTopic(ctx context.Context, req *pb.CreateTopicRequest) (*pb.Topic, error) {
+	return s.doTopicResponse(ctx, req)
+}
+
+func (s *mockLiteServer) UpdateTopic(ctx context.Context, req *pb.UpdateTopicRequest) (*pb.Topic, error) {
+	return s.doTopicResponse(ctx, req)
+}
+
+func (s *mockLiteServer) GetTopic(ctx context.Context, req *pb.GetTopicRequest) (*pb.Topic, error) {
+	return s.doTopicResponse(ctx, req)
+}
+
 func (s *mockLiteServer) GetTopicPartitions(ctx context.Context, req *pb.GetTopicPartitionsRequest) (*pb.TopicPartitions, error) {
 	retResponse, retErr := s.popGlobalVerifiers(req)
 	if retErr != nil {
 		return nil, retErr
 	}
 	resp, ok := retResponse.(*pb.TopicPartitions)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) DeleteTopic(ctx context.Context, req *pb.DeleteTopicRequest) (*emptypb.Empty, error) {
+	return s.doEmptyResponse(ctx, req)
+}
+
+func (s *mockLiteServer) CreateSubscription(ctx context.Context, req *pb.CreateSubscriptionRequest) (*pb.Subscription, error) {
+	return s.doSubscriptionResponse(ctx, req)
+}
+
+func (s *mockLiteServer) GetSubscription(ctx context.Context, req *pb.GetSubscriptionRequest) (*pb.Subscription, error) {
+	return s.doSubscriptionResponse(ctx, req)
+}
+
+func (s *mockLiteServer) UpdateSubscription(ctx context.Context, req *pb.UpdateSubscriptionRequest) (*pb.Subscription, error) {
+	return s.doSubscriptionResponse(ctx, req)
+}
+
+func (s *mockLiteServer) DeleteSubscription(ctx context.Context, req *pb.DeleteSubscriptionRequest) (*emptypb.Empty, error) {
+	return s.doEmptyResponse(ctx, req)
+}
+
+func (s *mockLiteServer) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*pb.ListTopicsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListTopicsResponse)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) ListTopicSubscriptions(ctx context.Context, req *pb.ListTopicSubscriptionsRequest) (*pb.ListTopicSubscriptionsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListTopicSubscriptionsResponse)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) ListSubscriptions(ctx context.Context, req *pb.ListSubscriptionsRequest) (*pb.ListSubscriptionsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListSubscriptionsResponse)
 	if !ok {
 		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
 	}

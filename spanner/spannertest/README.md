@@ -21,7 +21,7 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - case insensitivity
-- FULL JOIN, multiple joins
+- multiple joins
 - alternate literal types (esp. strings)
 - STRUCT types
 - transaction simulation
