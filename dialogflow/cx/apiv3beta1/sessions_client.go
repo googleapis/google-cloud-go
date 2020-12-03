@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	"google.golang.org/grpc"
@@ -44,7 +45,8 @@ type SessionsCallOptions struct {
 
 func defaultSessionsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -114,9 +116,8 @@ type SessionsClient struct {
 // NewSessionsClient creates a new sessions client.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the
-// DetectIntent
-// method to determine user intent and respond.
+// and pass it to the DetectIntent method to determine
+// user intent and respond.
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := defaultSessionsClientOptions()
 
@@ -237,13 +238,9 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 	return resp, nil
 }
 
-// FulfillIntent fulfills a matched intent returned by
-// MatchIntent.
-// Must be called after
-// MatchIntent,
-// with input from
-// MatchIntentResponse.
-// Otherwise, the behavior is undefined.
+// FulfillIntent fulfills a matched intent returned by MatchIntent.
+// Must be called after MatchIntent, with input from
+// MatchIntentResponse. Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)

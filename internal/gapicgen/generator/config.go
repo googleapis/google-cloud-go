@@ -694,7 +694,9 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/pubsublite/apiv1",
 		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
-		releaseLevel:          "ga",
+		// Update to "ga" after the manual client (beta) for pubsublite is released.
+		// Also make sure the manual client is generated in .repo-metadata-full.json.
+		releaseLevel: "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
@@ -777,6 +779,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/billing/budgets/v1",
+		pkg:                   "budgets",
+		importPath:            "cloud.google.com/go/billing/budgets/apiv1",
+		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1/billingbudgets_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/billing/budgets/v1/billingbudgets.yaml",
+		// GA after 2020/11/27
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/billing/budgets/v1beta1",
 		pkg:                   "budgets",
 		importPath:            "cloud.google.com/go/billing/budgets/apiv1beta1",
@@ -823,6 +834,33 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/assuredworkloads/v1beta1/assuredworkloads_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/assuredworkloads/v1beta1/assuredworkloads_gapic.yaml",
 		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/accessapproval/v1",
+		pkg:                   "accessapproval",
+		importPath:            "cloud.google.com/go/accessapproval/apiv1",
+		gRPCServiceConfigPath: "google/cloud/accessapproval/v1/accessapproval_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/accessapproval/v1/accessapproval_gapic.yaml",
+		// GA after 2020/11/12
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/websecurityscanner/v1",
+		pkg:                   "websecurityscanner",
+		importPath:            "cloud.google.com/go/websecurityscanner/apiv1",
+		gRPCServiceConfigPath: "google/cloud/websecurityscanner/v1/websecurityscanner_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/websecurityscanner/v1/websecurityscanner_v1.yaml",
+		// GA after 2020/11/13
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/managedidentities/v1",
+		pkg:                   "managedidentities",
+		importPath:            "cloud.google.com/go/managedidentities/apiv1",
+		gRPCServiceConfigPath: "google/cloud/managedidentities/v1/managedidentities_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/managedidentities/v1/managedidentities_v1.yaml",
+		// GA after 2020/11/15
+		releaseLevel: "beta",
 	},
 
 	// Non-Cloud APIs

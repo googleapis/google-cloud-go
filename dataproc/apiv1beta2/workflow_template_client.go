@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -52,7 +53,8 @@ type WorkflowTemplateCallOptions struct {
 
 func defaultWorkflowTemplateClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
@@ -332,7 +334,8 @@ func (c *WorkflowTemplateClient) InstantiateWorkflowTemplate(ctx context.Context
 // InstantiateInlineWorkflowTemplate instantiates a template and begins execution.
 //
 // This method is equivalent to executing the sequence
-// CreateWorkflowTemplate, InstantiateWorkflowTemplate,
+// CreateWorkflowTemplate,
+// InstantiateWorkflowTemplate,
 // DeleteWorkflowTemplate.
 //
 // The returned Operation can be used to track execution of

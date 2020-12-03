@@ -228,3 +228,48 @@ func ExampleClient_SearchAllIamPolicies() {
 		_ = resp
 	}
 }
+
+func ExampleClient_AnalyzeIamPolicy() {
+	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &assetpb.AnalyzeIamPolicyRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.AnalyzeIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_AnalyzeIamPolicyLongrunning() {
+	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
+
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &assetpb.AnalyzeIamPolicyLongrunningRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.AnalyzeIamPolicyLongrunning(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

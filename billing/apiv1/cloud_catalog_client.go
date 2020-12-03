@@ -26,6 +26,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 	"google.golang.org/grpc"
@@ -42,7 +43,8 @@ type CloudCatalogCallOptions struct {
 
 func defaultCloudCatalogClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudbilling.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudbilling.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudbilling.mtls.googleapis.com:443"),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

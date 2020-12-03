@@ -184,9 +184,13 @@ type token struct {
 	line, offset int
 
 	typ     tokenType
-	int64   int64
 	float64 float64
 	string  string // unquoted form for stringToken/bytesToken/quotedID
+
+	// int64Token is parsed as a number only when it is known to be a literal.
+	// This permits correct handling of operators preceding such a token,
+	// which cannot be identified as part of the int64 until later.
+	int64Base int
 }
 
 type tokenType int
@@ -415,7 +419,9 @@ digitLoop:
 		p.cur.float64, err = strconv.ParseFloat(sign+p.cur.value[d0:], 64)
 	} else {
 		p.cur.typ = int64Token
-		p.cur.int64, err = strconv.ParseInt(sign+p.cur.value[d0:], base, 64)
+		p.cur.value = sign + p.cur.value[d0:]
+		p.cur.int64Base = base
+		// This is parsed on demand.
 	}
 	if err != nil {
 		p.errorf("bad numeric literal %q: %v", p.cur.value, err)
@@ -776,7 +782,7 @@ func (p *parser) advance() {
 	p.cur.typ = unknownToken
 	// TODO: array, struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '{', '}', '*':
+	case ',', ';', '(', ')', '{', '}', '*', '+', '-':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		p.offset++
@@ -825,8 +831,8 @@ func (p *parser) advance() {
 		p.offset += i
 		return
 	}
-	if len(p.s) >= 2 && (p.s[0] == '+' || p.s[0] == '-' || p.s[0] == '.') && ('0' <= p.s[1] && p.s[1] <= '9') {
-		// [-+.] followed by a digit.
+	if len(p.s) >= 2 && p.s[0] == '.' && ('0' <= p.s[1] && p.s[1] <= '9') {
+		// dot followed by a digit.
 		p.consumeNumber()
 		return
 	}
@@ -1060,11 +1066,11 @@ func (p *parser) sniffTableConstraint() bool {
 	// could be the start of a declaration of a column called "CONSTRAINT" of boolean type,
 	// or it could be the start of a foreign key constraint called "BOOL".
 	// We have to sniff up to the third token to see what production it is.
-	// If we have "FOREIGN" and "KEY", this is an unnamed table constraint.
-	// If we have "CONSTRAINT", an identifier and "FOREIGN", this is a table constraint.
+	// If we have "FOREIGN" and "KEY" (or "CHECK"), this is an unnamed table constraint.
+	// If we have "CONSTRAINT", an identifier and "FOREIGN" (or "CHECK"), this is a table constraint.
 	// Otherwise, this is a column definition.
 
-	if p.sniff("FOREIGN", "KEY") {
+	if p.sniff("FOREIGN", "KEY") || p.sniff("CHECK") {
 		return true
 	}
 
@@ -1079,7 +1085,7 @@ func (p *parser) sniffTableConstraint() bool {
 	if _, err := p.parseTableOrIndexOrColumnName(); err != nil {
 		return false
 	}
-	return p.eat("FOREIGN")
+	return p.sniff("FOREIGN") || p.sniff("CHECK")
 }
 
 func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
@@ -1195,7 +1201,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	default:
 		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
 	case "ADD":
-		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") {
+		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") || p.sniff("CHECK") {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
 				return nil, err
@@ -1275,7 +1281,13 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		DELETE [FROM] target_name [[AS] alias]
 		WHERE condition
 
-		TODO: Insert, Update.
+		UPDATE target_name [[AS] alias]
+		SET update_item [, ...]
+		WHERE condition
+
+		update_item: path_expression = expression | path_expression = DEFAULT
+
+		TODO: Insert.
 	*/
 
 	if p.eat("DELETE") {
@@ -1298,7 +1310,62 @@ func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 		}, nil
 	}
 
+	if p.eat("UPDATE") {
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		u := &Update{
+			Table: tname,
+		}
+		// TODO: parse alias.
+		if err := p.expect("SET"); err != nil {
+			return nil, err
+		}
+		for {
+			ui, err := p.parseUpdateItem()
+			if err != nil {
+				return nil, err
+			}
+			u.Items = append(u.Items, ui)
+			if p.eat(",") {
+				continue
+			}
+			break
+		}
+		if err := p.expect("WHERE"); err != nil {
+			return nil, err
+		}
+		where, err := p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+		u.Where = where
+		return u, nil
+	}
+
 	return nil, p.errorf("unknown DML statement")
+}
+
+func (p *parser) parseUpdateItem() (UpdateItem, *parseError) {
+	col, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	ui := UpdateItem{
+		Column: col,
+	}
+	if err := p.expect("="); err != nil {
+		return UpdateItem{}, err
+	}
+	if p.eat("DEFAULT") {
+		return ui, nil
+	}
+	ui.Value, err = p.parseExpr()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	return ui, nil
 }
 
 func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
@@ -1452,36 +1519,45 @@ func (p *parser) parseTableConstraint() (TableConstraint, *parseError) {
 	/*
 		table_constraint:
 			[ CONSTRAINT constraint_name ]
-			foreign_key
+			{ check | foreign_key }
 	*/
 
 	if p.eat("CONSTRAINT") {
 		pos := p.Pos()
-		// Named foreign key.
+		// Named constraint.
 		cname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return TableConstraint{}, err
 		}
-		fk, err := p.parseForeignKey()
+		c, err := p.parseConstraint()
 		if err != nil {
 			return TableConstraint{}, err
 		}
 		return TableConstraint{
 			Name:       cname,
-			ForeignKey: fk,
+			Constraint: c,
 			Position:   pos,
 		}, nil
 	}
 
-	// Unnamed foreign key.
-	fk, err := p.parseForeignKey()
+	// Unnamed constraint.
+	c, err := p.parseConstraint()
 	if err != nil {
 		return TableConstraint{}, err
 	}
 	return TableConstraint{
-		ForeignKey: fk,
-		Position:   fk.Position,
+		Constraint: c,
+		Position:   c.Pos(),
 	}, nil
+}
+
+func (p *parser) parseConstraint() (Constraint, *parseError) {
+	if p.sniff("FOREIGN") {
+		fk, err := p.parseForeignKey()
+		return fk, err
+	}
+	c, err := p.parseCheck()
+	return c, err
 }
 
 func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
@@ -1516,6 +1592,32 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 		return ForeignKey{}, err
 	}
 	return fk, nil
+}
+
+func (p *parser) parseCheck() (Check, *parseError) {
+	debugf("parseCheck: %v", p)
+
+	/*
+		check:
+			CHECK ( expression )
+	*/
+
+	if err := p.expect("CHECK"); err != nil {
+		return Check{}, err
+	}
+	c := Check{Position: p.Pos()}
+	if err := p.expect("("); err != nil {
+		return Check{}, err
+	}
+	var err *parseError
+	c.Expr, err = p.parseBoolExpr()
+	if err != nil {
+		return Check{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return Check{}, err
+	}
+	return c, nil
 }
 
 func (p *parser) parseColumnNameList() ([]ID, *parseError) {
@@ -1588,7 +1690,11 @@ func (p *parser) parseType() (Type, *parseError) {
 		if tok.value == "MAX" {
 			t.Len = MaxLen
 		} else if tok.typ == int64Token {
-			t.Len = tok.int64
+			n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+			if err != nil {
+				return Type{}, p.errorf("%v", err)
+			}
+			t.Len = n
 		} else {
 			return Type{}, p.errorf("got %q, want MAX or int64", tok.value)
 		}
@@ -2025,7 +2131,11 @@ func (p *parser) parseLiteralOrParam() (LiteralOrParam, *parseError) {
 		return nil, tok.err
 	}
 	if tok.typ == int64Token {
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	}
 	// TODO: check character sets.
 	if strings.HasPrefix(tok.value, "@") {
@@ -2343,6 +2453,7 @@ func (p *parser) parseArithOp() (Expr, *parseError) {
 var unaryArithOperators = map[string]ArithOperator{
 	"-": Neg,
 	"~": BitNot,
+	"+": Plus,
 }
 
 func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
@@ -2350,7 +2461,35 @@ func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
 	if tok.err != nil {
 		return nil, tok.err
 	}
-	if op, ok := unaryArithOperators[tok.value]; ok {
+
+	op := tok.value
+
+	if op == "-" || op == "+" {
+		// If the next token is a numeric token, combine and parse as a literal.
+		ntok := p.next()
+		if ntok.err == nil {
+			switch ntok.typ {
+			case int64Token:
+				comb := op + ntok.value
+				n, err := strconv.ParseInt(comb, ntok.int64Base, 64)
+				if err != nil {
+					return nil, p.errorf("%v", err)
+				}
+				return IntegerLiteral(n), nil
+			case float64Token:
+				f := ntok.float64
+				if op == "-" {
+					f = -f
+				}
+				return FloatLiteral(f), nil
+			}
+		}
+		// It is not possible for the p.back() lower down to fire
+		// because - and + are in unaryArithOperators.
+		p.back()
+	}
+
+	if op, ok := unaryArithOperators[op]; ok {
 		e, err := p.parseLit()
 		if err != nil {
 			return nil, err
@@ -2370,7 +2509,11 @@ func (p *parser) parseLit() (Expr, *parseError) {
 
 	switch tok.typ {
 	case int64Token:
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	case float64Token:
 		return FloatLiteral(tok.float64), nil
 	case stringToken:

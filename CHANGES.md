@@ -1,5 +1,72 @@
 # Changes
 
+
+## [0.72.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.71.0...v0.72.0) (2020-11-10)
+
+
+### Features
+
+* **all:** auto-regenerate gapics , refs [#3177](https://www.github.com/googleapis/google-cloud-go/issues/3177) [#3164](https://www.github.com/googleapis/google-cloud-go/issues/3164) [#3149](https://www.github.com/googleapis/google-cloud-go/issues/3149) [#3142](https://www.github.com/googleapis/google-cloud-go/issues/3142) [#3136](https://www.github.com/googleapis/google-cloud-go/issues/3136) [#3130](https://www.github.com/googleapis/google-cloud-go/issues/3130) [#3121](https://www.github.com/googleapis/google-cloud-go/issues/3121) [#3119](https://www.github.com/googleapis/google-cloud-go/issues/3119)
+
+
+### Bug Fixes
+
+* **all:** Update hand-written clients to not use WithEndpoint override ([#3111](https://www.github.com/googleapis/google-cloud-go/issues/3111)) ([f0cfd05](https://www.github.com/googleapis/google-cloud-go/commit/f0cfd0532f5204ff16f7bae406efa72603d16f44))
+* **internal/godocfx:** rename README files to pkg-readme ([#3185](https://www.github.com/googleapis/google-cloud-go/issues/3185)) ([d3a8571](https://www.github.com/googleapis/google-cloud-go/commit/d3a85719be411b692aede3331abb29b5a7b3da9a))
+
+
+## [0.71.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.70.0...v0.71.0) (2020-10-30)
+
+
+### Features
+
+* **all:** auto-regenerate gapics , refs [#3115](https://www.github.com/googleapis/google-cloud-go/issues/3115) [#3106](https://www.github.com/googleapis/google-cloud-go/issues/3106) [#3102](https://www.github.com/googleapis/google-cloud-go/issues/3102) [#3083](https://www.github.com/googleapis/google-cloud-go/issues/3083) [#3073](https://www.github.com/googleapis/google-cloud-go/issues/3073) [#3057](https://www.github.com/googleapis/google-cloud-go/issues/3057) [#3044](https://www.github.com/googleapis/google-cloud-go/issues/3044)
+* **billing/budgets:** start generating apiv1 ([#3099](https://www.github.com/googleapis/google-cloud-go/issues/3099)) ([e760c85](https://www.github.com/googleapis/google-cloud-go/commit/e760c859de88a6e79b6dffc653dbf75f1630d8e3))
+* **internal:** auto-run godocfx on new mods ([#3069](https://www.github.com/googleapis/google-cloud-go/issues/3069)) ([49f497e](https://www.github.com/googleapis/google-cloud-go/commit/49f497eab80ce34dfb4ca41f033a5c0429ff5e42))
+* **pubsublite:** Added Pub/Sub Lite clients and routing headers ([#3105](https://www.github.com/googleapis/google-cloud-go/issues/3105)) ([98668fa](https://www.github.com/googleapis/google-cloud-go/commit/98668fa5457d26ed34debee708614f027020e5bc))
+* **pubsublite:** Message type and message routers ([#3077](https://www.github.com/googleapis/google-cloud-go/issues/3077)) ([179fc55](https://www.github.com/googleapis/google-cloud-go/commit/179fc550b545a5344358a243da7007ffaa7b5171))
+* **pubsublite:** Pub/Sub Lite admin client ([#3036](https://www.github.com/googleapis/google-cloud-go/issues/3036)) ([749473e](https://www.github.com/googleapis/google-cloud-go/commit/749473ead30bf1872634821d3238d1299b99acc6))
+* **pubsublite:** Publish settings and errors ([#3075](https://www.github.com/googleapis/google-cloud-go/issues/3075)) ([9eb9fcb](https://www.github.com/googleapis/google-cloud-go/commit/9eb9fcb79f17ad7c08c77c455ba3e8d89e3bdbf2))
+* **pubsublite:** Retryable stream wrapper ([#3068](https://www.github.com/googleapis/google-cloud-go/issues/3068)) ([97cfd45](https://www.github.com/googleapis/google-cloud-go/commit/97cfd4587f2f51996bd685ff486308b70eb51900))
+
+
+### Bug Fixes
+
+* **internal/kokoro:** remove unnecessary cd ([#3071](https://www.github.com/googleapis/google-cloud-go/issues/3071)) ([c1a4c3e](https://www.github.com/googleapis/google-cloud-go/commit/c1a4c3eaffcdc3cffe0e223fcfa1f60879cd23bb))
+* **pubsublite:** Disable integration tests for project id ([#3087](https://www.github.com/googleapis/google-cloud-go/issues/3087)) ([a0982f7](https://www.github.com/googleapis/google-cloud-go/commit/a0982f79d6461feabdf31363f29fed7dc5677fe7))
+
+## [0.70.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.69.0...v0.70.0) (2020-10-19)
+
+
+### Features
+
+* **all:** auto-regenerate gapics , refs [#3047](https://www.github.com/googleapis/google-cloud-go/issues/3047) [#3035](https://www.github.com/googleapis/google-cloud-go/issues/3035) [#3025](https://www.github.com/googleapis/google-cloud-go/issues/3025)
+* **managedidentities:** start generating apiv1 ([#3032](https://www.github.com/googleapis/google-cloud-go/issues/3032)) ([10ccca2](https://www.github.com/googleapis/google-cloud-go/commit/10ccca238074d24fea580a4cd8e64478818b0b44))
+* **pubsublite:** Types for resource paths and topic/subscription configs ([#3026](https://www.github.com/googleapis/google-cloud-go/issues/3026)) ([6f7fa86](https://www.github.com/googleapis/google-cloud-go/commit/6f7fa86ed906258f98d996aab40184f3a46f9714))
+
+## [0.69.1](https://www.github.com/googleapis/google-cloud-go/compare/v0.69.0...v0.69.1) (2020-10-14)
+
+This is an empty release that was created solely to aid in pubsublite's module
+carve out. See: https://github.com/golang/go/wiki/Modules#is-it-possible-to-add-a-module-to-a-multi-module-repository.
+
+## [0.69.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.68.0...v0.69.0) (2020-10-14)
+
+
+### Features
+
+* **accessapproval:** start generating apiv1 ([#3002](https://www.github.com/googleapis/google-cloud-go/issues/3002)) ([709d6e7](https://www.github.com/googleapis/google-cloud-go/commit/709d6e76393e6ac00ff488efd83bfe873173b045))
+* **all:** auto-regenerate gapics , refs [#3010](https://www.github.com/googleapis/google-cloud-go/issues/3010) [#3005](https://www.github.com/googleapis/google-cloud-go/issues/3005) [#2993](https://www.github.com/googleapis/google-cloud-go/issues/2993) [#2989](https://www.github.com/googleapis/google-cloud-go/issues/2989) [#2981](https://www.github.com/googleapis/google-cloud-go/issues/2981) [#2976](https://www.github.com/googleapis/google-cloud-go/issues/2976) [#2968](https://www.github.com/googleapis/google-cloud-go/issues/2968) [#2958](https://www.github.com/googleapis/google-cloud-go/issues/2958)
+* **cmd/go-cloud-debug-agent:** mark as deprecated ([#2964](https://www.github.com/googleapis/google-cloud-go/issues/2964)) ([276ec88](https://www.github.com/googleapis/google-cloud-go/commit/276ec88b05852c33a3ba437e18d072f7ffd8fd33))
+* **godocfx:** add nesting to TOC ([#2972](https://www.github.com/googleapis/google-cloud-go/issues/2972)) ([3a49b2d](https://www.github.com/googleapis/google-cloud-go/commit/3a49b2d142a353f98429235c3f380431430b4dbf))
+* **internal/godocfx:** HTML-ify package summary ([#2986](https://www.github.com/googleapis/google-cloud-go/issues/2986)) ([9e64b01](https://www.github.com/googleapis/google-cloud-go/commit/9e64b018255bd8d9b31d60e8f396966251de946b))
+* **internal/kokoro:** make publish_docs VERSION optional ([#2979](https://www.github.com/googleapis/google-cloud-go/issues/2979)) ([76e35f6](https://www.github.com/googleapis/google-cloud-go/commit/76e35f689cb60bd5db8e14b8c8d367c5902bcb0e))
+* **websecurityscanner:** start generating apiv1 ([#3006](https://www.github.com/googleapis/google-cloud-go/issues/3006)) ([1d92e20](https://www.github.com/googleapis/google-cloud-go/commit/1d92e2062a13f62d7a96be53a7354c0cacca6a85))
+
+
+### Bug Fixes
+
+* **godocfx:** make extra files optional, filter out third_party ([#2985](https://www.github.com/googleapis/google-cloud-go/issues/2985)) ([f268921](https://www.github.com/googleapis/google-cloud-go/commit/f2689214a24b2e325d3e8f54441bb11fbef925f0))
+
 ## [0.68.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.67.0...v0.68.0) (2020-10-02)
 
 
