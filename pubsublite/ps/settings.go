@@ -114,8 +114,7 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 // NackHandler is invoked when pubsub.Message.Nack() is called. Cloud Pub/Sub
 // Lite does not have a concept of 'nack'. If the nack handler implementation
 // returns nil, the message is acknowledged. If an error is returned, the
-// SubscriberClient will consider this a fatal error and terminate once all
-// outstanding message receivers have finished.
+// SubscriberClient will consider this a fatal error and terminate.
 //
 // In Cloud Pub/Sub Lite, only a single subscriber for a given subscription is
 // connected to any partition at a time, and there is no other client that may

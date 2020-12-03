@@ -15,19 +15,20 @@
 Package ps contains a publisher and subscriber client for the Cloud Pub/Sub Lite
 service that emulates the Cloud Pub/Sub API.
 
-If interfaces are defined for pubsub.Topic.Publish() and
-pubsub.Subscription.Receive(), the clients in this package can be used as
-drop-in replacements.
+If interfaces are defined, PublisherClient and SubscriberClient can be used as
+substitutions for pubsub.Topic.Publish() and pubsub.Subscription.Receive(),
+respectively.
 
-As noted in comments, the two services have some semantic differences:
-  - Pub/Sub Lite does not support nack for messages. A custom function can be
-    provided for ReceiveSettings.NackHandler to handle nacked messages.
-  - Pub/Sub Lite has no concept of ack expiration. Subscribers must acknowledge
-    every message received or shut down the SubscriberClient.
-  - Pub/Sub Lite has publish and subscribe throughput limits. Thus publishing
-    can be more sensitive to buffer overflow.
+As noted in comments, the two services have some differences:
+  - Pub/Sub Lite does not support nack for messages. By default, this will
+    terminate the SubscriberClient. A custom function can be provided for
+    ReceiveSettings.NackHandler to handle nacked messages.
+  - Pub/Sub Lite has no concept of ack expiration. Subscribers must ack or nack
+    every message received.
   - Pub/Sub Lite PublisherClients can terminate when an unretryable error
     occurs.
+  - Pub/Sub Lite has publish and subscribe throughput limits. Thus publishing
+    can be more sensitive to buffer overflow.
   - DefaultPublishSettings and DefaultReceiveSettings should be used for default
     settings rather than their empty types.
 
