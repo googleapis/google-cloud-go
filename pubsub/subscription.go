@@ -810,6 +810,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// If MaxExtension is negative, disable automatic extension.
 		maxExt = 0
 	}
+	maxExtPeriod := s.ReceiveSettings.MaxExtensionPeriod
+	if maxExtPeriod < 0 {
+		maxExtPeriod = 0
+	}
+
 	var numGoroutines int
 	switch {
 	case s.ReceiveSettings.Synchronous:
@@ -822,6 +827,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
 		maxExtension:           maxExt,
+		maxExtensionPeriod:     maxExtPeriod,
 		maxPrefetch:            trunc32(int64(maxCount)),
 		synchronous:            s.ReceiveSettings.Synchronous,
 		maxOutstandingMessages: maxCount,
@@ -853,7 +859,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
-		iter := newMessageIterator(s.c.subc, s.name, &s.ReceiveSettings.MaxExtension, po)
+		iter := newMessageIterator(s.c.subc, s.name, po)
 
 		// We cannot use errgroup from Receive here. Receive might already be
 		// calling group.Wait, and group.Wait cannot be called concurrently with
@@ -951,8 +957,9 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 }
 
 type pullOptions struct {
-	maxExtension time.Duration
-	maxPrefetch  int32
+	maxExtension       time.Duration
+	maxExtensionPeriod time.Duration
+	maxPrefetch        int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous            bool

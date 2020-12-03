@@ -118,8 +118,10 @@ func TestMaxExtensionPeriod(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := time.Duration(1) * time.Second
-	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &want, &pullOptions{})
+	want := 1 * time.Second
+	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{
+		maxExtensionPeriod: want,
+	})
 
 	receiveTime := time.Now().Add(time.Duration(-3) * time.Second)
 	iter.ackTimeDist.Record(int(time.Since(receiveTime) / time.Second))

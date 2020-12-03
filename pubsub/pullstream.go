@@ -39,7 +39,7 @@ type pullStream struct {
 // for testing
 type streamingPullFunc func(context.Context, ...gax.CallOption) (pb.Subscriber_StreamingPullClient, error)
 
-func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName string, maxOutstandingMessages int, maxOutstandingBytes int) *pullStream {
+func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName string, maxOutstandingMessages, maxOutstandingBytes int, maxDurationPerLeaseExtension time.Duration) *pullStream {
 	ctx = withSubscriptionKey(ctx, subName)
 	return &pullStream{
 		ctx: ctx,
@@ -50,7 +50,7 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 				err = spc.Send(&pb.StreamingPullRequest{
 					Subscription: subName,
 					// We modack messages when we receive them, so this value doesn't matter too much.
-					StreamAckDeadlineSeconds: 60,
+					StreamAckDeadlineSeconds: int32(maxDurationPerLeaseExtension / time.Second),
 					MaxOutstandingMessages:   int64(maxOutstandingMessages),
 					MaxOutstandingBytes:      int64(maxOutstandingBytes),
 				})
