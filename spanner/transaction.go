@@ -1226,7 +1226,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 		return ts, err
 	}
 	if t.commitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
-		opts = &sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_UNSPECIFIED}
+		opts = &sppb.RequestOptions{Priority: t.commitPriority}
 	}
 
 	// Retry-loop for aborted transactions.
