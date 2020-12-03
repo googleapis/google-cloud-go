@@ -355,6 +355,7 @@ func TestSubscribeStreamDuplicateInitialResponse(t *testing.T) {
 }
 
 func TestSubscribeStreamSpuriousSeekResponse(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/3329")
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
 	acks := newAckTracker()
 
