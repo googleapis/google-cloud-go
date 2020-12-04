@@ -45,8 +45,9 @@ func defaultCloudCatalogClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudbilling.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudbilling.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://cloudbilling.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
