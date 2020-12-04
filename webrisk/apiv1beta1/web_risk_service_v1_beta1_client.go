@@ -44,8 +44,9 @@ func defaultWebRiskServiceV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("webrisk.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("webrisk.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://webrisk.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
