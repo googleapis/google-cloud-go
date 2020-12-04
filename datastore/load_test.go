@@ -455,17 +455,23 @@ func TestLoadCivilTimeInNonUTCZone(t *testing.T) {
 			Minute: 30,
 		},
 	}
-	loc, _ := time.LoadLocation("Africa/Cairo")
+	loc, err := time.LoadLocation("Africa/Cairo")
+	if err != nil {
+		t.Fatalf("LoadLocation: %v", err)
+	}
 	time.Local = loc
 
-	err := loadEntityProto(dst, src)
+	err = loadEntityProto(dst, src)
 	if err != nil {
 		t.Fatalf("loadEntityProto: %v", err)
 	}
 	if diff := testutil.Diff(dst, want); diff != "" {
 		t.Fatalf("Mismatch: got - want +\n%s", diff)
 	}
-	loc, _ = time.LoadLocation("UTC")
+	loc, err = time.LoadLocation("UTC")
+	if err != nil {
+		t.Fatalf("LoadLocation: %v", err)
+	}
 	time.Local = loc
 }
 
