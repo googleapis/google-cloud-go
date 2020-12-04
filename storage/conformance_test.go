@@ -16,10 +16,13 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"log"
+	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
@@ -29,7 +32,109 @@ import (
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	raw "google.golang.org/api/storage/v1"
+	htransport "google.golang.org/api/transport/http"
 )
+
+func TestRetryConformance(t *testing.T) {
+	// Create test cases.
+	cases := []struct{
+		instruction string   // add later
+		method func(ctx context.Context, c *Client) error
+		expectSuccess bool
+	}{
+		{
+			instruction: "return-503-after-256K",
+			method: func(ctx context.Context, c *Client) error {
+
+
+				_, err := c.Bucket("cjcotter-devrel-test").Object("file.txt").Attrs(ctx)
+				return err
+			},
+			expectSuccess: true,
+		},
+		{
+			instruction: "reset-connection",
+			method: func(ctx context.Context, c *Client) error {
+				_, err := c.Bucket("cjcotter-devrel-test").Object("file.txt").Attrs(ctx)
+				return err
+			},
+			expectSuccess: false,
+		},
+	}
+
+	ctx := context.Background()
+
+	// Create custom client that sends instruction
+	base := http.DefaultTransport
+	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
+		option.WithUserAgent("custom-user-agent"))
+	if err != nil {
+		// Handle error.
+	}
+	c := http.Client{Transport:trans}
+
+	// Add RoundTripper to the created HTTP client.
+	instr := "reset-connection"
+	wrappedTrans := &withInstruction{rt: c.Transport, instr: instr}
+	c.Transport = *wrappedTrans
+
+	// Supply this client to storage.NewClient
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint("http://localhost:9000/storage/v1/"))
+	if err != nil {
+		// Handle error.
+	}
+
+	// Setup bucket and object
+	bktName := "cjcotter-devrel-test"
+	if err := client.Bucket(bktName).Create(ctx,"myproj", &BucketAttrs{}); err != nil {
+		t.Errorf("Error creating bucket: %v", err)
+	}
+
+	w := client.Bucket(bktName).Object("file.txt").NewWriter(ctx)
+	if _, err := w.Write([]byte("abcdef")); err != nil {
+		t.Errorf("Error writing object to emulator: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Errorf("Error writing object to emulator in Close: %v", err)
+	}
+
+
+
+	for _, c := range cases {
+		// Transport manipulation is not thread safe.
+		retries = 2
+		wrappedTrans.instr = c.instruction
+		err := c.method(ctx, client)
+		if err == nil && !c.expectSuccess {
+			t.Errorf("case: want failure, got success")
+		}
+		if err != nil && c.expectSuccess {
+			t.Errorf("case: want success, got %v", err)
+		}
+	}
+}
+
+var retries int
+
+type withInstruction struct {
+	rt http.RoundTripper
+	instr string
+}
+
+func (wi withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
+	if retries > 0 {
+		r.Header.Set("x-goog-testbench-instructions", wi.instr)
+		retries -= 1
+	}
+	log.Printf("Request: %+v\nRetries: %v\n\n", r, retries)
+	resp, err := wi.rt.RoundTrip(r)
+	//if err != nil{
+	//	log.Printf("Error: %+v", err)
+	//}
+	return resp, err
+}
 
 func TestPostPolicyV4Conformance(t *testing.T) {
 	oldUTCNow := utcNow
