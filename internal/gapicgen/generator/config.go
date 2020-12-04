@@ -723,6 +723,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/servicedirectory/v1",
+		pkg:                   "servicedirectory",
+		importPath:            "cloud.google.com/go/servicedirectory/apiv1",
+		gRPCServiceConfigPath: "google/cloud/servicedirectory/v1/servicedirectory_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/servicedirectory/v1/servicedirectory_v1.yaml",
+		// GA after 2021/01/05
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/servicedirectory/v1beta1",
 		pkg:                   "servicedirectory",
 		importPath:            "cloud.google.com/go/servicedirectory/apiv1beta1",
