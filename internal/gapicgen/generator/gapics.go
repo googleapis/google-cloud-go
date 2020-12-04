@@ -28,31 +28,33 @@ import (
 
 // GapicGenerator is used to regenerate gapic libraries.
 type GapicGenerator struct {
-	googleapisDir  string
-	protoDir       string
-	googleCloudDir string
-	genprotoDir    string
+	googleapisDir   string
+	protoDir        string
+	googleCloudDir  string
+	genprotoDir     string
+	gapicToGenerate string
 }
 
 // NewGapicGenerator creates a GapicGenerator.
-func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string) *GapicGenerator {
+func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string) *GapicGenerator {
 	return &GapicGenerator{
-		googleapisDir:  googleapisDir,
-		protoDir:       protoDir,
-		googleCloudDir: googleCloudDir,
-		genprotoDir:    genprotoDir,
+		googleapisDir:   googleapisDir,
+		protoDir:        protoDir,
+		googleCloudDir:  googleCloudDir,
+		genprotoDir:     genprotoDir,
+		gapicToGenerate: gapicToGenerate,
 	}
 }
 
 // Regen generates gapics.
-func (g *GapicGenerator) Regen(ctx context.Context, gapicToGenerate string) error {
+func (g *GapicGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating gapics")
 	for _, c := range microgenGapicConfigs {
 		// Skip generation if generating all of the gapics and the associated
 		// config has a block on it. Or if generating a single gapic and it does
 		// not match the specified import path.
-		if (c.stopGeneration && gapicToGenerate == "") ||
-			(gapicToGenerate != "" && gapicToGenerate != c.importPath) {
+		if (c.stopGeneration && g.gapicToGenerate == "") ||
+			(g.gapicToGenerate != "" && g.gapicToGenerate != c.importPath) {
 			continue
 		}
 		if err := g.microgen(c); err != nil {
