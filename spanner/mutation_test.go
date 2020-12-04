@@ -17,10 +17,13 @@ limitations under the License.
 package spanner
 
 import (
+	"math/big"
 	"sort"
 	"strings"
 	"testing"
+	"time"
 
+	"cloud.google.com/go/civil"
 	proto3 "github.com/golang/protobuf/ptypes/struct"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 )
@@ -36,6 +39,12 @@ func keysetProto(t *testing.T, ks KeySet) *sppb.KeySet {
 
 // Test encoding from spanner.Mutation to protobuf.
 func TestMutationToProto(t *testing.T) {
+	utc, err := time.LoadLocation("UTC")
+	if err != nil {
+		t.Fatalf("Could not load UTC: %v", err)
+	}
+	r, _ := (&big.Rat{}).SetString("3.14")
+
 	for i, test := range []struct {
 		m    *Mutation
 		want *sppb.Mutation
@@ -120,9 +129,50 @@ func TestMutationToProto(t *testing.T) {
 				},
 			},
 		},
+		// Mutation with all supported data types
+		{
+			&Mutation{
+				opInsert,
+				"t_foo",
+				KeySets(),
+				[]string{"colBool", "colInt64", "colFloat64", "colNumeric", "colString", "colBytes", "colDate", "colTimestamp"},
+				[]interface{}{
+					true,
+					int64(100),
+					float64(3.14),
+					*r, // 3.14
+					"one",
+					[]byte{1, 2, 3},
+					civil.Date{Year: 2020, Month: 12, Day: 2},
+					time.Date(2020, time.December, 3, 8, 46, 58, 109, utc),
+				},
+			},
+			&sppb.Mutation{
+				Operation: &sppb.Mutation_Insert{
+					Insert: &sppb.Mutation_Write{
+						Table:   "t_foo",
+						Columns: []string{"colBool", "colInt64", "colFloat64", "colNumeric", "colString", "colBytes", "colDate", "colTimestamp"},
+						Values: []*proto3.ListValue{
+							{
+								Values: []*proto3.Value{
+									boolProto(true),
+									stringProto("100"),
+									floatProto(3.14),
+									stringProto("3.140000000"),
+									stringProto("one"),
+									bytesProto([]byte{1, 2, 3}),
+									stringProto("2020-12-02"),
+									stringProto("2020-12-03T08:46:58.000000109Z"),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	} {
 		if got, err := test.m.proto(); err != nil || !testEqual(got, test.want) {
-			t.Errorf("%d: (%#v).proto() = (%v, %v), want (%v, nil)", i, test.m, got, err, test.want)
+			t.Errorf("%d:\n(%#v).proto() =\n     (%v, %v)\nwant (%v, nil)", i, test.m, got, err, test.want)
 		}
 	}
 }
