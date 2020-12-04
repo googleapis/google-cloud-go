@@ -43,8 +43,9 @@ func defaultPhishingProtectionServiceV1Beta1ClientOptions() []option.ClientOptio
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("phishingprotection.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("phishingprotection.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://phishingprotection.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

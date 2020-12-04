@@ -55,6 +55,7 @@ func main() {
 	genprotoDir := flag.String("genproto-dir", filepath.Join(tmpDir, "genproto"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", filepath.Join(tmpDir, "proto"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	gapicToGenerate := flag.String("gapic", "", `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
+	onlyGapics := flag.Bool("only-gapics", false, "Enabling stops regenerating genproto.")
 	verbose := flag.Bool("verbose", false, "Enables verbose logging.")
 	flag.Parse()
 
@@ -71,7 +72,15 @@ func main() {
 	}
 
 	// Regen.
-	changes, err := generator.Generate(ctx, *googleapisDir, *genprotoDir, *gocloudDir, *protoDir, *gapicToGenerate)
+	conf := &generator.Config{
+		GoogleapisDir:     *googleapisDir,
+		GenprotoDir:       *genprotoDir,
+		GapicDir:          *gocloudDir,
+		ProtoDir:          *protoDir,
+		GapicToGenerate:   *gapicToGenerate,
+		OnlyGenerateGapic: *onlyGapics,
+	}
+	changes, err := generator.Generate(ctx, conf)
 	if err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
 		log.Fatal(err)
