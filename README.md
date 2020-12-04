@@ -178,7 +178,8 @@ for more information.
 
 ## Links
 
-- [Go on Google](https://cloud.google.com/go/home)
-- [Getting started with Go](https://cloud.google.com/go/getting-started)
+- [Go on Google Cloud](https://cloud.google.com/go/home)
+- [Getting started with Go on Google Cloud](https://cloud.google.com/go/getting-started)
 - [App Engine Quickstart](https://cloud.google.com/appengine/docs/standard/go/quickstart)
 - [Cloud Functions Quickstart](https://cloud.google.com/functions/docs/quickstart-go)
+- [Cloud Run Quickstart](https://cloud.google.com/run/docs/quickstarts/build-and-deploy#go)
