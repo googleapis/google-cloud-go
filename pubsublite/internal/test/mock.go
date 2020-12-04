@@ -16,11 +16,13 @@ package test
 import (
 	"context"
 	"io"
+	"log"
 	"reflect"
 	"sync"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -28,12 +30,6 @@ import (
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
-
-// Server is a mock Pub/Sub Lite server that can be used for unit testing.
-type Server struct {
-	LiteServer MockServer
-	gRPCServer *testutil.Server
-}
 
 // MockServer is an in-memory mock implementation of a Pub/Sub Lite service,
 // which allows unit tests to inspect requests received by the server and send
@@ -46,6 +42,12 @@ type MockServer interface {
 	// OnTestEnd should be called at the end of each test to flush the verifiers
 	// (i.e. check whether any expected requests were not sent to the server).
 	OnTestEnd()
+}
+
+// Server is a mock Pub/Sub Lite server that can be used for unit testing.
+type Server struct {
+	LiteServer MockServer
+	gRPCServer *testutil.Server
 }
 
 // NewServer creates a new mock Pub/Sub Lite server.
@@ -64,6 +66,20 @@ func NewServer() (*Server, error) {
 	return &Server{LiteServer: liteServer, gRPCServer: srv}, nil
 }
 
+// NewServerWithConn creates a new mock Pub/Sub Lite server along with client
+// options to connect to it.
+func NewServerWithConn() (*Server, []option.ClientOption) {
+	testServer, err := NewServer()
+	if err != nil {
+		log.Fatal(err)
+	}
+	conn, err := grpc.Dial(testServer.Addr(), grpc.WithInsecure())
+	if err != nil {
+		log.Fatal(err)
+	}
+	return testServer, []option.ClientOption{option.WithGRPCConn(conn)}
+}
+
 // Addr returns the address that the server is listening on.
 func (s *Server) Addr() string {
 	return s.gRPCServer.Addr
@@ -72,11 +88,6 @@ func (s *Server) Addr() string {
 // Close shuts down the server and releases all resources.
 func (s *Server) Close() {
 	s.gRPCServer.Close()
-}
-
-type streamHolder struct {
-	stream   grpc.ServerStream
-	verifier *RPCVerifier
 }
 
 // mockLiteServer implements the MockServer interface.
