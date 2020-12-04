@@ -175,3 +175,10 @@ for more information.
 [cloud-video]: https://cloud.google.com/video-intelligence/
 [cloud-vision]: https://cloud.google.com/vision
 [cloud-webrisk]: https://cloud.google.com/web-risk/
+
+## Links
+
+- [Go on Google](https://cloud.google.com/go/home)
+- [Getting started with Go](https://cloud.google.com/go/getting-started)
+- [App Engine Quickstart](https://cloud.google.com/appengine/docs/standard/go/quickstart)
+- [Cloud Functions Quickstart](https://cloud.google.com/functions/docs/quickstart-go)
