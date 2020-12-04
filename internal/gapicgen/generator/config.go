@@ -729,7 +729,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/servicedirectory/v1/servicedirectory_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/servicedirectory/v1/servicedirectory_v1.yaml",
 		// GA after 2021/01/05
-		releaseLevel:          "beta",
+		releaseLevel: "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/servicedirectory/v1beta1",
