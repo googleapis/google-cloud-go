@@ -225,7 +225,6 @@ git push origin $BRANCH_NAME
 		Body:  &body,
 		Head:  &head,
 		Base:  &base,
-		Draft: github.Bool(true),
 	})
 	if err != nil {
 		return 0, err
