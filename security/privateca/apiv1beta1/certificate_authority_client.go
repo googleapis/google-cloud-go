@@ -68,8 +68,9 @@ func defaultCertificateAuthorityClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
