@@ -50,8 +50,9 @@ func defaultMetricsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
