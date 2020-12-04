@@ -694,7 +694,9 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/pubsublite/apiv1",
 		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
-		releaseLevel:          "ga",
+		// Update to "ga" after the manual client (beta) for pubsublite is released.
+		// Also make sure the manual client is generated in .repo-metadata-full.json.
+		releaseLevel: "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/automl/v1",
@@ -858,6 +860,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/managedidentities/v1/managedidentities_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/managedidentities/v1/managedidentities_v1.yaml",
 		// GA after 2020/11/15
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/devtools/artifactregistry/v1beta2",
+		pkg:                   "artifactregistry",
+		importPath:            "cloud.google.com/go/artifactregistry/apiv1beta2",
+		gRPCServiceConfigPath: "google/devtools/artifactregistry/v1beta2/artifactregistry_grpc_service_config.json",
+		apiServiceConfigPath:  "google/devtools/artifactregistry/v1beta2/artifactregistry_v1beta2.yaml",
+		// GA after 2021/01/05
 		releaseLevel: "beta",
 	},
 
