@@ -26,23 +26,35 @@ import (
 	"strings"
 )
 
+// Config contains inputs needed to generate sources.
+type Config struct {
+	GoogleapisDir     string
+	GenprotoDir       string
+	GapicDir          string
+	ProtoDir          string
+	GapicToGenerate   string
+	OnlyGenerateGapic bool
+}
+
 // Generate generates genproto and gapics.
-func Generate(ctx context.Context, googleapisDir, genprotoDir, gocloudDir, protoDir string, gapicToGenerate string) ([]*ChangeInfo, error) {
-	protoGenerator := NewGenprotoGenerator(genprotoDir, googleapisDir, protoDir)
-	gapicGenerator := NewGapicGenerator(googleapisDir, protoDir, gocloudDir, genprotoDir)
-	if err := protoGenerator.Regen(ctx); err != nil {
-		return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
+func Generate(ctx context.Context, conf *Config) ([]*ChangeInfo, error) {
+	if !conf.OnlyGenerateGapic {
+		protoGenerator := NewGenprotoGenerator(conf.GenprotoDir, conf.GoogleapisDir, conf.ProtoDir)
+		if err := protoGenerator.Regen(ctx); err != nil {
+			return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
+		}
 	}
-	if err := gapicGenerator.Regen(ctx, gapicToGenerate); err != nil {
+	gapicGenerator := NewGapicGenerator(conf.GoogleapisDir, conf.ProtoDir, conf.GapicDir, conf.GenprotoDir, conf.GapicToGenerate)
+	if err := gapicGenerator.Regen(ctx); err != nil {
 		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
 	}
 
-	changes, err := gatherChanges(googleapisDir, genprotoDir)
+	changes, err := gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
 	if err != nil {
 		return nil, fmt.Errorf("error gathering commit info")
 	}
 
-	if err := recordGoogleapisHash(googleapisDir, genprotoDir); err != nil {
+	if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
 		return nil, err
 	}
 
