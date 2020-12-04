@@ -75,6 +75,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cj", Type: Type{Array: true, Base: Int64}, Position: line(11)},
 					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
 					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
+					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -95,6 +96,7 @@ func TestSQL(t *testing.T) {
   Cj ARRAY<INT64>,
   Ck ARRAY<STRING(MAX)>,
   Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
+  Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
