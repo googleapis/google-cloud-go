@@ -21,15 +21,16 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - case insensitivity
-- multiple joins
 - alternate literal types (esp. strings)
-- STRUCT types
-- transaction simulation
+- generated columns
 - expression type casting, coercion
+- multiple joins
 - subselects
+- transaction simulation
 - FOREIGN KEY and CHECK constraints
 - INSERT DML statements
 - set operations (UNION, INTERSECT, EXCEPT)
+- STRUCT types
 - partition support
 - conditional expressions
 - table sampling (implementation)
