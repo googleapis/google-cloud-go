@@ -22,10 +22,12 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os/exec"
 	"reflect"
 	"sort"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -2142,6 +2144,63 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 }
 
+// Blackhole directpath address to test fallback.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	countEnough := exerciseDirectPath(ctx, testEnv, table /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeOrAllowDirectPath(testEnv, t /*blackholeDP = */, true)
+	countEnough = exerciseDirectPath(ctx, testEnv, table /*blackholeDP = */, true)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Make sure that the client will start reading from IPv6 again by sending new requests and
+	// checking the injected IPv6 counter has been updated.
+	blackholeOrAllowDirectPath(testEnv, t /*blackholeDP = */, false)
+	countEnough = exerciseDirectPath(ctx, testEnv, table /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+func exerciseDirectPath(ctx context.Context, testEnv IntegrationEnv, table *Table, isBlackhole bool) bool {
+	var numCount uint64
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+
+	countEnough := false
+	start := time.Now()
+	for !countEnough && time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = table.ReadRow(ctx, "jadams")
+			if _, useDp := isDirectPathRemoteAddress(testEnv); useDp != isBlackhole {
+				atomic.AddUint64(&numCount, 1)
+			}
+			time.Sleep(100 * time.Millisecond)
+			countEnough = numCount >= minCompleteRPC
+		}
+	}
+	return countEnough
+}
+
 func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2258,4 +2317,39 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 	}
 	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
 	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+func blackholeOrAllowDirectPath(testEnv IntegrationEnv, t *testing.T, blackholeDP bool) {
+	blackholeDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j DROP && sleep 5 && echo blackholeDpv6"
+	blackholeDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j DROP && sleep 5 && echo blackholeDpv4"
+	allowDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j ACCEPT && sleep 5 && echo allowDpv6"
+	allowDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j ACCEPT && sleep 5 && echo allowDpv4"
+
+	if testEnv.Config().DirectPathIPV4Only {
+		if blackholeDP {
+			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		} else {
+			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		}
+	} else {
+		if blackholeDP {
+			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+			cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+			out, _ = cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		} else {
+			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+			cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+			out, _ = cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		}
+	}
 }
