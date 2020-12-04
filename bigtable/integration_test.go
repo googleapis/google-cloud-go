@@ -2144,7 +2144,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 }
 
-// Blackhole directpath address to test fallback.
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
 func TestIntegration_DirectPathFallback(t *testing.T) {
 	ctx := context.Background()
 	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
@@ -2158,28 +2158,28 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 
 	// Precondition: wait for DirectPath to connect.
-	countEnough := exerciseDirectPath(ctx, testEnv, table /*blackholeDP = */, false)
+	countEnough := examineTraffic(ctx, testEnv, table /*blackholeDP = */, false)
 	if !countEnough {
 		t.Fatalf("Failed to observe RPCs over DirectPath")
 	}
 
 	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
 	blackholeOrAllowDirectPath(testEnv, t /*blackholeDP = */, true)
-	countEnough = exerciseDirectPath(ctx, testEnv, table /*blackholeDP = */, true)
+	countEnough = examineTraffic(ctx, testEnv, table /*blackholeDP = */, true)
 	if !countEnough {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
 	}
 
-	// Make sure that the client will start reading from IPv6 again by sending new requests and
-	// checking the injected IPv6 counter has been updated.
+	// Disable the blackhole, and client should use DirectPath again.
 	blackholeOrAllowDirectPath(testEnv, t /*blackholeDP = */, false)
-	countEnough = exerciseDirectPath(ctx, testEnv, table /*blackholeDP = */, false)
+	countEnough = examineTraffic(ctx, testEnv, table /*blackholeDP = */, false)
 	if !countEnough {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
 	}
 }
 
-func exerciseDirectPath(ctx context.Context, testEnv IntegrationEnv, table *Table, isBlackhole bool) bool {
+// examineTraffic counts RPCs use DirectPath or CFE traffic.
+func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, expectDP bool) bool {
 	var numCount uint64
 	const (
 		numRPCsToSend  = 20
@@ -2191,7 +2191,7 @@ func exerciseDirectPath(ctx context.Context, testEnv IntegrationEnv, table *Tabl
 	for !countEnough && time.Since(start) < 2*time.Minute {
 		for i := 0; i < numRPCsToSend; i++ {
 			_, _ = table.ReadRow(ctx, "jadams")
-			if _, useDp := isDirectPathRemoteAddress(testEnv); useDp != isBlackhole {
+			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != expectDP {
 				atomic.AddUint64(&numCount, 1)
 			}
 			time.Sleep(100 * time.Millisecond)
