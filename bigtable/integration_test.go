@@ -2153,9 +2153,9 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 	defer cleanup()
 
-  if (!testEnv.Config().AttemptDirectPath) {
-    return
-  }
+	if !testEnv.Config().AttemptDirectPath {
+		return
+	}
 
 	if err := populatePresidentsGraph(table); err != nil {
 		t.Fatal(err)
