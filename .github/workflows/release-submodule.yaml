@@ -43,7 +43,7 @@ jobs:
                 owner,
                 repo
               });
-              console.info(`latest release: ${latestRelease.data.tag_name)}`);
+              console.info(`latest release: ${latestRelease.data.tag_name}`);
               // pull all tags, so we can get diff between HEAD and last release:
               execSync('git pull --tags');
               execSync(`git reset --hard ${latestRelease.data.tag_name}`);
