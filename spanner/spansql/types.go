@@ -244,6 +244,8 @@ type ColumnDef struct {
 	Type    Type
 	NotNull bool
 
+	Generated Expr // set of this is a generated column
+
 	Options ColumnOptions
 
 	Position Position // position of the column name

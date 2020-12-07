@@ -143,5 +143,8 @@ var funcs = map[string]bool{
 	// Hash functions.
 	"SHA1": true,
 
+	// String functions.
+	"CHAR_LENGTH": true,
+
 	// TODO: many more
 }
