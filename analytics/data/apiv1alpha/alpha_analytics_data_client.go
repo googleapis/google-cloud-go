@@ -49,8 +49,9 @@ func defaultAlphaAnalyticsDataClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticsdata.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticsdata.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://analyticsdata.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

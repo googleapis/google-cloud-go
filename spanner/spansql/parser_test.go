@@ -379,6 +379,12 @@ func TestParseDDL(t *testing.T) {
 			Names ARRAY<STRING(MAX)>,
 		) PRIMARY KEY (Dummy);
 
+		-- Table with generated column.
+		CREATE TABLE GenCol (
+			Name STRING(MAX) NOT NULL,
+			NameLen INT64 AS (CHAR_LENGTH(Name)) STORED,
+		) PRIMARY KEY (Name);
+
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
 			&CreateTable{
@@ -517,6 +523,19 @@ func TestParseDDL(t *testing.T) {
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
 				Position:   line(35),
 			},
+			&CreateTable{
+				Name: "GenCol",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(45)},
+					{
+						Name: "NameLen", Type: Type{Base: Int64},
+						Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Name")}},
+						Position:  line(46),
+					},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(44),
+			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
 				Text: []string{"This is a comment."}},
@@ -535,8 +554,10 @@ func TestParseDDL(t *testing.T) {
 			{Marker: "--", Start: line(37), End: line(37), Text: []string{"comment on ids"}},
 			{Marker: "--", Isolated: true, Start: line(38), End: line(38), Text: []string{"leading multi comment immediately after inline comment"}},
 
+			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Table with generated column."}},
+
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{

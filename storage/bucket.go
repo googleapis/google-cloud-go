@@ -661,6 +661,14 @@ type BucketAttrsToUpdate struct {
 	// for more information.
 	UniformBucketLevelAccess *UniformBucketLevelAccess
 
+	// StorageClass is the default storage class of the bucket. This defines
+	// how objects in the bucket are stored and determines the SLA
+	// and the cost of storage. Typical values are "STANDARD", "NEARLINE",
+	// "COLDLINE" and "ARCHIVE". Defaults to "STANDARD".
+	// See https://cloud.google.com/storage/docs/storage-classes for all
+	// valid values.
+	StorageClass string
+
 	// If set, updates the retention policy of the bucket. Using
 	// RetentionPolicy.RetentionPeriod = 0 will delete the existing policy.
 	//
@@ -801,6 +809,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		rb.DefaultObjectAcl = nil
 		rb.ForceSendFields = append(rb.ForceSendFields, "DefaultObjectAcl")
 	}
+	rb.StorageClass = ua.StorageClass
 	if ua.setLabels != nil || ua.deleteLabels != nil {
 		rb.Labels = map[string]string{}
 		for k, v := range ua.setLabels {
