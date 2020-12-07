@@ -45,6 +45,7 @@ jobs:
               });
               console.info(`latest release: ${latestRelease.data.tag_name}`);
               // pull all tags, so we can get diff between HEAD and last release:
+              execSync('git checkout master');
               execSync('git pull --tags');
               execSync(`git reset --hard ${latestRelease.data.tag_name}`);
               const status = execSync(`git diff --name-only origin/master`, { encoding: 'utf-8'});
