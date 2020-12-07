@@ -439,6 +439,9 @@ type QueryStatistics struct {
 
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
+
+	// Information about reservation usage.
+	ReservationUsage []*ReservationUsage
 }
 
 // ExplainQueryStage describes one stage of a query.
@@ -559,6 +562,25 @@ type QueryTimelineSample struct {
 
 	// Cumulative slot-milliseconds consumed by the query.
 	SlotMillis int64
+}
+
+// ReservationUsage contains information about a job's usage of a single reservation.
+type ReservationUsage struct {
+	// Slot-milliseconds the job spent in the given reservation.
+	SlotMillis int64
+	// Name indicates the utilized reservation name, or "unreserved" for ondemand usage.
+	Name string
+}
+
+func bqToReservationUsage(ru []*bq.JobStatistics2ReservationUsage) []*ReservationUsage {
+	var usage []*ReservationUsage
+	for _, in := range ru {
+		usage = append(usage, &ReservationUsage{
+			SlotMillis: in.SlotMs,
+			Name:       in.Name,
+		})
+	}
+	return usage
 }
 
 // ScriptStatistics report information about script-based query jobs.
@@ -849,6 +871,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
+			ReservationUsage:              bqToReservationUsage(s.Query.ReservationUsage),
 		}
 	}
 	j.lastStatus.Statistics = js
