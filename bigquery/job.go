@@ -347,6 +347,9 @@ type JobStatistics struct {
 	// ScriptStatistics includes information run as part of a child job within
 	// a script.
 	ScriptStatistics *ScriptStatistics
+
+	// ReservationUsage attributes slot consumption to reservations.
+	ReservationUsage []*ReservationUsage
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -439,9 +442,6 @@ type QueryStatistics struct {
 
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
-
-	// ReservationUsage details slot consumption by reservation.
-	ReservationUsage []*ReservationUsage
 }
 
 // ExplainQueryStage describes one stage of a query.
@@ -572,7 +572,7 @@ type ReservationUsage struct {
 	Name string
 }
 
-func bqToReservationUsage(ru []*bq.JobStatistics2ReservationUsage) []*ReservationUsage {
+func bqToReservationUsage(ru []*bq.JobStatisticsReservationUsage) []*ReservationUsage {
 	var usage []*ReservationUsage
 	for _, in := range ru {
 		usage = append(usage, &ReservationUsage{
@@ -832,6 +832,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		NumChildJobs:        s.NumChildJobs,
 		ParentJobID:         s.ParentJobId,
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
+		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
 	}
 	switch {
 	case s.Extract != nil:
@@ -871,7 +872,6 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			Timeline:                      timelineFromProto(s.Query.Timeline),
 			ReferencedTables:              tables,
 			UndeclaredQueryParameterNames: names,
-			ReservationUsage:              bqToReservationUsage(s.Query.ReservationUsage),
 		}
 	}
 	j.lastStatus.Statistics = js
