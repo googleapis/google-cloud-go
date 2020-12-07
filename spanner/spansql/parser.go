@@ -1373,7 +1373,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [AS ( expression ) STORED] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -1390,6 +1390,19 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	if p.eat("NOT", "NULL") {
 		cd.NotNull = true
+	}
+
+	if p.eat("AS", "(") {
+		cd.Generated, err = p.parseExpr()
+		if err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect(")"); err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect("STORED"); err != nil {
+			return ColumnDef{}, err
+		}
 	}
 
 	if p.sniff("OPTIONS") {

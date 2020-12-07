@@ -130,6 +130,7 @@ var keywords = map[string]bool{
 var funcs = map[string]bool{
 	// Aggregate functions.
 	"ARRAY_AGG": true,
+	"AVG":       true,
 	"BIT_XOR":   true,
 	"COUNT":     true,
 	"MAX":       true,
@@ -141,6 +142,9 @@ var funcs = map[string]bool{
 
 	// Hash functions.
 	"SHA1": true,
+
+	// String functions.
+	"CHAR_LENGTH": true,
 
 	// TODO: many more
 }

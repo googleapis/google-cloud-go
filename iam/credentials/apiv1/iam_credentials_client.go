@@ -47,8 +47,9 @@ func defaultIamCredentialsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("iamcredentials.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("iamcredentials.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://iamcredentials.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

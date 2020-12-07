@@ -890,6 +890,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			`SELECT AVG(Height) FROM Staff WHERE ID <= 2`,
+			nil,
+			[][]interface{}{
+				{float64(1.84)},
+			},
+		},
+		{
 			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
 			map[string]interface{}{"lim": "Teal'c"},
 			[][]interface{}{

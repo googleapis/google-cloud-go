@@ -26,46 +26,67 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-// generateGapics generates gapics.
-func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string, gapicToGenerate string) error {
+// GapicGenerator is used to regenerate gapic libraries.
+type GapicGenerator struct {
+	googleapisDir   string
+	protoDir        string
+	googleCloudDir  string
+	genprotoDir     string
+	gapicToGenerate string
+}
+
+// NewGapicGenerator creates a GapicGenerator.
+func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string) *GapicGenerator {
+	return &GapicGenerator{
+		googleapisDir:   googleapisDir,
+		protoDir:        protoDir,
+		googleCloudDir:  googleCloudDir,
+		genprotoDir:     genprotoDir,
+		gapicToGenerate: gapicToGenerate,
+	}
+}
+
+// Regen generates gapics.
+func (g *GapicGenerator) Regen(ctx context.Context) error {
+	log.Println("regenerating gapics")
 	for _, c := range microgenGapicConfigs {
 		// Skip generation if generating all of the gapics and the associated
 		// config has a block on it. Or if generating a single gapic and it does
 		// not match the specified import path.
-		if (c.stopGeneration && gapicToGenerate == "") ||
-			(gapicToGenerate != "" && gapicToGenerate != c.importPath) {
+		if (c.stopGeneration && g.gapicToGenerate == "") ||
+			(g.gapicToGenerate != "" && g.gapicToGenerate != c.importPath) {
 			continue
 		}
-		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
+		if err := g.microgen(c); err != nil {
 			return err
 		}
 	}
 
-	if err := copyMicrogenFiles(gocloudDir); err != nil {
+	if err := g.copyMicrogenFiles(); err != nil {
 		return err
 	}
 
-	if err := manifest(microgenGapicConfigs, googleapisDir, gocloudDir); err != nil {
+	if err := g.manifest(microgenGapicConfigs); err != nil {
 		return err
 	}
 
-	if err := setVersion(gocloudDir); err != nil {
+	if err := g.setVersion(); err != nil {
 		return err
 	}
 
-	if err := addModReplaceGenproto(gocloudDir, genprotoDir); err != nil {
+	if err := g.addModReplaceGenproto(); err != nil {
 		return err
 	}
 
-	if err := vet(gocloudDir); err != nil {
+	if err := vet(g.googleCloudDir); err != nil {
 		return err
 	}
 
-	if err := build(gocloudDir); err != nil {
+	if err := build(g.googleCloudDir); err != nil {
 		return err
 	}
 
-	if err := dropModReplaceGenproto(gocloudDir); err != nil {
+	if err := g.dropModReplaceGenproto(); err != nil {
 		return err
 	}
 
@@ -75,18 +96,17 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 // addModReplaceGenproto adds a genproto replace statement that points genproto
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
-func addModReplaceGenproto(gocloudDir, genprotoDir string) error {
+func (g *GapicGenerator) addModReplaceGenproto() error {
+	log.Println("adding temporary genproto replace statement")
 	c := command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | awk '{print $2}')
 go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR"
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	c.Env = []string{
-		"GENPROTO_DIR=" + genprotoDir,
+		"GENPROTO_DIR=" + g.genprotoDir,
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}
@@ -95,16 +115,15 @@ go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR
 
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
-func dropModReplaceGenproto(gocloudDir string) error {
+func (g *GapicGenerator) dropModReplaceGenproto() error {
+	log.Println("removing genproto replace statement")
 	c := command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | grep -v replace | awk '{print $2}')
 go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -115,7 +134,8 @@ go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 // setVersion updates the versionClient constant in all .go files. It may create
 // .backup files on certain systems (darwin), and so should be followed by a
 // clean-up of .backup files.
-func setVersion(gocloudDir string) error {
+func (g *GapicGenerator) setVersion() error {
+	log.Println("updating client version")
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
 
 	c := command("bash", "-c", `
@@ -126,18 +146,16 @@ git ls-files -mo | while read modified; do
 done
 find . -name '*.backup' -delete
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	return c.Run()
 }
 
 // microgen runs the microgenerator on a single microgen config.
-func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) error {
+func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	log.Println("microgen generating", conf.pkg)
 
 	var protoFiles []string
-	if err := filepath.Walk(googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(g.googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -149,19 +167,17 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 		return err
 	}
 
-	args := []string{"-I", googleapisDir,
+	args := []string{"-I", g.googleapisDir,
 		"--experimental_allow_proto3_optional",
-		"-I", protoDir,
-		"--go_gapic_out", gocloudDir,
+		"-I", g.protoDir,
+		"--go_gapic_out", g.googleCloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
 		"--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("gapic-service-config=%s", conf.apiServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel)}
 	args = append(args, protoFiles...)
 	c := command("protoc", args...)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = googleapisDir
+	c.Dir = g.googleapisDir
 	return c.Run()
 }
 
@@ -286,9 +302,10 @@ var manualEntries = []manifestEntry{
 }
 
 // manifest writes a manifest file with info about all of the confs.
-func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
+func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
+	log.Println("updating gapic manifest")
 	entries := map[string]manifestEntry{} // Key is the package name.
-	f, err := os.Create(filepath.Join(gocloudDir, "internal", ".repo-metadata-full.json"))
+	f, err := os.Create(filepath.Join(g.googleCloudDir, "internal", ".repo-metadata-full.json"))
 	if err != nil {
 		return err
 	}
@@ -297,7 +314,7 @@ func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 		entries[manual.DistributionName] = manual
 	}
 	for _, conf := range confs {
-		yamlPath := filepath.Join(googleapisDir, conf.apiServiceConfigPath)
+		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return err
@@ -325,19 +342,15 @@ func manifest(confs []*microgenConfig, googleapisDir, gocloudDir string) error {
 
 // copyMicrogenFiles takes microgen files from gocloudDir/cloud.google.com/go
 // and places them in gocloudDir.
-func copyMicrogenFiles(gocloudDir string) error {
+func (g *GapicGenerator) copyMicrogenFiles() error {
 	// The period at the end is analagous to * (copy everything in this dir).
-	c := command("cp", "-R", gocloudDir+"/cloud.google.com/go/.", ".")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c := command("cp", "-R", g.googleCloudDir+"/cloud.google.com/go/.", ".")
+	c.Dir = g.googleCloudDir
 	if err := c.Run(); err != nil {
 		return err
 	}
 
 	c = command("rm", "-rf", "cloud.google.com")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	return c.Run()
 }

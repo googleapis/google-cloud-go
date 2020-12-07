@@ -1,4 +1,0 @@
-releaseType: go-yoshi
-handleGHRelease: true
-changelogPath: CHANGES.md
-monorepoTags: true
