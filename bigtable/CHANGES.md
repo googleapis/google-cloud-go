@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.6.0...v1.7.0) (2020-12-07)
+
+
+### Features
+
+* **bigtable:** run E2E test over DirectPath ([#3116](https://www.github.com/googleapis/google-cloud-go/issues/3116)) ([948452c](https://www.github.com/googleapis/google-cloud-go/commit/948452ce896d3f44c0e22cdaf69e122f26a3c912))
+
 ## v1.6.0
 - Add support partial results in InstanceAdminClient.Instances. In the case of
   partial availability, available instances will be returned along with an
