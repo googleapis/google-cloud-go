@@ -1,9 +1,11 @@
 # This action looks at the commit history since the last release, and uses
 # this to decide which submodules require an update:
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+#on:
+#  push:
+#    branches:
+#      - master
 name: release-please-submodule
 jobs:
   # This logic looks at commits that have occurred since GitHub's magic
