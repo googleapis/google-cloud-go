@@ -1,11 +1,9 @@
 # This action looks at the commit history since the last release, and uses
 # this to decide which submodules require an update:
 on:
-  pull_request:
-#on:
-#  push:
-#    branches:
-#      - master
+  push:
+    branches:
+      - master
 name: release-please-submodule
 jobs:
   # This logic looks at commits that have occurred since GitHub's magic
@@ -45,7 +43,6 @@ jobs:
               });
               console.info(`latest release: ${latestRelease.data.tag_name}`);
               // pull all tags, so we can get diff between HEAD and last release:
-              execSync('git checkout master');
               execSync('git pull --tags');
               execSync(`git reset --hard ${latestRelease.data.tag_name}`);
               const status = execSync(`git diff --name-only origin/master`, { encoding: 'utf-8'});
