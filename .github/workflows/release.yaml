@@ -1,9 +1,10 @@
 # This workflow creates release PRs and tags the top level release for
 # the top level repository:
 on:
-  push:
-    branches:
-      - master
+  pull_request:
+#  push:
+#    branches:
+#      - master
 name: release-please
 jobs:
   release-please-pr:
