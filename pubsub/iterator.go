@@ -38,20 +38,19 @@ import (
 const gracePeriod = 5 * time.Second
 
 type messageIterator struct {
-	ctx                context.Context
-	cancel             func() // the function that will cancel ctx; called in stop
-	po                 *pullOptions
-	ps                 *pullStream
-	subc               *vkit.SubscriberClient
-	subName            string
-	maxExtensionPeriod *time.Duration
-	kaTick             <-chan time.Time // keep-alive (deadline extensions)
-	ackTicker          *time.Ticker     // message acks
-	nackTicker         *time.Ticker     // message nacks (more frequent than acks)
-	pingTicker         *time.Ticker     //  sends to the stream to keep it open
-	failed             chan struct{}    // closed on stream error
-	drained            chan struct{}    // closed when stopped && no more pending messages
-	wg                 sync.WaitGroup
+	ctx        context.Context
+	cancel     func() // the function that will cancel ctx; called in stop
+	po         *pullOptions
+	ps         *pullStream
+	subc       *vkit.SubscriberClient
+	subName    string
+	kaTick     <-chan time.Time // keep-alive (deadline extensions)
+	ackTicker  *time.Ticker     // message acks
+	nackTicker *time.Ticker     // message nacks (more frequent than acks)
+	pingTicker *time.Ticker     //  sends to the stream to keep it open
+	failed     chan struct{}    // closed on stream error
+	drained    chan struct{}    // closed when stopped && no more pending messages
+	wg         sync.WaitGroup
 
 	mu          sync.Mutex
 	ackTimeDist *distribution.D // dist uses seconds
@@ -73,7 +72,7 @@ type messageIterator struct {
 // subName is the full name of the subscription to pull messages from.
 // Stop must be called on the messageIterator when it is no longer needed.
 // The iterator always uses the background context for acking messages and extending message deadlines.
-func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensionPeriod *time.Duration, po *pullOptions) *messageIterator {
+func newMessageIterator(subc *vkit.SubscriberClient, subName string, po *pullOptions) *messageIterator {
 	var ps *pullStream
 	if !po.synchronous {
 		maxMessages := po.maxOutstandingMessages
@@ -82,7 +81,7 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensio
 			maxMessages = 0
 			maxBytes = 0
 		}
-		ps = newPullStream(context.Background(), subc.StreamingPull, subName, maxMessages, maxBytes)
+		ps = newPullStream(context.Background(), subc.StreamingPull, subName, maxMessages, maxBytes, po.maxExtensionPeriod)
 	}
 	// The period will update each tick based on the distribution of acks. We'll start by arbitrarily sending
 	// the first keepAlive halfway towards the minimum ack deadline.
@@ -100,7 +99,6 @@ func newMessageIterator(subc *vkit.SubscriberClient, subName string, maxExtensio
 		po:                 po,
 		subc:               subc,
 		subName:            subName,
-		maxExtensionPeriod: maxExtensionPeriod,
 		kaTick:             time.After(keepAlivePeriod),
 		ackTicker:          ackTicker,
 		nackTicker:         nackTicker,
@@ -579,8 +577,8 @@ func splitRequestIDs(ids []string, maxSize int) (prefix, remainder []string) {
 func (it *messageIterator) ackDeadline() time.Duration {
 	pt := time.Duration(it.ackTimeDist.Percentile(.99)) * time.Second
 
-	if *it.maxExtensionPeriod > 0 && pt > *it.maxExtensionPeriod {
-		return *it.maxExtensionPeriod
+	if it.po.maxExtensionPeriod > 0 && pt > it.po.maxExtensionPeriod {
+		return it.po.maxExtensionPeriod
 	}
 	if pt > maxAckDeadline {
 		return maxAckDeadline
