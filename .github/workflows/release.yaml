@@ -13,7 +13,8 @@ jobs:
       - id: release-pr # Open the release PR from a fork.
         uses: GoogleCloudPlatform/release-please-action@v2
         with:
-          token: ${{ secrets.FORKING_TOKEN }}
+          # token: ${{ secrets.FORKING_TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           release-type: go
           fork: true
           package-name: google-cloud-go
