@@ -1679,11 +1679,11 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 	}
 
 	if len(qStats.QueryPlan) == 0 {
-		t.Errorf("expected query plan, none present")
+		t.Error("expected query plan, none present")
 	}
 
 	if len(qStats.Timeline) == 0 {
-		t.Errorf("expected query timeline, none present")
+		t.Error("expected query timeline, none present")
 	}
 }
 

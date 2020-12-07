@@ -440,7 +440,7 @@ type QueryStatistics struct {
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
 
-	// Information about reservation usage.
+	// ReservationUsage details slot consumption by reservation.
 	ReservationUsage []*ReservationUsage
 }
 
@@ -566,7 +566,7 @@ type QueryTimelineSample struct {
 
 // ReservationUsage contains information about a job's usage of a single reservation.
 type ReservationUsage struct {
-	// Slot-milliseconds the job spent in the given reservation.
+	// SlotMillis reports the slot milliseconds utilized within in the given reservation.
 	SlotMillis int64
 	// Name indicates the utilized reservation name, or "unreserved" for ondemand usage.
 	Name string
