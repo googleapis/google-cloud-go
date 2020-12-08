@@ -77,7 +77,7 @@ jobs:
            command: release-pr
       - uses: actions/github-script@v3
         id: label # Adds the "autorelease: pending" label.
-        if: ${{steps.release-please.outputs.pr}})
+        if: ${{steps.release-please.outputs.pr}}
         with:
             github-token: ${{secrets.GITHUB_TOKEN}}
             script: |
