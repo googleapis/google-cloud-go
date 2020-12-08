@@ -2,6 +2,8 @@
 # the top level repository:
 on:
   push:
+    branches:
+      - master
 name: release-please
 jobs:
   release-please-pr:
