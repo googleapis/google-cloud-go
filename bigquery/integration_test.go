@@ -1630,6 +1630,63 @@ func TestIntegration_TableUpdate(t *testing.T) {
 	}
 }
 
+func TestIntegration_QueryStatistics(t *testing.T) {
+	// Make a bunch of assertions on a simple query.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT 17 as foo, 3.14 as bar")
+	// disable cache to ensure we have query statistics
+	q.DisableQueryCache = true
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("job Run failure: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("job Wait failure: %v", err)
+	}
+	if status.Statistics == nil {
+		t.Fatal("expected job statistics, none found")
+	}
+
+	if status.Statistics.NumChildJobs != 0 {
+		t.Errorf("expected no children, %d reported", status.Statistics.NumChildJobs)
+	}
+
+	if status.Statistics.ParentJobID != "" {
+		t.Errorf("expected no parent, but parent present: %s", status.Statistics.ParentJobID)
+	}
+
+	if status.Statistics.Details == nil {
+		t.Fatal("expected job details, none present")
+	}
+
+	qStats, ok := status.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("expected query statistics not present")
+	}
+
+	if qStats.CacheHit {
+		t.Error("unexpected cache hit")
+	}
+
+	if qStats.StatementType != "SELECT" {
+		t.Errorf("expected SELECT statement type, got: %s", qStats.StatementType)
+	}
+
+	if len(qStats.QueryPlan) == 0 {
+		t.Error("expected query plan, none present")
+	}
+
+	if len(qStats.Timeline) == 0 {
+		t.Error("expected query timeline, none present")
+	}
+}
+
 func TestIntegration_Load(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
