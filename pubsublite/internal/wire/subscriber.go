@@ -353,6 +353,13 @@ type singlePartitionSubscriber struct {
 	compositeService
 }
 
+// Terminate shuts down the singlePartitionSubscriber without waiting for
+// outstanding acks. Alternatively, Stop() will wait for outstanding acks.
+func (s *singlePartitionSubscriber) Terminate() {
+	s.subscriber.Stop()
+	s.committer.Terminate()
+}
+
 type singlePartitionSubscriberFactory struct {
 	ctx              context.Context
 	subClient        *vkit.SubscriberClient
@@ -380,6 +387,8 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // multiPartitionSubscriber receives messages from a fixed set of topic
 // partitions.
 type multiPartitionSubscriber struct {
+	subscribers []*singlePartitionSubscriber
+
 	compositeService
 }
 
@@ -390,8 +399,20 @@ func newMultiPartitionSubscriber(subFactory *singlePartitionSubscriberFactory) *
 	for _, partition := range subFactory.settings.Partitions {
 		subscriber := subFactory.New(partition)
 		ms.unsafeAddServices(subscriber)
+		ms.subscribers = append(ms.subscribers, subscriber)
 	}
 	return ms
+}
+
+// Terminate shuts down all singlePartitionSubscribers without waiting for
+// outstanding acks. Alternatively, Stop() will wait for outstanding acks.
+func (ms *multiPartitionSubscriber) Terminate() {
+	ms.mu.Lock()
+	defer ms.mu.Unlock()
+
+	for _, sub := range ms.subscribers {
+		sub.Terminate()
+	}
 }
 
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
@@ -453,6 +474,17 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	return nil
 }
 
+// Terminate shuts down all singlePartitionSubscribers without waiting for
+// outstanding acks. Alternatively, Stop() will wait for outstanding acks.
+func (as *assigningSubscriber) Terminate() {
+	as.mu.Lock()
+	defer as.mu.Unlock()
+
+	for _, sub := range as.subscribers {
+		sub.Terminate()
+	}
+}
+
 // Subscriber is the client interface exported from this package for receiving
 // messages.
 type Subscriber interface {
@@ -460,6 +492,7 @@ type Subscriber interface {
 	WaitStarted() error
 	Stop()
 	WaitStopped() error
+	Terminate()
 }
 
 // NewSubscriber creates a new client for receiving messages.
