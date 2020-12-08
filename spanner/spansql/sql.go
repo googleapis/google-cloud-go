@@ -234,6 +234,8 @@ func (tb TypeBase) SQL() string {
 		return "INT64"
 	case Float64:
 		return "FLOAT64"
+	case Numeric:
+		return "NUMERIC"
 	case String:
 		return "STRING"
 	case Bytes:
