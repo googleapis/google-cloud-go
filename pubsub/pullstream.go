@@ -54,8 +54,7 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 					streamAckDeadline = 60
 				}
 				err = spc.Send(&pb.StreamingPullRequest{
-					Subscription: subName,
-					// We modack messages when we receive them, so this value doesn't matter too much.
+					Subscription:             subName,
 					StreamAckDeadlineSeconds: streamAckDeadline,
 					MaxOutstandingMessages:   int64(maxOutstandingMessages),
 					MaxOutstandingBytes:      int64(maxOutstandingBytes),
