@@ -190,6 +190,17 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT * FROM UNNEST (@p) AS data`, // array literals aren't yet supported
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromUnnest{
+						Expr:  Param("p"),
+						Alias: ID("data"),
+					}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)
