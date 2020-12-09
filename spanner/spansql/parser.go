@@ -1936,8 +1936,31 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
 	*/
 
+	if p.eat("UNNEST") {
+		if err := p.expect("("); err != nil {
+			return nil, err
+		}
+		e, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		sfu := SelectFromUnnest{Expr: e}
+		if p.eat("AS") { // TODO: The "AS" keyword is optional.
+			alias, err := p.parseAlias()
+			if err != nil {
+				return nil, err
+			}
+			sfu.Alias = alias
+		}
+		// TODO: hint, offset
+		return sfu, nil
+	}
+
 	// A join starts with a from_item, so that can't be detected in advance.
-	// TODO: Support more than table name or join.
+	// TODO: Support subquery, field_path, array_path, WITH.
 	// TODO: Verify associativity of multile joins.
 
 	tname, err := p.parseTableOrIndexOrColumnName()
