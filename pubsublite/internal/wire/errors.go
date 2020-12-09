@@ -26,7 +26,7 @@ var (
 
 	// ErrOversizedMessage indicates that the user published a message over the
 	// allowed serialized byte size limit. It is wrapped in another error.
-	ErrOversizedMessage = fmt.Errorf("maximum allowed message size is MaxPublishMessageBytes (%d)", MaxPublishMessageBytes)
+	ErrOversizedMessage = fmt.Errorf("maximum allowed message size is MaxPublishRequestBytes (%d)", MaxPublishRequestBytes)
 
 	// ErrServiceUninitialized indicates that a service (e.g. publisher or
 	// subscriber) cannot perform an operation because it is uninitialized.

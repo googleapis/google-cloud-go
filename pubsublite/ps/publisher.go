@@ -33,7 +33,7 @@ var (
 	ErrOverflow = bundler.ErrOverflow
 
 	// ErrOversizedMessage is set for a PublishResult when a published message
-	// exceeds MaxPublishMessageBytes.
+	// exceeds MaxPublishRequestBytes.
 	ErrOversizedMessage = bundler.ErrOversizedItem
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
@@ -55,7 +55,7 @@ func translateError(err error) error {
 }
 
 // PublisherClient is a Cloud Pub/Sub Lite client to publish messages to a given
-// topic.
+// topic. A PublisherClient is safe to use from multiple goroutines.
 //
 // See https://cloud.google.com/pubsub/lite/docs/publishing for more information
 // about publishing.

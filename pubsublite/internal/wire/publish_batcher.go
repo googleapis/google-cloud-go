@@ -110,7 +110,7 @@ func newPublishMessageBatcher(settings *PublishSettings, partition int, onNewBat
 func (b *publishMessageBatcher) AddMessage(msg *pb.PubSubMessage, onResult PublishResultFunc) error {
 	msgSize := proto.Size(msg)
 	switch {
-	case msgSize > MaxPublishMessageBytes:
+	case msgSize > MaxPublishRequestBytes:
 		return xerrors.Errorf("pubsublite: serialized message size is %d bytes: %w", msgSize, ErrOversizedMessage)
 	case msgSize > b.availableBufferBytes:
 		return ErrOverflow
