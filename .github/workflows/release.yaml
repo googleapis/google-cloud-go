@@ -1,6 +1,7 @@
 # This workflow creates release PRs and tags the top level release for
 # the top level repository:
-push:
+on:
+  push:
     branches:
       - master
 name: release-please
@@ -17,9 +18,9 @@ jobs:
           fork: true
           package-name: google-cloud-go
           command: release-pr
-      - id: label # Add the magic "autorelease: pending" label.
+      - uses: actions/github-script@v3
+        id: label # Add the magic "autorelease: pending" label.
         if: ${{ steps.release-pr.outputs.pr }}
-        uses: actions/github-script@v3    
         with:
             github-token: ${{secrets.GITHUB_TOKEN}}
             script: |

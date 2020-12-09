@@ -293,7 +293,7 @@ func (Check) isConstraint()   {}
 // Type represents a column type.
 type Type struct {
 	Array bool
-	Base  TypeBase // Bool, Int64, Float64, String, Bytes, Date, Timestamp
+	Base  TypeBase // Bool, Int64, Float64, Numeric, String, Bytes, Date, Timestamp
 	Len   int64    // if Base is String or Bytes; may be MaxLen
 }
 
@@ -306,6 +306,7 @@ const (
 	Bool TypeBase = iota
 	Int64
 	Float64
+	Numeric
 	String
 	Bytes
 	Date

@@ -1650,6 +1650,7 @@ var baseTypes = map[string]TypeBase{
 	"BOOL":      Bool,
 	"INT64":     Int64,
 	"FLOAT64":   Float64,
+	"NUMERIC":   Numeric,
 	"STRING":    String,
 	"BYTES":     Bytes,
 	"DATE":      Date,
@@ -1664,7 +1665,7 @@ func (p *parser) parseType() (Type, *parseError) {
 			ARRAY< scalar_type >
 
 		scalar_type:
-			{ BOOL | INT64 | FLOAT64 | STRING( length ) | BYTES( length ) | DATE | TIMESTAMP }
+			{ BOOL | INT64 | FLOAT64 | NUMERIC | STRING( length ) | BYTES( length ) | DATE | TIMESTAMP }
 		length:
 			{ int64_value | MAX }
 	*/
