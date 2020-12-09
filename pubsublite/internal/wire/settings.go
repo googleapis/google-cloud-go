@@ -31,7 +31,7 @@ const (
 	// MaxPublishRequestBytes is the maximum allowed serialized size of a single
 	// publish request (containing a batch of messages) in bytes. Must be lower
 	// than the gRPC limit of 4 MiB.
-	MaxPublishRequestBytes = 3500000
+	MaxPublishRequestBytes int = 3.5 * 1024 * 1024
 )
 
 // FrameworkType is the user-facing API for Cloud Pub/Sub Lite.

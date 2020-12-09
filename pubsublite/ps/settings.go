@@ -27,10 +27,6 @@ const (
 	// batched in a single publish request.
 	MaxPublishRequestCount = wire.MaxPublishRequestCount
 
-	// MaxPublishMessageBytes is the maximum allowed serialized size of a single
-	// Pub/Sub message in bytes.
-	MaxPublishMessageBytes = wire.MaxPublishMessageBytes
-
 	// MaxPublishRequestBytes is the maximum allowed serialized size of a single
 	// publish request (containing a batch of messages) in bytes.
 	MaxPublishRequestBytes = wire.MaxPublishRequestBytes
@@ -92,11 +88,11 @@ type PublishSettings struct {
 
 // DefaultPublishSettings holds the default values for PublishSettings.
 var DefaultPublishSettings = PublishSettings{
-	DelayThreshold:    wire.DefaultPublishSettings.DelayThreshold,
-	CountThreshold:    wire.DefaultPublishSettings.CountThreshold,
-	ByteThreshold:     wire.DefaultPublishSettings.ByteThreshold,
-	Timeout:           wire.DefaultPublishSettings.Timeout,
-	BufferedByteLimit: wire.DefaultPublishSettings.BufferedByteLimit,
+	DelayThreshold:    10 * time.Millisecond,
+	CountThreshold:    100,
+	ByteThreshold:     1e6,
+	Timeout:           10 * time.Minute,
+	BufferedByteLimit: 1e8,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -165,9 +161,9 @@ type ReceiveSettings struct {
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
 var DefaultReceiveSettings = ReceiveSettings{
-	MaxOutstandingMessages: wire.DefaultReceiveSettings.MaxOutstandingMessages,
-	MaxOutstandingBytes:    wire.DefaultReceiveSettings.MaxOutstandingBytes,
-	Timeout:                wire.DefaultReceiveSettings.Timeout,
+	MaxOutstandingMessages: 1000,
+	MaxOutstandingBytes:    1e9,
+	Timeout:                10 * time.Minute,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
