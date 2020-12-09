@@ -568,6 +568,11 @@ type Paren struct {
 func (Paren) isBoolExpr() {} // possibly bool
 func (Paren) isExpr()     {}
 
+// Array represents an array literal.
+type Array []Expr
+
+func (Array) isExpr() {}
+
 // ID represents an identifier.
 // https://cloud.google.com/spanner/docs/lexical#identifiers
 type ID string
