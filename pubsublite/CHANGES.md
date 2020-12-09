@@ -5,12 +5,14 @@
 
 ### Features
 
-* **pubsublite:** assigning subscriber implementation ([#3238](https://www.github.com/googleapis/google-cloud-go/issues/3238)) ([d1c03da](https://www.github.com/googleapis/google-cloud-go/commit/d1c03dae383f5a175e4237d5f46dc1bdc2cd33f0))
-* **pubsublite:** committer implementation ([#3198](https://www.github.com/googleapis/google-cloud-go/issues/3198)) ([ecc706b](https://www.github.com/googleapis/google-cloud-go/commit/ecc706b03079c6521a31e1066b00677aaf51e7dd))
+pubsublite/internal/wire implementation:
+
+* **pubsublite:** assigning subscriber ([#3238](https://www.github.com/googleapis/google-cloud-go/issues/3238)) ([d1c03da](https://www.github.com/googleapis/google-cloud-go/commit/d1c03dae383f5a175e4237d5f46dc1bdc2cd33f0))
+* **pubsublite:** committer ([#3198](https://www.github.com/googleapis/google-cloud-go/issues/3198)) ([ecc706b](https://www.github.com/googleapis/google-cloud-go/commit/ecc706b03079c6521a31e1066b00677aaf51e7dd))
 * **pubsublite:** receive settings ([#3195](https://www.github.com/googleapis/google-cloud-go/issues/3195)) ([bd837fc](https://www.github.com/googleapis/google-cloud-go/commit/bd837fc9aad4181b8aa574e41341000755875eca))
-* **pubsublite:** routing publisher implementation ([#3277](https://www.github.com/googleapis/google-cloud-go/issues/3277)) ([88e5466](https://www.github.com/googleapis/google-cloud-go/commit/88e546600c7d4f7570530aa72355f51f44187890))
+* **pubsublite:** routing publisher ([#3277](https://www.github.com/googleapis/google-cloud-go/issues/3277)) ([88e5466](https://www.github.com/googleapis/google-cloud-go/commit/88e546600c7d4f7570530aa72355f51f44187890))
 * **pubsublite:** single and multi partition subscribers ([#3221](https://www.github.com/googleapis/google-cloud-go/issues/3221)) ([299b803](https://www.github.com/googleapis/google-cloud-go/commit/299b803aaee9a0dc0b2ec8c81fac66341045b8b2))
-* **pubsublite:** single partition publisher implementation ([#3225](https://www.github.com/googleapis/google-cloud-go/issues/3225)) ([4982eeb](https://www.github.com/googleapis/google-cloud-go/commit/4982eeb32ebe85de211ae09d13fdaf6140d9e115))
+* **pubsublite:** single partition publisher ([#3225](https://www.github.com/googleapis/google-cloud-go/issues/3225)) ([4982eeb](https://www.github.com/googleapis/google-cloud-go/commit/4982eeb32ebe85de211ae09d13fdaf6140d9e115))
 
 
 ### Bug Fixes
