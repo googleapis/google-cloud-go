@@ -48,7 +48,7 @@ func newPullStream(ctx context.Context, streamingPull streamingPullFunc, subName
 			if err == nil {
 				recordStat(ctx, StreamRequestCount, 1)
 				streamAckDeadline := int32(maxDurationPerLeaseExtension / time.Second)
-				// By default, maxDurationPerLeaseExtension (aka MaxExtensionPeriod) is 0 (off),
+				// By default, maxDurationPerLeaseExtension, aka MaxExtensionPeriod, is disabled,
 				// so in these cases, use a healthy default of 60 seconds.
 				if streamAckDeadline <= 0 {
 					streamAckDeadline = 60
