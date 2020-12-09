@@ -27,10 +27,9 @@ As noted in comments, the two services have some differences:
     every message received.
   - Pub/Sub Lite PublisherClients can terminate when an unretryable error
     occurs.
-  - Pub/Sub Lite has publish and subscribe throughput limits. Thus publishing
-    can be more sensitive to buffer overflow.
-  - DefaultPublishSettings and DefaultReceiveSettings should be used for default
-    settings rather than their empty types.
+  - Publishers and subscribers will be throttled if Pub/Sub Lite publish or
+    subscribe throughput limits are exceeded. Thus publishing can be more
+    sensitive to buffer overflow than Cloud Pub/Sub.
 
 For more information about Cloud Pub/Sub Lite, see
 https://cloud.google.com/pubsub/lite/docs.

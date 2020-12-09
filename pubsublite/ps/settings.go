@@ -44,22 +44,27 @@ type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) erro
 // PublishSettings control the batching of published messages. These settings
 // apply per partition.
 //
-// Use DefaultPublishSettings for defaults, as an empty PublishSettings will
-// fail validation.
+// A zero PublishSettings will result in values equivalent to
+// DefaultPublishSettings.
 type PublishSettings struct {
-	// Publish a non-empty batch after this delay has passed. Must be > 0.
+	// Publish a non-empty batch after this delay has passed. If DelayThreshold is
+	// 0, it will be treated as DefaultPublishSettings.DelayThreshold. Otherwise
+	// must be > 0.
 	DelayThreshold time.Duration
 
-	// Publish a batch when it has this many messages. Must be > 0. The maximum is
-	// MaxPublishRequestCount.
+	// Publish a batch when it has this many messages. The maximum is
+	// MaxPublishRequestCount. If CountThreshold is 0, it will be treated as
+	// DefaultPublishSettings.CountThreshold. Otherwise must be > 0.
 	CountThreshold int
 
-	// Publish a batch when its size in bytes reaches this value. Must be > 0. The
-	// maximum is MaxPublishRequestBytes.
+	// Publish a batch when its size in bytes reaches this value. The maximum is
+	// MaxPublishRequestBytes. If ByteThreshold is 0, it will be treated as
+	// DefaultPublishSettings.ByteThreshold. Otherwise must be > 0.
 	ByteThreshold int
 
 	// The maximum time that the client will attempt to establish a publish stream
-	// connection to the server. Must be > 0.
+	// connection to the server. If Timeout is 0, it will be treated as
+	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
 	//
 	// The timeout is exceeded, the publisher will terminate with the last error
 	// that occurred while trying to reconnect. Note that if the timeout duration
@@ -67,7 +72,8 @@ type PublishSettings struct {
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
-	// returning ErrOverflow. Must be > 0.
+	// returning ErrOverflow. If BufferedByteLimit is 0, it will be treated as
+	// DefaultPublishSettings.BufferedByteLimit. Otherwise must be > 0.
 	//
 	// Note that Pub/Sub Lite topics are provisioned a publishing throughput
 	// capacity, per partition, shared by all publisher clients. Setting a large
@@ -91,20 +97,37 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold:    10 * time.Millisecond,
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
-	Timeout:           10 * time.Minute,
+	Timeout:           60 * time.Second,
 	BufferedByteLimit: 1e8,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
-	return wire.PublishSettings{
-		DelayThreshold:    s.DelayThreshold,
-		CountThreshold:    s.CountThreshold,
-		ByteThreshold:     s.ByteThreshold,
-		Timeout:           s.Timeout,
-		BufferedByteLimit: s.BufferedByteLimit,
+	wireSettings := wire.PublishSettings{
+		DelayThreshold:    DefaultPublishSettings.DelayThreshold,
+		CountThreshold:    DefaultPublishSettings.CountThreshold,
+		ByteThreshold:     DefaultPublishSettings.ByteThreshold,
+		Timeout:           DefaultPublishSettings.Timeout,
+		BufferedByteLimit: DefaultPublishSettings.BufferedByteLimit,
 		ConfigPollPeriod:  wire.DefaultPublishSettings.ConfigPollPeriod,
 		Framework:         wire.FrameworkCloudPubSubShim,
 	}
+	// Negative values preserved, but will fail validation in wire package.
+	if s.DelayThreshold != 0 {
+		wireSettings.DelayThreshold = s.DelayThreshold
+	}
+	if s.CountThreshold != 0 {
+		wireSettings.CountThreshold = s.CountThreshold
+	}
+	if s.ByteThreshold != 0 {
+		wireSettings.ByteThreshold = s.ByteThreshold
+	}
+	if s.Timeout != 0 {
+		wireSettings.Timeout = s.Timeout
+	}
+	if s.BufferedByteLimit != 0 {
+		wireSettings.BufferedByteLimit = s.BufferedByteLimit
+	}
+	return wireSettings
 }
 
 // NackHandler is invoked when pubsub.Message.Nack() is called. Cloud Pub/Sub
@@ -126,19 +149,22 @@ type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) e
 // partition. If MaxOutstandingBytes is being used to bound memory usage, keep
 // in mind the number of partitions in the associated topic.
 //
-// Use DefaultReceiveSettings for defaults, as an empty ReceiveSettings will
-// fail validation.
+// A zero ReceiveSettings will result in values equivalent to
+// DefaultReceiveSettings.
 type ReceiveSettings struct {
 	// MaxOutstandingMessages is the maximum number of unacknowledged messages.
-	// Must be > 0.
+	// If MaxOutstandingMessages is 0, it will be treated as
+	// DefaultReceiveSettings.MaxOutstandingMessages. Otherwise must be > 0.
 	MaxOutstandingMessages int
 
 	// MaxOutstandingBytes is the maximum size (in quota bytes) of unacknowledged
-	// messages. Must be > 0.
+	// messages. If MaxOutstandingBytes is 0, it will be treated as
+	// DefaultReceiveSettings.MaxOutstandingBytes. Otherwise must be > 0.
 	MaxOutstandingBytes int
 
 	// The maximum time that the client will attempt to establish a subscribe
-	// stream connection to the server. Must be > 0.
+	// stream connection to the server. If Timeout is 0, it will be treated as
+	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
 	//
 	// The timeout is exceeded, the SubscriberClient will terminate with the last
 	// error that occurred while trying to reconnect.
@@ -163,15 +189,26 @@ type ReceiveSettings struct {
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9,
-	Timeout:                10 * time.Minute,
+	Timeout:                60 * time.Second,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
-	return wire.ReceiveSettings{
-		MaxOutstandingMessages: s.MaxOutstandingMessages,
-		MaxOutstandingBytes:    s.MaxOutstandingBytes,
-		Timeout:                s.Timeout,
+	wireSettings := wire.ReceiveSettings{
+		MaxOutstandingMessages: DefaultReceiveSettings.MaxOutstandingMessages,
+		MaxOutstandingBytes:    DefaultReceiveSettings.MaxOutstandingBytes,
+		Timeout:                DefaultReceiveSettings.Timeout,
 		Partitions:             s.Partitions,
 		Framework:              wire.FrameworkCloudPubSubShim,
 	}
+	// Negative values preserved, but will fail validation in wire package.
+	if s.MaxOutstandingMessages != 0 {
+		wireSettings.MaxOutstandingMessages = s.MaxOutstandingMessages
+	}
+	if s.MaxOutstandingBytes != 0 {
+		wireSettings.MaxOutstandingBytes = s.MaxOutstandingBytes
+	}
+	if s.Timeout != 0 {
+		wireSettings.Timeout = s.Timeout
+	}
+	return wireSettings
 }
