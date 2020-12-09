@@ -25,6 +25,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
@@ -400,6 +401,16 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 
 var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 
+// A PublishResult holds the result from a call to Publish.
+//
+// Call Get to obtain the result of the Publish call. Example:
+//   // Get blocks until Publish completes or ctx is done.
+//   id, err := r.Get(ctx)
+//   if err != nil {
+//       // TODO: Handle error.
+//   }
+type PublishResult = ipubsub.PublishResult
+
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
 //
@@ -410,9 +421,9 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
-	r := &PublishResult{ready: make(chan struct{})}
+	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
-		r.set("", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
 		return r
 	}
 
@@ -421,7 +432,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	// encoded proto message by accounting for the length of an individual
 	// PubSubMessage and Data/Attributes field.
 	// TODO(hongalex): if this turns out to take significant time, try to approximate it.
-	msg.size = proto.Size(&pb.PublishRequest{
+	msgSize := proto.Size(&pb.PublishRequest{
 		Messages: []*pb.PubsubMessage{
 			{
 				Data:        msg.Data,
@@ -435,16 +446,16 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
-		r.set("", errTopicStopped)
+		ipubsub.SetPublishResult(r, "", errTopicStopped)
 		return r
 	}
 
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msg.size)
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
-		r.set("", err)
+		ipubsub.SetPublishResult(r, "", err)
 	}
 	return r
 }
@@ -461,40 +472,6 @@ func (t *Topic) Stop() {
 		return
 	}
 	t.scheduler.FlushAndStop()
-}
-
-// A PublishResult holds the result from a call to Publish.
-type PublishResult struct {
-	ready    chan struct{}
-	serverID string
-	err      error
-}
-
-// Ready returns a channel that is closed when the result is ready.
-// When the Ready channel is closed, Get is guaranteed not to block.
-func (r *PublishResult) Ready() <-chan struct{} { return r.ready }
-
-// Get returns the server-generated message ID and/or error result of a Publish call.
-// Get blocks until the Publish call completes or the context is done.
-func (r *PublishResult) Get(ctx context.Context) (serverID string, err error) {
-	// If the result is already ready, return it even if the context is done.
-	select {
-	case <-r.Ready():
-		return r.serverID, r.err
-	default:
-	}
-	select {
-	case <-ctx.Done():
-		return "", ctx.Err()
-	case <-r.Ready():
-		return r.serverID, r.err
-	}
-}
-
-func (r *PublishResult) set(sid string, err error) {
-	r.serverID = sid
-	r.err = err
-	close(r.ready)
 }
 
 type bundledMessage struct {
@@ -591,9 +568,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
 		if err != nil {
-			bm.res.set("", err)
+			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {
-			bm.res.set(res.MessageIds[i], nil)
+			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
 		}
 	}
 }

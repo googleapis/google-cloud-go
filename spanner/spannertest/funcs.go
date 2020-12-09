@@ -37,6 +37,19 @@ type aggregateFunc struct {
 
 // TODO: more aggregate funcs.
 var aggregateFuncs = map[string]aggregateFunc{
+	"ANY_VALUE": {
+		// https://cloud.google.com/spanner/docs/aggregate_functions#any_value
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+			// Return the first non-NULL value.
+			for _, v := range values {
+				if v != nil {
+					return v, typ, nil
+				}
+			}
+			// Either all values are NULL, or there are no values.
+			return nil, typ, nil
+		},
+	},
 	"ARRAY_AGG": {
 		// https://cloud.google.com/spanner/docs/aggregate_functions#array_agg
 		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {

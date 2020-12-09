@@ -392,6 +392,17 @@ const (
 	RightJoin
 )
 
+// SelectFromUnnest is a SelectFrom that yields a virtual table from an array.
+// https://cloud.google.com/spanner/docs/query-syntax#unnest
+type SelectFromUnnest struct {
+	Expr  Expr
+	Alias ID // empty if not aliased
+
+	// TODO: Implicit
+}
+
+func (SelectFromUnnest) isSelectFrom() {}
+
 // TODO: SelectFromSubquery, etc.
 
 type Order struct {
