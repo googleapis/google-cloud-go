@@ -234,6 +234,8 @@ func (tb TypeBase) SQL() string {
 		return "INT64"
 	case Float64:
 		return "FLOAT64"
+	case Numeric:
+		return "NUMERIC"
 	case String:
 		return "STRING"
 	case Bytes:
@@ -341,6 +343,14 @@ var joinTypes = map[JoinType]string{
 	FullJoin:  "FULL",
 	LeftJoin:  "LEFT",
 	RightJoin: "RIGHT",
+}
+
+func (sfu SelectFromUnnest) SQL() string {
+	str := "UNNEST(" + sfu.Expr.SQL() + ")"
+	if sfu.Alias != "" {
+		str += " AS " + sfu.Alias.SQL()
+	}
+	return str
 }
 
 func (o Order) SQL() string { return buildSQL(o) }

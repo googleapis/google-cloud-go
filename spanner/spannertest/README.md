@@ -18,6 +18,7 @@ Here's a list of features that are missing or incomplete. It is roughly ordered
 by ascending esotericism:
 
 - expression functions
+- NUMERIC
 - more aggregation functions
 - SELECT HAVING
 - case insensitivity

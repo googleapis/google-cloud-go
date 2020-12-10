@@ -27,7 +27,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/gapicgen/generator"
-	"github.com/google/go-github/v32/github"
+	"github.com/google/go-github/v33/github"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
@@ -225,7 +225,6 @@ git push origin $BRANCH_NAME
 		Body:  &body,
 		Head:  &head,
 		Base:  &base,
-		Draft: github.Bool(true),
 	})
 	if err != nil {
 		return 0, err
