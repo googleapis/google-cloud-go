@@ -1373,7 +1373,7 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [AS ( expression ) STORED] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -1390,6 +1390,19 @@ func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 
 	if p.eat("NOT", "NULL") {
 		cd.NotNull = true
+	}
+
+	if p.eat("AS", "(") {
+		cd.Generated, err = p.parseExpr()
+		if err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect(")"); err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect("STORED"); err != nil {
+			return ColumnDef{}, err
+		}
 	}
 
 	if p.sniff("OPTIONS") {
@@ -1637,6 +1650,7 @@ var baseTypes = map[string]TypeBase{
 	"BOOL":      Bool,
 	"INT64":     Int64,
 	"FLOAT64":   Float64,
+	"NUMERIC":   Numeric,
 	"STRING":    String,
 	"BYTES":     Bytes,
 	"DATE":      Date,
@@ -1651,7 +1665,7 @@ func (p *parser) parseType() (Type, *parseError) {
 			ARRAY< scalar_type >
 
 		scalar_type:
-			{ BOOL | INT64 | FLOAT64 | STRING( length ) | BYTES( length ) | DATE | TIMESTAMP }
+			{ BOOL | INT64 | FLOAT64 | NUMERIC | STRING( length ) | BYTES( length ) | DATE | TIMESTAMP }
 		length:
 			{ int64_value | MAX }
 	*/
@@ -1922,8 +1936,31 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
 	*/
 
+	if p.eat("UNNEST") {
+		if err := p.expect("("); err != nil {
+			return nil, err
+		}
+		e, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		sfu := SelectFromUnnest{Expr: e}
+		if p.eat("AS") { // TODO: The "AS" keyword is optional.
+			alias, err := p.parseAlias()
+			if err != nil {
+				return nil, err
+			}
+			sfu.Alias = alias
+		}
+		// TODO: hint, offset
+		return sfu, nil
+	}
+
 	// A join starts with a from_item, so that can't be detected in advance.
-	// TODO: Support more than table name or join.
+	// TODO: Support subquery, field_path, array_path, WITH.
 	// TODO: Verify associativity of multile joins.
 
 	tname, err := p.parseTableOrIndexOrColumnName()

@@ -412,6 +412,9 @@ func (d *database) queryContext(q spansql.Query, params queryParams) (*queryCont
 				return err
 			}
 			return findTables(sf.RHS)
+		case spansql.SelectFromUnnest:
+			// TODO: if array paths get supported, this will need more work.
+			return nil
 		}
 	}
 	for _, sf := range q.Select.From {
@@ -552,7 +555,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 		if !starArg {
 			ci, err := ec.colInfo(fexpr.Args[0])
 			if err != nil {
-				return nil, err
+				return nil, fmt.Errorf("evaluating aggregate function %s arg type: %v", fexpr.Name, err)
 			}
 			argType = ci.Type
 		}
@@ -708,6 +711,39 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 			return ec, nil, err
 		}
 		return ec, ji, nil
+	case spansql.SelectFromUnnest:
+		// TODO: Do all relevant types flow through here? Path expressions might be tricky here.
+		col, err := ec.colInfo(sf.Expr)
+		if err != nil {
+			return ec, nil, fmt.Errorf("evaluating type of UNNEST arg: %v", err)
+		}
+		if !col.Type.Array {
+			return ec, nil, fmt.Errorf("type of UNNEST arg is non-array %s", col.Type.SQL())
+		}
+		// The output of this UNNEST is the non-array version.
+		col.Name = sf.Alias // may be empty
+		col.Type.Array = false
+
+		// Evaluate the expression, and yield a virtual table with one column.
+		e, err := ec.evalExpr(sf.Expr)
+		if err != nil {
+			return ec, nil, fmt.Errorf("evaluating UNNEST arg: %v", err)
+		}
+		arr, ok := e.([]interface{})
+		if !ok {
+			return ec, nil, fmt.Errorf("evaluating UNNEST arg gave %t, want array", e)
+		}
+		var rows []row
+		for _, v := range arr {
+			rows = append(rows, row{v})
+		}
+
+		ri := &rawIter{
+			cols: []colInfo{col},
+			rows: rows,
+		}
+		ec.cols = ri.cols
+		return ec, ri, nil
 	}
 }
 

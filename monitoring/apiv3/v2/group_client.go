@@ -52,8 +52,9 @@ func defaultGroupClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

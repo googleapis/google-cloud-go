@@ -351,7 +351,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 	}
 
-	// Turn  off versioning again; add and remove some more labels.
+	// Turn off versioning again; add and remove some more labels.
 	ua = BucketAttrsToUpdate{VersioningEnabled: false}
 	ua.SetLabel("l1", "v2")   // update
 	ua.SetLabel("new", "new") // create
@@ -382,6 +382,18 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	attrs = h.mustUpdateBucket(b, ua)
 	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
+	// Check that StorageClass has "STANDARD" value for unset field by default
+	// before passing new value.
+	wantStorageClass := "STANDARD"
+	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+	}
+	wantStorageClass = "NEARLINE"
+	ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
+	attrs = h.mustUpdateBucket(b, ua)
+	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 	}
 }
 
