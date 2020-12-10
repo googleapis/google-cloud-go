@@ -564,9 +564,6 @@ func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
 		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
 	}
-	if got, want := resp.CommitStats.OverloadDelay.Nanos, int32(1); got != want {
-		t.Fatalf("Mismatch overload delay - got: %d, want: %d", got, want)
-	}
 }
 
 func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {

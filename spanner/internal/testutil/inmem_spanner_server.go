@@ -988,7 +988,6 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 	if req.ReturnCommitStats {
 		resp.CommitStats = &spannerpb.CommitResponse_CommitStats{
 			MutationCount: int64(1),
-			OverloadDelay: ptypes.DurationProto(time.Nanosecond),
 		}
 	}
 	return resp, nil
