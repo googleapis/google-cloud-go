@@ -101,6 +101,7 @@ jobs:
         id: tag-release
         with:
           path: ${{ matrix.package }}
+          changelog-path: CHANGES.md
           token: ${{ secrets.GITHUB_TOKEN }}
           release-type: go
           monorepo-tags: true
