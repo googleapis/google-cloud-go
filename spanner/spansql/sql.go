@@ -527,6 +527,13 @@ func (p Paren) addSQL(sb *strings.Builder) {
 	sb.WriteString(")")
 }
 
+func (a Array) SQL() string { return buildSQL(a) }
+func (a Array) addSQL(sb *strings.Builder) {
+	sb.WriteString("[")
+	addExprList(sb, []Expr(a), ", ")
+	sb.WriteString("]")
+}
+
 func (id ID) SQL() string { return buildSQL(id) }
 func (id ID) addSQL(sb *strings.Builder) {
 	// https://cloud.google.com/spanner/docs/lexical#identifiers

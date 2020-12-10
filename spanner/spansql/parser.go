@@ -780,9 +780,9 @@ func (p *parser) advance() {
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
-	// TODO: array, struct, date, timestamp literals
+	// TODO: struct, date, timestamp literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '{', '}', '*', '+', '-':
+	case ',', ';', '(', ')', '{', '}', '[', ']', '*', '+', '-':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
 		p.offset++
@@ -1000,7 +1000,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	}
 
 	ct := &CreateTable{Name: tname, Position: pos}
-	err = p.parseCommaList(func(p *parser) *parseError {
+	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
 		if p.sniffTableConstraint() {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
@@ -1483,7 +1483,7 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
 	var list []KeyPart
-	err := p.parseCommaList(func(p *parser) *parseError {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		kp, err := p.parseKeyPart()
 		if err != nil {
 			return err
@@ -1635,7 +1635,7 @@ func (p *parser) parseCheck() (Check, *parseError) {
 
 func (p *parser) parseColumnNameList() ([]ID, *parseError) {
 	var list []ID
-	err := p.parseCommaList(func(p *parser) *parseError {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return err
@@ -2200,7 +2200,7 @@ func (p *parser) parseExprList() ([]Expr, *parseError) {
 
 func (p *parser) parseParenExprList() ([]Expr, *parseError) {
 	var list []Expr
-	err := p.parseCommaList(func(p *parser) *parseError {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		e, err := p.parseExpr()
 		if err != nil {
 			return err
@@ -2601,7 +2601,13 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		// case insensitivity for keywords.
 	}
 
-	// TODO: more types of literals (array, struct, date, timestamp).
+	// Handle array literals.
+	if tok.value == "ARRAY" || tok.value == "[" {
+		p.back()
+		return p.parseArrayLit()
+	}
+
+	// TODO: more types of literals (struct, date, timestamp).
 
 	// Try a parameter.
 	// TODO: check character sets.
@@ -2619,6 +2625,24 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		return pe[0], nil // identifier
 	}
 	return pe, nil
+}
+
+func (p *parser) parseArrayLit() (Array, *parseError) {
+	// ARRAY keyword is optional.
+	// TODO: If it is present, consume any <T> after it.
+	p.eat("ARRAY")
+
+	var arr Array
+	err := p.parseCommaList("[", "]", func(p *parser) *parseError {
+		e, err := p.parseLit()
+		if err != nil {
+			return err
+		}
+		// TODO: Do type consistency checking here?
+		arr = append(arr, e)
+		return nil
+	})
+	return arr, err
 }
 
 func (p *parser) parsePathExp() (PathExp, *parseError) {
@@ -2705,14 +2729,14 @@ func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 	return NoActionOnDelete, nil
 }
 
-// parseCommaList parses a parenthesized comma-separated list,
+// parseCommaList parses a comma-separated list enclosed by bra and ket,
 // delegating to f for the individual element parsing.
-func (p *parser) parseCommaList(f func(*parser) *parseError) *parseError {
-	if err := p.expect("("); err != nil {
+func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *parseError {
+	if err := p.expect(bra); err != nil {
 		return err
 	}
 	for {
-		if p.eat(")") {
+		if p.eat(ket) {
 			return nil
 		}
 
@@ -2721,17 +2745,17 @@ func (p *parser) parseCommaList(f func(*parser) *parseError) *parseError {
 			return err
 		}
 
-		// ")" or "," should be next.
+		// ket or "," should be next.
 		tok := p.next()
 		if tok.err != nil {
 			return err
 		}
-		if tok.value == ")" {
+		if tok.value == ket {
 			return nil
 		} else if tok.value == "," {
 			continue
 		} else {
-			return p.errorf(`got %q, want ")" or ","`, tok.value)
+			return p.errorf(`got %q, want %q or ","`, tok.value, ket)
 		}
 	}
 }
