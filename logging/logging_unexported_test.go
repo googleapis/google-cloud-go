@@ -18,8 +18,10 @@ package logging
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/url"
+	"os/exec"
 	"testing"
 	"time"
 
@@ -441,6 +443,21 @@ func TestFromHTTPRequest(t *testing.T) {
 	if got != nil && err == nil {
 		t.Errorf("got  %+v\nwant %+v", got, want)
 	}
+}
+
+// TODO(nicole)
+func TestDetectResource(t *testing.T) {
+	// 1. Deploy cloud run
+	err := exec.Command("/bin/sh", "environments/deploy_gcr.sh").Run()
+	if err != nil {
+		fmt.Printf("Command finished with error: %v", err)
+	}
+
+	// 2. Write log & get log from cloud run
+	// 3. Get log from cloud run
+
+	// 4. Destroy cloud run
+	// err := exec.Command("/bin/sh", "environments/deploy_gcr.sh").Run()
 }
 
 func TestMonitoredResource(t *testing.T) {

@@ -252,6 +252,78 @@ var detectedResource struct {
 	once sync.Once
 }
 
+func detectGAEResource() *mrpb.MonitoredResource {
+	return &mrpb.MonitoredResource{
+		Type: "gae_app",
+		Labels: map[string]string{
+			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
+			"module_id":   os.Getenv("GAE_SERVICE"),
+			"version_id":  os.Getenv("GAE_VERSION"),
+			"instance_id": os.Getenv("GAE_INSTANCE"),
+			"runtime":     os.Getenv("GAE_RUNTIME"),
+		},
+	}
+}
+
+// TODO: maybe refactor these into internal/
+func isCloudFunction() bool {
+	_, name := os.LookupEnv("FUNCTION_NAME")
+	_, target := os.LookupEnv("FUNCTION_TARGET")
+	return (name || target)
+}
+
+// TODO(nicolezhu): implement this
+func detectGCFResource() *mrpb.MonitoredResource {
+	return &mrpb.MonitoredResource{
+		Type: "gae_app",
+		Labels: map[string]string{
+			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
+		},
+	}
+}
+
+func isCloudRun() bool {
+	_, config := os.LookupEnv("K_CONFIGURATION")
+	return config
+}
+
+// TODO(nicolezhu): test this
+func detectGCRResource() *mrpb.MonitoredResource {
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_run_revision",
+		Labels: map[string]string{
+			"project_id":         os.Getenv("GOOGLE_CLOUD_PROJECT"),
+			"location":           zone,
+			"service_name":       os.Getenv("K_SERVICE"),
+			"revision_name":      os.Getenv("K_REVISION"),
+			"configuration_name": os.Getenv("K_CONFIGURATION"),
+		},
+	}
+}
+
+// TODO(nicolezhu): test this
+func isKubernetesEngine() bool {
+	_, err := metadata.InstanceAttributeValue("cluster-name")
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+// TODO(nicolezhu): implement this
+func detectGKEResource() *mrpb.MonitoredResource {
+	return &mrpb.MonitoredResource{
+		Type: "gae_app",
+		Labels: map[string]string{
+			
+		},
+	}
+}
+
 func detectGCEResource() *mrpb.MonitoredResource {
 	projectID, err := metadata.ProjectID()
 	if err != nil {
@@ -280,28 +352,22 @@ func detectGCEResource() *mrpb.MonitoredResource {
 	}
 }
 
-func detectGAEResource() *mrpb.MonitoredResource {
-	return &mrpb.MonitoredResource{
-		Type: "gae_app",
-		Labels: map[string]string{
-			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
-			"module_id":   os.Getenv("GAE_SERVICE"),
-			"version_id":  os.Getenv("GAE_VERSION"),
-			"instance_id": os.Getenv("GAE_INSTANCE"),
-			"runtime":     os.Getenv("GAE_RUNTIME"),
-		},
-	}
-}
-
+// TODO(nicolezhu): test this
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// GAE needs to come first, as metadata.OnGCE() is actually true on GAE
-		// Second Gen runtimes.
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
+		case isCloudFunction():
+			detectedResource.pb = detectGCFResource()
+		case isCloudRun():
+			detectedResource.pb = detectGCRResource()
 		case metadata.OnGCE():
-			detectedResource.pb = detectGCEResource()
+			if isKubernetesEngine() {
+				detectedResource.pb = detectGKEResource()
+			} else {
+				detectedResource.pb = detectGCEResource()
+			}
 		}
 	})
 	return detectedResource.pb
