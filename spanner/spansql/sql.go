@@ -345,6 +345,14 @@ var joinTypes = map[JoinType]string{
 	RightJoin: "RIGHT",
 }
 
+func (sfu SelectFromUnnest) SQL() string {
+	str := "UNNEST(" + sfu.Expr.SQL() + ")"
+	if sfu.Alias != "" {
+		str += " AS " + sfu.Alias.SQL()
+	}
+	return str
+}
+
 func (o Order) SQL() string { return buildSQL(o) }
 func (o Order) addSQL(sb *strings.Builder) {
 	o.Expr.addSQL(sb)
@@ -517,6 +525,13 @@ func (p Paren) addSQL(sb *strings.Builder) {
 	sb.WriteString("(")
 	p.Expr.addSQL(sb)
 	sb.WriteString(")")
+}
+
+func (a Array) SQL() string { return buildSQL(a) }
+func (a Array) addSQL(sb *strings.Builder) {
+	sb.WriteString("[")
+	addExprList(sb, []Expr(a), ", ")
+	sb.WriteString("]")
 }
 
 func (id ID) SQL() string { return buildSQL(id) }
