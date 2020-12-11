@@ -42,6 +42,7 @@ jobs:
           release-type: go
           package-name: google-cloud-go
           command: github-release
+          changelog-path: CHANGES.md
       # Add the "autorelease: published" and remove tagged, this allows
       # monitoring to be enabled that detects failed releases:
       - uses: actions/github-script@v3
