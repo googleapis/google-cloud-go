@@ -25,6 +25,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
 
+	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
@@ -104,10 +105,10 @@ func NewPublisherClient(ctx context.Context, settings PublishSettings, topic pub
 // error ErrPublisherStopped. Error() returns the error that caused the
 // publisher to terminate.
 func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pubsub.PublishResult {
-	result := pubsub.NewPublishResult()
+	result := ipubsub.NewPublishResult()
 	msgpb := new(pb.PubSubMessage)
 	if err := p.transformMessage(msg, msgpb); err != nil {
-		pubsub.SetPublishResult(result, "", err)
+		ipubsub.SetPublishResult(result, "", err)
 		p.setError(err)
 		p.Stop()
 		return result
@@ -116,9 +117,9 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 	p.wirePub.Publish(msgpb, func(pm *common.PublishMetadata, err error) {
 		err = translateError(err)
 		if pm != nil {
-			pubsub.SetPublishResult(result, pm.String(), err)
+			ipubsub.SetPublishResult(result, pm.String(), err)
 		} else {
-			pubsub.SetPublishResult(result, "", err)
+			ipubsub.SetPublishResult(result, "", err)
 		}
 	})
 	return result
