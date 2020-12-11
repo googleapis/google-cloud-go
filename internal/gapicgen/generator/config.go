@@ -880,6 +880,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/01/05
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/retail/v2",
+		pkg:                   "retail",
+		importPath:            "cloud.google.com/go/retail/apiv2",
+		gRPCServiceConfigPath: "google/cloud/retail/v2/retail_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/retail/v2/retail_v2.yaml",
+		// GA after 2021/01/10
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
