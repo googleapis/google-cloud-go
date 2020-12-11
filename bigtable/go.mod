@@ -10,9 +10,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5 // indirect
 	golang.org/x/oauth2 v0.0.0-20201208152858-08078c50e5b5
-	golang.org/x/tools v0.0.0-20201208233053-a543418bbed2 // indirect
+	golang.org/x/tools v0.0.0-20201211025543-abf6a1d87e11 // indirect
 	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20201210142538-e3217bee35cc
+	google.golang.org/genproto v0.0.0-20201211151036-40ec1c210f7a
 	google.golang.org/grpc v1.34.0
 	rsc.io/binaryregexp v0.2.0
 )
