@@ -440,6 +440,7 @@ type withUntypedInterface struct {
 }
 
 func TestLoadCivilTimeInNonUTCZone(t *testing.T) {
+	t.Skip("https://github.com/googleapis/google-cloud-go/issues/3402")
 	src := &pb.Entity{
 		Key: keyToProto(testKey0),
 		Properties: map[string]*pb.Value{
