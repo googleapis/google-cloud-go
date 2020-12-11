@@ -177,6 +177,10 @@ func (c *SessionsClient) setGoogleClientInfo(keyval ...string) {
 // as a result. This method is not idempotent, because it may cause session
 // entity types to be updated, which in turn might affect results of future
 // queries.
+//
+// Note: Always use agent versions for production traffic.
+// See Versions and
+// environments (at https://cloud.google.com/dialogflow/cx/docs/concept/version).
 func (c *SessionsClient) DetectIntent(ctx context.Context, req *cxpb.DetectIntentRequest, opts ...gax.CallOption) (*cxpb.DetectIntentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
@@ -201,6 +205,10 @@ func (c *SessionsClient) DetectIntent(ctx context.Context, req *cxpb.DetectInten
 // StreamingDetectIntent processes a natural language query in audio format in a streaming fashion
 // and returns structured, actionable data as a result. This method is only
 // available via the gRPC API (not REST).
+//
+// Note: Always use agent versions for production traffic.
+// See Versions and
+// environments (at https://cloud.google.com/dialogflow/cx/docs/concept/version).
 func (c *SessionsClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (cxpb.Sessions_StreamingDetectIntentClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.StreamingDetectIntent[0:len(c.CallOptions.StreamingDetectIntent):len(c.CallOptions.StreamingDetectIntent)], opts...)
