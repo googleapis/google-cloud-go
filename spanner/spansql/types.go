@@ -293,7 +293,7 @@ func (Check) isConstraint()   {}
 // Type represents a column type.
 type Type struct {
 	Array bool
-	Base  TypeBase // Bool, Int64, Float64, String, Bytes, Date, Timestamp
+	Base  TypeBase // Bool, Int64, Float64, Numeric, String, Bytes, Date, Timestamp
 	Len   int64    // if Base is String or Bytes; may be MaxLen
 }
 
@@ -306,6 +306,7 @@ const (
 	Bool TypeBase = iota
 	Int64
 	Float64
+	Numeric
 	String
 	Bytes
 	Date
@@ -390,6 +391,17 @@ const (
 	LeftJoin
 	RightJoin
 )
+
+// SelectFromUnnest is a SelectFrom that yields a virtual table from an array.
+// https://cloud.google.com/spanner/docs/query-syntax#unnest
+type SelectFromUnnest struct {
+	Expr  Expr
+	Alias ID // empty if not aliased
+
+	// TODO: Implicit
+}
+
+func (SelectFromUnnest) isSelectFrom() {}
 
 // TODO: SelectFromSubquery, etc.
 
@@ -555,6 +567,11 @@ type Paren struct {
 
 func (Paren) isBoolExpr() {} // possibly bool
 func (Paren) isExpr()     {}
+
+// Array represents an array literal.
+type Array []Expr
+
+func (Array) isExpr() {}
 
 // ID represents an identifier.
 // https://cloud.google.com/spanner/docs/lexical#identifiers
