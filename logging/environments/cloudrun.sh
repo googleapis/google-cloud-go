@@ -3,27 +3,43 @@
 # - run.googleapis.com
 # - storage.buckets.create for CloudBuild service account
 
-# Fail on any error.
+# TODO error handling for all the things
 set -eo pipefail
-
-# Display commands being run.
 set -ex
 
-# Gets folder containing this running script
-SCRIPT_DIR=$(realpath $(dirname "$0"))
-ROOT_DIR=$SCRIPT_DIR/../..
+GCR_REGION=us-west1
+GCR_SERVICE=logging-gcr-test
 
-# Temporarily move Dockerfile into the local library build context
-cd $ROOT_DIR
-cp ./logging/environments/Dockerfile .
+scaffold() {
+    # Gets folder containing this running script
+    SCRIPT_DIR=$(realpath $(dirname "$0"))
+    ROOT_DIR=$SCRIPT_DIR/../..
 
-gcloud builds submit --tag gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/logging-gcr-test
-gcloud run deploy --image gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/logging-gcr-test \
-    --platform managed \
-    --region us-west1 \
-    --allow-unauthenticated \
-    logging-gcr-test
+    # Temporarily move Dockerfile into the local library build context
+    cd $ROOT_DIR
+    cp ./logging/environments/Dockerfile .
 
-# TODO: cleanup steps above, should restore state completely
-cd $ROOT_DIR
-rm Dockerfile
+    gcloud builds submit --tag gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$GCR_SERVICE
+    rm Dockerfile
+
+    gcloud run deploy --image gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$GCR_SERVICE \
+        --platform managed \
+        --region $GCR_REGION \
+        --allow-unauthenticated \
+        $GCR_SERVICE
+}
+
+# Deletes GCR service and container image
+teardown() {
+    gcloud run services delete $GCR_SERVICE \
+        --platform managed \
+        --region $GCR_REGION \
+        --quiet || true
+    
+    gcloud container images delete gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$GCR_SERVICE \
+        --force-delete-tags \
+        --quiet || true
+}
+
+# bash cloudrun.sh $FUNCTION
+"$@"

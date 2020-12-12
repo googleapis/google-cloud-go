@@ -289,6 +289,10 @@ func isCloudRun() bool {
 
 // TODO(nicolezhu): test this
 func detectGCRResource() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
 	zone, err := metadata.Zone()
 	if err != nil {
 		return nil
@@ -296,7 +300,7 @@ func detectGCRResource() *mrpb.MonitoredResource {
 	return &mrpb.MonitoredResource{
 		Type: "cloud_run_revision",
 		Labels: map[string]string{
-			"project_id":         os.Getenv("GOOGLE_CLOUD_PROJECT"),
+			"project_id":         projectID,
 			"location":           zone,
 			"service_name":       os.Getenv("K_SERVICE"),
 			"revision_name":      os.Getenv("K_REVISION"),
