@@ -264,6 +264,12 @@ func plsFieldLoad(v reflect.Value, p Property, subfields []string) (ok bool, err
 
 // setVal sets 'v' to the value of the Property 'p'.
 func setVal(v reflect.Value, p Property) (s string) {
+	return setValInTimezone(v, p, time.UTC)
+}
+
+// setVal sets 'v' to the value of the Property 'p', using
+// timezone 'loc'.
+func setValInTimezone(v reflect.Value, p Property, loc *time.Location) (s string) {
 	pValue := p.Value
 	switch v.Kind() {
 	case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -384,13 +390,13 @@ func setVal(v reflect.Value, p Property) (s string) {
 			}
 			v.Set(reflect.ValueOf(x))
 		case typeOfCivilDate:
-			date := civil.DateOf(pValue.(time.Time).In(time.UTC))
+			date := civil.DateOf(pValue.(time.Time).In(loc))
 			v.Set(reflect.ValueOf(date))
 		case typeOfCivilDateTime:
-			dateTime := civil.DateTimeOf(pValue.(time.Time).In(time.UTC))
+			dateTime := civil.DateTimeOf(pValue.(time.Time).In(loc))
 			v.Set(reflect.ValueOf(dateTime))
 		case typeOfCivilTime:
-			timeVal := civil.TimeOf(pValue.(time.Time).In(time.UTC))
+			timeVal := civil.TimeOf(pValue.(time.Time).In(loc))
 			v.Set(reflect.ValueOf(timeVal))
 		default:
 			ent, ok := pValue.(*Entity)
