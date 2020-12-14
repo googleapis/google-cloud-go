@@ -29,6 +29,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -1275,22 +1276,29 @@ func TestIntegration_BackupIAM(t *testing.T) {
 	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
-	iamHandle := adminClient.BackupIAM(ctx, cluster, backup)
+	iamHandle := adminClient.BackupIAM(cluster, backup)
 	// Get backup policy.
 	p, err := iamHandle.Policy(ctx)
 	if err != nil {
 		t.Errorf("iamHandle.Policy: %v", err)
 	}
+	// The resource is new, so the policy should be empty.
+	if got := p.Roles(); len(got) > 0 {
+		t.Errorf("got roles %v, want none", got)
+	}
 	// Set backup policy.
+	member := "domain:google.com"
+	// Add a member, set the policy, then check that the member is present.
+	p.Add(member, iam.Viewer)
 	if err = iamHandle.SetPolicy(ctx, p); err != nil {
 		t.Errorf("iamHandle.SetPolicy: %v", err)
 	}
-	newPolicy, err := iamHandle.Policy(ctx)
+	p, err = iamHandle.Policy(ctx)
 	if err != nil {
 		t.Errorf("iamHandle.Policy: %v", err)
 	}
-	if diff := testutil.Diff(newPolicy, p); diff != "" {
-		t.Fatalf("iamHandle.Policy: got - want +\n%s", diff)
+	if got, want := p.Members(iam.Viewer), []string{member}; !testutil.Equal(got, want) {
+		t.Errorf("iamHandle.Policy: got %v, want %v", got, want)
 	}
 	// Test backup permissions.
 	permissions := []string{"bigtable.backups.get", "bigtable.backups.update"}
