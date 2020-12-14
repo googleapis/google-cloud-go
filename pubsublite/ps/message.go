@@ -26,11 +26,12 @@ import (
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
+// Message transforms and event timestamp encoding mirrors the Java client
+// library implementation:
+// https://github.com/googleapis/java-pubsublite/blob/master/google-cloud-pubsublite/src/main/java/com/google/cloud/pubsublite/cloudpubsub/MessageTransforms.java
 const eventTimestampAttributeKey = "x-goog-pubsublite-event-time-timestamp-proto"
 
-var (
-	errInvalidMessage = errors.New("pubsublite: invalid received message")
-)
+var errInvalidMessage = errors.New("pubsublite: invalid received message")
 
 // Encodes a timestamp in a way that it will be interpreted as an event time if
 // published on a message with an attribute named eventTimestampAttributeKey.
