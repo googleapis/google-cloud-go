@@ -15,8 +15,12 @@ package wire
 
 import (
 	"context"
+	"encoding/base64"
 	"fmt"
 	"net/url"
+	"runtime/debug"
+	"strconv"
+	"strings"
 	"time"
 
 	"google.golang.org/api/option"
@@ -24,6 +28,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/structpb"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	gax "github.com/googleapis/gax-go/v2"
@@ -127,10 +133,7 @@ func retryableReadOnlyCallOption() gax.CallOption {
 	})
 }
 
-const (
-	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
-	routingMetadataHeader     = "x-goog-request-params"
-)
+const pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
 
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
@@ -164,18 +167,99 @@ func newPartitionAssignmentClient(ctx context.Context, region string, opts ...op
 	return vkit.NewPartitionAssignmentClient(ctx, options...)
 }
 
-func addTopicRoutingMetadata(ctx context.Context, topic topicPartition) context.Context {
-	md, _ := metadata.FromOutgoingContext(ctx)
-	md = md.Copy()
-	val := fmt.Sprintf("partition=%d&topic=%s", topic.Partition, url.QueryEscape(topic.Path))
-	md[routingMetadataHeader] = append(md[routingMetadataHeader], val)
-	return metadata.NewOutgoingContext(ctx, md)
+const (
+	routingMetadataHeader    = "x-goog-request-params"
+	clientInfoMetadataHeader = "x-goog-pubsub-context"
+
+	languageKey     = "language"
+	languageValue   = "GOLANG"
+	frameworkKey    = "framework"
+	majorVersionKey = "major_version"
+	minorVersionKey = "minor_version"
+
+	pubsubLiteModulePath = "cloud.google.com/go/pubsublite"
+)
+
+func parseModuleVersion(version string) (major string, minor string, ok bool) {
+	if strings.HasPrefix(version, "v") {
+		version = version[1:]
+	}
+	components := strings.Split(version, ".")
+	if len(components) >= 2 {
+		if _, err := strconv.ParseInt(components[0], 10, 32); err != nil {
+			return
+		}
+		if _, err := strconv.ParseInt(components[1], 10, 32); err != nil {
+			return
+		}
+		major = components[0]
+		minor = components[1]
+		ok = true
+	}
+	return
 }
 
-func addSubscriptionRoutingMetadata(ctx context.Context, subscription subscriptionPartition) context.Context {
+// getModuleVersion extracts the module version from BuildInfo embedded in the
+// binary. Only applies to binaries built with module support.
+func getModuleVersion(buildInfo *debug.BuildInfo) (string, string, bool) {
+	for _, dep := range buildInfo.Deps {
+		if dep.Path == pubsubLiteModulePath {
+			return parseModuleVersion(dep.Version)
+		}
+	}
+	return "", "", false
+}
+
+func stringValue(str string) *structpb.Value {
+	return &structpb.Value{
+		Kind: &structpb.Value_StringValue{StringValue: str},
+	}
+}
+
+// pubsubMetadata stores key/value pairs that should be added to gRPC metadata.
+type pubsubMetadata map[string]string
+
+func newPubsubMetadata() pubsubMetadata {
+	return make(map[string]string)
+}
+
+func (pm pubsubMetadata) AddTopicRoutingMetadata(topic topicPartition) {
+	pm[routingMetadataHeader] = fmt.Sprintf("partition=%d&topic=%s", topic.Partition, url.QueryEscape(topic.Path))
+}
+
+func (pm pubsubMetadata) AddSubscriptionRoutingMetadata(subscription subscriptionPartition) {
+	pm[routingMetadataHeader] = fmt.Sprintf("partition=%d&subscription=%s", subscription.Partition, url.QueryEscape(subscription.Path))
+}
+
+func (pm pubsubMetadata) AddClientInfo(framework FrameworkType) {
+	buildInfo, _ := debug.ReadBuildInfo()
+	pm.doAddClientInfo(framework, buildInfo)
+}
+
+func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, buildInfo *debug.BuildInfo) {
+	s := &structpb.Struct{
+		Fields: make(map[string]*structpb.Value),
+	}
+	s.Fields[languageKey] = stringValue(languageValue)
+	if len(framework) > 0 {
+		s.Fields[frameworkKey] = stringValue(string(framework))
+	}
+	if buildInfo != nil {
+		if major, minor, ok := getModuleVersion(buildInfo); ok {
+			s.Fields[majorVersionKey] = stringValue(major)
+			s.Fields[minorVersionKey] = stringValue(minor)
+		}
+	}
+	if bytes, err := proto.Marshal(s); err == nil {
+		pm[clientInfoMetadataHeader] = base64.StdEncoding.EncodeToString(bytes)
+	}
+}
+
+func (pm pubsubMetadata) AddToContext(ctx context.Context) context.Context {
 	md, _ := metadata.FromOutgoingContext(ctx)
 	md = md.Copy()
-	val := fmt.Sprintf("partition=%d&subscription=%s", subscription.Partition, url.QueryEscape(subscription.Path))
-	md[routingMetadataHeader] = append(md[routingMetadataHeader], val)
+	for key, val := range pm {
+		md[key] = append(md[key], val)
+	}
 	return metadata.NewOutgoingContext(ctx, md)
 }

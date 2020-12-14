@@ -34,6 +34,12 @@ const (
 	MaxPublishRequestBytes = 3500000
 )
 
+// FrameworkType is the user-facing API for Cloud Pub/Sub Lite.
+type FrameworkType string
+
+// FrameworkCloudPubSubShim is the API that emulates Cloud Pub/Sub.
+const FrameworkCloudPubSubShim FrameworkType = "CLOUD_PUBSUB_SHIM"
+
 // PublishSettings control the batching of published messages. These settings
 // apply per partition.
 type PublishSettings struct {
@@ -70,6 +76,9 @@ type PublishSettings struct {
 	// The polling interval to watch for topic partition count updates. Set to 0
 	// to disable polling if the number of partitions will never update.
 	ConfigPollPeriod time.Duration
+
+	// The user-facing API type.
+	Framework FrameworkType
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -132,6 +141,9 @@ type ReceiveSettings struct {
 	// specified, the client will use the partition assignment service to
 	// determine which partitions it should connect to.
 	Partitions []int
+
+	// The user-facing API type.
+	Framework FrameworkType
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.

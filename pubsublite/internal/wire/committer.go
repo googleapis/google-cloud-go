@@ -43,6 +43,7 @@ type committer struct {
 	// Immutable after creation.
 	cursorClient *vkit.CursorClient
 	initialReq   *pb.StreamingCommitCursorRequest
+	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mutex.
 	stream        *retryableStream
@@ -66,10 +67,12 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 				},
 			},
 		},
+		metadata:      newPubsubMetadata(),
 		acks:          acks,
 		cursorTracker: newCommitCursorTracker(acks),
 	}
 	c.stream = newRetryableStream(ctx, c, settings.Timeout, reflect.TypeOf(pb.StreamingCommitCursorResponse{}))
+	c.metadata.AddClientInfo(settings.Framework)
 
 	backgroundTask := c.commitOffsetToStream
 	if disableTasks {
@@ -99,7 +102,7 @@ func (c *committer) Stop() {
 }
 
 func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return c.cursorClient.StreamingCommitCursor(ctx)
+	return c.cursorClient.StreamingCommitCursor(c.metadata.AddToContext(ctx))
 }
 
 func (c *committer) initialRequest() (req interface{}, needsResp bool) {
