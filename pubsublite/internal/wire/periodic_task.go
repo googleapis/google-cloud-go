@@ -35,7 +35,7 @@ func newPeriodicTask(period time.Duration, task func()) *periodicTask {
 // Start the polling goroutine. No-op if the goroutine is already running.
 // The task is executed after the polling period.
 func (pt *periodicTask) Start() {
-	if pt.ticker != nil {
+	if pt.ticker != nil || pt.period <= 0 {
 		return
 	}
 
@@ -59,10 +59,16 @@ func (pt *periodicTask) Stop() {
 
 func (pt *periodicTask) poll(ticker *time.Ticker, stop chan struct{}) {
 	for {
+		// stop has higher priority.
 		select {
 		case <-stop:
-			// Ends the goroutine.
-			return
+			return // Ends the goroutine.
+		default:
+		}
+
+		select {
+		case <-stop:
+			return // Ends the goroutine.
 		case <-ticker.C:
 			pt.task()
 		}

@@ -129,7 +129,9 @@ var keywords = map[string]bool{
 // https://cloud.google.com/spanner/docs/functions-and-operators
 var funcs = map[string]bool{
 	// Aggregate functions.
+	"ANY_VALUE": true,
 	"ARRAY_AGG": true,
+	"AVG":       true,
 	"BIT_XOR":   true,
 	"COUNT":     true,
 	"MAX":       true,
@@ -141,6 +143,9 @@ var funcs = map[string]bool{
 
 	// Hash functions.
 	"SHA1": true,
+
+	// String functions.
+	"CHAR_LENGTH": true,
 
 	// TODO: many more
 }

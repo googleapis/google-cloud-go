@@ -32,7 +32,7 @@ type flowControlTokens struct {
 	Messages int64
 }
 
-// A TokenCounter stores the amount of outstanding byte and message flow control
+// A tokenCounter stores the amount of outstanding byte and message flow control
 // tokens that the client believes exists for the stream.
 type tokenCounter struct {
 	Bytes    int64
@@ -81,7 +81,7 @@ func (tc *tokenCounter) ToFlowControlRequest() *pb.FlowControlRequest {
 
 // flowControlBatcher tracks flow control tokens and manages batching of flow
 // control requests to avoid overwhelming the server. It is only accessed by
-// the wireSubscriber.
+// the subscribeStream.
 type flowControlBatcher struct {
 	// The current amount of outstanding byte and message flow control tokens.
 	clientTokens tokenCounter
@@ -142,7 +142,7 @@ func (fc *flowControlBatcher) ShouldExpediteBatchRequest() bool {
 }
 
 // subscriberOffsetTracker tracks the expected offset of the next message
-// received from the server. It is only accessed by the wireSubscriber.
+// received from the server. It is only accessed by the subscribeStream.
 type subscriberOffsetTracker struct {
 	minNextOffset int64
 }

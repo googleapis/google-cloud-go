@@ -19,14 +19,9 @@ import (
 	"math/rand"
 )
 
-// messageRouter outputs a partition number, given an ordering key. Results are
-// undefined when:
-// - setPartitionCount() is called with count <= 0.
-// - route() is called before setPartitionCount() to initialize the router.
-//
-// Message routers need to accommodate topic partition resizing.
+// messageRouter outputs a partition number, given an ordering key (which it may
+// ignore).
 type messageRouter interface {
-	SetPartitionCount(count int)
 	Route(orderingKey []byte) int
 }
 
@@ -38,12 +33,15 @@ type roundRobinMsgRouter struct {
 	nextPartition  int
 }
 
-func (r *roundRobinMsgRouter) SetPartitionCount(count int) {
-	r.partitionCount = count
-	r.nextPartition = int(r.rng.Int63n(int64(count)))
+func newRoundRobinMsgRouter(rng *rand.Rand, count int) *roundRobinMsgRouter {
+	return &roundRobinMsgRouter{
+		rng:            rng,
+		partitionCount: count,
+		nextPartition:  int(rng.Int63n(int64(count))),
+	}
 }
 
-func (r *roundRobinMsgRouter) Route(orderingKey []byte) (partition int) {
+func (r *roundRobinMsgRouter) Route(_ []byte) (partition int) {
 	partition = r.nextPartition
 	r.nextPartition = (partition + 1) % r.partitionCount
 	return
@@ -58,8 +56,10 @@ type hashingMsgRouter struct {
 	partitionCount *big.Int
 }
 
-func (r *hashingMsgRouter) SetPartitionCount(count int) {
-	r.partitionCount = big.NewInt(int64(count))
+func newHashingMsgRouter(count int) *hashingMsgRouter {
+	return &hashingMsgRouter{
+		partitionCount: big.NewInt(int64(count)),
+	}
 }
 
 func (r *hashingMsgRouter) Route(orderingKey []byte) int {
@@ -79,11 +79,6 @@ type compositeMsgRouter struct {
 	keylessRouter messageRouter
 }
 
-func (r *compositeMsgRouter) SetPartitionCount(count int) {
-	r.keyedRouter.SetPartitionCount(count)
-	r.keylessRouter.SetPartitionCount(count)
-}
-
 func (r *compositeMsgRouter) Route(orderingKey []byte) int {
 	if len(orderingKey) > 0 {
 		return r.keyedRouter.Route(orderingKey)
@@ -91,11 +86,19 @@ func (r *compositeMsgRouter) Route(orderingKey []byte) int {
 	return r.keylessRouter.Route(orderingKey)
 }
 
-// defaultMessageRouter returns a compositeMsgRouter that uses hashingMsgRouter
-// for messages with ordering key and roundRobinMsgRouter for messages without.
-func newDefaultMessageRouter(rng *rand.Rand) messageRouter {
+type messageRouterFactory struct {
+	rng *rand.Rand
+}
+
+func newMessageRouterFactory(rng *rand.Rand) *messageRouterFactory {
+	return &messageRouterFactory{rng: rng}
+}
+
+// New returns a compositeMsgRouter that uses hashingMsgRouter for messages with
+// ordering key and roundRobinMsgRouter for messages without.
+func (f *messageRouterFactory) New(partitionCount int) messageRouter {
 	return &compositeMsgRouter{
-		keyedRouter:   &hashingMsgRouter{},
-		keylessRouter: &roundRobinMsgRouter{rng: rng},
+		keyedRouter:   newHashingMsgRouter(partitionCount),
+		keylessRouter: newRoundRobinMsgRouter(f.rng, partitionCount),
 	}
 }

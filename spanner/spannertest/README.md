@@ -18,18 +18,20 @@ Here's a list of features that are missing or incomplete. It is roughly ordered
 by ascending esotericism:
 
 - expression functions
+- NUMERIC
 - more aggregation functions
 - SELECT HAVING
 - case insensitivity
-- FULL JOIN, multiple joins
 - alternate literal types (esp. strings)
-- STRUCT types
-- transaction simulation
+- generated columns
 - expression type casting, coercion
+- multiple joins
 - subselects
+- transaction simulation
 - FOREIGN KEY and CHECK constraints
 - INSERT DML statements
 - set operations (UNION, INTERSECT, EXCEPT)
+- STRUCT types
 - partition support
 - conditional expressions
 - table sampling (implementation)

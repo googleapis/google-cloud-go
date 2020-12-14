@@ -115,7 +115,7 @@ func TestCommitterStopFlushesCommits(t *testing.T) {
 
 	ack1.Ack()
 	cmt.Stop() // Stop should flush the first offset
-	ack2.Ack() // Acks after Stop() are still processed
+	ack2.Ack() // Acks after Stop() are processed
 	cmt.SendBatchCommit()
 	// Committer terminates when all acks are processed.
 	if gotErr := cmt.FinalError(); gotErr != nil {

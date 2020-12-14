@@ -1434,6 +1434,7 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 	ctm := civil.Time{Hour: 15, Minute: 4, Second: 5, Nanosecond: 6000}
 	cdt := civil.DateTime{Date: testDate, Time: ctm}
 	rat := big.NewRat(33, 100)
+	rat2 := big.NewRat(66, 100)
 	geo := "POINT(-122.198939 47.669865)"
 
 	// Nil fields in the struct.
@@ -1455,20 +1456,21 @@ func TestIntegration_InsertAndReadNullable(t *testing.T) {
 
 	// Populate the struct with values.
 	testInsertAndReadNullable(t, testStructNullable{
-		String:    NullString{"x", true},
-		Bytes:     []byte{1, 2, 3},
-		Integer:   NullInt64{1, true},
-		Float:     NullFloat64{2.3, true},
-		Boolean:   NullBool{true, true},
-		Timestamp: NullTimestamp{testTimestamp, true},
-		Date:      NullDate{testDate, true},
-		Time:      NullTime{ctm, true},
-		DateTime:  NullDateTime{cdt, true},
-		Numeric:   rat,
-		Geography: NullGeography{geo, true},
-		Record:    &subNullable{X: NullInt64{4, true}},
+		String:     NullString{"x", true},
+		Bytes:      []byte{1, 2, 3},
+		Integer:    NullInt64{1, true},
+		Float:      NullFloat64{2.3, true},
+		Boolean:    NullBool{true, true},
+		Timestamp:  NullTimestamp{testTimestamp, true},
+		Date:       NullDate{testDate, true},
+		Time:       NullTime{ctm, true},
+		DateTime:   NullDateTime{cdt, true},
+		Numeric:    rat,
+		BigNumeric: rat2,
+		Geography:  NullGeography{geo, true},
+		Record:     &subNullable{X: NullInt64{4, true}},
 	},
-		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, geo, []Value{int64(4)}})
+		[]Value{"x", []byte{1, 2, 3}, int64(1), 2.3, true, testTimestamp, testDate, ctm, cdt, rat, rat2, geo, []Value{int64(4)}})
 }
 
 func testInsertAndReadNullable(t *testing.T, ts testStructNullable, wantRow []Value) {
@@ -1625,6 +1627,63 @@ func TestIntegration_TableUpdate(t *testing.T) {
 		} else if !hasStatusCode(err, 400) {
 			t.Errorf("%s: want 400, got %v", test.desc, err)
 		}
+	}
+}
+
+func TestIntegration_QueryStatistics(t *testing.T) {
+	// Make a bunch of assertions on a simple query.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT 17 as foo, 3.14 as bar")
+	// disable cache to ensure we have query statistics
+	q.DisableQueryCache = true
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("job Run failure: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("job Wait failure: %v", err)
+	}
+	if status.Statistics == nil {
+		t.Fatal("expected job statistics, none found")
+	}
+
+	if status.Statistics.NumChildJobs != 0 {
+		t.Errorf("expected no children, %d reported", status.Statistics.NumChildJobs)
+	}
+
+	if status.Statistics.ParentJobID != "" {
+		t.Errorf("expected no parent, but parent present: %s", status.Statistics.ParentJobID)
+	}
+
+	if status.Statistics.Details == nil {
+		t.Fatal("expected job details, none present")
+	}
+
+	qStats, ok := status.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("expected query statistics not present")
+	}
+
+	if qStats.CacheHit {
+		t.Error("unexpected cache hit")
+	}
+
+	if qStats.StatementType != "SELECT" {
+		t.Errorf("expected SELECT statement type, got: %s", qStats.StatementType)
+	}
+
+	if len(qStats.QueryPlan) == 0 {
+		t.Error("expected query plan, none present")
+	}
+
+	if len(qStats.Timeline) == 0 {
+		t.Error("expected query timeline, none present")
 	}
 }
 
@@ -1855,6 +1914,59 @@ func TestIntegration_LegacyQuery(t *testing.T) {
 		}
 		checkRead(t, "LegacyQuery", it, [][]Value{c.wantRow})
 	}
+}
+
+func TestIntegration_QueryExternalHivePartitioning(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	autoTable := dataset.Table(tableIDs.New())
+	customTable := dataset.Table(tableIDs.New())
+
+	err := autoTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: &ExternalDataConfig{
+			SourceFormat: Parquet,
+			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/*"},
+			AutoDetect:   true,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   AutoHivePartitioningMode,
+				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/autolayout/",
+				RequirePartitionFilter: true,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("table.Create(auto): %v", err)
+	}
+	defer autoTable.Delete(ctx)
+
+	err = customTable.Create(ctx, &TableMetadata{
+		ExternalDataConfig: &ExternalDataConfig{
+			SourceFormat: Parquet,
+			SourceURIs:   []string{"gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/*"},
+			AutoDetect:   true,
+			HivePartitioningOptions: &HivePartitioningOptions{
+				Mode:                   CustomHivePartitioningMode,
+				SourceURIPrefix:        "gs://cloud-samples-data/bigquery/hive-partitioning-samples/customlayout/{pkey:STRING}/",
+				RequirePartitionFilter: true,
+			},
+		},
+	})
+	if err != nil {
+		t.Fatalf("table.Create(custom): %v", err)
+	}
+	defer customTable.Delete(ctx)
+
+	// Issue a test query that prunes based on the custom hive partitioning key, and verify the result is as expected.
+	sql := fmt.Sprintf("SELECT COUNT(*) as ct FROM `%s`.%s.%s WHERE pkey=\"foo\"", customTable.ProjectID, customTable.DatasetID, customTable.TableID)
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("Error querying: %v", err)
+	}
+	checkReadAndTotalRows(t, "HiveQuery", it, [][]Value{{int64(50)}})
 }
 
 func TestIntegration_QueryParameters(t *testing.T) {
