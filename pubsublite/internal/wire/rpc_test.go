@@ -15,7 +15,6 @@ package wire
 
 import (
 	"encoding/base64"
-	"runtime/debug"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -27,11 +26,14 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 	for _, tc := range []struct {
 		desc           string
 		framework      FrameworkType
-		buildInfo      *debug.BuildInfo
+		libraryVersion func() (version, bool)
 		wantClientInfo *structpb.Struct
 	}{
 		{
 			desc: "minimal",
+			libraryVersion: func() (version, bool) {
+				return version{}, false
+			},
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language": stringValue("GOLANG"),
@@ -41,6 +43,9 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 		{
 			desc:      "cps shim",
 			framework: FrameworkCloudPubSubShim,
+			libraryVersion: func() (version, bool) {
+				return version{}, false
+			},
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
 					"language":  stringValue("GOLANG"),
@@ -51,11 +56,8 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 		{
 			desc:      "version valid",
 			framework: FrameworkCloudPubSubShim,
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "v1.2.2"},
-					{Path: "cloud.google.com/go/pubsub", Version: "v1.8.3"},
-				},
+			libraryVersion: func() (version, bool) {
+				return version{Major: "1", Minor: "2"}, true
 			},
 			wantClientInfo: &structpb.Struct{
 				Fields: map[string]*structpb.Value{
@@ -66,77 +68,10 @@ func TestPubsubMetadataAddClientInfo(t *testing.T) {
 				},
 			},
 		},
-		{
-			desc: "version corner case",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "2.3"},
-				},
-			},
-			wantClientInfo: &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"language":      stringValue("GOLANG"),
-					"major_version": stringValue("2"),
-					"minor_version": stringValue("3"),
-				},
-			},
-		},
-		{
-			desc: "version missing",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsub", Version: "v1.8.3"},
-				},
-			},
-			wantClientInfo: &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"language": stringValue("GOLANG"),
-				},
-			},
-		},
-		{
-			desc: "minor version invalid",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "v1.a.2"},
-				},
-			},
-			wantClientInfo: &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"language": stringValue("GOLANG"),
-				},
-			},
-		},
-		{
-			desc: "major version invalid",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "vb.1.2"},
-				},
-			},
-			wantClientInfo: &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"language": stringValue("GOLANG"),
-				},
-			},
-		},
-		{
-			desc: "minor version missing",
-			buildInfo: &debug.BuildInfo{
-				Deps: []*debug.Module{
-					{Path: "cloud.google.com/go/pubsublite", Version: "v4"},
-				},
-			},
-			wantClientInfo: &structpb.Struct{
-				Fields: map[string]*structpb.Value{
-					"language": stringValue("GOLANG"),
-				},
-			},
-		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			metadata := newPubsubMetadata()
-			metadata.doAddClientInfo(tc.framework, tc.buildInfo)
+			metadata.doAddClientInfo(tc.framework, tc.libraryVersion)
 
 			b, err := base64.StdEncoding.DecodeString(metadata["x-goog-pubsub-context"])
 			if err != nil {

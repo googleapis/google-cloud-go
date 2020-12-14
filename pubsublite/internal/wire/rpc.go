@@ -18,9 +18,6 @@ import (
 	"encoding/base64"
 	"fmt"
 	"net/url"
-	"runtime/debug"
-	"strconv"
-	"strings"
 	"time"
 
 	"google.golang.org/api/option"
@@ -176,39 +173,7 @@ const (
 	frameworkKey    = "framework"
 	majorVersionKey = "major_version"
 	minorVersionKey = "minor_version"
-
-	pubsubLiteModulePath = "cloud.google.com/go/pubsublite"
 )
-
-func parseModuleVersion(version string) (major string, minor string, ok bool) {
-	if strings.HasPrefix(version, "v") {
-		version = version[1:]
-	}
-	components := strings.Split(version, ".")
-	if len(components) >= 2 {
-		if _, err := strconv.ParseInt(components[0], 10, 32); err != nil {
-			return
-		}
-		if _, err := strconv.ParseInt(components[1], 10, 32); err != nil {
-			return
-		}
-		major = components[0]
-		minor = components[1]
-		ok = true
-	}
-	return
-}
-
-// getModuleVersion extracts the module version from BuildInfo embedded in the
-// binary. Only applies to binaries built with module support.
-func getModuleVersion(buildInfo *debug.BuildInfo) (string, string, bool) {
-	for _, dep := range buildInfo.Deps {
-		if dep.Path == pubsubLiteModulePath {
-			return parseModuleVersion(dep.Version)
-		}
-	}
-	return "", "", false
-}
 
 func stringValue(str string) *structpb.Value {
 	return &structpb.Value{
@@ -232,11 +197,10 @@ func (pm pubsubMetadata) AddSubscriptionRoutingMetadata(subscription subscriptio
 }
 
 func (pm pubsubMetadata) AddClientInfo(framework FrameworkType) {
-	buildInfo, _ := debug.ReadBuildInfo()
-	pm.doAddClientInfo(framework, buildInfo)
+	pm.doAddClientInfo(framework, libraryVersion)
 }
 
-func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, buildInfo *debug.BuildInfo) {
+func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, getVersion func() (version, bool)) {
 	s := &structpb.Struct{
 		Fields: make(map[string]*structpb.Value),
 	}
@@ -244,11 +208,9 @@ func (pm pubsubMetadata) doAddClientInfo(framework FrameworkType, buildInfo *deb
 	if len(framework) > 0 {
 		s.Fields[frameworkKey] = stringValue(string(framework))
 	}
-	if buildInfo != nil {
-		if major, minor, ok := getModuleVersion(buildInfo); ok {
-			s.Fields[majorVersionKey] = stringValue(major)
-			s.Fields[minorVersionKey] = stringValue(minor)
-		}
+	if version, ok := getVersion(); ok {
+		s.Fields[majorVersionKey] = stringValue(version.Major)
+		s.Fields[minorVersionKey] = stringValue(version.Minor)
 	}
 	if bytes, err := proto.Marshal(s); err == nil {
 		pm[clientInfoMetadataHeader] = base64.StdEncoding.EncodeToString(bytes)
