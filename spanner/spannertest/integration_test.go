@@ -890,10 +890,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
-			// From https://cloud.google.com/spanner/docs/aggregate_functions#avg
-			// but using a param for the array since array literals aren't supported yet.
-			`SELECT AVG(x) AS avg FROM UNNEST(@p) AS x`,
-			map[string]interface{}{"p": []int64{0, 2, 4, 4, 5}},
+			// From https://cloud.google.com/spanner/docs/aggregate_functions#avg.
+			`SELECT AVG(x) AS avg FROM UNNEST([0, 2, 4, 4, 5]) AS x`,
+			nil,
 			[][]interface{}{
 				{float64(3)},
 			},
