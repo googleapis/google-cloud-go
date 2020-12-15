@@ -169,7 +169,7 @@ func parseInstanceName(inst string) (project, instance string, err error) {
 	return matches[1], matches[2], nil
 }
 
-func getSpannerHost() (string) {
+func getSpannerHost() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
 }
 
