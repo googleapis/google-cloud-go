@@ -2345,11 +2345,6 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 }
 
 func blackholeOrAllowDirectPath(testEnv IntegrationEnv, t *testing.T, blackholeDP bool) {
-	//	blackholeDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j DROP && sleep 5 && echo blackholeDpv6"
-	//	blackholeDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j DROP && sleep 5 && echo blackholeDpv4"
-	//	allowDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j ACCEPT && sleep 5 && echo allowDpv6"
-	//	allowDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j ACCEPT && sleep 5 && echo allowDpv4"
-
 	if testEnv.Config().DirectPathIPV4Only {
 		if blackholeDP {
 			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
