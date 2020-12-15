@@ -74,6 +74,10 @@ func populatePresidentsGraph(table *Table) error {
 var instanceToCreate string
 var instanceToCreateZone string
 var instanceToCreateZone2 string
+var blackholeDpv6Cmd string
+var blackholeDpv4Cmd string
+var allowDpv6Cmd string
+var allowDpv4Cmd string
 
 func init() {
 	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
@@ -83,6 +87,10 @@ func init() {
 		"The zone in which to create the new test instance.")
 	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
 		"The zone in which to create a second cluster in the test instance.")
+  flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+  flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+  flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+  flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -2157,6 +2165,19 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 		return
 	}
 
+  if len(blackholeDpv6Cmd) == 0 {
+    t.Fatal("-it.blackhole-dpv6-cmd unset")
+  }
+  if len(blackholeDpv4Cmd) == 0 {
+    t.Fatal("-it.blackhole-dpv4-cmd unset")
+  }
+  if len(allowDpv6Cmd) == 0 {
+    t.Fatal("-it.allowdpv6-cmd unset")
+  }
+  if len(allowDpv4Cmd) == 0 {
+    t.Fatal("-it.allowdpv4-cmd unset")
+  }
+
 	if err := populatePresidentsGraph(table); err != nil {
 		t.Fatal(err)
 	}
@@ -2324,10 +2345,10 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 }
 
 func blackholeOrAllowDirectPath(testEnv IntegrationEnv, t *testing.T, blackholeDP bool) {
-	blackholeDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j DROP && sleep 5 && echo blackholeDpv6"
-	blackholeDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j DROP && sleep 5 && echo blackholeDpv4"
-	allowDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j ACCEPT && sleep 5 && echo allowDpv6"
-	allowDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j ACCEPT && sleep 5 && echo allowDpv4"
+//	blackholeDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j DROP && sleep 5 && echo blackholeDpv6"
+//	blackholeDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j DROP && sleep 5 && echo blackholeDpv4"
+//	allowDpv6Cmd := "sudo ip6tables -I INPUT -s 2001:4860:8040::/42 -j ACCEPT && sleep 5 && echo allowDpv6"
+//	allowDpv4Cmd := "sudo iptables -I INPUT -s 34.126.0.0/18 -j ACCEPT && sleep 5 && echo allowDpv4"
 
 	if testEnv.Config().DirectPathIPV4Only {
 		if blackholeDP {
