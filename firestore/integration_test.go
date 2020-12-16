@@ -1516,14 +1516,14 @@ func TestPartionQuery(t *testing.T) {
 	cg := client.CollectionGroup(subColl)
 	_, partitions, err := cg.PartitionQuery(ctx, 3)
 	if err != nil {
-		t.Fatalf("Collection.PartitionQuery: %v", err)
+		t.Fatalf("PartitionQuery: %v", err)
 	}
 	var got []string
 	for _, partition := range partitions {
 		it := partition.Documents(ctx)
 		docSnapshots, err := it.GetAll()
 		if err != nil {
-			t.Fatalf("query.Documents(ctx).GetAll(): %v", err)
+			t.Errorf("query.Documents(ctx).GetAll(): %v", err)
 		}
 		for _, docSnapshot := range docSnapshots {
 			got = append(got, docSnapshot.Ref.Path)
@@ -1531,7 +1531,7 @@ func TestPartionQuery(t *testing.T) {
 	}
 	sort.Strings(got)
 	if len(got) != len(want) {
-		t.Fatalf("got lenght:%v, want lenght:%v", len(got), len(want))
+		t.Errorf("got lenght:%v, want lenght:%v", len(got), len(want))
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("-got, +want:\n%s", diff)
@@ -1546,7 +1546,7 @@ func TestEmptyPartitionedQuery(t *testing.T) {
 	cg := client.CollectionGroup(subColl)
 	q, partitions, err := cg.PartitionQuery(ctx, 3)
 	if err != nil {
-		t.Fatalf("Collection.PartitionQuery: %v", err)
+		t.Fatalf("PartitionQuery: %v", err)
 	}
 	if len(partitions) != 0 {
 		t.Errorf("got lenght: %v, want lenght: 0", len(partitions))
