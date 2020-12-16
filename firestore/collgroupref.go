@@ -17,6 +17,7 @@ package firestore
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	firestore "cloud.google.com/go/firestore/apiv1"
 	"google.golang.org/api/iterator"
@@ -48,16 +49,15 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 
 // PartitionQuery partitions a query by returning partition cursors that can be used to run
 // the query in parallel. The returned partition cursors are split points that
-// can be used by RunQuery as starting/end points for the query results.
-// Partition queries require explicit ordering by __name__ and
-// select all descendant collections.
+// can be used as starting/end points for the query results. The returned cursors can only
+// be used in a query that matches the constraint of query that produced this partition.
 //
 // count is the desired maximum number of partition points. The number must be
 // strictly positive.
-func (c *CollectionGroupRef) PartitionQuery(ctx context.Context, count int) (Query, []Query, error) {
+func (c *CollectionGroupRef) PartitionQuery(ctx context.Context, count int) (*Query, []Query, error) {
 	client, err := firestore.NewClient(ctx)
 	if err != nil {
-		return Query{}, nil, fmt.Errorf("firestore.NewClient: %v", err)
+		return nil, nil, fmt.Errorf("firestore.NewClient: %v", err)
 	}
 	defer client.Close()
 	// Partition queries require explicit ordering by __name__ and
@@ -66,7 +66,7 @@ func (c *CollectionGroupRef) PartitionQuery(ctx context.Context, count int) (Que
 	q.allDescendants = true
 	strQuery, err := q.toProto()
 	if err != nil {
-		return Query{}, nil, err
+		return nil, nil, err
 	}
 	req := &pb.PartitionQueryRequest{
 		Parent:         c.parentPath,
@@ -84,20 +84,21 @@ func (c *CollectionGroupRef) PartitionQuery(ctx context.Context, count int) (Que
 			break
 		}
 		if err != nil {
-			return q, nil, fmt.Errorf("PartitionQuery: %v", err)
+			return &q, nil, fmt.Errorf("PartitionQuery: %v", err)
 		}
-		doc := cursor.Values[0].GetReferenceValue()
-		docs = append(docs, doc)
+		docRef := cursor.Values[0].GetReferenceValue()
+		// Splitting values to pass it to "fieldValuesToCursorValues",
+		// since cursor values are not yet supported,
+		// and "Value_ReferenceValue" is taking q.path + " / " + docID.
+		doc := strings.Split(docRef, c.path+"/")
+		docs = append(docs, doc[1])
 	}
-	for i, doc := range docs {
-		partition := q
-		if i == 0 {
-			partitions = append(partitions, partition.EndBefore(doc))
-		} else if i == len(docs)-1 {
-			partitions = append(partitions, partition.StartAt(doc))
-		} else {
-			partitions = append(partitions, partition.StartAt(doc).EndBefore(docs[i+1]))
+	if docs != nil {
+		partitions = append(partitions, q.EndBefore(docs[0]))
+		for i := 0; i < len(docs)-1; i++ {
+			partitions = append(partitions, q.StartAt(docs[i]).EndBefore(docs[i+1]))
 		}
+		partitions = append(partitions, q.StartAt(docs[len(docs)-1]))
 	}
-	return q, partitions, nil
+	return &q, partitions, nil
 }

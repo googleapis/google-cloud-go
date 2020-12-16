@@ -26,7 +26,6 @@ import (
 	"reflect"
 	"runtime"
 	"sort"
-	"strconv"
 	"testing"
 	"time"
 
@@ -1500,18 +1499,21 @@ func TestPartionQuery(t *testing.T) {
 	// Minimum partition size is 128.
 	documentCount := 128*2 + 127
 	var want []string
-	for i := 0; i < documentCount; i++ {
-		doc := fmt.Sprintf("doc-" + strconv.Itoa(i+1))
-		want = append(want, doc)
-
-		dr1 := cr.Doc(doc)
-		h.mustCreate(dr1, integrationTestMap)
+	parents := []string{"abc-123", "def-456", "ghi-789"}
+	for i, parent := range parents {
+		dr1 := cr.Doc(parent)
+		h.mustCreate(dr1, nil)
 		defer h.mustDelete(dr1)
-
 		scr := dr1.Collection(subColl)
-		dr2 := scr.NewDoc()
-		h.mustSet(dr2, map[string]int{"id": i})
-		defer h.mustDelete(dr2)
+		for j := 0; j <= documentCount/3; j++ {
+			if i != len(parents)-1 || j != documentCount/3 {
+				doc := fmt.Sprintf("cg-doc%03d", j)
+				dr2 := scr.Doc(doc)
+				want = append(want, dr2.Path)
+				h.mustSet(dr2, map[string]int{"id": j})
+				defer h.mustDelete(dr2)
+			}
+		}
 	}
 	cg := client.CollectionGroup(subColl)
 	_, partitions, err := cg.PartitionQuery(ctx, 3)
@@ -1521,21 +1523,38 @@ func TestPartionQuery(t *testing.T) {
 	var got []string
 	for _, partition := range partitions {
 		it := partition.Documents(ctx)
-		ds, err := it.GetAll()
+		docSnapshots, err := it.GetAll()
 		if err != nil {
-			t.Fatalf("partition.Documents(ctx).GetAll(): %v", err)
+			t.Fatalf("query.Documents(ctx).GetAll(): %v", err)
 		}
-		for _, partitionDoc := range ds {
-			got = append(got, partitionDoc.Ref.ID)
+		for _, docSnapshot := range docSnapshots {
+			got = append(got, docSnapshot.Ref.Path)
 		}
 	}
 	sort.Strings(got)
-	sort.Strings(want)
 	if len(got) != len(want) {
 		t.Fatalf("got lenght:%v, want lenght:%v", len(got), len(want))
 	}
-	if !testutil.Equal(got, want) {
-		t.Errorf("got %v, want %v", got, want)
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("-got, +want:\n%s", diff)
+	}
+}
+
+func TestEmptyPartitionedQuery(t *testing.T) {
+	coll := collectionIDs.New()
+	ctx := context.Background()
+	client := integrationClient(t)
+	subColl := coll + "-sub"
+	cg := client.CollectionGroup(subColl)
+	q, partitions, err := cg.PartitionQuery(ctx, 3)
+	if err != nil {
+		t.Fatalf("Collection.PartitionQuery: %v", err)
+	}
+	if len(partitions) != 0 {
+		t.Errorf("got lenght: %v, want lenght: 0", len(partitions))
+	}
+	if !(q.allDescendants && q.orders[0].isDocumentID()) {
+		t.Errorf("query doesn't match the constraint of query that is producing the partition)")
 	}
 }
 
