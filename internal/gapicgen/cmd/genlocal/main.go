@@ -20,6 +20,7 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -54,32 +55,49 @@ func main() {
 	genprotoDir := flag.String("genproto-dir", filepath.Join(tmpDir, "genproto"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	protoDir := flag.String("proto-dir", filepath.Join(tmpDir, "proto"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
 	gapicToGenerate := flag.String("gapic", "", `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
+	onlyGapics := flag.Bool("only-gapics", false, "Enabling stops regenerating genproto.")
+	verbose := flag.Bool("verbose", false, "Enables verbose logging.")
 	flag.Parse()
 
 	ctx := context.Background()
 
 	// Clone repositories if needed.
-
 	grp, _ := errgroup.WithContext(ctx)
 	gitClone(grp, "https://github.com/googleapis/googleapis.git", *googleapisDir, tmpDir)
 	gitClone(grp, "https://github.com/googleapis/go-genproto", *genprotoDir, tmpDir)
 	gitClone(grp, "https://github.com/googleapis/google-cloud-go", *gocloudDir, tmpDir)
-	gitClone(grp, "https://github.com/google/protobuf", *protoDir, tmpDir)
+	gitClone(grp, "https://github.com/protocolbuffers/protobuf", *protoDir, tmpDir)
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
 	}
 
 	// Regen.
-
-	if err := generator.Generate(ctx, *googleapisDir, *genprotoDir, *gocloudDir, *protoDir, *gapicToGenerate); err != nil {
+	conf := &generator.Config{
+		GoogleapisDir:     *googleapisDir,
+		GenprotoDir:       *genprotoDir,
+		GapicDir:          *gocloudDir,
+		ProtoDir:          *protoDir,
+		GapicToGenerate:   *gapicToGenerate,
+		OnlyGenerateGapic: *onlyGapics,
+	}
+	changes, err := generator.Generate(ctx, conf)
+	if err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
 		log.Fatal(err)
 	}
 
 	// Log results.
-
 	log.Println(genprotoDir)
 	log.Println(gocloudDir)
+
+	if *verbose {
+		log.Println("Changes:")
+		fmt.Println()
+		for _, v := range changes {
+			fmt.Println("********************************************")
+			fmt.Println(v.Body)
+		}
+	}
 }
 
 // gitClone clones a repository in the given directory if dir is not in tmpDir.
