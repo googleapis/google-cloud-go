@@ -851,11 +851,8 @@ func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
 		}
 	}()
 
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("Unexpected error during transaction: %v", err)
+	if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		t.Fatalf("idle session count mismatch.\nGot: %v\nWant: %v", g, w)
 	}
 }
 
