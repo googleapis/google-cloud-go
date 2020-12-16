@@ -1502,8 +1502,6 @@ func TestPartionQuery(t *testing.T) {
 	parents := []string{"abc-123", "def-456", "ghi-789"}
 	for i, parent := range parents {
 		dr1 := cr.Doc(parent)
-		h.mustCreate(dr1, nil)
-		defer h.mustDelete(dr1)
 		scr := dr1.Collection(subColl)
 		for j := 0; j <= documentCount/3; j++ {
 			if i != len(parents)-1 || j != documentCount/3 {
