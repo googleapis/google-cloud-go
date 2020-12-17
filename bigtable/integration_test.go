@@ -42,6 +42,7 @@ import (
 const (
 	directPathIPV6Prefix = "[2001:4860:8040"
 	directPathIPV4Prefix = "34.126"
+	directPathFamilyID   = "cf"
 )
 
 var (
@@ -55,12 +56,12 @@ var (
 	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
 )
 
-func populatePresidentsGraph(table *Table) error {
+func populatePresidentsGraph(table *Table, familyID string) error {
 	ctx := context.Background()
 	for row, ss := range presidentsSocialGraph {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+			mut.Set(familyID, name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
 			return fmt.Errorf("Mutating row %q: %v", row, err)
@@ -85,19 +86,19 @@ func init() {
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
+	if err := populatePresidentsGraph(table, familyID); err != nil {
 		t.Fatal(err)
 	}
 
 	// Do a conditional mutation with a complex filter.
 	mutTrue := NewMutation()
-	mutTrue.Set("follows", "wmckinley", 1000, []byte("1"))
+	mutTrue.Set(familyID, "wmckinley", 1000, []byte("1"))
 	filter := ChainFilters(ColumnFilter("gwash[iz].*"), ValueFilter("."))
 	mut := NewCondMutation(filter, mutTrue, nil)
 	if err := table.Apply(ctx, "tjefferson", mut); err != nil {
@@ -122,9 +123,9 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
 	wantRow := Row{
-		"follows": []ReadItem{
-			{Row: "jadams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
-			{Row: "jadams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
+		familyID: []ReadItem{
+			{Row: "jadams", Column: familyID + ":gwashington", Timestamp: 1000, Value: []byte("1")},
+			{Row: "jadams", Column: familyID + ":tjefferson", Timestamp: 1000, Value: []byte("1")},
 		},
 	}
 	if !testutil.Equal(row, wantRow) {
@@ -134,13 +135,13 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 
 func TestIntegration_PartialReadRows(t *testing.T) {
 	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
+	if err := populatePresidentsGraph(table, familyID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -161,17 +162,18 @@ func TestIntegration_PartialReadRows(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Partial ReadRows: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 }
 
 func TestIntegration_ReadRowList(t *testing.T) {
 	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, _, table, _, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
+	if err := populatePresidentsGraph(table, familyID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -198,13 +200,13 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 func TestIntegration_DeleteRow(t *testing.T) {
 	ctx := context.Background()
-	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
+	if err := populatePresidentsGraph(table, familyID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -214,10 +216,12 @@ func TestIntegration_DeleteRow(t *testing.T) {
 	if err := table.Apply(ctx, "wmckinley", mut); err != nil {
 		t.Fatalf("Apply DeleteRow: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	row, err := table.ReadRow(ctx, "wmckinley")
 	if err != nil {
 		t.Fatalf("Reading a row after DeleteRow: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	if len(row) != 0 {
 		t.Fatalf("Read non-zero row after DeleteRow: %v", row)
 	}
@@ -225,13 +229,13 @@ func TestIntegration_DeleteRow(t *testing.T) {
 
 func TestIntegration_ReadModifyWrite(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, table, tableName, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
+	if err := populatePresidentsGraph(table, familyID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -275,7 +279,6 @@ func TestIntegration_ReadModifyWrite(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ApplyReadModifyWrite %+v: %v", step.rmw, err)
 		}
-		verifyDirectPathRemoteAddress(testEnv, t)
 		// Make sure the modified cell returned by the RMW operation has a timestamp.
 		if row["counter"][0].Timestamp == 0 {
 			t.Fatalf("RMW returned cell timestamp: got %v, want > 0", row["counter"][0].Timestamp)
@@ -292,18 +295,15 @@ func TestIntegration_ReadModifyWrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	_, err = table.ApplyReadModifyWrite(ctx, "issue-723-1", appendRMW([]byte{0}))
 	if err != nil {
 		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	// Get only the correct row back on read.
 	r, err := table.ReadRow(ctx, "issue-723-1")
 	if err != nil {
 		t.Fatalf("Reading row: %v", err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	if r.Key() != "issue-723-1" {
 		t.Fatalf("ApplyReadModifyWrite: incorrect read after RMW,\n got %v\nwant %v", r.Key(), "issue-723-1")
 	}
@@ -311,7 +311,7 @@ func TestIntegration_ReadModifyWrite(t *testing.T) {
 
 func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	ctx := context.Background()
-	_, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, table, tableName, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -593,13 +593,13 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 
 func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	ctx := context.Background()
-	_, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, table, tableName, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
 
-	if err := populatePresidentsGraph(table); err != nil {
+	if err := populatePresidentsGraph(table, familyID); err != nil {
 		t.Fatal(err)
 	}
 
@@ -636,7 +636,7 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 
 func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, table, tableName, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -654,12 +654,10 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err := table.Apply(ctx, "bigrow", mut); err != nil {
 		t.Fatalf("Big write: %v", err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	r, err := table.ReadRow(ctx, "bigrow")
 	if err != nil {
 		t.Fatalf("Big read: %v", err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	wantRow := Row{"ts": []ReadItem{
 		{Row: "bigrow", Column: "ts:col", Timestamp: 1000, Value: bigBytes},
 	}}
@@ -684,7 +682,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 			if err := table.Apply(ctx, row, mut); err != nil {
 				t.Errorf("Preparing large scan: %v", err)
 			}
-			verifyDirectPathRemoteAddress(testEnv, t)
 		}()
 	}
 	wg.Wait()
@@ -700,7 +697,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Doing large scan: %v", err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	if want := 1000 * len(medBytes); n != want {
 		t.Fatalf("Large scan returned %d bytes, want %d", n, want)
 	}
@@ -714,7 +710,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	if rc != wantRc {
 		t.Fatalf("Scan with row limit returned %d rows, want %d", rc, wantRc)
 	}
@@ -742,7 +737,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	if status != nil {
 		t.Fatalf("non-nil errors: %v", err)
 	}
@@ -753,7 +747,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Reading a bulk row: %v", err)
 		}
-		verifyDirectPathRemoteAddress(testEnv, t)
 		var wantItems []ReadItem
 		for _, val := range ss {
 			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: "bulk:" + val, Timestamp: 1000, Value: []byte("1")})
@@ -774,7 +767,6 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
 	}
-	verifyDirectPathRemoteAddress(testEnv, t)
 	if status == nil {
 		t.Fatalf("No errors for bad bulk mutation")
 	} else if status[0] == nil || status[1] == nil {
@@ -784,7 +776,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 
 func TestIntegration_Read(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -800,7 +792,7 @@ func TestIntegration_Read(t *testing.T) {
 	for row, ss := range initialData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+			mut.Set(familyID, name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
@@ -859,19 +851,19 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc:   "read range, with ColumnRangeFilter",
 			rr:     RowRange{},
-			filter: ColumnRangeFilter("follows", "h", "k"),
+			filter: ColumnRangeFilter(familyID, "h", "k"),
 			want:   "gwashington-jadams-1,tjefferson-jadams-1",
 		},
 		{
 			desc:   "read range from empty, with ColumnRangeFilter",
 			rr:     RowRange{},
-			filter: ColumnRangeFilter("follows", "", "u"),
+			filter: ColumnRangeFilter(familyID, "", "u"),
 			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read range from start to empty, with ColumnRangeFilter",
 			rr:     RowRange{},
-			filter: ColumnRangeFilter("follows", "h", ""),
+			filter: ColumnRangeFilter(familyID, "h", ""),
 			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
@@ -1027,7 +1019,7 @@ func TestIntegration_Read(t *testing.T) {
 
 func TestIntegration_SampleRowKeys(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, _, table, _, familyID, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1043,12 +1035,11 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	for row, ss := range initialData {
 		mut := NewMutation()
 		for _, name := range ss {
-			mut.Set("follows", name, 1000, []byte("1"))
+			mut.Set(familyID, name, 1000, []byte("1"))
 		}
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
 		}
-		verifyDirectPathRemoteAddress(testEnv, t)
 	}
 	sampleKeys, err := table.SampleRowKeys(context.Background())
 	if err != nil {
@@ -2142,10 +2133,10 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 }
 
-func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
+func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, familyID string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
-		return nil, nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", "", nil, err
 	}
 
 	var timeout time.Duration
@@ -2160,12 +2151,41 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	client, err := testEnv.NewClient()
 	if err != nil {
-		return nil, nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", "", nil, err
 	}
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
-		return nil, nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", "", nil, err
+	}
+
+	//if err := adminClient.CreateTable(ctx, testEnv.Config().Table); err != nil {
+	//  cancel()
+	//  return nil, nil, nil, nil, "", nil, err
+	//}
+	//if err := adminClient.CreateColumnFamily(ctx, testEnv.Config().Table, directPathFamilyID); err != nil {
+	//  cancel()
+	//  return nil, nil, nil, nil, "", nil, err
+	//}
+
+	// Do some check here
+	//aaa, _ := adminClient.Tables(ctx)
+	//for _, s := range aaa {
+	//  fmt.Println("table = " + s)
+	//}
+
+	//tableinfo, _ := adminClient.TableInfo(ctx, testEnv.Config().Table)
+	//for _, s := range tableinfo.Families {
+	//  fmt.Println("family = " + s)
+	//}
+
+	// DirectPath integration test must ben run with a pre-existing table with a pre-existing column family "cf"
+	if testEnv.Config().AttemptDirectPath {
+		tableName = testEnv.Config().Table
+		return testEnv, client, adminClient, client.Open(tableName), tableName, directPathFamilyID, func() {
+			client.Close()
+			adminClient.Close()
+		}, nil
 	}
 
 	if testEnv.Config().UseProd {
@@ -2178,14 +2198,14 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
-		return nil, nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", "", nil, err
 	}
 	if err := adminClient.CreateColumnFamily(ctx, tableName, "follows"); err != nil {
 		cancel()
-		return nil, nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", "", nil, err
 	}
 
-	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
+	return testEnv, client, adminClient, client.Open(tableName), tableName, "follows", func() {
 		if err := adminClient.DeleteTable(ctx, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
 		}
@@ -2252,6 +2272,7 @@ func verifyDirectPathRemoteAddress(testEnv IntegrationEnv, t *testing.T) {
 
 func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 	remoteIP := testEnv.Peer().Addr.String()
+	fmt.Println("Peer IP = " + remoteIP)
 	// DirectPath ipv4-only can only use ipv4 traffic.
 	if testEnv.Config().DirectPathIPV4Only {
 		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
