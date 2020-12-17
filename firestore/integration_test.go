@@ -1499,19 +1499,14 @@ func TestPartionQuery(t *testing.T) {
 	// Minimum partition size is 128.
 	documentCount := 128*2 + 127
 	var want []string
-	parents := []string{"abc-123", "def-456", "ghi-789"}
-	for i, parent := range parents {
-		dr1 := cr.Doc(parent)
+	for j := 0; j < documentCount; j++ {
+		dr1 := cr.NewDoc()
 		scr := dr1.Collection(subColl)
-		for j := 0; j <= documentCount/3; j++ {
-			if i != len(parents)-1 || j != documentCount/3 {
-				doc := fmt.Sprintf("cg-doc%03d", j)
-				dr2 := scr.Doc(doc)
-				want = append(want, dr2.Path)
-				h.mustSet(dr2, map[string]int{"id": j})
-				defer h.mustDelete(dr2)
-			}
-		}
+		doc := fmt.Sprintf("cg-doc%03d", j)
+		dr2 := scr.Doc(doc)
+		want = append(want, dr2.Path)
+		h.mustSet(dr2, map[string]int{"id": j})
+		defer h.mustDelete(dr2)
 	}
 	cg := client.CollectionGroup(subColl)
 	_, partitions, err := cg.PartitionQuery(ctx, 3)
@@ -1529,6 +1524,7 @@ func TestPartionQuery(t *testing.T) {
 			got = append(got, docSnapshot.Ref.Path)
 		}
 	}
+	sort.Strings(want)
 	sort.Strings(got)
 	if len(got) != len(want) {
 		t.Errorf("got lenght:%v, want lenght:%v", len(got), len(want))
