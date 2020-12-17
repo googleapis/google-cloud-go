@@ -13,19 +13,20 @@
 // limitations under the License.
 
 // End-to-end testing in various GCP environments.
+// Tests scaffold a GCP resource, trigger log tests via http or cloud events, and teardown resources when completed
 // These tests are long-running and should be skipped by -short tests.
 
 package logging
 
-
 import (
 	// "encoding/json"
-	// "fmt"
+	"fmt"
 	// "context"
 	"os"
 	// "net/http"
 	// "net/url"
-	// "os/exec"
+	"os/exec"
+	"runtime"
 	"testing"
 	// "time"
 
@@ -39,7 +40,8 @@ import (
 	// logtypepb "google.golang.org/genproto/googleapis/logging/type"
 )
 
-// TODO: add other GPC envs, Cloud Run only right now
+// Cloud Run only right now
+// TODO: add other GPC envs & parallelize runs.
 func TestDetectResource(t *testing.T) {
 	t.Parallel()
 	if testing.Short() {
@@ -51,8 +53,26 @@ func TestDetectResource(t *testing.T) {
 		t.Skip("skipping logging e2e GCP tests when GCLOUD_TESTS_GOLANG_PROJECT_ID variable is not set")
 	}
 
-	// TODO
+	// todo check compat issue
+	if runtime.GOOS == "windows" {
+        fmt.Println("Can't Execute this on a windows machine")
+    }
+	
+	scaffoldGCR := &exec.Cmd {
+		Path: "./e2e/cloudrun.sh",
+		Args: []string{"./cloudrun.sh", "scaffold", "logging-cloudrun-topicUUID", "logging-cloudrun-subUUID"},
+		Stdout: os.Stdout,
+		Stderr: os.Stdout,
+	}
+
 	// 1. Scaffold cloud run 
+	// Waits for it to complete (or run in background with scaffoldGCR.Start())
+	if err := scaffoldGCR.Run(); err != nil {
+		fmt.Println("Couldn't scaffold Cloud Run")
+		fmt.Println(err)
+	}
+
+	// TODO
 	// 2. Http trigger the appropriate tests (http, later pubsub)
 	// 3. Get log from cloud run container
 	// 4. Teardown cloud run

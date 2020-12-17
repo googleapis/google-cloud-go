@@ -18,10 +18,8 @@ package logging
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"net/url"
-	"os/exec"
 	"testing"
 	"time"
 

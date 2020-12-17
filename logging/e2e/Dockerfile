@@ -10,7 +10,7 @@ WORKDIR /app
 # Copy google-cloud-go/* into app/
 COPY . ./
 # cd into directory containing e2e tests
-WORKDIR /app/logging/environments
+WORKDIR /app/logging/e2e
 
 # Build the binary
 RUN go mod download
@@ -24,7 +24,7 @@ RUN set -x && apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install -
     rm -rf /var/lib/apt/lists/*
 
 # Copy the binary to the production image from the builder stage.
-COPY --from=builder /app/logging/environments/server /app/server
+COPY --from=builder /app/logging/e2e/server /app/server
 
 # Run the web service on container startup.
 CMD ["/app/server"]
