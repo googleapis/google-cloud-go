@@ -2255,7 +2255,6 @@ func verifyDirectPathRemoteAddress(testEnv IntegrationEnv, t *testing.T) {
 
 func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 	remoteIP := testEnv.Peer().Addr.String()
-	fmt.Println("Peer IP = " + remoteIP)
 	// DirectPath ipv4-only can only use ipv4 traffic.
 	if testEnv.Config().DirectPathIPV4Only {
 		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
