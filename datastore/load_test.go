@@ -439,43 +439,6 @@ type withUntypedInterface struct {
 	Field interface{}
 }
 
-func TestLoadCivilTimeInNonUTCZone(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/3402")
-	src := &pb.Entity{
-		Key: keyToProto(testKey0),
-		Properties: map[string]*pb.Value{
-			"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
-		},
-	}
-	dst := &struct{ Time civil.Time }{
-		Time: civil.Time{},
-	}
-	want := &struct{ Time civil.Time }{
-		Time: civil.Time{
-			Hour:   5,
-			Minute: 30,
-		},
-	}
-	loc, err := time.LoadLocation("Africa/Cairo")
-	if err != nil {
-		t.Fatalf("LoadLocation: %v", err)
-	}
-	time.Local = loc
-
-	err = loadEntityProto(dst, src)
-	if err != nil {
-		t.Fatalf("loadEntityProto: %v", err)
-	}
-	if diff := testutil.Diff(dst, want); diff != "" {
-		t.Fatalf("Mismatch: got - want +\n%s", diff)
-	}
-	loc, err = time.LoadLocation("UTC")
-	if err != nil {
-		t.Fatalf("LoadLocation: %v", err)
-	}
-	time.Local = loc
-}
-
 func TestLoadToInterface(t *testing.T) {
 	testCases := []struct {
 		name    string
