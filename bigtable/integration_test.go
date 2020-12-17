@@ -2159,33 +2159,13 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 		return nil, nil, nil, nil, "", "", nil, err
 	}
 
-	//if err := adminClient.CreateTable(ctx, testEnv.Config().Table); err != nil {
-	//  cancel()
-	//  return nil, nil, nil, nil, "", nil, err
-	//}
-	//if err := adminClient.CreateColumnFamily(ctx, testEnv.Config().Table, directPathFamilyID); err != nil {
-	//  cancel()
-	//  return nil, nil, nil, nil, "", nil, err
-	//}
-
-	// Do some check here
-	//aaa, _ := adminClient.Tables(ctx)
-	//for _, s := range aaa {
-	//  fmt.Println("table = " + s)
-	//}
-
-	//tableinfo, _ := adminClient.TableInfo(ctx, testEnv.Config().Table)
-	//for _, s := range tableinfo.Families {
-	//  fmt.Println("family = " + s)
-	//}
-
 	// DirectPath integration test must ben run with a pre-existing table with a pre-existing column family "cf"
 	if testEnv.Config().AttemptDirectPath {
 		tableName = testEnv.Config().Table
 		return testEnv, client, adminClient, client.Open(tableName), tableName, directPathFamilyID, func() {
-      if err := adminClient.DropAllRows(ctx, tableName); err != nil {
-        t.Errorf("DropAllRoes got error %v", err)
-      }
+			if err := adminClient.DropAllRows(ctx, tableName); err != nil {
+				t.Errorf("DropAllRoes got error %v", err)
+			}
 			client.Close()
 			adminClient.Close()
 		}, nil
