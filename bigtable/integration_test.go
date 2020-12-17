@@ -2183,6 +2183,9 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *C
 	if testEnv.Config().AttemptDirectPath {
 		tableName = testEnv.Config().Table
 		return testEnv, client, adminClient, client.Open(tableName), tableName, directPathFamilyID, func() {
+      if err := adminClient.DropAllRows(ctx, tableName); err != nil {
+        t.Errorf("DropAllRoes got error %v", err)
+      }
 			client.Close()
 			adminClient.Close()
 		}, nil
