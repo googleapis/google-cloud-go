@@ -60,8 +60,9 @@ func defaultGrafeasV1Beta1ClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("containeranalysis.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("containeranalysis.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://containeranalysis.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

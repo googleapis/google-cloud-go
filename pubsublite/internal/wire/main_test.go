@@ -15,13 +15,11 @@ package wire
 
 import (
 	"flag"
-	"log"
 	"os"
 	"testing"
 
 	"cloud.google.com/go/pubsublite/internal/test"
 	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 var (
@@ -33,16 +31,9 @@ var (
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	testServer, err := test.NewServer()
-	if err != nil {
-		log.Fatal(err)
-	}
+	testServer, clientOpts := test.NewServerWithConn()
 	mockServer = testServer.LiteServer
-	conn, err := grpc.Dial(testServer.Addr(), grpc.WithInsecure())
-	if err != nil {
-		log.Fatal(err)
-	}
-	testClientOpts = []option.ClientOption{option.WithGRPCConn(conn)}
+	testClientOpts = clientOpts
 
 	exit := m.Run()
 	testServer.Close()

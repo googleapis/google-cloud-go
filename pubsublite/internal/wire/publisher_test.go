@@ -658,13 +658,13 @@ func TestRoutingPublisherRoundRobin(t *testing.T) {
 	result2 := pub.Publish(msg2)
 	result3 := pub.Publish(msg3)
 	result4 := pub.Publish(msg4)
-	pub.Stop()
 
 	result1.ValidateResult(1, 41)
 	result2.ValidateResult(2, 78)
 	result3.ValidateResult(0, 34)
 	result4.ValidateResult(1, 42)
 
+	pub.Stop()
 	if err := pub.WaitStopped(); err != nil {
 		t.Errorf("Stop() got err: (%v)", err)
 	}
@@ -959,14 +959,16 @@ func TestRoutingPublisherPartitionCountDecreases(t *testing.T) {
 	t.Run("Updated count", func(t *testing.T) {
 		pub.pub.partitionWatcher.updatePartitionCount()
 
-		// Decreasing count unsupported. Terminates the routingPublisher.
-		if gotErr := pub.WaitStopped(); !test.ErrorEqual(gotErr, errDecreasingPartitions) {
-			t.Errorf("Final error got: (%v), want: (%v)", gotErr, errDecreasingPartitions)
-		}
+		// Decreasing count ignored.
 		if got, want := pub.NumPartitionPublishers(), initialPartitionCount; got != want {
 			t.Errorf("Num partition publishers: got %d, want %d", got, want)
 		}
 	})
+
+	pub.Stop()
+	if gotErr := pub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
 }
 
 func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {

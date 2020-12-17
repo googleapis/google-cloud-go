@@ -53,8 +53,9 @@ func defaultCloudSchedulerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudscheduler.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudscheduler.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://cloudscheduler.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

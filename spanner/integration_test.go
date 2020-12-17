@@ -52,6 +52,10 @@ var (
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
 
+	// spannerHost specifies the spanner API host used for testing. It can be changed
+	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
+	spannerHost = getSpannerHost()
+
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
@@ -165,6 +169,10 @@ func parseInstanceName(inst string) (project, instance string, err error) {
 	return matches[1], matches[2], nil
 }
 
+func getSpannerHost() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+}
+
 const (
 	str1 = "alice"
 	str2 = "a@example.com"
@@ -195,6 +203,9 @@ func initIntegrationTests() (cleanup func()) {
 	}
 
 	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
 	var err error
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
@@ -3090,7 +3101,11 @@ func isNaN(x interface{}) bool {
 
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}

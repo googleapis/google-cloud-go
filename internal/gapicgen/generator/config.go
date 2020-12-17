@@ -617,14 +617,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/asset/v1beta1",
-		pkg:                   "asset",
-		importPath:            "cloud.google.com/go/asset/apiv1beta1",
-		gRPCServiceConfigPath: "google/cloud/asset/v1beta1/cloudasset_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/asset/v1beta1/cloudasset_v1beta1.yaml",
-		releaseLevel:          "beta",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/asset/v1p2beta1",
 		pkg:                   "asset",
 		importPath:            "cloud.google.com/go/asset/apiv1p2beta1",
@@ -721,6 +713,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/container/v1/container_grpc_service_config.json",
 		apiServiceConfigPath:  "google/container/v1/container_v1.yaml",
 		releaseLevel:          "ga",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/servicedirectory/v1",
+		pkg:                   "servicedirectory",
+		importPath:            "cloud.google.com/go/servicedirectory/apiv1",
+		gRPCServiceConfigPath: "google/cloud/servicedirectory/v1/servicedirectory_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/servicedirectory/v1/servicedirectory_v1.yaml",
+		// GA after 2021/01/05
+		releaseLevel: "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/servicedirectory/v1beta1",
@@ -869,6 +870,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/devtools/artifactregistry/v1beta2/artifactregistry_grpc_service_config.json",
 		apiServiceConfigPath:  "google/devtools/artifactregistry/v1beta2/artifactregistry_v1beta2.yaml",
 		// GA after 2021/01/05
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/retail/v2",
+		pkg:                   "retail",
+		importPath:            "cloud.google.com/go/retail/apiv2",
+		gRPCServiceConfigPath: "google/cloud/retail/v2/retail_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/retail/v2/retail_v2.yaml",
+		// GA after 2021/01/10
 		releaseLevel: "beta",
 	},
 

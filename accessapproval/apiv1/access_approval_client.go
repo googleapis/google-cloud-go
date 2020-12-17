@@ -52,8 +52,9 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("accessapproval.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("accessapproval.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://accessapproval.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
