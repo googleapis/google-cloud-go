@@ -27,7 +27,6 @@ import (
 	"sort"
 	"strings"
 	"sync"
-	"sync/atomic"
 	"testing"
 	"time"
 
@@ -87,6 +86,7 @@ func init() {
 		"The zone in which to create the new test instance.")
 	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
 		"The zone in which to create a second cluster in the test instance.")
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
 	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
 	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
@@ -2217,7 +2217,7 @@ func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, e
 		for i := 0; i < numRPCsToSend; i++ {
 			_, _ = table.ReadRow(ctx, "jadams")
 			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != expectDP {
-				atomic.AddUint64(&numCount, 1)
+				numCount++
 			}
 			time.Sleep(100 * time.Millisecond)
 			countEnough = numCount >= minCompleteRPC
@@ -2355,21 +2355,22 @@ func blackholeOrAllowDirectPath(testEnv IntegrationEnv, t *testing.T, blackholeD
 			out, _ := cmdRes.CombinedOutput()
 			t.Logf(string(out))
 		}
+		return
+	}
+	// DirectPath supports both ipv4 and ipv6
+	if blackholeDP {
+		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
 	} else {
-		if blackholeDP {
-			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
-			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
-			cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
-			out, _ = cmdRes.CombinedOutput()
-			t.Logf(string(out))
-		} else {
-			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
-			out, _ := cmdRes.CombinedOutput()
-			t.Logf(string(out))
-			cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
-			out, _ = cmdRes.CombinedOutput()
-			t.Logf(string(out))
-		}
+		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
 	}
 }
