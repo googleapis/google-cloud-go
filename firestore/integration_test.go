@@ -1489,7 +1489,7 @@ func TestIntegration_CollectionGroupQueries(t *testing.T) {
 	}
 }
 
-func TestPartionQuery(t *testing.T) {
+func TestPartitionQuery(t *testing.T) {
 	coll := collectionIDs.New()
 	ctx := context.Background()
 	h := testHelper{t}
