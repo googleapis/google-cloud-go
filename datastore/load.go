@@ -20,15 +20,19 @@ import (
 	"strings"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/fields"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
 
 var (
-	typeOfByteSlice = reflect.TypeOf([]byte(nil))
-	typeOfTime      = reflect.TypeOf(time.Time{})
-	typeOfGeoPoint  = reflect.TypeOf(GeoPoint{})
-	typeOfKeyPtr    = reflect.TypeOf(&Key{})
+	typeOfByteSlice     = reflect.TypeOf([]byte(nil))
+	typeOfTime          = reflect.TypeOf(time.Time{})
+	typeOfCivilDate     = reflect.TypeOf(civil.Date{})
+	typeOfCivilDateTime = reflect.TypeOf(civil.DateTime{})
+	typeOfCivilTime     = reflect.TypeOf(civil.Time{})
+	typeOfGeoPoint      = reflect.TypeOf(GeoPoint{})
+	typeOfKeyPtr        = reflect.TypeOf(&Key{})
 )
 
 // typeMismatchReason returns a string explaining why the property p could not
@@ -379,6 +383,15 @@ func setVal(v reflect.Value, p Property) (s string) {
 				return typeMismatchReason(p, v)
 			}
 			v.Set(reflect.ValueOf(x))
+		case typeOfCivilDate:
+			date := civil.DateOf(pValue.(time.Time).In(time.UTC))
+			v.Set(reflect.ValueOf(date))
+		case typeOfCivilDateTime:
+			dateTime := civil.DateTimeOf(pValue.(time.Time).In(time.UTC))
+			v.Set(reflect.ValueOf(dateTime))
+		case typeOfCivilTime:
+			timeVal := civil.TimeOf(pValue.(time.Time).In(time.UTC))
+			v.Set(reflect.ValueOf(timeVal))
 		default:
 			ent, ok := pValue.(*Entity)
 			if !ok {

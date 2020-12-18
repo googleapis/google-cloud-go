@@ -35,7 +35,7 @@ func newPeriodicTask(period time.Duration, task func()) *periodicTask {
 // Start the polling goroutine. No-op if the goroutine is already running.
 // The task is executed after the polling period.
 func (pt *periodicTask) Start() {
-	if pt.ticker != nil {
+	if pt.ticker != nil || pt.period <= 0 {
 		return
 	}
 

@@ -20,8 +20,10 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 type Simple struct {
@@ -483,6 +485,68 @@ func TestLoadToInterface(t *testing.T) {
 			},
 			dst:  &withUntypedInterface{Field: 1e9},
 			want: &withUntypedInterface{Field: "Newly set"},
+		},
+		{
+			name: "struct with civil.Date",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Date": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605474000}}},
+				},
+			},
+			dst: &struct{ Date civil.Date }{
+				Date: civil.Date{},
+			},
+			want: &struct{ Date civil.Date }{
+				Date: civil.Date{
+					Year:  2020,
+					Month: 11,
+					Day:   15,
+				},
+			},
+		},
+		{
+			name: "struct with civil.DateTime",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"DateTime": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+				},
+			},
+			dst: &struct{ DateTime civil.DateTime }{
+				DateTime: civil.DateTime{},
+			},
+			want: &struct{ DateTime civil.DateTime }{
+				DateTime: civil.DateTime{
+					Date: civil.Date{
+						Year:  2020,
+						Month: 11,
+						Day:   16,
+					},
+					Time: civil.Time{
+						Hour:   5,
+						Minute: 30,
+					},
+				},
+			},
+		},
+		{
+			name: "struct with civil.Time",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+				},
+			},
+			dst: &struct{ Time civil.Time }{
+				Time: civil.Time{},
+			},
+			want: &struct{ Time civil.Time }{
+				Time: civil.Time{
+					Hour:   5,
+					Minute: 30,
+				},
+			},
 		},
 	}
 
