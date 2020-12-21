@@ -1459,11 +1459,12 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 }
 
 // RestoreTableTo creates a new table by restoring from this completed backup.
-// instance is an instance in which the new table will be created and restored to.
+//
+// diffInstance is an instance in which the new table will be restored to.
 // Instance must be in the same project as the project containing backup.
-func (ac *AdminClient) RestoreTableTo(ctx context.Context, instance, table, cluster, backup string) error {
+func (ac *AdminClient) RestoreTableTo(ctx context.Context, diffInstance, table, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := "projects/" + ac.project + "/instances/" + instance
+	prefix := "projects/" + ac.project + "/instances/" + diffInstance
 	backupPath := "projects/" + ac.project + "/instances/" + ac.instance + "/clusters/" + cluster + "/backups/" + backup
 
 	req := &btapb.RestoreTableRequest{
