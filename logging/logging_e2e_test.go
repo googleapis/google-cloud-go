@@ -30,6 +30,7 @@ import (
 	"testing"
 	// "time"
 
+	"github.com/google/uuid"
 	// "cloud.google.com/go/internal/testutil"
 	// "github.com/golang/protobuf/proto"
 	// durpb "github.com/golang/protobuf/ptypes/duration"
@@ -53,28 +54,27 @@ func TestDetectResource(t *testing.T) {
 		t.Skip("skipping logging e2e GCP tests when GCLOUD_TESTS_GOLANG_PROJECT_ID variable is not set")
 	}
 
-	// todo check compat issue
 	if runtime.GOOS == "windows" {
         fmt.Println("Can't Execute this on a windows machine")
     }
 	
+	testId := "log-gcr-" + uuid.New().String()
 	scaffoldGCR := &exec.Cmd {
 		Path: "./e2e/cloudrun.sh",
-		Args: []string{"./cloudrun.sh", "scaffold", "logging-cloudrun-topicUUID", "logging-cloudrun-subUUID"},
+		Args: []string{"./cloudrun.sh", "scaffold", testId},
 		Stdout: os.Stdout,
 		Stderr: os.Stdout,
 	}
 
-	// 1. Scaffold cloud run 
+	// 1. Scaffold cloud run
 	// Waits for it to complete (or run in background with scaffoldGCR.Start())
 	if err := scaffoldGCR.Run(); err != nil {
 		fmt.Println("Couldn't scaffold Cloud Run")
 		fmt.Println(err)
 	}
 
-	// TODO
 	// 2. Http trigger the appropriate tests (http, later pubsub)
 	// 3. Get log from cloud run container
-	// 4. Teardown cloud run
-
+	// 4. Teardown cloud run & subscription
+	// 5. Delete TOPIC
 }
