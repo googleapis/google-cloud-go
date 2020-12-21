@@ -115,6 +115,10 @@ func (ac *AdminClient) instancePrefix() string {
 	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
 }
 
+func (ac *AdminClient) backupPath(cluster, backup string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
+}
+
 // Tables returns a list of the tables in the instance.
 func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -1441,21 +1445,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
-	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
-
-	req := &btapb.RestoreTableRequest{
-		Parent:  prefix,
-		TableId: table,
-		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
-	}
-	op, err := ac.tClient.RestoreTable(ctx, req)
-	if err != nil {
-		return err
-	}
-	resp := btapb.Table{}
-	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+	return ac.RestoreTableTo(ctx, ac.instance, table, cluster, backup)
 }
 
 // RestoreTableTo creates a new table by restoring from this completed backup.
@@ -1465,8 +1455,7 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 func (ac *AdminClient) RestoreTableTo(ctx context.Context, diffInstance, table, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := "projects/" + ac.project + "/instances/" + diffInstance
-	backupPath := "projects/" + ac.project + "/instances/" + ac.instance + "/clusters/" + cluster + "/backups/" + backup
-
+	backupPath := ac.backupPath(cluster, backup)
 	req := &btapb.RestoreTableRequest{
 		Parent:  prefix,
 		TableId: table,
