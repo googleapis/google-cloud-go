@@ -1458,6 +1458,27 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
 }
 
+// RestoreTableTo creates a new table by restoring from this completed backup.
+// instance is an instance in which the new table will be created and restored to.
+// Instance must be in the same project as the project containing backup.
+func (ac *AdminClient) RestoreTableTo(ctx context.Context, instance, table, cluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := "projects/" + ac.project + "/instances/" + instance
+	backupPath := "projects/" + ac.project + "/instances/" + ac.instance + "/clusters/" + cluster + "/backups/" + backup
+
+	req := &btapb.RestoreTableRequest{
+		Parent:  prefix,
+		TableId: table,
+		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
+	}
+	op, err := ac.tClient.RestoreTable(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Table{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
