@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package common
+package publish
 
 import (
 	"fmt"
@@ -19,28 +19,28 @@ import (
 	"strings"
 )
 
-// PublishMetadata holds the results of a published message.
-type PublishMetadata struct {
+// Metadata holds the results of a published message.
+type Metadata struct {
 	Partition int
 	Offset    int64
 }
 
-func (pm *PublishMetadata) String() string {
-	return fmt.Sprintf("%d:%d", pm.Partition, pm.Offset)
+func (m *Metadata) String() string {
+	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
 }
 
-// ParsePublishMetadata converts a string obtained from PublishMetadata.String()
-// back to PublishMetadata.
-func ParsePublishMetadata(input string) (*PublishMetadata, error) {
+// ParseMetadata converts a string obtained from Metadata.String()
+// back to Metadata.
+func ParseMetadata(input string) (*Metadata, error) {
 	parts := strings.Split(input, ":")
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("pubsublite: invalid encoded PublishMetadata %q", input)
+		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", input)
 	}
 
 	partition, pErr := strconv.ParseInt(parts[0], 10, 64)
 	offset, oErr := strconv.ParseInt(parts[1], 10, 64)
 	if pErr != nil || oErr != nil {
-		return nil, fmt.Errorf("pubsublite: invalid encoded PublishMetadata %q", input)
+		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", input)
 	}
-	return &PublishMetadata{Partition: int(partition), Offset: offset}, nil
+	return &Metadata{Partition: int(partition), Offset: offset}, nil
 }
