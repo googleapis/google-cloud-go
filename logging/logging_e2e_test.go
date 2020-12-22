@@ -19,7 +19,6 @@
 package logging_test
 
 import (
-	// "encoding/json"
 	"context"
 	"fmt"
 	"log"
@@ -30,7 +29,6 @@ import (
 	"testing"
 	"time"
 
-	// "cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/logging"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
