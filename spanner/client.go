@@ -452,6 +452,11 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 	var (
 		sh *sessionHandle
 	)
+	defer func() {
+		if sh != nil {
+			sh.recycle()
+		}
+	}()
 	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
@@ -481,9 +486,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
-	if sh != nil {
-		sh.recycle()
-	}
 	return resp, err
 }
 
