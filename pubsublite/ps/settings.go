@@ -36,13 +36,14 @@ const (
 type KeyExtractorFunc func(*pubsub.Message) []byte
 
 // PublishMessageTransformerFunc transforms a pubsub.Message to a Pub/Sub Lite
-// PubSubMessage. If this returns an error, the pubsub.PublishResult will be
-// errored and the PublisherClient will consider this a fatal error and
+// PubSubMessage API proto. If this returns an error, the pubsub.PublishResult
+// will be errored and the PublisherClient will consider this a fatal error and
 // terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) error
 
-// PublishSettings control the batching of published messages. These settings
-// apply per partition.
+// PublishSettings configure the PublisherClient. These settings apply per
+// partition. If BufferedByteLimit is being used to bound memory usage, keep in
+// mind the number of partitions in the topic.
 //
 // A zero PublishSettings will result in values equivalent to
 // DefaultPublishSettings.
@@ -140,12 +141,12 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 // be able to handle messages.
 type NackHandler func(*pubsub.Message) error
 
-// ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage to a
-// pubsub.Message. If this returns an error, the SubscriberClient will consider
-// this a fatal error and terminate.
+// ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage API
+// proto to a pubsub.Message. If this returns an error, the SubscriberClient
+// will consider this a fatal error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
-// ReceiveSettings configure the Receive method. These settings apply per
+// ReceiveSettings configure the SubscriberClient. These settings apply per
 // partition. If MaxOutstandingBytes is being used to bound memory usage, keep
 // in mind the number of partitions in the associated topic.
 //
@@ -180,7 +181,7 @@ type ReceiveSettings struct {
 	// the default behavior is to terminate the SubscriberClient.
 	NackHandler NackHandler
 
-	// Optional custom function that transforms a PubSubMessage API proto to a
+	// Optional custom function that transforms a SequencedMessage API proto to a
 	// pubsub.Message.
 	MessageTransformer ReceiveMessageTransformerFunc
 }

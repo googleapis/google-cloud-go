@@ -101,7 +101,7 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 
 	if from.GetPublishTime() != nil {
 		if to.PublishTime, err = ptypes.Timestamp(from.GetPublishTime()); err != nil {
-			return err
+			return fmt.Errorf("%s: %s", errInvalidMessage.Error(), err)
 		}
 	}
 	if from.GetCursor() != nil {
@@ -122,10 +122,10 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 	}
 	for key, values := range msg.Attributes {
 		if key == eventTimestampAttributeKey {
-			return fmt.Errorf("%s: reserved attribute with key %s exists in wire message", errInvalidMessage.Error(), eventTimestampAttributeKey)
+			return fmt.Errorf("%s: attribute with reserved key %q exists in API message", errInvalidMessage.Error(), eventTimestampAttributeKey)
 		}
 		if len(values.Values) > 1 {
-			return fmt.Errorf("pubsublite: cannot transform wire message with multiple values for attribute %q", key)
+			return fmt.Errorf("%s: cannot transform API message with multiple values for attribute with key %q", errInvalidMessage.Error(), key)
 		}
 		to.Attributes[key] = string(values.Values[0])
 	}
