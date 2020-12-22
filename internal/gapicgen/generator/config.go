@@ -617,14 +617,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/asset/v1beta1",
-		pkg:                   "asset",
-		importPath:            "cloud.google.com/go/asset/apiv1beta1",
-		gRPCServiceConfigPath: "google/cloud/asset/v1beta1/cloudasset_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/asset/v1beta1/cloudasset_v1beta1.yaml",
-		releaseLevel:          "beta",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/asset/v1p2beta1",
 		pkg:                   "asset",
 		importPath:            "cloud.google.com/go/asset/apiv1p2beta1",
