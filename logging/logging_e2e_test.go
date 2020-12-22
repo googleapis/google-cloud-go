@@ -38,53 +38,28 @@ import (
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 )
 
-type environment string
+var (
+	projectID string
+)
 
+type environment string
 const (
 	cloudRun      environment = "CloudRun"
 	cloudFunction environment = "CloudFunction"
 )
 
-// Deploys a Cloud Run container with pubsub subscription
-// TODO refactor this into cmd(env, project...)
-func cmdCloudRun(projectID string, cmd string, topicId string) string {
-	// testId used for creation of image, gcr instance, subscription
-	// TODO fix this
-	testId := topicId
-	scaffoldGCR := &exec.Cmd{
-		Path:   "./e2e/cloudrun.sh",
-		Args:   []string{"./cloudrun.sh", cmd, topicId, testId},
-		Stdout: os.Stdout,
-		Stderr: os.Stdout,
-	}
-	// TODO: wait for it to complete (or run in background with scaffoldGCR.Start())
-	if err := scaffoldGCR.Run(); err != nil {
-		log.Fatalf("Couldn't do Cloud Run")
-	}
-	return testId
-}
-
-// Cloud Run only right now
-func TestDetectResource(t *testing.T) {
-	return // TODO remove
-	t.Parallel()
-	if testing.Short() {
-		t.Skip("skipping logging e2e GCP tests in short mode")
-	}
-
-	projectID := os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
-	if projectID == "" {
-		t.Skip("skipping logging e2e GCP tests when GCLOUD_TESTS_GOLANG_PROJECT_ID variable is not set")
-	}
-
+// TODO use same pubsub client
+// TODO use same logging client
+func init() {
 	if runtime.GOOS == "windows" {
 		log.Fatalf("Can't Execute this on a windows machine")
 	}
+	// TODO handle similar to testMain
+	projectID = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
+}
 
-	// **************** ENVS INIT ****************
-	// Create pubsub topic
+func newPubSubTopic(ctx context.Context, projectID string) (*pubsub.Topic, string) {
 	topicId := "log-" + uuid.New().String()
-	ctx := context.Background()
 	psClient, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
@@ -93,12 +68,38 @@ func TestDetectResource(t *testing.T) {
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
-	defer topic.Stop()
+	return topic, topicId
+}
 
-	// Scaffold relevant envs & subscribe to test trigger (Cloud Run only right now)
-	testId := cmdCloudRun(projectID, "scaffold", topicId)
+// TODO generalize for not just CloudRun
+func scaffold(projectID string, topicId string) {
+	fmt.Println("\n Scaffolding the environment")
+	cmdEnvironment(projectID, "scaffold", topicId)
+}
 
-	// // **************** TRIGGER LOGS ****************
+func teardown(ctx context.Context, projectID string, topicId string, topic *pubsub.Topic) {
+	fmt.Println("\n Tearing everything down")
+	cmdEnvironment(projectID, "teardown", topicId)
+	if err := topic.Delete(ctx); err != nil {
+		log.Fatalf("Couldn't delete e2e test topic")
+	}
+}
+
+// Deploys a Cloud Run container with pubsub subscription
+func cmdEnvironment(projectID string, cmd string, topicId string) {
+	scaffoldGCR := &exec.Cmd{
+		Path:   "./e2e/cloudrun.sh",
+		Args:   []string{"./cloudrun.sh", cmd, topicId, topicId},
+		Stdout: os.Stdout,
+		Stderr: os.Stdout,
+	}
+	if err := scaffoldGCR.Run(); err != nil {
+		log.Fatalf("Couldn't do Cloud Run")
+	}
+}
+
+// TODO, take in what tests are being run
+func triggerTestLogs(ctx context.Context, topic *pubsub.Topic) {
 	var results []*pubsub.PublishResult
 	res := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte("testStdLog, testBasicLog"),
@@ -110,53 +111,42 @@ func TestDetectResource(t *testing.T) {
 			log.Fatalf("Couldn't trigger log tests via pubsub")
 		}
 	}
+}
 
-	// **************** CHECK LOGS ****************
+func getTestLogs(ctx context.Context, topicId string, t *testing.T) []*logging.Entry {
 	var got []*logging.Entry
+	var err error
 	ok := ltesting.WaitFor(func() bool {
 		fmt.Println("\ninside of wait")
-		got, err = getEnvEntries(ctx, testId)
+		got, err = getLogEntries(ctx, topicId)
 		if err != nil {
 			t.Log("fetching log entries: ", err)
 			return false
 		}
-		// TODO: change to wait for testCount
 		return len(got) > 0
 	})
 	if !ok {
 		t.Fatalf("timed out, 0 entries")
 	}
-
-	// check that log entries contain the correct resource
-	if msg, ok := checkLogResource(got, cloudRun, testId); !ok {
-		t.Error(msg)
-	}
-
-	// **************** TEST TEARDOWN ****************
-	fmt.Println("\n Tearing everything down")
-	testId = cmdCloudRun(projectID, "teardown", topicId)
-	if err := topic.Delete(ctx); err != nil {
-		log.Fatalf("Couldn't delete e2e test topic")
-	}
+	return got
 }
 
-// filter by labels: testId, testname, testEnv
-func getEnvEntries(ctx context.Context, testId string) ([]*logging.Entry, error) {
+func getLogEntries(ctx context.Context, topicId string) ([]*logging.Entry, error) {
 	logAdminClient, err := logadmin.NewClient(ctx, "log-bench")
 	if err != nil {
 		log.Fatalf("creating logging client: %v", err)
 	}
-
 	hourAgo := time.Now().Add(-1 * time.Hour).UTC()
-	// TODO update projectID
 	testFilter := fmt.Sprintf(`logName = "projects/%s/logs/%s" AND timestamp >= "%s"`,
-		"log-bench", testId, hourAgo.Format(time.RFC3339))
+		projectID, topicId, hourAgo.Format(time.RFC3339))
 	return getEntries(ctx, logAdminClient, testFilter)
 }
 
+// todo fix this weird context passing?
 func getEntries(ctx context.Context, aclient *logadmin.Client, filter string) ([]*logging.Entry, error) {
 	var es []*logging.Entry
 	it := aclient.Entries(ctx, logadmin.Filter(filter))
+	fmt.Printf("\ngetEntries api returns: %v ", it)
 	for {
 		e, err := it.Next()
 		switch err {
@@ -170,16 +160,50 @@ func getEntries(ctx context.Context, aclient *logadmin.Client, filter string) ([
 	}
 }
 
+func TestGKE(t *testing.T) {
+	t.Parallel()
+	// TODO(nicoleczhu)
+}
+
+func TestGAE(t *testing.T) {
+	t.Parallel()
+	// TODO(nicoleczhu)
+}
+
+func TestGCR(t *testing.T) {
+	t.Parallel()
+
+	if testing.Short() {
+		t.Skip("skipping logging e2e GCP tests in short mode")
+	}
+	if projectID == "" {
+		t.Skip("skipping logging e2e GCP tests when GCLOUD_TESTS_GOLANG_PROJECT_ID variable is not set")
+	}
+
+	ctx := context.Background()
+	topic, topicId := newPubSubTopic(ctx, projectID)
+	defer topic.Stop()
+
+	scaffold(projectID, topicId)
+	defer teardown(ctx, projectID, topicId, topic)
+
+	// TODO construct testToRun array instead of running all tests
+	triggerTestLogs(ctx, topic)
+	got := getTestLogs(ctx, topicId, t)
+
+	if msg, ok := checkLogResource(got, cloudRun, topicId); !ok {
+		t.Error(msg)
+	}
+}
+
 // Check that got all has the correct field types
-func checkLogResource(got []*logging.Entry, env environment, testId string) (string, bool) {
-	fmt.Println("\nChecking log resource types")
+func checkLogResource(got []*logging.Entry, env environment, topicId string) (string, bool) {
+	fmt.Printf("\nChecking log resource types for %v: ", got)
 	for i := range got {
 		fmt.Printf("\nChecking log:  %v\n", got[i])
 		switch env {
 		case cloudRun:
-			return isCloudRunResource(got[i].Resource, testId)
-		case cloudFunction:
-			return "cloud func", false
+			return isCloudRunResource(got[i].Resource, topicId)
 		default:
 			return "lalala", false
 		}
@@ -187,18 +211,18 @@ func checkLogResource(got []*logging.Entry, env environment, testId string) (str
 	return "", true
 }
 
-func isCloudRunResource(res *mrpb.MonitoredResource, testId string) (string, bool) {
+func isCloudRunResource(res *mrpb.MonitoredResource, topicId string) (string, bool) {
 	if res.Type != "cloud_run_revision" {
 		return fmt.Sprintf("\ngot resource type  %+v\nwant %+v", res, "cloud_run_revision"), false
 	}
-	if res.Labels["configuration_name"] != testId {
-		return fmt.Sprintf("\ngot resource config name  %+v\nwant %+v", res.Labels["configuration_name"], testId), false
+	if res.Labels["configuration_name"] != topicId {
+		return fmt.Sprintf("\ngot resource config name  %+v\nwant %+v", res.Labels["configuration_name"], topicId), false
 	}
-	if res.Labels["service_name"] != testId {
-		return fmt.Sprintf("\ngot resource service name  %+v\nwant %+v", res.Labels["service_name"], testId), false
+	if res.Labels["service_name"] != topicId {
+		return fmt.Sprintf("\ngot resource service name  %+v\nwant %+v", res.Labels["service_name"], topicId), false
 	}
-	if !strings.Contains(res.Labels["revision_name"], testId) {
-		return fmt.Sprintf("\nresource revision name  %+v\ndoes not include substr %+v", res.Labels["revision_name"], testId), false
+	if !strings.Contains(res.Labels["revision_name"], topicId) {
+		return fmt.Sprintf("\nresource revision name  %+v\ndoes not include substr %+v", res.Labels["revision_name"], topicId), false
 	}
 	if len(res.Labels["project_id"]) == 0 {
 		return "\ncloud run resource projectid should not be nil", false
