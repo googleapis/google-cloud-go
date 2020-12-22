@@ -62,10 +62,9 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 	defer logClient.Close()
 
 	label := make(map[string]string)
-	label["testId"] = os.Getenv("SUB_ID")
 	label["testEnv"] = "Cloud Run"
 	label["testName"] = "testStdLog" // Overridable default
-	logger := logClient.Logger("my-log", logging.CommonLabels(label))
+	logger := logClient.Logger(os.Getenv("TEST_ID"), logging.CommonLabels(label))
 
 	msg := string(m.Message.Data)
 	// msg = "testStdLog, testBasicLog" //testmode
@@ -99,7 +98,7 @@ func main() {
 // Common tests
 func testStdLog(logger *logging.Logger) {
 	stdLogger := logger.StandardLogger(logging.Info)
-	stdLogger.Println("hi there")
+	stdLogger.Println("hello world")
 }
 
 func testBasicLog(logger *logging.Logger) {

@@ -31,13 +31,13 @@ import (
 	"testing"
 	"time"
 
-	cinternal "cloud.google.com/go/internal"
+	// cinternal "cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
-	gax "github.com/googleapis/gax-go/v2"
+	// gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -179,7 +179,7 @@ func TestLogSync(t *testing.T) {
 		entryForTesting("mr"),
 	}
 	var got []*logging.Entry
-	ok := waitFor(func() bool {
+	ok := ltesting.WaitFor(func() bool {
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
 			t.Log("fetching log entries: ", err)
@@ -212,7 +212,7 @@ func TestLogAndEntries(t *testing.T) {
 		want = append(want, entryForTesting(p))
 	}
 	var got []*logging.Entry
-	ok := waitFor(func() bool {
+	ok := ltesting.WaitFor(func() bool {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
@@ -349,7 +349,7 @@ func TestStandardLogger(t *testing.T) {
 		t.Fatal(err)
 	}
 	var got []*logging.Entry
-	ok := waitFor(func() bool {
+	ok := ltesting.WaitFor(func() bool {
 		var err error
 		got, err = allTestLogEntries(ctx)
 		if err != nil {
@@ -519,7 +519,7 @@ func TestNonProjectParent(t *testing.T) {
 		},
 	}}
 	var got []*logging.Entry
-	ok := waitFor(func() bool {
+	ok := ltesting.WaitFor(func() bool {
 		got, err = allEntries(ctx, a, fmt.Sprintf(`logName = "%s/logs/%s"`, parent,
 			strings.Replace(testLogID, "/", "%2F", -1)))
 		if err != nil {
@@ -536,17 +536,17 @@ func TestNonProjectParent(t *testing.T) {
 	}
 }
 
-// waitFor calls f repeatedly with exponential backoff, blocking until it returns true.
+// ltesting.WaitFor calls f repeatedly with exponential backoff, blocking until it returns true.
 // It returns false after a while (if it times out).
-func waitFor(f func() bool) bool {
-	// TODO(shadams): Find a better way to deflake these tests.
-	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
-	defer cancel()
-	err := cinternal.Retry(ctx,
-		gax.Backoff{Initial: time.Second, Multiplier: 2, Max: 30 * time.Second},
-		func() (bool, error) { return f(), nil })
-	return err == nil
-}
+// func ltesting.WaitFor(f func() bool) bool {
+// 	// TODO(shadams): Find a better way to deflake these tests.
+// 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+// 	defer cancel()
+// 	err := cinternal.Retry(ctx,
+// 		gax.Backoff{Initial: time.Second, Multiplier: 2, Max: 30 * time.Second},
+// 		func() (bool, error) { return f(), nil })
+// 	return err == nil
+// }
 
 // Interleave a lot of Log and Flush calls, to induce race conditions.
 // Run this test with:

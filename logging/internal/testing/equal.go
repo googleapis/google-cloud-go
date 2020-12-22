@@ -17,10 +17,16 @@ limitations under the License.
 package testing
 
 import (
+	"context"
 	"fmt"
-
+	"time"
+	
+	cinternal "cloud.google.com/go/internal"
+	gax "github.com/googleapis/gax-go/v2"
 	"github.com/golang/protobuf/proto"
 )
+
+// TODO rename this file? to common?
 
 // PayloadEqual compares two payloads, assuming they are both proto.Messages or both strings.
 func PayloadEqual(a, b interface{}) bool {
@@ -38,4 +44,14 @@ func PayloadEqual(a, b interface{}) bool {
 	default:
 		panic(fmt.Sprintf("payloadEqual: unexpected type %T", a))
 	}
+}
+
+func WaitFor(f func() bool) bool {
+	// TODO(shadams): Find a better way to deflake these tests.
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
+	defer cancel()
+	err := cinternal.Retry(ctx,
+		gax.Backoff{Initial: time.Second, Multiplier: 2, Max: 30 * time.Second},
+		func() (bool, error) { return f(), nil })
+	return err == nil
 }

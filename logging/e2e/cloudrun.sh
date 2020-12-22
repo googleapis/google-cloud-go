@@ -13,7 +13,8 @@ set -eo pipefail
 
 GCR_REGION=us-west1
 PROJECT_ID=$(gcloud config get-value project 2> /dev/null)
-TEST_ID=$2
+TOPIC_ID=$2
+TEST_ID=$3
 
 scaffold() {
     # Gets folder containing this running script
@@ -21,9 +22,9 @@ scaffold() {
     ROOT_DIR=$SCRIPT_DIR/../..              # google-cloud-go/.
 
     # Handle if e2e_test didn't create topic
-    missing=$(gcloud pubsub topics describe $TEST_ID 2>&1) || true
+    missing=$(gcloud pubsub topics describe $TOPIC_ID 2>&1) || true
     if [[ "$missing" == *"NOT_FOUND"* ]]; then
-        gcloud pubsub topics create $TEST_ID
+        gcloud pubsub topics create $TOPIC_ID
     else
         echo TOPIC FOUND
     fi
@@ -41,7 +42,7 @@ scaffold() {
         --platform managed \
         --region $GCR_REGION \
         --allow-unauthenticated \
-        --set-env-vars SUB_ID=$TEST_ID \
+        --set-env-vars TEST_ID=$TEST_ID \
         $TEST_ID
 
     # Allow Pub/Sub to create authentication tokens in your project:
@@ -71,7 +72,7 @@ scaffold() {
     missing=$(gcloud pubsub subscriptions describe $TEST_ID 2>&1) || true
     if [[ "$missing" == *"NOT_FOUND"* ]]; then
         gcloud pubsub subscriptions create $TEST_ID \
-            --topic $TEST_ID \
+            --topic $TOPIC_ID \
             --topic-project $PROJECT_ID \
             --push-endpoint $GCR_URL \
             --push-auth-service-account $SERVICEACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com
