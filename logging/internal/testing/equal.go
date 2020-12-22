@@ -20,10 +20,10 @@ import (
 	"context"
 	"fmt"
 	"time"
-	
+
 	cinternal "cloud.google.com/go/internal"
-	gax "github.com/googleapis/gax-go/v2"
 	"github.com/golang/protobuf/proto"
+	gax "github.com/googleapis/gax-go/v2"
 )
 
 // TODO rename this file? to common?

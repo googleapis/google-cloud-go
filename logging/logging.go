@@ -277,7 +277,7 @@ func detectGCFResource() *mrpb.MonitoredResource {
 	return &mrpb.MonitoredResource{
 		Type: "gae_app",
 		Labels: map[string]string{
-			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
+			"project_id": os.Getenv("GOOGLE_CLOUD_PROJECT"),
 		},
 	}
 }
@@ -321,10 +321,8 @@ func isKubernetesEngine() bool {
 // TODO(nicolezhu): implement this
 func detectGKEResource() *mrpb.MonitoredResource {
 	return &mrpb.MonitoredResource{
-		Type: "gae_app",
-		Labels: map[string]string{
-			
-		},
+		Type:   "gae_app",
+		Labels: map[string]string{},
 	}
 }
 
