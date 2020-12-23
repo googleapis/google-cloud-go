@@ -14,6 +14,7 @@
 package wire
 
 import (
+	"errors"
 	"sync"
 )
 
@@ -56,6 +57,7 @@ type service interface {
 	AddStatusChangeReceiver(serviceHandle, serviceStatusChangeFunc)
 	RemoveStatusChangeReceiver(serviceHandle)
 	Handle() serviceHandle
+	Status() serviceStatus
 	Error() error
 }
 
@@ -153,10 +155,7 @@ func (as *abstractService) unsafeUpdateStatus(targetStatus serviceStatus, err er
 	return true
 }
 
-type serviceHolder struct {
-	service    service
-	lastStatus serviceStatus
-}
+var errChildServiceStarted = errors.New("pubsublite: dependent service must not be started")
 
 // compositeService can be embedded into other structs to manage child services.
 // It implements the service interface and can itself be a dependency of another
@@ -169,8 +168,8 @@ type compositeService struct {
 	waitStarted    chan struct{}
 	waitTerminated chan struct{}
 
-	dependencies []*serviceHolder
-	removed      []*serviceHolder
+	dependencies []service
+	removed      []service
 
 	abstractService
 }
@@ -188,7 +187,7 @@ func (cs *compositeService) Start() {
 
 	if cs.abstractService.unsafeUpdateStatus(serviceStarting, nil) {
 		for _, s := range cs.dependencies {
-			s.service.Start()
+			s.Start()
 		}
 	}
 }
@@ -218,8 +217,14 @@ func (cs *compositeService) unsafeAddServices(services ...service) error {
 	}
 
 	for _, s := range services {
+		// Adding dependent services which have already started not currently
+		// supported. Requires updating logic to handle the compositeService state.
+		if s.Status() > serviceUninitialized {
+			return errChildServiceStarted
+		}
+
 		s.AddStatusChangeReceiver(cs.Handle(), cs.onServiceStatusChange)
-		cs.dependencies = append(cs.dependencies, &serviceHolder{service: s})
+		cs.dependencies = append(cs.dependencies, s)
 		if cs.status > serviceUninitialized {
 			s.Start()
 		}
@@ -227,15 +232,15 @@ func (cs *compositeService) unsafeAddServices(services ...service) error {
 	return nil
 }
 
-func (cs *compositeService) unsafeRemoveService(service service) {
+func (cs *compositeService) unsafeRemoveService(remove service) {
 	removeIdx := -1
 	for i, s := range cs.dependencies {
-		if s.service.Handle() == service.Handle() {
+		if s.Handle() == remove.Handle() {
 			// Move from the `dependencies` to the `removed` list.
 			cs.removed = append(cs.removed, s)
 			removeIdx = i
-			if s.lastStatus < serviceTerminating {
-				s.service.Stop()
+			if s.Status() < serviceTerminating {
+				s.Stop()
 			}
 			break
 		}
@@ -244,12 +249,13 @@ func (cs *compositeService) unsafeRemoveService(service service) {
 }
 
 func (cs *compositeService) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	for _, s := range cs.dependencies {
-		if s.lastStatus < serviceTerminating {
-			s.service.Stop()
+	if cs.unsafeUpdateStatus(targetStatus, err) {
+		for _, s := range cs.dependencies {
+			if s.Status() < serviceTerminating {
+				s.Stop()
+			}
 		}
 	}
-	cs.unsafeUpdateStatus(targetStatus, err)
 }
 
 func (cs *compositeService) unsafeUpdateStatus(targetStatus serviceStatus, err error) (ret bool) {
@@ -257,7 +263,7 @@ func (cs *compositeService) unsafeUpdateStatus(targetStatus serviceStatus, err e
 	if ret = cs.abstractService.unsafeUpdateStatus(targetStatus, err); ret {
 		// Note: the waitStarted channel must be closed when the service fails to
 		// start.
-		if previousStatus == serviceStarting {
+		if previousStatus < serviceActive && targetStatus >= serviceActive {
 			close(cs.waitStarted)
 		}
 		if targetStatus == serviceTerminated {
@@ -273,17 +279,15 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 
 	removeIdx := -1
 	for i, s := range cs.removed {
-		if s.service.Handle() == handle {
+		if s.Handle() == handle {
 			if status == serviceTerminated {
-				s.service.RemoveStatusChangeReceiver(cs.Handle())
+				s.RemoveStatusChangeReceiver(cs.Handle())
 				removeIdx = i
 			}
 			break
 		}
 	}
-	if removeIdx >= 0 {
-		cs.removed = removeFromSlice(cs.removed, removeIdx)
-	}
+	cs.removed = removeFromSlice(cs.removed, removeIdx)
 
 	// Note: we cannot rely on the service not being in the removed list above to
 	// determine whether it is an active dependency. The notification may be for a
@@ -291,10 +295,7 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 	// changes are notified asynchronously and may be received out of order.
 	isDependency := false
 	for _, s := range cs.dependencies {
-		if s.service.Handle() == handle {
-			if status > s.lastStatus {
-				s.lastStatus = status
-			}
+		if s.Handle() == handle {
 			isDependency = true
 			break
 		}
@@ -307,13 +308,13 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 	numTerminated := 0
 
 	for _, s := range cs.dependencies {
-		if shouldTerminate && s.lastStatus < serviceTerminating {
-			s.service.Stop()
+		if shouldTerminate && s.Status() < serviceTerminating {
+			s.Stop()
 		}
-		if s.lastStatus >= serviceActive {
+		if s.Status() >= serviceActive {
 			numStarted++
 		}
-		if s.lastStatus == serviceTerminated {
+		if s.Status() == serviceTerminated {
 			numTerminated++
 		}
 	}
@@ -328,7 +329,7 @@ func (cs *compositeService) onServiceStatusChange(handle serviceHandle, status s
 	}
 }
 
-func removeFromSlice(services []*serviceHolder, removeIdx int) []*serviceHolder {
+func removeFromSlice(services []service, removeIdx int) []service {
 	lastIdx := len(services) - 1
 	if removeIdx < 0 || removeIdx > lastIdx {
 		return services
