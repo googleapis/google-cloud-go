@@ -17,6 +17,7 @@ import (
 	"context"
 	"errors"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
@@ -62,7 +63,8 @@ func fakeGenerateUUID() (uuid.UUID, error) {
 // testAssigner wraps an assigner for ease of testing.
 type testAssigner struct {
 	// Fake error to simulate receiver unable to handle assignment.
-	RetError error
+	recvError error
+	mu        sync.Mutex
 
 	t          *testing.T
 	asn        *assigner
@@ -96,10 +98,18 @@ func (ta *testAssigner) receiveAssignment(partitions partitionSet) error {
 	sort.Ints(p)
 	ta.partitions <- p
 
-	if ta.RetError != nil {
-		return ta.RetError
+	ta.mu.Lock()
+	defer ta.mu.Unlock()
+	if ta.recvError != nil {
+		return ta.recvError
 	}
 	return nil
+}
+
+func (ta *testAssigner) SetReceiveError(err error) {
+	ta.mu.Lock()
+	defer ta.mu.Unlock()
+	ta.recvError = err
 }
 
 func (ta *testAssigner) NextPartitions() []int {
@@ -186,7 +196,8 @@ func TestAssignerHandlePartitionFailure(t *testing.T) {
 
 	asn := newTestAssigner(t, subscription)
 	// Simulates the assigningSubscriber discarding assignments.
-	asn.RetError = errors.New("subscriber shutting down")
+	wantErr := errors.New("subscriber shutting down")
+	asn.SetReceiveError(wantErr)
 
 	if gotErr := asn.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
@@ -194,7 +205,7 @@ func TestAssignerHandlePartitionFailure(t *testing.T) {
 	if got, want := asn.NextPartitions(), []int{1, 2}; !testutil.Equal(got, want) {
 		t.Errorf("Partition assignments: got %v, want %v", got, want)
 	}
-	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, asn.RetError) {
-		t.Errorf("Final err: (%v), want: (%v)", gotErr, asn.RetError)
+	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 }
