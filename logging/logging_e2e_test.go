@@ -46,6 +46,7 @@ var (
 
 // Corresponds to the name of its respective bash scripts
 type environment string
+
 const (
 	cloudRun      environment = "cloudrun"
 	cloudFunction environment = "cloudfunction"
