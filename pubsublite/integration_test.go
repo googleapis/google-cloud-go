@@ -15,12 +15,12 @@ package pubsublite
 
 import (
 	"context"
-	"math/rand"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
+	"cloud.google.com/go/pubsublite/internal/test"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/iterator"
@@ -33,16 +33,6 @@ const gibi = 1 << 30
 
 var (
 	resourceIDs = uid.NewSpace("go-admin-test", nil)
-	rng         *rand.Rand
-
-	// A random zone is selected for each integration test run.
-	supportedZones = []string{
-		"us-central1-a",
-		"us-central1-b",
-		"us-central1-c",
-		"europe-west1-b",
-		"europe-west1-d",
-	}
 
 	// The server returns topic and subscription configs with project numbers in
 	// resource paths. These will not match a project id specified for integration
@@ -52,10 +42,6 @@ var (
 		cmpopts.IgnoreFields(TopicPath{}, "Project"),
 	}
 )
-
-func init() {
-	rng = testutil.NewRand(time.Now())
-}
 
 func initIntegrationTest(t *testing.T) {
 	if testing.Short() {
@@ -101,16 +87,12 @@ func cleanUpSubscription(ctx context.Context, t *testing.T, admin *AdminClient, 
 	}
 }
 
-func randomLiteZone() string {
-	return supportedZones[rng.Intn(len(supportedZones))]
-}
-
 func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	initIntegrationTest(t)
 
 	ctx := context.Background()
 	proj := testutil.ProjID()
-	zone := randomLiteZone()
+	zone := test.RandomLiteZone()
 	region, _ := ZoneToRegion(zone)
 	resourceID := resourceIDs.New()
 
