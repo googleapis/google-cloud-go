@@ -75,7 +75,7 @@ type testAssigner struct {
 
 func newTestAssigner(t *testing.T, subscription string) *testAssigner {
 	ctx := context.Background()
-	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testClientOpts...)
+	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}

@@ -47,7 +47,7 @@ func (tw *testPartitionCountWatcher) UpdatePartitionCount() {
 
 func newTestPartitionCountWatcher(t *testing.T, topicPath string, settings PublishSettings) *testPartitionCountWatcher {
 	ctx := context.Background()
-	adminClient, err := NewAdminClient(ctx, "ignored", testClientOpts...)
+	adminClient, err := NewAdminClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}

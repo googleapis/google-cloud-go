@@ -379,13 +379,17 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // multiPartitionSubscriber receives messages from a fixed set of topic
 // partitions.
 type multiPartitionSubscriber struct {
+	// Immutable after creation.
+	clients     apiClients
 	subscribers []*singlePartitionSubscriber
 
 	compositeService
 }
 
-func newMultiPartitionSubscriber(subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
-	ms := new(multiPartitionSubscriber)
+func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
+	ms := &multiPartitionSubscriber{
+		clients: allClients,
+	}
 	ms.init()
 
 	for _, partition := range subFactory.settings.Partitions {
@@ -412,6 +416,7 @@ func (ms *multiPartitionSubscriber) Terminate() {
 // singlePartitionSubscribers.
 type assigningSubscriber struct {
 	// Immutable after creation.
+	clients    apiClients
 	subFactory *singlePartitionSubscriberFactory
 	assigner   *assigner
 
@@ -422,8 +427,9 @@ type assigningSubscriber struct {
 	compositeService
 }
 
-func newAssigningSubscriber(assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
+func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
+		clients:     allClients,
 		subFactory:  subFactory,
 		subscribers: make(map[int]*singlePartitionSubscriber),
 	}
@@ -503,6 +509,7 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	if err != nil {
 		return nil, err
 	}
+	allClients := apiClients{subClient, cursorClient}
 
 	subFactory := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -514,11 +521,12 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	}
 
 	if len(settings.Partitions) > 0 {
-		return newMultiPartitionSubscriber(subFactory), nil
+		return newMultiPartitionSubscriber(allClients, subFactory), nil
 	}
 	partitionClient, err := newPartitionAssignmentClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return newAssigningSubscriber(partitionClient, uuid.NewRandom, subFactory)
+	allClients = append(allClients, partitionClient)
+	return newAssigningSubscriber(allClients, partitionClient, uuid.NewRandom, subFactory)
 }

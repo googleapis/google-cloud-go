@@ -30,7 +30,7 @@ type testCommitter struct {
 
 func newTestCommitter(t *testing.T, subscription subscriptionPartition, acks *ackTracker) *testCommitter {
 	ctx := context.Background()
-	cursorClient, err := newCursorClient(ctx, "ignored", testClientOpts...)
+	cursorClient, err := newCursorClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}

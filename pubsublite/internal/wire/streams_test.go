@@ -49,7 +49,7 @@ type testStreamHandler struct {
 
 func newTestStreamHandler(t *testing.T, timeout time.Duration) *testStreamHandler {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}

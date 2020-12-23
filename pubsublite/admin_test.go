@@ -27,7 +27,7 @@ import (
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {
-	admin, err := NewAdminClient(context.Background(), "us-central1", testClientOpts...)
+	admin, err := NewAdminClient(context.Background(), "us-central1", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
