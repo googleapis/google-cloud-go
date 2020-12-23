@@ -46,6 +46,7 @@ func PayloadEqual(a, b interface{}) bool {
 	}
 }
 
+// WaitFor retries tests that need some lag time to pass
 func WaitFor(f func() bool) bool {
 	// TODO(shadams): Find a better way to deflake these tests.
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Minute)
