@@ -32,8 +32,8 @@ import (
 // PubSubMessage is the payload of a Pub/Sub event.
 type pubSubMessage struct {
 	Message struct {
-			Data []byte `json:"data,omitempty"`
-			ID   string `json:"id"`
+		Data []byte `json:"data,omitempty"`
+		ID   string `json:"id"`
 	} `json:"message"`
 	Subscription string `json:"subscription"`
 }
@@ -68,31 +68,31 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 	defer logClient.Close()
 
 	// Overridable default label
-	label := map[string]string{"testName": "testStdLog"} 
+	label := map[string]string{"testName": "testStdLog"}
 	logger := logClient.Logger(os.Getenv("TOPIC_ID"), logging.CommonLabels(label))
 
 	msg := string(m.Message.Data)
-	if strings.Contains(msg, "testStdLog"){
+	if strings.Contains(msg, "testStdLog") {
 		testStdLog(logger)
 	}
-	if strings.Contains(msg, "testBasicLog"){
+	if strings.Contains(msg, "testBasicLog") {
 		testBasicLog(logger)
 	}
 }
 
 func main() {
 	environment := os.Getenv("ENVIRONMENT")
-	if (environment == "cloudrun") {
+	if environment == "cloudrun" {
 		http.HandleFunc("/", handlePubSub)
 		port := os.Getenv("PORT")
 		if port == "" {
-				port = "8080"
-				log.Printf("Defaulting to port %s", port)
+			port = "8080"
+			log.Printf("Defaulting to port %s", port)
 		}
 		// Start HTTP server.
 		log.Printf("Listening on port %s", port)
 		if err := http.ListenAndServe(":"+port, nil); err != nil {
-				log.Fatal(err)
+			log.Fatal(err)
 		}
 	}
 }
@@ -106,6 +106,6 @@ func testStdLog(logger *logging.Logger) {
 func testBasicLog(logger *logging.Logger) {
 	logger.Log(logging.Entry{
 		Payload: "hello world",
-		Labels: map[string]string{"testName":"testBasicLog"},
+		Labels:  map[string]string{"testName": "testBasicLog"},
 	})
 }
