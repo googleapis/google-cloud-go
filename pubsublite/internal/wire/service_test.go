@@ -202,10 +202,10 @@ func newTestCompositeService(name string) *testCompositeService {
 	return ts
 }
 
-func (ts *testCompositeService) AddServices(services ...service) {
+func (ts *testCompositeService) AddServices(services ...service) error {
 	ts.mu.Lock()
 	defer ts.mu.Unlock()
-	ts.unsafeAddServices(services...)
+	return ts.unsafeAddServices(services...)
 }
 
 func (ts *testCompositeService) RemoveService(service service) {
@@ -231,7 +231,9 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 	child2 := newTestService("child2")
 	child3 := newTestService("child3")
 	parent := newTestCompositeService("parent")
-	parent.AddServices(child1, child2)
+	if err := parent.AddServices(child1, child2); err != nil {
+		t.Errorf("AddServices() got err: %v", err)
+	}
 
 	t.Run("Starting", func(t *testing.T) {
 		wantState := serviceUninitialized
@@ -252,7 +254,9 @@ func TestCompositeServiceNormalStop(t *testing.T) {
 		if child3.Status() != wantState {
 			t.Errorf("child3: current service status: got %d, want %d", child3.Status(), wantState)
 		}
-		parent.AddServices(child3)
+		if err := parent.AddServices(child3); err != nil {
+			t.Errorf("AddServices() got err: %v", err)
+		}
 		child3.receiver.VerifyStatus(t, serviceStarting)
 	})
 
@@ -300,7 +304,9 @@ func TestCompositeServiceErrorDuringStartup(t *testing.T) {
 	child1 := newTestService("child1")
 	child2 := newTestService("child2")
 	parent := newTestCompositeService("parent")
-	parent.AddServices(child1, child2)
+	if err := parent.AddServices(child1, child2); err != nil {
+		t.Errorf("AddServices() got err: %v", err)
+	}
 
 	t.Run("Starting", func(t *testing.T) {
 		parent.Start()
@@ -334,7 +340,9 @@ func TestCompositeServiceErrorWhileActive(t *testing.T) {
 	child1 := newTestService("child1")
 	child2 := newTestService("child2")
 	parent := newTestCompositeService("parent")
-	parent.AddServices(child1, child2)
+	if err := parent.AddServices(child1, child2); err != nil {
+		t.Errorf("AddServices() got err: %v", err)
+	}
 
 	t.Run("Starting", func(t *testing.T) {
 		parent.Start()
@@ -382,7 +390,9 @@ func TestCompositeServiceRemoveService(t *testing.T) {
 	child1 := newTestService("child1")
 	child2 := newTestService("child2")
 	parent := newTestCompositeService("parent")
-	parent.AddServices(child1, child2)
+	if err := parent.AddServices(child1, child2); err != nil {
+		t.Errorf("AddServices() got err: %v", err)
+	}
 
 	t.Run("Starting", func(t *testing.T) {
 		parent.Start()
@@ -452,16 +462,21 @@ func TestCompositeServiceTree(t *testing.T) {
 	leaf1 := newTestService("leaf1")
 	leaf2 := newTestService("leaf2")
 	intermediate1 := newTestCompositeService("intermediate1")
-	intermediate1.AddServices(leaf1, leaf2)
+	if err := intermediate1.AddServices(leaf1, leaf2); err != nil {
+		t.Errorf("intermediate1.AddServices() got err: %v", err)
+	}
 
 	leaf3 := newTestService("leaf3")
 	leaf4 := newTestService("leaf4")
 	intermediate2 := newTestCompositeService("intermediate2")
-	intermediate2.AddServices(leaf3, leaf4)
+	if err := intermediate2.AddServices(leaf3, leaf4); err != nil {
+		t.Errorf("intermediate2.AddServices() got err: %v", err)
+	}
 
 	root := newTestCompositeService("root")
-	root.AddServices(intermediate1, intermediate2)
-
+	if err := root.AddServices(intermediate1, intermediate2); err != nil {
+		t.Errorf("root.AddServices() got err: %v", err)
+	}
 	wantErr := errors.New("fail")
 
 	t.Run("Starting", func(t *testing.T) {
@@ -527,4 +542,24 @@ func TestCompositeServiceTree(t *testing.T) {
 			t.Errorf("compositeService.WaitStopped() got err: (%v), want err: (%v)", gotErr, wantErr)
 		}
 	})
+}
+
+func TestCompositeServiceAddServicesErrors(t *testing.T) {
+	child1 := newTestService("child1")
+	parent := newTestCompositeService("parent")
+	if err := parent.AddServices(child1); err != nil {
+		t.Errorf("AddServices(child1) got err: %v", err)
+	}
+
+	child2 := newTestService("child2")
+	child2.Start()
+	if gotErr, wantErr := parent.AddServices(child2), errChildServiceStarted; !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("AddServices(child2) got err: (%v), want err: (%v)", gotErr, wantErr)
+	}
+
+	parent.Stop()
+	child3 := newTestService("child3")
+	if gotErr, wantErr := parent.AddServices(child3), ErrServiceStopped; !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("AddServices(child3) got err: (%v), want err: (%v)", gotErr, wantErr)
+	}
 }
