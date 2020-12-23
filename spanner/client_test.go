@@ -828,6 +828,34 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
+	// Make sure that there is always only one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 1,
+		MaxOpened: 1,
+	}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc})
+	defer teardown()
+	ctx := context.Background()
+
+	// If a panic occurs during a transaction, the session will not leak.
+	func() {
+		defer func() { recover() }()
+
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			panic("cause panic")
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("Unexpected error during transaction: %v", err)
+		}
+	}()
+
+	if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		t.Fatalf("idle session count mismatch.\nGot: %v\nWant: %v", g, w)
+	}
+}
+
 func TestClient_SessionNotFound(t *testing.T) {
 	// Ensure we always have at least one session in the pool.
 	sc := SessionPoolConfig{

@@ -15,11 +15,63 @@ package ps_test
 
 import (
 	"context"
+	"fmt"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/ps"
 )
+
+func ExamplePublisherClient_Publish() {
+	ctx := context.Background()
+	topic := pubsublite.TopicPath{Project: "project-id", Zone: "zone", TopicID: "topic-id"}
+	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var results []*pubsub.PublishResult
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	results = append(results, r)
+	// Do other work ...
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+}
+
+func ExamplePublisherClient_Error() {
+	ctx := context.Background()
+	topic := pubsublite.TopicPath{Project: "project-id", Zone: "zone", TopicID: "topic-id"}
+	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var results []*pubsub.PublishResult
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	results = append(results, r)
+	// Do other work ...
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+			if err == ps.ErrPublisherStopped {
+				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
+			}
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+}
 
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()

@@ -197,8 +197,8 @@ func (s *subscribeStream) newStream(ctx context.Context) (grpc.ClientStream, err
 	return s.subClient.Subscribe(addSubscriptionRoutingMetadata(ctx, s.subscription))
 }
 
-func (s *subscribeStream) initialRequest() (interface{}, bool) {
-	return s.initialReq, true
+func (s *subscribeStream) initialRequest() (interface{}, initialResponseRequired) {
+	return s.initialReq, initialResponseRequired(true)
 }
 
 func (s *subscribeStream) validateInitialResponse(response interface{}) error {
