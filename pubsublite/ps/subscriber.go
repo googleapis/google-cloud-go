@@ -212,10 +212,9 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 // MessageReceiverFunc handles messages sent by the Cloud Pub/Sub Lite service.
 //
 // The implementation must arrange for pubsub.Message.Ack() or
-// pubsub.Message.Nack() to be called after processing the message. Failure to
-// do so can prevent SubscriberClient.Receive() from returning. Therefore it is
-// encouraged to process messages synchronously, even if that processing is
-// relatively time-consuming.
+// pubsub.Message.Nack() to be called after processing the message. Since Cloud
+// Pub/Sub Lite has no concept of ACK deadlines, it is encouraged to process
+// messages synchronously, even if that processing is relatively time-consuming.
 //
 // The receiver func will be called from multiple goroutines if the subscriber
 // is connected to multiple partitions. Only one call from any connected
@@ -276,7 +275,9 @@ func NewSubscriberClient(ctx context.Context, settings ReceiveSettings, subscrip
 //
 // Receive calls f concurrently from multiple goroutines if the SubscriberClient
 // is connected to multiple partitions. It is encouraged to process messages
-// synchronously in f, even if that processing is relatively time-consuming.
+// synchronously in f, even if that processing is relatively time-consuming. All
+// messages received by f must be ACKed or NACKed. Failure to do so can prevent
+// Receive from returning.
 //
 // The context passed to f will be canceled when ctx is Done or there is a fatal
 // service error.
