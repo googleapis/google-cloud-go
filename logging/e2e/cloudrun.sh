@@ -29,7 +29,6 @@ set -eo pipefail
 GCR_REGION=us-west1
 PROJECT_ID=$(gcloud config get-value project 2> /dev/null)
 TOPIC_ID=$2
-TEST_ID=$3
 
 scaffold() {
     # Gets folder containing this running script
@@ -49,16 +48,16 @@ scaffold() {
     cp ./logging/e2e/Dockerfile .
 
     # Build latest test app image
-    gcloud builds submit --tag gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$TEST_ID
+    gcloud builds submit --tag gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$TOPIC_ID
     rm Dockerfile
 
     # Build test image to Cloud Run
-    gcloud run deploy --image gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$TEST_ID \
+    gcloud run deploy --image gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$TOPIC_ID \
         --platform managed \
         --region $GCR_REGION \
         --allow-unauthenticated \
-        --set-env-vars TEST_ID=$TEST_ID \
-        $TEST_ID
+        --set-env-vars TOPIC_ID=$TOPIC_ID \
+        $TOPIC_ID
 
     # Allow Pub/Sub to create authentication tokens in your project:
     PROJECT_NUMBER=$(gcloud projects describe log-bench --format 'value(projectNumber)')
@@ -76,17 +75,17 @@ scaffold() {
     fi
     
     # Give service account permission to invoke pubsub service
-    gcloud run services add-iam-policy-binding $TEST_ID \
+    gcloud run services add-iam-policy-binding $TOPIC_ID \
         --member=serviceAccount:$SERVICEACCOUNT_NAME@$PROJECT_ID.iam.gserviceaccount.com \
         --role=roles/run.invoker \
         --region $GCR_REGION \
         --platform managed
 
     # Create pubsub subscription which pushes messages to the service account
-    GCR_URL=$(gcloud run services describe $TEST_ID --platform managed --region us-west1 --format 'value(status.url)')
-    missing=$(gcloud pubsub subscriptions describe $TEST_ID 2>&1) || true
+    GCR_URL=$(gcloud run services describe $TOPIC_ID --platform managed --region us-west1 --format 'value(status.url)')
+    missing=$(gcloud pubsub subscriptions describe $TOPIC_ID 2>&1) || true
     if [[ "$missing" == *"NOT_FOUND"* ]]; then
-        gcloud pubsub subscriptions create $TEST_ID \
+        gcloud pubsub subscriptions create $TOPIC_ID \
             --topic $TOPIC_ID \
             --topic-project $PROJECT_ID \
             --push-endpoint $GCR_URL \
@@ -98,14 +97,14 @@ scaffold() {
 
 # Deletes GCR service and container image
 teardown() {
-    gcloud container images delete gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$TEST_ID \
+    gcloud container images delete gcr.io/${GCLOUD_TESTS_GOLANG_PROJECT_ID}/$TOPIC_ID \
         --force-delete-tags \
         --quiet || true
     
-    gcloud pubsub subscriptions delete $TEST_ID \
+    gcloud pubsub subscriptions delete $TOPIC_ID \
         --quiet || true
 
-    gcloud run services delete $TEST_ID \
+    gcloud run services delete $TOPIC_ID \
         --platform managed \
         --region $GCR_REGION \
         --quiet || true

@@ -43,9 +43,10 @@ var (
 )
 
 type environment string
+// Corresponds to the name of its respective bash scripts
 const (
-	cloudRun      environment = "CloudRun"
-	cloudFunction environment = "CloudFunction"
+	cloudRun      environment = "cloudrun"
+	cloudFunction environment = "cloudfunction"
 )
 
 // TODO use same pubsub client
@@ -58,7 +59,7 @@ func init() {
 	projectID = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
 }
 
-func newPubSubTopic(ctx context.Context, projectID string) (*pubsub.Topic, string) {
+func newPubSubTopic(ctx context.Context) (*pubsub.Topic, string) {
 	topicId := "log-" + uuid.New().String()
 	psClient, err := pubsub.NewClient(ctx, projectID)
 	if err != nil {
@@ -71,25 +72,25 @@ func newPubSubTopic(ctx context.Context, projectID string) (*pubsub.Topic, strin
 	return topic, topicId
 }
 
-// TODO generalize for not just CloudRun
-func scaffold(projectID string, topicId string) {
+
+func scaffold(env environment, topicId string) {
 	fmt.Println("\n Scaffolding the environment")
-	cmdEnvironment(projectID, "scaffold", topicId)
+	cmdEnvironment("scaffold", env, topicId)
 }
 
-func teardown(ctx context.Context, projectID string, topicId string, topic *pubsub.Topic) {
+func teardown(env environment, ctx context.Context, topicId string, topic *pubsub.Topic) {
 	fmt.Println("\n Tearing everything down")
-	cmdEnvironment(projectID, "teardown", topicId)
+	cmdEnvironment("teardown", env, topicId)
 	if err := topic.Delete(ctx); err != nil {
 		log.Fatalf("Couldn't delete e2e test topic")
 	}
 }
 
 // Deploys a Cloud Run container with pubsub subscription
-func cmdEnvironment(projectID string, cmd string, topicId string) {
+func cmdEnvironment(cmd string, env environment, topicId string) {
 	scaffoldGCR := &exec.Cmd{
-		Path:   "./e2e/cloudrun.sh",
-		Args:   []string{"./cloudrun.sh", cmd, topicId, topicId},
+		Path:   "./e2e/" + string(env) + ".sh",
+		Args:   []string{"./" + string(env) + ".sh", cmd, topicId, topicId},
 		Stdout: os.Stdout,
 		Stderr: os.Stdout,
 	}
@@ -99,10 +100,10 @@ func cmdEnvironment(projectID string, cmd string, topicId string) {
 }
 
 // TODO, take in what tests are being run
-func triggerTestLogs(ctx context.Context, topic *pubsub.Topic) {
+func triggerTestLogs(ctx context.Context, topic *pubsub.Topic, tests...string) int {
 	var results []*pubsub.PublishResult
 	res := topic.Publish(ctx, &pubsub.Message{
-		Data: []byte("testStdLog, testBasicLog"),
+		Data: []byte(strings.Join(tests, ",")),
 	})
 	results = append(results, res)
 	for _, r := range results {
@@ -111,9 +112,10 @@ func triggerTestLogs(ctx context.Context, topic *pubsub.Topic) {
 			log.Fatalf("Couldn't trigger log tests via pubsub")
 		}
 	}
+	return len(tests)
 }
 
-func getTestLogs(ctx context.Context, topicId string, t *testing.T) []*logging.Entry {
+func getTestLogs(ctx context.Context, topicId string, t *testing.T, expectedNumLogs int) []*logging.Entry {
 	var got []*logging.Entry
 	var err error
 	ok := ltesting.WaitFor(func() bool {
@@ -123,7 +125,7 @@ func getTestLogs(ctx context.Context, topicId string, t *testing.T) []*logging.E
 			t.Log("fetching log entries: ", err)
 			return false
 		}
-		return len(got) > 0
+		return len(got) >= expectedNumLogs
 	})
 	if !ok {
 		t.Fatalf("timed out, 0 entries")
@@ -179,34 +181,35 @@ func TestGCR(t *testing.T) {
 	if projectID == "" {
 		t.Skip("skipping logging e2e GCP tests when GCLOUD_TESTS_GOLANG_PROJECT_ID variable is not set")
 	}
-
 	ctx := context.Background()
-	topic, topicId := newPubSubTopic(ctx, projectID)
+
+	// Create a test topic & Cloud Run env with tests triggered by the topic
+	topic, topicId := newPubSubTopic(ctx)
 	defer topic.Stop()
+	scaffold(cloudRun, topicId)
+	defer teardown(cloudRun, ctx, topicId, topic)
 
-	scaffold(projectID, topicId)
-	defer teardown(ctx, projectID, topicId, topic)
-
-	// TODO construct testToRun array instead of running all tests
-	triggerTestLogs(ctx, topic)
-	got := getTestLogs(ctx, topicId, t)
-
-	if msg, ok := checkLogResource(got, cloudRun, topicId); !ok {
+	// Test expectations
+	numLogs := triggerTestLogs(ctx, topic, "testStdLog", "testBasicLog")
+	got := getTestLogs(ctx, topicId, t, numLogs)
+	if msg, ok := checkLogResource(cloudRun, got, topicId); !ok {
 		t.Error(msg)
 	}
 }
 
 // Check that got all has the correct field types
-func checkLogResource(got []*logging.Entry, env environment, topicId string) (string, bool) {
-	fmt.Printf("\nChecking log resource types for %v: ", got)
+func checkLogResource(env environment, got []*logging.Entry, topicId string) (string, bool) {
+	fmt.Printf("\nChecking log resource types for #%v: logs", len(got))
+	switch env {
+		// todo start here
+	case cloudRun:
+		
+	default:
+		return "lalala", false
+	}
 	for i := range got {
 		fmt.Printf("\nChecking log:  %v\n", got[i])
-		switch env {
-		case cloudRun:
-			return isCloudRunResource(got[i].Resource, topicId)
-		default:
-			return "lalala", false
-		}
+		
 	}
 	return "", true
 }

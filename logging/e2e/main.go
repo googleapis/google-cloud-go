@@ -23,17 +23,13 @@ import (
 	"net/http"
 	"os"
 	"strings"
-	// "time"
 
 	"cloud.google.com/go/compute/metadata"
 	// This is replaced by the local version of cloud logging
 	"cloud.google.com/go/logging"
-	// "cloud.google.com/go/pubsub"
-
 )
 
 // PubSubMessage is the payload of a Pub/Sub event.
-// TODO replace this with client lib?
 type pubSubMessage struct {
 	Message struct {
 			Data []byte `json:"data,omitempty"`
@@ -76,12 +72,11 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 	defer logClient.Close()
 
 	label := make(map[string]string)
-	label["testEnv"] = "Cloud Run"
 	label["testName"] = "testStdLog" // Overridable default
-	logger := logClient.Logger(os.Getenv("TEST_ID"), logging.CommonLabels(label))
+	logger := logClient.Logger(os.Getenv("TOPIC_ID"), logging.CommonLabels(label))
 
 	msg := string(m.Message.Data)
-	// msg = "testStdLog, testBasicLog" //testmode
+
 	if strings.Contains(msg, "testStdLog"){
 		testStdLog(logger)
 	}
