@@ -105,10 +105,8 @@ func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
 	return c.cursorClient.StreamingCommitCursor(c.metadata.AddToContext(ctx))
 }
 
-func (c *committer) initialRequest() (req interface{}, needsResp bool) {
-	req = c.initialReq
-	needsResp = true
-	return
+func (c *committer) initialRequest() (interface{}, initialResponseRequired) {
+	return c.initialReq, initialResponseRequired(true)
 }
 
 func (c *committer) validateInitialResponse(response interface{}) error {
