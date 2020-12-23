@@ -2044,7 +2044,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		InstanceId:   diffInstance,
 		ClusterId:    diffCluster,
 		DisplayName:  "different test instance",
-		Zone:         instanceToCreateZone,
+		Zone:         instanceToCreateZone2,
 		InstanceType: DEVELOPMENT,
 		Labels:       map[string]string{"test-label-key": "test-label-value"},
 	}
