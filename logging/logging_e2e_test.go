@@ -39,54 +39,59 @@ import (
 )
 
 var (
-	projectID string
+	projectID      string
+	logadminClient *logadmin.Client
+	pubsubClient   *pubsub.Client
 )
 
-type environment string
 // Corresponds to the name of its respective bash scripts
+type environment string
 const (
 	cloudRun      environment = "cloudrun"
 	cloudFunction environment = "cloudfunction"
 )
 
-// TODO use same pubsub client
-// TODO use same logging client
 func init() {
 	if runtime.GOOS == "windows" {
 		log.Fatalf("Can't Execute this on a windows machine")
 	}
-	// TODO handle similar to testMain
+	ctx := context.Background()
 	projectID = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
+	var err error
+
+	pubsubClient, err = pubsub.NewClient(ctx, projectID)
+	if err != nil {
+		log.Fatalf("Failed to create client: %v", err)
+	}
+	logadminClient, err = logadmin.NewClient(ctx, "log-bench")
+	if err != nil {
+		log.Fatalf("creating logging client: %v", err)
+	}
 }
 
 func newPubSubTopic(ctx context.Context) (*pubsub.Topic, string) {
 	topicId := "log-" + uuid.New().String()
-	psClient, err := pubsub.NewClient(ctx, projectID)
-	if err != nil {
-		log.Fatalf("Failed to create client: %v", err)
-	}
-	topic, err := psClient.CreateTopic(ctx, topicId)
+	topic, err := pubsubClient.CreateTopic(ctx, topicId)
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
 	return topic, topicId
 }
 
-
 func scaffold(env environment, topicId string) {
-	fmt.Println("\n Scaffolding the environment")
+	fmt.Printf("\n Scaffolding %v environment", string(env))
 	cmdEnvironment("scaffold", env, topicId)
 }
 
 func teardown(env environment, ctx context.Context, topicId string, topic *pubsub.Topic) {
-	fmt.Println("\n Tearing everything down")
+	fmt.Printf("\n Tearing down %v environment", string(env))
 	cmdEnvironment("teardown", env, topicId)
 	if err := topic.Delete(ctx); err != nil {
 		log.Fatalf("Couldn't delete e2e test topic")
 	}
 }
 
-// Deploys a Cloud Run container with pubsub subscription
+// Deploys a Cloud resource with a pubsub subscription to the test topic
 func cmdEnvironment(cmd string, env environment, topicId string) {
 	scaffoldGCR := &exec.Cmd{
 		Path:   "./e2e/" + string(env) + ".sh",
@@ -99,8 +104,7 @@ func cmdEnvironment(cmd string, env environment, topicId string) {
 	}
 }
 
-// TODO, take in what tests are being run
-func triggerTestLogs(ctx context.Context, topic *pubsub.Topic, tests...string) int {
+func triggerTestLogs(ctx context.Context, topic *pubsub.Topic, tests ...string) int {
 	var results []*pubsub.PublishResult
 	res := topic.Publish(ctx, &pubsub.Message{
 		Data: []byte(strings.Join(tests, ",")),
@@ -119,7 +123,6 @@ func getTestLogs(ctx context.Context, topicId string, t *testing.T, expectedNumL
 	var got []*logging.Entry
 	var err error
 	ok := ltesting.WaitFor(func() bool {
-		fmt.Println("\ninside of wait")
 		got, err = getLogEntries(ctx, topicId)
 		if err != nil {
 			t.Log("fetching log entries: ", err)
@@ -134,21 +137,15 @@ func getTestLogs(ctx context.Context, topicId string, t *testing.T, expectedNumL
 }
 
 func getLogEntries(ctx context.Context, topicId string) ([]*logging.Entry, error) {
-	logAdminClient, err := logadmin.NewClient(ctx, "log-bench")
-	if err != nil {
-		log.Fatalf("creating logging client: %v", err)
-	}
 	hourAgo := time.Now().Add(-1 * time.Hour).UTC()
 	testFilter := fmt.Sprintf(`logName = "projects/%s/logs/%s" AND timestamp >= "%s"`,
 		projectID, topicId, hourAgo.Format(time.RFC3339))
-	return getEntries(ctx, logAdminClient, testFilter)
+	return getEntries(ctx, testFilter)
 }
 
-// todo fix this weird context passing?
-func getEntries(ctx context.Context, aclient *logadmin.Client, filter string) ([]*logging.Entry, error) {
+func getEntries(ctx context.Context, filter string) ([]*logging.Entry, error) {
 	var es []*logging.Entry
-	it := aclient.Entries(ctx, logadmin.Filter(filter))
-	fmt.Printf("\ngetEntries api returns: %v ", it)
+	it := logadminClient.Entries(ctx, logadmin.Filter(filter))
 	for {
 		e, err := it.Next()
 		switch err {
@@ -189,29 +186,28 @@ func TestGCR(t *testing.T) {
 	scaffold(cloudRun, topicId)
 	defer teardown(cloudRun, ctx, topicId, topic)
 
-	// Test expectations
+	// Trigger and get logs
 	numLogs := triggerTestLogs(ctx, topic, "testStdLog", "testBasicLog")
 	got := getTestLogs(ctx, topicId, t, numLogs)
-	if msg, ok := checkLogResource(cloudRun, got, topicId); !ok {
+
+	// Expect CloudRun Resource field to be auto detected
+	if msg, ok := checkResource(cloudRun, got, topicId); !ok {
 		t.Error(msg)
 	}
 }
 
 // Check that got all has the correct field types
-func checkLogResource(env environment, got []*logging.Entry, topicId string) (string, bool) {
-	fmt.Printf("\nChecking log resource types for #%v: logs", len(got))
+func checkResource(env environment, got []*logging.Entry, topicId string) (string, bool) {
 	switch env {
-		// todo start here
 	case cloudRun:
-		
-	default:
-		return "lalala", false
+		for i := range got {
+			if msg, ok := isCloudRunResource(got[i].Resource, topicId); !ok {
+				return msg, ok
+			}
+		}
+		return "", true
 	}
-	for i := range got {
-		fmt.Printf("\nChecking log:  %v\n", got[i])
-		
-	}
-	return "", true
+	return fmt.Sprintf("\nResource type for %v not expected", env), false
 }
 
 func isCloudRunResource(res *mrpb.MonitoredResource, topicId string) (string, bool) {

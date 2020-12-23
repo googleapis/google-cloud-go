@@ -265,21 +265,11 @@ func detectGAEResource() *mrpb.MonitoredResource {
 	}
 }
 
-// TODO: maybe refactor these into internal/
+// TODO: e2e test this
 func isCloudFunction() bool {
 	_, name := os.LookupEnv("FUNCTION_NAME")
 	_, target := os.LookupEnv("FUNCTION_TARGET")
 	return (name || target)
-}
-
-// TODO(nicolezhu): implement this
-func detectGCFResource() *mrpb.MonitoredResource {
-	return &mrpb.MonitoredResource{
-		Type: "gae_app",
-		Labels: map[string]string{
-			"project_id": os.Getenv("GOOGLE_CLOUD_PROJECT"),
-		},
-	}
 }
 
 func isCloudRun() bool {
@@ -287,7 +277,6 @@ func isCloudRun() bool {
 	return config
 }
 
-// TODO(nicolezhu): test this
 func detectGCRResource() *mrpb.MonitoredResource {
 	projectID, err := metadata.ProjectID()
 	if err != nil {
@@ -309,7 +298,7 @@ func detectGCRResource() *mrpb.MonitoredResource {
 	}
 }
 
-// TODO(nicolezhu): test this
+// TODO(nicolezhu): e2e test this
 func isKubernetesEngine() bool {
 	_, err := metadata.InstanceAttributeValue("cluster-name")
 	if err != nil {
@@ -318,7 +307,7 @@ func isKubernetesEngine() bool {
 	return true
 }
 
-// TODO(nicolezhu): implement this
+// TODO(nicolezhu): e2e test this
 func detectGKEResource() *mrpb.MonitoredResource {
 	return &mrpb.MonitoredResource{
 		Type:   "gae_app",
@@ -354,22 +343,22 @@ func detectGCEResource() *mrpb.MonitoredResource {
 	}
 }
 
-// TODO(nicolezhu): test this
+// TODO(nicolezhu): enable resource autodetection for other Cloud environments
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
-		case isCloudFunction():
-			detectedResource.pb = detectGCFResource()
+		// case isCloudFunction():
+		// 	detectedResource.pb = detectGCFResource()
 		case isCloudRun():
 			detectedResource.pb = detectGCRResource()
 		case metadata.OnGCE():
-			if isKubernetesEngine() {
-				detectedResource.pb = detectGKEResource()
-			} else {
-				detectedResource.pb = detectGCEResource()
-			}
+			// if isKubernetesEngine() {
+			// 	detectedResource.pb = detectGKEResource()
+			// } else {
+			detectedResource.pb = detectGCEResource()
+			// }
 		}
 	})
 	return detectedResource.pb

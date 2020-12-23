@@ -45,7 +45,6 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		log.Fatalf("metadata.ProjectID: %v", err)
 	}
-	// projectID := "log-bench" // testmode
 	ctx := context.Background()
 
 	var m pubSubMessage
@@ -55,8 +54,6 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-	// log.Printf("Body: \n: %v", body)
-	// log.Printf("Message: \n: %v", m)
 	if err := json.Unmarshal(body, &m); err != nil {
 		log.Printf("json.Unmarshal: %v", err)
 		http.Error(w, "Bad Request", http.StatusBadRequest)
@@ -64,19 +61,17 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Logging setup
-	// TODO generalize this snippet to be used by other calls
 	logClient, err := logging.NewClient(ctx, projectID)
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}
 	defer logClient.Close()
 
-	label := make(map[string]string)
-	label["testName"] = "testStdLog" // Overridable default
+	// Overridable default label
+	label := map[string]string{"testName": "testStdLog"} 
 	logger := logClient.Logger(os.Getenv("TOPIC_ID"), logging.CommonLabels(label))
 
 	msg := string(m.Message.Data)
-
 	if strings.Contains(msg, "testStdLog"){
 		testStdLog(logger)
 	}
@@ -86,11 +81,9 @@ func handlePubSub(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	// TODO: enable only for Cloud Run, update this depending on fnc being run 
-	cloudRun := true
-	if (cloudRun) {
+	environment := os.Getenv("ENVIRONMENT")
+	if (environment == "cloudrun") {
 		http.HandleFunc("/", handlePubSub)
-		// Determine port for HTTP service.
 		port := os.Getenv("PORT")
 		if port == "" {
 				port = "8080"
@@ -104,7 +97,7 @@ func main() {
 	}
 }
 
-// Common tests
+// Logs used in tests
 func testStdLog(logger *logging.Logger) {
 	stdLogger := logger.StandardLogger(logging.Info)
 	stdLogger.Println("hello world")

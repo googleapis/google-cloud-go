@@ -1,4 +1,4 @@
-#!/bin/bash -ex
+#!/bin/bash -e
 
 # Copyright 2020 Google Inc. All Rights Reserved.
 #
@@ -14,7 +14,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO, remove the ex
 # GCP permissions needed:
 # APIs
 # - cloudbuild.googleapis.com
@@ -23,7 +22,6 @@
 # - enable pub/sub to create authentication tokens   
 # - storage.buckets.create for CloudBuild service account
 
-set -ex
 set -eo pipefail
 
 GCR_REGION=us-west1
@@ -56,7 +54,7 @@ scaffold() {
         --platform managed \
         --region $GCR_REGION \
         --allow-unauthenticated \
-        --set-env-vars TOPIC_ID=$TOPIC_ID \
+        --set-env-vars=TOPIC_ID=$TOPIC_ID,ENVIRONMENT="cloudrun" \
         $TOPIC_ID
 
     # Allow Pub/Sub to create authentication tokens in your project:
