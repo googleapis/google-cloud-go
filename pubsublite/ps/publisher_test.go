@@ -19,9 +19,10 @@ import (
 	"testing"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite/common"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
+	"cloud.google.com/go/pubsublite/publish"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/support/bundler"
 
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
@@ -43,7 +44,7 @@ func (mp *mockWirePublisher) Publish(msg *pb.PubSubMessage, onResult wire.Publis
 		onResult(nil, err)
 		return
 	}
-	result := resp.(*common.PublishMetadata)
+	result := resp.(*publish.Metadata)
 	onResult(result, nil)
 }
 
@@ -67,7 +68,7 @@ func TestPublisherClientTransformMessage(t *testing.T) {
 		OrderingKey: "ordering_key",
 		Attributes:  map[string]string{"attr": "value"},
 	}
-	fakeResponse := &common.PublishMetadata{
+	fakeResponse := &publish.Metadata{
 		Partition: 2,
 		Offset:    42,
 	}
@@ -196,6 +197,11 @@ func TestPublisherClientTranslatePublishResultErrors(t *testing.T) {
 		{
 			desc:    "oversized message",
 			wireErr: wire.ErrOversizedMessage,
+			wantErr: bundler.ErrOversizedItem,
+		},
+		{
+			desc:    "oversized message wrapped",
+			wireErr: xerrors.Errorf("placeholder error message: %w", wire.ErrOversizedMessage),
 			wantErr: bundler.ErrOversizedItem,
 		},
 		{

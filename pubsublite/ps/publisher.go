@@ -110,7 +110,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 	if err := p.transformMessage(msg, msgpb); err != nil {
 		ipubsub.SetPublishResult(result, "", err)
 		p.setError(err)
-		p.Stop()
+		p.wirePub.Stop()
 		return result
 	}
 
