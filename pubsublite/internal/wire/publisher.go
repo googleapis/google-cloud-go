@@ -142,8 +142,8 @@ func (pp *singlePartitionPublisher) newStream(ctx context.Context) (grpc.ClientS
 	return pp.pubClient.Publish(addTopicRoutingMetadata(ctx, pp.topic))
 }
 
-func (pp *singlePartitionPublisher) initialRequest() (interface{}, bool) {
-	return pp.initialReq, true
+func (pp *singlePartitionPublisher) initialRequest() (interface{}, initialResponseRequired) {
+	return pp.initialReq, initialResponseRequired(true)
 }
 
 func (pp *singlePartitionPublisher) validateInitialResponse(response interface{}) error {
