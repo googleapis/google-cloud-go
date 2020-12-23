@@ -177,6 +177,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			),
 		),
 		option.WithGRPCConnectionPool(config.NumChannels),
+		option.WithUserAgent(clientUserAgent),
 	}
 	// opts will take precedence above allOpts, as the values in opts will be
 	// applied after the values in allOpts.
