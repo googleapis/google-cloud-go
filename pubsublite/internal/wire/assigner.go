@@ -112,12 +112,12 @@ func (a *assigner) newStream(ctx context.Context) (grpc.ClientStream, error) {
 	return a.assignmentClient.AssignPartitions(ctx)
 }
 
-func (a *assigner) initialRequest() (interface{}, bool) {
-	return a.initialReq, false // No initial response expected
+func (a *assigner) initialRequest() (interface{}, initialResponseRequired) {
+	return a.initialReq, initialResponseRequired(false)
 }
 
 func (a *assigner) validateInitialResponse(_ interface{}) error {
-	// Should not be called.
+	// Should not be called as initialResponseRequired=false above.
 	return errors.New("pubsublite: unexpected initial response")
 }
 
