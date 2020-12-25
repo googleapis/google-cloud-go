@@ -68,6 +68,7 @@ type table struct {
 type colInfo struct {
 	Name     spansql.ID
 	Type     spansql.Type
+	NotNull  bool
 	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
 	Alias    spansql.PathExp // an alternate name for this column (result sets only)
 }
@@ -400,10 +401,12 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 			if x == commitTimestampSentinel {
 				x = tx.commitTimestamp
 			}
+			if x == nil && t.cols[i].NotNull {
+				return status.Errorf(codes.FailedPrecondition, "%s must not be NULL in table %s", t.cols[i].Name, tbl)
+			}
 
 			r[i] = x
 		}
-		// TODO: enforce NOT NULL?
 		// TODO: enforce that provided timestamp for commit_timestamp=true columns
 		// are not ahead of the transaction's commit timestamp.
 
@@ -632,8 +635,9 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	}
 
 	t.cols = append(t.cols, colInfo{
-		Name: cd.Name,
-		Type: cd.Type,
+		Name:    cd.Name,
+		Type:    cd.Type,
+		NotNull: cd.NotNull,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
 	if !newTable {
@@ -856,7 +860,6 @@ func rowEqual(a, b []interface{}) bool {
 // valForType converts a value from its RPC form into its internal representation.
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
-		// TODO: enforce NOT NULL constraints?
 		return nil, nil
 	}
 
