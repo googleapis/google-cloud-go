@@ -91,8 +91,6 @@ type Client struct {
 	raw *raw.Service
 	// Scheme describes the scheme under the current host.
 	scheme string
-	// EnvHost is the host set on the STORAGE_EMULATOR_HOST variable.
-	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
 }
@@ -115,7 +113,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	// need to account for STORAGE_EMULATOR_HOST override when setting the default endpoints.
 	if host = os.Getenv("STORAGE_EMULATOR_HOST"); host == "" {
 		scheme = "https"
-		readHost = "storage.googleapis.com"
 
 		// Prepend default options to avoid overriding options passed by the user.
 		opts = append([]option.ClientOption{option.WithScopes(ScopeFullControl), option.WithUserAgent(userAgent)}, opts...)
@@ -124,12 +121,16 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		opts = append(opts, internaloption.WithDefaultMTLSEndpoint("https://storage.mtls.googleapis.com/storage/v1/"))
 	} else {
 		scheme = "http"
-		readHost = host
+		if strings.Contains(host, "//") {
+			host = strings.SplitN(host, "//", 2)[1]
+		}
+		host = strings.Trim(host, "/")
+		endpoint := "http://" + host + "/storage/v1/"
 
 		opts = append([]option.ClientOption{option.WithoutAuthentication()}, opts...)
 
-		opts = append(opts, internaloption.WithDefaultEndpoint(host))
-		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(host))
+		opts = append(opts, internaloption.WithDefaultEndpoint(endpoint))
+		opts = append(opts, internaloption.WithDefaultMTLSEndpoint(endpoint))
 	}
 
 	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpoint, and WithDefaultMTLSEndpoint.
@@ -153,7 +154,6 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		hc:       hc,
 		raw:      rawService,
 		scheme:   scheme,
-		envHost:  host,
 		readHost: readHost,
 	}, nil
 }

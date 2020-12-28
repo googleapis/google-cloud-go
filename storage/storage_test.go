@@ -1226,6 +1226,8 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 // for writes) and readHost and scheme (used for reads) are all set correctly.
 func TestWithEndpoint(t *testing.T) {
 	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	defer os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
+
 	testCases := []struct {
 		CustomEndpoint      string
 		StorageEmulatorHost string
@@ -1250,8 +1252,22 @@ func TestWithEndpoint(t *testing.T) {
 		{
 			CustomEndpoint:      "",
 			StorageEmulatorHost: "http://emu.com",
-			WantRawBasePath:     "http://emu.com",
+			WantRawBasePath:     "http://emu.com/storage/v1/",
 			WantReadHost:        "emu.com",
+			WantScheme:          "http",
+		},
+		{
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "emu.com:8080",
+			WantRawBasePath:     "http://emu.com:8080/storage/v1/",
+			WantReadHost:        "emu.com:8080",
+			WantScheme:          "http",
+		},
+		{
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "emu.com:8080/",
+			WantRawBasePath:     "http://emu.com:8080/storage/v1/",
+			WantReadHost:        "emu.com:8080",
 			WantScheme:          "http",
 		},
 		{
@@ -1263,25 +1279,24 @@ func TestWithEndpoint(t *testing.T) {
 		},
 	}
 	ctx := context.Background()
-	for _, tc := range testCases {
+	for i, tc := range testCases {
 		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
 		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint))
 		if err != nil {
-			t.Fatalf("error creating client: %v", err)
+			t.Fatalf("case #%d: error creating client: %v", i, err)
 		}
 		if err != nil {
-			t.Fatalf("error creating client: %v", err)
+			t.Fatalf("case #%d: error creating client: %v", i, err)
 		}
 
 		if c.raw.BasePath != tc.WantRawBasePath {
-			t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, tc.WantRawBasePath)
+			t.Errorf("case #%d: raw.BasePath not set correctly: got %v, want %v", i, c.raw.BasePath, tc.WantRawBasePath)
 		}
 		if c.readHost != tc.WantReadHost {
-			t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, tc.WantReadHost)
+			t.Errorf("case #%d: readHost not set correctly: got %v, want %v", i, c.readHost, tc.WantReadHost)
 		}
 		if c.scheme != tc.WantScheme {
-			t.Errorf("scheme not set correctly: got %v, want %v", c.scheme, tc.WantScheme)
+			t.Errorf("case #%d: scheme not set correctly: got %v, want %v", i, c.scheme, tc.WantScheme)
 		}
 	}
-	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 }

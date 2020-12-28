@@ -18,7 +18,9 @@ import (
 	"context"
 	"crypto/sha256"
 	"encoding/base64"
+	"errors"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -174,4 +176,31 @@ func TestCloseDoesNotLeak(t *testing.T) {
 	wc.Write([]byte(contents))
 
 	wc.Close()
+}
+
+type fakeRoundTripper struct{}
+
+func (rt fakeRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	return nil, errors.New("cannot connect to the server")
+}
+
+func TestEmulatorDoesNotBreakBasePath(t *testing.T) {
+	emulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	defer os.Setenv("STORAGE_EMULATOR_HOST", emulatorHost)
+
+	os.Setenv("STORAGE_EMULATOR_HOST", "example.com:8080")
+	httpClient := &http.Client{Transport: fakeRoundTripper{}}
+	ctx := context.Background()
+	client, err := NewClient(ctx, option.WithHTTPClient(httpClient))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	wc := client.Bucket("fake_bucket").Object("fake_object").NewWriter(ctx)
+	wc.Write([]byte("fake content"))
+	wc.Close()
+
+	if wc.o.c.raw.BasePath != "http://example.com:8080/storage/v1/" {
+		t.Fatalf("BasePath is broken (%s)", wc.o.c.raw.BasePath)
+	}
 }
