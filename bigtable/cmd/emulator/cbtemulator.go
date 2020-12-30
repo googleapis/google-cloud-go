@@ -27,9 +27,9 @@ import (
 )
 
 var (
-	latencyTargets bttest.LatencyTargets
-	host           = flag.String("host", "localhost", "the address to bind to on the local machine")
-	port           = flag.Int("port", 9000, "the port number to bind to on the local machine")
+	host                       = flag.String("host", "localhost", "the address to bind to on the local machine")
+	port                       = flag.Int("port", 9000, "the port number to bind to on the local machine")
+	emulatorInterceptorBuilder bttest.EmulatorInterceptorBuilder
 )
 
 const (
@@ -38,20 +38,16 @@ const (
 
 func main() {
 	grpc.EnableTracing = false
-
-	flag.Var(&latencyTargets, "inject-latency", "Introduce gRPC latency for testing - can be provided multiple times.")
+	flag.Var(&emulatorInterceptorBuilder.LatencyTargets, "inject-latency", "Introduce gRPC latency for testing like \"ReadRows:p50:50ms\"")
+	flag.Var(&emulatorInterceptorBuilder.GrpcErrorCodeTargets, "inject-errors", "Introduce gRPC error codes for testing like \"ReadRows:10%:14\"")
 	flag.Parse()
 	opts := []grpc.ServerOption{
 		grpc.MaxRecvMsgSize(maxMsgSize),
 		grpc.MaxSendMsgSize(maxMsgSize),
 	}
 
-	if len(latencyTargets) > 0 {
-		ssic, err := bttest.NewLatencyStreamServerInterceptorConfig(latencyTargets)
-		if err != nil {
-			log.Fatalf("failed to start emulator: %v", err)
-		}
-		opts = append(opts, grpc.StreamInterceptor(ssic.CreateInterceptor()))
+	if len(emulatorInterceptorBuilder.LatencyTargets) > 0 || len(emulatorInterceptorBuilder.GrpcErrorCodeTargets) > 0 {
+		opts = append(opts, emulatorInterceptorBuilder.BuildStreamInterceptor())
 	}
 
 	srv, err := bttest.NewServer(fmt.Sprintf("%s:%d", *host, *port), opts...)

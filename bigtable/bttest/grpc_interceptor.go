@@ -14,67 +14,98 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
+/*
+This file provides interceptors to hook into grpc streaming calls
+and inject latency and errors into cbtemulator for testing
+*/
 package bttest
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"strconv"
 	"strings"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var (
-	validMethodNames = []string{"MutateRow", "CheckAndMutate", "ReadModifyWrite", "ReadRows", "MutateRows"}
+	validStreamMethodSuffixes = []string{"ReadRows", "MutateRows"}
 )
 
-// StreamServerInterceptorConfig builds an interceptor to be passed into bttest.NewServer.
-// Currently supports interceptors to simulate latency, and could be expanded to other use-cases
-type StreamServerInterceptorConfig struct {
-	latencyTargets []LatencyTarget
+/*
+	Creates interceptors inject latency or errors into cbtemulator
+*/
+type EmulatorInterceptorBuilder struct {
+	LatencyTargets       latencyTargets
+	GrpcErrorCodeTargets grpcErrorCodeTargets
 }
 
-// Constructor using only latency
-func NewLatencyStreamServerInterceptorConfig(latencyTargets LatencyTargets) (*StreamServerInterceptorConfig, error) {
-	sic := new(StreamServerInterceptorConfig)
-	sic.latencyTargets = latencyTargets
-	return sic, nil
+func (esib *EmulatorInterceptorBuilder) BuildStreamInterceptor() grpc.ServerOption {
+	return grpc.StreamInterceptor(esib.interceptorFunc())
 }
 
-// Generate an Interceptor func to be passed into grpc opts
-func (ssic *StreamServerInterceptorConfig) CreateInterceptor() grpc.StreamServerInterceptor {
-	fmt.Printf("Creating GRPC StreamInterceptor:\n")
-	fmt.Printf(" --> Latency targets: %s\n", ssic.latencyTargets)
+func (esib *EmulatorInterceptorBuilder) interceptorFunc() grpc.StreamServerInterceptor {
+	fmt.Println("Building Stream Server Interceptor:")
+	if len(esib.LatencyTargets) > 0 {
+		fmt.Printf(" - Latency Targets: %s\n", esib.LatencyTargets.String())
+	}
+	if len(esib.GrpcErrorCodeTargets) > 0 {
+		fmt.Printf(" - Error Targets: %s\n", esib.GrpcErrorCodeTargets.String())
+	}
+
 	return func(srv interface{},
 		ss grpc.ServerStream,
 		info *grpc.StreamServerInfo,
 		handler grpc.StreamHandler) error {
 
-		start := time.Now()
-		err := handler(srv, ss)
+		startTime := time.Now()
 
-		percentile := rand.Int31n(100)
-
-		// Loop through latency targets and sleep if percentile > target percentile
-		for _, lt := range ssic.latencyTargets {
-			if strings.HasSuffix(info.FullMethod, lt.methodSuffix) {
-				if percentile >= lt.percentile {
-					time.Sleep(time.Until(start.Add(lt.expectedDuration)))
+		// Latency injection
+		pVal := rand.Int31n(100)
+		for _, lt := range esib.LatencyTargets {
+			if strings.HasSuffix(info.FullMethod, lt.methodSuffix) && pVal >= lt.percentile {
+				addedLatency := time.Until(startTime.Add(lt.expectedDuration))
+				if addedLatency > time.Duration(0) {
+					log.Printf("Sleeping %v for Latency Target [%s]", addedLatency, lt.String())
+					time.Sleep(addedLatency)
 				}
 			}
 		}
 
-		return err
+		// Return any actual errors from handler
+		err := handler(srv, ss)
+		if err != nil {
+			return err
+		}
+
+		// If no actual errors, run error injection
+		eRand := rand.Int31n(100)
+		for _, gt := range esib.GrpcErrorCodeTargets {
+			if strings.HasSuffix(info.FullMethod, gt.methodSuffix) && eRand <= gt.errorRate {
+				log.Printf("Injecting Emulator Error for Error Target %s", gt.String())
+				return status.Error(gt.grpcErrorCode, "Injected Emulator Error")
+			}
+		}
+
+		return nil
 	}
 }
 
-// LatencyTargets implements flags interface
-type LatencyTargets []LatencyTarget
+/*
+	latencyTargets define how long it will take for a method
+	to return at different percentiles. e.g. ReadRows:p50:100ms
+*/
 
-func (lts *LatencyTargets) Set(s string) error {
-	lt, err := NewLatencyTargetFromFlag(s)
+type latencyTargets []latencyTarget
+
+// Set() used by Flags lib to create new Latency Target
+func (lts *latencyTargets) Set(s string) error {
+	lt, err := newLatencyTarget(s)
 	if err != nil {
 		return err
 	}
@@ -82,57 +113,62 @@ func (lts *LatencyTargets) Set(s string) error {
 	return nil
 }
 
-func (lts *LatencyTargets) String() string {
+func (lts *latencyTargets) String() string {
 	var s []string
-	for _, lt := range *lts {
-		s = append(s, lt.String())
+	for _, v := range *lts {
+		s = append(s, v.String())
 	}
-	return fmt.Sprintf("%q\n", s)
+	return strings.Join(s, ", ")
 }
 
-// For a specific method + percentile, define the expected duration
-type LatencyTarget struct {
+type latencyTarget struct {
 	methodSuffix     string
 	percentile       int32
 	expectedDuration time.Duration
-	repr             string
 }
 
-func NewLatencyTargetFromFlag(s string) (*LatencyTarget, error) {
-	lt := new(LatencyTarget)
+// Create new latencyTarget from string like "ReadRows:p50:100ms"
+func newLatencyTarget(s string) (*latencyTarget, error) {
+	var lt latencyTarget
+	var err error
 
-	vals := strings.Split(s, ":")
-	if len(vals) != 3 {
+	pieces := strings.Split(s, ":")
+	if len(pieces) != 3 {
 		return nil, fmt.Errorf("Expected Latency Target in form of: <method>:<percentile>:<duration>")
 	}
+	err = lt.setMethodSuffix(pieces[0])
+	if err != nil {
+		return nil, err
+	}
+	err = lt.setPercentile(pieces[1])
+	if err != nil {
+		return nil, err
+	}
+	if err = lt.setExpectedDuration(pieces[2]); err != nil {
+		return nil, err
+	}
 
-	var err error
-	if err = lt.setMethod(vals[0]); err != nil {
-		return nil, err
-	}
-	if err = lt.setPercentile(vals[1]); err != nil {
-		return nil, err
-	}
-	if err = lt.setExpectedDuration(vals[2]); err != nil {
-		return nil, err
-	}
-
-	// Remember format string to make printing easier
-	lt.repr = s
-	return lt, nil
+	return &lt, nil
 }
 
-func (lt *LatencyTarget) setMethod(s string) error {
-	for _, v := range validMethodNames {
+func (lt *latencyTarget) setMethodSuffix(s string) error {
+	if isValidStreamMethodSuffix(s) {
+		lt.methodSuffix = s
+		return nil
+	}
+	return fmt.Errorf("Invalid method for Latency Target. Expected one of: %s", validStreamMethodSuffixes)
+}
+
+func isValidStreamMethodSuffix(s string) bool {
+	for _, v := range validStreamMethodSuffixes {
 		if s == v {
-			lt.methodSuffix = s
-			return nil
+			return true
 		}
 	}
-	return fmt.Errorf("Invalid latency method. Expected one of: [%s]", strings.Join(validMethodNames, ", "))
+	return false
 }
 
-func (lt *LatencyTarget) setPercentile(s string) error {
+func (lt *latencyTarget) setPercentile(s string) error {
 	p := strings.TrimPrefix(s, "p")
 	i, err := strconv.Atoi(p)
 	if err != nil || (i < 0 || i > 99) {
@@ -142,15 +178,117 @@ func (lt *LatencyTarget) setPercentile(s string) error {
 	return nil
 }
 
-func (lt *LatencyTarget) setExpectedDuration(s string) error {
+func (lt *latencyTarget) setExpectedDuration(s string) error {
 	d, err := time.ParseDuration(s)
 	if err != nil {
-		return fmt.Errorf("Invalid latency duration: %s. %s", s, err)
+		return fmt.Errorf("Invalid latency duration: %s.\n%s", s, err)
 	}
 	lt.expectedDuration = d
 	return nil
 }
 
-func (lt LatencyTarget) String() string {
-	return lt.repr
+func (lt *latencyTarget) String() string {
+	return fmt.Sprintf("%s:p%d:%s", lt.methodSuffix, lt.percentile, lt.expectedDuration)
+}
+
+/*
+	grpcErrorCodeTargets define how often each method should throw a given GRPC Error Code
+	e.g. "ReadRows:10%:14" will have a 10% chance to throw Error Code 14 (Unavailable) on each ReadRows request
+*/
+
+type grpcErrorCodeTargets []grpcErrorCodeTarget
+
+// Set() used by Flags lib to create new grpc error code target
+func (ets *grpcErrorCodeTargets) Set(s string) error {
+	et, err := newErrorTarget(s)
+	if err != nil {
+		return err
+	}
+	*ets = append(*ets, *et)
+	return nil
+}
+
+func (ets *grpcErrorCodeTargets) String() string {
+	var s []string
+	for _, v := range *ets {
+		s = append(s, v.String())
+	}
+	return strings.Join(s, ", ")
+}
+
+type grpcErrorCodeTarget struct {
+	methodSuffix  string
+	errorRate     int32
+	grpcErrorCode codes.Code
+}
+
+// If method suffix matches and errorRandValue falls in errorRate, inject error
+func (gt *grpcErrorCodeTarget) getError(errorRandValue int32, fullMethod string) error {
+	if strings.HasSuffix(fullMethod, gt.methodSuffix) {
+		if errorRandValue <= gt.errorRate {
+			return status.Error(gt.grpcErrorCode, "Injected Emulator Error")
+		}
+	}
+	return nil
+}
+
+// Create new grpc error code target from string like "MutateRows:10%:14"
+func newErrorTarget(s string) (*grpcErrorCodeTarget, error) {
+	var gt grpcErrorCodeTarget
+	var err error
+
+	// Split 's' and use each value to build error target
+	pieces := strings.Split(s, ":")
+	if len(pieces) != 3 {
+		return nil, fmt.Errorf("Expected GRPC Error Target in form of: <method>:<error_rate>:<grpc_error_code>")
+	}
+
+	// Method
+	err = gt.setMethodSuffix(pieces[0])
+	if err != nil {
+		return nil, err
+	}
+	// Error Rate
+	err = gt.setErrorRate(pieces[1])
+	if err != nil {
+		return nil, err
+	}
+	// Error Code
+	if err = gt.setGrpcErrorCode(pieces[2]); err != nil {
+		return nil, err
+	}
+
+	return &gt, nil
+}
+
+func (gt *grpcErrorCodeTarget) setMethodSuffix(s string) error {
+	if isValidStreamMethodSuffix(s) {
+		gt.methodSuffix = s
+		return nil
+	}
+	return fmt.Errorf("Invalid method for Latency Target. Expected one of: %s", validStreamMethodSuffixes)
+}
+
+func (gt *grpcErrorCodeTarget) setErrorRate(s string) error {
+	p := strings.TrimSuffix(s, "%")
+	i, err := strconv.Atoi(p)
+	if err != nil || (i < 0 || i > 100) {
+		return fmt.Errorf("Invalid error rate: %s. Expected integer between 0 and 100", s)
+	}
+	gt.errorRate = int32(i)
+	return nil
+}
+
+func (gt *grpcErrorCodeTarget) setGrpcErrorCode(s string) error {
+	var c codes.Code
+	err := c.UnmarshalJSON([]byte(s))
+	if err != nil {
+		return fmt.Errorf("Invalid GRPC Error Code: %s\n%v", s, err)
+	}
+	gt.grpcErrorCode = c
+	return nil
+}
+
+func (gt *grpcErrorCodeTarget) String() string {
+	return fmt.Sprintf("%s:%d%%:%v", gt.methodSuffix, gt.errorRate, gt.grpcErrorCode)
 }
