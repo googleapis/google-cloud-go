@@ -180,6 +180,9 @@ func (cd ColumnDef) SQL() string {
 	if cd.NotNull {
 		str += " NOT NULL"
 	}
+	if cd.Generated != nil {
+		str += " AS (" + cd.Generated.SQL() + ") STORED"
+	}
 	if cd.Options != (ColumnOptions{}) {
 		str += " " + cd.Options.SQL()
 	}
@@ -231,6 +234,8 @@ func (tb TypeBase) SQL() string {
 		return "INT64"
 	case Float64:
 		return "FLOAT64"
+	case Numeric:
+		return "NUMERIC"
 	case String:
 		return "STRING"
 	case Bytes:
@@ -338,6 +343,14 @@ var joinTypes = map[JoinType]string{
 	FullJoin:  "FULL",
 	LeftJoin:  "LEFT",
 	RightJoin: "RIGHT",
+}
+
+func (sfu SelectFromUnnest) SQL() string {
+	str := "UNNEST(" + sfu.Expr.SQL() + ")"
+	if sfu.Alias != "" {
+		str += " AS " + sfu.Alias.SQL()
+	}
+	return str
 }
 
 func (o Order) SQL() string { return buildSQL(o) }
@@ -512,6 +525,13 @@ func (p Paren) addSQL(sb *strings.Builder) {
 	sb.WriteString("(")
 	p.Expr.addSQL(sb)
 	sb.WriteString(")")
+}
+
+func (a Array) SQL() string { return buildSQL(a) }
+func (a Array) addSQL(sb *strings.Builder) {
+	sb.WriteString("[")
+	addExprList(sb, []Expr(a), ", ")
+	sb.WriteString("]")
 }
 
 func (id ID) SQL() string { return buildSQL(id) }

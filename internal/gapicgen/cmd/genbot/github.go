@@ -26,7 +26,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v32/github"
+	"cloud.google.com/go/internal/gapicgen/generator"
+	"github.com/google/go-github/v33/github"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
 )
@@ -178,13 +179,15 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 // CreateGenprotoPR creates a PR for a given genproto change.
 //
 // hasCorrespondingPR indicates that there is a corresponding google-cloud-go PR.
-func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string, hasCorrespondingPR bool) (prNumber int, _ error) {
+func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string, hasCorrespondingPR bool, changes []*generator.ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating genproto PR")
-
-	body := genprotoCommitBody
+	var sb strings.Builder
+	sb.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
-		body += "\n\nThere is no corresponding google-cloud-go PR.\n"
+		sb.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
+		sb.WriteString(formatChanges(changes, false))
 	}
+	body := sb.String()
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
@@ -246,18 +249,21 @@ git push origin $BRANCH_NAME
 	return pr.GetNumber(), nil
 }
 
-// CreateGocloudPR creats a PR for a given google-cloud-go change.
-func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, genprotoPRNum int) (prNumber int, _ error) {
+// CreateGocloudPR creates a PR for a given google-cloud-go change.
+func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, genprotoPRNum int, changes []*generator.ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating google-cloud-go PR")
 
-	var body string
+	var sb strings.Builder
 	var draft bool
+	sb.WriteString(gocloudCommitBody)
 	if genprotoPRNum > 0 {
-		body = gocloudCommitBody + fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum)
+		sb.WriteString(fmt.Sprintf("\n\nCorresponding genproto PR: https://github.com/googleapis/go-genproto/pull/%d\n", genprotoPRNum))
 		draft = true
 	} else {
-		body = gocloudCommitBody + "\n\nThere is no corresponding genproto PR.\n"
+		sb.WriteString("\n\nThere is no corresponding genproto PR.\n")
 	}
+	sb.WriteString(formatChanges(changes, true))
+	body := sb.String()
 
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
@@ -304,11 +310,14 @@ git push origin $BRANCH_NAME
 	return pr.GetNumber(), nil
 }
 
-// AmendWithPRURL amends the given genproto PR with a link to the given
+// AmendGenprotoPR amends the given genproto PR with a link to the given
 // google-cloud-go PR.
-func (gc *GithubClient) AmendWithPRURL(ctx context.Context, genprotoPRNum int, genprotoDir string, gocloudPRNum int) error {
-	newBody := genprotoCommitBody + fmt.Sprintf("\n\nCorresponding google-cloud-go PR: googleapis/google-cloud-go#%d\n", gocloudPRNum)
-
+func (gc *GithubClient) AmendGenprotoPR(ctx context.Context, genprotoPRNum int, genprotoDir string, gocloudPRNum int, changes []*generator.ChangeInfo) error {
+	var body strings.Builder
+	body.WriteString(genprotoCommitBody)
+	body.WriteString(fmt.Sprintf("\n\nCorresponding google-cloud-go PR: googleapis/google-cloud-go#%d\n", gocloudPRNum))
+	body.WriteString(formatChanges(changes, false))
+	sBody := body.String()
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
 
@@ -325,7 +334,7 @@ git push -f origin $BRANCH_NAME
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("COMMIT_TITLE=%s", genprotoCommitTitle),
-		fmt.Sprintf("COMMIT_BODY=%s", newBody),
+		fmt.Sprintf("COMMIT_BODY=%s", sBody),
 		fmt.Sprintf("BRANCH_NAME=%s", genprotoBranchName),
 	}
 	c.Dir = genprotoDir
@@ -333,7 +342,7 @@ git push -f origin $BRANCH_NAME
 		return err
 	}
 	_, _, err := gc.cV3.PullRequests.Edit(ctx, "googleapis", "go-genproto", genprotoPRNum, &github.PullRequest{
-		Body: &newBody,
+		Body: &sBody,
 	})
 	return err
 }
@@ -355,4 +364,32 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 		return err
 	}
 	return nil
+}
+
+func formatChanges(changes []*generator.ChangeInfo, onlyGapicChanges bool) string {
+	if len(changes) == 0 {
+		return ""
+	}
+	var sb strings.Builder
+	sb.WriteString("\nChanges:\n")
+	for _, c := range changes {
+		if onlyGapicChanges && !c.HasGapicChanges {
+			continue
+		}
+		sb.WriteString("- ")
+		ss := strings.Split(c.Body, "\n")
+		for i, s := range ss {
+			if i == 0 {
+				sb.WriteString(fmt.Sprintf("%s\n", s))
+				continue
+			}
+			if s == "" {
+				sb.WriteString("\n")
+				continue
+			}
+			sb.WriteString(fmt.Sprintf("  %s\n", s))
+		}
+		sb.WriteString("\n")
+	}
+	return sb.String()
 }

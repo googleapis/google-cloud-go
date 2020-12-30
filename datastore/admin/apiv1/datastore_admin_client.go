@@ -52,8 +52,9 @@ func defaultDatastoreAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datastore.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("datastore.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://datastore.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

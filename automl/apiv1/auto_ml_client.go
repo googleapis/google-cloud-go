@@ -66,8 +66,9 @@ func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("automl.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("automl.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://automl.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
