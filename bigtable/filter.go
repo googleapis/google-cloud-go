@@ -17,6 +17,8 @@ limitations under the License.
 package bigtable
 
 import (
+	"bytes"
+	"encoding/binary"
 	"fmt"
 	"strings"
 	"time"
@@ -124,6 +126,15 @@ func (cf columnFilter) proto() *btpb.RowFilter {
 // matches the provided RE2 pattern.
 // See https://github.com/google/re2/wiki/Syntax for the accepted syntax.
 func ValueFilter(pattern string) Filter { return valueFilter(pattern) }
+
+// ValueFilterInt64 returns a filter that matches cells whose value
+// matches the provided RE2 pattern.
+// It performs the 64-bit big-endian signed integer encoding.
+func ValueFilterInt64(pattern int) Filter {
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.BigEndian, int64(pattern))
+	return valueFilter(buf.String())
+}
 
 type valueFilter string
 
@@ -236,6 +247,16 @@ func (crf columnRangeFilter) proto() *btpb.RowFilter {
 // the given range, as specified by an inclusive start value and exclusive end value.
 func ValueRangeFilter(start, end []byte) Filter {
 	return valueRangeFilter{start, end}
+}
+
+// ValueRangeFilterInt64 returns a filter that matches cells with values that fall within
+// the given range, as specified by an inclusive start value and exclusive end value.
+// It performs the 64-bit big-endian signed integer encoding.
+func ValueRangeFilterInt64(start, end int) Filter {
+	startBuf, endBuf := new(bytes.Buffer), new(bytes.Buffer)
+	binary.Write(startBuf, binary.BigEndian, int64(start))
+	binary.Write(endBuf, binary.BigEndian, int64(end))
+	return ValueRangeFilter(startBuf.Bytes(), endBuf.Bytes())
 }
 
 type valueRangeFilter struct {
