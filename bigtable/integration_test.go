@@ -2033,6 +2033,26 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	table := testEnv.Config().Table
 	cluster := testEnv.Config().Cluster
 
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+	diffInstance := testEnv.Config().Instance + "-diff"
+	diffCluster := cluster + "-diff"
+	conf := &InstanceConf{
+		InstanceId:   diffInstance,
+		ClusterId:    diffCluster,
+		DisplayName:  "different test instance",
+		Zone:         instanceToCreateZone2,
+		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
+	}
+	defer iAdminClient.DeleteInstance(ctx, diffInstance)
+	// Create different instance to restore table.
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
 	defer deleteTable(ctx, t, adminClient, table)
@@ -2127,6 +2147,31 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
+	}
+	// Restore backup to different instance
+	diffTable := table + "-diff-restored"
+	diffConf := IntegrationTestConfig{
+		Project:  testEnv.Config().Project,
+		Instance: diffInstance,
+		Cluster:  diffCluster,
+		Table:    diffTable,
+	}
+	env := &ProdEnv{
+		config: diffConf,
+	}
+	dAdminClient, err := env.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer dAdminClient.Close()
+
+	defer deleteTable(ctx, t, dAdminClient, diffTable)
+	if err = adminClient.RestoreTableTo(ctx, diffInstance, diffTable, cluster, "mybackup"); err != nil {
+		t.Fatalf("RestoreTableTo: %v", err)
+	}
+	_, err = dAdminClient.TableInfo(ctx, diffTable)
+	if err != nil {
+		t.Fatalf("Restored to different instance TableInfo: %v", err)
 	}
 
 	// Delete backup
