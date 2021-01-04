@@ -710,38 +710,42 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
+	// TODO: check if the column isn't a primary key or array types.
+	t.cols[ci].NotNull = sct.NotNull
+
 	// Check and make type transformations.
 	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
-	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
-	// We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
-	// TODO: Do this when we track NOT NULL-ness.
+	// TODO: We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
 
-	// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
-	// TODO: This should permit array conversions too.
-	if stringOrBytes(oldT.Base) && stringOrBytes(newT.Base) && !oldT.Array && !newT.Array {
-		// TODO: Validate data; length limit changes should be rejected if they'd lead to data loss, for instance.
-		var conv func(x interface{}) interface{}
-		if oldT.Base == spansql.Bytes && newT.Base == spansql.String {
-			conv = func(x interface{}) interface{} { return string(x.([]byte)) }
-		} else if oldT.Base == spansql.String && newT.Base == spansql.Bytes {
-			conv = func(x interface{}) interface{} { return []byte(x.(string)) }
-		}
-		if conv != nil {
-			for _, row := range t.rows {
-				if row[ci] != nil { // NULL stays as NULL.
-					row[ci] = conv(row[ci])
+	if oldT != newT {
+		// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
+		// TODO: This should permit array conversions too.
+		if stringOrBytes(oldT.Base) && stringOrBytes(newT.Base) && !oldT.Array && !newT.Array {
+			// TODO: Validate data; length limit changes should be rejected if they'd lead to data loss, for instance.
+			var conv func(x interface{}) interface{}
+			if oldT.Base == spansql.Bytes && newT.Base == spansql.String {
+				conv = func(x interface{}) interface{} { return string(x.([]byte)) }
+			} else if oldT.Base == spansql.String && newT.Base == spansql.Bytes {
+				conv = func(x interface{}) interface{} { return []byte(x.(string)) }
+			}
+			if conv != nil {
+				for _, row := range t.rows {
+					if row[ci] != nil { // NULL stays as NULL.
+						row[ci] = conv(row[ci])
+					}
 				}
 			}
+			t.cols[ci].Type = newT
+		} else {
+			return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
 		}
-		t.cols[ci].Type = newT
-		return nil
 	}
 
 	// TODO: Support other alterations.
 
-	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
+	return nil
 }
 
 func (t *table) insertRow(rowNum int, r row) {
