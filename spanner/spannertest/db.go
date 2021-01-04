@@ -68,7 +68,7 @@ type table struct {
 type colInfo struct {
 	Name     spansql.ID
 	Type     spansql.Type
-	NotNull  bool
+	NotNull  bool            // only set for table columns
 	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
 	Alias    spansql.PathExp // an alternate name for this column (result sets only)
 }
@@ -217,9 +217,10 @@ func (d *database) GetDDL() []spansql.DDLStmt {
 		t.mu.Lock()
 		for i, col := range t.cols {
 			ct.Columns = append(ct.Columns, spansql.ColumnDef{
-				Name: col.Name,
-				Type: col.Type,
-				// TODO: NotNull, AllowCommitTimestamp
+				Name:    col.Name,
+				Type:    col.Type,
+				NotNull: col.NotNull,
+				// TODO: AllowCommitTimestamp
 			})
 			if i < t.pkCols {
 				ct.PrimaryKey = append(ct.PrimaryKey, spansql.KeyPart{
