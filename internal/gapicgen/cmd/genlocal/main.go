@@ -20,7 +20,6 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -91,12 +90,7 @@ func main() {
 	log.Println(gocloudDir)
 
 	if *verbose {
-		log.Println("Changes:")
-		fmt.Println()
-		for _, v := range changes {
-			fmt.Println("********************************************")
-			fmt.Println(v.Body)
-		}
+		log.Println(generator.FormatChanges(changes, false))
 	}
 }
 

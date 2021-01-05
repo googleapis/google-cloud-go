@@ -34,3 +34,58 @@ func TestParseConventionalCommitPkg(t *testing.T) {
 		})
 	}
 }
+
+func TestFormatChanges(t *testing.T) {
+	tests := []struct {
+		name       string
+		changes    []*ChangeInfo
+		onlyGapics bool
+		want       string
+	}{
+		{
+			name:    "basic",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
+			want:    "fix: foo\n  bar\n\n",
+		},
+		{
+			name:    "multi-lined body indented",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
+			want:    "fix: foo\n  bar\n  baz\n\n",
+		},
+		{
+			name:    "multi-lined body indented, multiple changes",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}, {Title: "fix: baz", Body: "foo\nbar"}},
+			want:    "fix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
+		},
+		{
+			name:       "no package, filtered",
+			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
+			onlyGapics: true,
+			want:       "",
+		},
+		{
+			name:    "with package",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "baz"}},
+			want:    "fix(baz): foo\n  bar\n\n",
+		},
+		{
+			name:    "multiple changes",
+			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "foo"}, {Title: "fix: baz", Body: "bar"}},
+			want:    "fix(foo): foo\n  bar\n\nfix: baz\n  bar\n\n",
+		},
+		{
+			name:       "multiple changes, some filtered",
+			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "foo"}, {Title: "fix: baz", Body: "bar"}},
+			onlyGapics: true,
+			want:       "fix(foo): foo\n  bar\n\n",
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := FormatChanges(tc.changes, tc.onlyGapics); got != tc.want {
+				t.Errorf("FormatChanges() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
