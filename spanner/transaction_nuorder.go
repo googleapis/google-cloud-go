@@ -18,7 +18,7 @@ func (t *ReadWriteTransaction) UpdateWithResultSet(ctx context.Context, stmt Sta
 	}
 	resultSet, err = sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 	if resultSet.Stats == nil {
 		return nil, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
