@@ -1,0 +1,2958 @@
+### YamlMime:UniversalReference
+items:
+- uid: cloud.google.com/go/storage
+  name: cloud.google.com/go/storage
+  id: storage
+  summary: "<p>\nPackage storage provides an easy way to work with Google Cloud Storage.\nGoogle
+    Cloud Storage stores data in named objects, which are grouped into buckets.\n</p>\n<p>\nMore
+    information about Google Cloud Storage is available at\n<a href=\"https://cloud.google.com/storage/docs\">https://cloud.google.com/storage/docs</a>.\n</p>\n<p>\nSee
+    <a href=\"https://godoc.org/cloud.google.com/go\">https://godoc.org/cloud.google.com/go</a>
+    for authentication, timeouts,\nconnection pooling and similar aspects of this
+    package.\n</p>\n<p>\nAll of the methods of this package use exponential backoff
+    to retry calls that fail\nwith certain errors, as described in\n<a href=\"https://cloud.google.com/storage/docs/exponential-backoff\">https://cloud.google.com/storage/docs/exponential-backoff</a>.
+    Retrying continues\nindefinitely unless the controlling context is canceled or
+    the client is closed. See\ncontext.WithTimeout and context.WithCancel.\n</p>\n<h3
+    id=\"hdr-Creating_a_Client\">Creating a Client</h3>\n<p>\nTo start working with
+    this package, create a client:\n</p>\n<pre>ctx := context.Background()\nclient,
+    err := storage.NewClient(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\n</pre>\n<p>\nThe
+    client will use your default application credentials. Clients should be\nreused
+    instead of created as needed. The methods of Client are safe for\nconcurrent use
+    by multiple goroutines.\n</p>\n<p>\nIf you only wish to access public data, you
+    can create\nan unauthenticated client with\n</p>\n<pre>client, err := storage.NewClient(ctx,
+    option.WithoutAuthentication())\n</pre>\n<h3 id=\"hdr-Buckets\">Buckets</h3>\n<p>\nA
+    Google Cloud Storage bucket is a collection of objects. To work with a\nbucket,
+    make a bucket handle:\n</p>\n<pre>bkt := client.Bucket(bucketName)\n</pre>\n<p>\nA
+    handle is a reference to a bucket. You can have a handle even if the\nbucket doesn&#39;t
+    exist yet. To create a bucket in Google Cloud Storage,\ncall Create on the handle:\n</p>\n<pre>if
+    err := bkt.Create(ctx, projectID, nil); err != nil {\n    // TODO: Handle error.\n}\n</pre>\n<p>\nNote
+    that although buckets are associated with projects, bucket names are\nglobal across
+    all projects.\n</p>\n<p>\nEach bucket has associated metadata, represented in
+    this package by\nBucketAttrs. The third argument to BucketHandle.Create allows
+    you to set\nthe initial BucketAttrs of a bucket. To retrieve a bucket&#39;s attributes,
+    use\nAttrs:\n</p>\n<pre>attrs, err := bkt.Attrs(ctx)\nif err != nil {\n    //
+    TODO: Handle error.\n}\nfmt.Printf(&#34;bucket %s, created at %s, is located in
+    %s with storage class %s\\n&#34;,\n    attrs.Name, attrs.Created, attrs.Location,
+    attrs.StorageClass)\n</pre>\n<h3 id=\"hdr-Objects\">Objects</h3>\n<p>\nAn object
+    holds arbitrary data as a sequence of bytes, like a file. You\nrefer to objects
+    using a handle, just as with buckets, but unlike buckets\nyou don&#39;t explicitly
+    create an object. Instead, the first time you write\nto an object it will be created.
+    You can use the standard Go io.Reader\nand io.Writer interfaces to read and write
+    object data:\n</p>\n<pre>obj := bkt.Object(&#34;data&#34;)\n// Write something
+    to obj.\n// w implements io.Writer.\nw := obj.NewWriter(ctx)\n// Write some text
+    to obj. This will either create the object or overwrite whatever is there already.\nif
+    _, err := fmt.Fprintf(w, &#34;This object contains text.\\n&#34;); err != nil
+    {\n    // TODO: Handle error.\n}\n// Close, just like writing a file.\nif err
+    := w.Close(); err != nil {\n    // TODO: Handle error.\n}\n\n// Read it back.\nr,
+    err := obj.NewReader(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\ndefer
+    r.Close()\nif _, err := io.Copy(os.Stdout, r); err != nil {\n    // TODO: Handle
+    error.\n}\n// Prints &#34;This object contains text.&#34;\n</pre>\n<p>\nObjects
+    also have attributes, which you can fetch with Attrs:\n</p>\n<pre>objAttrs, err
+    := obj.Attrs(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&#34;object
+    %s has size %d and can be read using %s\\n&#34;,\n    objAttrs.Name, objAttrs.Size,
+    objAttrs.MediaLink)\n</pre>\n<h3 id=\"hdr-Listing_objects\">Listing objects</h3>\n<p>\nListing
+    objects in a bucket is done with the Bucket.Objects method:\n</p>\n<pre>query
+    := &amp;storage.Query{Prefix: &#34;&#34;}\n\nvar names []string\nit := bkt.Objects(ctx,
+    query)\nfor {\n    attrs, err := it.Next()\n    if err == iterator.Done {\n        break\n
+    \   }\n    if err != nil {\n        log.Fatal(err)\n    }\n    names = append(names,
+    attrs.Name)\n}\n</pre>\n<p>\nIf only a subset of object attributes is needed when
+    listing, specifying this\nsubset using Query.SetAttrSelection may speed up the
+    listing process:\n</p>\n<pre>query := &amp;storage.Query{Prefix: &#34;&#34;}\nquery.SetAttrSelection([]string{&#34;Name&#34;})\n\n//
+    ... as before\n</pre>\n<h3 id=\"hdr-ACLs\">ACLs</h3>\n<p>\nBoth objects and buckets
+    have ACLs (Access Control Lists). An ACL is a list of\nACLRules, each of which
+    specifies the role of a user, group or project. ACLs\nare suitable for fine-grained
+    control, but you may prefer using IAM to control\naccess at the project level
+    (see\n<a href=\"https://cloud.google.com/storage/docs/access-control/iam\">https://cloud.google.com/storage/docs/access-control/iam</a>).\n</p>\n<p>\nTo
+    list the ACLs of a bucket or object, obtain an ACLHandle and call its List method:\n</p>\n<pre>acls,
+    err := obj.ACL().List(ctx)\nif err != nil {\n    // TODO: Handle error.\n}\nfor
+    _, rule := range acls {\n    fmt.Printf(&#34;%s has role %s\\n&#34;, rule.Entity,
+    rule.Role)\n}\n</pre>\n<p>\nYou can also set and delete ACLs.\n</p>\n<h3 id=\"hdr-Conditions\">Conditions</h3>\n<p>\nEvery
+    object has a generation and a metageneration. The generation changes\nwhenever
+    the content changes, and the metageneration changes whenever the\nmetadata changes.
+    Conditions let you check these values before an operation;\nthe operation only
+    executes if the conditions match. You can use conditions to\nprevent race conditions
+    in read-modify-write operations.\n</p>\n<p>\nFor example, say you&#39;ve read
+    an object&#39;s metadata into objAttrs. Now\nyou want to write to that object,
+    but only if its contents haven&#39;t changed\nsince you read it. Here is how to
+    express that:\n</p>\n<pre>w = obj.If(storage.Conditions{GenerationMatch: objAttrs.Generation}).NewWriter(ctx)\n//
+    Proceed with writing as above.\n</pre>\n<h3 id=\"hdr-Signed_URLs\">Signed URLs</h3>\n<p>\nYou
+    can obtain a URL that lets anyone read or write an object for a limited time.\nYou
+    don&#39;t need to create a client to do this. See the documentation of\nSignedURL
+    for details.\n</p>\n<pre>url, err := storage.SignedURL(bucketName, &#34;shared-object&#34;,
+    opts)\nif err != nil {\n    // TODO: Handle error.\n}\nfmt.Println(url)\n</pre>\n<h3
+    id=\"hdr-Post_Policy_V4_Signed_Request\">Post Policy V4 Signed Request</h3>\n<p>\nA
+    type of signed request that allows uploads through HTML forms directly to Cloud
+    Storage with\ntemporary permission. Conditions can be applied to restrict how
+    the HTML form is used and exercised\nby a user.\n</p>\n<p>\nFor more information,
+    please see <a href=\"https://cloud.google.com/storage/docs/xml-api/post-object\">https://cloud.google.com/storage/docs/xml-api/post-object</a>
+    as well\nas the documentation of GenerateSignedPostPolicyV4.\n</p>\n<pre>pv4,
+    err := storage.GenerateSignedPostPolicyV4(bucketName, objectName, opts)\nif err
+    != nil {\n    // TODO: Handle error.\n}\nfmt.Printf(&#34;URL: %s\\nFields; %v\\n&#34;,
+    pv4.URL, pv4.Fields)\n</pre>\n<h3 id=\"hdr-Errors\">Errors</h3>\n<p>\nErrors returned
+    by this client are often of the type [`googleapi.Error`](<a href=\"https://godoc.org/google.golang.org/api/googleapi#Error\">https://godoc.org/google.golang.org/api/googleapi#Error</a>).\nThese
+    errors can be introspected for more information by type asserting to the richer
+    `googleapi.Error` type. For example:\n</p>\n<pre>if e, ok := err.(*googleapi.Error);
+    ok {\n\t  if e.Code == 409 { ... }\n}\n</pre>\n"
+  type: package
+  langs:
+  - go
+  children:
+  - cloud.google.com/go/storage.DeleteAction,SetStorageClassAction
+  - cloud.google.com/go/storage.NoPayload,JSONPayload
+  - cloud.google.com/go/storage.ObjectFinalizeEvent,ObjectMetadataUpdateEvent,ObjectDeleteEvent,ObjectArchiveEvent
+  - cloud.google.com/go/storage.ScopeFullControl,ScopeReadOnly,ScopeReadWrite
+  - cloud.google.com/go/storage.ErrBucketNotExist,ErrObjectNotExist
+  - cloud.google.com/go/storage.ACLEntity
+  - cloud.google.com/go/storage.AllUsers,AllAuthenticatedUsers
+  - cloud.google.com/go/storage.ACLHandle
+  - cloud.google.com/go/storage.ACLHandle.Delete
+  - cloud.google.com/go/storage.ACLHandle.List
+  - cloud.google.com/go/storage.ACLHandle.Set
+  - cloud.google.com/go/storage.ACLRole
+  - cloud.google.com/go/storage.RoleOwner,RoleReader,RoleWriter
+  - cloud.google.com/go/storage.ACLRule
+  - cloud.google.com/go/storage.BucketAttrs
+  - cloud.google.com/go/storage.BucketAttrsToUpdate
+  - cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
+  - cloud.google.com/go/storage.BucketAttrsToUpdate.SetLabel
+  - cloud.google.com/go/storage.BucketConditions
+  - cloud.google.com/go/storage.BucketEncryption
+  - cloud.google.com/go/storage.BucketHandle
+  - cloud.google.com/go/storage.BucketHandle.ACL
+  - cloud.google.com/go/storage.BucketHandle.AddNotification
+  - cloud.google.com/go/storage.BucketHandle.Attrs
+  - cloud.google.com/go/storage.BucketHandle.Create
+  - cloud.google.com/go/storage.BucketHandle.DefaultObjectACL
+  - cloud.google.com/go/storage.BucketHandle.Delete
+  - cloud.google.com/go/storage.BucketHandle.DeleteNotification
+  - cloud.google.com/go/storage.BucketHandle.IAM
+  - cloud.google.com/go/storage.BucketHandle.If
+  - cloud.google.com/go/storage.BucketHandle.LockRetentionPolicy
+  - cloud.google.com/go/storage.BucketHandle.Notifications
+  - cloud.google.com/go/storage.BucketHandle.Object
+  - cloud.google.com/go/storage.BucketHandle.Objects
+  - cloud.google.com/go/storage.BucketHandle.Update
+  - cloud.google.com/go/storage.BucketHandle.UserProject
+  - cloud.google.com/go/storage.BucketIterator
+  - cloud.google.com/go/storage.BucketIterator.Next
+  - cloud.google.com/go/storage.BucketIterator.PageInfo
+  - cloud.google.com/go/storage.BucketLogging
+  - cloud.google.com/go/storage.BucketPolicyOnly
+  - cloud.google.com/go/storage.BucketWebsite
+  - cloud.google.com/go/storage.CORS
+  - cloud.google.com/go/storage.Client
+  - cloud.google.com/go/storage.Client.NewClient
+  - cloud.google.com/go/storage.Client.Bucket
+  - cloud.google.com/go/storage.Client.Buckets
+  - cloud.google.com/go/storage.Client.Close
+  - cloud.google.com/go/storage.Client.CreateHMACKey
+  - cloud.google.com/go/storage.Client.HMACKeyHandle
+  - cloud.google.com/go/storage.Client.ListHMACKeys
+  - cloud.google.com/go/storage.Client.ServiceAccount
+  - cloud.google.com/go/storage.Composer
+  - cloud.google.com/go/storage.Composer.Run
+  - cloud.google.com/go/storage.Conditions
+  - cloud.google.com/go/storage.Copier
+  - cloud.google.com/go/storage.Copier.Run
+  - cloud.google.com/go/storage.HMACKey
+  - cloud.google.com/go/storage.HMACKeyAttrsToUpdate
+  - cloud.google.com/go/storage.HMACKeyHandle
+  - cloud.google.com/go/storage.HMACKeyHandle.Delete
+  - cloud.google.com/go/storage.HMACKeyHandle.Get
+  - cloud.google.com/go/storage.HMACKeyHandle.Update
+  - cloud.google.com/go/storage.HMACKeyOption
+  - cloud.google.com/go/storage.HMACKeyOption.ForHMACKeyServiceAccountEmail
+  - cloud.google.com/go/storage.HMACKeyOption.ShowDeletedHMACKeys
+  - cloud.google.com/go/storage.HMACKeyOption.UserProjectForHMACKeys
+  - cloud.google.com/go/storage.HMACKeysIterator
+  - cloud.google.com/go/storage.HMACKeysIterator.Next
+  - cloud.google.com/go/storage.HMACKeysIterator.PageInfo
+  - cloud.google.com/go/storage.HMACState
+  - cloud.google.com/go/storage.Active,Inactive,Deleted
+  - cloud.google.com/go/storage.Lifecycle
+  - cloud.google.com/go/storage.LifecycleAction
+  - cloud.google.com/go/storage.LifecycleCondition
+  - cloud.google.com/go/storage.LifecycleRule
+  - cloud.google.com/go/storage.Liveness
+  - cloud.google.com/go/storage.LiveAndArchived,Live,Archived
+  - cloud.google.com/go/storage.Notification
+  - cloud.google.com/go/storage.ObjectAttrs
+  - cloud.google.com/go/storage.ObjectAttrsToUpdate
+  - cloud.google.com/go/storage.ObjectHandle
+  - cloud.google.com/go/storage.ObjectHandle.ACL
+  - cloud.google.com/go/storage.ObjectHandle.Attrs
+  - cloud.google.com/go/storage.ObjectHandle.BucketName
+  - cloud.google.com/go/storage.ObjectHandle.ComposerFrom
+  - cloud.google.com/go/storage.ObjectHandle.CopierFrom
+  - cloud.google.com/go/storage.ObjectHandle.Delete
+  - cloud.google.com/go/storage.ObjectHandle.Generation
+  - cloud.google.com/go/storage.ObjectHandle.If
+  - cloud.google.com/go/storage.ObjectHandle.Key
+  - cloud.google.com/go/storage.ObjectHandle.NewRangeReader
+  - cloud.google.com/go/storage.ObjectHandle.NewReader
+  - cloud.google.com/go/storage.ObjectHandle.NewWriter
+  - cloud.google.com/go/storage.ObjectHandle.ObjectName
+  - cloud.google.com/go/storage.ObjectHandle.ReadCompressed
+  - cloud.google.com/go/storage.ObjectHandle.Update
+  - cloud.google.com/go/storage.ObjectIterator
+  - cloud.google.com/go/storage.ObjectIterator.Next
+  - cloud.google.com/go/storage.ObjectIterator.PageInfo
+  - cloud.google.com/go/storage.PolicyV4Fields
+  - cloud.google.com/go/storage.PostPolicyV4
+  - cloud.google.com/go/storage.PostPolicyV4.GenerateSignedPostPolicyV4
+  - cloud.google.com/go/storage.PostPolicyV4Condition
+  - cloud.google.com/go/storage.PostPolicyV4Condition.ConditionContentLengthRange
+  - cloud.google.com/go/storage.PostPolicyV4Condition.ConditionStartsWith
+  - cloud.google.com/go/storage.PostPolicyV4Options
+  - cloud.google.com/go/storage.ProjectTeam
+  - cloud.google.com/go/storage.Query
+  - cloud.google.com/go/storage.Query.SetAttrSelection
+  - cloud.google.com/go/storage.Reader
+  - cloud.google.com/go/storage.Reader.CacheControl
+  - cloud.google.com/go/storage.Reader.Close
+  - cloud.google.com/go/storage.Reader.ContentEncoding
+  - cloud.google.com/go/storage.Reader.ContentType
+  - cloud.google.com/go/storage.Reader.LastModified
+  - cloud.google.com/go/storage.Reader.Read
+  - cloud.google.com/go/storage.Reader.Remain
+  - cloud.google.com/go/storage.Reader.Size
+  - cloud.google.com/go/storage.ReaderObjectAttrs
+  - cloud.google.com/go/storage.RetentionPolicy
+  - cloud.google.com/go/storage.SignedURLOptions
+  - cloud.google.com/go/storage.SigningScheme
+  - cloud.google.com/go/storage.SigningSchemeDefault,SigningSchemeV2,SigningSchemeV4
+  - cloud.google.com/go/storage.URLStyle
+  - cloud.google.com/go/storage.URLStyle.BucketBoundHostname
+  - cloud.google.com/go/storage.URLStyle.PathStyle
+  - cloud.google.com/go/storage.URLStyle.VirtualHostedStyle
+  - cloud.google.com/go/storage.UniformBucketLevelAccess
+  - cloud.google.com/go/storage.Writer
+  - cloud.google.com/go/storage.Writer.Attrs
+  - cloud.google.com/go/storage.Writer.Close
+  - cloud.google.com/go/storage.Writer.CloseWithError
+  - cloud.google.com/go/storage.Writer.Write
+  - cloud.google.com/go/storage.SignedURL
+- uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction
+  name: DeleteAction, SetStorageClassAction
+  id: DeleteAction,SetStorageClassAction
+  parent: cloud.google.com/go/storage
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\n\t// DeleteAction is a lifecycle action that deletes a live
+      and/or archived\n\t// objects. Takes precedence over SetStorageClass actions.\n\tDeleteAction
+      = \"Delete\"\n\n\t// SetStorageClassAction changes the storage class of live
+      and/or archived\n\t// objects.\n\tSetStorageClassAction = \"SetStorageClass\"\n)"
+- uid: cloud.google.com/go/storage.NoPayload,JSONPayload
+  name: NoPayload, JSONPayload
+  id: NoPayload,JSONPayload
+  summary: |
+    Values for Notification.PayloadFormat.
+  parent: cloud.google.com/go/storage
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// Send no payload with notification messages.\n\tNoPayload
+      = \"NONE\"\n\n\t// Send object metadata as JSON with notification messages.\n\tJSONPayload
+      = \"JSON_API_V1\"\n)"
+- uid: cloud.google.com/go/storage.ObjectFinalizeEvent,ObjectMetadataUpdateEvent,ObjectDeleteEvent,ObjectArchiveEvent
+  name: ObjectFinalizeEvent, ObjectMetadataUpdateEvent, ObjectDeleteEvent, ObjectArchiveEvent
+  id: ObjectFinalizeEvent,ObjectMetadataUpdateEvent,ObjectDeleteEvent,ObjectArchiveEvent
+  summary: |
+    Values for Notification.EventTypes.
+  parent: cloud.google.com/go/storage
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// Event that occurs when an object is successfully created.\n\tObjectFinalizeEvent
+      = \"OBJECT_FINALIZE\"\n\n\t// Event that occurs when the metadata of an existing
+      object changes.\n\tObjectMetadataUpdateEvent = \"OBJECT_METADATA_UPDATE\"\n\n\t//
+      Event that occurs when an object is permanently deleted.\n\tObjectDeleteEvent
+      = \"OBJECT_DELETE\"\n\n\t// Event that occurs when the live version of an object
+      becomes an\n\t// archived version.\n\tObjectArchiveEvent = \"OBJECT_ARCHIVE\"\n)"
+- uid: cloud.google.com/go/storage.ScopeFullControl,ScopeReadOnly,ScopeReadWrite
+  name: ScopeFullControl, ScopeReadOnly, ScopeReadWrite
+  id: ScopeFullControl,ScopeReadOnly,ScopeReadWrite
+  parent: cloud.google.com/go/storage
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// ScopeFullControl grants permissions to manage your\n\t//
+      data and permissions in Google Cloud Storage.\n\tScopeFullControl = raw.DevstorageFullControlScope\n\n\t//
+      ScopeReadOnly grants permissions to\n\t// view your data in Google Cloud Storage.\n\tScopeReadOnly
+      = raw.DevstorageReadOnlyScope\n\n\t// ScopeReadWrite grants permissions to manage
+      your\n\t// data in Google Cloud Storage.\n\tScopeReadWrite = raw.DevstorageReadWriteScope\n)"
+- uid: cloud.google.com/go/storage.ErrBucketNotExist,ErrObjectNotExist
+  name: ErrBucketNotExist, ErrObjectNotExist
+  id: ErrBucketNotExist,ErrObjectNotExist
+  parent: cloud.google.com/go/storage
+  type: variable
+  langs:
+  - go
+  syntax:
+    content: "var (\n\t// ErrBucketNotExist indicates that the bucket does not exist.\n\tErrBucketNotExist
+      = errors.New(\"storage: bucket doesn't exist\")\n\t// ErrObjectNotExist indicates
+      that the object does not exist.\n\tErrObjectNotExist = errors.New(\"storage:
+      object doesn't exist\")\n)"
+- uid: cloud.google.com/go/storage.ACLEntity
+  name: ACLEntity
+  id: ACLEntity
+  summary: |
+    ACLEntity refers to a user or group.
+    They are sometimes referred to as grantees.
+
+    It could be in the form of:
+    "user-<userId>", "user-<email>", "group-<groupId>", "group-<email>",
+    "domain-<domain>" and "project-team-<projectId>".
+
+    Or one of the predefined constants: AllUsers, AllAuthenticatedUsers.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type ACLEntity string
+- uid: cloud.google.com/go/storage.AllUsers,AllAuthenticatedUsers
+  name: AllUsers, AllAuthenticatedUsers
+  id: AllUsers,AllAuthenticatedUsers
+  parent: cloud.google.com/go/storage.ACLEntity
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\tAllUsers              ACLEntity = \"allUsers\"\n\tAllAuthenticatedUsers
+      ACLEntity = \"allAuthenticatedUsers\"\n)"
+- uid: cloud.google.com/go/storage.ACLHandle
+  name: ACLHandle
+  id: ACLHandle
+  summary: |
+    ACLHandle provides operations on an access control list for a Google Cloud Storage bucket or object.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ACLHandle struct {\n\t// contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.ACLHandle.Delete
+  name: |
+    func (*ACLHandle) Delete
+  id: Delete
+  summary: |
+    Delete permanently deletes the ACL entry for the given entity.
+  parent: cloud.google.com/go/storage.ACLHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (a *ACLHandle) Delete(ctx context.Context, entity ACLEntity) (err
+      error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// No longer grant access to
+      the bucket to everyone on the Internet.\n\tif err := client.Bucket(\"my-bucket\").ACL().Delete(ctx,
+      storage.AllUsers); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.ACLHandle.List
+  name: |
+    func (*ACLHandle) List
+  id: List
+  summary: |
+    List retrieves ACL entries.
+  parent: cloud.google.com/go/storage.ACLHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (a *ACLHandle) List(ctx context.Context) (rules []ACLRule, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// List the default object
+      ACLs for my-bucket.\n\taclRules, err := client.Bucket(\"my-bucket\").DefaultObjectACL().List(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(aclRules)\n}\n"
+- uid: cloud.google.com/go/storage.ACLHandle.Set
+  name: |
+    func (*ACLHandle) Set
+  id: Set
+  summary: |
+    Set sets the role for the given entity.
+  parent: cloud.google.com/go/storage.ACLHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (a *ACLHandle) Set(ctx context.Context, entity ACLEntity, role ACLRole)
+      (err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Let any authenticated user
+      read my-bucket/my-object.\n\tobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\tif
+      err := obj.ACL().Set(ctx, storage.AllAuthenticatedUsers, storage.RoleReader);
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.ACLRole
+  name: ACLRole
+  id: ACLRole
+  summary: |
+    ACLRole is the level of access to grant.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type ACLRole string
+- uid: cloud.google.com/go/storage.RoleOwner,RoleReader,RoleWriter
+  name: RoleOwner, RoleReader, RoleWriter
+  id: RoleOwner,RoleReader,RoleWriter
+  parent: cloud.google.com/go/storage.ACLRole
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\tRoleOwner  ACLRole = \"OWNER\"\n\tRoleReader ACLRole = \"READER\"\n\tRoleWriter
+      ACLRole = \"WRITER\"\n)"
+- uid: cloud.google.com/go/storage.ACLRule
+  name: ACLRule
+  id: ACLRule
+  summary: |
+    ACLRule represents a grant for a role to an entity (user, group or team) for a
+    Google Cloud Storage object or bucket.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ACLRule struct {\n\tEntity      ACLEntity\n\tEntityID    string\n\tRole
+      \       ACLRole\n\tDomain      string\n\tEmail       string\n\tProjectTeam *ProjectTeam\n}"
+- uid: cloud.google.com/go/storage.BucketAttrs
+  name: BucketAttrs
+  id: BucketAttrs
+  summary: |
+    BucketAttrs represents the metadata for a Google Cloud Storage bucket.
+    Read-only fields are ignored by BucketHandle.Create.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketAttrs struct {\n\t// Name is the name of the bucket.\n\t//
+      This field is read-only.\n\tName string\n\n\t// ACL is the list of access control
+      rules on the bucket.\n\tACL []ACLRule\n\n\t// BucketPolicyOnly is an alias for
+      UniformBucketLevelAccess. Use of\n\t// UniformBucketLevelAccess is recommended
+      above the use of this field.\n\t// Setting BucketPolicyOnly.Enabled OR UniformBucketLevelAccess.Enabled
+      to\n\t// true, will enable UniformBucketLevelAccess.\n\tBucketPolicyOnly BucketPolicyOnly\n\n\t//
+      UniformBucketLevelAccess configures access checks to use only bucket-level IAM\n\t//
+      policies and ignore any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
+      for more information.\n\tUniformBucketLevelAccess UniformBucketLevelAccess\n\n\t//
+      DefaultObjectACL is the list of access controls to\n\t// apply to new objects
+      when no object ACL is provided.\n\tDefaultObjectACL []ACLRule\n\n\t// DefaultEventBasedHold
+      is the default value for event-based hold on\n\t// newly created objects in
+      this bucket. It defaults to false.\n\tDefaultEventBasedHold bool\n\n\t// If
+      not empty, applies a predefined set of access controls. It should be set\n\t//
+      only when creating a bucket.\n\t// It is always empty for BucketAttrs returned
+      from the service.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert\n\t//
+      for valid values.\n\tPredefinedACL string\n\n\t// If not empty, applies a predefined
+      set of default object access controls.\n\t// It should be set only when creating
+      a bucket.\n\t// It is always empty for BucketAttrs returned from the service.\n\t//
+      See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert\n\t// for
+      valid values.\n\tPredefinedDefaultObjectACL string\n\n\t// Location is the location
+      of the bucket. It defaults to \"US\".\n\tLocation string\n\n\t// MetaGeneration
+      is the metadata generation of the bucket.\n\t// This field is read-only.\n\tMetaGeneration
+      int64\n\n\t// StorageClass is the default storage class of the bucket. This
+      defines\n\t// how objects in the bucket are stored and determines the SLA\n\t//
+      and the cost of storage. Typical values are \"STANDARD\", \"NEARLINE\",\n\t//
+      \"COLDLINE\" and \"ARCHIVE\". Defaults to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
+      for all\n\t// valid values.\n\tStorageClass string\n\n\t// Created is the creation
+      time of the bucket.\n\t// This field is read-only.\n\tCreated time.Time\n\n\t//
+      VersioningEnabled reports whether this bucket has versioning enabled.\n\tVersioningEnabled
+      bool\n\n\t// Labels are the bucket's labels.\n\tLabels map[string]string\n\n\t//
+      RequesterPays reports whether the bucket is a Requester Pays bucket.\n\t// Clients
+      performing operations on Requester Pays buckets must provide\n\t// a user project
+      (see BucketHandle.UserProject), which will be billed\n\t// for the operations.\n\tRequesterPays
+      bool\n\n\t// Lifecycle is the lifecycle configuration for objects in the bucket.\n\tLifecycle
+      Lifecycle\n\n\t// Retention policy enforces a minimum retention time for all
+      objects\n\t// contained in the bucket. A RetentionPolicy of nil implies the
+      bucket\n\t// has no minimum data retention.\n\t//\n\t// This feature is in private
+      alpha release. It is not currently available to\n\t// most customers. It might
+      be changed in backwards-incompatible ways and is not\n\t// subject to any SLA
+      or deprecation policy.\n\tRetentionPolicy *RetentionPolicy\n\n\t// The bucket's
+      Cross-Origin Resource Sharing (CORS) configuration.\n\tCORS []CORS\n\n\t// The
+      encryption configuration used by default for newly inserted objects.\n\tEncryption
+      *BucketEncryption\n\n\t// The logging configuration.\n\tLogging *BucketLogging\n\n\t//
+      The website configuration.\n\tWebsite *BucketWebsite\n\n\t// Etag is the HTTP/1.1
+      Entity tag for the bucket.\n\t// This field is read-only.\n\tEtag string\n\n\t//
+      LocationType describes how data is stored and replicated.\n\t// Typical values
+      are \"multi-region\", \"region\" and \"dual-region\".\n\t// This field is read-only.\n\tLocationType
+      string\n}"
+- uid: cloud.google.com/go/storage.BucketAttrsToUpdate
+  name: BucketAttrsToUpdate
+  id: BucketAttrsToUpdate
+  summary: |
+    BucketAttrsToUpdate define the attributes to update during an Update call.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketAttrsToUpdate struct {\n\t// If set, updates whether the
+      bucket uses versioning.\n\tVersioningEnabled optional.Bool\n\n\t// If set, updates
+      whether the bucket is a Requester Pays bucket.\n\tRequesterPays optional.Bool\n\n\t//
+      DefaultEventBasedHold is the default value for event-based hold on\n\t// newly
+      created objects in this bucket.\n\tDefaultEventBasedHold optional.Bool\n\n\t//
+      BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of\n\t// UniformBucketLevelAccess
+      is recommended above the use of this field.\n\t// Setting BucketPolicyOnly.Enabled
+      OR UniformBucketLevelAccess.Enabled to\n\t// true, will enable UniformBucketLevelAccess.
+      If both BucketPolicyOnly and\n\t// UniformBucketLevelAccess are set, the value
+      of UniformBucketLevelAccess\n\t// will take precedence.\n\tBucketPolicyOnly
+      *BucketPolicyOnly\n\n\t// UniformBucketLevelAccess configures access checks
+      to use only bucket-level IAM\n\t// policies and ignore any ACL rules for the
+      bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
+      for more information.\n\tUniformBucketLevelAccess *UniformBucketLevelAccess\n\n\t//
+      If set, updates the retention policy of the bucket. Using\n\t// RetentionPolicy.RetentionPeriod
+      = 0 will delete the existing policy.\n\t//\n\t// This feature is in private
+      alpha release. It is not currently available to\n\t// most customers. It might
+      be changed in backwards-incompatible ways and is not\n\t// subject to any SLA
+      or deprecation policy.\n\tRetentionPolicy *RetentionPolicy\n\n\t// If set, replaces
+      the CORS configuration with a new configuration.\n\t// An empty (rather than
+      nil) slice causes all CORS policies to be removed.\n\tCORS []CORS\n\n\t// If
+      set, replaces the encryption configuration of the bucket. Using\n\t// BucketEncryption.DefaultKMSKeyName
+      = \"\" will delete the existing\n\t// configuration.\n\tEncryption *BucketEncryption\n\n\t//
+      If set, replaces the lifecycle configuration of the bucket.\n\tLifecycle *Lifecycle\n\n\t//
+      If set, replaces the logging configuration of the bucket.\n\tLogging *BucketLogging\n\n\t//
+      If set, replaces the website configuration of the bucket.\n\tWebsite *BucketWebsite\n\n\t//
+      If not empty, applies a predefined set of access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedACL
+      string\n\n\t// If not empty, applies a predefined set of default object access
+      controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedDefaultObjectACL
+      string\n\t// contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
+  name: |
+    func (*BucketAttrsToUpdate) DeleteLabel
+  id: DeleteLabel
+  summary: |
+    DeleteLabel causes a label to be deleted when ua is used in a
+    call to Bucket.Update.
+  parent: cloud.google.com/go/storage.BucketAttrsToUpdate
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (ua *BucketAttrsToUpdate) DeleteLabel(name string)
+- uid: cloud.google.com/go/storage.BucketAttrsToUpdate.SetLabel
+  name: |
+    func (*BucketAttrsToUpdate) SetLabel
+  id: SetLabel
+  summary: |
+    SetLabel causes a label to be added or modified when ua is used
+    in a call to Bucket.Update.
+  parent: cloud.google.com/go/storage.BucketAttrsToUpdate
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (ua *BucketAttrsToUpdate) SetLabel(name, value string)
+- uid: cloud.google.com/go/storage.BucketConditions
+  name: BucketConditions
+  id: BucketConditions
+  summary: |
+    BucketConditions constrain bucket methods to act on specific metagenerations.
+
+    The zero value is an empty set of constraints.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketConditions struct {\n\t// MetagenerationMatch specifies that
+      the bucket must have the given\n\t// metageneration for the operation to occur.\n\t//
+      If MetagenerationMatch is zero, it has no effect.\n\tMetagenerationMatch int64\n\n\t//
+      MetagenerationNotMatch specifies that the bucket must not have the given\n\t//
+      metageneration for the operation to occur.\n\t// If MetagenerationNotMatch is
+      zero, it has no effect.\n\tMetagenerationNotMatch int64\n}"
+- uid: cloud.google.com/go/storage.BucketEncryption
+  name: BucketEncryption
+  id: BucketEncryption
+  summary: |
+    BucketEncryption is a bucket's encryption configuration.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketEncryption struct {\n\t// A Cloud KMS key name, in the form\n\t//
+      projects/P/locations/L/keyRings/R/cryptoKeys/K, that will be used to encrypt\n\t//
+      objects inserted into this bucket, if no encryption method is specified.\n\t//
+      The key's location must be the same as the bucket's.\n\tDefaultKMSKeyName string\n}"
+- uid: cloud.google.com/go/storage.BucketHandle
+  name: BucketHandle
+  id: BucketHandle
+  summary: |
+    BucketHandle provides operations on a Google Cloud Storage bucket.
+    Use Client.Bucket to get a handle.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketHandle struct {\n\t// contains filtered or unexported fields\n}"
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\tattrs, err := client.Bucket(\"my-bucket\").Attrs(ctx)\n\tif
+      err == storage.ErrBucketNotExist {\n\t\tfmt.Println(\"The bucket does not exist\")\n\t\treturn\n\t}\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"The bucket exists
+      and has attributes: %#v\\n\", attrs)\n}\n"
+    name: exists
+- uid: cloud.google.com/go/storage.BucketHandle.ACL
+  name: |
+    func (*BucketHandle) ACL
+  id: ACL
+  summary: |
+    ACL returns an ACLHandle, which provides access to the bucket's access control list.
+    This controls who can list, create or overwrite the objects in a bucket.
+    This call does not perform any network operations.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) ACL() *ACLHandle
+- uid: cloud.google.com/go/storage.BucketHandle.AddNotification
+  name: |
+    func (*BucketHandle) AddNotification
+  id: AddNotification
+  summary: |
+    AddNotification adds a notification to b. You must set n's TopicProjectID, TopicID
+    and PayloadFormat, and must not set its ID. The other fields are all optional. The
+    returned Notification's ID can be used to refer to it.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification)
+      (ret *Notification, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tn,
+      err := b.AddNotification(ctx, &storage.Notification{\n\t\tTopicProjectID: \"my-project\",\n\t\tTopicID:
+      \       \"my-topic\",\n\t\tPayloadFormat:  storage.JSONPayload,\n\t})\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(n.ID)\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.Attrs
+  name: |
+    func (*BucketHandle) Attrs
+  id: Attrs
+  summary: |
+    Attrs returns the metadata for the bucket.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Attrs(ctx context.Context) (attrs *BucketAttrs,
+      err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tattrs, err := client.Bucket(\"my-bucket\").Attrs(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(attrs)\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.Create
+  name: |
+    func (*BucketHandle) Create
+  id: Create
+  summary: |
+    Create creates the Bucket in the project.
+    If attrs is nil the API defaults will be used.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Create(ctx context.Context, projectID string,
+      attrs *BucketAttrs) (err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := client.Bucket(\"my-bucket\").Create(ctx,
+      \"my-project\", nil); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.DefaultObjectACL
+  name: |
+    func (*BucketHandle) DefaultObjectACL
+  id: DefaultObjectACL
+  summary: |
+    DefaultObjectACL returns an ACLHandle, which provides access to the bucket's default object ACLs.
+    These ACLs are applied to newly created objects in this bucket that do not have a defined ACL.
+    This call does not perform any network operations.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) DefaultObjectACL() *ACLHandle
+- uid: cloud.google.com/go/storage.BucketHandle.Delete
+  name: |
+    func (*BucketHandle) Delete
+  id: Delete
+  summary: |
+    Delete deletes the Bucket.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Delete(ctx context.Context) (err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := client.Bucket(\"my-bucket\").Delete(ctx);
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.DeleteNotification
+  name: |
+    func (*BucketHandle) DeleteNotification
+  id: DeleteNotification
+  summary: |
+    DeleteNotification deletes the notification with the given ID.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) DeleteNotification(ctx context.Context, id string)
+      (err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
+      notificationID string\n\nfunc main() {\n\tctx := context.Background()\n\tclient,
+      err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb
+      := client.Bucket(\"my-bucket\")\n\t// TODO: Obtain notificationID from BucketHandle.AddNotification\n\t//
+      or BucketHandle.Notifications.\n\terr = b.DeleteNotification(ctx, notificationID)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.IAM
+  name: |
+    func (*BucketHandle) IAM
+  id: IAM
+  summary: |
+    IAM provides access to IAM access control for the bucket.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) IAM() *iam.Handle
+- uid: cloud.google.com/go/storage.BucketHandle.If
+  name: |
+    func (*BucketHandle) If
+  id: If
+  summary: |
+    If returns a new BucketHandle that applies a set of preconditions.
+    Preconditions already set on the BucketHandle are ignored.
+    Operations on the new handle will return an error if the preconditions are not
+    satisfied. The only valid preconditions for buckets are MetagenerationMatch
+    and MetagenerationNotMatch.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) If(conds BucketConditions) *BucketHandle
+- uid: cloud.google.com/go/storage.BucketHandle.LockRetentionPolicy
+  name: |
+    func (*BucketHandle) LockRetentionPolicy
+  id: LockRetentionPolicy
+  summary: |
+    LockRetentionPolicy locks a bucket's retention policy until a previously-configured
+    RetentionPeriod past the EffectiveTime. Note that if RetentionPeriod is set to less
+    than a day, the retention policy is treated as a development configuration and locking
+    will have no effect. The BucketHandle must have a metageneration condition that
+    matches the bucket's metageneration. See BucketHandle.If.
+
+    This feature is in private alpha release. It is not currently available to
+    most customers. It might be changed in backwards-incompatible ways and is not
+    subject to any SLA or deprecation policy.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tattrs,
+      err := b.Attrs(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t//
+      Note that locking the bucket without first attaching a RetentionPolicy\n\t//
+      that's at least 1 day is a no-op\n\terr = b.If(storage.BucketConditions{MetagenerationMatch:
+      attrs.MetaGeneration}).LockRetentionPolicy(ctx)\n\tif err != nil {\n\t\t// TODO:
+      handle err\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.Notifications
+  name: |
+    func (*BucketHandle) Notifications
+  id: Notifications
+  summary: |
+    Notifications returns all the Notifications configured for this bucket, as a map
+    indexed by notification ID.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Notifications(ctx context.Context) (n map[string]*Notification,
+      err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tns,
+      err := b.Notifications(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfor
+      id, n := range ns {\n\t\tfmt.Printf(\"%s: %+v\\n\", id, n)\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.Object
+  name: |
+    func (*BucketHandle) Object
+  id: Object
+  summary: |
+    Object returns an ObjectHandle, which provides operations on the named object.
+    This call does not perform any network operations.
+
+    name must consist entirely of valid UTF-8-encoded runes. The full specification
+    for valid object names can be found at:
+      https://cloud.google.com/storage/docs/bucket-naming
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Object(name string) *ObjectHandle
+- uid: cloud.google.com/go/storage.BucketHandle.Objects
+  name: |
+    func (*BucketHandle) Objects
+  id: Objects
+  summary: |
+    Objects returns an iterator over the objects in the bucket that match the Query q.
+    If q is nil, no filtering is done.
+
+    Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Objects(ctx context.Context, q *Query) *ObjectIterator
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Bucket(\"my-bucket\").Objects(ctx,
+      nil)\n\t_ = it // TODO: iterate using Next or iterator.Pager.\n}\n"
+- uid: cloud.google.com/go/storage.BucketHandle.Update
+  name: |
+    func (*BucketHandle) Update
+  id: Update
+  summary: |
+    Update updates a bucket's attributes.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) Update(ctx context.Context, uattrs BucketAttrsToUpdate)
+      (attrs *BucketAttrs, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Enable versioning in the
+      bucket, regardless of its previous value.\n\tattrs, err := client.Bucket(\"my-bucket\").Update(ctx,\n\t\tstorage.BucketAttrsToUpdate{VersioningEnabled:
+      true})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(attrs)\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tb := client.Bucket(\"my-bucket\")\n\tattrs,
+      err := b.Attrs(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tvar
+      au storage.BucketAttrsToUpdate\n\tau.SetLabel(\"lab\", attrs.Labels[\"lab\"]+\"-more\")\n\tif
+      attrs.Labels[\"delete-me\"] == \"yes\" {\n\t\tau.DeleteLabel(\"delete-me\")\n\t}\n\tattrs,
+      err = b.\n\t\tIf(storage.BucketConditions{MetagenerationMatch: attrs.MetaGeneration}).\n\t\tUpdate(ctx,
+      au)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(attrs)\n}\n"
+    name: readModifyWrite
+- uid: cloud.google.com/go/storage.BucketHandle.UserProject
+  name: |
+    func (*BucketHandle) UserProject
+  id: UserProject
+  summary: |
+    UserProject returns a new BucketHandle that passes the project ID as the user
+    project for all subsequent calls. Calls with a user project will be billed to that
+    project rather than to the bucket's owning project.
+
+    A user project is required for all operations on Requester Pays buckets.
+  parent: cloud.google.com/go/storage.BucketHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (b *BucketHandle) UserProject(projectID string) *BucketHandle
+- uid: cloud.google.com/go/storage.BucketIterator
+  name: BucketIterator
+  id: BucketIterator
+  summary: |
+    A BucketIterator is an iterator over BucketAttrs.
+
+    Note: This iterator is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketIterator struct {\n\t// Prefix restricts the iterator to
+      buckets whose names begin with it.\n\tPrefix string\n\t// contains filtered
+      or unexported fields\n}"
+- uid: cloud.google.com/go/storage.BucketIterator.Next
+  name: |
+    func (*BucketIterator) Next
+  id: Next
+  summary: |
+    Next returns the next result. Its second return value is iterator.Done if
+    there are no more results. Once Next returns iterator.Done, all subsequent
+    calls will return iterator.Done.
+
+    Note: This method is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage.BucketIterator
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (it *BucketIterator) Next() (*BucketAttrs, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Buckets(ctx, \"my-project\")\n\tfor
+      {\n\t\tbucketAttrs, err := it.Next()\n\t\tif err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif
+      err != nil {\n\t\t\t// TODO: Handle error.\n\t\t}\n\t\tfmt.Println(bucketAttrs)\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.BucketIterator.PageInfo
+  name: |
+    func (*BucketIterator) PageInfo
+  id: PageInfo
+  summary: |
+    PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+
+    Note: This method is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage.BucketIterator
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (it *BucketIterator) PageInfo() *iterator.PageInfo
+- uid: cloud.google.com/go/storage.BucketLogging
+  name: BucketLogging
+  id: BucketLogging
+  summary: |
+    BucketLogging holds the bucket's logging configuration, which defines the
+    destination bucket and optional name prefix for the current bucket's
+    logs.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketLogging struct {\n\t// The destination bucket where the current
+      bucket's logs\n\t// should be placed.\n\tLogBucket string\n\n\t// A prefix for
+      log object names.\n\tLogObjectPrefix string\n}"
+- uid: cloud.google.com/go/storage.BucketPolicyOnly
+  name: BucketPolicyOnly
+  id: BucketPolicyOnly
+  summary: |
+    BucketPolicyOnly is an alias for UniformBucketLevelAccess.
+    Use of UniformBucketLevelAccess is preferred above BucketPolicyOnly.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketPolicyOnly struct {\n\t// Enabled specifies whether access
+      checks use only bucket-level IAM\n\t// policies. Enabled may be disabled until
+      the locked time.\n\tEnabled bool\n\t// LockedTime specifies the deadline for
+      changing Enabled from true to\n\t// false.\n\tLockedTime time.Time\n}"
+- uid: cloud.google.com/go/storage.BucketWebsite
+  name: BucketWebsite
+  id: BucketWebsite
+  summary: |
+    BucketWebsite holds the bucket's website configuration, controlling how the
+    service behaves when accessing bucket contents as a web site. See
+    https://cloud.google.com/storage/docs/static-website for more information.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type BucketWebsite struct {\n\t// If the requested object path is missing,
+      the service will ensure the path has\n\t// a trailing '/', append this suffix,
+      and attempt to retrieve the resulting\n\t// object. This allows the creation
+      of index.html objects to represent directory\n\t// pages.\n\tMainPageSuffix
+      string\n\n\t// If the requested object path is missing, and any mainPageSuffix
+      object is\n\t// missing, if applicable, the service will return the named object
+      from this\n\t// bucket as the content for a 404 Not Found result.\n\tNotFoundPage
+      string\n}"
+- uid: cloud.google.com/go/storage.CORS
+  name: CORS
+  id: CORS
+  summary: |
+    CORS is the bucket's Cross-Origin Resource Sharing (CORS) configuration.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type CORS struct {\n\t// MaxAge is the value to return in the Access-Control-Max-Age\n\t//
+      header used in preflight responses.\n\tMaxAge time.Duration\n\n\t// Methods
+      is the list of HTTP methods on which to include CORS response\n\t// headers,
+      (GET, OPTIONS, POST, etc) Note: \"*\" is permitted in the list\n\t// of methods,
+      and means \"any method\".\n\tMethods []string\n\n\t// Origins is the list of
+      Origins eligible to receive CORS response\n\t// headers. Note: \"*\" is permitted
+      in the list of origins, and means\n\t// \"any Origin\".\n\tOrigins []string\n\n\t//
+      ResponseHeaders is the list of HTTP headers other than the simple\n\t// response
+      headers to give permission for the user-agent to share\n\t// across domains.\n\tResponseHeaders
+      []string\n}"
+- uid: cloud.google.com/go/storage.Client
+  name: Client
+  id: Client
+  summary: |
+    Client is a client for interacting with Google Cloud Storage.
+
+    Clients should be reused instead of created as needed.
+    The methods of Client are safe for concurrent use by multiple goroutines.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Client struct {\n\t// contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.Client.NewClient
+  name: |
+    func NewClient
+  id: NewClient
+  summary: |
+    NewClient creates a new Google Cloud Storage client.
+    The default scope is ScopeFullControl. To use a different scope, like
+    ScopeReadOnly, use option.WithScopes.
+
+    Clients should be reused instead of created as needed. The methods of Client
+    are safe for concurrent use by multiple goroutines.
+  parent: cloud.google.com/go/storage.Client
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client,
+      error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\t// Use Google Application Default
+      Credentials to authorize and authenticate the client.\n\t// More information
+      about Application Default Credentials and how to enable is at\n\t// https://developers.google.com/identity/protocols/application-default-credentials.\n\tclient,
+      err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t//
+      Use the client.\n\n\t// Close the client when finished.\n\tif err := client.Close();
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/option\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx,
+      option.WithoutAuthentication())\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t//
+      Use the client.\n\n\t// Close the client when finished.\n\tif err := client.Close();
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+    name: unauthenticated
+- uid: cloud.google.com/go/storage.Client.Bucket
+  name: |
+    func (*Client) Bucket
+  id: Bucket
+  summary: |
+    Bucket returns a BucketHandle, which provides operations on the named bucket.
+    This call does not perform any network operations.
+
+    The supplied name must contain only lowercase letters, numbers, dashes,
+    underscores, and dots. The full specification for valid bucket names can be
+    found at:
+      https://cloud.google.com/storage/docs/bucket-naming
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) Bucket(name string) *BucketHandle
+- uid: cloud.google.com/go/storage.Client.Buckets
+  name: |
+    func (*Client) Buckets
+  id: Buckets
+  summary: |
+    Buckets returns an iterator over the buckets in the project. You may
+    optionally set the iterator's Prefix field to restrict the list to buckets
+    whose names begin with the prefix. By default, all buckets in the project
+    are returned.
+
+    Note: The returned iterator is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) Buckets(ctx context.Context, projectID string) *BucketIterator
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Buckets(ctx, \"my-bucket\")\n\t_
+      = it // TODO: iterate using Next or iterator.Pager.\n}\n"
+- uid: cloud.google.com/go/storage.Client.Close
+  name: |
+    func (*Client) Close
+  id: Close
+  summary: |
+    Close closes the Client.
+
+    Close need not be called at program exit.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) Close() error
+- uid: cloud.google.com/go/storage.Client.CreateHMACKey
+  name: |
+    func (*Client) CreateHMACKey
+  id: CreateHMACKey
+  summary: |
+    CreateHMACKey invokes an RPC for Google Cloud Storage to create a new HMACKey.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) CreateHMACKey(ctx context.Context, projectID, serviceAccountEmail
+      string, ...) (*HMACKey, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkey, err := client.CreateHMACKey(ctx,
+      \"project-id\", \"service-account-email\")\n\tif err != nil {\n\t\t// TODO:
+      handle error.\n\t}\n\t_ = hkey // TODO: Use the HMAC Key.\n}\n"
+- uid: cloud.google.com/go/storage.Client.HMACKeyHandle
+  name: |
+    func (*Client) HMACKeyHandle
+  id: HMACKeyHandle
+  summary: |
+    HMACKeyHandle creates a handle that will be used for HMACKey operations.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) HMACKeyHandle(projectID, accessID string) *HMACKeyHandle
+- uid: cloud.google.com/go/storage.Client.ListHMACKeys
+  name: |
+    func (*Client) ListHMACKeys
+  id: ListHMACKeys
+  summary: |
+    ListHMACKeys returns an iterator for listing HMACKeys.
+
+    Note: This iterator is not safe for concurrent operations without explicit synchronization.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) ListHMACKeys(ctx context.Context, projectID string,
+      opts ...HMACKeyOption) *HMACKeysIterator
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\titer := client.ListHMACKeys(ctx,
+      \"project-id\")\n\tfor {\n\t\tkey, err := iter.Next()\n\t\tif err == iterator.Done
+      {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\t// TODO: handle error.\n\t\t}\n\t\t_
+      = key // TODO: Use the key.\n\t}\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\titer := client.ListHMACKeys(ctx,
+      \"project-id\", storage.ForHMACKeyServiceAccountEmail(\"service@account.email\"))\n\tfor
+      {\n\t\tkey, err := iter.Next()\n\t\tif err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif
+      err != nil {\n\t\t\t// TODO: handle error.\n\t\t}\n\t\t_ = key // TODO: Use
+      the key.\n\t}\n}\n"
+    name: forServiceAccountEmail
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\titer := client.ListHMACKeys(ctx,
+      \"project-id\", storage.ShowDeletedHMACKeys())\n\tfor {\n\t\tkey, err := iter.Next()\n\t\tif
+      err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\t// TODO:
+      handle error.\n\t\t}\n\t\t_ = key // TODO: Use the key.\n\t}\n}\n"
+    name: showDeletedKeys
+- uid: cloud.google.com/go/storage.Client.ServiceAccount
+  name: |
+    func (*Client) ServiceAccount
+  id: ServiceAccount
+  summary: |
+    ServiceAccount fetches the email address of the given project's Google Cloud Storage service account.
+  parent: cloud.google.com/go/storage.Client
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Client) ServiceAccount(ctx context.Context, projectID string)
+      (string, error)
+- uid: cloud.google.com/go/storage.Composer
+  name: Composer
+  id: Composer
+  summary: |
+    A Composer composes source objects into a destination object.
+
+    For Requester Pays buckets, the user project of dst is billed.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Composer struct {\n\t// ObjectAttrs are optional attributes to
+      set on the destination object.\n\t// Any attributes must be initialized before
+      any calls on the Composer. Nil\n\t// or zero-valued attributes are ignored.\n\tObjectAttrs\n\n\t//
+      SendCRC specifies whether to transmit a CRC32C field. It should be set\n\t//
+      to true in addition to setting the Composer's CRC32C field, because zero\n\t//
+      is a valid CRC and normally a zero would not be transmitted.\n\t// If a CRC32C
+      is sent, and the data in the destination object does not match\n\t// the checksum,
+      the compose will be rejected.\n\tSendCRC32C bool\n\t// contains filtered or
+      unexported fields\n}"
+- uid: cloud.google.com/go/storage.Composer.Run
+  name: |
+    func (*Composer) Run
+  id: Run
+  summary: |
+    Run performs the compose operation.
+  parent: cloud.google.com/go/storage.Composer
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Composer) Run(ctx context.Context) (attrs *ObjectAttrs, err
+      error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tbkt := client.Bucket(\"bucketname\")\n\tsrc1
+      := bkt.Object(\"o1\")\n\tsrc2 := bkt.Object(\"o2\")\n\tdst := bkt.Object(\"o3\")\n\n\t//
+      Compose and modify metadata.\n\tc := dst.ComposerFrom(src1, src2)\n\tc.ContentType
+      = \"text/plain\"\n\n\t// Set the expected checksum for the destination object
+      to be validated by\n\t// the backend (if desired).\n\tc.CRC32C = 42\n\tc.SendCRC32C
+      = true\n\n\tattrs, err := c.Run(ctx)\n\tif err != nil {\n\t\t// TODO: Handle
+      error.\n\t}\n\tfmt.Println(attrs)\n\t// Just compose.\n\tattrs, err = dst.ComposerFrom(src1,
+      src2).Run(ctx)\n\tif err != nil {\n\t\t// TODO: Handle error.\n\t}\n\tfmt.Println(attrs)\n}\n"
+- uid: cloud.google.com/go/storage.Conditions
+  name: Conditions
+  id: Conditions
+  summary: |
+    Conditions constrain methods to act on specific generations of
+    objects.
+
+    The zero value is an empty set of constraints. Not all conditions or
+    combinations of conditions are applicable to all methods.
+    See https://cloud.google.com/storage/docs/generations-preconditions
+    for details on how these operate.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Conditions struct {\n\n\t// GenerationMatch specifies that the
+      object must have the given generation\n\t// for the operation to occur.\n\t//
+      If GenerationMatch is zero, it has no effect.\n\t// Use DoesNotExist to specify
+      that the object does not exist in the bucket.\n\tGenerationMatch int64\n\n\t//
+      GenerationNotMatch specifies that the object must not have the given\n\t// generation
+      for the operation to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\tGenerationNotMatch
+      int64\n\n\t// DoesNotExist specifies that the object must not exist in the bucket
+      for\n\t// the operation to occur.\n\t// If DoesNotExist is false, it has no
+      effect.\n\tDoesNotExist bool\n\n\t// MetagenerationMatch specifies that the
+      object must have the given\n\t// metageneration for the operation to occur.\n\t//
+      If MetagenerationMatch is zero, it has no effect.\n\tMetagenerationMatch int64\n\n\t//
+      MetagenerationNotMatch specifies that the object must not have the given\n\t//
+      metageneration for the operation to occur.\n\t// If MetagenerationNotMatch is
+      zero, it has no effect.\n\tMetagenerationNotMatch int64\n}"
+- uid: cloud.google.com/go/storage.Copier
+  name: Copier
+  id: Copier
+  summary: |
+    A Copier copies a source object to a destination.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Copier struct {\n\t// ObjectAttrs are optional attributes to set
+      on the destination object.\n\t// Any attributes must be initialized before any
+      calls on the Copier. Nil\n\t// or zero-valued attributes are ignored.\n\tObjectAttrs\n\n\t//
+      RewriteToken can be set before calling Run to resume a copy\n\t// operation.
+      After Run returns a non-nil error, RewriteToken will\n\t// have been updated
+      to contain the value needed to resume the copy.\n\tRewriteToken string\n\n\t//
+      ProgressFunc can be used to monitor the progress of a multi-RPC copy\n\t// operation.
+      If ProgressFunc is not nil and copying requires multiple\n\t// calls to the
+      underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/objects/rewrite),
+      then\n\t// ProgressFunc will be invoked after each call with the number of bytes
+      of\n\t// content copied so far and the total size in bytes of the source object.\n\t//\n\t//
+      ProgressFunc is intended to make upload progress available to the\n\t// application.
+      For example, the implementation of ProgressFunc may update\n\t// a progress
+      bar in the application's UI, or log the result of\n\t// float64(copiedBytes)/float64(totalBytes).\n\t//\n\t//
+      ProgressFunc should return quickly without blocking.\n\tProgressFunc func(copiedBytes,
+      totalBytes uint64)\n\n\t// The Cloud KMS key, in the form projects/P/locations/L/keyRings/R/cryptoKeys/K,\n\t//
+      that will be used to encrypt the object. Overrides the object's KMSKeyName,
+      if\n\t// any.\n\t//\n\t// Providing both a DestinationKMSKeyName and a customer-supplied
+      encryption key\n\t// (via ObjectHandle.Key) on the destination object will result
+      in an error when\n\t// Run is called.\n\tDestinationKMSKeyName string\n\t//
+      contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.Copier.Run
+  name: |
+    func (*Copier) Run
+  id: Run
+  summary: |
+    Run performs the copy.
+  parent: cloud.google.com/go/storage.Copier
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (c *Copier) Run(ctx context.Context) (attrs *ObjectAttrs, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tsrc := client.Bucket(\"bucketname\").Object(\"file1\")\n\tdst
+      := client.Bucket(\"another-bucketname\").Object(\"file2\")\n\n\t// Copy content
+      and modify metadata.\n\tcopier := dst.CopierFrom(src)\n\tcopier.ContentType
+      = \"text/plain\"\n\tattrs, err := copier.Run(ctx)\n\tif err != nil {\n\t\t//
+      TODO: Handle error, possibly resuming with copier.RewriteToken.\n\t}\n\tfmt.Println(attrs)\n\n\t//
+      Just copy content.\n\tattrs, err = dst.CopierFrom(src).Run(ctx)\n\tif err !=
+      nil {\n\t\t// TODO: Handle error. No way to resume.\n\t}\n\tfmt.Println(attrs)\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"log\"\n)\n\nfunc
+      main() {\n\t// Display progress across multiple rewrite RPCs.\n\tctx := context.Background()\n\tclient,
+      err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tsrc
+      := client.Bucket(\"bucketname\").Object(\"file1\")\n\tdst := client.Bucket(\"another-bucketname\").Object(\"file2\")\n\n\tcopier
+      := dst.CopierFrom(src)\n\tcopier.ProgressFunc = func(copiedBytes, totalBytes
+      uint64) {\n\t\tlog.Printf(\"copy %.1f%% done\", float64(copiedBytes)/float64(totalBytes)*100)\n\t}\n\tif
+      _, err := copier.Run(ctx); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+    name: progress
+- uid: cloud.google.com/go/storage.HMACKey
+  name: HMACKey
+  id: HMACKey
+  summary: |
+    HMACKey is the representation of a Google Cloud Storage HMAC key.
+
+    HMAC keys are used to authenticate signed access to objects. To enable HMAC key
+    authentication, please visit https://cloud.google.com/storage/docs/migrating.
+
+    This type is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type HMACKey struct {\n\t// The HMAC's secret key.\n\tSecret string\n\n\t//
+      AccessID is the ID of the HMAC key.\n\tAccessID string\n\n\t// Etag is the HTTP/1.1
+      Entity tag.\n\tEtag string\n\n\t// ID is the ID of the HMAC key, including the
+      ProjectID and AccessID.\n\tID string\n\n\t// ProjectID is the ID of the project
+      that owns the\n\t// service account to which the key authenticates.\n\tProjectID
+      string\n\n\t// ServiceAccountEmail is the email address\n\t// of the key's associated
+      service account.\n\tServiceAccountEmail string\n\n\t// CreatedTime is the creation
+      time of the HMAC key.\n\tCreatedTime time.Time\n\n\t// UpdatedTime is the last
+      modification time of the HMAC key metadata.\n\tUpdatedTime time.Time\n\n\t//
+      State is the state of the HMAC key.\n\t// It can be one of StateActive, StateInactive
+      or StateDeleted.\n\tState HMACState\n}"
+- uid: cloud.google.com/go/storage.HMACKeyAttrsToUpdate
+  name: HMACKeyAttrsToUpdate
+  id: HMACKeyAttrsToUpdate
+  summary: |
+    HMACKeyAttrsToUpdate defines the attributes of an HMACKey that will be updated.
+
+    This type is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type HMACKeyAttrsToUpdate struct {\n\t// State is required and must
+      be either StateActive or StateInactive.\n\tState HMACState\n\n\t// Etag is an
+      optional field and it is the HTTP/1.1 Entity tag.\n\tEtag string\n}"
+- uid: cloud.google.com/go/storage.HMACKeyHandle
+  name: HMACKeyHandle
+  id: HMACKeyHandle
+  summary: |
+    HMACKeyHandle helps provide access and management for HMAC keys.
+
+    This type is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type HMACKeyHandle struct {\n\t// contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.HMACKeyHandle.Delete
+  name: |
+    func (*HMACKeyHandle) Delete
+  id: Delete
+  summary: |
+    Delete invokes an RPC to delete the key referenced by accessID, on Google Cloud Storage.
+    Only inactive HMAC keys can be deleted.
+    After deletion, a key cannot be used to authenticate requests.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeyHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (hkh *HMACKeyHandle) Delete(ctx context.Context, opts ...HMACKeyOption)
+      error
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkh := client.HMACKeyHandle(\"project-id\",
+      \"access-key-id\")\n\t// Make sure that the HMACKey being deleted has a status
+      of inactive.\n\tif err := hkh.Delete(ctx); err != nil {\n\t\t// TODO: handle
+      error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.HMACKeyHandle.Get
+  name: |
+    func (*HMACKeyHandle) Get
+  id: Get
+  summary: |
+    Get invokes an RPC to retrieve the HMAC key referenced by the
+    HMACKeyHandle's accessID.
+
+    Options such as UserProjectForHMACKeys can be used to set the
+    userProject to be billed against for operations.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeyHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (hkh *HMACKeyHandle) Get(ctx context.Context, opts ...HMACKeyOption)
+      (*HMACKey, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkh := client.HMACKeyHandle(\"project-id\",
+      \"access-key-id\")\n\thkey, err := hkh.Get(ctx)\n\tif err != nil {\n\t\t// TODO:
+      handle error.\n\t}\n\t_ = hkey // TODO: Use the HMAC Key.\n}\n"
+- uid: cloud.google.com/go/storage.HMACKeyHandle.Update
+  name: |
+    func (*HMACKeyHandle) Update
+  id: Update
+  summary: |
+    Update mutates the HMACKey referred to by accessID.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeyHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (h *HMACKeyHandle) Update(ctx context.Context, au HMACKeyAttrsToUpdate,
+      opts ...HMACKeyOption) (*HMACKey, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\thkh := client.HMACKeyHandle(\"project-id\",
+      \"access-key-id\")\n\tukey, err := hkh.Update(ctx, storage.HMACKeyAttrsToUpdate{\n\t\tState:
+      storage.Inactive,\n\t})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t_
+      = ukey // TODO: Use the HMAC Key.\n}\n"
+- uid: cloud.google.com/go/storage.HMACKeyOption
+  name: HMACKeyOption
+  id: HMACKeyOption
+  summary: |
+    HMACKeyOption configures the behavior of HMACKey related methods and actions.
+
+    This interface is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type HMACKeyOption interface {\n\t// contains filtered or unexported
+      methods\n}"
+- uid: cloud.google.com/go/storage.HMACKeyOption.ForHMACKeyServiceAccountEmail
+  name: |
+    func ForHMACKeyServiceAccountEmail
+  id: ForHMACKeyServiceAccountEmail
+  summary: |
+    ForHMACKeyServiceAccountEmail returns HMAC Keys that are
+    associated with the email address of a service account in the project.
+
+    Only one service account email can be used as a filter, so if multiple
+    of these options are applied, the last email to be set will be used.
+
+    This option is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeyOption
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func ForHMACKeyServiceAccountEmail(serviceAccountEmail string) HMACKeyOption
+- uid: cloud.google.com/go/storage.HMACKeyOption.ShowDeletedHMACKeys
+  name: |
+    func ShowDeletedHMACKeys
+  id: ShowDeletedHMACKeys
+  summary: |
+    ShowDeletedHMACKeys will also list keys whose state is "DELETED".
+
+    This option is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeyOption
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func ShowDeletedHMACKeys() HMACKeyOption
+- uid: cloud.google.com/go/storage.HMACKeyOption.UserProjectForHMACKeys
+  name: |
+    func UserProjectForHMACKeys
+  id: UserProjectForHMACKeys
+  summary: |
+    UserProjectForHMACKeys will bill the request against userProjectID
+    if userProjectID is non-empty.
+
+    Note: This is a noop right now and only provided for API compatibility.
+
+    This option is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeyOption
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func UserProjectForHMACKeys(userProjectID string) HMACKeyOption
+- uid: cloud.google.com/go/storage.HMACKeysIterator
+  name: HMACKeysIterator
+  id: HMACKeysIterator
+  summary: |
+    An HMACKeysIterator is an iterator over HMACKeys.
+
+    Note: This iterator is not safe for concurrent operations without explicit synchronization.
+
+    This type is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type HMACKeysIterator struct {\n\t// contains filtered or unexported
+      fields\n}"
+- uid: cloud.google.com/go/storage.HMACKeysIterator.Next
+  name: |
+    func (*HMACKeysIterator) Next
+  id: Next
+  summary: |
+    Next returns the next result. Its second return value is iterator.Done if
+    there are no more results. Once Next returns iterator.Done, all subsequent
+    calls will return iterator.Done.
+
+    Note: This iterator is not safe for concurrent operations without explicit synchronization.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeysIterator
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (it *HMACKeysIterator) Next() (*HMACKey, error)
+- uid: cloud.google.com/go/storage.HMACKeysIterator.PageInfo
+  name: |
+    func (*HMACKeysIterator) PageInfo
+  id: PageInfo
+  summary: |
+    PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+
+    Note: This iterator is not safe for concurrent operations without explicit synchronization.
+
+    This method is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage.HMACKeysIterator
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (it *HMACKeysIterator) PageInfo() *iterator.PageInfo
+- uid: cloud.google.com/go/storage.HMACState
+  name: HMACState
+  id: HMACState
+  summary: |
+    HMACState is the state of the HMAC key.
+
+    This type is EXPERIMENTAL and subject to change or removal without notice.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type HMACState string
+- uid: cloud.google.com/go/storage.Active,Inactive,Deleted
+  name: Active, Inactive, Deleted
+  id: Active,Inactive,Deleted
+  parent: cloud.google.com/go/storage.HMACState
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// Active is the status for an active key that can be used
+      to sign\n\t// requests.\n\tActive HMACState = \"ACTIVE\"\n\n\t// Inactive is
+      the status for an inactive key thus requests signed by\n\t// this key will be
+      denied.\n\tInactive HMACState = \"INACTIVE\"\n\n\t// Deleted is the status for
+      a key that is deleted.\n\t// Once in this state the key cannot key cannot be
+      recovered\n\t// and does not count towards key limits. Deleted keys will be
+      cleaned\n\t// up later.\n\tDeleted HMACState = \"DELETED\"\n)"
+- uid: cloud.google.com/go/storage.Lifecycle
+  name: Lifecycle
+  id: Lifecycle
+  summary: |
+    Lifecycle is the lifecycle configuration for objects in the bucket.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Lifecycle struct {\n\tRules []LifecycleRule\n}"
+- uid: cloud.google.com/go/storage.LifecycleAction
+  name: LifecycleAction
+  id: LifecycleAction
+  summary: |
+    LifecycleAction is a lifecycle configuration action.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type LifecycleAction struct {\n\t// Type is the type of action to take
+      on matching objects.\n\t//\n\t// Acceptable values are \"Delete\" to delete
+      matching objects and\n\t// \"SetStorageClass\" to set the storage class defined
+      in StorageClass on\n\t// matching objects.\n\tType string\n\n\t// StorageClass
+      is the storage class to set on matching objects if the Action\n\t// is \"SetStorageClass\".\n\tStorageClass
+      string\n}"
+- uid: cloud.google.com/go/storage.LifecycleCondition
+  name: LifecycleCondition
+  id: LifecycleCondition
+  summary: |
+    LifecycleCondition is a set of conditions used to match objects and take an
+    action automatically.
+
+    All configured conditions must be met for the associated action to be taken.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type LifecycleCondition struct {\n\t// AgeInDays is the age of the object
+      in days.\n\tAgeInDays int64\n\n\t// CreatedBefore is the time the object was
+      created.\n\t//\n\t// This condition is satisfied when an object is created before
+      midnight of\n\t// the specified date in UTC.\n\tCreatedBefore time.Time\n\n\t//
+      CustomTimeBefore is the CustomTime metadata field of the object. This\n\t//
+      condition is satisfied when an object's CustomTime timestamp is before\n\t//
+      midnight of the specified date in UTC.\n\t//\n\t// This condition can only be
+      satisfied if CustomTime has been set.\n\tCustomTimeBefore time.Time\n\n\t//
+      DaysSinceCustomTime is the days elapsed since the CustomTime date of the\n\t//
+      object. This condition can only be satisfied if CustomTime has been set.\n\tDaysSinceCustomTime
+      int64\n\n\t// DaysSinceNoncurrentTime is the days elapsed since the noncurrent
+      timestamp\n\t// of the object. This condition is relevant only for versioned
+      objects.\n\tDaysSinceNoncurrentTime int64\n\n\t// Liveness specifies the object's
+      liveness. Relevant only for versioned objects\n\tLiveness Liveness\n\n\t// MatchesStorageClasses
+      is the condition matching the object's storage\n\t// class.\n\t//\n\t// Values
+      include \"STANDARD\", \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\tMatchesStorageClasses
+      []string\n\n\t// NoncurrentTimeBefore is the noncurrent timestamp of the object.
+      This\n\t// condition is satisfied when an object's noncurrent timestamp is before\n\t//
+      midnight of the specified date in UTC.\n\t//\n\t// This condition is relevant
+      only for versioned objects.\n\tNoncurrentTimeBefore time.Time\n\n\t// NumNewerVersions
+      is the condition matching objects with a number of newer versions.\n\t//\n\t//
+      If the value is N, this condition is satisfied when there are at least N\n\t//
+      versions (including the live version) newer than this version of the\n\t// object.\n\tNumNewerVersions
+      int64\n}"
+- uid: cloud.google.com/go/storage.LifecycleRule
+  name: LifecycleRule
+  id: LifecycleRule
+  summary: |
+    LifecycleRule is a lifecycle configuration rule.
+
+    When all the configured conditions are met by an object in the bucket, the
+    configured action will automatically be taken on that object.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type LifecycleRule struct {\n\t// Action is the action to take when
+      all of the associated conditions are\n\t// met.\n\tAction LifecycleAction\n\n\t//
+      Condition is the set of conditions that must be met for the associated\n\t//
+      action to be taken.\n\tCondition LifecycleCondition\n}"
+- uid: cloud.google.com/go/storage.Liveness
+  name: Liveness
+  id: Liveness
+  summary: |
+    Liveness specifies whether the object is live or not.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type Liveness int
+- uid: cloud.google.com/go/storage.LiveAndArchived,Live,Archived
+  name: LiveAndArchived, Live, Archived
+  id: LiveAndArchived,Live,Archived
+  parent: cloud.google.com/go/storage.Liveness
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// LiveAndArchived includes both live and archived objects.\n\tLiveAndArchived
+      Liveness = iota\n\t// Live specifies that the object is still live.\n\tLive\n\t//
+      Archived specifies that the object is archived.\n\tArchived\n)"
+- uid: cloud.google.com/go/storage.Notification
+  name: Notification
+  id: Notification
+  summary: |
+    A Notification describes how to send Cloud PubSub messages when certain
+    events occur in a bucket.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Notification struct {\n\t//The ID of the notification.\n\tID string\n\n\t//
+      The ID of the topic to which this subscription publishes.\n\tTopicID string\n\n\t//
+      The ID of the project to which the topic belongs.\n\tTopicProjectID string\n\n\t//
+      Only send notifications about listed event types. If empty, send notifications\n\t//
+      for all event types.\n\t// See https://cloud.google.com/storage/docs/pubsub-notifications#events.\n\tEventTypes
+      []string\n\n\t// If present, only apply this notification configuration to object
+      names that\n\t// begin with this prefix.\n\tObjectNamePrefix string\n\n\t//
+      An optional list of additional attributes to attach to each Cloud PubSub\n\t//
+      message published for this notification subscription.\n\tCustomAttributes map[string]string\n\n\t//
+      The contents of the message payload.\n\t// See https://cloud.google.com/storage/docs/pubsub-notifications#payload.\n\tPayloadFormat
+      string\n}"
+- uid: cloud.google.com/go/storage.ObjectAttrs
+  name: ObjectAttrs
+  id: ObjectAttrs
+  summary: |
+    ObjectAttrs represents the metadata for a Google Cloud Storage (GCS) object.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ObjectAttrs struct {\n\t// Bucket is the name of the bucket containing
+      this GCS object.\n\t// This field is read-only.\n\tBucket string\n\n\t// Name
+      is the name of the object within the bucket.\n\t// This field is read-only.\n\tName
+      string\n\n\t// ContentType is the MIME type of the object's content.\n\tContentType
+      string\n\n\t// ContentLanguage is the content language of the object's content.\n\tContentLanguage
+      string\n\n\t// CacheControl is the Cache-Control header to be sent in the response\n\t//
+      headers when serving the object data.\n\tCacheControl string\n\n\t// EventBasedHold
+      specifies whether an object is under event-based hold. New\n\t// objects created
+      in a bucket whose DefaultEventBasedHold is set will\n\t// default to that value.\n\tEventBasedHold
+      bool\n\n\t// TemporaryHold specifies whether an object is under temporary hold.
+      While\n\t// this flag is set to true, the object is protected against deletion
+      and\n\t// overwrites.\n\tTemporaryHold bool\n\n\t// RetentionExpirationTime
+      is a server-determined value that specifies the\n\t// earliest time that the
+      object's retention period expires.\n\t// This is a read-only field.\n\tRetentionExpirationTime
+      time.Time\n\n\t// ACL is the list of access control rules for the object.\n\tACL
+      []ACLRule\n\n\t// If not empty, applies a predefined set of access controls.
+      It should be set\n\t// only when writing, copying or composing an object. When
+      copying or composing,\n\t// it acts as the destinationPredefinedAcl parameter.\n\t//
+      PredefinedACL is always empty for ObjectAttrs returned from the service.\n\t//
+      See https://cloud.google.com/storage/docs/json_api/v1/objects/insert\n\t// for
+      valid values.\n\tPredefinedACL string\n\n\t// Owner is the owner of the object.
+      This field is read-only.\n\t//\n\t// If non-zero, it is in the form of \"user-<userId>\".\n\tOwner
+      string\n\n\t// Size is the length of the object's content. This field is read-only.\n\tSize
+      int64\n\n\t// ContentEncoding is the encoding of the object's content.\n\tContentEncoding
+      string\n\n\t// ContentDisposition is the optional Content-Disposition header
+      of the object\n\t// sent in the response headers.\n\tContentDisposition string\n\n\t//
+      MD5 is the MD5 hash of the object's content. This field is read-only,\n\t//
+      except when used from a Writer. If set on a Writer, the uploaded\n\t// data
+      is rejected if its MD5 hash does not match this field.\n\tMD5 []byte\n\n\t//
+      CRC32C is the CRC32 checksum of the object's content using the Castagnoli93\n\t//
+      polynomial. This field is read-only, except when used from a Writer or\n\t//
+      Composer. In those cases, if the SendCRC32C field in the Writer or Composer\n\t//
+      is set to is true, the uploaded data is rejected if its CRC32C hash does\n\t//
+      not match this field.\n\tCRC32C uint32\n\n\t// MediaLink is an URL to the object's
+      content. This field is read-only.\n\tMediaLink string\n\n\t// Metadata represents
+      user-provided metadata, in key/value pairs.\n\t// It can be nil if no metadata
+      is provided.\n\tMetadata map[string]string\n\n\t// Generation is the generation
+      number of the object's content.\n\t// This field is read-only.\n\tGeneration
+      int64\n\n\t// Metageneration is the version of the metadata for this\n\t// object
+      at this generation. This field is used for preconditions\n\t// and for detecting
+      changes in metadata. A metageneration number\n\t// is only meaningful in the
+      context of a particular generation\n\t// of a particular object. This field
+      is read-only.\n\tMetageneration int64\n\n\t// StorageClass is the storage class
+      of the object. This defines\n\t// how objects are stored and determines the
+      SLA and the cost of storage.\n\t// Typical values are \"STANDARD\", \"NEARLINE\",
+      \"COLDLINE\" and \"ARCHIVE\".\n\t// Defaults to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
+      for all\n\t// valid values.\n\tStorageClass string\n\n\t// Created is the time
+      the object was created. This field is read-only.\n\tCreated time.Time\n\n\t//
+      Deleted is the time the object was deleted.\n\t// If not deleted, it is the
+      zero value. This field is read-only.\n\tDeleted time.Time\n\n\t// Updated is
+      the creation or modification time of the object.\n\t// For buckets with versioning
+      enabled, changing an object's\n\t// metadata does not change this property.
+      This field is read-only.\n\tUpdated time.Time\n\n\t// CustomerKeySHA256 is the
+      base64-encoded SHA-256 hash of the\n\t// customer-supplied encryption key for
+      the object. It is empty if there is\n\t// no customer-supplied encryption key.\n\t//
+      See // https://cloud.google.com/storage/docs/encryption for more about\n\t//
+      encryption in Google Cloud Storage.\n\tCustomerKeySHA256 string\n\n\t// Cloud
+      KMS key name, in the form\n\t// projects/P/locations/L/keyRings/R/cryptoKeys/K,
+      used to encrypt this object,\n\t// if the object is encrypted by such a key.\n\t//\n\t//
+      Providing both a KMSKeyName and a customer-supplied encryption key (via\n\t//
+      ObjectHandle.Key) will result in an error when writing an object.\n\tKMSKeyName
+      string\n\n\t// Prefix is set only for ObjectAttrs which represent synthetic
+      \"directory\n\t// entries\" when iterating over buckets using Query.Delimiter.
+      See\n\t// ObjectIterator.Next. When set, no other fields in ObjectAttrs will
+      be\n\t// populated.\n\tPrefix string\n\n\t// Etag is the HTTP/1.1 Entity tag
+      for the object.\n\t// This field is read-only.\n\tEtag string\n\n\t// A user-specified
+      timestamp which can be applied to an object. This is\n\t// typically set in
+      order to use the CustomTimeBefore and DaysSinceCustomTime\n\t// LifecycleConditions
+      to manage object lifecycles.\n\t//\n\t// CustomTime cannot be removed once set
+      on an object. It can be updated to a\n\t// later value but not to an earlier
+      one.\n\tCustomTime time.Time\n}"
+- uid: cloud.google.com/go/storage.ObjectAttrsToUpdate
+  name: ObjectAttrsToUpdate
+  id: ObjectAttrsToUpdate
+  summary: |
+    ObjectAttrsToUpdate is used to update the attributes of an object.
+    Only fields set to non-nil values will be updated.
+    Set a field to its zero value to delete it.
+
+    For example, to change ContentType and delete ContentEncoding and
+    Metadata, use
+       ObjectAttrsToUpdate{
+           ContentType: "text/html",
+           ContentEncoding: "",
+           Metadata: map[string]string{},
+       }
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ObjectAttrsToUpdate struct {\n\tEventBasedHold     optional.Bool\n\tTemporaryHold
+      \     optional.Bool\n\tContentType        optional.String\n\tContentLanguage
+      \   optional.String\n\tContentEncoding    optional.String\n\tContentDisposition
+      optional.String\n\tCacheControl       optional.String\n\tCustomTime         time.Time\n\tMetadata
+      \          map[string]string // set to map[string]string{} to delete\n\tACL
+      \               []ACLRule\n\n\t// If not empty, applies a predefined set of
+      access controls. ACL must be nil.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.\n\tPredefinedACL
+      string\n}"
+- uid: cloud.google.com/go/storage.ObjectHandle
+  name: ObjectHandle
+  id: ObjectHandle
+  summary: |
+    ObjectHandle provides operations on an object in a Google Cloud Storage bucket.
+    Use BucketHandle.Object to get a handle.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ObjectHandle struct {\n\t// contains filtered or unexported fields\n}"
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\tattrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Attrs(ctx)\n\tif
+      err == storage.ErrObjectNotExist {\n\t\tfmt.Println(\"The object does not exist\")\n\t\treturn\n\t}\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"The object exists
+      and has attributes: %#v\\n\", attrs)\n}\n"
+    name: exists
+- uid: cloud.google.com/go/storage.ObjectHandle.ACL
+  name: |
+    func (*ObjectHandle) ACL
+  id: ACL
+  summary: |
+    ACL provides access to the object's access control list.
+    This controls who can read and write this object.
+    This call does not perform any network operations.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) ACL() *ACLHandle
+- uid: cloud.google.com/go/storage.ObjectHandle.Attrs
+  name: |
+    func (*ObjectHandle) Attrs
+  id: Attrs
+  summary: |
+    Attrs returns meta information about the object.
+    ErrObjectNotExist will be returned if the object is not found.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs,
+      err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobjAttrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Attrs(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(objAttrs)\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\t//
+      Read the object.\n\tobjAttrs1, err := obj.Attrs(ctx)\n\tif err != nil {\n\t\t//
+      TODO: handle error.\n\t}\n\t// Do something else for a while.\n\ttime.Sleep(5
+      * time.Minute)\n\t// Now read the same contents, even if the object has been
+      written since the last read.\n\tobjAttrs2, err := obj.Generation(objAttrs1.Generation).Attrs(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(objAttrs1, objAttrs2)\n}\n"
+    name: withConditions
+- uid: cloud.google.com/go/storage.ObjectHandle.BucketName
+  name: |
+    func (*ObjectHandle) BucketName
+  id: BucketName
+  summary: |
+    BucketName returns the name of the bucket.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) BucketName() string
+- uid: cloud.google.com/go/storage.ObjectHandle.ComposerFrom
+  name: |
+    func (*ObjectHandle) ComposerFrom
+  id: ComposerFrom
+  summary: |
+    ComposerFrom creates a Composer that can compose srcs into dst.
+    You can immediately call Run on the returned Composer, or you can
+    configure it first.
+
+    The encryption key for the destination object will be used to decrypt all
+    source objects and encrypt the destination object. It is an error
+    to specify an encryption key for any of the source objects.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (dst *ObjectHandle) ComposerFrom(srcs ...*ObjectHandle) *Composer
+- uid: cloud.google.com/go/storage.ObjectHandle.CopierFrom
+  name: |
+    func (*ObjectHandle) CopierFrom
+  id: CopierFrom
+  summary: |
+    CopierFrom creates a Copier that can copy src to dst.
+    You can immediately call Run on the returned Copier, or
+    you can configure it first.
+
+    For Requester Pays buckets, the user project of dst is billed, unless it is empty,
+    in which case the user project of src is billed.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (dst *ObjectHandle) CopierFrom(src *ObjectHandle) *Copier
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
+      key1, key2 []byte\n\nfunc main() {\n\t// To rotate the encryption key on an
+      object, copy it onto itself.\n\tctx := context.Background()\n\tclient, err :=
+      storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj
+      := client.Bucket(\"bucketname\").Object(\"obj\")\n\t// Assume obj is encrypted
+      with key1, and we want to change to key2.\n\t_, err = obj.Key(key2).CopierFrom(obj.Key(key1)).Run(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+    name: rotateEncryptionKeys
+- uid: cloud.google.com/go/storage.ObjectHandle.Delete
+  name: |
+    func (*ObjectHandle) Delete
+  id: Delete
+  summary: |
+    Delete deletes the single specified object.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) Delete(ctx context.Context) error
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// To delete multiple objects
+      in a bucket, list them with an\n\t// ObjectIterator, then Delete them.\n\n\t//
+      If you are using this package on the App Engine Flex runtime,\n\t// you can
+      init a bucket client with your app's default bucket name.\n\t// See http://godoc.org/google.golang.org/appengine/file#DefaultBucketName.\n\tbucket
+      := client.Bucket(\"my-bucket\")\n\tit := bucket.Objects(ctx, nil)\n\tfor {\n\t\tobjAttrs,
+      err := it.Next()\n\t\tif err != nil && err != iterator.Done {\n\t\t\t// TODO:
+      Handle error.\n\t\t}\n\t\tif err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif
+      err := bucket.Object(objAttrs.Name).Delete(ctx); err != nil {\n\t\t\t// TODO:
+      Handle error.\n\t\t}\n\t}\n\tfmt.Println(\"deleted all object items in the bucket
+      specified.\")\n}\n"
+- uid: cloud.google.com/go/storage.ObjectHandle.Generation
+  name: |
+    func (*ObjectHandle) Generation
+  id: Generation
+  summary: |
+    Generation returns a new ObjectHandle that operates on a specific generation
+    of the object.
+    By default, the handle operates on the latest generation. Not
+    all operations work when given a specific generation; check the API
+    endpoints at https://cloud.google.com/storage/docs/json_api/ for details.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) Generation(gen int64) *ObjectHandle
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"io\"\n\t\"os\"\n)\n\nvar
+      gen int64\n\nfunc main() {\n\t// Read an object's contents from generation gen,
+      regardless of the\n\t// current generation of the object.\n\tctx := context.Background()\n\tclient,
+      err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj
+      := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\trc, err := obj.Generation(gen).NewReader(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdefer rc.Close()\n\tif _, err
+      := io.Copy(os.Stdout, rc); err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.ObjectHandle.If
+  name: |
+    func (*ObjectHandle) If
+  id: If
+  summary: |
+    If returns a new ObjectHandle that applies a set of preconditions.
+    Preconditions already set on the ObjectHandle are ignored.
+    Operations on the new handle will return an error if the preconditions are not
+    satisfied. See https://cloud.google.com/storage/docs/generations-preconditions
+    for more details.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) If(conds Conditions) *ObjectHandle
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/googleapi\"\n\t\"io\"\n\t\"net/http\"\n\t\"os\"\n)\n\nvar
+      gen int64\n\nfunc main() {\n\t// Read from an object only if the current generation
+      is gen.\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\trc,
+      err := obj.If(storage.Conditions{GenerationMatch: gen}).NewReader(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\tif _, err := io.Copy(os.Stdout,
+      rc); err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := rc.Close();
+      err != nil {\n\t\tswitch ee := err.(type) {\n\t\tcase *googleapi.Error:\n\t\t\tif
+      ee.Code == http.StatusPreconditionFailed {\n\t\t\t\t// The condition presented
+      in the If failed.\n\t\t\t\t// TODO: handle error.\n\t\t\t}\n\n\t\t\t// TODO:
+      handle other status codes here.\n\n\t\tdefault:\n\t\t\t// TODO: handle error.\n\t\t}\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.ObjectHandle.Key
+  name: |
+    func (*ObjectHandle) Key
+  id: Key
+  summary: |
+    Key returns a new ObjectHandle that uses the supplied encryption
+    key to encrypt and decrypt the object's contents.
+
+    Encryption key must be a 32-byte AES-256 key.
+    See https://cloud.google.com/storage/docs/encryption for details.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
+      secretKey []byte\n\nfunc main() {\n\tctx := context.Background()\n\tclient,
+      err := storage.NewClient(ctx)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tobj
+      := client.Bucket(\"my-bucket\").Object(\"my-object\")\n\t// Encrypt the object's
+      contents.\n\tw := obj.Key(secretKey).NewWriter(ctx)\n\tif _, err := w.Write([]byte(\"top
+      secret\")); err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := w.Close();
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.ObjectHandle.NewRangeReader
+  name: |
+    func (*ObjectHandle) NewRangeReader
+  id: NewRangeReader
+  summary: |
+    NewRangeReader reads part of an object, reading at most length bytes
+    starting at the given offset. If length is negative, the object is read
+    until the end. If offset is negative, the object is read abs(offset) bytes
+    from the end, and length must also be negative to indicate all remaining
+    bytes will be read.
+
+    If the object's metadata property "Content-Encoding" is set to "gzip" or satisfies
+    decompressive transcoding per https://cloud.google.com/storage/docs/transcoding
+    that file will be served back whole, regardless of the requested range as
+    Google Cloud Storage dictates.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length
+      int64) (r *Reader, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Read only the first 64K.\n\trc,
+      err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx,
+      0, 64*1024)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdefer rc.Close()\n\n\tslurp,
+      err := ioutil.ReadAll(rc)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"first
+      64K of file contents:\\n%s\\n\", slurp)\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Read only the last 10 bytes
+      until the end of the file.\n\trc, err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx,
+      -10, -1)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdefer rc.Close()\n\n\tslurp,
+      err := ioutil.ReadAll(rc)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"Last
+      10 bytes from the end of the file:\\n%s\\n\", slurp)\n}\n"
+    name: lastNBytes
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Read from the 101st byte
+      until the end of the file.\n\trc, err := client.Bucket(\"bucketname\").Object(\"filename1\").NewRangeReader(ctx,
+      100, -1)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdefer rc.Close()\n\n\tslurp,
+      err := ioutil.ReadAll(rc)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Printf(\"From
+      101st byte until the end:\\n%s\\n\", slurp)\n}\n"
+    name: untilEnd
+- uid: cloud.google.com/go/storage.ObjectHandle.NewReader
+  name: |
+    func (*ObjectHandle) NewReader
+  id: NewReader
+  summary: |
+    NewReader creates a new Reader to read the contents of the
+    object.
+    ErrObjectNotExist will be returned if the object is not found.
+
+    The caller must call Close on the returned Reader when done reading.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\trc, err := client.Bucket(\"my-bucket\").Object(\"my-object\").NewReader(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tslurp, err := ioutil.ReadAll(rc)\n\trc.Close()\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"file contents:\",
+      slurp)\n}\n"
+- uid: cloud.google.com/go/storage.ObjectHandle.NewWriter
+  name: |
+    func (*ObjectHandle) NewWriter
+  id: NewWriter
+  summary: |
+    NewWriter returns a storage Writer that writes to the GCS object
+    associated with this ObjectHandle.
+
+    A new object will be created unless an object with this name already exists.
+    Otherwise any previous object with the same name will be replaced.
+    The object will not be available (and any previous object will remain)
+    until Close has been called.
+
+    Attributes can be set on the object by modifying the returned Writer's
+    ObjectAttrs field before the first call to Write. If no ContentType
+    attribute is specified, the content type will be automatically sniffed
+    using net/http.DetectContentType.
+
+    It is the caller's responsibility to call Close when writing is done. To
+    stop writing without saving the data, cancel the context.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) NewWriter(ctx context.Context) *Writer
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\twc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n\t_
+      = wc // TODO: Use the Writer.\n}\n"
+- uid: cloud.google.com/go/storage.ObjectHandle.ObjectName
+  name: |
+    func (*ObjectHandle) ObjectName
+  id: ObjectName
+  summary: |
+    ObjectName returns the name of the object.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) ObjectName() string
+- uid: cloud.google.com/go/storage.ObjectHandle.ReadCompressed
+  name: |
+    func (*ObjectHandle) ReadCompressed
+  id: ReadCompressed
+  summary: |
+    ReadCompressed when true causes the read to happen without decompressing.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) ReadCompressed(compressed bool) *ObjectHandle
+- uid: cloud.google.com/go/storage.ObjectHandle.Update
+  name: |
+    func (*ObjectHandle) Update
+  id: Update
+  summary: |
+    Update updates an object with the provided attributes.
+    All zero-value attributes are ignored.
+    ErrObjectNotExist will be returned if the object is not found.
+  parent: cloud.google.com/go/storage.ObjectHandle
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate)
+      (oa *ObjectAttrs, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\t// Change only the content
+      type of the object.\n\tobjAttrs, err := client.Bucket(\"my-bucket\").Object(\"my-object\").Update(ctx,
+      storage.ObjectAttrsToUpdate{\n\t\tContentType:        \"text/html\",\n\t\tContentDisposition:
+      \"\", // delete ContentDisposition\n\t})\n\tif err != nil {\n\t\t// TODO: handle
+      error.\n\t}\n\tfmt.Println(objAttrs)\n}\n"
+- uid: cloud.google.com/go/storage.ObjectIterator
+  name: ObjectIterator
+  id: ObjectIterator
+  summary: |
+    An ObjectIterator is an iterator over ObjectAttrs.
+
+    Note: This iterator is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ObjectIterator struct {\n\t// contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.ObjectIterator.Next
+  name: |
+    func (*ObjectIterator) Next
+  id: Next
+  summary: |
+    Next returns the next result. Its second return value is iterator.Done if
+    there are no more results. Once Next returns iterator.Done, all subsequent
+    calls will return iterator.Done.
+
+    If Query.Delimiter is non-empty, some of the ObjectAttrs returned by Next will
+    have a non-empty Prefix field, and a zero value for all other fields. These
+    represent prefixes.
+
+    Note: This method is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage.ObjectIterator
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (it *ObjectIterator) Next() (*ObjectAttrs, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tit := client.Bucket(\"my-bucket\").Objects(ctx,
+      nil)\n\tfor {\n\t\tobjAttrs, err := it.Next()\n\t\tif err == iterator.Done {\n\t\t\tbreak\n\t\t}\n\t\tif
+      err != nil {\n\t\t\t// TODO: Handle error.\n\t\t}\n\t\tfmt.Println(objAttrs)\n\t}\n}\n"
+- uid: cloud.google.com/go/storage.ObjectIterator.PageInfo
+  name: |
+    func (*ObjectIterator) PageInfo
+  id: PageInfo
+  summary: |
+    PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+
+    Note: This method is not safe for concurrent operations without explicit synchronization.
+  parent: cloud.google.com/go/storage.ObjectIterator
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (it *ObjectIterator) PageInfo() *iterator.PageInfo
+- uid: cloud.google.com/go/storage.PolicyV4Fields
+  name: PolicyV4Fields
+  id: PolicyV4Fields
+  summary: |
+    PolicyV4Fields describes the attributes for a PostPolicyV4 request.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type PolicyV4Fields struct {\n\t// ACL specifies the access control
+      permissions for the object.\n\t// Optional.\n\tACL string\n\t// CacheControl
+      specifies the caching directives for the object.\n\t// Optional.\n\tCacheControl
+      string\n\t// ContentType specifies the media type of the object.\n\t// Optional.\n\tContentType
+      string\n\t// ContentDisposition specifies how the file will be served back to
+      requesters.\n\t// Optional.\n\tContentDisposition string\n\t// ContentEncoding
+      specifies the decompressive transcoding that the object.\n\t// This field is
+      complementary to ContentType in that the file could be\n\t// compressed but
+      ContentType specifies the file's original media type.\n\t// Optional.\n\tContentEncoding
+      string\n\t// Metadata specifies custom metadata for the object.\n\t// If any
+      key doesn't begin with \"x-goog-meta-\", an error will be returned.\n\t// Optional.\n\tMetadata
+      map[string]string\n\t// StatusCodeOnSuccess when set, specifies the status code
+      that Cloud Storage\n\t// will serve back on successful upload of the object.\n\t//
+      Optional.\n\tStatusCodeOnSuccess int\n\t// RedirectToURLOnSuccess when set,
+      specifies the URL that Cloud Storage\n\t// will serve back on successful upload
+      of the object.\n\t// Optional.\n\tRedirectToURLOnSuccess string\n}"
+- uid: cloud.google.com/go/storage.PostPolicyV4
+  name: PostPolicyV4
+  id: PostPolicyV4
+  summary: |
+    PostPolicyV4 describes the URL and respective form fields for a generated PostPolicyV4 request.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type PostPolicyV4 struct {\n\t// URL is the generated URL that the file
+      upload will be made to.\n\tURL string\n\t// Fields specifies the generated key-values
+      that the file uploader\n\t// must include in their multipart upload form.\n\tFields
+      map[string]string\n}"
+- uid: cloud.google.com/go/storage.PostPolicyV4.GenerateSignedPostPolicyV4
+  name: |
+    func GenerateSignedPostPolicyV4
+  id: GenerateSignedPostPolicyV4
+  summary: |
+    GenerateSignedPostPolicyV4 generates a PostPolicyV4 value from bucket, object and opts.
+    The generated URL and fields will then allow an unauthenticated client to perform multipart uploads.
+  parent: cloud.google.com/go/storage.PostPolicyV4
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func GenerateSignedPostPolicyV4(bucket, object string, opts *PostPolicyV4Options)
+      (*PostPolicyV4, error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"bytes\"\n\t\"cloud.google.com/go/storage\"\n\t\"io\"\n\t\"mime/multipart\"\n\t\"net/http\"\n\t\"time\"\n)\n\nfunc
+      main() {\n\tpv4, err := storage.GenerateSignedPostPolicyV4(\"my-bucket\", \"my-object.txt\",
+      &storage.PostPolicyV4Options{\n\t\tGoogleAccessID: \"my-access-id\",\n\t\tPrivateKey:
+      \    []byte(\"my-private-key\"),\n\n\t\t// The upload expires in 2hours.\n\t\tExpires:
+      time.Now().Add(2 * time.Hour),\n\n\t\tFields: &storage.PolicyV4Fields{\n\t\t\tStatusCodeOnSuccess:
+      \   200,\n\t\t\tRedirectToURLOnSuccess: \"https://example.org/\",\n\t\t\t//
+      It MUST only be a text file.\n\t\t\tContentType: \"text/plain\",\n\t\t},\n\n\t\t//
+      The conditions that the uploaded file will be expected to conform to.\n\t\tConditions:
+      []storage.PostPolicyV4Condition{\n\t\t\t// Make the file a maximum of 10mB.\n\t\t\tstorage.ConditionContentLengthRange(0,
+      10<<20),\n\t\t},\n\t})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\n\t//
+      Now you can upload your file using the generated post policy\n\t// with a plain
+      HTTP client or even the browser.\n\tformBuf := new(bytes.Buffer)\n\tmw := multipart.NewWriter(formBuf)\n\tfor
+      fieldName, value := range pv4.Fields {\n\t\tif err := mw.WriteField(fieldName,
+      value); err != nil {\n\t\t\t// TODO: handle error.\n\t\t}\n\t}\n\tfile := bytes.NewReader(bytes.Repeat([]byte(\"a\"),
+      100))\n\n\tmf, err := mw.CreateFormFile(\"file\", \"myfile.txt\")\n\tif err
+      != nil {\n\t\t// TODO: handle error.\n\t}\n\tif _, err := io.Copy(mf, file);
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tif err := mw.Close(); err !=
+      nil {\n\t\t// TODO: handle error.\n\t}\n\n\t// Compose the request.\n\treq,
+      err := http.NewRequest(\"POST\", pv4.URL, formBuf)\n\tif err != nil {\n\t\t//
+      TODO: handle error.\n\t}\n\t// Ensure the Content-Type is derived from the multipart
+      writer.\n\treq.Header.Set(\"Content-Type\", mw.FormDataContentType())\n\tres,
+      err := http.DefaultClient.Do(req)\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\t_
+      = res\n}\n"
+- uid: cloud.google.com/go/storage.PostPolicyV4Condition
+  name: PostPolicyV4Condition
+  id: PostPolicyV4Condition
+  summary: |
+    PostPolicyV4Condition describes the constraints that the subsequent
+    object upload's multipart form fields will be expected to conform to.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type PostPolicyV4Condition interface {\n\tjson.Marshaler\n\t// contains
+      filtered or unexported methods\n}"
+- uid: cloud.google.com/go/storage.PostPolicyV4Condition.ConditionContentLengthRange
+  name: |
+    func ConditionContentLengthRange
+  id: ConditionContentLengthRange
+  summary: |
+    ConditionContentLengthRange constraints the limits that the
+    multipart upload's range header will be expected to be within.
+  parent: cloud.google.com/go/storage.PostPolicyV4Condition
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func ConditionContentLengthRange(start, end uint64) PostPolicyV4Condition
+- uid: cloud.google.com/go/storage.PostPolicyV4Condition.ConditionStartsWith
+  name: |
+    func ConditionStartsWith
+  id: ConditionStartsWith
+  summary: |
+    ConditionStartsWith checks that an attributes starts with value.
+    An empty value will cause this condition to be ignored.
+  parent: cloud.google.com/go/storage.PostPolicyV4Condition
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func ConditionStartsWith(key, value string) PostPolicyV4Condition
+- uid: cloud.google.com/go/storage.PostPolicyV4Options
+  name: PostPolicyV4Options
+  id: PostPolicyV4Options
+  summary: |
+    PostPolicyV4Options are used to construct a signed post policy.
+    Please see https://cloud.google.com/storage/docs/xml-api/post-object
+    for reference about the fields.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type PostPolicyV4Options struct {\n\t// GoogleAccessID represents the
+      authorizer of the signed URL generation.\n\t// It is typically the Google service
+      account client email address from\n\t// the Google Developers Console in the
+      form of \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\tGoogleAccessID
+      string\n\n\t// PrivateKey is the Google service account private key. It is obtainable\n\t//
+      from the Google Developers Console.\n\t// At https://console.developers.google.com/project/<your-project-id>/apiui/credential,\n\t//
+      create a service account client ID or reuse one of your existing service account\n\t//
+      credentials. Click on the \"Generate new P12 key\" to generate and download\n\t//
+      a new private key. Once you download the P12 file, use the following command\n\t//
+      to convert it into a PEM file.\n\t//\n\t//    $ openssl pkcs12 -in key.p12 -passin
+      pass:notasecret -out key.pem -nodes\n\t//\n\t// Provide the contents of the
+      PEM file as a byte slice.\n\t// Exactly one of PrivateKey or SignBytes must
+      be non-nil.\n\tPrivateKey []byte\n\n\t// SignBytes is a function for implementing
+      custom signing. For example, if\n\t// your application is running on Google
+      App Engine, you can use\n\t// appengine's internal signing function:\n\t//     ctx
+      := appengine.NewContext(request)\n\t//     acc, _ := appengine.ServiceAccount(ctx)\n\t//
+      \    url, err := SignedURL(\"bucket\", \"object\", &SignedURLOptions{\n\t//
+      \    \tGoogleAccessID: acc,\n\t//     \tSignBytes: func(b []byte) ([]byte, error)
+      {\n\t//     \t\t_, signedBytes, err := appengine.SignBytes(ctx, b)\n\t//     \t\treturn
+      signedBytes, err\n\t//     \t},\n\t//     \t// etc.\n\t//     })\n\t//\n\t//
+      Exactly one of PrivateKey or SignBytes must be non-nil.\n\tSignBytes func(hashBytes
+      []byte) (signature []byte, err error)\n\n\t// Expires is the expiration time
+      on the signed URL.\n\t// It must be a time in the future.\n\t// Required.\n\tExpires
+      time.Time\n\n\t// Style provides options for the type of URL to use. Options
+      are\n\t// PathStyle (default), BucketBoundHostname, and VirtualHostedStyle.
+      See\n\t// https://cloud.google.com/storage/docs/request-endpoints for details.\n\t//
+      Optional.\n\tStyle URLStyle\n\n\t// Insecure when set indicates that the generated
+      URL's scheme\n\t// will use \"http\" instead of \"https\" (default).\n\t// Optional.\n\tInsecure
+      bool\n\n\t// Fields specifies the attributes of a PostPolicyV4 request.\n\t//
+      When Fields is non-nil, its attributes must match those that will\n\t// passed
+      into field Conditions.\n\t// Optional.\n\tFields *PolicyV4Fields\n\n\t// The
+      conditions that the uploaded file will be expected to conform to.\n\t// When
+      used, the failure of an upload to satisfy a condition will result in\n\t// a
+      4XX status code, back with the message describing the problem.\n\t// Optional.\n\tConditions
+      []PostPolicyV4Condition\n}"
+- uid: cloud.google.com/go/storage.ProjectTeam
+  name: ProjectTeam
+  id: ProjectTeam
+  summary: |
+    ProjectTeam is the project team associated with the entity, if any.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ProjectTeam struct {\n\tProjectNumber string\n\tTeam          string\n}"
+- uid: cloud.google.com/go/storage.Query
+  name: Query
+  id: Query
+  summary: |
+    Query represents a query to filter objects from a bucket.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Query struct {\n\t// Delimiter returns results in a directory-like
+      fashion.\n\t// Results will contain only objects whose names, aside from the\n\t//
+      prefix, do not contain delimiter. Objects whose names,\n\t// aside from the
+      prefix, contain delimiter will have their name,\n\t// truncated after the delimiter,
+      returned in prefixes.\n\t// Duplicate prefixes are omitted.\n\t// Optional.\n\tDelimiter
+      string\n\n\t// Prefix is the prefix filter to query objects\n\t// whose names
+      begin with this prefix.\n\t// Optional.\n\tPrefix string\n\n\t// Versions indicates
+      whether multiple versions of the same\n\t// object will be included in the results.\n\tVersions
+      bool\n\n\t// StartOffset is used to filter results to objects whose names are\n\t//
+      lexicographically equal to or after startOffset. If endOffset is also set,\n\t//
+      the objects listed will have names between startOffset (inclusive) and\n\t//
+      endOffset (exclusive).\n\tStartOffset string\n\n\t// EndOffset is used to filter
+      results to objects whose names are\n\t// lexicographically before endOffset.
+      If startOffset is also set, the objects\n\t// listed will have names between
+      startOffset (inclusive) and endOffset (exclusive).\n\tEndOffset string\n\t//
+      contains filtered or unexported fields\n}"
+- uid: cloud.google.com/go/storage.Query.SetAttrSelection
+  name: |
+    func (*Query) SetAttrSelection
+  id: SetAttrSelection
+  summary: |
+    SetAttrSelection makes the query populate only specific attributes of
+    objects. When iterating over objects, if you only need each object's name
+    and size, pass []string{"Name", "Size"} to this method. Only these fields
+    will be fetched for each object across the network; the other fields of
+    ObjectAttr will remain at their default values. This is a performance
+    optimization; for more information, see
+    https://cloud.google.com/storage/docs/json_api/v1/how-tos/performance
+  parent: cloud.google.com/go/storage.Query
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (q *Query) SetAttrSelection(attrs []string) error
+- uid: cloud.google.com/go/storage.Reader
+  name: Reader
+  id: Reader
+  summary: |
+    Reader reads a Cloud Storage object.
+    It implements io.Reader.
+
+    Typically, a Reader computes the CRC of the downloaded content and compares it to
+    the stored CRC, returning an error from Read if there is a mismatch. This integrity check
+    is skipped if transcoding occurs. See https://cloud.google.com/storage/docs/transcoding.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Reader struct {\n\tAttrs ReaderObjectAttrs\n\t// contains filtered
+      or unexported fields\n}"
+- uid: cloud.google.com/go/storage.Reader.CacheControl
+  name: |
+    func (*Reader) CacheControl
+  id: CacheControl
+  summary: |
+    CacheControl returns the cache control of the object.
+
+    Deprecated: use Reader.Attrs.CacheControl.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) CacheControl() string
+- uid: cloud.google.com/go/storage.Reader.Close
+  name: |
+    func (*Reader) Close
+  id: Close
+  summary: |
+    Close closes the Reader. It must be called when done reading.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) Close() error
+- uid: cloud.google.com/go/storage.Reader.ContentEncoding
+  name: |
+    func (*Reader) ContentEncoding
+  id: ContentEncoding
+  summary: |
+    ContentEncoding returns the content encoding of the object.
+
+    Deprecated: use Reader.Attrs.ContentEncoding.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) ContentEncoding() string
+- uid: cloud.google.com/go/storage.Reader.ContentType
+  name: |
+    func (*Reader) ContentType
+  id: ContentType
+  summary: |
+    ContentType returns the content type of the object.
+
+    Deprecated: use Reader.Attrs.ContentType.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) ContentType() string
+- uid: cloud.google.com/go/storage.Reader.LastModified
+  name: |
+    func (*Reader) LastModified
+  id: LastModified
+  summary: |
+    LastModified returns the value of the Last-Modified header.
+
+    Deprecated: use Reader.Attrs.LastModified.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) LastModified() (time.Time, error)
+- uid: cloud.google.com/go/storage.Reader.Read
+  name: |
+    func (*Reader) Read
+  id: Read
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) Read(p []byte) (int, error)
+- uid: cloud.google.com/go/storage.Reader.Remain
+  name: |
+    func (*Reader) Remain
+  id: Remain
+  summary: |
+    Remain returns the number of bytes left to read, or -1 if unknown.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) Remain() int64
+- uid: cloud.google.com/go/storage.Reader.Size
+  name: |
+    func (*Reader) Size
+  id: Size
+  summary: |
+    Size returns the size of the object in bytes.
+    The returned value is always the same and is not affected by
+    calls to Read or Close.
+
+    Deprecated: use Reader.Attrs.Size.
+  parent: cloud.google.com/go/storage.Reader
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (r *Reader) Size() int64
+- uid: cloud.google.com/go/storage.ReaderObjectAttrs
+  name: ReaderObjectAttrs
+  id: ReaderObjectAttrs
+  summary: |
+    ReaderObjectAttrs are attributes about the object being read. These are populated
+    during the New call. This struct only holds a subset of object attributes: to
+    get the full set of attributes, use ObjectHandle.Attrs.
+
+    Each field is read-only.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type ReaderObjectAttrs struct {\n\t// Size is the length of the object's
+      content.\n\tSize int64\n\n\t// StartOffset is the byte offset within the object\n\t//
+      from which reading begins.\n\t// This value is only non-zero for range requests.\n\tStartOffset
+      int64\n\n\t// ContentType is the MIME type of the object's content.\n\tContentType
+      string\n\n\t// ContentEncoding is the encoding of the object's content.\n\tContentEncoding
+      string\n\n\t// CacheControl specifies whether and for how long browser and Internet\n\t//
+      caches are allowed to cache your objects.\n\tCacheControl string\n\n\t// LastModified
+      is the time that the object was last modified.\n\tLastModified time.Time\n\n\t//
+      Generation is the generation number of the object's content.\n\tGeneration int64\n\n\t//
+      Metageneration is the version of the metadata for this object at\n\t// this
+      generation. This field is used for preconditions and for\n\t// detecting changes
+      in metadata. A metageneration number is only\n\t// meaningful in the context
+      of a particular generation of a\n\t// particular object.\n\tMetageneration int64\n}"
+- uid: cloud.google.com/go/storage.RetentionPolicy
+  name: RetentionPolicy
+  id: RetentionPolicy
+  summary: |
+    RetentionPolicy enforces a minimum retention time for all objects
+    contained in the bucket.
+
+    Any attempt to overwrite or delete objects younger than the retention
+    period will result in an error. An unlocked retention policy can be
+    modified or removed from the bucket via the Update method. A
+    locked retention policy cannot be removed or shortened in duration
+    for the lifetime of the bucket.
+
+    This feature is in private alpha release. It is not currently available to
+    most customers. It might be changed in backwards-incompatible ways and is not
+    subject to any SLA or deprecation policy.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type RetentionPolicy struct {\n\t// RetentionPeriod specifies the duration
+      that objects need to be\n\t// retained. Retention duration must be greater than
+      zero and less than\n\t// 100 years. Note that enforcement of retention periods
+      less than a day\n\t// is not guaranteed. Such periods should only be used for
+      testing\n\t// purposes.\n\tRetentionPeriod time.Duration\n\n\t// EffectiveTime
+      is the time from which the policy was enforced and\n\t// effective. This field
+      is read-only.\n\tEffectiveTime time.Time\n\n\t// IsLocked describes whether
+      the bucket is locked. Once locked, an\n\t// object retention policy cannot be
+      modified.\n\t// This field is read-only.\n\tIsLocked bool\n}"
+- uid: cloud.google.com/go/storage.SignedURLOptions
+  name: SignedURLOptions
+  id: SignedURLOptions
+  summary: |
+    SignedURLOptions allows you to restrict the access to the signed URL.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type SignedURLOptions struct {\n\t// GoogleAccessID represents the authorizer
+      of the signed URL generation.\n\t// It is typically the Google service account
+      client email address from\n\t// the Google Developers Console in the form of
+      \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\tGoogleAccessID string\n\n\t//
+      PrivateKey is the Google service account private key. It is obtainable\n\t//
+      from the Google Developers Console.\n\t// At https://console.developers.google.com/project/<your-project-id>/apiui/credential,\n\t//
+      create a service account client ID or reuse one of your existing service account\n\t//
+      credentials. Click on the \"Generate new P12 key\" to generate and download\n\t//
+      a new private key. Once you download the P12 file, use the following command\n\t//
+      to convert it into a PEM file.\n\t//\n\t//    $ openssl pkcs12 -in key.p12 -passin
+      pass:notasecret -out key.pem -nodes\n\t//\n\t// Provide the contents of the
+      PEM file as a byte slice.\n\t// Exactly one of PrivateKey or SignBytes must
+      be non-nil.\n\tPrivateKey []byte\n\n\t// SignBytes is a function for implementing
+      custom signing. For example, if\n\t// your application is running on Google
+      App Engine, you can use\n\t// appengine's internal signing function:\n\t//     ctx
+      := appengine.NewContext(request)\n\t//     acc, _ := appengine.ServiceAccount(ctx)\n\t//
+      \    url, err := SignedURL(\"bucket\", \"object\", &SignedURLOptions{\n\t//
+      \    \tGoogleAccessID: acc,\n\t//     \tSignBytes: func(b []byte) ([]byte, error)
+      {\n\t//     \t\t_, signedBytes, err := appengine.SignBytes(ctx, b)\n\t//     \t\treturn
+      signedBytes, err\n\t//     \t},\n\t//     \t// etc.\n\t//     })\n\t//\n\t//
+      Exactly one of PrivateKey or SignBytes must be non-nil.\n\tSignBytes func([]byte)
+      ([]byte, error)\n\n\t// Method is the HTTP method to be used with the signed
+      URL.\n\t// Signed URLs can be used with GET, HEAD, PUT, and DELETE requests.\n\t//
+      Required.\n\tMethod string\n\n\t// Expires is the expiration time on the signed
+      URL. It must be\n\t// a datetime in the future. For SigningSchemeV4, the expiration
+      may be no\n\t// more than seven days in the future.\n\t// Required.\n\tExpires
+      time.Time\n\n\t// ContentType is the content type header the client must provide\n\t//
+      to use the generated signed URL.\n\t// Optional.\n\tContentType string\n\n\t//
+      Headers is a list of extension headers the client must provide\n\t// in order
+      to use the generated signed URL. Each must be a string of the\n\t// form \"key:values\",
+      with multiple values separated by a semicolon.\n\t// Optional.\n\tHeaders []string\n\n\t//
+      QueryParameters is a map of additional query parameters. When\n\t// SigningScheme
+      is V4, this is used in computing the signature, and the\n\t// client must use
+      the same query parameters when using the generated signed\n\t// URL.\n\t// Optional.\n\tQueryParameters
+      url.Values\n\n\t// MD5 is the base64 encoded MD5 checksum of the file.\n\t//
+      If provided, the client should provide the exact value on the request\n\t//
+      header in order to use the signed URL.\n\t// Optional.\n\tMD5 string\n\n\t//
+      Style provides options for the type of URL to use. Options are\n\t// PathStyle
+      (default), BucketBoundHostname, and VirtualHostedStyle. See\n\t// https://cloud.google.com/storage/docs/request-endpoints
+      for details.\n\t// Only supported for V4 signing.\n\t// Optional.\n\tStyle URLStyle\n\n\t//
+      Insecure determines whether the signed URL should use HTTPS (default) or\n\t//
+      HTTP.\n\t// Only supported for V4 signing.\n\t// Optional.\n\tInsecure bool\n\n\t//
+      Scheme determines the version of URL signing to use. Default is\n\t// SigningSchemeV2.\n\tScheme
+      SigningScheme\n}"
+- uid: cloud.google.com/go/storage.SigningScheme
+  name: SigningScheme
+  id: SigningScheme
+  summary: |
+    SigningScheme determines the API version to use when signing URLs.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: type SigningScheme int
+- uid: cloud.google.com/go/storage.SigningSchemeDefault,SigningSchemeV2,SigningSchemeV4
+  name: SigningSchemeDefault, SigningSchemeV2, SigningSchemeV4
+  id: SigningSchemeDefault,SigningSchemeV2,SigningSchemeV4
+  parent: cloud.google.com/go/storage.SigningScheme
+  type: const
+  langs:
+  - go
+  syntax:
+    content: "const (\n\t// SigningSchemeDefault is presently V2 and will change to
+      V4 in the future.\n\tSigningSchemeDefault SigningScheme = iota\n\n\t// SigningSchemeV2
+      uses the V2 scheme to sign URLs.\n\tSigningSchemeV2\n\n\t// SigningSchemeV4
+      uses the V4 scheme to sign URLs.\n\tSigningSchemeV4\n)"
+- uid: cloud.google.com/go/storage.URLStyle
+  name: URLStyle
+  id: URLStyle
+  summary: |
+    URLStyle determines the style to use for the signed URL. pathStyle is the
+    default. All non-default options work with V4 scheme only. See
+    https://cloud.google.com/storage/docs/request-endpoints for details.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type URLStyle interface {\n\t// contains filtered or unexported methods\n}"
+- uid: cloud.google.com/go/storage.URLStyle.BucketBoundHostname
+  name: |
+    func BucketBoundHostname
+  id: BucketBoundHostname
+  summary: |
+    BucketBoundHostname generates a URL with a custom hostname tied to a
+    specific GCS bucket. The desired hostname should be passed in using the
+    hostname argument. Generated urls will be of the form
+    "<bucket-bound-hostname>/<object-name>". See
+    https://cloud.google.com/storage/docs/request-endpoints#cname and
+    https://cloud.google.com/load-balancing/docs/https/adding-backend-buckets-to-load-balancers
+    for details. Note that for CNAMEs, only HTTP is supported, so Insecure must
+    be set to true.
+  parent: cloud.google.com/go/storage.URLStyle
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func BucketBoundHostname(hostname string) URLStyle
+- uid: cloud.google.com/go/storage.URLStyle.PathStyle
+  name: |
+    func PathStyle
+  id: PathStyle
+  summary: |
+    PathStyle is the default style, and will generate a URL of the form
+    "storage.googleapis.com/<bucket-name>/<object-name>".
+  parent: cloud.google.com/go/storage.URLStyle
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func PathStyle() URLStyle
+- uid: cloud.google.com/go/storage.URLStyle.VirtualHostedStyle
+  name: |
+    func VirtualHostedStyle
+  id: VirtualHostedStyle
+  summary: |
+    VirtualHostedStyle generates a URL relative to the bucket's virtual
+    hostname, e.g. "<bucket-name>.storage.googleapis.com/<object-name>".
+  parent: cloud.google.com/go/storage.URLStyle
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func VirtualHostedStyle() URLStyle
+- uid: cloud.google.com/go/storage.UniformBucketLevelAccess
+  name: UniformBucketLevelAccess
+  id: UniformBucketLevelAccess
+  summary: |
+    UniformBucketLevelAccess configures access checks to use only bucket-level IAM
+    policies.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type UniformBucketLevelAccess struct {\n\t// Enabled specifies whether
+      access checks use only bucket-level IAM\n\t// policies. Enabled may be disabled
+      until the locked time.\n\tEnabled bool\n\t// LockedTime specifies the deadline
+      for changing Enabled from true to\n\t// false.\n\tLockedTime time.Time\n}"
+- uid: cloud.google.com/go/storage.Writer
+  name: Writer
+  id: Writer
+  summary: |
+    A Writer writes a Cloud Storage object.
+  parent: cloud.google.com/go/storage
+  type: type
+  langs:
+  - go
+  syntax:
+    content: "type Writer struct {\n\t// ObjectAttrs are optional attributes to set
+      on the object. Any attributes\n\t// must be initialized before the first Write
+      call. Nil or zero-valued\n\t// attributes are ignored.\n\tObjectAttrs\n\n\t//
+      SendCRC specifies whether to transmit a CRC32C field. It should be set\n\t//
+      to true in addition to setting the Writer's CRC32C field, because zero\n\t//
+      is a valid CRC and normally a zero would not be transmitted.\n\t// If a CRC32C
+      is sent, and the data written does not match the checksum,\n\t// the write will
+      be rejected.\n\tSendCRC32C bool\n\n\t// ChunkSize controls the maximum number
+      of bytes of the object that the\n\t// Writer will attempt to send to the server
+      in a single request. Objects\n\t// smaller than the size will be sent in a single
+      request, while larger\n\t// objects will be split over multiple requests. The
+      size will be rounded up\n\t// to the nearest multiple of 256K.\n\t//\n\t// ChunkSize
+      will default to a reasonable value. If you perform many\n\t// concurrent writes
+      of small objects (under ~8MB), you may wish set ChunkSize\n\t// to a value that
+      matches your objects' sizes to avoid consuming large\n\t// amounts of memory.
+      See\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/upload#size\n\t//
+      for more information about performance trade-offs related to ChunkSize.\n\t//\n\t//
+      If ChunkSize is set to zero, chunking will be disabled and the object will\n\t//
+      be uploaded in a single request without the use of a buffer. This will\n\t//
+      further reduce memory used during uploads, but will also prevent the writer\n\t//
+      from retrying in case of a transient error from the server, since a buffer\n\t//
+      is required in order to retry the failed request.\n\t//\n\t// ChunkSize must
+      be set before the first Write call.\n\tChunkSize int\n\n\t// ProgressFunc can
+      be used to monitor the progress of a large write.\n\t// operation. If ProgressFunc
+      is not nil and writing requires multiple\n\t// calls to the underlying service
+      (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),\n\t//
+      then ProgressFunc will be invoked after each call with the number of bytes of\n\t//
+      content copied so far.\n\t//\n\t// ProgressFunc should return quickly without
+      blocking.\n\tProgressFunc func(int64)\n\t// contains filtered or unexported
+      fields\n}"
+- uid: cloud.google.com/go/storage.Writer.Attrs
+  name: |
+    func (*Writer) Attrs
+  id: Attrs
+  summary: |
+    Attrs returns metadata about a successfully-written object.
+    It's only valid to call it after Close returns nil.
+  parent: cloud.google.com/go/storage.Writer
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (w *Writer) Attrs() *ObjectAttrs
+- uid: cloud.google.com/go/storage.Writer.Close
+  name: |
+    func (*Writer) Close
+  id: Close
+  summary: |
+    Close completes the write operation and flushes any buffered data.
+    If Close doesn't return an error, metadata about the written object
+    can be retrieved by calling Attrs.
+  parent: cloud.google.com/go/storage.Writer
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (w *Writer) Close() error
+- uid: cloud.google.com/go/storage.Writer.CloseWithError
+  name: |
+    func (*Writer) CloseWithError
+  id: CloseWithError
+  summary: |
+    CloseWithError aborts the write operation with the provided error.
+    CloseWithError always returns nil.
+
+    Deprecated: cancel the context passed to NewWriter instead.
+  parent: cloud.google.com/go/storage.Writer
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (w *Writer) CloseWithError(err error) error
+- uid: cloud.google.com/go/storage.Writer.Write
+  name: |
+    func (*Writer) Write
+  id: Write
+  summary: |
+    Write appends to w. It implements the io.Writer interface.
+
+    Since writes happen asynchronously, Write may return a nil
+    error even though the write failed (or will fail). Always
+    use the error returned from Writer.Close to determine if
+    the upload was successful.
+
+    Writes will be retried on transient errors from the server, unless
+    Writer.ChunkSize has been set to zero.
+  parent: cloud.google.com/go/storage.Writer
+  type: method
+  langs:
+  - go
+  syntax:
+    content: func (w *Writer) Write(p []byte) (n int, err error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\twc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n\twc.ContentType
+      = \"text/plain\"\n\twc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role:
+      storage.RoleReader}}\n\tif _, err := wc.Write([]byte(\"hello world\")); err
+      != nil {\n\t\t// TODO: handle error.\n\t\t// Note that Write may return nil
+      in some error situations,\n\t\t// so always check the error from Close.\n\t}\n\tif
+      err := wc.Close(); err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"updated
+      object:\", wc.Attrs())\n}\n"
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\tdata := []byte(\"verify me\")\n\twc
+      := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(ctx)\n\twc.CRC32C
+      = crc32.Checksum(data, crc32.MakeTable(crc32.Castagnoli))\n\twc.SendCRC32C =
+      true\n\tif _, err := wc.Write([]byte(\"hello world\")); err != nil {\n\t\t//
+      TODO: handle error.\n\t\t// Note that Write may return nil in some error situations,\n\t\t//
+      so always check the error from Close.\n\t}\n\tif err := wc.Close(); err != nil
+      {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"updated object:\", wc.Attrs())\n}\n"
+    name: checksum
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc
+      main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
+      err != nil {\n\t\t// TODO: handle error.\n\t}\n\ttctx, cancel := context.WithTimeout(ctx,
+      30*time.Second)\n\tdefer cancel() // Cancel when done, whether we time out or
+      not.\n\twc := client.Bucket(\"bucketname\").Object(\"filename1\").NewWriter(tctx)\n\twc.ContentType
+      = \"text/plain\"\n\twc.ACL = []storage.ACLRule{{Entity: storage.AllUsers, Role:
+      storage.RoleReader}}\n\tif _, err := wc.Write([]byte(\"hello world\")); err
+      != nil {\n\t\t// TODO: handle error.\n\t\t// Note that Write may return nil
+      in some error situations,\n\t\t// so always check the error from Close.\n\t}\n\tif
+      err := wc.Close(); err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(\"updated
+      object:\", wc.Attrs())\n}\n"
+    name: timeout
+- uid: cloud.google.com/go/storage.SignedURL
+  name: |
+    func SignedURL
+  id: SignedURL
+  summary: |
+    SignedURL returns a URL for the specified object. Signed URLs allow
+    the users access to a restricted resource for a limited time without having a
+    Google account or signing in. For more information about the signed
+    URLs, see https://cloud.google.com/storage/docs/accesscontrol#Signed-URLs.
+  parent: cloud.google.com/go/storage
+  type: function
+  langs:
+  - go
+  syntax:
+    content: func SignedURL(bucket, name string, opts *SignedURLOptions) (string,
+      error)
+  codeexamples:
+  - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\t\"time\"\n)\n\nfunc
+      main() {\n\tpkey, err := ioutil.ReadFile(\"my-private-key.pem\")\n\tif err !=
+      nil {\n\t\t// TODO: handle error.\n\t}\n\turl, err := storage.SignedURL(\"my-bucket\",
+      \"my-object\", &storage.SignedURLOptions{\n\t\tGoogleAccessID: \"xxx@developer.gserviceaccount.com\",\n\t\tPrivateKey:
+      \    pkey,\n\t\tMethod:         \"GET\",\n\t\tExpires:        time.Now().Add(48
+      * time.Hour),\n\t})\n\tif err != nil {\n\t\t// TODO: handle error.\n\t}\n\tfmt.Println(url)\n}\n"

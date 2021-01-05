@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 	"google.golang.org/grpc"
@@ -43,6 +44,7 @@ type AnalyticsAdminCallOptions struct {
 	DeleteAccount                     []gax.CallOption
 	UpdateAccount                     []gax.CallOption
 	ProvisionAccountTicket            []gax.CallOption
+	ListAccountSummaries              []gax.CallOption
 	GetProperty                       []gax.CallOption
 	ListProperties                    []gax.CallOption
 	CreateProperty                    []gax.CallOption
@@ -89,9 +91,11 @@ type AnalyticsAdminCallOptions struct {
 
 func defaultAnalyticsAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("analyticsadmin.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -104,22 +108,34 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 		DeleteAccount:          []gax.CallOption{},
 		UpdateAccount:          []gax.CallOption{},
 		ProvisionAccountTicket: []gax.CallOption{},
-		GetProperty:            []gax.CallOption{},
-		ListProperties:         []gax.CallOption{},
-		CreateProperty:         []gax.CallOption{},
-		DeleteProperty:         []gax.CallOption{},
-		UpdateProperty:         []gax.CallOption{},
-		GetUserLink:            []gax.CallOption{},
-		BatchGetUserLinks:      []gax.CallOption{},
-		ListUserLinks:          []gax.CallOption{},
-		AuditUserLinks:         []gax.CallOption{},
-		CreateUserLink:         []gax.CallOption{},
-		BatchCreateUserLinks:   []gax.CallOption{},
-		UpdateUserLink:         []gax.CallOption{},
-		BatchUpdateUserLinks:   []gax.CallOption{},
-		DeleteUserLink:         []gax.CallOption{},
-		BatchDeleteUserLinks:   []gax.CallOption{},
-		GetWebDataStream:       []gax.CallOption{},
+		ListAccountSummaries: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetProperty:          []gax.CallOption{},
+		ListProperties:       []gax.CallOption{},
+		CreateProperty:       []gax.CallOption{},
+		DeleteProperty:       []gax.CallOption{},
+		UpdateProperty:       []gax.CallOption{},
+		GetUserLink:          []gax.CallOption{},
+		BatchGetUserLinks:    []gax.CallOption{},
+		ListUserLinks:        []gax.CallOption{},
+		AuditUserLinks:       []gax.CallOption{},
+		CreateUserLink:       []gax.CallOption{},
+		BatchCreateUserLinks: []gax.CallOption{},
+		UpdateUserLink:       []gax.CallOption{},
+		BatchUpdateUserLinks: []gax.CallOption{},
+		DeleteUserLink:       []gax.CallOption{},
+		BatchDeleteUserLinks: []gax.CallOption{},
+		GetWebDataStream:     []gax.CallOption{},
 		DeleteWebDataStream: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -193,7 +209,7 @@ type AnalyticsAdminClient struct {
 
 // NewAnalyticsAdminClient creates a new analytics admin service client.
 //
-// Service Interface for the Analytics Admin API (App+Web).
+// Service Interface for the Analytics Admin API (GA4).
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
 	clientOpts := defaultAnalyticsAdminClientOptions()
 
@@ -274,7 +290,7 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 
 // ListAccounts returns all accounts accessible by the caller.
 //
-// Note that these accounts might not currently have App+Web properties.
+// Note that these accounts might not currently have GA4 properties.
 // Soft-deleted (ie: “trashed”) accounts are excluded by default.
 // Returns an empty list if no relevant accounts are found.
 func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
@@ -387,10 +403,50 @@ func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *
 	return resp, nil
 }
 
-// GetProperty lookup for a single “App+Web” Property.
+// ListAccountSummaries returns summaries of all accounts accessible by the caller.
+func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ListAccountSummaries[0:len(c.CallOptions.ListAccountSummaries):len(c.CallOptions.ListAccountSummaries)], opts...)
+	it := &AccountSummaryIterator{}
+	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
+		var resp *adminpb.ListAccountSummariesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListAccountSummaries(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAccountSummaries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// GetProperty lookup for a single “GA4” Property.
 //
 // Throws “Target not found” if no such property found, if property is not
-// of the type “App+Web”, or if caller does not have permissions to access it.
+// of the type “GA4”, or if caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -414,7 +470,7 @@ func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.Get
 
 // ListProperties returns child Properties under the specified parent Account.
 //
-// Only “App+Web” properties will be returned.
+// Only “GA4” properties will be returned.
 // Properties will be excluded if the caller does not have access.
 // Soft-deleted (ie: “trashed”) properties are excluded by default.
 // Returns an empty list if no relevant properties are found.
@@ -457,7 +513,7 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 	return it
 }
 
-// CreateProperty creates an “App+Web” property with the specified location and attributes.
+// CreateProperty creates an “GA4” property with the specified location and attributes.
 func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -488,7 +544,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 // will be permanently purged.
 // https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
 //
-// Returns an error if the target is not found, or is not an App+Web Property.
+// Returns an error if the target is not found, or is not an GA4 Property.
 func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1512,6 +1568,53 @@ func (it *AccountIterator) bufLen() int {
 }
 
 func (it *AccountIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// AccountSummaryIterator manages a stream of *adminpb.AccountSummary.
+type AccountSummaryIterator struct {
+	items    []*adminpb.AccountSummary
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.AccountSummary, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AccountSummaryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AccountSummaryIterator) Next() (*adminpb.AccountSummary, error) {
+	var item *adminpb.AccountSummary
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AccountSummaryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AccountSummaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

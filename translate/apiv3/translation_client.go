@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -53,9 +54,11 @@ type TranslationCallOptions struct {
 
 func defaultTranslationClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("translate.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("translate.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("translate.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://translate.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

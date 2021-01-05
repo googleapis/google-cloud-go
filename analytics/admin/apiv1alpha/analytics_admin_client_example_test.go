@@ -137,6 +137,33 @@ func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
 	_ = resp
 }
 
+func ExampleAnalyticsAdminClient_ListAccountSummaries() {
+	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.ListAccountSummariesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListAccountSummaries(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleAnalyticsAdminClient_GetProperty() {
 	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 

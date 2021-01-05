@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 	"google.golang.org/grpc"
@@ -40,9 +41,11 @@ type ReportErrorsCallOptions struct {
 
 func defaultReportErrorsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -54,7 +57,7 @@ func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	}
 }
 
-// ReportErrorsClient is a client for interacting with Stackdriver Error Reporting API.
+// ReportErrorsClient is a client for interacting with Cloud Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ReportErrorsClient struct {

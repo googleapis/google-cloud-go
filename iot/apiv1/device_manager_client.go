@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -62,9 +63,11 @@ type DeviceManagerCallOptions struct {
 
 func defaultDeviceManagerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudiot.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudiot.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudiot.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://cloudiot.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

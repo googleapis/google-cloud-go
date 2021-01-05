@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1"
 	"google.golang.org/grpc"
@@ -50,9 +51,11 @@ type CloudSchedulerCallOptions struct {
 
 func defaultCloudSchedulerClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudscheduler.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudscheduler.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudscheduler.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://cloudscheduler.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

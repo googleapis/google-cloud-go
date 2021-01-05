@@ -112,3 +112,23 @@ func ExampleClient_RegisterAgent() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleClient_ReportInventory() {
+	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
+
+	ctx := context.Background()
+	c, err := agentendpoint.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &agentendpointpb.ReportInventoryRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ReportInventory(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

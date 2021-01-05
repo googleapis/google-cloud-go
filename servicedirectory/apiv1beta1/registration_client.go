@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -61,9 +62,11 @@ type RegistrationCallOptions struct {
 
 func defaultRegistrationClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("servicedirectory.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("servicedirectory.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("servicedirectory.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://servicedirectory.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

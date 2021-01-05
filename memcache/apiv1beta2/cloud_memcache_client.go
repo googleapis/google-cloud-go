@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1beta2"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -51,9 +52,11 @@ type CloudMemcacheCallOptions struct {
 
 func defaultCloudMemcacheClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("memcache.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("memcache.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("memcache.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://memcache.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

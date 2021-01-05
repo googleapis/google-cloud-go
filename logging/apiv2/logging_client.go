@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	monitoredrespb "google.golang.org/genproto/googleapis/api/monitoredres"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
@@ -44,13 +45,16 @@ type CallOptions struct {
 	ListLogEntries                   []gax.CallOption
 	ListMonitoredResourceDescriptors []gax.CallOption
 	ListLogs                         []gax.CallOption
+	TailLogEntries                   []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -111,6 +115,19 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		ListLogs: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		TailLogEntries: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.DeadlineExceeded,
@@ -374,6 +391,23 @@ func (c *Client) ListLogs(ctx context.Context, req *loggingpb.ListLogsRequest, o
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// TailLogEntries streaming read of log entries as they are ingested. Until the stream is
+// terminated, it will continue reading logs.
+func (c *Client) TailLogEntries(ctx context.Context, opts ...gax.CallOption) (loggingpb.LoggingServiceV2_TailLogEntriesClient, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.TailLogEntries[0:len(c.CallOptions.TailLogEntries):len(c.CallOptions.TailLogEntries)], opts...)
+	var resp loggingpb.LoggingServiceV2_TailLogEntriesClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.TailLogEntries(ctx, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // LogEntryIterator manages a stream of *loggingpb.LogEntry.

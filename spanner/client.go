@@ -36,7 +36,8 @@ import (
 )
 
 const (
-	endpoint = "spanner.googleapis.com:443"
+	endpoint     = "spanner.googleapis.com:443"
+	mtlsEndpoint = "spanner.mtls.googleapis.com:443"
 
 	// resourcePrefixHeader is the name of the metadata header used to indicate
 	// the resource being operated on.
@@ -117,7 +118,7 @@ type ClientConfig struct {
 
 // errDial returns error for dialing to Cloud Spanner.
 func errDial(ci int, err error) error {
-	e := toSpannerError(err).(*Error)
+	e := ToSpannerError(err).(*Error)
 	e.decorate(fmt.Sprintf("dialing fails for channel[%v]", ci))
 	return e
 }
@@ -166,7 +167,8 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 	}
 	// gRPC options.
 	allOpts := []option.ClientOption{
-		option.WithEndpoint(endpoint),
+		internaloption.WithDefaultEndpoint(endpoint),
+		internaloption.WithDefaultMTLSEndpoint(mtlsEndpoint),
 		option.WithScopes(Scope),
 		option.WithGRPCDialOption(
 			grpc.WithDefaultCallOptions(
@@ -341,7 +343,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		},
 	})
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 	tx = res.Id
 	if res.ReadTimestamp != nil {
@@ -424,11 +426,29 @@ func checkNestedTxn(ctx context.Context) error {
 func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (commitTimestamp time.Time, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransaction")
 	defer func() { trace.EndSpan(ctx, err) }()
+	resp, err := c.rwTransaction(ctx, f, TransactionOptions{})
+	return resp.CommitTs, err
+}
+
+// ReadWriteTransactionWithOptions executes a read-write transaction with
+// configurable options, with retries as necessary.
+//
+// ReadWriteTransactionWithOptions is a configurable ReadWriteTransaction.
+//
+// See https://godoc.org/cloud.google.com/go/spanner#ReadWriteTransaction for
+// more details.
+func (c *Client) ReadWriteTransactionWithOptions(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.ReadWriteTransactionWithOptions")
+	defer func() { trace.EndSpan(ctx, err) }()
+	resp, err = c.rwTransaction(ctx, f, options)
+	return resp, err
+}
+
+func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error, options TransactionOptions) (resp CommitResponse, err error) {
 	if err := checkNestedTxn(ctx); err != nil {
-		return time.Time{}, err
+		return resp, err
 	}
 	var (
-		ts time.Time
 		sh *sessionHandle
 	)
 	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
@@ -457,13 +477,13 @@ func (c *Client) ReadWriteTransaction(ctx context.Context, f func(context.Contex
 		if err = t.begin(ctx); err != nil {
 			return err
 		}
-		ts, err = t.runInTransaction(ctx, f)
+		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
 	if sh != nil {
 		sh.recycle()
 	}
-	return ts, err
+	return resp, err
 }
 
 // applyOption controls the behavior of Client.Apply.

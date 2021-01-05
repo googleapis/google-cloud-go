@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -49,9 +50,11 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("workflows.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("workflows.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("workflows.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://workflows.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

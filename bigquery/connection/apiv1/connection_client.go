@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -51,9 +52,11 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("bigqueryconnection.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("bigqueryconnection.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("bigqueryconnection.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://bigqueryconnection.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

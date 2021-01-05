@@ -25,7 +25,7 @@ import (
 	maskpb "google.golang.org/genproto/protobuf/field_mask"
 )
 
-// Sink describes a sink used to export log entries outside Stackdriver
+// Sink describes a sink used to export log entries outside Cloud
 // Logging. Incoming log entries matching a filter are exported to a
 // destination (a Cloud Storage bucket, BigQuery dataset or Cloud Pub/Sub
 // topic).
@@ -95,7 +95,7 @@ type SinkOptions struct {
 	// Determines the kind of IAM identity returned as WriterIdentity in the new
 	// sink. If this value is omitted or set to false, and if the sink's parent is a
 	// project, then the value returned as WriterIdentity is the same group or
-	// service account used by Stackdriver Logging before the addition of writer
+	// service account used by Cloud Logging before the addition of writer
 	// identities to the API. The sink's destination must be in the same project as
 	// the sink itself.
 	//

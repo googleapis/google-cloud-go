@@ -347,6 +347,9 @@ type JobStatistics struct {
 	// ScriptStatistics includes information run as part of a child job within
 	// a script.
 	ScriptStatistics *ScriptStatistics
+
+	// ReservationUsage attributes slot consumption to reservations.
+	ReservationUsage []*ReservationUsage
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -559,6 +562,25 @@ type QueryTimelineSample struct {
 
 	// Cumulative slot-milliseconds consumed by the query.
 	SlotMillis int64
+}
+
+// ReservationUsage contains information about a job's usage of a single reservation.
+type ReservationUsage struct {
+	// SlotMillis reports the slot milliseconds utilized within in the given reservation.
+	SlotMillis int64
+	// Name indicates the utilized reservation name, or "unreserved" for ondemand usage.
+	Name string
+}
+
+func bqToReservationUsage(ru []*bq.JobStatisticsReservationUsage) []*ReservationUsage {
+	var usage []*ReservationUsage
+	for _, in := range ru {
+		usage = append(usage, &ReservationUsage{
+			SlotMillis: in.SlotMs,
+			Name:       in.Name,
+		})
+	}
+	return usage
 }
 
 // ScriptStatistics report information about script-based query jobs.
@@ -810,6 +832,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		NumChildJobs:        s.NumChildJobs,
 		ParentJobID:         s.ParentJobId,
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
+		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
 	}
 	switch {
 	case s.Extract != nil:

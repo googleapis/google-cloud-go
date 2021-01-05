@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
 	"google.golang.org/grpc"
@@ -44,9 +45,11 @@ type IamCredentialsCallOptions struct {
 
 func defaultIamCredentialsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("iamcredentials.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("iamcredentials.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("iamcredentials.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://iamcredentials.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

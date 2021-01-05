@@ -14,6 +14,7 @@
 
 // +build linux,go1.7
 
+// Deprecated.
 package main
 
 import (

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package errorreporting is a Google Stackdriver Error Reporting library.
+// Package errorreporting is a Google Cloud Error Reporting library.
 //
 // Any provided stacktraces must match the format produced by https://golang.org/pkg/runtime/#Stack
 // or as per https://cloud.google.com/error-reporting/reference/rest/v1beta1/projects.events/report#ReportedErrorEvent

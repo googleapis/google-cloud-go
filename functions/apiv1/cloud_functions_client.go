@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
@@ -56,9 +57,11 @@ type CloudFunctionsCallOptions struct {
 
 func defaultCloudFunctionsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudfunctions.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudfunctions.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudfunctions.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://cloudfunctions.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

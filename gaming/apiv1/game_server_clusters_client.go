@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -53,9 +54,11 @@ type GameServerClustersCallOptions struct {
 
 func defaultGameServerClustersClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("gameservices.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("gameservices.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("gameservices.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://gameservices.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

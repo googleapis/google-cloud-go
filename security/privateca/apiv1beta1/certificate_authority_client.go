@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -56,22 +57,20 @@ type CertificateAuthorityCallOptions struct {
 	RestoreCertificateAuthority        []gax.CallOption
 	ScheduleDeleteCertificateAuthority []gax.CallOption
 	UpdateCertificateAuthority         []gax.CallOption
-	CreateCertificateRevocationList    []gax.CallOption
 	GetCertificateRevocationList       []gax.CallOption
 	ListCertificateRevocationLists     []gax.CallOption
 	UpdateCertificateRevocationList    []gax.CallOption
-	CreateReusableConfig               []gax.CallOption
-	DeleteReusableConfig               []gax.CallOption
 	GetReusableConfig                  []gax.CallOption
 	ListReusableConfigs                []gax.CallOption
-	UpdateReusableConfig               []gax.CallOption
 }
 
 func defaultCertificateAuthorityClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://privateca.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -274,19 +273,6 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		CreateCertificateRevocationList: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
 		GetCertificateRevocationList: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -326,32 +312,6 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 				})
 			}),
 		},
-		CreateReusableConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteReusableConfig: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
 		GetReusableConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -366,19 +326,6 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 			}),
 		},
 		ListReusableConfigs: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unknown,
-					codes.Unavailable,
-					codes.DeadlineExceeded,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		UpdateReusableConfig: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -595,7 +542,8 @@ func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req 
 	return resp, nil
 }
 
-// UpdateCertificate update a Certificate.
+// UpdateCertificate update a Certificate. Currently, the only field you can update is the
+// labels field.
 func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -881,31 +829,6 @@ func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Cont
 	}, nil
 }
 
-// CreateCertificateRevocationList create a new CertificateRevocationList in a given Project, Location
-// for a particular CertificateAuthority.
-func (c *CertificateAuthorityClient) CreateCertificateRevocationList(ctx context.Context, req *privatecapb.CreateCertificateRevocationListRequest, opts ...gax.CallOption) (*CreateCertificateRevocationListOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificateRevocationList[0:len(c.CallOptions.CreateCertificateRevocationList):len(c.CallOptions.CreateCertificateRevocationList)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.CreateCertificateRevocationList(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
 // GetCertificateRevocationList returns a CertificateRevocationList.
 func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
@@ -993,54 +916,6 @@ func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context
 	}, nil
 }
 
-// CreateReusableConfig create a new ReusableConfig in a given Project and Location.
-func (c *CertificateAuthorityClient) CreateReusableConfig(ctx context.Context, req *privatecapb.CreateReusableConfigRequest, opts ...gax.CallOption) (*CreateReusableConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateReusableConfig[0:len(c.CallOptions.CreateReusableConfig):len(c.CallOptions.CreateReusableConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.CreateReusableConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &CreateReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
-// DeleteReusableConfig deleteReusableConfig deletes a ReusableConfig.
-func (c *CertificateAuthorityClient) DeleteReusableConfig(ctx context.Context, req *privatecapb.DeleteReusableConfigRequest, opts ...gax.CallOption) (*DeleteReusableConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteReusableConfig[0:len(c.CallOptions.DeleteReusableConfig):len(c.CallOptions.DeleteReusableConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.DeleteReusableConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &DeleteReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
-}
-
 // GetReusableConfig returns a ReusableConfig.
 func (c *CertificateAuthorityClient) GetReusableConfig(ctx context.Context, req *privatecapb.GetReusableConfigRequest, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
@@ -1102,30 +977,6 @@ func (c *CertificateAuthorityClient) ListReusableConfigs(ctx context.Context, re
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
-}
-
-// UpdateReusableConfig update a ReusableConfig.
-func (c *CertificateAuthorityClient) UpdateReusableConfig(ctx context.Context, req *privatecapb.UpdateReusableConfigRequest, opts ...gax.CallOption) (*UpdateReusableConfigOperation, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reusable_config.name", url.QueryEscape(req.GetReusableConfig().GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateReusableConfig[0:len(c.CallOptions.UpdateReusableConfig):len(c.CallOptions.UpdateReusableConfig)], opts...)
-	var resp *longrunningpb.Operation
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.certificateAuthorityClient.UpdateReusableConfig(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return &UpdateReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
-	}, nil
 }
 
 // ActivateCertificateAuthorityOperation manages a long-running operation from ActivateCertificateAuthority.
@@ -1263,202 +1114,6 @@ func (op *CreateCertificateAuthorityOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateCertificateAuthorityOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateCertificateRevocationListOperation manages a long-running operation from CreateCertificateRevocationList.
-type CreateCertificateRevocationListOperation struct {
-	lro *longrunning.Operation
-}
-
-// CreateCertificateRevocationListOperation returns a new CreateCertificateRevocationListOperation from a given name.
-// The name must be that of a previously created CreateCertificateRevocationListOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) CreateCertificateRevocationListOperation(name string) *CreateCertificateRevocationListOperation {
-	return &CreateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateCertificateRevocationListOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
-	var resp privatecapb.CertificateRevocationList
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateCertificateRevocationListOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
-	var resp privatecapb.CertificateRevocationList
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateCertificateRevocationListOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateCertificateRevocationListOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateCertificateRevocationListOperation) Name() string {
-	return op.lro.Name()
-}
-
-// CreateReusableConfigOperation manages a long-running operation from CreateReusableConfig.
-type CreateReusableConfigOperation struct {
-	lro *longrunning.Operation
-}
-
-// CreateReusableConfigOperation returns a new CreateReusableConfigOperation from a given name.
-// The name must be that of a previously created CreateReusableConfigOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) CreateReusableConfigOperation(name string) *CreateReusableConfigOperation {
-	return &CreateReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *CreateReusableConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
-	var resp privatecapb.ReusableConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *CreateReusableConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
-	var resp privatecapb.ReusableConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *CreateReusableConfigOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *CreateReusableConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *CreateReusableConfigOperation) Name() string {
-	return op.lro.Name()
-}
-
-// DeleteReusableConfigOperation manages a long-running operation from DeleteReusableConfig.
-type DeleteReusableConfigOperation struct {
-	lro *longrunning.Operation
-}
-
-// DeleteReusableConfigOperation returns a new DeleteReusableConfigOperation from a given name.
-// The name must be that of a previously created DeleteReusableConfigOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) DeleteReusableConfigOperation(name string) *DeleteReusableConfigOperation {
-	return &DeleteReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *DeleteReusableConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.WaitWithInterval(ctx, nil, time.Minute, opts...)
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *DeleteReusableConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	return op.lro.Poll(ctx, nil, opts...)
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *DeleteReusableConfigOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *DeleteReusableConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *DeleteReusableConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -1873,75 +1528,6 @@ func (op *UpdateCertificateRevocationListOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateCertificateRevocationListOperation) Name() string {
-	return op.lro.Name()
-}
-
-// UpdateReusableConfigOperation manages a long-running operation from UpdateReusableConfig.
-type UpdateReusableConfigOperation struct {
-	lro *longrunning.Operation
-}
-
-// UpdateReusableConfigOperation returns a new UpdateReusableConfigOperation from a given name.
-// The name must be that of a previously created UpdateReusableConfigOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) UpdateReusableConfigOperation(name string) *UpdateReusableConfigOperation {
-	return &UpdateReusableConfigOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
-	}
-}
-
-// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
-//
-// See documentation of Poll for error-handling information.
-func (op *UpdateReusableConfigOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
-	var resp privatecapb.ReusableConfig
-	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
-		return nil, err
-	}
-	return &resp, nil
-}
-
-// Poll fetches the latest state of the long-running operation.
-//
-// Poll also fetches the latest metadata, which can be retrieved by Metadata.
-//
-// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
-// the operation has completed with failure, the error is returned and op.Done will return true.
-// If Poll succeeds and the operation has completed successfully,
-// op.Done will return true, and the response of the operation is returned.
-// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
-func (op *UpdateReusableConfigOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*privatecapb.ReusableConfig, error) {
-	var resp privatecapb.ReusableConfig
-	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
-		return nil, err
-	}
-	if !op.Done() {
-		return nil, nil
-	}
-	return &resp, nil
-}
-
-// Metadata returns metadata associated with the long-running operation.
-// Metadata itself does not contact the server, but Poll does.
-// To get the latest metadata, call this method after a successful call to Poll.
-// If the metadata is not available, the returned metadata and error are both nil.
-func (op *UpdateReusableConfigOperation) Metadata() (*privatecapb.OperationMetadata, error) {
-	var meta privatecapb.OperationMetadata
-	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &meta, nil
-}
-
-// Done reports whether the long-running operation has completed.
-func (op *UpdateReusableConfigOperation) Done() bool {
-	return op.lro.Done()
-}
-
-// Name returns the name of the long-running operation.
-// The name is assigned by the server and is unique within the service from which the operation is created.
-func (op *UpdateReusableConfigOperation) Name() string {
 	return op.lro.Name()
 }
 

@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/grpc"
@@ -43,9 +44,11 @@ type BigQueryReadCallOptions struct {
 
 func defaultBigQueryReadClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("bigquerystorage.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("bigquerystorage.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("bigquerystorage.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -116,6 +119,9 @@ type BigQueryReadClient struct {
 // BigQuery Read API.
 //
 // The Read API can be used to read data from BigQuery.
+//
+// New code should use the v1 Read API going forward, if they don’t use Write
+// API at the same time.
 func NewBigQueryReadClient(ctx context.Context, opts ...option.ClientOption) (*BigQueryReadClient, error) {
 	clientOpts := defaultBigQueryReadClientOptions()
 

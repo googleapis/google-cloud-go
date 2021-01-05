@@ -1634,7 +1634,26 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode DATE to CustomStructToDate", proto: dateProto(d1), protoType: dateType(), want: customStructToDate{"A", "B"}},
 	} {
 		gotp := reflect.New(reflect.TypeOf(test.want))
-		err := decodeValue(test.proto, test.protoType, gotp.Interface())
+		v := gotp.Interface()
+		// Initialize the input to a non-zero value to ensure that the decode
+		// method will override this with the actual value, or a zero value in
+		// case of a NULL.
+		switch nullValue := v.(type) {
+		case *NullString:
+			nullValue.StringVal = "foo"
+		case *NullInt64:
+			nullValue.Int64 = -100
+		case *NullFloat64:
+			nullValue.Float64 = 3.14
+		case *NullBool:
+			nullValue.Bool = true
+		case *NullTime:
+			nullValue.Time = time.Unix(100, 100)
+		case *NullDate:
+			nullValue.Date = civil.DateOf(time.Unix(100, 200))
+		default:
+		}
+		err := decodeValue(test.proto, test.protoType, v)
 		if test.wantErr {
 			if err == nil {
 				t.Errorf("%s: missing expected decode failure for %v(%v)", test.desc, test.proto, test.protoType)

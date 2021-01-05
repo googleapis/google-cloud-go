@@ -30,6 +30,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -54,9 +55,11 @@ type CloudRedisCallOptions struct {
 
 func defaultCloudRedisClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("redis.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("redis.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("redis.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://redis.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

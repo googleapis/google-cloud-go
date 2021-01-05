@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 	"google.golang.org/grpc"
@@ -76,9 +77,11 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dlp.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dlp.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dlp.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://dlp.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

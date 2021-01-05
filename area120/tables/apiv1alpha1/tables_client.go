@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 	"google.golang.org/grpc"
@@ -50,9 +51,11 @@ type CallOptions struct {
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("area120tables.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("area120tables.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("area120tables.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://area120tables.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

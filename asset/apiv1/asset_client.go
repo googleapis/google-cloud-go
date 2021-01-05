@@ -29,6 +29,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -41,22 +42,26 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ExportAssets          []gax.CallOption
-	BatchGetAssetsHistory []gax.CallOption
-	CreateFeed            []gax.CallOption
-	GetFeed               []gax.CallOption
-	ListFeeds             []gax.CallOption
-	UpdateFeed            []gax.CallOption
-	DeleteFeed            []gax.CallOption
-	SearchAllResources    []gax.CallOption
-	SearchAllIamPolicies  []gax.CallOption
+	ExportAssets                []gax.CallOption
+	BatchGetAssetsHistory       []gax.CallOption
+	CreateFeed                  []gax.CallOption
+	GetFeed                     []gax.CallOption
+	ListFeeds                   []gax.CallOption
+	UpdateFeed                  []gax.CallOption
+	DeleteFeed                  []gax.CallOption
+	SearchAllResources          []gax.CallOption
+	SearchAllIamPolicies        []gax.CallOption
+	AnalyzeIamPolicy            []gax.CallOption
+	AnalyzeIamPolicyLongrunning []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("cloudasset.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("cloudasset.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("cloudasset.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://cloudasset.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -139,6 +144,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		AnalyzeIamPolicy: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		AnalyzeIamPolicyLongrunning: []gax.CallOption{},
 	}
 }
 
@@ -488,6 +505,130 @@ func (c *Client) SearchAllIamPolicies(ctx context.Context, req *assetpb.SearchAl
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// AnalyzeIamPolicy analyzes IAM policies to answer which identities have what accesses on
+// which resources.
+func (c *Client) AnalyzeIamPolicy(ctx context.Context, req *assetpb.AnalyzeIamPolicyRequest, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.AnalyzeIamPolicy[0:len(c.CallOptions.AnalyzeIamPolicy):len(c.CallOptions.AnalyzeIamPolicy)], opts...)
+	var resp *assetpb.AnalyzeIamPolicyResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AnalyzeIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// AnalyzeIamPolicyLongrunning analyzes IAM policies asynchronously to answer which identities have what
+// accesses on which resources, and writes the analysis results to a Google
+// Cloud Storage or a BigQuery destination. For Cloud Storage destination, the
+// output format is the JSON format that represents a
+// AnalyzeIamPolicyResponse. This method implements the
+// google.longrunning.Operation, which allows you to track the operation
+// status. We recommend intervals of at least 2 seconds with exponential
+// backoff retry to poll the operation result. The metadata contains the
+// request to help callers to map responses to requests.
+func (c *Client) AnalyzeIamPolicyLongrunning(ctx context.Context, req *assetpb.AnalyzeIamPolicyLongrunningRequest, opts ...gax.CallOption) (*AnalyzeIamPolicyLongrunningOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "analysis_query.scope", url.QueryEscape(req.GetAnalysisQuery().GetScope())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.AnalyzeIamPolicyLongrunning[0:len(c.CallOptions.AnalyzeIamPolicyLongrunning):len(c.CallOptions.AnalyzeIamPolicyLongrunning)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.AnalyzeIamPolicyLongrunning(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &AnalyzeIamPolicyLongrunningOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// AnalyzeIamPolicyLongrunningOperation manages a long-running operation from AnalyzeIamPolicyLongrunning.
+type AnalyzeIamPolicyLongrunningOperation struct {
+	lro *longrunning.Operation
+}
+
+// AnalyzeIamPolicyLongrunningOperation returns a new AnalyzeIamPolicyLongrunningOperation from a given name.
+// The name must be that of a previously created AnalyzeIamPolicyLongrunningOperation, possibly from a different process.
+func (c *Client) AnalyzeIamPolicyLongrunningOperation(name string) *AnalyzeIamPolicyLongrunningOperation {
+	return &AnalyzeIamPolicyLongrunningOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *AnalyzeIamPolicyLongrunningOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyLongrunningResponse, error) {
+	var resp assetpb.AnalyzeIamPolicyLongrunningResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *AnalyzeIamPolicyLongrunningOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*assetpb.AnalyzeIamPolicyLongrunningResponse, error) {
+	var resp assetpb.AnalyzeIamPolicyLongrunningResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *AnalyzeIamPolicyLongrunningOperation) Metadata() (*assetpb.AnalyzeIamPolicyLongrunningRequest, error) {
+	var meta assetpb.AnalyzeIamPolicyLongrunningRequest
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *AnalyzeIamPolicyLongrunningOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *AnalyzeIamPolicyLongrunningOperation) Name() string {
+	return op.lro.Name()
 }
 
 // ExportAssetsOperation manages a long-running operation from ExportAssets.

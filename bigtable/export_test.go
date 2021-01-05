@@ -28,8 +28,10 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/peer"
 )
 
 var legacyUseProd string
@@ -45,6 +47,8 @@ func init() {
 	flag.StringVar(&c.Instance, "it.instance", "", "Bigtable instance to use")
 	flag.StringVar(&c.Cluster, "it.cluster", "", "Bigtable cluster to use")
 	flag.StringVar(&c.Table, "it.table", "", "Bigtable table to create")
+	flag.BoolVar(&c.AttemptDirectPath, "it.attempt-directpath", false, "Attempt DirectPath")
+	flag.BoolVar(&c.DirectPathIPV4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a ipv4-only VM")
 
 	// Backwards compat
 	flag.StringVar(&legacyUseProd, "use_prod", "", `DEPRECATED: if set to "proj,instance,table", run integration test against production`)
@@ -53,13 +57,15 @@ func init() {
 
 // IntegrationTestConfig contains parameters to pick and setup a IntegrationEnv for testing
 type IntegrationTestConfig struct {
-	UseProd       bool
-	AdminEndpoint string
-	DataEndpoint  string
-	Project       string
-	Instance      string
-	Cluster       string
-	Table         string
+	UseProd            bool
+	AdminEndpoint      string
+	DataEndpoint       string
+	Project            string
+	Instance           string
+	Cluster            string
+	Table              string
+	AttemptDirectPath  bool
+	DirectPathIPV4Only bool
 }
 
 // IntegrationEnv represents a testing environment.
@@ -71,6 +77,7 @@ type IntegrationEnv interface {
 	NewInstanceAdminClient() (*InstanceAdminClient, error)
 	NewClient() (*Client, error)
 	Close()
+	Peer() *peer.Peer
 }
 
 // NewIntegrationEnv creates a new environment based on the command line args
@@ -124,6 +131,10 @@ func NewEmulatedEnv(config IntegrationTestConfig) (*EmulatedEnv, error) {
 	return env, nil
 }
 
+func (e *EmulatedEnv) Peer() *peer.Peer {
+	return nil
+}
+
 // Close stops & cleans up the emulator
 func (e *EmulatedEnv) Close() {
 	e.server.Close()
@@ -138,7 +149,7 @@ var headersInterceptor = testutil.DefaultHeadersEnforcer()
 
 // NewAdminClient builds a new connected admin client for this environment
 func (e *EmulatedEnv) NewAdminClient() (*AdminClient, error) {
-	o, err := btopt.DefaultClientOptions(e.server.Addr, AdminScope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(e.server.Addr, e.server.Addr, AdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -170,7 +181,7 @@ func (e *EmulatedEnv) NewInstanceAdminClient() (*InstanceAdminClient, error) {
 
 // NewClient builds a new connected data client for this environment
 func (e *EmulatedEnv) NewClient() (*Client, error) {
-	o, err := btopt.DefaultClientOptions(e.server.Addr, Scope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(e.server.Addr, e.server.Addr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -197,7 +208,8 @@ func (e *EmulatedEnv) NewClient() (*Client, error) {
 
 // ProdEnv encapsulates the state necessary to connect to the external Bigtable service
 type ProdEnv struct {
-	config IntegrationTestConfig
+	config   IntegrationTestConfig
+	peerInfo *peer.Peer
 }
 
 // NewProdEnv builds the environment representation
@@ -212,7 +224,15 @@ func NewProdEnv(config IntegrationTestConfig) (*ProdEnv, error) {
 		return nil, errors.New("Table not set")
 	}
 
-	return &ProdEnv{config}, nil
+	env := &ProdEnv{
+		config:   config,
+		peerInfo: &peer.Peer{},
+	}
+	return env, nil
+}
+
+func (e *ProdEnv) Peer() *peer.Peer {
+	return e.peerInfo
 }
 
 // Close is a no-op for production environments
@@ -247,5 +267,13 @@ func (e *ProdEnv) NewClient() (*Client, error) {
 	if endpoint := e.config.DataEndpoint; endpoint != "" {
 		clientOpts = append(clientOpts, option.WithEndpoint(endpoint))
 	}
+
+	if e.config.AttemptDirectPath {
+		// TODO(mohanli): Move the EnableDirectPath internal option to bigtable.go after e2e tests are done.
+		clientOpts = append(clientOpts, internaloption.EnableDirectPath(true))
+		// For DirectPath tests, we need to add an interceptor to check the peer IP.
+		clientOpts = append(clientOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(e.peerInfo))))
+	}
+
 	return NewClient(context.Background(), e.config.Project, e.config.Instance, clientOpts...)
 }

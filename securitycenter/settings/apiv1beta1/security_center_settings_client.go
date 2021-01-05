@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
 	"google.golang.org/grpc"
@@ -55,9 +56,11 @@ type SecurityCenterSettingsCallOptions struct {
 
 func defaultSecurityCenterSettingsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("securitycenter.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("securitycenter.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("securitycenter.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://securitycenter.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
