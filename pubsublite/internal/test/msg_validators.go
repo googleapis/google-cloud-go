@@ -69,7 +69,8 @@ func parseMsgIndex(msg string) int64 {
 //
 // Note: a normal scenario resulting in unordered messages is when the Publish
 // stream breaks while there are in-flight batches, which are resent upon
-// stream reconnect.
+// stream reconnect. Use DuplicateMsgDetector if it is undesirable to fail a
+// test.
 func (or *OrderingReceiver) Receive(data, key string) error {
 	or.mu.Lock()
 	defer or.mu.Unlock()
@@ -79,11 +80,10 @@ func (or *OrderingReceiver) Receive(data, key string) error {
 		return fmt.Errorf("failed to parse index from message: %q", data)
 	}
 
-	// Verify non-decreasing ordering. Allow duplicates, which can be verified
-	// with DuplicateMsgDetector.
+	// Verify increasing ordering.
 	lastIdx, exists := or.received[key]
-	if exists && idx < lastIdx {
-		return fmt.Errorf("message ordering failed for key %s, expected message idx >= %d, got %d", key, lastIdx, idx)
+	if exists && idx <= lastIdx {
+		return fmt.Errorf("message ordering failed for key %s, expected message idx > %d, got %d", key, lastIdx, idx)
 	}
 	or.received[key] = idx
 	return nil
