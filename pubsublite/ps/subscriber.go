@@ -281,33 +281,29 @@ func NewSubscriberClient(ctx context.Context, settings ReceiveSettings, subscrip
 // Each SubscriberClient may have only one invocation of Receive active at a
 // time.
 func (s *SubscriberClient) Receive(ctx context.Context, f MessageReceiverFunc) error {
+	if err := s.setReceiveActive(true); err != nil {
+		return err
+	}
+	defer s.setReceiveActive(false)
+
 	// Initialize a subscriber instance.
-	subInstance, err := func() (*subscriberInstance, error) {
-		s.mu.Lock()
-		defer s.mu.Unlock()
-
-		if s.receiveActive {
-			return nil, errDuplicateReceive
-		}
-		subInstance, err := newSubscriberInstance(ctx, s.wireSubFactory, s.settings, f)
-		if err != nil {
-			return nil, err
-		}
-
-		s.receiveActive = true
-		return subInstance, nil
-	}()
+	subInstance, err := newSubscriberInstance(ctx, s.wireSubFactory, s.settings, f)
 	if err != nil {
 		return err
 	}
 
-	defer func() {
-		s.mu.Lock()
-		s.receiveActive = false
-		s.mu.Unlock()
-	}()
-
 	// Wait for the subscriber without mutex held. Overlapping Receive invocations
 	// will return an error.
 	return subInstance.Wait(ctx)
+}
+
+func (s *SubscriberClient) setReceiveActive(active bool) error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if active && s.receiveActive {
+		return errDuplicateReceive
+	}
+	s.receiveActive = active
+	return nil
 }

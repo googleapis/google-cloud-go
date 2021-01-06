@@ -29,6 +29,7 @@ func ExamplePublisherClient_Publish() {
 		Zone:    "zone",
 		TopicID: "topic-id",
 	}
+	// NOTE: DefaultPublishSettings and empty PublishSettings{} are equivalent.
 	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
 	if err != nil {
 		// TODO: Handle error.
@@ -88,6 +89,7 @@ func ExampleSubscriberClient_Receive() {
 		Zone:           "zone",
 		SubscriptionID: "subscription-id",
 	}
+	// NOTE: DefaultReceiveSettings and empty ReceiveSettings{} are equivalent.
 	subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
 	if err != nil {
 		// TODO: Handle error.
