@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,26 @@ func ExampleTopicStatsClient_ComputeMessageStats() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.ComputeMessageStats(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTopicStatsClient_ComputeHeadCursor() {
+	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+
+	ctx := context.Background()
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &pubsublitepb.ComputeHeadCursorRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ComputeHeadCursor(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
