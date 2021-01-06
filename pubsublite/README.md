@@ -29,13 +29,13 @@ topic := pubsublite.TopicPath{
     Zone:    "us-central1-b",
     TopicID: "topic1",
 }
-pub, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
 if err != nil {
     log.Fatal(err)
 }
 
 // Publish "hello world".
-res := pub.Publish(ctx, &pubsub.Message{
+res := publisher.Publish(ctx, &pubsub.Message{
 	Data: []byte("hello world"),
 })
 // The publish happens asynchronously.

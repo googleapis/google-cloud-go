@@ -144,14 +144,11 @@ Receive, cancel its context:
   cancel()
 
 Clients must call pubsub.Message.Ack() or pubsub.Message.Nack() for every
-message received. Cloud Pub/Sub Lite does not have ACK deadlines. It is
-encouraged to process messages synchronously, even if that processing is
-relatively time-consuming.
-
-Cloud Pub/Sub Lite also does not actually have the concept of NACK. The default
-behavior terminates the SubscriberClient. In Cloud Pub/Sub Lite, only a single
-subscriber for a given subscription is connected to any partition at a time, and
-there is no other client that may be able to handle messages.
+message received. Cloud Pub/Sub Lite does not have ACK deadlines. Cloud Pub/Sub
+Lite also does not actually have the concept of NACK. The default behavior
+terminates the SubscriberClient. In Cloud Pub/Sub Lite, only a single subscriber
+for a given subscription is connected to any partition at a time, and there is
+no other client that may be able to handle messages.
 
 See https://cloud.google.com/pubsub/lite/docs/subscribing for more information
 about receiving messages.
