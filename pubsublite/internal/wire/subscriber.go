@@ -119,6 +119,7 @@ type subscribeStream struct {
 	settings     ReceiveSettings
 	subscription subscriptionPartition
 	initialReq   *pb.SubscribeRequest
+	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mu.
 	messageQueue    *messageDeliveryQueue
@@ -147,8 +148,11 @@ func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, s
 			},
 		},
 		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
+		metadata:     newPubsubMetadata(),
 	}
 	s.stream = newRetryableStream(ctx, s, settings.Timeout, reflect.TypeOf(pb.SubscribeResponse{}))
+	s.metadata.AddSubscriptionRoutingMetadata(s.subscription)
+	s.metadata.AddClientInfo(settings.Framework)
 
 	backgroundTask := s.sendBatchFlowControl
 	if disableTasks {
@@ -184,7 +188,7 @@ func (s *subscribeStream) Stop() {
 }
 
 func (s *subscribeStream) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return s.subClient.Subscribe(addSubscriptionRoutingMetadata(ctx, s.subscription))
+	return s.subClient.Subscribe(s.metadata.AddToContext(ctx))
 }
 
 func (s *subscribeStream) initialRequest() (interface{}, initialResponseRequired) {
