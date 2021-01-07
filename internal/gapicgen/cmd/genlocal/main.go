@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build !windows
+
 // genlocal is a binary for generating gapics locally. It may be used to test out
 // new changes, test the generation of a new library, test new generator tweaks,
 // run generators against googleapis-private, and various other local tasks.
