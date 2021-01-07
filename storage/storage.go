@@ -142,11 +142,12 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
-	// Update readHost with the chosen endpoint.
+	// Update readHost and scheme with the chosen endpoint.
 	u, err := url.Parse(ep)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
+	scheme = u.Scheme
 	readHost = u.Host
 
 	return &Client{
