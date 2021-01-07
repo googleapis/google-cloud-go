@@ -41,9 +41,9 @@ type KeyExtractorFunc func(*pubsub.Message) []byte
 // terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) error
 
-// PublishSettings configure the PublisherClient. These settings apply per
-// partition. If BufferedByteLimit is being used to bound memory usage, keep in
-// mind the number of partitions in the topic.
+// PublishSettings configure the PublisherClient. Batching settings
+// (DelayThreshold, CountThreshold, ByteThreshold, BufferedByteLimit) apply per
+// partition.
 //
 // A zero PublishSettings will result in values equivalent to
 // DefaultPublishSettings.
@@ -75,6 +75,10 @@ type PublishSettings struct {
 	// The maximum number of bytes that the publisher will keep in memory before
 	// returning ErrOverflow. If BufferedByteLimit is 0, it will be treated as
 	// DefaultPublishSettings.BufferedByteLimit. Otherwise must be > 0.
+	//
+	// Note that this setting applies per partition. If BufferedByteLimit is being
+	// used to bound memory usage, keep in mind the number of partitions in the
+	// topic.
 	//
 	// Note that Pub/Sub Lite topics are provisioned a publishing throughput
 	// capacity, per partition, shared by all publisher clients. Setting a large
@@ -146,9 +150,8 @@ type NackHandler func(*pubsub.Message) error
 // will consider this a fatal error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
-// ReceiveSettings configure the SubscriberClient. These settings apply per
-// partition. If MaxOutstandingBytes is being used to bound memory usage, keep
-// in mind the number of partitions in the associated topic.
+// ReceiveSettings configure the SubscriberClient. Flow control settings
+// (MaxOutstandingMessages, MaxOutstandingBytes) apply per partition.
 //
 // A zero ReceiveSettings will result in values equivalent to
 // DefaultReceiveSettings.
@@ -161,6 +164,10 @@ type ReceiveSettings struct {
 	// MaxOutstandingBytes is the maximum size (in quota bytes) of unacknowledged
 	// messages. If MaxOutstandingBytes is 0, it will be treated as
 	// DefaultReceiveSettings.MaxOutstandingBytes. Otherwise must be > 0.
+	//
+	// Note that this setting applies per partition. If MaxOutstandingBytes is
+	// being used to bound memory usage, keep in mind the number of partitions in
+	// the associated topic.
 	MaxOutstandingBytes int
 
 	// The maximum time that the client will attempt to establish a subscribe

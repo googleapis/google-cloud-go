@@ -24,7 +24,12 @@ import (
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
-	topic := pubsublite.TopicPath{Project: "project-id", Zone: "zone", TopicID: "topic-id"}
+	topic := pubsublite.TopicPath{
+		Project: "project-id",
+		Zone:    "zone",
+		TopicID: "topic-id",
+	}
+	// NOTE: DefaultPublishSettings and empty PublishSettings{} are equivalent.
 	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
 	if err != nil {
 		// TODO: Handle error.
@@ -48,7 +53,11 @@ func ExamplePublisherClient_Publish() {
 
 func ExamplePublisherClient_Error() {
 	ctx := context.Background()
-	topic := pubsublite.TopicPath{Project: "project-id", Zone: "zone", TopicID: "topic-id"}
+	topic := pubsublite.TopicPath{
+		Project: "project-id",
+		Zone:    "zone",
+		TopicID: "topic-id",
+	}
 	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
 	if err != nil {
 		// TODO: Handle error.
@@ -71,4 +80,63 @@ func ExamplePublisherClient_Error() {
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
+}
+
+func ExampleSubscriberClient_Receive() {
+	ctx := context.Background()
+	subscription := pubsublite.SubscriptionPath{
+		Project:        "project-id",
+		Zone:           "zone",
+		SubscriptionID: "subscription-id",
+	}
+	// NOTE: DefaultReceiveSettings and empty ReceiveSettings{} are equivalent.
+	subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		// TODO: Handle message.
+		// NOTE: May be called concurrently; synchronize access to shared memory.
+		m.Ack()
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from callback, or another goroutine.
+	cancel()
+}
+
+// This example shows how to throttle SubscriberClient.Receive, which aims for
+// high throughput by default. By limiting the number of messages and/or bytes
+// being processed at once, you can bound your program's resource consumption.
+// Note that ReceiveSettings apply per partition, so keep in mind the number of
+// partitions in the associated topic.
+func ExampleSubscriberClient_Receive_maxOutstanding() {
+	ctx := context.Background()
+	subscription := pubsublite.SubscriptionPath{
+		Project:        "project-id",
+		Zone:           "zone",
+		SubscriptionID: "subscription-id",
+	}
+	settings := ps.DefaultReceiveSettings
+	settings.MaxOutstandingMessages = 5
+	settings.MaxOutstandingBytes = 10e6
+	subscriber, err := ps.NewSubscriberClient(ctx, settings, subscription)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		// TODO: Handle message.
+		// NOTE: May be called concurrently; synchronize access to shared memory.
+		m.Ack()
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from callback, or another goroutine.
+	cancel()
 }
