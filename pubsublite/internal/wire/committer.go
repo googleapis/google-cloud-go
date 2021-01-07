@@ -98,6 +98,16 @@ func (c *committer) Stop() {
 	c.unsafeInitiateShutdown(serviceTerminating, nil)
 }
 
+// Terminate will discard outstanding acks and send the final commit offset to
+// the server.
+func (c *committer) Terminate() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.acks.Release()
+	c.unsafeInitiateShutdown(serviceTerminating, nil)
+}
+
 func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
 	return c.cursorClient.StreamingCommitCursor(ctx)
 }
@@ -201,18 +211,18 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 
 	// Otherwise discard outstanding acks and immediately terminate the stream.
 	c.acks.Release()
-	c.unsafeTerminate()
+	c.unsafeOnTerminated()
 }
 
 func (c *committer) unsafeCheckDone() {
 	// The commit stream can be closed once the final commit offset has been
 	// confirmed and there are no outstanding acks.
 	if c.status == serviceTerminating && c.cursorTracker.UpToDate() && c.acks.Empty() {
-		c.unsafeTerminate()
+		c.unsafeOnTerminated()
 	}
 }
 
-func (c *committer) unsafeTerminate() {
+func (c *committer) unsafeOnTerminated() {
 	c.pollCommits.Stop()
 	c.stream.Stop()
 }

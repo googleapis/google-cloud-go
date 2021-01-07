@@ -20,16 +20,19 @@ substitutions for pubsub.Topic.Publish() and pubsub.Subscription.Receive(),
 respectively, from the pubsub package.
 
 As noted in comments, the two services have some differences:
-  - Pub/Sub Lite does not support nack for messages. By default, this will
+  - Pub/Sub Lite does not support NACK for messages. By default, this will
     terminate the SubscriberClient. A custom function can be provided for
-    ReceiveSettings.NackHandler to handle nacked messages.
-  - Pub/Sub Lite has no concept of ack expiration. Subscribers must ack or nack
-    every message received.
-  - Pub/Sub Lite PublisherClients can terminate when an unretryable error
-    occurs.
+    ReceiveSettings.NackHandler to handle NACKed messages.
+  - Pub/Sub Lite has no concept of ack deadlines. Subscribers must ACK or NACK
+    every message received and can take as much time as they need to process the
+    message.
+  - Pub/Sub Lite PublisherClients and SubscriberClients can terminate when an
+    unretryable error occurs.
   - Publishers and subscribers will be throttled if Pub/Sub Lite publish or
     subscribe throughput limits are exceeded. Thus publishing can be more
     sensitive to buffer overflow than Cloud Pub/Sub.
+  - Pub/Sub Lite utilizes bidirectional gRPC streams extensively to maximize
+    publish and subscribe throughput.
 
 More information about Google Cloud Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/lite.
