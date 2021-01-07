@@ -16,8 +16,10 @@ information on how that's done can be found here:
 Note: this may change your `~/.gitconfig`, `~/.gitcookies`, and use up
 non-trivial amounts of space on your computer.
 
-1. Make sure you have all the tools installed listed in genlocal's README.md
-2. Run:
+1. Make sure you are on a non-Windows platform. If you are using windows
+   continue on to the docker instructions.
+2. Make sure you have all the tools installed listed in genlocal's README.md
+3. Run:
 
 ```shell
 cd /path/to/internal/gapicgen
