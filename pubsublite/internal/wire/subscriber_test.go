@@ -145,7 +145,7 @@ func TestMessageDeliveryQueue(t *testing.T) {
 	t.Run("Add before start", func(t *testing.T) {
 		msg1 := seqMsgWithOffset(1)
 		ack1 := newAckConsumer(1, 0, nil)
-		messageQueue.Add([]*ReceivedMessage{{Msg: msg1, Ack: ack1}})
+		messageQueue.Add(&ReceivedMessage{Msg: msg1, Ack: ack1})
 
 		receiver.VerifyNoMsgs()
 	})
@@ -158,10 +158,8 @@ func TestMessageDeliveryQueue(t *testing.T) {
 
 		messageQueue.Start()
 		messageQueue.Start() // Check duplicate starts
-		messageQueue.Add([]*ReceivedMessage{
-			{Msg: msg2, Ack: ack2},
-			{Msg: msg3, Ack: ack3},
-		})
+		messageQueue.Add(&ReceivedMessage{Msg: msg2, Ack: ack2})
+		messageQueue.Add(&ReceivedMessage{Msg: msg3, Ack: ack3})
 
 		receiver.ValidateMsg(msg2)
 		receiver.ValidateMsg(msg3)
@@ -173,7 +171,7 @@ func TestMessageDeliveryQueue(t *testing.T) {
 
 		messageQueue.Stop()
 		messageQueue.Stop() // Check duplicate stop
-		messageQueue.Add([]*ReceivedMessage{{Msg: msg4, Ack: ack4}})
+		messageQueue.Add(&ReceivedMessage{Msg: msg4, Ack: ack4})
 
 		receiver.VerifyNoMsgs()
 	})
