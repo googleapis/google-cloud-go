@@ -834,7 +834,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		maxOutstandingBytes:    maxBytes,
 		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
-	fc := newFlowController(maxCount, maxBytes)
+	fc := newFlowController(maxCount, maxBytes, Block)
 
 	sched := scheduler.NewReceiveScheduler(maxCount)
 

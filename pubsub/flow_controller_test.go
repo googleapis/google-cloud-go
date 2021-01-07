@@ -28,7 +28,7 @@ import (
 func TestFlowControllerCancel(t *testing.T) {
 	// Test canceling a flow controller's context.
 	t.Parallel()
-	fc := newFlowController(3, 10)
+	fc := newFlowController(3, 10, Block)
 	if err := fc.acquire(context.Background(), 5); err != nil {
 		t.Fatal(err)
 	}
@@ -51,7 +51,7 @@ func TestFlowControllerCancel(t *testing.T) {
 func TestFlowControllerLargeRequest(t *testing.T) {
 	// Large requests succeed, consuming the entire allotment.
 	t.Parallel()
-	fc := newFlowController(3, 10)
+	fc := newFlowController(3, 10, Block)
 	err := fc.acquire(context.Background(), 11)
 	if err != nil {
 		t.Fatal(err)
@@ -64,7 +64,7 @@ func TestFlowControllerNoStarve(t *testing.T) {
 	t.Parallel()
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
-	fc := newFlowController(10, 10)
+	fc := newFlowController(10, 10, Block)
 	first := make(chan int)
 	for i := 0; i < 20; i++ {
 		go func() {
@@ -120,7 +120,7 @@ func TestFlowControllerSaturation(t *testing.T) {
 			wantSize:    9,
 		},
 	} {
-		fc := newFlowController(maxCount, maxSize)
+		fc := newFlowController(maxCount, maxSize, Block)
 		// Atomically track flow controller state.
 		// The flowController itself tracks count.
 		var curSize int64
@@ -176,7 +176,7 @@ func TestFlowControllerSaturation(t *testing.T) {
 
 func TestFlowControllerTryAcquire(t *testing.T) {
 	t.Parallel()
-	fc := newFlowController(3, 10)
+	fc := newFlowController(3, 10, Block)
 
 	// Successfully tryAcquire 4 bytes.
 	if !fc.tryAcquire(4) {
@@ -197,7 +197,7 @@ func TestFlowControllerTryAcquire(t *testing.T) {
 func TestFlowControllerUnboundedCount(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	fc := newFlowController(0, 10)
+	fc := newFlowController(0, 10, Block)
 
 	// Successfully acquire 4 bytes.
 	if err := fc.acquire(ctx, 4); err != nil {
@@ -218,7 +218,7 @@ func TestFlowControllerUnboundedCount(t *testing.T) {
 func TestFlowControllerUnboundedCount2(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	fc := newFlowController(0, 0)
+	fc := newFlowController(0, 0, Block)
 	// Successfully acquire 4 bytes.
 	if err := fc.acquire(ctx, 4); err != nil {
 		t.Errorf("got %v, wanted no error", err)
@@ -236,7 +236,7 @@ func TestFlowControllerUnboundedCount2(t *testing.T) {
 func TestFlowControllerUnboundedBytes(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	fc := newFlowController(2, 0)
+	fc := newFlowController(2, 0, Block)
 
 	// Successfully acquire 4GB.
 	if err := fc.acquire(ctx, 4e9); err != nil {

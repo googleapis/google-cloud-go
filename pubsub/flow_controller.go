@@ -16,9 +16,24 @@ package pubsub
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"sync/atomic"
 
 	"golang.org/x/sync/semaphore"
+)
+
+// LimitExceededBehavior configures the behavior that flowController can use in case
+// the flow control limits are exceeded.
+type LimitExceededBehavior int
+
+const (
+	// Ignore disables flow control.
+	Ignore LimitExceededBehavior = iota
+	// Block signals to wait until the request can be made without exceeding the limit.
+	Block
+	// SignalError signals an error to the caller of acquire.
+	SignalError
 )
 
 // flowController implements flow control for Subscription.Receive.
@@ -31,18 +46,20 @@ type flowController struct {
 	// small releases.
 	// Atomic.
 	countRemaining int64
+	limitBehavior  LimitExceededBehavior
 }
 
 // newFlowController creates a new flowController that ensures no more than
 // maxCount messages or maxSize bytes are outstanding at once. If maxCount or
 // maxSize is < 1, then an unlimited number of messages or bytes is permitted,
 // respectively.
-func newFlowController(maxCount, maxSize int) *flowController {
+func newFlowController(maxCount, maxSize int, behavior LimitExceededBehavior) *flowController {
 	fc := &flowController{
-		maxCount: maxCount,
-		maxSize:  maxSize,
-		semCount: nil,
-		semSize:  nil,
+		maxCount:      maxCount,
+		maxSize:       maxSize,
+		semCount:      nil,
+		semSize:       nil,
+		limitBehavior: behavior,
 	}
 	if maxCount > 0 {
 		fc.semCount = semaphore.NewWeighted(int64(maxCount))
@@ -59,6 +76,9 @@ func newFlowController(maxCount, maxSize int) *flowController {
 // acquire allows large messages to proceed by treating a size greater than maxSize
 // as if it were equal to maxSize.
 func (f *flowController) acquire(ctx context.Context, size int) error {
+	if f.limitBehavior == Ignore {
+		return nil
+	}
 	if f.semCount != nil {
 		if err := f.semCount.Acquire(ctx, 1); err != nil {
 			return err
@@ -99,8 +119,50 @@ func (f *flowController) tryAcquire(size int) bool {
 	return true
 }
 
+func (f *flowController) newAcquire(ctx context.Context, size int) error {
+	switch f.limitBehavior {
+	case Ignore:
+		return nil
+	case Block:
+		return fmt.Errorf("blah")
+		if f.semCount != nil {
+			if err := f.semCount.Acquire(ctx, 1); err != nil {
+				return err
+			}
+		}
+		if f.semSize != nil {
+			if err := f.semSize.Acquire(ctx, f.bound(size)); err != nil {
+				if f.semCount != nil {
+					f.semCount.Release(1)
+				}
+				return err
+			}
+		}
+		atomic.AddInt64(&f.countRemaining, 1)
+	case SignalError:
+		if f.semCount != nil {
+			if !f.semCount.TryAcquire(1) {
+				return errors.New("pubsub: MaxOutstandingMessages flow controller limit exceeded")
+			}
+		}
+		if f.semSize != nil {
+			if !f.semSize.TryAcquire(f.bound(size)) {
+				if f.semCount != nil {
+					f.semCount.Release(1)
+				}
+				return errors.New("pubsub: MaxOutstandingBytes flow controller limit exceeded")
+			}
+		}
+		atomic.AddInt64(&f.countRemaining, 1)
+	}
+	return nil
+}
+
 // release notes that one message of size bytes is no longer outstanding.
 func (f *flowController) release(size int) {
+	if f.limitBehavior == Ignore {
+		return
+	}
 	atomic.AddInt64(&f.countRemaining, -1)
 	if f.semCount != nil {
 		f.semCount.Release(1)

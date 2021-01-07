@@ -68,6 +68,8 @@ type Topic struct {
 	stopped   bool
 	scheduler *scheduler.PublishScheduler
 
+	fc *flowController
+
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
 }
@@ -100,6 +102,19 @@ type PublishSettings struct {
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
 	BufferedByteLimit int
+
+	// MaxOutstandingMessages is the maximum number of unsent messages
+	MaxOutstandingMessages int
+
+	// MaxOutstandingBytes is the maximum size of messages waiting
+	// to be published.
+	MaxOutstandingBytes int
+
+	// LimitExceededBehavior configures the behavior when trying to publish
+	// additional messages while the flow controller is full. The available options
+	// include Block (default), Ignore (disable), and SignalError (publish
+	// results will return an error).
+	LimitExceededBehavior LimitExceededBehavior
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -450,9 +465,12 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	// TODO(jba) [from bcmills] consider using a shared channel per bundle
-	// (requires Bundler API changes; would reduce allocations)
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msgSize)
+	if err := t.fc.newAcquire(ctx, msgSize); err != nil {
+		t.scheduler.Pause(msg.OrderingKey)
+		ipubsub.SetPublishResult(r, "", err)
+		return r
+	}
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r, msgSize}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -475,8 +493,9 @@ func (t *Topic) Stop() {
 }
 
 type bundledMessage struct {
-	msg *Message
-	res *PublishResult
+	msg  *Message
+	res  *PublishResult
+	size int
 }
 
 func (t *Topic) initBundler() {
@@ -502,6 +521,8 @@ func (t *Topic) initBundler() {
 	if t.PublishSettings.NumGoroutines == 0 {
 		workers = 25 * runtime.GOMAXPROCS(0)
 	}
+
+	t.fc = newFlowController(t.PublishSettings.MaxOutstandingMessages, t.PublishSettings.MaxOutstandingBytes, t.PublishSettings.LimitExceededBehavior)
 
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
@@ -538,11 +559,14 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	var orderingKey string
 	for i, bm := range bms {
 		orderingKey = bm.msg.OrderingKey
-		pbMsgs[i] = &pb.PubsubMessage{
+		msg := &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
+		pbMsgs[i] = msg
+		// Calculate size of message for flow control release.
+		bm.size = proto.Size(msg)
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
@@ -567,6 +591,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
+		t.fc.release(bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {
