@@ -10,6 +10,6 @@ require (
 	golang.org/x/sys v0.0.0-20201201145000-ef89a241ccb3 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
-	google.golang.org/genproto v0.0.0-20201211151036-40ec1c210f7a
+	google.golang.org/genproto v0.0.0-20210105202744-fe13368bc0e1
 	google.golang.org/grpc v1.33.2 // indirect
 )
