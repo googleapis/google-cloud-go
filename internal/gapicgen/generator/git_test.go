@@ -48,6 +48,11 @@ func TestFormatChanges(t *testing.T) {
 			want:    "\nChanges:\n\nfix: foo\n  bar\n\n",
 		},
 		{
+			name:    "breaking change",
+			changes: []*ChangeInfo{{Title: "feat!: breaking change", Body: "BREAKING CHANGE: The world is breaking."}},
+			want:    "\nChanges:\n\nfeat!: breaking change\n  BREAKING CHANGE: The world is breaking.\n\n",
+		},
+		{
 			name:    "multi-lined body indented",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
 			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\n",
