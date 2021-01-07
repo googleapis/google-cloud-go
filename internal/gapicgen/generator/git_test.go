@@ -45,17 +45,17 @@ func TestFormatChanges(t *testing.T) {
 		{
 			name:    "basic",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar"}},
-			want:    "fix: foo\n  bar\n\n",
+			want:    "\nChanges:\n\nfix: foo\n  bar\n\n",
 		},
 		{
 			name:    "multi-lined body indented",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}},
-			want:    "fix: foo\n  bar\n  baz\n\n",
+			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\n",
 		},
 		{
 			name:    "multi-lined body indented, multiple changes",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar\nbaz"}, {Title: "fix: baz", Body: "foo\nbar"}},
-			want:    "fix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
+			want:    "\nChanges:\n\nfix: foo\n  bar\n  baz\n\nfix: baz\n  foo\n  bar\n\n",
 		},
 		{
 			name:       "no package, filtered",
@@ -66,18 +66,18 @@ func TestFormatChanges(t *testing.T) {
 		{
 			name:    "with package",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "baz"}},
-			want:    "fix(baz): foo\n  bar\n\n",
+			want:    "\nChanges:\n\nfix(baz): foo\n  bar\n\n",
 		},
 		{
 			name:    "multiple changes",
 			changes: []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "foo"}, {Title: "fix: baz", Body: "bar"}},
-			want:    "fix(foo): foo\n  bar\n\nfix: baz\n  bar\n\n",
+			want:    "\nChanges:\n\nfix(foo): foo\n  bar\n\nfix: baz\n  bar\n\n",
 		},
 		{
 			name:       "multiple changes, some filtered",
 			changes:    []*ChangeInfo{{Title: "fix: foo", Body: "bar", Package: "foo"}, {Title: "fix: baz", Body: "bar"}},
 			onlyGapics: true,
-			want:       "fix(foo): foo\n  bar\n\n",
+			want:       "\nChanges:\n\nfix(foo): foo\n  bar\n\n",
 		},
 	}
 

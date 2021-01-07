@@ -28,7 +28,9 @@ type ChangeInfo struct {
 	GoogleapisHash string
 }
 
-// FormatChanges turns
+// FormatChanges turns a slice of changes into formatted string that will match
+// the conventional commit footer pattern. This will allow these changes to be
+// parsed into the changelog.
 func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 	if len(changes) == 0 {
 		return ""
@@ -62,6 +64,11 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 		}
 		body := strings.Join(splitBody, "\n")
 		sb.WriteString(fmt.Sprintf("%s\n\n", body))
+	}
+	// If the buffer is empty except for the "Changes:" text return an empty
+	// string.
+	if sb.Len() == 11 {
+		return ""
 	}
 	return sb.String()
 }
