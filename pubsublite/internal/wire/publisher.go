@@ -31,7 +31,6 @@ import (
 var (
 	errInvalidInitialPubResponse = errors.New("pubsublite: first response from server was not an initial response for publish")
 	errInvalidMsgPubResponse     = errors.New("pubsublite: received invalid publish response from server")
-	errDecreasingPartitions      = errors.New("pubsublite: publisher does not support decreasing topic partition count")
 )
 
 // singlePartitionPublisher publishes messages to a single topic partition.
@@ -143,8 +142,8 @@ func (pp *singlePartitionPublisher) newStream(ctx context.Context) (grpc.ClientS
 	return pp.pubClient.Publish(addTopicRoutingMetadata(ctx, pp.topic))
 }
 
-func (pp *singlePartitionPublisher) initialRequest() (interface{}, bool) {
-	return pp.initialReq, true
+func (pp *singlePartitionPublisher) initialRequest() (interface{}, initialResponseRequired) {
+	return pp.initialReq, initialResponseRequired(true)
 }
 
 func (pp *singlePartitionPublisher) validateInitialResponse(response interface{}) error {
@@ -309,7 +308,7 @@ func (rp *routingPublisher) onPartitionCountChanged(partitionCount int) {
 		return
 	}
 	if partitionCount < len(rp.publishers) {
-		rp.unsafeInitiateShutdown(serviceTerminating, errDecreasingPartitions)
+		// TODO: Log the decrease in partition count.
 		return
 	}
 
