@@ -65,11 +65,12 @@ func TestAddLatency(t *testing.T) {
 	}
 }
 
-func TestAddErrors(t *testing.T) {
+func TestAddError(t *testing.T) {
 	// Test triggering codes.FailedPrecondition on 100% of ReadRows requests
 	var eib EmulatorInterceptorBuilder
-	gt := grpcErrorCodeTarget{"ReadRows", 100, codes.FailedPrecondition}
-	eib.GrpcErrorCodeTargets = append(eib.GrpcErrorCodeTargets, gt)
+	eib.GrpcErrorCodeTargets = []grpcErrorCodeTarget{
+		grpcErrorCodeTarget{"ReadRows", 100, codes.FailedPrecondition},
+	}
 
 	ctx := context.Background()
 	tbl, cleanup, err := setupFakeServer(eib.BuildStreamInterceptor())
@@ -83,11 +84,53 @@ func TestAddErrors(t *testing.T) {
 	if err == nil {
 		t.Errorf("Expected error to be injected")
 	}
-	if status.Code(err) != gt.grpcErrorCode {
-		t.Errorf("Expected %v. Actual: %v", gt.grpcErrorCode, err)
+	if status.Code(err) != codes.FailedPrecondition {
+		t.Errorf("Expected FailedPrecondition. Actual: %v", err)
 	}
 
 	// Test we add don't add Errors to MutateRows
+	rowKeys, muts := getBulkRowKeysAndMuts(100)
+	errs, err := tbl.ApplyBulk(ctx, rowKeys, muts)
+	if err != nil || errs != nil {
+		t.Errorf("Added error to MutateRows: %v %v", err, errs)
+	}
+}
+
+func TestAddMultipleErrors(t *testing.T) {
+	// Test triggering codes.FailedPrecondition on 50%
+	//   and codes.NotFound on 50%
+	var eib EmulatorInterceptorBuilder
+	eib.GrpcErrorCodeTargets = []grpcErrorCodeTarget{
+		grpcErrorCodeTarget{"ReadRows", 50, codes.FailedPrecondition},
+		grpcErrorCodeTarget{"ReadRows", 50, codes.NotFound},
+	}
+
+	ctx := context.Background()
+	tbl, cleanup, err := setupFakeServer(eib.BuildStreamInterceptor())
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+	defer cleanup()
+
+	sawFailedPrecondition, sawNotFound := false, false
+	for i := 0; i < 100; i++ {
+		// Test we add Errors to valid ReadRows request
+		err = tbl.ReadRows(ctx, bigtable.PrefixRange("some-prefix"), readRowsNoop)
+		if status.Code(err) != codes.FailedPrecondition && status.Code(err) != codes.NotFound {
+			t.Errorf("Expected FailedPrecondition or NotFound error. Actual: %v", err)
+		}
+		if status.Code(err) == codes.FailedPrecondition {
+			sawFailedPrecondition = true
+		}
+		if status.Code(err) == codes.NotFound {
+			sawNotFound = true
+		}
+	}
+	if !sawFailedPrecondition || !sawNotFound {
+		t.Errorf("Expected to see both FailedPrecondition and NotFound errors")
+	}
+
+	// Test we still don't add Errors to MutateRows
 	rowKeys, muts := getBulkRowKeysAndMuts(100)
 	errs, err := tbl.ApplyBulk(ctx, rowKeys, muts)
 	if err != nil || errs != nil {
@@ -143,12 +186,12 @@ func TestFailOnInvalidLatencyArgs(t *testing.T) {
 func TestParseValidErrorArgs(t *testing.T) {
 	var eib EmulatorInterceptorBuilder
 	tests := map[string]grpcErrorCodeTarget{
-		"ReadRows:1%:1":     grpcErrorCodeTarget{"ReadRows", 1, codes.Canceled},
-		"ReadRows:50:2":     grpcErrorCodeTarget{"ReadRows", 50, codes.Unknown},
-		"ReadRows:99:3":     grpcErrorCodeTarget{"ReadRows", 99, codes.InvalidArgument},
-		"MutateRows:20%:14": grpcErrorCodeTarget{"MutateRows", 20, codes.Unavailable},
-		"MutateRows:75:15":  grpcErrorCodeTarget{"MutateRows", 75, codes.DataLoss},
-		"MutateRows:80:16":  grpcErrorCodeTarget{"MutateRows", 80, codes.Unauthenticated},
+		"ReadRows:10%:1":   grpcErrorCodeTarget{"ReadRows", 10, codes.Canceled},
+		"ReadRows:13:2":    grpcErrorCodeTarget{"ReadRows", 13, codes.Unknown},
+		"ReadRows:11:3":    grpcErrorCodeTarget{"ReadRows", 11, codes.InvalidArgument},
+		"MutateRows:1%:14": grpcErrorCodeTarget{"MutateRows", 1, codes.Unavailable},
+		"MutateRows:20:15": grpcErrorCodeTarget{"MutateRows", 20, codes.DataLoss},
+		"MutateRows:27:16": grpcErrorCodeTarget{"MutateRows", 27, codes.Unauthenticated},
 	}
 	for argString, expectedErrorTarget := range tests {
 		err := eib.GrpcErrorCodeTargets.Set(argString)
@@ -160,6 +203,7 @@ func TestParseValidErrorArgs(t *testing.T) {
 			t.Errorf("Expected: %v\nActual: %v\n", expectedErrorTarget, actualErrorTarget)
 		}
 	}
+
 }
 
 func TestFailOnInvalidErrorArgs(t *testing.T) {
