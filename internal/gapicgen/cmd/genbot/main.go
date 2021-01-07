@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build !windows
+
 // genbot is a binary for generating gapics and creating CLs/PRs with the results.
 // It is intended to be used as a bot, though it can be run locally too.
 package main
