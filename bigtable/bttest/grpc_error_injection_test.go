@@ -61,7 +61,7 @@ func TestAddLatency(t *testing.T) {
 	}
 	actualReadLatency := time.Now().Sub(readRowsStartTime)
 	if actualReadLatency > lt.expectedDuration {
-		t.Errorf("Unexpected latency. Expected < %q. Got %q", actualReadLatency, lt.expectedDuration)
+		t.Errorf("Unexpected latency. Expected < %q. Got %q", lt.expectedDuration, actualReadLatency)
 	}
 }
 
