@@ -15,12 +15,18 @@ package pubsublite
 
 import (
 	"context"
+	"errors"
 
 	"cloud.google.com/go/pubsublite/internal/wire"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+)
+
+var (
+	errNoTopicFieldsUpdated        = errors.New("pubsublite: no fields updated for topic")
+	errNoSubscriptionFieldsUpdated = errors.New("pubsublite: no fields updated for subscription")
 )
 
 // AdminClient provides admin operations for Cloud Pub/Sub Lite resources
@@ -45,7 +51,8 @@ func NewAdminClient(ctx context.Context, region string, opts ...option.ClientOpt
 	return &AdminClient{admin: admin}, nil
 }
 
-// CreateTopic creates a new topic from the given config.
+// CreateTopic creates a new topic from the given config. If the topic already
+// exists an error will be returned.
 func (ac *AdminClient) CreateTopic(ctx context.Context, config TopicConfig) (*TopicConfig, error) {
 	req := &pb.CreateTopicRequest{
 		Parent:  config.Name.location().String(),
@@ -60,9 +67,13 @@ func (ac *AdminClient) CreateTopic(ctx context.Context, config TopicConfig) (*To
 }
 
 // UpdateTopic updates an existing topic from the given config and returns the
-// new topic config.
+// new topic config. UpdateTopic returns an error if no fields were modified.
 func (ac *AdminClient) UpdateTopic(ctx context.Context, config TopicConfigToUpdate) (*TopicConfig, error) {
-	topicpb, err := ac.admin.UpdateTopic(ctx, config.toUpdateRequest())
+	req := config.toUpdateRequest()
+	if len(req.GetUpdateMask().GetPaths()) == 0 {
+		return nil, errNoTopicFieldsUpdated
+	}
+	topicpb, err := ac.admin.UpdateTopic(ctx, req)
 	if err != nil {
 		return nil, err
 	}
@@ -106,7 +117,8 @@ func (ac *AdminClient) Topics(ctx context.Context, location LocationPath) *Topic
 	}
 }
 
-// CreateSubscription creates a new subscription from the given config.
+// CreateSubscription creates a new subscription from the given config. If the
+// subscription already exists an error will be returned.
 func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
 	req := &pb.CreateSubscriptionRequest{
 		Parent:         config.Name.location().String(),
@@ -121,9 +133,14 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 }
 
 // UpdateSubscription updates an existing subscription from the given config and
-// returns the new subscription config.
+// returns the new subscription config. UpdateSubscription returns an error if
+// no fields were modified.
 func (ac *AdminClient) UpdateSubscription(ctx context.Context, config SubscriptionConfigToUpdate) (*SubscriptionConfig, error) {
-	subspb, err := ac.admin.UpdateSubscription(ctx, config.toUpdateRequest())
+	req := config.toUpdateRequest()
+	if len(req.GetUpdateMask().GetPaths()) == 0 {
+		return nil, errNoSubscriptionFieldsUpdated
+	}
+	subspb, err := ac.admin.UpdateSubscription(ctx, req)
 	if err != nil {
 		return nil, err
 	}

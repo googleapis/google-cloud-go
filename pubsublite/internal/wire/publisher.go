@@ -54,6 +54,7 @@ type singlePartitionPublisher struct {
 	pubClient  *vkit.PublisherClient
 	topic      topicPartition
 	initialReq *pb.PublishRequest
+	metadata   pubsubMetadata
 
 	// Fields below must be guarded with mu.
 	stream             *retryableStream
@@ -84,9 +85,12 @@ func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPub
 				},
 			},
 		},
+		metadata: newPubsubMetadata(),
 	}
 	pp.batcher = newPublishMessageBatcher(&f.settings, partition, pp.onNewBatch)
 	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, reflect.TypeOf(pb.PublishResponse{}))
+	pp.metadata.AddTopicRoutingMetadata(pp.topic)
+	pp.metadata.AddClientInfo(f.settings.Framework)
 	return pp
 }
 
@@ -139,7 +143,7 @@ func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publ
 }
 
 func (pp *singlePartitionPublisher) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return pp.pubClient.Publish(addTopicRoutingMetadata(ctx, pp.topic))
+	return pp.pubClient.Publish(pp.metadata.AddToContext(ctx))
 }
 
 func (pp *singlePartitionPublisher) initialRequest() (interface{}, initialResponseRequired) {
