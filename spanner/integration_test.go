@@ -3348,7 +3348,6 @@ func verifyDirectPathRemoteAddress(t *testing.T) {
 
 func isDirectPathRemoteAddress() (_ string, _ bool) {
 	remoteIP := peerInfo.Addr.String()
-	fmt.Println("Peer IP = " + remoteIP)
 	// DirectPath ipv4-only can only use ipv4 traffic.
 	if dpConfig.directPathIPv4Only {
 		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
