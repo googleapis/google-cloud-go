@@ -123,7 +123,6 @@ else
     # check to see if there are tests that aren't in a sub-module.
     else
       goDirectories="$(find "$d" -name "*.go" -printf "%h\n" | sort -u)"
-      goDirectories=""
       if [[ -n "$goDirectories" ]]; then
         for gd in $goDirectories; do
           pushd "$gd" > /dev/null;
