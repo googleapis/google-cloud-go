@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Google LLC
+Copyright 2021 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
-	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -41,44 +40,24 @@ var (
 /*
    Creates interceptors inject latency or errors into cbtemulator
 */
-type EmulatorInterceptorBuilder struct {
+type EmulatorInterceptor struct {
 	LatencyTargets       latencyTargets
 	GrpcErrorCodeTargets grpcErrorCodeTargets
 }
 
-func (esib *EmulatorInterceptorBuilder) BuildStreamInterceptor() grpc.ServerOption {
-	return grpc.StreamInterceptor(esib.interceptorFunc())
-}
-
-/*
-   Stack error targets are so that arguments like:
-     - [ReadRows:20%:12, ReadRows:10%:14]
-   transform to:
-     - [ReadRows:20%:12, ReadRows:30%:14]
-   Thus, when we check against randint(100), we'll
-     throw the first error 20% of the time and the second error 10% of the time
-*/
-func (esib *EmulatorInterceptorBuilder) stackGrpcErrorCodeTargets() {
-	sort.SliceStable(esib.GrpcErrorCodeTargets, func(i, j int) bool {
-		return esib.GrpcErrorCodeTargets[i].errorRate < esib.GrpcErrorCodeTargets[j].errorRate
-	})
-	baseErrorRate := int32(0)
-	for i, gt := range esib.GrpcErrorCodeTargets {
-		esib.GrpcErrorCodeTargets[i].errorRate = gt.errorRate + baseErrorRate
-		baseErrorRate = esib.GrpcErrorCodeTargets[i].errorRate
-	}
-}
-
-func (esib *EmulatorInterceptorBuilder) interceptorFunc() grpc.StreamServerInterceptor {
+func (esib *EmulatorInterceptor) StreamInterceptor() grpc.ServerOption {
 	log.Println("Building Stream Server Interceptor:")
 	if len(esib.LatencyTargets) > 0 {
 		log.Printf(" - Latency Targets: %s\n", esib.LatencyTargets.String())
 	}
 	if len(esib.GrpcErrorCodeTargets) > 0 {
 		log.Printf(" - Error Targets: %s\n", esib.GrpcErrorCodeTargets.String())
-		esib.stackGrpcErrorCodeTargets()
 	}
 
+	return grpc.StreamInterceptor(esib.interceptorFunc())
+}
+
+func (esib *EmulatorInterceptor) interceptorFunc() grpc.StreamServerInterceptor {
 	return func(srv interface{},
 		ss grpc.ServerStream,
 		info *grpc.StreamServerInfo,
@@ -87,7 +66,7 @@ func (esib *EmulatorInterceptorBuilder) interceptorFunc() grpc.StreamServerInter
 		startTime := time.Now()
 
 		// Latency injection
-		pVal := rand.Int31n(100)
+		pVal := rand.Float64() * 100
 		for _, lt := range esib.LatencyTargets {
 			if strings.HasSuffix(info.FullMethod, lt.methodSuffix) && pVal >= lt.percentile {
 				addedLatency := time.Until(startTime.Add(lt.expectedDuration))
@@ -104,9 +83,9 @@ func (esib *EmulatorInterceptorBuilder) interceptorFunc() grpc.StreamServerInter
 		}
 
 		// If no actual errors, run error injection
-		eRand := rand.Int31n(100)
+		eRand := rand.Float64() * 100
 		for _, gt := range esib.GrpcErrorCodeTargets {
-			if strings.HasSuffix(info.FullMethod, gt.methodSuffix) && eRand <= gt.errorRate {
+			if strings.HasSuffix(info.FullMethod, gt.methodSuffix) && eRand <= gt.stackedErrorRate {
 				return status.Error(gt.grpcErrorCode, "Injected Emulator Error")
 			}
 		}
@@ -122,7 +101,7 @@ func (esib *EmulatorInterceptorBuilder) interceptorFunc() grpc.StreamServerInter
 
 type latencyTargets []latencyTarget
 
-// Set() used by Flags lib to create new Latency Target
+// Set() and String() used by Flags lib
 func (lts *latencyTargets) Set(s string) error {
 	lt, err := newLatencyTarget(s)
 	if err != nil {
@@ -142,7 +121,7 @@ func (lts *latencyTargets) String() string {
 
 type latencyTarget struct {
 	methodSuffix     string
-	percentile       int32
+	percentile       float64
 	expectedDuration time.Duration
 }
 
@@ -175,7 +154,7 @@ func (lt *latencyTarget) setMethodSuffix(s string) error {
 		lt.methodSuffix = s
 		return nil
 	}
-	return fmt.Errorf("Invalid method for Latency Target. Expected one of: %s", validStreamMethodSuffixes)
+	return fmt.Errorf("Invalid method \"%s\". Expected one of: %s", s, validStreamMethodSuffixes)
 }
 
 func isValidStreamMethodSuffix(s string) bool {
@@ -188,26 +167,26 @@ func isValidStreamMethodSuffix(s string) bool {
 }
 
 func (lt *latencyTarget) setPercentile(s string) error {
-	p := strings.TrimPrefix(s, "p")
-	i, err := strconv.Atoi(p)
-	if err != nil || (i < 0 || i > 99) {
-		return fmt.Errorf("Invalid latency percentile: %s. Expected integer between 0 and 99", s)
+	sf := strings.TrimPrefix(s, "p")
+	p, err := strconv.ParseFloat(sf, 64)
+	if err != nil || (p < 0 || p >= 100) {
+		return fmt.Errorf("Invalid percentile \"%s\". Expected float in range [0, 100)", s)
 	}
-	lt.percentile = int32(i)
+	lt.percentile = p
 	return nil
 }
 
 func (lt *latencyTarget) setExpectedDuration(s string) error {
 	d, err := time.ParseDuration(s)
 	if err != nil {
-		return fmt.Errorf("Invalid latency duration: %s.\n%s", s, err)
+		return fmt.Errorf("Invalid duration \"%s\". ParseDuration error: %s", s, err)
 	}
 	lt.expectedDuration = d
 	return nil
 }
 
 func (lt *latencyTarget) String() string {
-	return fmt.Sprintf("%s:p%d:%s", lt.methodSuffix, lt.percentile, lt.expectedDuration)
+	return fmt.Sprintf("%s:p%.2f:%s", lt.methodSuffix, lt.percentile, lt.expectedDuration)
 }
 
 /*
@@ -217,24 +196,26 @@ func (lt *latencyTarget) String() string {
 
 type grpcErrorCodeTargets []grpcErrorCodeTarget
 
-func (ets *grpcErrorCodeTargets) GetTotalErrorRate() int32 {
-	totalErrorRate := int32(0)
-	for _, v := range *ets {
-		totalErrorRate = totalErrorRate + v.errorRate
-	}
-	return totalErrorRate
-}
-
-// Set() used by Flags lib to create new grpc error code target
+/*
+   Error targets are stacked so that arguments like:
+     - [ReadRows:50%:12, ReadRows:50%:14, MutateRows:10%:9]
+   transform to:
+     - [ReadRows:50%:12, ReadRows:100%:14, MutateRows:10%:9]
+   and when we check against randint(100):
+    - ReadRows will always throw an error (50% probability for each error)
+    - MutateRows throw an error 10% of the time
+*/
 func (ets *grpcErrorCodeTargets) Set(s string) error {
 	et, err := newErrorTarget(s)
 	if err != nil {
 		return err
 	}
-	*ets = append(*ets, *et)
-	if ets.GetTotalErrorRate() > 100 {
-		return fmt.Errorf("Hit errorRate > 100 on %s", s)
+	totalErrorRate := ets.getTotalErrorRateForMethodSuffix(et.methodSuffix) + et.errorRate
+	if totalErrorRate > 100 {
+		return fmt.Errorf("Total error rate for method \"%s\" should not be >100", et.methodSuffix)
 	}
+	et.stackedErrorRate = totalErrorRate
+	*ets = append(*ets, *et)
 	return nil
 }
 
@@ -246,10 +227,21 @@ func (ets *grpcErrorCodeTargets) String() string {
 	return strings.Join(s, ", ")
 }
 
+func (ets *grpcErrorCodeTargets) getTotalErrorRateForMethodSuffix(methodSuffix string) float64 {
+	totalErrorRate := float64(0)
+	for _, gt := range *ets {
+		if gt.methodSuffix == methodSuffix {
+			totalErrorRate = totalErrorRate + gt.errorRate
+		}
+	}
+	return totalErrorRate
+}
+
 type grpcErrorCodeTarget struct {
-	methodSuffix  string
-	errorRate     int32
-	grpcErrorCode codes.Code
+	methodSuffix     string
+	errorRate        float64
+	stackedErrorRate float64
+	grpcErrorCode    codes.Code
 }
 
 // Create new grpc error code target from string like "MutateRows:10%:14"
@@ -286,30 +278,30 @@ func (gt *grpcErrorCodeTarget) setMethodSuffix(s string) error {
 		gt.methodSuffix = s
 		return nil
 	}
-	return fmt.Errorf("Invalid method for Latency Target. Expected one of: %s", validStreamMethodSuffixes)
+	return fmt.Errorf("Invalid method \"%s\". Expected one of: %s", s, validStreamMethodSuffixes)
 }
 
 func (gt *grpcErrorCodeTarget) setErrorRate(s string) error {
-	p := strings.TrimSuffix(s, "%")
-	i, err := strconv.Atoi(p)
-	if err != nil || (i < 0 || i > 100) {
-		return fmt.Errorf("Invalid error rate: %s. Expected integer between 0 and 100", s)
+	sf := strings.TrimSuffix(s, "%")
+	e, err := strconv.ParseFloat(sf, 64)
+	if err != nil || (e < 0 || e > 100) {
+		return fmt.Errorf("Invalid error rate \"%s\". Expected float in range [0, 100]", s)
 	}
-	gt.errorRate = int32(i)
+	gt.errorRate = e
 	return nil
 }
 
 func (gt *grpcErrorCodeTarget) setGrpcErrorCode(s string) error {
 	var c codes.Code
-	// Use UnmarshalJSON() check against valid codes in google.golang.org/grpc/codes
+	// Use UnmarshalJSON() to check against valid codes in google.golang.org/grpc/codes
 	err := c.UnmarshalJSON([]byte(s))
 	if err != nil {
-		return fmt.Errorf("Invalid GRPC Error Code: %s\n%v", s, err)
+		return fmt.Errorf("Invalid GRPC Error Code: \"%s\". %v", s, err)
 	}
 	gt.grpcErrorCode = c
 	return nil
 }
 
 func (gt *grpcErrorCodeTarget) String() string {
-	return fmt.Sprintf("%s:%d%%:%v", gt.methodSuffix, gt.errorRate, gt.grpcErrorCode)
+	return fmt.Sprintf("%s:%.2f%%:%v", gt.methodSuffix, gt.errorRate, gt.grpcErrorCode)
 }

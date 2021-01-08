@@ -1,5 +1,5 @@
 /*
-Copyright 2020 Google LLC
+Copyright 2021 Google LLC
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -30,12 +30,12 @@ import (
 )
 
 func TestAddLatency(t *testing.T) {
-	var eib EmulatorInterceptorBuilder
+	var eib EmulatorInterceptor
 	lt := latencyTarget{"MutateRows", 0, time.Duration(100 * time.Millisecond)}
 	eib.LatencyTargets = append(eib.LatencyTargets, lt)
 
 	ctx := context.Background()
-	tbl, cleanup, err := setupFakeServer(eib.BuildStreamInterceptor())
+	tbl, cleanup, err := setupFakeServer(eib.StreamInterceptor())
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
 	}
@@ -66,14 +66,15 @@ func TestAddLatency(t *testing.T) {
 }
 
 func TestAddError(t *testing.T) {
-	// Test triggering codes.FailedPrecondition on 100% of ReadRows requests
-	var eib EmulatorInterceptorBuilder
-	eib.GrpcErrorCodeTargets = []grpcErrorCodeTarget{
-		grpcErrorCodeTarget{"ReadRows", 100, codes.FailedPrecondition},
+	// Test triggering codes.FailedPrecondition (9) on 100% of ReadRows requests
+	var eib EmulatorInterceptor
+	err := eib.GrpcErrorCodeTargets.Set("ReadRows:100:9")
+	if err != nil {
+		t.Fatalf("Failed creating GrpcErrorCodeTargets: %v", err)
 	}
 
 	ctx := context.Background()
-	tbl, cleanup, err := setupFakeServer(eib.BuildStreamInterceptor())
+	tbl, cleanup, err := setupFakeServer(eib.StreamInterceptor())
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
 	}
@@ -97,16 +98,18 @@ func TestAddError(t *testing.T) {
 }
 
 func TestAddMultipleErrors(t *testing.T) {
-	// Test triggering codes.FailedPrecondition on 50%
-	//   and codes.NotFound on 50%
-	var eib EmulatorInterceptorBuilder
-	eib.GrpcErrorCodeTargets = []grpcErrorCodeTarget{
-		grpcErrorCodeTarget{"ReadRows", 50, codes.FailedPrecondition},
-		grpcErrorCodeTarget{"ReadRows", 50, codes.NotFound},
+	// Test failing 50/50 on FailedPrecondition (9) and NotFound (5)
+	var eib EmulatorInterceptor
+	args := []string{"ReadRows:50%:9", "ReadRows:50%:5"}
+	for _, arg := range args {
+		err := eib.GrpcErrorCodeTargets.Set(arg)
+		if err != nil {
+			t.Fatalf("Failed creating GrpcErrorCodeTargets: %v", err)
+		}
 	}
 
 	ctx := context.Background()
-	tbl, cleanup, err := setupFakeServer(eib.BuildStreamInterceptor())
+	tbl, cleanup, err := setupFakeServer(eib.StreamInterceptor())
 	if err != nil {
 		t.Fatalf("fake server setup: %v", err)
 	}
@@ -127,6 +130,7 @@ func TestAddMultipleErrors(t *testing.T) {
 		}
 	}
 	if !sawFailedPrecondition || !sawNotFound {
+		// Given 100 requests, there's a 10^-31 chance that both errors are not seen at least once
 		t.Errorf("Expected to see both FailedPrecondition and NotFound errors")
 	}
 
@@ -139,14 +143,14 @@ func TestAddMultipleErrors(t *testing.T) {
 }
 
 func TestParseValidLatencyArgs(t *testing.T) {
-	var eib EmulatorInterceptorBuilder
+	var eib EmulatorInterceptor
 	tests := map[string]latencyTarget{
-		"ReadRows:p0:0ms":    latencyTarget{"ReadRows", 0, time.Duration(0)},
-		"ReadRows:p50:10ms":  latencyTarget{"ReadRows", 50, time.Duration(10 * time.Millisecond)},
-		"ReadRows:p99:100ms": latencyTarget{"ReadRows", 99, time.Duration(100 * time.Millisecond)},
-		"MutateRows:25:0s":   latencyTarget{"MutateRows", 25, time.Duration(0)},
-		"MutateRows:75:88ms": latencyTarget{"MutateRows", 75, time.Duration(88 * time.Millisecond)},
-		"MutateRows:80:1s":   latencyTarget{"MutateRows", 80, time.Duration(1 * time.Second)},
+		"ReadRows:p0:0ms":      latencyTarget{"ReadRows", 0, time.Duration(0)},
+		"ReadRows:p50:10ms":    latencyTarget{"ReadRows", 50, time.Duration(10 * time.Millisecond)},
+		"ReadRows:p99.9:100ms": latencyTarget{"ReadRows", 99.9, time.Duration(100 * time.Millisecond)},
+		"MutateRows:25:0s":     latencyTarget{"MutateRows", 25, time.Duration(0)},
+		"MutateRows:75:88ms":   latencyTarget{"MutateRows", 75, time.Duration(88 * time.Millisecond)},
+		"MutateRows:99:1s":     latencyTarget{"MutateRows", 99, time.Duration(1 * time.Second)},
 	}
 	for argString, expectedLatencyTarget := range tests {
 		err := eib.LatencyTargets.Set(argString)
@@ -155,16 +159,16 @@ func TestParseValidLatencyArgs(t *testing.T) {
 		}
 		actualLatencyTarget := eib.LatencyTargets[len(eib.LatencyTargets)-1]
 		if expectedLatencyTarget != actualLatencyTarget {
-			t.Errorf("Expected: %v\nActual: %v\n", expectedLatencyTarget, actualLatencyTarget)
+			t.Errorf("expected: %v, actual: %v", expectedLatencyTarget, actualLatencyTarget)
 		}
 	}
 	if len(eib.LatencyTargets) != len(tests) {
-		t.Errorf("Wrong number of LatencyTargets.\nExpected: %d\n Actual: %d", len(eib.LatencyTargets), len(tests))
+		t.Errorf("Wrong number of LatencyTargets. expected: %d, actual: %d", len(eib.LatencyTargets), len(tests))
 	}
 }
 
 func TestFailOnInvalidLatencyArgs(t *testing.T) {
-	var eib EmulatorInterceptorBuilder
+	var eib EmulatorInterceptor
 	tests := map[string]string{
 		"Invalid Method":                "BadMethod:p50:10ms",
 		"Invalid Percentile":            "ReadRows:BadPercentile:10ms",
@@ -184,30 +188,33 @@ func TestFailOnInvalidLatencyArgs(t *testing.T) {
 }
 
 func TestParseValidErrorArgs(t *testing.T) {
-	var eib EmulatorInterceptorBuilder
-	tests := map[string]grpcErrorCodeTarget{
-		"ReadRows:10%:1":   grpcErrorCodeTarget{"ReadRows", 10, codes.Canceled},
-		"ReadRows:13:2":    grpcErrorCodeTarget{"ReadRows", 13, codes.Unknown},
-		"ReadRows:11:3":    grpcErrorCodeTarget{"ReadRows", 11, codes.InvalidArgument},
-		"MutateRows:1%:14": grpcErrorCodeTarget{"MutateRows", 1, codes.Unavailable},
-		"MutateRows:20:15": grpcErrorCodeTarget{"MutateRows", 20, codes.DataLoss},
-		"MutateRows:27:16": grpcErrorCodeTarget{"MutateRows", 27, codes.Unauthenticated},
+	var eib EmulatorInterceptor
+	tests := []struct {
+		argString      string
+		expectedTarget grpcErrorCodeTarget
+	}{
+		{"ReadRows:1%:1", grpcErrorCodeTarget{"ReadRows", 1, 1, codes.Canceled}},
+		{"ReadRows:2:2", grpcErrorCodeTarget{"ReadRows", 2, 3, codes.Unknown}},
+		{"ReadRows:3:3", grpcErrorCodeTarget{"ReadRows", 3, 6, codes.InvalidArgument}},
+		{"MutateRows:10%:14", grpcErrorCodeTarget{"MutateRows", 10, 10, codes.Unavailable}},
+		{"MutateRows:20%:15", grpcErrorCodeTarget{"MutateRows", 20, 30, codes.DataLoss}},
+		{"MutateRows:30:16", grpcErrorCodeTarget{"MutateRows", 30, 60, codes.Unauthenticated}},
 	}
-	for argString, expectedErrorTarget := range tests {
-		err := eib.GrpcErrorCodeTargets.Set(argString)
+	for _, test := range tests {
+		err := eib.GrpcErrorCodeTargets.Set(test.argString)
 		if err != nil {
-			t.Fatalf("failed to parse valid GrpcErrorCodeTargets %s\n%s", argString, err)
+			t.Fatalf("failed to parse valid GrpcErrorCodeTargets %s\n%s", test.argString, err)
 		}
 		actualErrorTarget := eib.GrpcErrorCodeTargets[len(eib.GrpcErrorCodeTargets)-1]
-		if expectedErrorTarget != actualErrorTarget {
-			t.Errorf("Expected: %v\nActual: %v\n", expectedErrorTarget, actualErrorTarget)
+		if test.expectedTarget != actualErrorTarget {
+			t.Errorf("Set(%s): expected %v, actual: %v", test.argString, test.expectedTarget, actualErrorTarget)
 		}
 	}
 
 }
 
 func TestFailOnInvalidErrorArgs(t *testing.T) {
-	var eib EmulatorInterceptorBuilder
+	var eib EmulatorInterceptor
 	tests := map[string]string{
 		"Invalid Method":                    "BadMethod:1%:1",
 		"Invalid Error Rate":                "ReadRows::BadErrorRate:1",
@@ -220,7 +227,7 @@ func TestFailOnInvalidErrorArgs(t *testing.T) {
 	for testName, argString := range tests {
 		err := eib.GrpcErrorCodeTargets.Set(argString)
 		if err == nil {
-			t.Errorf("Expected to fail due to %s for %s", testName, argString)
+			t.Errorf("Set(%s): expected to fail due to %s", argString, testName)
 		}
 	}
 	if len(eib.GrpcErrorCodeTargets) > 0 {
