@@ -13,6 +13,17 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+##
+# continuous.sh
+# Runs CI checks for entire repository.
+#
+# Jobs types
+#
+# Continuous: Runs root tests & tests in submodules changed by a PR. Triggered by PR merges.
+# Nightly: Runs root tests & tests in all modules. Triggered nightly.
+# Nightly/$MODULE: Runs tests in a specified module. Triggered nightly.
+##
+
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
 # Removing the GCLOUD_TESTS_GOLANG_PROJECT_ID setting may make some integration
 # tests (like profiler's) silently skipped, so make sure you know what you are
@@ -54,37 +65,9 @@ try3 go mod download
 go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 
-# Continuous jobs only run root tests & tests in submodules changed by the PR
-# Nightly jobs run all tests in all submodules
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only master..HEAD | grep -Ev '(\.md$|^\.github)' || true)
-# CHANGED_DIRS is the list of significant top-level directories that changed,
-# but weren't deleted by the current PR.
-# CHANGED_DIRS will be empty when run on master.
-CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
-
-# List all modules in changed directories.
-# If running on master will collect all modules in the repo, including the root module.
-# shellcheck disable=SC2086
-GO_CHANGED_MODULES="$(find ${CHANGED_DIRS:-.} -name go.mod)"
-# If we didn't find any modules, use the root module.
-GO_CHANGED_MODULES=${GO_CHANGED_MODULES:-./go.mod}
-# Exclude the root module, if present, from the list of sub-modules.
-GO_CHANGED_SUBMODULES=${GO_CHANGED_MODULES#./go.mod}
-
-# Override to determine if all go tests should be run.
-# Does not include static analysis checks.
-RUN_ALL_TESTS="0"
-# If this is a nightly test (not a PR), run all tests.
-if [ -z "${KOKORO_GITHUB_PULL_REQUEST_NUMBER:-}" ]; then
-  RUN_ALL_TESTS="0"
-# If the change touches a repo-spanning file or directory of significance, run all tests.
-elif echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
-  RUN_ALL_TESTS="1"
-fi
-
-# runTests runs the tests in the current directory. If an argument is specified,
-# it is used as the argument to `go test`.
-runTests() {
+# runTests runs all tests in the current directory.
+# If a PATH argument is specified, it runs `go test [PATH]`.
+runDirectoryTests() {
   go test -race -v -timeout 45m "${1:-./...}" 2>&1 \
     | tee sponge_log.log
   # Takes the kokoro output log (raw stdout) and creates a machine-parseable
@@ -95,43 +78,63 @@ runTests() {
   exit_code=$(($exit_code + $?))
 }
 
+# testAllModules runs all modules tests.
+testAllModules() {
+  echo "Testing all modules"
+  for i in $(find . -name go.mod); do
+    pushd "$(dirname "$i")" > /dev/null;
+      runDirectoryTests
+    popd > /dev/null;
+  done
+}
+
+# testChangedModules runs tests in changed modules only.
+testChangedModules() {
+  for d in $CHANGED_DIRS; do
+    goDirectories="$(find "$d" -name "*.go" -printf "%h\n" | sort -u)"
+    if [[ -n "$goDirectories" ]]; then
+      for gd in $goDirectories; do
+        pushd "$gd" > /dev/null;
+          runDirectoryTests .
+        popd > /dev/null;
+      done
+    fi
+  done
+}
+
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
-if [[ $RUN_ALL_TESTS = "1" ]]; then
-  echo "Running all tests"
-  # shellcheck disable=SC2044
-  for i in $(find . -name go.mod); do
-    pushd "$(dirname "$i")" > /dev/null;
-      runTests
-    popd > /dev/null;
-  done
-elif [[ -z "${CHANGED_DIRS// }" ]]; then
-  echo "Only running root tests"
-  runTests .
+if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
+  # Continuous jobs only run root tests & tests in submodules changed by the PR
+  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only master..HEAD | grep -Ev '(\.md$|^\.github)' || true)
+  # CHANGED_DIRS is the list of significant top-level directories that changed,
+  # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on master.
+  CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
+  # If PR changes affect all submodules, then run all tests
+  if echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
+    testAllModules
+  else
+    runDirectoryTests .
+    echo "Running tests only in changed submodules: $CHANGED_DIRS"
+    testChangedModules
+  fi
+elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
+  JOB_SUBNAME="${KOKORO_JOB_NAME#*"nightly/"}"
+  # If it is a regular nightly job, then run all tests
+  if [[ -z $JOB_SUBNAME ]] || [[ $JOB_SUBNAME =~ ^(go1|master) ]]; then
+    testAllModules
+  else
+    # Only run tests in the submodule designated in the Kokoro job name.
+    # Expected format example: ...google-cloud-go/nightly/logging.
+    # Note: It skips the root tests.
+    echo "Running tests in submodule: $JOB_SUBNAME"
+    pushd $JOB_SUBNAME > /dev/null;
+      runDirectoryTests
+    popd > /dev/null
+  fi
 else
-  runTests . # Always run root tests.
-  echo "Running tests in modified directories: $CHANGED_DIRS"
-  for d in $CHANGED_DIRS; do
-    mods=$(find "$d" -name go.mod)
-    # If there are no modules, just run the tests directly.
-    if [[ -z "$mods" ]]; then
-      pushd "$d" > /dev/null;
-        runTests
-      popd > /dev/null;
-    # Otherwise, run the tests in all Go directories. This way, we don't have to
-    # check to see if there are tests that aren't in a sub-module.
-    else
-      goDirectories="$(find "$d" -name "*.go" -printf "%h\n" | sort -u)"
-      if [[ -n "$goDirectories" ]]; then
-        for gd in $goDirectories; do
-          pushd "$gd" > /dev/null;
-            runTests .
-          popd > /dev/null;
-        done
-      fi
-    fi
-  done
+  testAllModules
 fi
 
 if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
