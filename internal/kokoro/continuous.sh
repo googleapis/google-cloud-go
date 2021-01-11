@@ -40,7 +40,7 @@ export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 # Fail on any error
 set -eo pipefail
 
-# Display commands being run
+# # Display commands being run
 set -x
 
 # cd to project dir on Kokoro instance
@@ -118,23 +118,23 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   if echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
     testAllModules
   else
-    runDirectoryTests .
+    runDirectoryTests . # Always run base tests
     echo "Running tests only in changed submodules: $CHANGED_DIRS"
     testChangedModules
   fi
 elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
-  JOB_SUBNAME="${KOKORO_JOB_NAME#*"nightly/"}"
-  # If it is a regular nightly job, then run all tests
-  if [[ -z $JOB_SUBNAME ]] || [[ $JOB_SUBNAME =~ ^(go1|master) ]]; then
-    testAllModules
-  else
+  SUBMODULE_NAME="${KOKORO_JOB_NAME#*"nightly/"}"
+  if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
     # Expected format example: ...google-cloud-go/nightly/logging.
-    # Note: It skips the root tests.
-    echo "Running tests in submodule: $JOB_SUBNAME"
-    pushd $JOB_SUBNAME > /dev/null;
+    runDirectoryTests . # Always run base tests
+    echo "Running tests in one submodule: $SUBMODULE_NAME"
+    pushd $SUBMODULE_NAME > /dev/null;
       runDirectoryTests
     popd > /dev/null
+  else
+    # Run all tests if it is a regular nightly job
+    testAllModules
   fi
 else
   testAllModules
