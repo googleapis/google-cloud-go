@@ -2162,7 +2162,7 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	defer cleanup()
 
 	if !testEnv.Config().AttemptDirectPath {
-		return
+		t.Skip()
 	}
 
 	if len(blackholeDpv6Cmd) == 0 {
@@ -2183,27 +2183,27 @@ func TestIntegration_DirectPathFallback(t *testing.T) {
 	}
 
 	// Precondition: wait for DirectPath to connect.
-	countEnough := examineTraffic(ctx, testEnv, table, false)
-	if !countEnough {
+	dpEnabled := examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
 		t.Fatalf("Failed to observe RPCs over DirectPath")
 	}
 
 	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
 	blackholeDirectPath(testEnv, t)
-	countEnough = examineTraffic(ctx, testEnv, table, true)
-	if !countEnough {
+	dpDisabled := examineTraffic(ctx, testEnv, table, true)
+	if !dpDisabled {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
 	}
 
 	// Disable the blackhole, and client should use DirectPath again.
 	allowDirectPath(testEnv, t)
-	countEnough = examineTraffic(ctx, testEnv, table, false)
-	if !countEnough {
+	dpEnabled = examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
 		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
 	}
 }
 
-// examineTraffic counts RPCs use DirectPath or CFE traffic.
+// examineTraffic returns whether RPCs use DirectPath (blackholeDP = false) or CFE (blackholeDP = true).
 func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, blackholeDP bool) bool {
 	numCount := 0
 	const (
@@ -2346,31 +2346,25 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 }
 
 func blackholeDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
 	if testEnv.Config().DirectPathIPV4Only {
-		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
-		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
-	} else {
-		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
-		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
-		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
-		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		return
 	}
+	cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
 }
 
 func allowDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
 	if testEnv.Config().DirectPathIPV4Only {
-		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
-		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
-	} else {
-		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
-		out, _ := cmdRes.CombinedOutput()
-		t.Logf(string(out))
-		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
-		out, _ = cmdRes.CombinedOutput()
-		t.Logf(string(out))
+		return
 	}
+	cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
 }
