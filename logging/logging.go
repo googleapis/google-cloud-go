@@ -134,6 +134,7 @@ type Client struct {
 // for backwards compatibility, a string with no '/' is also allowed and is interpreted
 // as a project ID.
 //
+// Lalalal
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
