@@ -119,7 +119,7 @@ func TestHandleInsertErrors(t *testing.T) {
 		want        error
 	}{
 		{
-			description: "nil errors",
+			description: "nil error",
 			in:          nil,
 			want:        nil,
 		},
@@ -155,11 +155,16 @@ func TestHandleInsertErrors(t *testing.T) {
 		got := handleInsertErrors(test.in, rows)
 		_, ok := got.(PutMultiError)
 		if ok {
+			// compare structure of the PutMultiError
 			if !testutil.Equal(got, test.want) {
 				t.Errorf("(case: %s)\nin %#v\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
 			}
 		} else {
-			if got != nil && got.Error() != test.want.Error() {
+			if got != nil && test.want != nil && got.Error() != test.want.Error() {
+				// check matching error messages
+				t.Errorf("(case: %s)\nin %#v:\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
+			} else {
+				// mismatched nils
 				t.Errorf("(case: %s)\nin %#v:\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
 			}
 		}
