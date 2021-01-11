@@ -536,7 +536,7 @@ func propToValue(v *pb.Value) (interface{}, error) {
 	case *pb.Value_DoubleValue:
 		return v.DoubleValue, nil
 	case *pb.Value_TimestampValue:
-		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos)).In(time.UTC) nil
+		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos)).In(time.UTC), nil
 	case *pb.Value_KeyValue:
 		return protoToKey(v.KeyValue)
 	case *pb.Value_StringValue:
