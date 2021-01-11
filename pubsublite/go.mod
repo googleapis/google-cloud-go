@@ -10,10 +10,10 @@ require (
 	github.com/google/uuid v1.1.4
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
-	golang.org/x/tools v0.0.0-20210108195828-e2f9c7f1fc8e // indirect
+	golang.org/x/tools v0.0.0-20210111221946-d33bae441459 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210108203827-ffc7fda8c3d7
+	google.golang.org/genproto v0.0.0-20210111234610-22ae2b108f89
 	google.golang.org/grpc v1.34.0
 	google.golang.org/protobuf v1.25.0
 )
