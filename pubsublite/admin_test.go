@@ -95,6 +95,10 @@ func TestAdminTopicCRUD(t *testing.T) {
 		t.Errorf("UpdateTopic() got: %v\nwant: %v", gotConfig, topicConfig)
 	}
 
+	if _, err := admin.UpdateTopic(ctx, TopicConfigToUpdate{}); !test.ErrorEqual(err, errNoTopicFieldsUpdated) {
+		t.Errorf("UpdateTopic() got err: (%v), want err: (%v)", err, errNoTopicFieldsUpdated)
+	}
+
 	if gotConfig, err := admin.Topic(ctx, topicPath); err != nil {
 		t.Errorf("Topic() got err: %v", err)
 	} else if !testutil.Equal(gotConfig, &topicConfig) {
@@ -294,6 +298,10 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 		t.Errorf("UpdateSubscription() got err: %v", err)
 	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
 		t.Errorf("UpdateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
+	}
+
+	if _, err := admin.UpdateSubscription(ctx, SubscriptionConfigToUpdate{}); !test.ErrorEqual(err, errNoSubscriptionFieldsUpdated) {
+		t.Errorf("UpdateSubscription() got err: (%v), want err: (%v)", err, errNoSubscriptionFieldsUpdated)
 	}
 
 	if gotConfig, err := admin.Subscription(ctx, subscriptionPath); err != nil {
