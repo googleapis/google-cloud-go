@@ -134,7 +134,12 @@ func CommitsSinceHash(gitDir, hash string, inclusive bool) ([]string, error) {
 // hash for the given gitDir.
 func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
 	out := bytes.NewBuffer(nil)
-	c := command("git", "diff-tree", "--no-commit-id", "--name-only", "-r", fmt.Sprintf("%s..HEAD", hash))
+	// The provided diff-filter flags restricts to files that have been:
+	// - (A) Added
+	// - (C) Copied
+	// - (M) Modified
+	// - (R) Renamed
+	c := command("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash))
 	c.Stdout = out
 	c.Dir = gitDir
 	if err := c.Run(); err != nil {

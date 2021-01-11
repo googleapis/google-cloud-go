@@ -68,6 +68,7 @@ type table struct {
 type colInfo struct {
 	Name     spansql.ID
 	Type     spansql.Type
+	NotNull  bool            // only set for table columns
 	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
 	Alias    spansql.PathExp // an alternate name for this column (result sets only)
 }
@@ -216,9 +217,10 @@ func (d *database) GetDDL() []spansql.DDLStmt {
 		t.mu.Lock()
 		for i, col := range t.cols {
 			ct.Columns = append(ct.Columns, spansql.ColumnDef{
-				Name: col.Name,
-				Type: col.Type,
-				// TODO: NotNull, AllowCommitTimestamp
+				Name:    col.Name,
+				Type:    col.Type,
+				NotNull: col.NotNull,
+				// TODO: AllowCommitTimestamp
 			})
 			if i < t.pkCols {
 				ct.PrimaryKey = append(ct.PrimaryKey, spansql.KeyPart{
@@ -400,10 +402,12 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 			if x == commitTimestampSentinel {
 				x = tx.commitTimestamp
 			}
+			if x == nil && t.cols[i].NotNull {
+				return status.Errorf(codes.FailedPrecondition, "%s must not be NULL in table %s", t.cols[i].Name, tbl)
+			}
 
 			r[i] = x
 		}
-		// TODO: enforce NOT NULL?
 		// TODO: enforce that provided timestamp for commit_timestamp=true columns
 		// are not ahead of the transaction's commit timestamp.
 
@@ -632,8 +636,9 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	}
 
 	t.cols = append(t.cols, colInfo{
-		Name: cd.Name,
-		Type: cd.Type,
+		Name:    cd.Name,
+		Type:    cd.Type,
+		NotNull: cd.NotNull,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
 	if !newTable {
@@ -705,13 +710,14 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
+	// TODO: check if the column isn't a primary key or array types.
+	t.cols[ci].NotNull = sct.NotNull
+
 	// Check and make type transformations.
 	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
-	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
-	// We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
-	// TODO: Do this when we track NOT NULL-ness.
+	// TODO: We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
 
 	// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
 	// TODO: This should permit array conversions too.
@@ -856,7 +862,6 @@ func rowEqual(a, b []interface{}) bool {
 // valForType converts a value from its RPC form into its internal representation.
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
-		// TODO: enforce NOT NULL constraints?
 		return nil, nil
 	}
 

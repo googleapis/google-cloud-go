@@ -146,7 +146,7 @@ func makeMsgHolder(msg *pb.PubSubMessage, receiver ...*testPublishResultReceiver
 }
 
 func TestPublishBatcherAddMessage(t *testing.T) {
-	const initAvailableBytes = MaxPublishMessageBytes + 1
+	const initAvailableBytes = MaxPublishRequestBytes
 	settings := DefaultPublishSettings
 	settings.BufferedByteLimit = initAvailableBytes
 
@@ -178,8 +178,8 @@ func TestPublishBatcherAddMessage(t *testing.T) {
 	})
 
 	t.Run("oversized message", func(t *testing.T) {
-		msg := &pb.PubSubMessage{Data: bytes.Repeat([]byte{'0'}, MaxPublishMessageBytes)}
-		if gotErr, wantMsg := batcher.AddMessage(msg, nil), "MaxPublishMessageBytes"; !test.ErrorHasMsg(gotErr, wantMsg) {
+		msg := &pb.PubSubMessage{Data: bytes.Repeat([]byte{'0'}, MaxPublishRequestBytes)}
+		if gotErr, wantMsg := batcher.AddMessage(msg, nil), "MaxPublishRequestBytes"; !test.ErrorHasMsg(gotErr, wantMsg) {
 			t.Errorf("AddMessage(%v) got err: %v, want err msg: %q", msg, gotErr, wantMsg)
 		}
 	})
