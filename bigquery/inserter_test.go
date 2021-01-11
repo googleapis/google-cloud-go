@@ -153,8 +153,7 @@ func TestHandleInsertErrors(t *testing.T) {
 		},
 	} {
 		got := handleInsertErrors(test.in, rows)
-		_, ok := got.(PutMultiError)
-		if ok {
+		if _, ok := got.(PutMultiError); ok {
 			// compare structure of the PutMultiError
 			if !testutil.Equal(got, test.want) {
 				t.Errorf("(case: %s)\nin %#v\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
