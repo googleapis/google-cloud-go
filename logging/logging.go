@@ -156,7 +156,7 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 		donec:   make(chan struct{}),
 		OnError: func(e error) { log.Printf("logging client: %v", e) },
 	}
-	// Call the user's function synchronously, to make life easier for them.
+	// Call the user's function sync hronously, to make life easier for them.
 	go func() {
 		for err := range client.errc {
 			// This reference to OnError is memory-safe if the user sets OnError before

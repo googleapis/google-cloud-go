@@ -48,7 +48,7 @@ const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 // ErrPartiallyUnavailable is returned when some locations (clusters) are
 // unavailable. Both partial results (retrieved from available locations)
-// and the error are returned when this exception occurred.
+// and the error are returned when this exception occurred .
 type ErrPartiallyUnavailable struct {
 	Locations []string // unavailable locations
 }
