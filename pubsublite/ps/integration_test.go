@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
@@ -599,19 +600,24 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		}
 
 		cctx, stopSubscribers := context.WithTimeout(context.Background(), defaultTestTimeout)
+		g, _ := errgroup.WithContext(ctx)
 		for i := 0; i < subscriberCount; i++ {
 			// Subscribers must be started in a goroutine as Receive() blocks.
-			go func() {
+			g.Go(func() error {
 				subscriber := subscriberClient(cctx, t, DefaultReceiveSettings, subscriptionPath)
-				if err := subscriber.Receive(cctx, messageReceiver); err != nil {
+				err := subscriber.Receive(cctx, messageReceiver)
+				if err != nil {
 					t.Errorf("Receive() got err: %v", err)
 				}
-			}()
+				return err
+			})
 		}
 
 		// Wait until all messages have been received.
 		msgTracker.Wait(defaultTestTimeout)
 		stopSubscribers()
+		// Wait until all subscribers have terminated.
+		g.Wait()
 	})
 }
 
