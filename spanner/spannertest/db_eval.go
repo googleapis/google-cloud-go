@@ -30,7 +30,7 @@ import (
 	"cloud.google.com/go/spanner/spansql"
 )
 
-// evalContext represents the context for evaluating an expression.
+// evalContext represents t he context for evaluating an expression.
 type evalContext struct {
 	// cols and row are set during expr evaluation.
 	cols []colInfo
