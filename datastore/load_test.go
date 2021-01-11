@@ -487,6 +487,21 @@ func TestLoadToInterface(t *testing.T) {
 			want: &withUntypedInterface{Field: "Newly set"},
 		},
 		{
+			name: "struct with timestamp",
+			src: &pb.Entity{
+				Key: keyToProto(testKey0),
+				Properties: map[string]*pb.Value{
+					"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+				},
+			},
+			dst: &struct{ Time time.Time }{
+				Time: time.Time{},
+			},
+			want: &struct{ Time time.Time }{
+				Time: time.Unix(1605504600, 0).In(time.UTC),
+			},
+		},
+		{
 			name: "struct with civil.Date",
 			src: &pb.Entity{
 				Key: keyToProto(testKey0),
