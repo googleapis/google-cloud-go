@@ -158,15 +158,14 @@ func TestHandleInsertErrors(t *testing.T) {
 			if !testutil.Equal(got, test.want) {
 				t.Errorf("(case: %s)\nin %#v\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
 			}
-		} else {
-			if got != nil && test.want != nil && got.Error() != test.want.Error() {
-				// check matching error messages
-				t.Errorf("(case: %s)\nin %#v:\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
-			} else {
-				// mismatched nils
-				t.Errorf("(case: %s)\nin %#v:\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
-			}
+			continue
 		}
+
+		if got != nil && test.want != nil && got.Error() != test.want.Error() {
+			// check matching error messages
+			t.Errorf("(case: %s)\nin %#v:\ngot\n%#v\nwant\n%#v", test.description, test.in, got, test.want)
+		}
+
 	}
 }
 
