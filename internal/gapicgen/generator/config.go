@@ -881,6 +881,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/01/10
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/channel/v1",
+		pkg:                   "channel",
+		importPath:            "cloud.google.com/go/channel/apiv1",
+		gRPCServiceConfigPath: "google/cloud/channel/v1/cloudchannel_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/channel/v1/cloudchannel_v1.yaml",
+		// GA after 2021/02/08
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
