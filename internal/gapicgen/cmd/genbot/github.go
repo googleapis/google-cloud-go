@@ -187,7 +187,7 @@ func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string
 	sb.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
 		sb.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
-		sb.WriteString(formatChanges(changes, false))
+		sb.WriteString(generator.FormatChanges(changes, false))
 	}
 	body := sb.String()
 
@@ -264,7 +264,7 @@ func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, 
 	} else {
 		sb.WriteString("\n\nThere is no corresponding genproto PR.\n")
 	}
-	sb.WriteString(formatChanges(changes, true))
+	sb.WriteString(generator.FormatChanges(changes, true))
 	body := sb.String()
 
 	c := exec.Command("/bin/bash", "-c", `
@@ -318,7 +318,7 @@ func (gc *GithubClient) AmendGenprotoPR(ctx context.Context, genprotoPRNum int, 
 	var body strings.Builder
 	body.WriteString(genprotoCommitBody)
 	body.WriteString(fmt.Sprintf("\n\nCorresponding google-cloud-go PR: googleapis/google-cloud-go#%d\n", gocloudPRNum))
-	body.WriteString(formatChanges(changes, false))
+	body.WriteString(generator.FormatChanges(changes, false))
 	sBody := body.String()
 	c := exec.Command("/bin/bash", "-c", `
 set -ex
@@ -366,32 +366,4 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 		return err
 	}
 	return nil
-}
-
-func formatChanges(changes []*generator.ChangeInfo, onlyGapicChanges bool) string {
-	if len(changes) == 0 {
-		return ""
-	}
-	var sb strings.Builder
-	sb.WriteString("\nChanges:\n")
-	for _, c := range changes {
-		if onlyGapicChanges && !c.HasGapicChanges {
-			continue
-		}
-		sb.WriteString("- ")
-		ss := strings.Split(c.Body, "\n")
-		for i, s := range ss {
-			if i == 0 {
-				sb.WriteString(fmt.Sprintf("%s\n", s))
-				continue
-			}
-			if s == "" {
-				sb.WriteString("\n")
-				continue
-			}
-			sb.WriteString(fmt.Sprintf("  %s\n", s))
-		}
-		sb.WriteString("\n")
-	}
-	return sb.String()
 }
