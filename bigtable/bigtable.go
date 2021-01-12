@@ -14,7 +14,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package bigtable // import "cloud.google.com/go/bigtable"
+package bigtable // imp ort "cloud.google.com/go/bigtable"
 
 import (
 	"context"
