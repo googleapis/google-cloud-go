@@ -172,21 +172,21 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 
 // DeliveryRequirement specifies when a subscription should send messages to
 // subscribers relative to persistence in storage.
-type DeliveryRequirement int32
+type DeliveryRequirement int
 
 const (
 	// UnspecifiedDeliveryRequirement represents and unset delivery requirement.
-	UnspecifiedDeliveryRequirement = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVERY_REQUIREMENT_UNSPECIFIED)
+	UnspecifiedDeliveryRequirement DeliveryRequirement = iota
 
 	// DeliverImmediately means the server will not not wait for a published
 	// message to be successfully written to storage before delivering it to
 	// subscribers.
-	DeliverImmediately = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVER_IMMEDIATELY)
+	DeliverImmediately
 
 	// DeliverAfterStored means the server will not deliver a published message to
 	// subscribers until the message has been successfully written to storage.
 	// This will result in higher end-to-end latency, but consistent delivery.
-	DeliverAfterStored = DeliveryRequirement(pb.Subscription_DeliveryConfig_DELIVER_AFTER_STORED)
+	DeliverAfterStored
 )
 
 // SubscriptionConfig describes the properties of a Google Pub/Sub Lite
@@ -211,6 +211,7 @@ func (sc *SubscriptionConfig) toProto() *pb.Subscription {
 		Name:  sc.Name.String(),
 		Topic: sc.Topic.String(),
 		DeliveryConfig: &pb.Subscription_DeliveryConfig{
+			// Note: Assumes DeliveryRequirement enum values match API proto.
 			DeliveryRequirement: pb.Subscription_DeliveryConfig_DeliveryRequirement(sc.DeliveryRequirement),
 		},
 	}
@@ -226,8 +227,9 @@ func protoToSubscriptionConfig(s *pb.Subscription) (*SubscriptionConfig, error) 
 		return nil, fmt.Errorf("pubsublite: invalid topic name %q in subscription config", s.GetTopic())
 	}
 	return &SubscriptionConfig{
-		Name:                name,
-		Topic:               topic,
+		Name:  name,
+		Topic: topic,
+		// Note: Assumes DeliveryRequirement enum values match API proto.
 		DeliveryRequirement: DeliveryRequirement(s.GetDeliveryConfig().GetDeliveryRequirement().Number()),
 	}, nil
 }
@@ -246,6 +248,7 @@ func (sc *SubscriptionConfigToUpdate) toUpdateRequest() *pb.UpdateSubscriptionRe
 	updatedSubs := &pb.Subscription{
 		Name: sc.Name.String(),
 		DeliveryConfig: &pb.Subscription_DeliveryConfig{
+			// Note: Assumes DeliveryRequirement enum values match API proto.
 			DeliveryRequirement: pb.Subscription_DeliveryConfig_DeliveryRequirement(sc.DeliveryRequirement),
 		},
 	}
