@@ -112,7 +112,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on master.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
   # If PR changes affect all submodules, then run all tests
-  if echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
+  if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
     testAllModules
   else
     runDirectoryTests . # Always run base tests
