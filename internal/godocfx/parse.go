@@ -83,6 +83,7 @@ type item struct {
 	Syntax   syntax    `yaml:"syntax,omitempty"`
 	Examples []example `yaml:"codeexamples,omitempty"`
 	Children []child   `yaml:"children,omitempty"`
+	AltLink  string    `yaml:"alt_link,omitempty"`
 }
 
 func (p *page) addItem(i *item) {
@@ -156,6 +157,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 			Langs:    onlyGo,
 			Type:     "package",
 			Examples: processExamples(pi.doc.Examples, pi.fset),
+			AltLink:  "https://pkg.go.dev/" + pi.doc.ImportPath,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pi.doc.ImportPath] = pkgPage
