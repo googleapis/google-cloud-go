@@ -487,21 +487,6 @@ func TestLoadToInterface(t *testing.T) {
 			want: &withUntypedInterface{Field: "Newly set"},
 		},
 		{
-			name: "struct with timestamp",
-			src: &pb.Entity{
-				Key: keyToProto(testKey0),
-				Properties: map[string]*pb.Value{
-					"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
-				},
-			},
-			dst: &struct{ Time time.Time }{
-				Time: time.Time{},
-			},
-			want: &struct{ Time time.Time }{
-				Time: time.Unix(1605504600, 0).In(time.UTC),
-			},
-		},
-		{
 			name: "struct with civil.Date",
 			src: &pb.Entity{
 				Key: keyToProto(testKey0),
@@ -582,6 +567,36 @@ func TestLoadToInterface(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestTimezone(t *testing.T) {
+	// Expect Local times to be represented in UTC
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+		},
+	}
+
+	dst := &struct{ Time time.Time }{
+		Time: time.Time{},
+	}
+	want := &struct{ Time time.Time }{
+		Time: time.Unix(1605504600, 0).In(time.UTC),
+	}
+
+	err := loadEntityProto(dst, src)
+
+	if err != nil {
+		t.Fatalf("loadEntityProto: %v", err)
+	}
+
+	gotZone, _ := dst.Time.Zone()
+	wantZone, _ := want.Time.Zone()
+	if diff := testutil.Diff(gotZone, wantZone); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+
 }
 
 func TestAlreadyPopulatedDst(t *testing.T) {
