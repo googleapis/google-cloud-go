@@ -129,13 +129,27 @@ func (r *Routine) Delete(ctx context.Context) (err error) {
 	return req.Do()
 }
 
+// RoutineDeterminism specifies the level of determinism that javascript User Defined Functions
+// exhibit.
+type RoutineDeterminism string
+
+const (
+	// Deterministic indicates that two calls with the same input to a UDF yield the same output.
+	Deterministic RoutineDeterminism = "DETERMINISTIC"
+	// NonDeterministic indicates that the output of the UDF is not guaranteed to yield the same
+	// output each time for a given set of inputs.
+	NonDeterministic RoutineDeterminism = "NON_DETERMINSTIC"
+)
+
 // RoutineMetadata represents details of a given BigQuery Routine.
 type RoutineMetadata struct {
 	ETag string
 	// Type indicates the type of routine, such as SCALAR_FUNCTION or PROCEDURE.
-	Type             string
-	CreationTime     time.Time
-	Description      string
+	Type         string
+	CreationTime time.Time
+	Description  string
+	// DeterminismLevel is only applicable to Javascript UDFs.
+	DeterminismLevel RoutineDeterminism
 	LastModifiedTime time.Time
 	// Language of the routine, such as SQL or JAVASCRIPT.
 	Language string
@@ -161,6 +175,7 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 		return r, nil
 	}
 	r.Description = rm.Description
+	r.DeterminismLevel = string(rm.DeterminismLevel)
 	r.Language = rm.Language
 	r.RoutineType = rm.Type
 	r.DefinitionBody = rm.Body
@@ -280,6 +295,7 @@ func routineArgumentsToBQ(in []*RoutineArgument) ([]*bq.Argument, error) {
 type RoutineMetadataToUpdate struct {
 	Arguments         []*RoutineArgument
 	Description       optional.String
+	DeterminismLevel  optional.String
 	Type              optional.String
 	Language          optional.String
 	Body              optional.String
@@ -298,6 +314,9 @@ func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
 	if rm.Description != nil {
 		r.Description = optional.ToString(rm.Description)
 		forceSend("Description")
+	}
+	if rm.DeterminismLevel != nil {
+		r.DeterminismLevel = optional.ToString(rm.DeterminismLevel)
 	}
 	if rm.Arguments != nil {
 		if len(rm.Arguments) == 0 {
@@ -348,6 +367,7 @@ func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 		Type:              r.RoutineType,
 		CreationTime:      unixMillisToTime(r.CreationTime),
 		Description:       r.Description,
+		DeterminismLevel:  RoutineDeterminism(r.DeterminismLevel),
 		LastModifiedTime:  unixMillisToTime(r.LastModifiedTime),
 		Language:          r.Language,
 		ImportedLibraries: r.ImportedLibraries,

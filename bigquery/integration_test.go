@@ -2918,7 +2918,8 @@ func TestIntegration_RoutineJSUDF(t *testing.T) {
 	routine := dataset.Routine(routineID)
 	err := routine.Create(ctx, &RoutineMetadata{
 		Language: "JAVASCRIPT", Type: "SCALAR_FUNCTION",
-		Description: "capitalizes using javascript",
+		Description:      "capitalizes using javascript",
+		DeterminismLevel: Deterministic,
 		Arguments: []*RoutineArgument{
 			{Name: "instr", Kind: "FIXED_TYPE", DataType: &StandardSQLDataType{TypeKind: "STRING"}},
 		},
