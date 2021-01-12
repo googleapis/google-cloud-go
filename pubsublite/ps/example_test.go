@@ -29,9 +29,7 @@ func ExamplePublisherClient_Publish() {
 		Zone:    "zone",
 		TopicID: "topic-id",
 	}
-	// NOTE: Specifying nil, &DefaultPublishSettings and &PublishSettings{} for
-	// settings are equivalent.
-	publisher, err := ps.NewPublisherClient(ctx, topic, nil)
+	publisher, err := ps.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -59,7 +57,7 @@ func ExamplePublisherClient_Error() {
 		Zone:    "zone",
 		TopicID: "topic-id",
 	}
-	publisher, err := ps.NewPublisherClient(ctx, topic, nil)
+	publisher, err := ps.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -90,9 +88,7 @@ func ExampleSubscriberClient_Receive() {
 		Zone:           "zone",
 		SubscriptionID: "subscription-id",
 	}
-	// NOTE: Specifying nil, &DefaultReceiveSettings and &ReceiveSettings{} for
-	// settings are equivalent.
-	subscriber, err := ps.NewSubscriberClient(ctx, subscription, nil)
+	subscriber, err := ps.NewSubscriberClient(ctx, subscription)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -125,7 +121,7 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 	settings := ps.DefaultReceiveSettings
 	settings.MaxOutstandingMessages = 5
 	settings.MaxOutstandingBytes = 10e6
-	subscriber, err := ps.NewSubscriberClient(ctx, subscription, &settings)
+	subscriber, err := ps.NewSubscriberClientWithSettings(ctx, subscription, settings)
 	if err != nil {
 		// TODO: Handle error.
 	}

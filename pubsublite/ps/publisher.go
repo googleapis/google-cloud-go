@@ -70,18 +70,23 @@ type PublisherClient struct {
 }
 
 // NewPublisherClient creates a new Cloud Pub/Sub Lite client to publish
-// messages to a given topic. Specifying nil for settings will result in
-// DefaultPublishSettings being used.
+// messages to a given topic. DefaultPublishSettings will be used.
 //
 // See https://cloud.google.com/pubsub/lite/docs/publishing for more information
 // about publishing.
-func NewPublisherClient(ctx context.Context, topic pubsublite.TopicPath, settings *PublishSettings, opts ...option.ClientOption) (*PublisherClient, error) {
+func NewPublisherClient(ctx context.Context, topic pubsublite.TopicPath, opts ...option.ClientOption) (*PublisherClient, error) {
+	return NewPublisherClientWithSettings(ctx, topic, DefaultPublishSettings, opts...)
+}
+
+// NewPublisherClientWithSettings creates a new Cloud Pub/Sub Lite client to
+// publish messages to a given topic, using the specified PublishSettings.
+//
+// See https://cloud.google.com/pubsub/lite/docs/publishing for more information
+// about publishing.
+func NewPublisherClientWithSettings(ctx context.Context, topic pubsublite.TopicPath, settings PublishSettings, opts ...option.ClientOption) (*PublisherClient, error) {
 	region, err := pubsublite.ZoneToRegion(topic.Zone)
 	if err != nil {
 		return nil, err
-	}
-	if settings == nil {
-		settings = &DefaultPublishSettings
 	}
 
 	// Note: ctx is not used to create the wire publisher, because if it is
@@ -95,7 +100,7 @@ func NewPublisherClient(ctx context.Context, topic pubsublite.TopicPath, setting
 	if err := wirePub.WaitStarted(); err != nil {
 		return nil, err
 	}
-	return &PublisherClient{settings: *settings, wirePub: wirePub}, nil
+	return &PublisherClient{settings: settings, wirePub: wirePub}, nil
 }
 
 // Publish publishes `msg` to the topic asynchronously. Messages are batched and
