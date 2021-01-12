@@ -135,7 +135,7 @@ type Client struct {
 // as a project ID.
 //
 // Lalalal
-// By default NewClient uses WriteScope. To use a different scope, call
+// By default NewClient uses Writ eScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
 	if !strings.ContainsRune(parent, '/') {
