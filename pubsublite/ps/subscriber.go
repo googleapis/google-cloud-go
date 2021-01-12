@@ -235,14 +235,18 @@ type SubscriberClient struct {
 }
 
 // NewSubscriberClient creates a new Cloud Pub/Sub Lite client to receive
-// messages for a given subscription.
+// messages for a given subscription. Specifying nil for settings will result in
+// DefaultReceiveSettings being used.
 //
 // See https://cloud.google.com/pubsub/lite/docs/subscribing for more
 // information about receiving messages.
-func NewSubscriberClient(ctx context.Context, settings ReceiveSettings, subscription pubsublite.SubscriptionPath, opts ...option.ClientOption) (*SubscriberClient, error) {
+func NewSubscriberClient(ctx context.Context, subscription pubsublite.SubscriptionPath, settings *ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
 	region, err := pubsublite.ZoneToRegion(subscription.Zone)
 	if err != nil {
 		return nil, err
+	}
+	if settings == nil {
+		settings = &DefaultReceiveSettings
 	}
 	factory := &wireSubscriberFactoryImpl{
 		settings:     settings.toWireSettings(),
@@ -251,7 +255,7 @@ func NewSubscriberClient(ctx context.Context, settings ReceiveSettings, subscrip
 		options:      opts,
 	}
 	subClient := &SubscriberClient{
-		settings:       settings,
+		settings:       *settings,
 		wireSubFactory: factory,
 	}
 	return subClient, nil

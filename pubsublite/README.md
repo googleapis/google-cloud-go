@@ -30,7 +30,7 @@ topic := pubsublite.TopicPath{
     Zone:    "us-central1-b",
     TopicID: "topic1",
 }
-publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+publisher, err := ps.NewPublisherClient(ctx, topic, nil)
 if err != nil {
     log.Fatal(err)
 }
@@ -58,7 +58,7 @@ subscription := pubsublite.SubscriptionPath{
     Zone:           "us-central1-b",
     SubscriptionID: "subscription1",
 }
-subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
+subscriber, err := ps.NewSubscriberClient(ctx, subscription, nil)
 if err != nil {
 	log.Fatal(err)
 }

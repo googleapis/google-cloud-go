@@ -73,7 +73,7 @@ https://godoc.org/cloud.google.com/go/pubsublite/ps.
 
 To publish messages to a topic, first create a PublisherClient:
 
-  publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topicPath)
+  publisher, err := ps.NewPublisherClient(ctx, topicPath, nil)
 
 Then call Publish:
 
@@ -124,7 +124,7 @@ Receiving
 
 To receive messages for a subscription, first create a SubscriberClient:
 
-  subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscriptionPath)
+  subscriber, err := ps.NewSubscriberClient(ctx, subscriptionPath, nil)
 
 Messages are then consumed from a subscription via callback.
 

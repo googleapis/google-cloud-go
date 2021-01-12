@@ -80,7 +80,7 @@ func adminClient(ctx context.Context, t *testing.T, region string, opts ...optio
 
 func publisherClient(ctx context.Context, t *testing.T, settings PublishSettings, topic pubsublite.TopicPath, opts ...option.ClientOption) *PublisherClient {
 	opts = testOptions(ctx, t, opts...)
-	pub, err := NewPublisherClient(ctx, settings, topic, opts...)
+	pub, err := NewPublisherClient(ctx, topic, &settings, opts...)
 	if err != nil {
 		t.Fatalf("Failed to create publisher client: %v", err)
 	}
@@ -89,7 +89,7 @@ func publisherClient(ctx context.Context, t *testing.T, settings PublishSettings
 
 func subscriberClient(ctx context.Context, t *testing.T, settings ReceiveSettings, subscription pubsublite.SubscriptionPath, opts ...option.ClientOption) *SubscriberClient {
 	opts = testOptions(ctx, t, opts...)
-	sub, err := NewSubscriberClient(ctx, settings, subscription, opts...)
+	sub, err := NewSubscriberClient(ctx, subscription, &settings, opts...)
 	if err != nil {
 		t.Fatalf("Failed to create publisher client: %v", err)
 	}
