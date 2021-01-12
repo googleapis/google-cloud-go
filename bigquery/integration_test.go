@@ -2916,7 +2916,7 @@ func TestIntegration_RoutineJSUDF(t *testing.T) {
 	// Create a scalar UDF routine via API.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
-	err := routine.Create(ctx, &RoutineMetadata{
+	meta := &RoutineMetadata{
 		Language: "JAVASCRIPT", Type: "SCALAR_FUNCTION",
 		Description:      "capitalizes using javascript",
 		DeterminismLevel: Deterministic,
@@ -2925,9 +2925,23 @@ func TestIntegration_RoutineJSUDF(t *testing.T) {
 		},
 		ReturnType: &StandardSQLDataType{TypeKind: "STRING"},
 		Body:       "return instr.toUpperCase();",
-	})
-	if err != nil {
+	}
+	if err := routine.Create(ctx, meta); err != nil {
 		t.Fatalf("Create: %v", err)
+	}
+
+	newMeta := &RoutineMetadataToUpdate{
+		Language:    meta.Language,
+		Body:        meta.Body,
+		Arguments:   meta.Arguments,
+		Description: meta.Description,
+		ReturnType:  meta.ReturnType,
+		Type:        meta.Type,
+
+		DeterminismLevel: NotDeterministic,
+	}
+	if _, err := routine.Update(ctx, newMeta, ""); err != nil {
+		t.Fatalf("Update: %v", err)
 	}
 }
 

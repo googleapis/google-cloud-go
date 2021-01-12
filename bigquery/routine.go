@@ -136,9 +136,9 @@ type RoutineDeterminism string
 const (
 	// Deterministic indicates that two calls with the same input to a UDF yield the same output.
 	Deterministic RoutineDeterminism = "DETERMINISTIC"
-	// NonDeterministic indicates that the output of the UDF is not guaranteed to yield the same
+	// NotDeterministic indicates that the output of the UDF is not guaranteed to yield the same
 	// output each time for a given set of inputs.
-	NonDeterministic RoutineDeterminism = "NON_DETERMINSTIC"
+	NotDeterministic RoutineDeterminism = "NOT_DETERMINISTIC"
 )
 
 // RoutineMetadata represents details of a given BigQuery Routine.
@@ -316,7 +316,19 @@ func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
 		forceSend("Description")
 	}
 	if rm.DeterminismLevel != nil {
-		r.DeterminismLevel = optional.ToString(rm.DeterminismLevel)
+		processed := false
+		// Allow either string or RoutineDeterminism, a type based on string.
+		if x, ok := rm.DeterminismLevel.(RoutineDeterminism); ok {
+			r.DeterminismLevel = string(x)
+			processed = true
+		}
+		if x, ok := rm.DeterminismLevel.(string); ok {
+			r.DeterminismLevel = x
+			processed = true
+		}
+		if !processed {
+			panic(fmt.Sprintf("DeterminismLevel should be either type string or RoutineDetermism in update, got %T", rm.DeterminismLevel))
+		}
 	}
 	if rm.Arguments != nil {
 		if len(rm.Arguments) == 0 {
