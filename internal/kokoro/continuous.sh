@@ -40,7 +40,7 @@ export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 # Fail on any error
 set -eo pipefail
 
-# # Display commands being run
+# Display commands being run
 set -x
 
 # cd to project dir on Kokoro instance
@@ -107,15 +107,12 @@ exit_code=0
 
 if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   # Continuous jobs only run root tests & tests in submodules changed by the PR
-  # TODO(nicoleczhu): change back to master branch before merging
-  # SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only master..HEAD | grep -Ev '(\.md$|^\.github)' || true)
-  # I have it configured to just view the diffs from the last commit, for easier testing
-  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only HEAD~1 | grep -Ev '(\.md$|^\.github)' || true)
+  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^ | grep -Ev '(\.md$|^\.github)' || true)
   # CHANGED_DIRS is the list of significant top-level directories that changed,
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on master.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
   # If PR changes affect all submodules, then run all tests
-  if echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
+  if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
     testAllModules
   else
     runDirectoryTests . # Always run base tests
