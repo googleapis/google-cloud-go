@@ -19,7 +19,7 @@ package spannertest
 // This file contains the implementation of the Spanner fake itself,
 // namely the part behind the RPC interface.
 
-// TODO: missing transactionality in a serious way!
+// TODO: missing transa  ctionality in a serious way!
 
 import (
 	"bytes"
