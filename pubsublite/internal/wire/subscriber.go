@@ -411,6 +411,12 @@ func (ms *multiPartitionSubscriber) Terminate() {
 	}
 }
 
+func (ms *multiPartitionSubscriber) WaitStopped() error {
+	err := ms.compositeService.WaitStopped()
+	ms.clients.Close()
+	return err
+}
+
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
 // listen to its assigned partition numbers and dynamically add/remove
 // singlePartitionSubscribers.
@@ -481,6 +487,12 @@ func (as *assigningSubscriber) Terminate() {
 	for _, sub := range as.subscribers {
 		sub.Terminate()
 	}
+}
+
+func (as *assigningSubscriber) WaitStopped() error {
+	err := as.compositeService.WaitStopped()
+	as.clients.Close()
+	return err
 }
 
 // Subscriber is the client interface exported from this package for receiving
