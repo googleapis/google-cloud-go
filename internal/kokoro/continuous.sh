@@ -121,7 +121,7 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
   fi
 elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
   # Expected job name format: "/nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
-  ARR=(${JOBNAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
+  ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
   SUBMODULE_NAME=${ARR[1]} # Gets the token after "nightly/".
   if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
