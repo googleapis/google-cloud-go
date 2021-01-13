@@ -428,6 +428,17 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return bool(e), nil
 	case spansql.Paren:
 		return ec.evalExpr(e.Expr)
+	case spansql.Array:
+		var arr []interface{}
+		for _, elt := range e {
+			v, err := ec.evalExpr(elt)
+			if err != nil {
+				return nil, err
+			}
+			arr = append(arr, v)
+		}
+		// TODO: enforce or coerce to consistent types.
+		return arr, nil
 	case spansql.ArithOp:
 		return ec.evalArithOp(e)
 	case spansql.LogicalOp:
@@ -774,6 +785,21 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: qp.Type}, nil
 	case spansql.Paren:
 		return ec.colInfo(e.Expr)
+	case spansql.Array:
+		// Assume all element of an array literal have the same type.
+		if len(e) == 0 {
+			// TODO: What does the real Spanner do here?
+			return colInfo{Type: spansql.Type{Base: spansql.Int64, Array: true}}, nil
+		}
+		ci, err := ec.colInfo(e[0])
+		if err != nil {
+			return colInfo{}, err
+		}
+		if ci.Type.Array {
+			return colInfo{}, fmt.Errorf("can't nest array literals")
+		}
+		ci.Type.Array = true
+		return ci, nil
 	case spansql.NullLiteral:
 		// There isn't necessarily something sensible here.
 		// Empirically, though, the real Spanner returns Int64.
@@ -781,7 +807,7 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	case aggSentinel:
 		return colInfo{Type: e.Type, AggIndex: e.AggIndex}, nil
 	}
-	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s]", e.SQL())
+	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s] (type %T)", e.SQL(), e)
 }
 
 func (ec evalContext) arithColType(ao spansql.ArithOp) (spansql.Type, error) {

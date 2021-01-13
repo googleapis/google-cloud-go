@@ -25,6 +25,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"os/exec"
 	"reflect"
 	"regexp"
 	"strings"
@@ -39,18 +40,29 @@ import (
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	directPathIPV6Prefix = "[2001:4860:8040"
+	directPathIPV4Prefix = "34.126"
 )
 
 var (
 	// testProjectID specifies the project used for testing. It can be changed
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
+
+	// spannerHost specifies the spanner API host used for testing. It can be changed
+	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
+	spannerHost = getSpannerHost()
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -63,6 +75,9 @@ var (
 
 	databaseAdmin *database.DatabaseAdminClient
 	instanceAdmin *instance.InstanceAdminClient
+
+	dpConfig directPathTestConfig
+	peerInfo *peer.Peer
 
 	singerDBStatements = []string{
 		`CREATE TABLE Singers (
@@ -154,7 +169,28 @@ var (
 	}
 
 	validInstancePattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)$")
+
+	blackholeDpv6Cmd string
+	blackholeDpv4Cmd string
+	allowDpv6Cmd     string
+	allowDpv4Cmd     string
 )
+
+func init() {
+	flag.BoolVar(&dpConfig.attemptDirectPath, "it.attempt-directpath", false, "DirectPath integration test flag")
+	flag.BoolVar(&dpConfig.directPathIPv4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a IPv4-only VM")
+	peerInfo = &peer.Peer{}
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
+}
+
+type directPathTestConfig struct {
+	attemptDirectPath  bool
+	directPathIPv4Only bool
+}
 
 func parseInstanceName(inst string) (project, instance string, err error) {
 	matches := validInstancePattern.FindStringSubmatch(inst)
@@ -163,6 +199,10 @@ func parseInstanceName(inst string) (project, instance string, err error) {
 			inst, validInstancePattern.String())
 	}
 	return matches[1], matches[2], nil
+}
+
+func getSpannerHost() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
 }
 
 const (
@@ -195,6 +235,14 @@ func initIntegrationTests() (cleanup func()) {
 	}
 
 	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	if dpConfig.attemptDirectPath {
+		// TODO(mohanli): Move EnableDirectPath internal option to client.go when DirectPath is ready for public beta.
+		opts = append(opts, internaloption.EnableDirectPath(true))
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
 	var err error
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
@@ -342,6 +390,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
 			t.Fatal(err)
 		}
+		verifyDirectPathRemoteAddress(t)
 	}
 	// Calculate time difference between Cloud Spanner server and localhost to
 	// use to determine the exact staleness value to use.
@@ -425,6 +474,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query returns error %v, want nil", i, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 			rts, err := su.Timestamp()
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
@@ -441,6 +491,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Read returns error %v, want nil", i, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 			rts, err = su.Timestamp()
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Read doesn't return a timestamp, error: %v", i, err)
@@ -459,6 +510,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 				if err != nil {
 					continue
 				}
+				verifyDirectPathRemoteAddress(t)
 				v, err := rowToValues(r)
 				if err != nil {
 					continue
@@ -481,6 +533,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 			// The results from ReadUsingIndex is sorted by the index rather than primary key.
 			if len(got) != len(test.want) {
 				t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
@@ -519,6 +572,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 				if err != nil {
 					continue
 				}
+				verifyDirectPathRemoteAddress(t)
 				v, err := rowToValues(r)
 				if err != nil {
 					continue
@@ -920,10 +974,12 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 				if e != nil {
 					return e
 				}
+				verifyDirectPathRemoteAddress(t)
 				bb, e := readBalance(tx.Read(ctx, "Accounts", KeySets(Key{int64(2)}), []string{"Balance"}))
 				if e != nil {
 					return e
 				}
+				verifyDirectPathRemoteAddress(t)
 				if bf <= 0 {
 					return nil
 				}
@@ -937,6 +993,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 			if err != nil {
 				t.Errorf("%d: failed to execute transaction: %v", iter, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 		}(i)
 	}
 	// Because of context timeout, all goroutines will eventually return.
@@ -947,6 +1004,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 		if e != nil {
 			return e
 		}
+		verifyDirectPathRemoteAddress(t)
 		if ce := r.Column(0, &bf); ce != nil {
 			return ce
 		}
@@ -954,6 +1012,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 		if e != nil {
 			return e
 		}
+		verifyDirectPathRemoteAddress(t)
 		if bf != 30 || bb != 21 {
 			t.Errorf("Foo's balance is now %v and Bar's balance is now %v, want %v and %v", bf, bb, 30, 21)
 		}
@@ -962,6 +1021,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	if err != nil {
 		t.Errorf("failed to check balances: %v", err)
 	}
+	verifyDirectPathRemoteAddress(t)
 }
 
 func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
@@ -1076,6 +1136,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if _, err := client.Apply(ctx, ms); err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 
 	// Empty read.
 	rows, err := readAllTestTable(client.Single().Read(ctx, testTable,
@@ -1083,6 +1144,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	if got, want := len(rows), 0; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
@@ -1093,6 +1155,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	if got, want := len(rows), 0; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
@@ -1102,6 +1165,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	var got testTableRow
 	if err := row.ToStruct(&got); err != nil {
 		t.Fatal(err)
@@ -1115,12 +1179,14 @@ func TestIntegration_Reads(t *testing.T) {
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
 	}
+	verifyDirectPathRemoteAddress(t)
 
 	// Index point read.
 	rowIndex, err := client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v1"}, testTableColumns)
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	var gotIndex testTableRow
 	if err := rowIndex.ToStruct(&gotIndex); err != nil {
 		t.Fatal(err)
@@ -1133,6 +1199,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	rangeReads(ctx, t, client)
 	indexRangeReads(ctx, t, client)
 }
@@ -1282,6 +1349,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	if _, err := iter.Next(); err == nil {
 		t.Errorf("client sends query to removed database successfully, want it to fail")
 	}
+	verifyDirectPathRemoteAddress(t)
 
 	// Recreate database and table.
 	dbName := dbPath[strings.LastIndex(dbPath, "/")+1:]
@@ -1311,6 +1379,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	if err != nil && err != iterator.Done {
 		t.Errorf("failed to send query to database %v: %v", dbPath, err)
 	}
+	verifyDirectPathRemoteAddress(t)
 }
 
 // Test encoding/decoding non-struct Cloud Spanner types.
@@ -1503,6 +1572,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Unable to fetch row %v: %v", i, err)
 		}
+		verifyDirectPathRemoteAddress(t)
 		// Create new instance of type of test.want.
 		want := test.want
 		if want == nil {
@@ -2898,6 +2968,52 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 	}
 }
 
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	defer cleanup()
+
+	if !dpConfig.attemptDirectPath {
+		return
+	}
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	countEnough := examineTraffic(ctx, client /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeOrAllowDirectPath(t /*blackholeDP = */, true)
+	countEnough = examineTraffic(ctx, client /*blackholeDP = */, true)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	blackholeOrAllowDirectPath(t /*blackholeDP = */, false)
+	countEnough = examineTraffic(ctx, client /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	if databaseAdmin == nil {
@@ -3090,7 +3206,16 @@ func isNaN(x interface{}) bool {
 
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
-	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	if dpConfig.attemptDirectPath {
+		// TODO(mohanli): Move EnableDirectPath internal option to client.go when DirectPath is ready for public beta.
+		opts = append(opts, internaloption.EnableDirectPath(true))
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -3209,5 +3334,82 @@ func isEmulatorEnvSet() bool {
 func skipEmulatorTest(t *testing.T) {
 	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
+	}
+}
+
+func verifyDirectPathRemoteAddress(t *testing.T) {
+	t.Helper()
+	if !dpConfig.attemptDirectPath {
+		return
+	}
+	if remoteIP, res := isDirectPathRemoteAddress(); !res {
+		if dpConfig.directPathIPv4Only {
+			t.Fatalf("Expect to access DirectPath via ipv4 only, but RPC was destined to %s", remoteIP)
+		} else {
+			t.Fatalf("Expect to access DirectPath via ipv4 or ipv6, but RPC was destined to %s", remoteIP)
+		}
+	}
+}
+
+func isDirectPathRemoteAddress() (_ string, _ bool) {
+	remoteIP := peerInfo.Addr.String()
+	// DirectPath ipv4-only can only use ipv4 traffic.
+	if dpConfig.directPathIPv4Only {
+		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
+	}
+	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
+	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+// examineTraffic counts RPCs use DirectPath or CFE traffic.
+func examineTraffic(ctx context.Context, client *Client, expectDP bool) bool {
+	var numCount uint64
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+	countEnough := false
+	start := time.Now()
+	for !countEnough && time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = readAllTestTable(client.Single().Read(ctx, testTable, Key{"k1"}, testTableColumns))
+			if _, useDP := isDirectPathRemoteAddress(); useDP != expectDP {
+				numCount++
+			}
+			time.Sleep(100 * time.Millisecond)
+			countEnough = numCount >= minCompleteRPC
+		}
+	}
+	return countEnough
+}
+
+func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
+	if dpConfig.directPathIPv4Only {
+		if blackholeDP {
+			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		} else {
+			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		}
+		return
+	}
+	// DirectPath supports both ipv4 and ipv6
+	if blackholeDP {
+		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
+	} else {
+		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
 	}
 }

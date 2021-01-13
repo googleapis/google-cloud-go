@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -38,14 +38,16 @@ var newTopicStatsClientHook clientHook
 // TopicStatsCallOptions contains the retry settings for each method of TopicStatsClient.
 type TopicStatsCallOptions struct {
 	ComputeMessageStats []gax.CallOption
+	ComputeHeadCursor   []gax.CallOption
 }
 
 func defaultTopicStatsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://pubsublite.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -68,6 +70,7 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 				})
 			}),
 		},
+		ComputeHeadCursor: []gax.CallOption{},
 	}
 }
 
@@ -163,6 +166,28 @@ func (c *TopicStatsClient) ComputeMessageStats(ctx context.Context, req *pubsubl
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.topicStatsClient.ComputeMessageStats(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ComputeHeadCursor compute the head cursor for the partition.
+// The head cursor’s offset is guaranteed to be before or equal to all
+// messages which have not yet been acknowledged to be published, and
+// greater than the offset of any message whose publish has already
+// been acknowledged. It is 0 if there have never been messages on the
+// partition.
+func (c *TopicStatsClient) ComputeHeadCursor(ctx context.Context, req *pubsublitepb.ComputeHeadCursorRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeHeadCursorResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ComputeHeadCursor[0:len(c.CallOptions.ComputeHeadCursor):len(c.CallOptions.ComputeHeadCursor)], opts...)
+	var resp *pubsublitepb.ComputeHeadCursorResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.topicStatsClient.ComputeHeadCursor(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

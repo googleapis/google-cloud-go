@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,8 +20,6 @@
 // The Cloud Billing Budget API stores Cloud Billing budgets, which define a
 // budget plan and the rules to execute as spend is tracked against that
 // plan.
-//
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // Use of Context
 //
@@ -52,7 +50,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20201203"
+const versionClient = "20210112"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

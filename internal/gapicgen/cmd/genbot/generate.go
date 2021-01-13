@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build !windows
+
 package main
 
 import (
@@ -67,7 +69,13 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 	}
 
 	// Regen.
-	changes, err := generator.Generate(ctx, googleapisDir, genprotoDir, gocloudDir, protoDir, "")
+	conf := &generator.Config{
+		GoogleapisDir: googleapisDir,
+		GenprotoDir:   genprotoDir,
+		GapicDir:      gocloudDir,
+		ProtoDir:      protoDir,
+	}
+	changes, err := generator.Generate(ctx, conf)
 	if err != nil {
 		return err
 	}
