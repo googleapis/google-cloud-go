@@ -120,9 +120,9 @@ if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
     testChangedModules
   fi
 elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
-  # Expected job name format: "/nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
+  # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
   ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
-  SUBMODULE_NAME=${ARR[1]} # Gets the token after "nightly/".
+  SUBMODULE_NAME=${ARR[5]} # Gets the token after "nightly/".
   if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
     # Expected format example: ...google-cloud-go/nightly/logging.
