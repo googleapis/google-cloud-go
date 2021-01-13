@@ -231,6 +231,7 @@ items:
   - cloud.google.com/go/storage.Writer.CloseWithError
   - cloud.google.com/go/storage.Writer.Write
   - cloud.google.com/go/storage.SignedURL
+  alt_link: https://pkg.go.dev/cloud.google.com/go/storage
 - uid: cloud.google.com/go/storage.DeleteAction,SetStorageClassAction
   name: DeleteAction, SetStorageClassAction
   id: DeleteAction,SetStorageClassAction
