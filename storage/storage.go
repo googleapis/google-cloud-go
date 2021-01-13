@@ -1306,6 +1306,14 @@ func encodeUint32(u uint32) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
+const (
+	// ProjectionFull returns all fields of object(s).
+	ProjectionFull = "full"
+
+	// ProjectionNoAcl returns all fields of object(s) except for owner and acl.
+	ProjectionNoAcl = "noAcl"
+)
+
 // Query represents a query to filter objects from a bucket.
 type Query struct {
 	// Delimiter returns results in a directory-like fashion.
@@ -1341,6 +1349,10 @@ type Query struct {
 	// lexicographically before endOffset. If startOffset is also set, the objects
 	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
 	EndOffset string
+
+	// Projection defines set of properties to return. This may be either
+	// ProjectionFull or ProjectionNoAcl, zero value means ProjectionFull.
+	Projection string
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
@@ -1409,6 +1421,16 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 		q.fieldSelection = b.String()
 	}
 	return nil
+}
+
+// GetProjection returns either value of Projection field or
+// default projection when this field is empty.
+func (q *Query) GetProjection() string {
+	if q.Projection == "" {
+		return ProjectionFull
+	} else {
+		return q.Projection
+	}
 }
 
 // Conditions constrain methods to act on specific generations of

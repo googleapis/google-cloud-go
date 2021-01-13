@@ -663,3 +663,31 @@ func TestNewBucket(t *testing.T) {
 		t.Errorf("got=-, want=+:\n%s", diff)
 	}
 }
+
+func TestObjectsWithProjection(t *testing.T) {
+	samples := []struct {
+		req, expect string
+	} {
+		{"", ProjectionFull},
+		{ProjectionFull, ProjectionFull},
+		{ProjectionNoAcl, ProjectionNoAcl},
+	}
+	res := &http.Response{StatusCode: http.StatusInternalServerError}
+	transport := &mockTransport{}
+	client := mockClient(t, transport)
+	bucket := client.Bucket("mock-bucket")
+	ctx := context.Background()
+
+	for _, sample := range samples {
+		transport.addResult(res, nil)
+		query := &Query{Projection: sample.req}
+		bucket.Objects(ctx, query).Next()
+
+		projection := transport.gotReq.URL.Query()["projection"]
+		if len(projection) == 0 {
+			t.Errorf("requesting %q projection: no projection parameter generated", sample.req)
+		} else if projection[0] != sample.expect {
+			t.Errorf("requesting %q projection: expecting %q, got %q", sample.req, sample.expect, projection[0])
+		}
+	}
+}
