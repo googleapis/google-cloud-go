@@ -883,6 +883,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/02/08
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
+		pkg:                   "networkconnectivity",
+		importPath:            "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+		gRPCServiceConfigPath: "google/cloud/networkconnectivity/v1alpha1/networkconnectivity_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/networkconnectivity/v1alpha1/networkconnectivity_v1alpha1.yaml",
+		// GA after 2021/02/12
+		releaseLevel: "alpha",
+	},
 
 	// Non-Cloud APIs
 	{
