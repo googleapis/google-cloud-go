@@ -39,7 +39,7 @@ func (m *Metadata) String() string {
 //
 // Example:
 //   result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
-//   id, err := r.Get(ctx)
+//   id, err := result.Get(ctx)
 //   if err != nil {
 //     // TODO: Handle error.
 //   }
