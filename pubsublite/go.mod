@@ -11,10 +11,10 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
-	golang.org/x/tools v0.0.0-20210112230658-8b4aab62c064 // indirect
+	golang.org/x/tools v0.0.0-20210113180300-f96436850f18 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210111234610-22ae2b108f89
+	google.golang.org/genproto v0.0.0-20210113155445-facbc42f5e06
 	google.golang.org/grpc v1.34.1
 	google.golang.org/protobuf v1.25.0
 )
