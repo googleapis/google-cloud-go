@@ -9,6 +9,7 @@ require (
 	github.com/google/go-cmp v0.5.4
 	github.com/google/uuid v1.1.4
 	github.com/googleapis/gax-go/v2 v2.0.5
+	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
 	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 	golang.org/x/tools v0.0.0-20210112230658-8b4aab62c064 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
