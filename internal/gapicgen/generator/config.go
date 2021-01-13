@@ -883,6 +883,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/02/08
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/bigtable/admin/v2",
+		pkg:                   "admin",
+		importPath:            "cloud.google.com/go/bigtable/admin/apiv2",
+		gRPCServiceConfigPath: "google/bigtable/admin/v2/bigtableadmin_grpc_service_config.json",
+		apiServiceConfigPath:  "google/bigtable/admin/v2/bigtableadmin_v2.yaml",
+		// GA after 2021/02/13
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
