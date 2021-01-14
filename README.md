@@ -1,6 +1,6 @@
 # Google Cloud Client Libraries for Go
 
-[![GoDoc](https://godoc.org/cloud.google.com/go?status.svg)](https://pkg.go.dev/cloud.google.com/go)
+[![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go.svg)](https://pkg.go.dev/cloud.google.com/go)
 
 Go packages for [Google Cloud Platform](https://cloud.google.com) services.
 
@@ -24,8 +24,6 @@ To install the packages on your system, *do not clone the repo*. Instead:
 
 **NOTE:** Some of these packages are under development, and may occasionally
 make backwards-incompatible changes.
-
-**NOTE:** Github repo is a mirror of [https://code.googlesource.com/gocloud](https://code.googlesource.com/gocloud).
 
 ## Supported APIs
 

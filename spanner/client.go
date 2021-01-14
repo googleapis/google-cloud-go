@@ -177,6 +177,7 @@ func NewClientWithConfig(ctx context.Context, database string, config ClientConf
 			),
 		),
 		option.WithGRPCConnectionPool(config.NumChannels),
+		option.WithUserAgent(clientUserAgent),
 	}
 	// opts will take precedence above allOpts, as the values in opts will be
 	// applied after the values in allOpts.
@@ -451,6 +452,11 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 	var (
 		sh *sessionHandle
 	)
+	defer func() {
+		if sh != nil {
+			sh.recycle()
+		}
+	}()
 	err = runWithRetryOnAbortedOrSessionNotFound(ctx, func(ctx context.Context) error {
 		var (
 			err error
@@ -480,9 +486,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		resp, err = t.runInTransaction(ctx, f)
 		return err
 	})
-	if sh != nil {
-		sh.recycle()
-	}
 	return resp, err
 }
 
