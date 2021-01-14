@@ -19,7 +19,6 @@ import (
 	"sync"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/wire"
 	"google.golang.org/api/option"
 
@@ -78,7 +77,7 @@ type wireSubscriberFactory interface {
 type wireSubscriberFactoryImpl struct {
 	settings     wire.ReceiveSettings
 	region       string
-	subscription pubsublite.SubscriptionPath
+	subscription wire.SubscriptionPath
 	options      []option.ClientOption
 }
 
@@ -209,7 +208,7 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 	return err
 }
 
-// MessageReceiverFunc handles messages sent by the Cloud Pub/Sub Lite service.
+// MessageReceiverFunc handles messages sent by the Pub/Sub Lite service.
 //
 // The implementation must arrange for pubsub.Message.Ack() or
 // pubsub.Message.Nack() to be called after processing the message.
@@ -220,8 +219,8 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 // callback will block the delivery of subsequent messages for the partition.
 type MessageReceiverFunc func(context.Context, *pubsub.Message)
 
-// SubscriberClient is a Cloud Pub/Sub Lite client to receive messages for a
-// given subscription.
+// SubscriberClient is a Pub/Sub Lite client to receive messages for a given
+// subscription.
 //
 // See https://cloud.google.com/pubsub/lite/docs/subscribing for more
 // information about receiving messages.
@@ -234,30 +233,31 @@ type SubscriberClient struct {
 	receiveActive bool
 }
 
-// NewSubscriberClient creates a new Cloud Pub/Sub Lite client to receive
-// messages for a given subscription. DefaultReceiveSettings will be used.
-//
-// See https://cloud.google.com/pubsub/lite/docs/subscribing for more
-// information about receiving messages.
-func NewSubscriberClient(ctx context.Context, subscription pubsublite.SubscriptionPath, opts ...option.ClientOption) (*SubscriberClient, error) {
+// NewSubscriberClient creates a new Pub/Sub Lite client to receive messages for
+// a given subscription, using DefaultReceiveSettings. A valid subscription path
+// has the format:
+// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+func NewSubscriberClient(ctx context.Context, subscription string, opts ...option.ClientOption) (*SubscriberClient, error) {
 	return NewSubscriberClientWithSettings(ctx, subscription, DefaultReceiveSettings, opts...)
 }
 
-// NewSubscriberClientWithSettings creates a new Cloud Pub/Sub Lite client to
-// receive messages for a given subscription, using the specified
-// ReceiveSettings.
-//
-// See https://cloud.google.com/pubsub/lite/docs/subscribing for more
-// information about receiving messages.
-func NewSubscriberClientWithSettings(ctx context.Context, subscription pubsublite.SubscriptionPath, settings ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
-	region, err := pubsublite.ZoneToRegion(subscription.Zone)
+// NewSubscriberClientWithSettings creates a new Pub/Sub Lite client to receive
+// messages for a given subscription, using the specified ReceiveSettings. A
+// valid subscription path has the format:
+// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+func NewSubscriberClientWithSettings(ctx context.Context, subscription string, settings ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
+	subscriptionPath, err := wire.ParseSubscriptionPath(subscription)
+	if err != nil {
+		return nil, err
+	}
+	region, err := wire.ZoneToRegion(subscriptionPath.Zone)
 	if err != nil {
 		return nil, err
 	}
 	factory := &wireSubscriberFactoryImpl{
 		settings:     settings.toWireSettings(),
 		region:       region,
-		subscription: subscription,
+		subscription: subscriptionPath,
 		options:      opts,
 	}
 	subClient := &SubscriberClient{

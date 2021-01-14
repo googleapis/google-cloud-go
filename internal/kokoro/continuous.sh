@@ -106,21 +106,23 @@ set +e # Run all tests, don't stop after the first failure.
 exit_code=0
 
 if [[ $KOKORO_JOB_NAME == *"continuous"* ]]; then
-  # Continuous jobs only run root tests & tests in submodules changed by the PR
-  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^ | grep -Ev '(\.md$|^\.github)' || true)
+  # Continuous jobs only run root tests & tests in submodules changed by the PR.
+  SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only $KOKORO_GIT_COMMIT^..$KOKORO_GIT_COMMIT | grep -Ev '(\.md$|^\.github)' || true)
   # CHANGED_DIRS is the list of significant top-level directories that changed,
   # but weren't deleted by the current PR. CHANGED_DIRS will be empty when run on master.
   CHANGED_DIRS=$(echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "/" | cut -d/ -f1 | sort -u | tr '\n' ' ' | xargs ls -d 2>/dev/null || true)
-  # If PR changes affect all submodules, then run all tests
+  # If PR changes affect all submodules, then run all tests.
   if [[ -z $SIGNIFICANT_CHANGES ]] || echo "$SIGNIFICANT_CHANGES" | tr ' ' '\n' | grep "^go.mod$" || [[ $CHANGED_DIRS =~ "internal" ]]; then
     testAllModules
   else
-    runDirectoryTests . # Always run base tests
+    runDirectoryTests . # Always run base tests.
     echo "Running tests only in changed submodules: $CHANGED_DIRS"
     testChangedModules
   fi
 elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
-  SUBMODULE_NAME="${KOKORO_JOB_NAME#*"nightly/"}"
+  # Expected job name format: ".../nightly/[OPTIONAL_MODULE_NAME]/[OPTIONAL_JOB_NAMES...]"
+  ARR=(${KOKORO_JOB_NAME//// }) # Splits job name by "/" where ARR[0] is expected to be "nightly".
+  SUBMODULE_NAME=${ARR[5]} # Gets the token after "nightly/".
   if [[ -n $SUBMODULE_NAME ]] && [[ -d "./$SUBMODULE_NAME" ]]; then
     # Only run tests in the submodule designated in the Kokoro job name.
     # Expected format example: ...google-cloud-go/nightly/logging.
@@ -130,7 +132,7 @@ elif [[ $KOKORO_JOB_NAME == *"nightly"* ]]; then
       runDirectoryTests
     popd > /dev/null
   else
-    # Run all tests if it is a regular nightly job
+    # Run all tests if it is a regular nightly job.
     testAllModules
   fi
 else
