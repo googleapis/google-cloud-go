@@ -108,10 +108,10 @@ func TestAdminTopicCRUD(t *testing.T) {
 		t.Errorf("Topic() got: %v\nwant: %v", gotConfig, topicConfig)
 	}
 
-	if gotPartitions, err := admin.TopicPartitions(ctx, topicPath); err != nil {
-		t.Errorf("TopicPartitions() got err: %v", err)
+	if gotPartitions, err := admin.TopicPartitionCount(ctx, topicPath); err != nil {
+		t.Errorf("TopicPartitionCount() got err: %v", err)
 	} else if wantPartitions := 3; gotPartitions != wantPartitions {
-		t.Errorf("TopicPartitions() got: %v\nwant: %v", gotPartitions, wantPartitions)
+		t.Errorf("TopicPartitionCount() got: %v\nwant: %v", gotPartitions, wantPartitions)
 	}
 
 	if err := admin.DeleteTopic(ctx, topicPath); err != nil {
@@ -397,8 +397,8 @@ func TestAdminValidateResourcePaths(t *testing.T) {
 	if _, err := admin.Topic(ctx, "INVALID"); err == nil {
 		t.Errorf("Topic() should fail")
 	}
-	if _, err := admin.TopicPartitions(ctx, "INVALID"); err == nil {
-		t.Errorf("TopicPartitions() should fail")
+	if _, err := admin.TopicPartitionCount(ctx, "INVALID"); err == nil {
+		t.Errorf("TopicPartitionCount() should fail")
 	}
 	if err := admin.DeleteTopic(ctx, "INVALID"); err == nil {
 		t.Errorf("DeleteTopic() should fail")

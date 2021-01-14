@@ -163,10 +163,10 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 		t.Errorf("Topic() got: -, want: +\n%s", diff)
 	}
 
-	if gotTopicPartitions, err := admin.TopicPartitions(ctx, topicPath); err != nil {
+	if gotTopicPartitions, err := admin.TopicPartitionCount(ctx, topicPath); err != nil {
 		t.Errorf("Failed to get topic partitions: %v", err)
 	} else if gotTopicPartitions != newTopicConfig.PartitionCount {
-		t.Errorf("TopicPartitions() got: %v, want: %v", gotTopicPartitions, newTopicConfig.PartitionCount)
+		t.Errorf("TopicPartitionCount() got: %v, want: %v", gotTopicPartitions, newTopicConfig.PartitionCount)
 	}
 
 	topicIt := admin.Topics(ctx, locationPath)
