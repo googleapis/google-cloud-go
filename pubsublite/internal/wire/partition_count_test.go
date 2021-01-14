@@ -55,7 +55,7 @@ func newTestPartitionCountWatcher(t *testing.T, topicPath string, settings Publi
 		t: t,
 	}
 	tw.watcher = newPartitionCountWatcher(ctx, adminClient, testPublishSettings(), topicPath, tw.onCountChanged)
-	tw.initAndStart(t, tw.watcher, "PartitionCountWatcher")
+	tw.initAndStart(t, tw.watcher, "PartitionCountWatcher", adminClient)
 	return tw
 }
 

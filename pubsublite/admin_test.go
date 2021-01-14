@@ -82,6 +82,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	if gotConfig, err := admin.CreateTopic(ctx, topicConfig); err != nil {
 		t.Errorf("CreateTopic() got err: %v", err)
@@ -169,6 +170,7 @@ func TestAdminListTopics(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	var gotTopicConfigs []*TopicConfig
 	topicIt := admin.Topics(ctx, locationPath)
@@ -221,6 +223,7 @@ func TestAdminListTopicSubscriptions(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	// Inputs
 	topicPath := TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "my-topic"}
@@ -287,6 +290,7 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig); err != nil {
 		t.Errorf("CreateSubscription() got err: %v", err)
@@ -359,6 +363,7 @@ func TestAdminListSubscriptions(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	//defer admin.Close()
 
 	var gotSubscriptionConfigs []*SubscriptionConfig
 	subscriptionIt := admin.Subscriptions(ctx, locationPath)

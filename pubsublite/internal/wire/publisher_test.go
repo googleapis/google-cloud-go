@@ -61,7 +61,7 @@ func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, setting
 	tp := &testPartitionPublisher{
 		pub: pubFactory.New(topic.Partition),
 	}
-	tp.initAndStart(t, tp.pub, "Publisher")
+	tp.initAndStart(t, tp.pub, "Publisher", pubClient)
 	return tp
 }
 

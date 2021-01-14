@@ -105,6 +105,11 @@ func (sh *testStreamHandler) initialRequest() (interface{}, initialResponseRequi
 
 func (sh *testStreamHandler) onStreamStatusChange(status streamStatus) {
 	sh.statuses <- status
+
+	// Close connections.
+	if status == streamTerminated {
+		sh.pubClient.Close()
+	}
 }
 
 func (sh *testStreamHandler) onResponse(response interface{}) {

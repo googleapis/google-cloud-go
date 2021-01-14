@@ -89,7 +89,7 @@ func newTestAssigner(t *testing.T, subscription string) *testAssigner {
 		t.Fatal(err)
 	}
 	ta.asn = asn
-	ta.initAndStart(t, ta.asn, "Assigner")
+	ta.initAndStart(t, ta.asn, "Assigner", assignmentClient)
 	return ta
 }
 

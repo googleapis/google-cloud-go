@@ -197,7 +197,7 @@ func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, se
 		t:        t,
 	}
 	ts.sub = newSubscribeStream(ctx, subClient, settings, ts.Receiver.onMessage, subscription, acks, true)
-	ts.initAndStart(t, ts.sub, "Subscriber")
+	ts.initAndStart(t, ts.sub, "Subscriber", subClient)
 	return ts
 }
 
@@ -433,7 +433,17 @@ func TestSubscribeStreamFlowControlOverflow(t *testing.T) {
 	}
 }
 
-func newTestSinglePartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscription subscriptionPartition) *singlePartitionSubscriber {
+type testSinglePartitionSubscriber singlePartitionSubscriber
+
+func (t *testSinglePartitionSubscriber) WaitStopped() error {
+	err := t.compositeService.WaitStopped()
+	// Close connections.
+	t.committer.cursorClient.Close()
+	t.subscriber.subClient.Close()
+	return err
+}
+
+func newTestSinglePartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscription subscriptionPartition) *testSinglePartitionSubscriber {
 	ctx := context.Background()
 	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -455,7 +465,7 @@ func newTestSinglePartitionSubscriber(t *testing.T, receiverFunc MessageReceiver
 	}
 	sub := f.New(subscription.Partition)
 	sub.Start()
-	return sub
+	return (*testSinglePartitionSubscriber)(sub)
 }
 
 func TestSinglePartitionSubscriberStartStop(t *testing.T) {
