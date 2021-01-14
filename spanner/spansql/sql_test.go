@@ -19,6 +19,9 @@ package spansql
 import (
 	"reflect"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 func boolAddr(b bool) *bool {
@@ -51,6 +54,11 @@ func TestSQL(t *testing.T) {
 			return nil, pe
 		}
 		return e, nil
+	}
+
+	latz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatalf("Loading Los Angeles time zone info: %v", err)
 	}
 
 	line := func(n int) Position { return Position{Line: n} }
@@ -299,6 +307,16 @@ func TestSQL(t *testing.T) {
 			},
 			"SELECT `Desc`",
 			reparseQuery,
+		},
+		{
+			DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27}),
+			`DATE '2014-09-27'`,
+			reparseExpr,
+		},
+		{
+			TimestampLiteral(time.Date(2014, time.September, 27, 12, 34, 56, 123456e3, latz)),
+			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
+			reparseExpr,
 		},
 	}
 	for _, test := range tests {
