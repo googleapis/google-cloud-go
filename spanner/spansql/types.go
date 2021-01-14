@@ -23,6 +23,9 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
@@ -629,6 +632,18 @@ func (StringLiteral) isExpr() {}
 type BytesLiteral string
 
 func (BytesLiteral) isExpr() {}
+
+// DateLiteral represents a date literal.
+// https://cloud.google.com/spanner/docs/lexical#date_literals
+type DateLiteral civil.Date
+
+func (DateLiteral) isExpr() {}
+
+// TimestampLiteral represents a timestamp literal.
+// https://cloud.google.com/spanner/docs/lexical#timestamp_literals
+type TimestampLiteral time.Time
+
+func (TimestampLiteral) isExpr() {}
 
 type StarExpr int
 
