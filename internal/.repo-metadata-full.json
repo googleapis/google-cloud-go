@@ -5,7 +5,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/accessapproval/apiv1",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/analytics/admin/apiv1alpha": {
     "distribution_name": "cloud.google.com/go/analytics/admin/apiv1alpha",
@@ -37,7 +37,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/artifactregistry/apiv1beta2",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/asset/apiv1": {
     "distribution_name": "cloud.google.com/go/asset/apiv1",
@@ -189,7 +189,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/billing/budgets/apiv1",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/billing/budgets/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/billing/budgets/apiv1beta1",
@@ -477,7 +477,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/memcache/apiv1beta2": {
     "distribution_name": "cloud.google.com/go/memcache/apiv1beta2",
@@ -661,7 +661,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/retail/apiv2",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/rpcreplay": {
     "distribution_name": "cloud.google.com/go/rpcreplay",
@@ -749,7 +749,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/servicedirectory/apiv1",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/servicedirectory/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/servicedirectory/apiv1beta1",
@@ -933,7 +933,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/websecurityscanner/apiv1",
-    "release_level": "beta"
+    "release_level": "ga"
   },
   "cloud.google.com/go/workflows/apiv1beta": {
     "distribution_name": "cloud.google.com/go/workflows/apiv1beta",
