@@ -55,12 +55,6 @@ func TestMicrogenConfigs(t *testing.T) {
 		if entry.pkg == "" {
 			t.Errorf("config %q (#%d) expected non-empty pkg field", entry.importPath, k)
 		}
-		// TODO: Consider if we want to allow this at a later point in time.  If this
-		// isn't supplied the config is technically valid, but the generated library
-		// won't include features such as retry policies.
-		if entry.gRPCServiceConfigPath == "" {
-			t.Errorf("config %q (#%d) expected non-empty gRPCServiceConfigPath", entry.importPath, k)
-		}
 		if entry.apiServiceConfigPath == "" {
 			t.Errorf("config %q (#%d) expected non-empty apiServiceConfigPath", entry.importPath, k)
 		}
