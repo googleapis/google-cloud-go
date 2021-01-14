@@ -879,7 +879,16 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                  "appengine",
 		importPath:           "cloud.google.com/go/appengine/apiv1",
 		apiServiceConfigPath: "google/appengine/v1/appengine.yaml",
-		releaseLevel:         "beta",
+		// GA after 2021/02/13
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/binaryauthorization/v1beta1",
+		pkg:                   "binaryauthorization",
+		importPath:            "cloud.google.com/go/binaryauthorization/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/binaryauthorization/v1beta1/binaryauthorization_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/binaryauthorization/v1beta1/binaryauthorization_v1beta1.yaml",
+		releaseLevel:          "beta",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/channel/v1",
