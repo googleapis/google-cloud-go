@@ -38,14 +38,14 @@ func TestAdminTopicCRUD(t *testing.T) {
 	ctx := context.Background()
 
 	// Inputs
-	topicPath := TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "my-topic"}
+	const topicPath = "projects/my-proj/locations/us-central1-a/topics/my-topic"
 	topicConfig := TopicConfig{
 		Name:                       topicPath,
 		PartitionCount:             2,
 		PublishCapacityMiBPerSec:   4,
 		SubscribeCapacityMiBPerSec: 4,
 		PerPartitionBytes:          30 * gibi,
-		RetentionDuration:          time.Duration(24 * time.Hour),
+		RetentionDuration:          24 * time.Hour,
 	}
 	updateConfig := TopicConfigToUpdate{
 		Name:                       topicPath,
@@ -53,6 +53,9 @@ func TestAdminTopicCRUD(t *testing.T) {
 		SubscribeCapacityMiBPerSec: 8,
 		PerPartitionBytes:          40 * gibi,
 		RetentionDuration:          InfiniteRetention,
+	}
+	emptyUpdateConfig := TopicConfigToUpdate{
+		Name: topicPath,
 	}
 
 	// Expected requests and fake responses
@@ -95,7 +98,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 		t.Errorf("UpdateTopic() got: %v\nwant: %v", gotConfig, topicConfig)
 	}
 
-	if _, err := admin.UpdateTopic(ctx, TopicConfigToUpdate{}); !test.ErrorEqual(err, errNoTopicFieldsUpdated) {
+	if _, err := admin.UpdateTopic(ctx, emptyUpdateConfig); !test.ErrorEqual(err, errNoTopicFieldsUpdated) {
 		t.Errorf("UpdateTopic() got err: (%v), want err: (%v)", err, errNoTopicFieldsUpdated)
 	}
 
@@ -120,9 +123,9 @@ func TestAdminListTopics(t *testing.T) {
 	ctx := context.Background()
 
 	// Inputs
-	locationPath := LocationPath{Project: "my-proj", Zone: "us-central1-a"}
+	const locationPath = "projects/my-proj/locations/us-central1-a"
 	topicConfig1 := TopicConfig{
-		Name:                       TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "topic1"},
+		Name:                       "projects/my-proj/locations/us-central1-a/topics/topic1",
 		PartitionCount:             2,
 		PublishCapacityMiBPerSec:   4,
 		SubscribeCapacityMiBPerSec: 4,
@@ -130,7 +133,7 @@ func TestAdminListTopics(t *testing.T) {
 		RetentionDuration:          24 * time.Hour,
 	}
 	topicConfig2 := TopicConfig{
-		Name:                       TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "topic2"},
+		Name:                       "projects/my-proj/locations/us-central1-a/topics/topic2",
 		PartitionCount:             4,
 		PublishCapacityMiBPerSec:   6,
 		SubscribeCapacityMiBPerSec: 8,
@@ -138,7 +141,7 @@ func TestAdminListTopics(t *testing.T) {
 		RetentionDuration:          InfiniteRetention,
 	}
 	topicConfig3 := TopicConfig{
-		Name:                       TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "topic3"},
+		Name:                       "projects/my-proj/locations/us-central1-a/topics/topic3",
 		PartitionCount:             3,
 		PublishCapacityMiBPerSec:   8,
 		SubscribeCapacityMiBPerSec: 12,
@@ -193,15 +196,20 @@ func TestAdminListTopics(t *testing.T) {
 func TestAdminListTopicSubscriptions(t *testing.T) {
 	ctx := context.Background()
 
+	// Inputs
+	const (
+		topicPath     = "projects/my-proj/locations/us-central1-a/topics/my-topic"
+		subscription1 = "projects/my-proj/locations/us-central1-a/subscriptions/subscription1"
+		subscription2 = "projects/my-proj/locations/us-central1-a/subscriptions/subscription2"
+		subscription3 = "projects/my-proj/locations/us-central1-a/subscriptions/subscription3"
+	)
+
 	// Expected requests and fake responses
 	wantListReq1 := &pb.ListTopicSubscriptionsRequest{
 		Name: "projects/my-proj/locations/us-central1-a/topics/my-topic",
 	}
 	listResp1 := &pb.ListTopicSubscriptionsResponse{
-		Subscriptions: []string{
-			"projects/my-proj/locations/us-central1-a/subscriptions/subscription1",
-			"projects/my-proj/locations/us-central1-a/subscriptions/subscription2",
-		},
+		Subscriptions: []string{subscription1, subscription2},
 		NextPageToken: "next_token",
 	}
 	wantListReq2 := &pb.ListTopicSubscriptionsRequest{
@@ -209,9 +217,7 @@ func TestAdminListTopicSubscriptions(t *testing.T) {
 		PageToken: "next_token",
 	}
 	listResp2 := &pb.ListTopicSubscriptionsResponse{
-		Subscriptions: []string{
-			"projects/my-proj/locations/us-central1-a/subscriptions/subscription3",
-		},
+		Subscriptions: []string{subscription3},
 	}
 
 	verifiers := test.NewVerifiers(t)
@@ -222,13 +228,7 @@ func TestAdminListTopicSubscriptions(t *testing.T) {
 
 	admin := newTestAdminClient(t)
 
-	// Inputs
-	topicPath := TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "my-topic"}
-	subscription1 := SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "subscription1"}
-	subscription2 := SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "subscription2"}
-	subscription3 := SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "subscription3"}
-
-	var gotSubscriptions []SubscriptionPath
+	var gotSubscriptions []string
 	subsPathIt := admin.TopicSubscriptions(ctx, topicPath)
 	for {
 		subsPath, err := subsPathIt.Next()
@@ -242,7 +242,7 @@ func TestAdminListTopicSubscriptions(t *testing.T) {
 		}
 	}
 
-	wantSubscriptions := []SubscriptionPath{subscription1, subscription2, subscription3}
+	wantSubscriptions := []string{subscription1, subscription2, subscription3}
 	if !testutil.Equal(gotSubscriptions, wantSubscriptions) {
 		t.Errorf("TopicSubscriptions() got: %v\nwant: %v", gotSubscriptions, wantSubscriptions)
 	}
@@ -252,8 +252,8 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 	ctx := context.Background()
 
 	// Inputs
-	topicPath := TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "my-subscription"}
-	subscriptionPath := SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "my-subscription"}
+	const topicPath = "projects/my-proj/locations/us-central1-a/topics/my-topic"
+	const subscriptionPath = "projects/my-proj/locations/us-central1-a/subscriptions/my-subscription"
 	subscriptionConfig := SubscriptionConfig{
 		Name:                subscriptionPath,
 		Topic:               topicPath,
@@ -262,6 +262,9 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 	updateConfig := SubscriptionConfigToUpdate{
 		Name:                subscriptionPath,
 		DeliveryRequirement: DeliverAfterStored,
+	}
+	emptyUpdateConfig := SubscriptionConfigToUpdate{
+		Name: subscriptionPath,
 	}
 
 	// Expected requests and fake responses
@@ -300,7 +303,7 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 		t.Errorf("UpdateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
 	}
 
-	if _, err := admin.UpdateSubscription(ctx, SubscriptionConfigToUpdate{}); !test.ErrorEqual(err, errNoSubscriptionFieldsUpdated) {
+	if _, err := admin.UpdateSubscription(ctx, emptyUpdateConfig); !test.ErrorEqual(err, errNoSubscriptionFieldsUpdated) {
 		t.Errorf("UpdateSubscription() got err: (%v), want err: (%v)", err, errNoSubscriptionFieldsUpdated)
 	}
 
@@ -319,20 +322,20 @@ func TestAdminListSubscriptions(t *testing.T) {
 	ctx := context.Background()
 
 	// Inputs
-	locationPath := LocationPath{Project: "my-proj", Zone: "us-central1-a"}
+	const locationPath = "projects/my-proj/locations/us-central1-a"
 	subscriptionConfig1 := SubscriptionConfig{
-		Name:                SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "subscription1"},
-		Topic:               TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "topic1"},
+		Name:                "projects/my-proj/locations/us-central1-a/subscriptions/subscription1",
+		Topic:               "projects/my-proj/locations/us-central1-a/topics/topic1",
 		DeliveryRequirement: DeliverImmediately,
 	}
 	subscriptionConfig2 := SubscriptionConfig{
-		Name:                SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "subscription2"},
-		Topic:               TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "topic2"},
+		Name:                "projects/my-proj/locations/us-central1-a/subscriptions/subscription2",
+		Topic:               "projects/my-proj/locations/us-central1-a/topics/topic2",
 		DeliveryRequirement: DeliverAfterStored,
 	}
 	subscriptionConfig3 := SubscriptionConfig{
-		Name:                SubscriptionPath{Project: "my-proj", Zone: "us-central1-a", SubscriptionID: "subscription3"},
-		Topic:               TopicPath{Project: "my-proj", Zone: "us-central1-a", TopicID: "topic3"},
+		Name:                "projects/my-proj/locations/us-central1-a/subscriptions/subscription3",
+		Topic:               "projects/my-proj/locations/us-central1-a/topics/topic3",
 		DeliveryRequirement: DeliverImmediately,
 	}
 
@@ -377,5 +380,46 @@ func TestAdminListSubscriptions(t *testing.T) {
 	wantSubscriptionConfigs := []*SubscriptionConfig{&subscriptionConfig1, &subscriptionConfig2, &subscriptionConfig3}
 	if diff := testutil.Diff(gotSubscriptionConfigs, wantSubscriptionConfigs); diff != "" {
 		t.Errorf("Subscriptions() got: -, want: +\n%s", diff)
+	}
+}
+
+func TestAdminValidateResourcePaths(t *testing.T) {
+	ctx := context.Background()
+
+	// Note: no server requests expected.
+	verifiers := test.NewVerifiers(t)
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	admin := newTestAdminClient(t)
+	defer admin.Close()
+
+	if _, err := admin.Topic(ctx, "INVALID"); err == nil {
+		t.Errorf("Topic() should fail")
+	}
+	if _, err := admin.TopicPartitions(ctx, "INVALID"); err == nil {
+		t.Errorf("TopicPartitions() should fail")
+	}
+	if err := admin.DeleteTopic(ctx, "INVALID"); err == nil {
+		t.Errorf("DeleteTopic() should fail")
+	}
+	if _, err := admin.Subscription(ctx, "INVALID"); err == nil {
+		t.Errorf("Subscription() should fail")
+	}
+	if err := admin.DeleteSubscription(ctx, "INVALID"); err == nil {
+		t.Errorf("DeleteTopic() should fail")
+	}
+
+	topicIt := admin.Topics(ctx, "INVALID")
+	if _, err := topicIt.Next(); err == nil {
+		t.Errorf("TopicIterator.Next() should fail")
+	}
+	subsPathIt := admin.TopicSubscriptions(ctx, "INVALID")
+	if _, err := subsPathIt.Next(); err == nil {
+		t.Errorf("SubscriptionPathIterator.Next() should fail")
+	}
+	subsIt := admin.Subscriptions(ctx, "INVALID")
+	if _, err := subsIt.Next(); err == nil {
+		t.Errorf("SubscriptionIterator.Next() should fail")
 	}
 }
