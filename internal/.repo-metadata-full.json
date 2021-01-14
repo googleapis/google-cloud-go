@@ -23,6 +23,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/analytics/data/apiv1alpha",
     "release_level": "alpha"
   },
+  "cloud.google.com/go/appengine/apiv1": {
+    "distribution_name": "cloud.google.com/go/appengine/apiv1",
+    "description": "App Engine Audit Data",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/appengine/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/area120/tables/apiv1alpha1": {
     "distribution_name": "cloud.google.com/go/area120/tables/apiv1alpha1",
     "description": "",
