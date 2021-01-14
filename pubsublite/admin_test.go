@@ -384,12 +384,15 @@ func TestAdminListSubscriptions(t *testing.T) {
 }
 
 func TestAdminValidateResourcePaths(t *testing.T) {
+	ctx := context.Background()
+
+	// Note: no server requests expected.
 	verifiers := test.NewVerifiers(t)
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
-	ctx := context.Background()
+	defer admin.Close()
 
 	if _, err := admin.Topic(ctx, "INVALID"); err == nil {
 		t.Errorf("Topic() should fail")
