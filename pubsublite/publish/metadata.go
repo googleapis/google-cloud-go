@@ -47,16 +47,16 @@ func (m *Metadata) String() string {
 //   if err != nil {
 //     // TODO: Handle error.
 //   }
-func ParseMetadata(serverID string) (*Metadata, error) {
-	parts := strings.Split(serverID, ":")
+func ParseMetadata(id string) (*Metadata, error) {
+	parts := strings.Split(id, ":")
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", serverID)
+		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", id)
 	}
 
 	partition, pErr := strconv.ParseInt(parts[0], 10, 64)
 	offset, oErr := strconv.ParseInt(parts[1], 10, 64)
 	if pErr != nil || oErr != nil {
-		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", serverID)
+		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", id)
 	}
 	return &Metadata{Partition: int(partition), Offset: offset}, nil
 }
