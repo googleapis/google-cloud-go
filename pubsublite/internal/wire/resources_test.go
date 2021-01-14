@@ -76,3 +76,197 @@ func TestValidateRegion(t *testing.T) {
 		})
 	}
 }
+
+func TestZoneToRegion(t *testing.T) {
+	for _, tc := range []struct {
+		desc       string
+		zone       string
+		wantRegion string
+		wantErr    bool
+	}{
+		{
+			desc:       "valid",
+			zone:       "europe-west1-d",
+			wantRegion: "europe-west1",
+			wantErr:    false,
+		},
+		{
+			desc:    "invalid: insufficient dashes",
+			zone:    "europe-west1",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: no dashes",
+			zone:    "europewest1",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotRegion, gotErr := ZoneToRegion(tc.zone)
+			if gotRegion != tc.wantRegion || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ZoneToRegion(%q) = (%v, %v), want (%v, err=%v)", tc.zone, gotRegion, gotErr, tc.wantRegion, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestParseLocationPath(t *testing.T) {
+	for _, tc := range []struct {
+		desc     string
+		input    string
+		wantPath LocationPath
+		wantErr  bool
+	}{
+		{
+			desc:     "valid: location path",
+			input:    "projects/987654321/locations/europe-west1-d",
+			wantPath: LocationPath{Project: "987654321", Zone: "europe-west1-d"},
+		},
+		{
+			desc:    "invalid: zone",
+			input:   "europe-west1-d",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing project",
+			input:   "projects//locations/europe-west1-d",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing zone",
+			input:   "projects/987654321/locations/",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has prefix",
+			input:   "prefix/projects/987654321/locations/europe-west1-d",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has suffix",
+			input:   "projects/987654321/locations/europe-west1-d/subscriptions/my-subs",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotPath, gotErr := ParseLocationPath(tc.input)
+			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ParseLocationPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestParseTopicPath(t *testing.T) {
+	for _, tc := range []struct {
+		desc     string
+		input    string
+		wantPath TopicPath
+		wantErr  bool
+	}{
+		{
+			desc:     "valid: topic path",
+			input:    "projects/987654321/locations/europe-west1-d/topics/my-topic",
+			wantPath: TopicPath{Project: "987654321", Zone: "europe-west1-d", TopicID: "my-topic"},
+		},
+		{
+			desc:    "invalid: zone",
+			input:   "europe-west1-d",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: subscription path",
+			input:   "projects/987654321/locations/europe-west1-d/subscriptions/my-subs",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing project",
+			input:   "projects//locations/europe-west1-d/topics/my-topic",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing zone",
+			input:   "projects/987654321/locations//topics/my-topic",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing topic id",
+			input:   "projects/987654321/locations/europe-west1-d/topics/",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has prefix",
+			input:   "prefix/projects/987654321/locations/europe-west1-d/topics/my-topic",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has suffix",
+			input:   "projects/my-project/locations/us-west1-b/topics/my-topic/subresource/desc",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotPath, gotErr := ParseTopicPath(tc.input)
+			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ParseTopicPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestParseSubscriptionPath(t *testing.T) {
+	for _, tc := range []struct {
+		desc     string
+		input    string
+		wantPath SubscriptionPath
+		wantErr  bool
+	}{
+		{
+			desc:     "valid: subscription path",
+			input:    "projects/987654321/locations/europe-west1-d/subscriptions/my-subs",
+			wantPath: SubscriptionPath{Project: "987654321", Zone: "europe-west1-d", SubscriptionID: "my-subs"},
+		},
+		{
+			desc:    "invalid: zone",
+			input:   "europe-west1-d",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: topic path",
+			input:   "projects/987654321/locations/europe-west1-d/topics/my-topic",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing project",
+			input:   "projects//locations/europe-west1-d/subscriptions/my-subs",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing zone",
+			input:   "projects/987654321/locations//subscriptions/my-subs",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing subscription id",
+			input:   "projects/987654321/locations/europe-west1-d/subscriptions/",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has prefix",
+			input:   "prefix/projects/987654321/locations/europe-west1-d/subscriptions/my-subs",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has suffix",
+			input:   "projects/my-project/locations/us-west1-b/subscriptions/my-subs/subresource/desc",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotPath, gotErr := ParseSubscriptionPath(tc.input)
+			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ParseSubscriptionPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+			}
+		})
+	}
+}

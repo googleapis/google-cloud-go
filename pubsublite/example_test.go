@@ -31,11 +31,7 @@ func ExampleAdminClient_CreateTopic() {
 
 	const gib = 1 << 30
 	topicConfig := pubsublite.TopicConfig{
-		Name: pubsublite.TopicPath{
-			Project: "project-id",
-			Zone:    "zone",
-			TopicID: "topic-id",
-		},
+		Name:                       "projects/my-project/locations/zone/topics/my-topic",
 		PartitionCount:             2,        // Must be at least 1.
 		PublishCapacityMiBPerSec:   4,        // Must be 4-16 MiB/s.
 		SubscribeCapacityMiBPerSec: 8,        // Must be 4-32 MiB/s.
@@ -57,11 +53,7 @@ func ExampleAdminClient_UpdateTopic() {
 	}
 
 	updateConfig := pubsublite.TopicConfigToUpdate{
-		Name: pubsublite.TopicPath{
-			Project: "project-id",
-			Zone:    "zone",
-			TopicID: "topic-id",
-		},
+		Name:                       "projects/my-project/locations/zone/topics/my-topic",
 		PublishCapacityMiBPerSec:   8,
 		SubscribeCapacityMiBPerSec: 16,
 		// Garbage collect messages older than 24 hours.
@@ -80,11 +72,7 @@ func ExampleAdminClient_DeleteTopic() {
 		// TODO: Handle error.
 	}
 
-	topic := pubsublite.TopicPath{
-		Project: "project-id",
-		Zone:    "zone",
-		TopicID: "topic-id",
-	}
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	if err := admin.DeleteTopic(ctx, topic); err != nil {
 		// TODO: Handle error.
 	}
@@ -98,8 +86,7 @@ func ExampleAdminClient_Topics() {
 	}
 
 	// List the configs of all topics in the given zone for the project.
-	location := pubsublite.LocationPath{Project: "project-id", Zone: "zone"}
-	it := admin.Topics(ctx, location)
+	it := admin.Topics(ctx, "projects/my-project/locations/zone")
 	for {
 		topicConfig, err := it.Next()
 		if err == iterator.Done {
@@ -120,11 +107,7 @@ func ExampleAdminClient_TopicSubscriptions() {
 	}
 
 	// List the paths of all subscriptions of a topic.
-	topic := pubsublite.TopicPath{
-		Project: "project-id",
-		Zone:    "zone",
-		TopicID: "topic-id",
-	}
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	it := admin.TopicSubscriptions(ctx, topic)
 	for {
 		subscriptionPath, err := it.Next()
@@ -146,16 +129,8 @@ func ExampleAdminClient_CreateSubscription() {
 	}
 
 	subscriptionConfig := pubsublite.SubscriptionConfig{
-		Name: pubsublite.SubscriptionPath{
-			Project:        "project-id",
-			Zone:           "zone",
-			SubscriptionID: "subscription-id",
-		},
-		Topic: pubsublite.TopicPath{
-			Project: "project-id",
-			Zone:    "zone",
-			TopicID: "topic-id",
-		},
+		Name:  "projects/my-project/locations/zone/subscriptions/my-subscription",
+		Topic: "projects/my-project/locations/zone/topics/my-topic",
 		// Do not wait for a published message to be successfully written to storage
 		// before delivering it to subscribers.
 		DeliveryRequirement: pubsublite.DeliverImmediately,
@@ -174,11 +149,7 @@ func ExampleAdminClient_UpdateSubscription() {
 	}
 
 	updateConfig := pubsublite.SubscriptionConfigToUpdate{
-		Name: pubsublite.SubscriptionPath{
-			Project:        "project-id",
-			Zone:           "zone",
-			SubscriptionID: "subscription-id",
-		},
+		Name: "projects/my-project/locations/zone/subscriptions/my-subscription",
 		// Deliver a published message to subscribers after it has been successfully
 		// written to storage.
 		DeliveryRequirement: pubsublite.DeliverAfterStored,
@@ -196,11 +167,7 @@ func ExampleAdminClient_DeleteSubscription() {
 		// TODO: Handle error.
 	}
 
-	subscription := pubsublite.SubscriptionPath{
-		Project:        "project-id",
-		Zone:           "zone",
-		SubscriptionID: "subscription-id",
-	}
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
 	if err := admin.DeleteSubscription(ctx, subscription); err != nil {
 		// TODO: Handle error.
 	}
@@ -214,8 +181,7 @@ func ExampleAdminClient_Subscriptions() {
 	}
 
 	// List the configs of all subscriptions in the given zone for the project.
-	location := pubsublite.LocationPath{Project: "project-id", Zone: "zone"}
-	it := admin.Subscriptions(ctx, location)
+	it := admin.Subscriptions(ctx, "projects/my-project/locations/zone")
 	for {
 		subscriptionConfig, err := it.Next()
 		if err == iterator.Done {
