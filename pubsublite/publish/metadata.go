@@ -34,8 +34,7 @@ func (m *Metadata) String() string {
 	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
 }
 
-// ParseMetadata converts the server message ID string of a pubsub.PublishResult
-// to Metadata.
+// ParseMetadata converts the ID string of a pubsub.PublishResult to Metadata.
 //
 // Example:
 //   result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
