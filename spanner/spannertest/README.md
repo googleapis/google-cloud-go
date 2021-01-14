@@ -22,7 +22,7 @@ by ascending esotericism:
 - more aggregation functions
 - SELECT HAVING
 - case insensitivity
-- alternate literal types (esp. strings)
+- more literal types
 - generated columns
 - expression type casting, coercion
 - multiple joins
