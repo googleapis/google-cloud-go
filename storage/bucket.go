@@ -1204,7 +1204,11 @@ func (it *ObjectIterator) Next() (*ObjectAttrs, error) {
 func (it *ObjectIterator) fetch(pageSize int, pageToken string) (string, error) {
 	req := it.bucket.c.raw.Objects.List(it.bucket.name)
 	setClientHeader(req.Header())
-	req.Projection(it.query.GetProjection())
+	projection := it.query.Projection
+	if projection == "" {
+		projection = ProjectionFull
+	}
+	req.Projection(projection)
 	req.Delimiter(it.query.Delimiter)
 	req.Prefix(it.query.Prefix)
 	req.StartOffset(it.query.StartOffset)

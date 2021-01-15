@@ -1310,8 +1310,8 @@ const (
 	// ProjectionFull returns all fields of object(s).
 	ProjectionFull = "full"
 
-	// ProjectionNoAcl returns all fields of object(s) except for owner and acl.
-	ProjectionNoAcl = "noAcl"
+	// ProjectionNoACL returns all fields of object(s) except for Owner and ACL.
+	ProjectionNoACL = "noAcl"
 )
 
 // Query represents a query to filter objects from a bucket.
@@ -1350,8 +1350,9 @@ type Query struct {
 	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
 	EndOffset string
 
-	// Projection defines set of properties to return. This may be either
-	// ProjectionFull or ProjectionNoAcl, zero value means ProjectionFull.
+	// Projection defines the set of properties to return. It will default to ProjectionFull,
+	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
+	// which may improve performance when listing many objects.
 	Projection string
 }
 
@@ -1421,16 +1422,6 @@ func (q *Query) SetAttrSelection(attrs []string) error {
 		q.fieldSelection = b.String()
 	}
 	return nil
-}
-
-// GetProjection returns either value of Projection field or
-// default projection when this field is empty.
-func (q *Query) GetProjection() string {
-	if q.Projection == "" {
-		return ProjectionFull
-	} else {
-		return q.Projection
-	}
 }
 
 // Conditions constrain methods to act on specific generations of
