@@ -28,7 +28,6 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
@@ -269,8 +268,6 @@ func (e *ProdEnv) NewClient() (*Client, error) {
 	}
 
 	if e.config.AttemptDirectPath {
-		// TODO(mohanli): Move the EnableDirectPath internal option to bigtable.go after e2e tests are done.
-		clientOpts = append(clientOpts, internaloption.EnableDirectPath(true))
 		// For DirectPath tests, we need to add an interceptor to check the peer IP.
 		clientOpts = append(clientOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(e.peerInfo))))
 	}
