@@ -18,17 +18,12 @@ import (
 	"fmt"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/ps"
 )
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
-	topic := pubsublite.TopicPath{
-		Project: "project-id",
-		Zone:    "zone",
-		TopicID: "topic-id",
-	}
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	// NOTE: DefaultPublishSettings and empty PublishSettings{} are equivalent.
 	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
 	if err != nil {
@@ -53,11 +48,7 @@ func ExamplePublisherClient_Publish() {
 
 func ExamplePublisherClient_Error() {
 	ctx := context.Background()
-	topic := pubsublite.TopicPath{
-		Project: "project-id",
-		Zone:    "zone",
-		TopicID: "topic-id",
-	}
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
 	if err != nil {
 		// TODO: Handle error.
@@ -84,11 +75,7 @@ func ExamplePublisherClient_Error() {
 
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
-	subscription := pubsublite.SubscriptionPath{
-		Project:        "project-id",
-		Zone:           "zone",
-		SubscriptionID: "subscription-id",
-	}
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
 	// NOTE: DefaultReceiveSettings and empty ReceiveSettings{} are equivalent.
 	subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
 	if err != nil {
@@ -115,11 +102,7 @@ func ExampleSubscriberClient_Receive() {
 // partitions in the associated topic.
 func ExampleSubscriberClient_Receive_maxOutstanding() {
 	ctx := context.Background()
-	subscription := pubsublite.SubscriptionPath{
-		Project:        "project-id",
-		Zone:           "zone",
-		SubscriptionID: "subscription-id",
-	}
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
 	settings := ps.DefaultReceiveSettings
 	settings.MaxOutstandingMessages = 5
 	settings.MaxOutstandingBytes = 10e6
