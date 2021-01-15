@@ -1238,9 +1238,9 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 }
 
 func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
-	projections := map[string]bool {
-		"": true,
-		ProjectionFull: true,
+	projections := map[string]bool{
+		"":              true,
+		ProjectionFull:  true,
 		ProjectionNoACL: false,
 	}
 
