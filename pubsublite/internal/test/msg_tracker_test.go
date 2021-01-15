@@ -50,7 +50,7 @@ func TestMsgTrackerWaitTimeout(t *testing.T) {
 			t.Errorf("MsgTracker.Remove(%q) got %v, want %v", msg, got, want)
 		}
 	}
-	if gotErr, wantMsg := msgTracker.Wait(time.Millisecond), "received 2 of 3 messages"; ErrorHasMsg(gotErr, wantMsg) {
-		t.Errorf("MsgTracker.Wait() got err: %v, want msg: %q", gotErr, wantMsg)
+	if gotErr := msgTracker.Wait(time.Millisecond); gotErr == nil {
+		t.Errorf("MsgTracker.Wait() should return error")
 	}
 }
