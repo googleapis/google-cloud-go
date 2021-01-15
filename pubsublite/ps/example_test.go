@@ -16,6 +16,7 @@ package ps_test
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/ps"
@@ -25,6 +26,38 @@ func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	publisher, err := ps.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var results []*pubsub.PublishResult
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	results = append(results, r)
+	// Do other work ...
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+}
+
+// This example illustrates how to set batching settings for publishing. Note
+// that batching settings apply per partition. If BufferedByteLimit is being
+// used to bound memory usage, keep in mind the number of partitions in the
+// topic.
+func ExamplePublisherClient_Publish_batchingSettings() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	settings := ps.DefaultPublishSettings
+	settings.DelayThreshold = 50 * time.Millisecond
+	settings.CountThreshold = 200
+	settings.BufferedByteLimit = 5e8
+	publisher, err := ps.NewPublisherClientWithSettings(ctx, topic, settings)
 	if err != nil {
 		// TODO: Handle error.
 	}
