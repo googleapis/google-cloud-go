@@ -110,9 +110,10 @@ func (ac *AdminClient) Topic(ctx context.Context, topic string) (*TopicConfig, e
 	return protoToTopicConfig(topicpb)
 }
 
-// TopicPartitions returns the number of partitions for a topic. A valid topic
-// path has the format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
-func (ac *AdminClient) TopicPartitions(ctx context.Context, topic string) (int, error) {
+// TopicPartitionCount returns the number of partitions for a topic. A valid
+// topic path has the format:
+// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+func (ac *AdminClient) TopicPartitionCount(ctx context.Context, topic string) (int, error) {
 	if _, err := wire.ParseTopicPath(topic); err != nil {
 		return 0, err
 	}
