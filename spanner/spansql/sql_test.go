@@ -318,6 +318,29 @@ func TestSQL(t *testing.T) {
 			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
 			reparseExpr,
 		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("A"), ID("B"),
+					},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS:  SelectFromTable{Table: "Table1"},
+							RHS:  SelectFromTable{Table: "Table2"},
+							On: ComparisonOp{
+								LHS: PathExp{"Table1", "A"},
+								Op:  Eq,
+								RHS: PathExp{"Table2", "A"},
+							},
+						},
+					},
+				},
+			},
+			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
+			reparseQuery,
+		},
 	}
 	for _, test := range tests {
 		sql := test.data.SQL()
