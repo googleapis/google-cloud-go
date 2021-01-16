@@ -1230,7 +1230,8 @@ type ObjectAttrs struct {
 	// LifecycleConditions to manage object lifecycles.
 	//
 	// CustomTime cannot be removed once set on an object. It can be updated to a
-	// later value but not to an earlier one.
+	// later value but not to an earlier one. For more information see
+	// https://cloud.google.com/storage/docs/metadata#custom-time .
 	CustomTime time.Time
 }
 
