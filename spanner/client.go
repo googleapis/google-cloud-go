@@ -205,8 +205,6 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 		internaloption.EnableDirectPath(true),
 	}
 	allDefaultOpts := append(generatedDefaultOpts, clientDefaultOpts...)
-	// userOpts will take precedence above allDefaultOpts, as the values in
-	// userOpts will be applied after the values in allDefaultOpts.
 	return append(allDefaultOpts, userOpts...)
 }
 
