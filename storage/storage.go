@@ -1306,15 +1306,17 @@ func encodeUint32(u uint32) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
+// Projection is enumerated type for Query.Projection.
 type Projection int
 
 const (
+	// ProjectionDefault returns all fields of objects.
 	ProjectionDefault Projection = iota
 
-	// ProjectionFull returns all fields of object(s).
+	// ProjectionFull returns all fields of objects.
 	ProjectionFull
 
-	// ProjectionNoACL returns all fields of object(s) except for Owner and ACL.
+	// ProjectionNoACL returns all fields of objects except for Owner and ACL.
 	ProjectionNoACL
 )
 
