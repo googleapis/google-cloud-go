@@ -187,7 +187,7 @@ type testSubscribeStream struct {
 
 func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, settings ReceiveSettings, acks *ackTracker) *testSubscribeStream {
 	ctx := context.Background()
-	subClient, err := newSubscriberClient(ctx, "ignored", testClientOpts...)
+	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -197,7 +197,7 @@ func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, se
 		t:        t,
 	}
 	ts.sub = newSubscribeStream(ctx, subClient, settings, ts.Receiver.onMessage, subscription, acks, true)
-	ts.initAndStart(t, ts.sub, "Subscriber")
+	ts.initAndStart(t, ts.sub, "Subscriber", subClient)
 	return ts
 }
 
@@ -433,13 +433,23 @@ func TestSubscribeStreamFlowControlOverflow(t *testing.T) {
 	}
 }
 
-func newTestSinglePartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscription subscriptionPartition) *singlePartitionSubscriber {
+type testSinglePartitionSubscriber singlePartitionSubscriber
+
+func (t *testSinglePartitionSubscriber) WaitStopped() error {
+	err := t.compositeService.WaitStopped()
+	// Close connections.
+	t.committer.cursorClient.Close()
+	t.subscriber.subClient.Close()
+	return err
+}
+
+func newTestSinglePartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscription subscriptionPartition) *testSinglePartitionSubscriber {
 	ctx := context.Background()
-	subClient, err := newSubscriberClient(ctx, "ignored", testClientOpts...)
+	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
-	cursorClient, err := newCursorClient(ctx, "ignored", testClientOpts...)
+	cursorClient, err := newCursorClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -455,7 +465,7 @@ func newTestSinglePartitionSubscriber(t *testing.T, receiverFunc MessageReceiver
 	}
 	sub := f.New(subscription.Partition)
 	sub.Start()
-	return sub
+	return (*testSinglePartitionSubscriber)(sub)
 }
 
 func TestSinglePartitionSubscriberStartStop(t *testing.T) {
@@ -622,14 +632,15 @@ func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
 
 func newTestMultiPartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string, partitions []int) *multiPartitionSubscriber {
 	ctx := context.Background()
-	subClient, err := newSubscriberClient(ctx, "ignored", testClientOpts...)
+	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
-	cursorClient, err := newCursorClient(ctx, "ignored", testClientOpts...)
+	cursorClient, err := newCursorClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
+	allClients := apiClients{subClient, cursorClient}
 
 	f := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -641,7 +652,7 @@ func newTestMultiPartitionSubscriber(t *testing.T, receiverFunc MessageReceiverF
 		disableTasks:     true, // Background tasks disabled to control event order
 	}
 	f.settings.Partitions = partitions
-	sub := newMultiPartitionSubscriber(f)
+	sub := newMultiPartitionSubscriber(allClients, f)
 	sub.Start()
 	return sub
 }
@@ -769,18 +780,19 @@ func (as *assigningSubscriber) FlushCommits() {
 
 func newTestAssigningSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string) *assigningSubscriber {
 	ctx := context.Background()
-	subClient, err := newSubscriberClient(ctx, "ignored", testClientOpts...)
+	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
-	cursorClient, err := newCursorClient(ctx, "ignored", testClientOpts...)
+	cursorClient, err := newCursorClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
-	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testClientOpts...)
+	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
+	allClients := apiClients{subClient, cursorClient, assignmentClient}
 
 	f := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -791,7 +803,7 @@ func newTestAssigningSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, 
 		receiver:         receiverFunc,
 		disableTasks:     true, // Background tasks disabled to control event order
 	}
-	sub, err := newAssigningSubscriber(assignmentClient, fakeGenerateUUID, f)
+	sub, err := newAssigningSubscriber(allClients, assignmentClient, fakeGenerateUUID, f)
 	if err != nil {
 		t.Fatal(err)
 	}
