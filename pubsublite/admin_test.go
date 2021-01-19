@@ -366,7 +366,7 @@ func TestAdminListSubscriptions(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
-	//defer admin.Close()
+	defer admin.Close()
 
 	var gotSubscriptionConfigs []*SubscriptionConfig
 	subscriptionIt := admin.Subscriptions(ctx, locationPath)
