@@ -1306,13 +1306,28 @@ func encodeUint32(u uint32) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
+type Projection int
+
 const (
+	ProjectionDefault Projection = iota
+
 	// ProjectionFull returns all fields of object(s).
-	ProjectionFull = "full"
+	ProjectionFull
 
 	// ProjectionNoACL returns all fields of object(s) except for Owner and ACL.
-	ProjectionNoACL = "noAcl"
+	ProjectionNoACL
 )
+
+func (p Projection) String() string {
+	switch p {
+	case ProjectionFull:
+		return "full"
+	case ProjectionNoACL:
+		return "noAcl"
+	default:
+		return ""
+	}
+}
 
 // Query represents a query to filter objects from a bucket.
 type Query struct {
@@ -1353,7 +1368,7 @@ type Query struct {
 	// Projection defines the set of properties to return. It will default to ProjectionFull,
 	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
 	// which may improve performance when listing many objects.
-	Projection string
+	Projection Projection
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
