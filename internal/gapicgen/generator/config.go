@@ -899,6 +899,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/02/08
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:   "google/cloud/resourcemanager/v2",
+		pkg:                  "resourcemanager",
+		importPath:           "cloud.google.com/go/resourcemanager/apiv2",
+		apiServiceConfigPath: "google/cloud/resourcemanager/v2/cloudresourcemanager_v2.yaml",
+		// GA after 2021/02/19
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
