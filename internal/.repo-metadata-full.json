@@ -671,6 +671,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/redis/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/resourcemanager/apiv2": {
+    "distribution_name": "cloud.google.com/go/resourcemanager/apiv2",
+    "description": "Cloud Resource Manager API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/resourcemanager/apiv2",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/retail/apiv2": {
     "distribution_name": "cloud.google.com/go/retail/apiv2",
     "description": "Retail API",
