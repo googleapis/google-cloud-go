@@ -11,26 +11,21 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package ps_test
+package pscompat_test
 
 import (
 	"context"
 	"fmt"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite"
-	"cloud.google.com/go/pubsublite/ps"
+	"cloud.google.com/go/pubsublite/pscompat"
 )
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
-	topic := pubsublite.TopicPath{
-		Project: "project-id",
-		Zone:    "zone",
-		TopicID: "topic-id",
-	}
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	// NOTE: DefaultPublishSettings and empty PublishSettings{} are equivalent.
-	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+	publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -53,12 +48,8 @@ func ExamplePublisherClient_Publish() {
 
 func ExamplePublisherClient_Error() {
 	ctx := context.Background()
-	topic := pubsublite.TopicPath{
-		Project: "project-id",
-		Zone:    "zone",
-		TopicID: "topic-id",
-	}
-	publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -74,7 +65,7 @@ func ExamplePublisherClient_Error() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
-			if err == ps.ErrPublisherStopped {
+			if err == pscompat.ErrPublisherStopped {
 				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
 			}
 		}
@@ -84,13 +75,9 @@ func ExamplePublisherClient_Error() {
 
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
-	subscription := pubsublite.SubscriptionPath{
-		Project:        "project-id",
-		Zone:           "zone",
-		SubscriptionID: "subscription-id",
-	}
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
 	// NOTE: DefaultReceiveSettings and empty ReceiveSettings{} are equivalent.
-	subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
+	subscriber, err := pscompat.NewSubscriberClient(ctx, pscompat.DefaultReceiveSettings, subscription)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -115,15 +102,11 @@ func ExampleSubscriberClient_Receive() {
 // partitions in the associated topic.
 func ExampleSubscriberClient_Receive_maxOutstanding() {
 	ctx := context.Background()
-	subscription := pubsublite.SubscriptionPath{
-		Project:        "project-id",
-		Zone:           "zone",
-		SubscriptionID: "subscription-id",
-	}
-	settings := ps.DefaultReceiveSettings
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	settings := pscompat.DefaultReceiveSettings
 	settings.MaxOutstandingMessages = 5
 	settings.MaxOutstandingBytes = 10e6
-	subscriber, err := ps.NewSubscriberClient(ctx, settings, subscription)
+	subscriber, err := pscompat.NewSubscriberClient(ctx, settings, subscription)
 	if err != nil {
 		// TODO: Handle error.
 	}

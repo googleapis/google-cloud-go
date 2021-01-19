@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package ps
+package pscompat
 
 import (
 	"time"
@@ -135,12 +135,12 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 	return wireSettings
 }
 
-// NackHandler is invoked when pubsub.Message.Nack() is called. Cloud Pub/Sub
-// Lite does not have a concept of 'nack'. If the nack handler implementation
-// returns nil, the message is acknowledged. If an error is returned, the
+// NackHandler is invoked when pubsub.Message.Nack() is called. Pub/Sub Lite
+// does not have a concept of 'nack'. If the nack handler implementation returns
+// nil, the message is acknowledged. If an error is returned, the
 // SubscriberClient will consider this a fatal error and terminate.
 //
-// In Cloud Pub/Sub Lite, only a single subscriber for a given subscription is
+// In Pub/Sub Lite, only a single subscriber for a given subscription is
 // connected to any partition at a time, and there is no other client that may
 // be able to handle messages.
 type NackHandler func(*pubsub.Message) error

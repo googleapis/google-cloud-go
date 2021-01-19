@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package ps
+package pscompat
 
 import (
 	"context"
@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/test"
+	"cloud.google.com/go/pubsublite/internal/wire"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -78,40 +79,40 @@ func adminClient(ctx context.Context, t *testing.T, region string, opts ...optio
 	return admin
 }
 
-func publisherClient(ctx context.Context, t *testing.T, settings PublishSettings, topic pubsublite.TopicPath, opts ...option.ClientOption) *PublisherClient {
+func publisherClient(ctx context.Context, t *testing.T, settings PublishSettings, topic wire.TopicPath, opts ...option.ClientOption) *PublisherClient {
 	opts = testOptions(ctx, t, opts...)
-	pub, err := NewPublisherClient(ctx, settings, topic, opts...)
+	pub, err := NewPublisherClient(ctx, settings, topic.String(), opts...)
 	if err != nil {
 		t.Fatalf("Failed to create publisher client: %v", err)
 	}
 	return pub
 }
 
-func subscriberClient(ctx context.Context, t *testing.T, settings ReceiveSettings, subscription pubsublite.SubscriptionPath, opts ...option.ClientOption) *SubscriberClient {
+func subscriberClient(ctx context.Context, t *testing.T, settings ReceiveSettings, subscription wire.SubscriptionPath, opts ...option.ClientOption) *SubscriberClient {
 	opts = testOptions(ctx, t, opts...)
-	sub, err := NewSubscriberClient(ctx, settings, subscription, opts...)
+	sub, err := NewSubscriberClient(ctx, settings, subscription.String(), opts...)
 	if err != nil {
 		t.Fatalf("Failed to create publisher client: %v", err)
 	}
 	return sub
 }
 
-func initResourcePaths(t *testing.T) (string, pubsublite.TopicPath, pubsublite.SubscriptionPath) {
+func initResourcePaths(t *testing.T) (string, wire.TopicPath, wire.SubscriptionPath) {
 	initIntegrationTest(t)
 
 	proj := testutil.ProjID()
 	zone := test.RandomLiteZone()
-	region, _ := pubsublite.ZoneToRegion(zone)
+	region, _ := wire.ZoneToRegion(zone)
 	resourceID := resourceIDs.New()
 
-	topicPath := pubsublite.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}
-	subscriptionPath := pubsublite.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
+	topicPath := wire.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}
+	subscriptionPath := wire.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}
 	return region, topicPath, subscriptionPath
 }
 
-func createTopic(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, topic pubsublite.TopicPath, partitionCount int) {
+func createTopic(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, topic wire.TopicPath, partitionCount int) {
 	topicConfig := pubsublite.TopicConfig{
-		Name:                       topic,
+		Name:                       topic.String(),
 		PartitionCount:             partitionCount,
 		PublishCapacityMiBPerSec:   4,
 		SubscribeCapacityMiBPerSec: 8,
@@ -126,18 +127,18 @@ func createTopic(ctx context.Context, t *testing.T, admin *pubsublite.AdminClien
 	}
 }
 
-func cleanUpTopic(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, topic pubsublite.TopicPath) {
-	if err := admin.DeleteTopic(ctx, topic); err != nil {
+func cleanUpTopic(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, topic wire.TopicPath) {
+	if err := admin.DeleteTopic(ctx, topic.String()); err != nil {
 		t.Errorf("Failed to delete topic %s: %v", topic, err)
 	} else {
 		t.Logf("Deleted topic %s", topic)
 	}
 }
 
-func createSubscription(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, subscription pubsublite.SubscriptionPath, topic pubsublite.TopicPath) {
+func createSubscription(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, subscription wire.SubscriptionPath, topic wire.TopicPath) {
 	subConfig := &pubsublite.SubscriptionConfig{
-		Name:                subscription,
-		Topic:               topic,
+		Name:                subscription.String(),
+		Topic:               topic.String(),
 		DeliveryRequirement: pubsublite.DeliverImmediately,
 	}
 	_, err := admin.CreateSubscription(ctx, *subConfig)
@@ -148,8 +149,8 @@ func createSubscription(ctx context.Context, t *testing.T, admin *pubsublite.Adm
 	}
 }
 
-func cleanUpSubscription(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, subscription pubsublite.SubscriptionPath) {
-	if err := admin.DeleteSubscription(ctx, subscription); err != nil {
+func cleanUpSubscription(ctx context.Context, t *testing.T, admin *pubsublite.AdminClient, subscription wire.SubscriptionPath) {
+	if err := admin.DeleteSubscription(ctx, subscription.String()); err != nil {
 		t.Errorf("Failed to delete subscription %s: %v", subscription, err)
 	} else {
 		t.Logf("Deleted subscription %s", subscription)
@@ -164,7 +165,7 @@ func partitionNumbers(partitionCount int) []int {
 	return partitions
 }
 
-func publishMessages(t *testing.T, settings PublishSettings, topic pubsublite.TopicPath, msgs ...*pubsub.Message) {
+func publishMessages(t *testing.T, settings PublishSettings, topic wire.TopicPath, msgs ...*pubsub.Message) {
 	ctx := context.Background()
 	publisher := publisherClient(ctx, t, settings, topic)
 	defer publisher.Stop()
@@ -176,7 +177,7 @@ func publishMessages(t *testing.T, settings PublishSettings, topic pubsublite.To
 	waitForPublishResults(t, pubResults)
 }
 
-func publishPrefixedMessages(t *testing.T, settings PublishSettings, topic pubsublite.TopicPath, msgPrefix string, messageCount int) []string {
+func publishPrefixedMessages(t *testing.T, settings PublishSettings, topic wire.TopicPath, msgPrefix string, messageCount int) []string {
 	ctx := context.Background()
 	publisher := publisherClient(ctx, t, settings, topic)
 	defer publisher.Stop()
@@ -220,7 +221,7 @@ func messageDiff(got, want *pubsub.Message) string {
 
 type checkOrdering bool
 
-func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings ReceiveSettings, subscription pubsublite.SubscriptionPath, checkOrder checkOrdering) {
+func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings ReceiveSettings, subscription wire.SubscriptionPath, checkOrder checkOrdering) {
 	cctx, stopSubscriber := context.WithTimeout(context.Background(), defaultTestTimeout)
 	orderingValidator := test.NewOrderingReceiver()
 
@@ -251,7 +252,7 @@ func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings Rece
 	}
 }
 
-func receiveAndVerifyMessage(t *testing.T, want *pubsub.Message, settings ReceiveSettings, subscription pubsublite.SubscriptionPath) {
+func receiveAndVerifyMessage(t *testing.T, want *pubsub.Message, settings ReceiveSettings, subscription wire.SubscriptionPath) {
 	cctx, stopSubscriber := context.WithTimeout(context.Background(), defaultTestTimeout)
 
 	messageReceiver := func(ctx context.Context, got *pubsub.Message) {
@@ -637,7 +638,7 @@ func TestIntegration_SubscribeFanOut(t *testing.T) {
 	createTopic(ctx, t, admin, topicPath, partitionCount)
 	defer cleanUpTopic(ctx, t, admin, topicPath)
 
-	var subscriptionPaths []pubsublite.SubscriptionPath
+	var subscriptionPaths []wire.SubscriptionPath
 	for i := 0; i < subscriberCount; i++ {
 		subscription := baseSubscriptionPath
 		subscription.SubscriptionID += fmt.Sprintf("%s-%d", baseSubscriptionPath.SubscriptionID, i)

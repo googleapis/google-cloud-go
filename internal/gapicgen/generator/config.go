@@ -875,12 +875,36 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:   "google/appengine/v1",
+		pkg:                  "appengine",
+		importPath:           "cloud.google.com/go/appengine/apiv1",
+		apiServiceConfigPath: "google/appengine/v1/appengine.yaml",
+		// GA after 2021/02/13
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/binaryauthorization/v1beta1",
+		pkg:                   "binaryauthorization",
+		importPath:            "cloud.google.com/go/binaryauthorization/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/binaryauthorization/v1beta1/binaryauthorization_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/binaryauthorization/v1beta1/binaryauthorization_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/channel/v1",
 		pkg:                   "channel",
 		importPath:            "cloud.google.com/go/channel/apiv1",
 		gRPCServiceConfigPath: "google/cloud/channel/v1/cloudchannel_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/channel/v1/cloudchannel_v1.yaml",
 		// GA after 2021/02/08
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:   "google/cloud/resourcemanager/v2",
+		pkg:                  "resourcemanager",
+		importPath:           "cloud.google.com/go/resourcemanager/apiv2",
+		apiServiceConfigPath: "google/cloud/resourcemanager/v2/cloudresourcemanager_v2.yaml",
+		// GA after 2021/02/19
 		releaseLevel: "beta",
 	},
 
