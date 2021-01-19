@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package ps_test
+package pscompat_test
 
 import (
 	"context"
@@ -19,13 +19,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite/ps"
+	"cloud.google.com/go/pubsublite/pscompat"
 )
 
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	publisher, err := ps.NewPublisherClient(ctx, topic)
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -53,11 +53,11 @@ func ExamplePublisherClient_Publish() {
 func ExamplePublisherClient_Publish_batchingSettings() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	settings := ps.DefaultPublishSettings
+	settings := pscompat.DefaultPublishSettings
 	settings.DelayThreshold = 50 * time.Millisecond
 	settings.CountThreshold = 200
 	settings.BufferedByteLimit = 5e8
-	publisher, err := ps.NewPublisherClientWithSettings(ctx, topic, settings)
+	publisher, err := pscompat.NewPublisherClientWithSettings(ctx, topic, settings)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -81,7 +81,7 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 func ExamplePublisherClient_Error() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	publisher, err := ps.NewPublisherClient(ctx, topic)
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -97,7 +97,7 @@ func ExamplePublisherClient_Error() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
-			if err == ps.ErrPublisherStopped {
+			if err == pscompat.ErrPublisherStopped {
 				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
 			}
 		}
@@ -108,7 +108,7 @@ func ExamplePublisherClient_Error() {
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
-	subscriber, err := ps.NewSubscriberClient(ctx, subscription)
+	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -134,10 +134,10 @@ func ExampleSubscriberClient_Receive() {
 func ExampleSubscriberClient_Receive_maxOutstanding() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
-	settings := ps.DefaultReceiveSettings
+	settings := pscompat.DefaultReceiveSettings
 	settings.MaxOutstandingMessages = 5
 	settings.MaxOutstandingBytes = 10e6
-	subscriber, err := ps.NewSubscriberClientWithSettings(ctx, subscription, settings)
+	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
 	if err != nil {
 		// TODO: Handle error.
 	}
