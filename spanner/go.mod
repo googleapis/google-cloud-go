@@ -13,7 +13,7 @@ require (
 	golang.org/x/tools v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210119180700-e258113e47cc
+	google.golang.org/genproto v0.0.0-20210120162456-f5e8c5e2aaf2
 	google.golang.org/grpc v1.34.1
 	google.golang.org/protobuf v1.25.0
 )
