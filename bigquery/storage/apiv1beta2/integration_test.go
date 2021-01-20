@@ -132,7 +132,7 @@ func TestSimpleMessageWithDefaultStream(t *testing.T) {
 	}
 
 	var wg sync.WaitGroup
-	var reqCount, respCount int64
+	var reqCount, respCount, totalRows int64
 
 	// Send Data.
 	wg.Add(1)
@@ -170,6 +170,7 @@ func TestSimpleMessageWithDefaultStream(t *testing.T) {
 			}
 			stream.Send(req)
 			reqCount = reqCount + 1
+			totalRows = totalRows + int64(len(rowSet))
 			serialized = nil
 		}
 		stream.CloseSend()
@@ -204,6 +205,23 @@ func TestSimpleMessageWithDefaultStream(t *testing.T) {
 
 	if reqCount != respCount {
 		t.Errorf("sent %d requests, only got %d responses", reqCount, respCount)
+	}
+
+	// Verify data is present in the table with a count query.
+	sql := fmt.Sprintf("SELECT COUNT(1) FROM `%s`.%s.%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)
+	q := bqClient.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		t.Fatalf("failed to issue validation query: %v", err)
+	}
+	var rowdata []bigquery.Value
+	err = it.Next(&rowdata)
+	if err != nil {
+		t.Fatalf("error iterating validation results: %v", err)
+	}
+
+	if rowdata[0] != totalRows {
+		t.Errorf("query result mismatch, got %v want %v", rowdata, totalRows)
 	}
 
 }
