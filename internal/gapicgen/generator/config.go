@@ -87,6 +87,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/memcache/v1",
+		pkg:                   "memcache",
+		importPath:            "cloud.google.com/go/memcache/apiv1",
+		gRPCServiceConfigPath: "google/cloud/memcache/v1/memcache_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/memcache/v1/memcache_v1.yaml",
+		// GA after 2021/02/20
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/memcache/v1beta2",
 		pkg:                   "memcache",
 		importPath:            "cloud.google.com/go/memcache/apiv1beta2",
