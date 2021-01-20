@@ -495,6 +495,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1",
     "release_level": "ga"
   },
+  "cloud.google.com/go/memcache/apiv1": {
+    "distribution_name": "cloud.google.com/go/memcache/apiv1",
+    "description": "Cloud Memorystore for Memcached API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/memcache/apiv1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/memcache/apiv1beta2": {
     "distribution_name": "cloud.google.com/go/memcache/apiv1beta2",
     "description": "Cloud Memorystore for Memcached API",
