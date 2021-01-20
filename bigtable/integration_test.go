@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os/exec"
 	"reflect"
 	"sort"
 	"strings"
@@ -29,6 +30,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -37,6 +39,11 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+)
+
+const (
+	directPathIPV6Prefix = "[2001:4860:8040"
+	directPathIPV4Prefix = "34.126"
 )
 
 var (
@@ -67,6 +74,10 @@ func populatePresidentsGraph(table *Table) error {
 var instanceToCreate string
 var instanceToCreateZone string
 var instanceToCreateZone2 string
+var blackholeDpv6Cmd string
+var blackholeDpv4Cmd string
+var allowDpv6Cmd string
+var allowDpv4Cmd string
 
 func init() {
 	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
@@ -76,11 +87,16 @@ func init() {
 		"The zone in which to create the new test instance.")
 	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
 		"The zone in which to create a second cluster in the test instance.")
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
 	ctx := context.Background()
-	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -98,6 +114,7 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	if err := table.Apply(ctx, "tjefferson", mut); err != nil {
 		t.Fatalf("Conditionally mutating row: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	// Do a second condition mutation with a filter that does not match,
 	// and thus no changes should be made.
 	mutTrue = NewMutation()
@@ -107,12 +124,14 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	if err := table.Apply(ctx, "tjefferson", mut); err != nil {
 		t.Fatalf("Conditionally mutating row: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 
 	// Fetch a row.
 	row, err := table.ReadRow(ctx, "jadams")
 	if err != nil {
 		t.Fatalf("Reading a row: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	wantRow := Row{
 		"follows": []ReadItem{
 			{Row: "jadams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
@@ -126,7 +145,7 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 
 func TestIntegration_PartialReadRows(t *testing.T) {
 	ctx := context.Background()
-	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -157,7 +176,7 @@ func TestIntegration_PartialReadRows(t *testing.T) {
 
 func TestIntegration_ReadRowList(t *testing.T) {
 	ctx := context.Background()
-	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -190,7 +209,7 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 func TestIntegration_DeleteRow(t *testing.T) {
 	ctx := context.Background()
-	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	_, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -217,7 +236,7 @@ func TestIntegration_DeleteRow(t *testing.T) {
 
 func TestIntegration_ReadModifyWrite(t *testing.T) {
 	ctx := context.Background()
-	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -267,6 +286,7 @@ func TestIntegration_ReadModifyWrite(t *testing.T) {
 		if err != nil {
 			t.Fatalf("ApplyReadModifyWrite %+v: %v", step.rmw, err)
 		}
+		verifyDirectPathRemoteAddress(testEnv, t)
 		// Make sure the modified cell returned by the RMW operation has a timestamp.
 		if row["counter"][0].Timestamp == 0 {
 			t.Fatalf("RMW returned cell timestamp: got %v, want > 0", row["counter"][0].Timestamp)
@@ -283,15 +303,18 @@ func TestIntegration_ReadModifyWrite(t *testing.T) {
 	if err != nil {
 		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	_, err = table.ApplyReadModifyWrite(ctx, "issue-723-1", appendRMW([]byte{0}))
 	if err != nil {
 		t.Fatalf("ApplyReadModifyWrite null string: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	// Get only the correct row back on read.
 	r, err := table.ReadRow(ctx, "issue-723-1")
 	if err != nil {
 		t.Fatalf("Reading row: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	if r.Key() != "issue-723-1" {
 		t.Fatalf("ApplyReadModifyWrite: incorrect read after RMW,\n got %v\nwant %v", r.Key(), "issue-723-1")
 	}
@@ -299,7 +322,7 @@ func TestIntegration_ReadModifyWrite(t *testing.T) {
 
 func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 	ctx := context.Background()
-	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -581,7 +604,7 @@ func TestIntegration_ArbitraryTimestamps(t *testing.T) {
 
 func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 	ctx := context.Background()
-	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	_, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -624,7 +647,7 @@ func TestIntegration_HighlyConcurrentReadsAndWrites(t *testing.T) {
 
 func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	ctx := context.Background()
-	_, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, adminClient, table, tableName, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -642,10 +665,12 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err := table.Apply(ctx, "bigrow", mut); err != nil {
 		t.Fatalf("Big write: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	r, err := table.ReadRow(ctx, "bigrow")
 	if err != nil {
 		t.Fatalf("Big read: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	wantRow := Row{"ts": []ReadItem{
 		{Row: "bigrow", Column: "ts:col", Timestamp: 1000, Value: bigBytes},
 	}}
@@ -670,6 +695,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 			if err := table.Apply(ctx, row, mut); err != nil {
 				t.Errorf("Preparing large scan: %v", err)
 			}
+			verifyDirectPathRemoteAddress(testEnv, t)
 		}()
 	}
 	wg.Wait()
@@ -685,6 +711,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Doing large scan: %v", err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	if want := 1000 * len(medBytes); n != want {
 		t.Fatalf("Large scan returned %d bytes, want %d", n, want)
 	}
@@ -698,6 +725,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	if rc != wantRc {
 		t.Fatalf("Scan with row limit returned %d rows, want %d", rc, wantRc)
 	}
@@ -725,6 +753,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	if status != nil {
 		t.Fatalf("non-nil errors: %v", err)
 	}
@@ -735,6 +764,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Reading a bulk row: %v", err)
 		}
+		verifyDirectPathRemoteAddress(testEnv, t)
 		var wantItems []ReadItem
 		for _, val := range ss {
 			wantItems = append(wantItems, ReadItem{Row: rowKey, Column: "bulk:" + val, Timestamp: 1000, Value: []byte("1")})
@@ -755,6 +785,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Bulk mutating rows %q: %v", rowKeys, err)
 	}
+	verifyDirectPathRemoteAddress(testEnv, t)
 	if status == nil {
 		t.Fatalf("No errors for bad bulk mutation")
 	} else if status[0] == nil || status[1] == nil {
@@ -764,7 +795,7 @@ func TestIntegration_LargeReadsWritesAndScans(t *testing.T) {
 
 func TestIntegration_Read(t *testing.T) {
 	ctx := context.Background()
-	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -785,6 +816,7 @@ func TestIntegration_Read(t *testing.T) {
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
 		}
+		verifyDirectPathRemoteAddress(testEnv, t)
 	}
 
 	for _, test := range []struct {
@@ -993,6 +1025,7 @@ func TestIntegration_Read(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
+			verifyDirectPathRemoteAddress(testEnv, t)
 			if got := strings.Join(elt, ","); got != test.want {
 				t.Fatalf("got %q\nwant %q", got, test.want)
 			}
@@ -1005,7 +1038,7 @@ func TestIntegration_Read(t *testing.T) {
 
 func TestIntegration_SampleRowKeys(t *testing.T) {
 	ctx := context.Background()
-	_, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -1026,6 +1059,7 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 		if err := table.Apply(ctx, row, mut); err != nil {
 			t.Fatalf("Mutating row %q: %v", row, err)
 		}
+		verifyDirectPathRemoteAddress(testEnv, t)
 	}
 	sampleKeys, err := table.SampleRowKeys(context.Background())
 	if err != nil {
@@ -1240,6 +1274,70 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	if _, err = iamHandle.TestPermissions(ctx, []string{"bigtable.tables.get"}); err != nil {
 		t.Errorf("Iam TestPermissions mytable: %v", err)
+	}
+}
+
+func TestIntegration_BackupIAM(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	cluster := testEnv.Config().Cluster
+
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	// Create backup.
+	backup := "backup"
+	defer adminClient.DeleteBackup(ctx, cluster, backup)
+	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	iamHandle := adminClient.BackupIAM(cluster, backup)
+	// Get backup policy.
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	// The resource is new, so the policy should be empty.
+	if got := p.Roles(); len(got) > 0 {
+		t.Errorf("got roles %v, want none", got)
+	}
+	// Set backup policy.
+	member := "domain:google.com"
+	// Add a member, set the policy, then check that the member is present.
+	p.Add(member, iam.Viewer)
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("iamHandle.SetPolicy: %v", err)
+	}
+	p, err = iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if got, want := p.Members(iam.Viewer), []string{member}; !testutil.Equal(got, want) {
+		t.Errorf("iamHandle.Policy: got %v, want %v", got, want)
+	}
+	// Test backup permissions.
+	permissions := []string{"bigtable.backups.get", "bigtable.backups.update"}
+	_, err = iamHandle.TestPermissions(ctx, permissions)
+	if err != nil {
+		t.Errorf("iamHandle.TestPermissions: %v", err)
 	}
 }
 
@@ -2045,9 +2143,10 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Create backup
+	backupName := "mybackup"
 	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
 
-	if err = adminClient.CreateBackup(ctx, table, cluster, "mybackup", time.Now().Add(8*time.Hour)); err != nil {
+	if err = adminClient.CreateBackup(ctx, table, cluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
@@ -2059,7 +2158,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	if got, want := len(backups), 1; got != want {
 		t.Fatalf("Listing backup count: %d, want: %d", got, want)
 	}
-	if got, want := backups[0].Name, "mybackup"; got != want {
+	if got, want := backups[0].Name, backupName; got != want {
 		t.Fatalf("Backup name: %s, want: %s", got, want)
 	}
 	if got, want := backups[0].SourceTable, table; got != want {
@@ -2070,7 +2169,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	backup, err := adminClient.BackupInfo(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
@@ -2080,13 +2179,13 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Update backup
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
+	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
@@ -2099,7 +2198,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	// Restore backup
 	restoredTable := table + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, backupName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
@@ -2107,7 +2206,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, cluster, "mybackup"); err != nil {
+	if err = adminClient.DeleteBackup(ctx, cluster, backupName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
 	backups, err = list(cluster)
@@ -2119,10 +2218,85 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 }
 
-func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().AttemptDirectPath {
+		t.Skip()
+	}
+
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	dpEnabled := examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeDirectPath(testEnv, t)
+	dpDisabled := examineTraffic(ctx, testEnv, table, true)
+	if !dpDisabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	allowDirectPath(testEnv, t)
+	dpEnabled = examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+// examineTraffic returns whether RPCs use DirectPath (blackholeDP = false) or CFE (blackholeDP = true).
+func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, blackholeDP bool) bool {
+	numCount := 0
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+
+	start := time.Now()
+	for time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = table.ReadRow(ctx, "jadams")
+			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != blackholeDP {
+				numCount++
+				if numCount >= minCompleteRPC {
+					return true
+				}
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+	return false
+}
+
+func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
-		return nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", nil, err
 	}
 
 	var timeout time.Duration
@@ -2137,12 +2311,12 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminCli
 
 	client, err := testEnv.NewClient()
 	if err != nil {
-		return nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", nil, err
 	}
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
-		return nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", nil, err
 	}
 
 	if testEnv.Config().UseProd {
@@ -2155,14 +2329,14 @@ func setupIntegration(ctx context.Context, t *testing.T) (_ *Client, _ *AdminCli
 
 	if err := adminClient.CreateTable(ctx, tableName); err != nil {
 		cancel()
-		return nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", nil, err
 	}
 	if err := adminClient.CreateColumnFamily(ctx, tableName, "follows"); err != nil {
 		cancel()
-		return nil, nil, nil, "", nil, err
+		return nil, nil, nil, nil, "", nil, err
 	}
 
-	return client, adminClient, client.Open(tableName), tableName, func() {
+	return testEnv, client, adminClient, client.Open(tableName), tableName, func() {
 		if err := adminClient.DeleteTable(ctx, tableName); err != nil {
 			t.Errorf("DeleteTable got error %v", err)
 		}
@@ -2211,4 +2385,52 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)
 	}
+}
+
+func verifyDirectPathRemoteAddress(testEnv IntegrationEnv, t *testing.T) {
+	t.Helper()
+	if !testEnv.Config().AttemptDirectPath {
+		return
+	}
+	if remoteIP, res := isDirectPathRemoteAddress(testEnv); !res {
+		if testEnv.Config().DirectPathIPV4Only {
+			t.Fatalf("Expect to access DirectPath via ipv4 only, but RPC was destined to %s", remoteIP)
+		} else {
+			t.Fatalf("Expect to access DirectPath via ipv4 or ipv6, but RPC was destined to %s", remoteIP)
+		}
+	}
+}
+
+func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
+	remoteIP := testEnv.Peer().Addr.String()
+	// DirectPath ipv4-only can only use ipv4 traffic.
+	if testEnv.Config().DirectPathIPV4Only {
+		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
+	}
+	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
+	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+func blackholeDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
+}
+
+func allowDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
 }

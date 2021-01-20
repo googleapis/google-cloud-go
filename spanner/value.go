@@ -2389,7 +2389,7 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}) er
 
 	fields, err := fieldCache.Fields(t)
 	if err != nil {
-		return toSpannerError(err)
+		return ToSpannerError(err)
 	}
 	seen := map[string]bool{}
 	for i, f := range ty.Fields {
@@ -3067,6 +3067,7 @@ func isSupportedMutationType(v interface{}) bool {
 		float64, *float64, []float64, []*float64, NullFloat64, []NullFloat64,
 		time.Time, *time.Time, []time.Time, []*time.Time, NullTime, []NullTime,
 		civil.Date, *civil.Date, []civil.Date, []*civil.Date, NullDate, []NullDate,
+		big.Rat, *big.Rat, []big.Rat, []*big.Rat, NullNumeric, []NullNumeric,
 		GenericColumnValue:
 		return true
 	default:

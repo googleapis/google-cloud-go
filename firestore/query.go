@@ -500,8 +500,12 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		op = pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL
 	case "==":
 		op = pb.StructuredQuery_FieldFilter_EQUAL
+	case "!=":
+		op = pb.StructuredQuery_FieldFilter_NOT_EQUAL
 	case "in":
 		op = pb.StructuredQuery_FieldFilter_IN
+	case "not-in":
+		op = pb.StructuredQuery_FieldFilter_NOT_IN
 	case "array-contains":
 		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS
 	case "array-contains-any":

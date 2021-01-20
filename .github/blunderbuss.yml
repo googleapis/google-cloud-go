@@ -18,3 +18,8 @@ assign_issues_by:
   - 'api: spanner'
   to:
   - skuruppu
+- labels:
+  - 'api: logging'
+  - 'api: clouderrorreporting'
+  to:
+  - nicolezhu

@@ -365,6 +365,14 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 	}
 	// We're on the fastPath, but we need to poll because the job is incomplete.
 	// Fallback to job-based Read().
+	//
+	// (Issue 2937) In order to satisfy basic probing of the job in classic path,
+	// we need to supply additional config which is probed for presence, not contents.
+	//
+	minimalJob.config = &bq.JobConfiguration{
+		Query: &bq.JobConfigurationQuery{},
+	}
+
 	return minimalJob.Read(ctx)
 }
 

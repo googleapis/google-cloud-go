@@ -65,47 +65,79 @@ func (ec evalContext) evalExprList(list []spansql.Expr) ([]interface{}, error) {
 	return out, nil
 }
 
-func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
+func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (*bool, error) {
 	switch be := be.(type) {
 	default:
-		return false, fmt.Errorf("unhandled BoolExpr %T", be)
+		return nil, fmt.Errorf("unhandled BoolExpr %T", be)
 	case spansql.BoolLiteral:
-		return bool(be), nil
-	case spansql.ID, spansql.Paren, spansql.InOp: // InOp is a bit weird.
+		b := bool(be)
+		return &b, nil
+	case spansql.ID, spansql.Param, spansql.Paren, spansql.InOp: // InOp is a bit weird.
 		e, err := ec.evalExpr(be)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
-		if e == nil { // NULL is a false boolean.
-			return false, nil
+		if e == nil {
+			return nil, nil // preserve NULLs
 		}
 		b, ok := e.(bool)
 		if !ok {
-			return false, fmt.Errorf("got %T, want bool", e)
+			return nil, fmt.Errorf("got %T, want bool", e)
 		}
-		return b, nil
+		return &b, nil
 	case spansql.LogicalOp:
-		var lhs, rhs bool
+		var lhs, rhs *bool
 		var err error
 		if be.LHS != nil {
 			lhs, err = ec.evalBoolExpr(be.LHS)
 			if err != nil {
-				return false, err
+				return nil, err
 			}
 		}
 		rhs, err = ec.evalBoolExpr(be.RHS)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
+		// https://cloud.google.com/spanner/docs/operators#logical_operators
 		switch be.Op {
 		case spansql.And:
-			return lhs && rhs, nil
+			if lhs != nil {
+				if *lhs {
+					// TRUE AND x => x
+					return rhs, nil
+				}
+				// FALSE AND x => FALSE
+				return lhs, nil
+			}
+			// NULL AND FALSE => FALSE
+			if rhs != nil && !*rhs {
+				return rhs, nil
+			}
+			// NULL AND TRUE|NULL => NULL
+			return nil, nil
 		case spansql.Or:
-			return lhs || rhs, nil
+			if lhs != nil {
+				if *lhs {
+					// TRUE OR x => TRUE
+					return lhs, nil
+				}
+				// FALSE OR x => x
+				return rhs, nil
+			}
+			// NULL OR TRUE => TRUE
+			if rhs != nil && *rhs {
+				return rhs, nil
+			}
+			// NULL OR FALSE|NULL => NULL
+			return nil, nil
 		case spansql.Not:
-			return !rhs, nil
+			if rhs == nil {
+				return nil, nil
+			}
+			b := !*rhs
+			return &b, nil
 		default:
-			return false, fmt.Errorf("unhandled LogicalOp %d", be.Op)
+			return nil, fmt.Errorf("unhandled LogicalOp %d", be.Op)
 		}
 	case spansql.ComparisonOp:
 		// Per https://cloud.google.com/spanner/docs/operators#comparison_operators,
@@ -113,70 +145,74 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		// Before evaluating be.LHS and be.RHS, do any necessary coercion.
 		be, err := ec.coerceComparisonOpArgs(be)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 
-		var lhs, rhs interface{}
-		lhs, err = ec.evalExpr(be.LHS)
+		lhs, err := ec.evalExpr(be.LHS)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
-		rhs, err = ec.evalExpr(be.RHS)
+		rhs, err := ec.evalExpr(be.RHS)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
+		if lhs == nil || rhs == nil {
+			// https://cloud.google.com/spanner/docs/operators#comparison_operators says
+			// "any operation with a NULL input returns NULL."
+			return nil, nil
+		}
+		var b bool
 		switch be.Op {
 		default:
-			return false, fmt.Errorf("TODO: ComparisonOp %d", be.Op)
+			return nil, fmt.Errorf("TODO: ComparisonOp %d", be.Op)
 		case spansql.Lt:
-			return compareVals(lhs, rhs) < 0, nil
+			b = compareVals(lhs, rhs) < 0
 		case spansql.Le:
-			return compareVals(lhs, rhs) <= 0, nil
+			b = compareVals(lhs, rhs) <= 0
 		case spansql.Gt:
-			return compareVals(lhs, rhs) > 0, nil
+			b = compareVals(lhs, rhs) > 0
 		case spansql.Ge:
-			return compareVals(lhs, rhs) >= 0, nil
+			b = compareVals(lhs, rhs) >= 0
 		case spansql.Eq:
-			return compareVals(lhs, rhs) == 0, nil
+			b = compareVals(lhs, rhs) == 0
 		case spansql.Ne:
-			return compareVals(lhs, rhs) != 0, nil
+			b = compareVals(lhs, rhs) != 0
 		case spansql.Like, spansql.NotLike:
 			left, ok := lhs.(string)
 			if !ok {
 				// TODO: byte works here too?
-				return false, fmt.Errorf("LHS of LIKE is %T, not string", lhs)
+				return nil, fmt.Errorf("LHS of LIKE is %T, not string", lhs)
 			}
 			right, ok := rhs.(string)
 			if !ok {
 				// TODO: byte works here too?
-				return false, fmt.Errorf("RHS of LIKE is %T, not string", rhs)
+				return nil, fmt.Errorf("RHS of LIKE is %T, not string", rhs)
 			}
 
-			match := evalLike(left, right)
+			b = evalLike(left, right)
 			if be.Op == spansql.NotLike {
-				match = !match
+				b = !b
 			}
-			return match, nil
 		case spansql.Between, spansql.NotBetween:
 			rhs2, err := ec.evalExpr(be.RHS2)
 			if err != nil {
-				return false, err
+				return nil, err
 			}
-			b := compareVals(rhs, lhs) <= 0 && compareVals(lhs, rhs2) <= 0
+			b = compareVals(rhs, lhs) <= 0 && compareVals(lhs, rhs2) <= 0
 			if be.Op == spansql.NotBetween {
 				b = !b
 			}
-			return b, nil
 		}
+		return &b, nil
 	case spansql.IsOp:
 		lhs, err := ec.evalExpr(be.LHS)
 		if err != nil {
-			return false, err
+			return nil, err
 		}
 		var b bool
 		switch rhs := be.RHS.(type) {
 		default:
-			return false, fmt.Errorf("unhandled IsOp %T", rhs)
+			return nil, fmt.Errorf("unhandled IsOp %T", rhs)
 		case spansql.BoolLiteral:
 			if lhs == nil {
 				// For `X IS TRUE`, X being NULL is okay, and this evaluates
@@ -185,7 +221,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 			}
 			lhsBool, ok := lhs.(bool)
 			if !ok {
-				return false, fmt.Errorf("non-bool value %T on LHS for %s", lhs, be.SQL())
+				return nil, fmt.Errorf("non-bool value %T on LHS for %s", lhs, be.SQL())
 			}
 			b = (lhsBool == bool(rhs))
 		case spansql.NullLiteral:
@@ -194,7 +230,7 @@ func (ec evalContext) evalBoolExpr(be spansql.BoolExpr) (bool, error) {
 		if be.Neg {
 			b = !b
 		}
-		return b, nil
+		return &b, nil
 	}
 }
 
@@ -349,11 +385,27 @@ func asFloat64(e spansql.Expr, v interface{}) (float64, error) {
 }
 
 func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
+	// Several cases below are handled by this.
+	// It evaluates a BoolExpr (which returns *bool for a tri-state BOOL)
+	// and converts it to true/false/nil.
+	evalBool := func(be spansql.BoolExpr) (interface{}, error) {
+		b, err := ec.evalBoolExpr(be)
+		if err != nil {
+			return nil, err
+		}
+		if b == nil {
+			return nil, nil // (*bool)(nil) -> interface nil
+		}
+		return *b, nil
+	}
+
 	switch e := e.(type) {
 	default:
 		return nil, fmt.Errorf("TODO: evalExpr(%s %T)", e.SQL(), e)
 	case coercedValue:
 		return e.val, nil
+	case spansql.PathExp:
+		return ec.evalPathExp(e)
 	case spansql.ID:
 		return ec.evalID(e)
 	case spansql.Param:
@@ -376,16 +428,28 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		return bool(e), nil
 	case spansql.Paren:
 		return ec.evalExpr(e.Expr)
+	case spansql.Array:
+		var arr []interface{}
+		for _, elt := range e {
+			v, err := ec.evalExpr(elt)
+			if err != nil {
+				return nil, err
+			}
+			arr = append(arr, v)
+		}
+		// TODO: enforce or coerce to consistent types.
+		return arr, nil
 	case spansql.ArithOp:
 		return ec.evalArithOp(e)
 	case spansql.LogicalOp:
-		return ec.evalBoolExpr(e)
+		return evalBool(e)
 	case spansql.ComparisonOp:
-		return ec.evalBoolExpr(e)
+		return evalBool(e)
 	case spansql.InOp:
 		// This is implemented here in evalExpr instead of evalBoolExpr
 		// because it can return FALSE/TRUE/NULL.
 		// The docs are a bit confusing here, so there's probably some bugs here around NULL handling.
+		// TODO: Can this now simplify using evalBool?
 
 		if len(e.RHS) == 0 {
 			// "IN with an empty right side expression is always FALSE".
@@ -431,7 +495,7 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 		}
 		return b, nil
 	case spansql.IsOp:
-		return ec.evalBoolExpr(e)
+		return evalBool(e)
 	case aggSentinel:
 		// Match up e.AggIndex with the column.
 		// They might have been reordered.
@@ -449,11 +513,36 @@ func (ec evalContext) evalExpr(e spansql.Expr) (interface{}, error) {
 	}
 }
 
-func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
-	for i, col := range ec.cols {
-		if col.Name == id {
-			return ec.row.copyDataElem(i), nil
+// resolveColumnIndex turns an ID or PathExp into a table column index.
+func (ec evalContext) resolveColumnIndex(e spansql.Expr) (int, error) {
+	switch e := e.(type) {
+	case spansql.ID:
+		for i, col := range ec.cols {
+			if col.Name == e {
+				return i, nil
+			}
 		}
+	case spansql.PathExp:
+		for i, col := range ec.cols {
+			if pathExpEqual(e, col.Alias) {
+				return i, nil
+			}
+		}
+	}
+	return 0, fmt.Errorf("couldn't resolve [%s] as a table column", e.SQL())
+}
+
+func (ec evalContext) evalPathExp(pe spansql.PathExp) (interface{}, error) {
+	// TODO: support more than only naming an aliased table column.
+	if i, err := ec.resolveColumnIndex(pe); err == nil {
+		return ec.row.copyDataElem(i), nil
+	}
+	return nil, fmt.Errorf("couldn't resolve path expression %s", pe.SQL())
+}
+
+func (ec evalContext) evalID(id spansql.ID) (interface{}, error) {
+	if i, err := ec.resolveColumnIndex(id); err == nil {
+		return ec.row.copyDataElem(i), nil
 	}
 	if e, ok := ec.aliases[id]; ok {
 		// Make a copy of the context without this alias
@@ -681,13 +770,13 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: t}, nil
 	case spansql.LogicalOp, spansql.ComparisonOp, spansql.IsOp:
 		return colInfo{Type: spansql.Type{Base: spansql.Bool}}, nil
-	case spansql.ID:
+	case spansql.PathExp, spansql.ID:
 		// TODO: support more than only naming a table column.
-		for _, col := range ec.cols {
-			if col.Name == e {
-				return col, nil
-			}
+		i, err := ec.resolveColumnIndex(e)
+		if err == nil {
+			return ec.cols[i], nil
 		}
+		// Let errors fall through.
 	case spansql.Param:
 		qp, ok := ec.params[string(e)]
 		if !ok {
@@ -696,6 +785,21 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 		return colInfo{Type: qp.Type}, nil
 	case spansql.Paren:
 		return ec.colInfo(e.Expr)
+	case spansql.Array:
+		// Assume all element of an array literal have the same type.
+		if len(e) == 0 {
+			// TODO: What does the real Spanner do here?
+			return colInfo{Type: spansql.Type{Base: spansql.Int64, Array: true}}, nil
+		}
+		ci, err := ec.colInfo(e[0])
+		if err != nil {
+			return colInfo{}, err
+		}
+		if ci.Type.Array {
+			return colInfo{}, fmt.Errorf("can't nest array literals")
+		}
+		ci.Type.Array = true
+		return ci, nil
 	case spansql.NullLiteral:
 		// There isn't necessarily something sensible here.
 		// Empirically, though, the real Spanner returns Int64.
@@ -703,7 +807,7 @@ func (ec evalContext) colInfo(e spansql.Expr) (colInfo, error) {
 	case aggSentinel:
 		return colInfo{Type: e.Type, AggIndex: e.AggIndex}, nil
 	}
-	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s]", e.SQL())
+	return colInfo{}, fmt.Errorf("can't deduce column type from expression [%s] (type %T)", e.SQL(), e)
 }
 
 func (ec evalContext) arithColType(ao spansql.ArithOp) (spansql.Type, error) {
@@ -746,6 +850,18 @@ func (ec evalContext) arithColType(ao spansql.ArithOp) (spansql.Type, error) {
 		// "All bitwise operators return the same type and the same length as the first operand."
 		return lhs, nil
 	}
+}
+
+func pathExpEqual(a, b spansql.PathExp) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i := range a {
+		if a[i] != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 func evalLike(str, pat string) bool {

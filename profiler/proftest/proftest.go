@@ -472,6 +472,10 @@ func parseBackoffDuration(line string) (time.Duration, error) {
 func (tr *GCETestRunner) PollForAndReturnSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) (string, error) {
 	var output string
 	defer func() {
+		// Avoid escaping and double newlines in the rendered output (b/175999077).
+		// TODO: Use strings.ReplaceAll once support for Go 1.11 is dropped.
+		output = strings.Replace(output, "\r\n", "\n", -1)
+		output = strings.Replace(output, "\033", "\\033", -1)
 		log.Printf("Serial port output for %s:\n%s", inst.Name, output)
 	}()
 

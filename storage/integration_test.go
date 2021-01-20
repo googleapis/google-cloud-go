@@ -351,7 +351,7 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 		t.Fatalf("got %v, want %v", attrs.Labels, wantLabels)
 	}
 
-	// Turn  off versioning again; add and remove some more labels.
+	// Turn off versioning again; add and remove some more labels.
 	ua = BucketAttrsToUpdate{VersioningEnabled: false}
 	ua.SetLabel("l1", "v2")   // update
 	ua.SetLabel("new", "new") // create
@@ -382,6 +382,18 @@ func TestIntegration_BucketUpdate(t *testing.T) {
 	attrs = h.mustUpdateBucket(b, ua)
 	if !testutil.Equal(attrs.Lifecycle, wantLifecycle) {
 		t.Fatalf("got %v, want %v", attrs.Lifecycle, wantLifecycle)
+	}
+	// Check that StorageClass has "STANDARD" value for unset field by default
+	// before passing new value.
+	wantStorageClass := "STANDARD"
+	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
+	}
+	wantStorageClass = "NEARLINE"
+	ua = BucketAttrsToUpdate{StorageClass: wantStorageClass}
+	attrs = h.mustUpdateBucket(b, ua)
+	if !testutil.Equal(attrs.StorageClass, wantStorageClass) {
+		t.Fatalf("got %v, want %v", attrs.StorageClass, wantStorageClass)
 	}
 }
 
@@ -1875,7 +1887,7 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 	ctx := context.Background()
 	client := testConfig(ctx, t)
 	defer client.Close()
-	bkt := client.Bucket("storage-library-test-bucket")
+	bkt := client.Bucket(bucketName)
 	h := testHelper{t}
 
 	for _, tst := range []struct {
@@ -1885,6 +1897,8 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 		{`"Cafe\u0301"`, "Normalization Form D"},
 	} {
 		name, err := strconv.Unquote(tst.nameQuoted)
+		w := bkt.Object(name).NewWriter(ctx)
+		h.mustWrite(w, []byte(tst.content))
 		if err != nil {
 			t.Fatalf("invalid name: %s: %v", tst.nameQuoted, err)
 		}
@@ -2353,15 +2367,30 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		uncompressedBucket = "gcp-public-data-landsat"
 		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
 
-		gzippedBucket = "storage-library-test-bucket"
 		gzippedObject = "gzipped-text.txt"
 	)
 	ctx := context.Background()
-	client, err := newTestClient(ctx, option.WithoutAuthentication())
+	client, err := newTestClient(ctx)
 	if err != nil {
 		t.Fatal(err)
 	}
+	h := testHelper{t}
 	defer client.Close()
+
+	// Create gzipped object.
+	var buf bytes.Buffer
+	zw := gzip.NewWriter(&buf)
+	zw.Name = gzippedObject
+	if _, err := zw.Write([]byte("gzipped object data")); err != nil {
+		t.Fatalf("creating gzip: %v", err)
+	}
+	if err := zw.Close(); err != nil {
+		t.Fatalf("closing gzip writer: %v", err)
+	}
+	w := client.Bucket(bucketName).Object(gzippedObject).NewWriter(ctx)
+	w.ContentEncoding = "gzip"
+	w.ContentType = "text/plain"
+	h.mustWrite(w, buf.Bytes())
 
 	for _, test := range []struct {
 		desc           string
@@ -2409,7 +2438,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			// because it was computed against the zipped contents. We can detect
 			// this case using http.Response.Uncompressed.
 			desc:           "compressed, entire file, unzipped",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: false,
@@ -2419,7 +2448,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			// When we read a gzipped file uncompressed, it's like reading a regular file:
 			// the served content and the CRC match.
 			desc:           "compressed, entire file, read compressed",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         0,
 			length:         -1,
 			readCompressed: true,
@@ -2427,7 +2456,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		},
 		{
 			desc:           "compressed, partial, server unzips",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         1,
 			length:         8,
 			readCompressed: false,
@@ -2436,7 +2465,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		},
 		{
 			desc:           "compressed, partial, read compressed",
-			obj:            client.Bucket(gzippedBucket).Object(gzippedObject),
+			obj:            client.Bucket(bucketName).Object(gzippedObject),
 			offset:         1,
 			length:         8,
 			readCompressed: true,
