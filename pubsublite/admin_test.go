@@ -27,7 +27,7 @@ import (
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {
-	admin, err := NewAdminClient(context.Background(), "us-central1", testClientOpts...)
+	admin, err := NewAdminClient(context.Background(), "us-central1", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -85,6 +85,7 @@ func TestAdminTopicCRUD(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	if gotConfig, err := admin.CreateTopic(ctx, topicConfig); err != nil {
 		t.Errorf("CreateTopic() got err: %v", err)
@@ -172,6 +173,7 @@ func TestAdminListTopics(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	var gotTopicConfigs []*TopicConfig
 	topicIt := admin.Topics(ctx, locationPath)
@@ -227,6 +229,7 @@ func TestAdminListTopicSubscriptions(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	var gotSubscriptions []string
 	subsPathIt := admin.TopicSubscriptions(ctx, topicPath)
@@ -290,6 +293,7 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig); err != nil {
 		t.Errorf("CreateSubscription() got err: %v", err)
@@ -362,6 +366,7 @@ func TestAdminListSubscriptions(t *testing.T) {
 	defer mockServer.OnTestEnd()
 
 	admin := newTestAdminClient(t)
+	defer admin.Close()
 
 	var gotSubscriptionConfigs []*SubscriptionConfig
 	subscriptionIt := admin.Subscriptions(ctx, locationPath)
