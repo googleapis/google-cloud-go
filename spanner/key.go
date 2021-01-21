@@ -437,20 +437,4 @@ func (u union) keySetProto() (*sppb.KeySet, error) {
 	return upb, nil
 }
 
-func DistinctKeys(keys ...Key) KeySet {
-	return distinct(keys)
-}
-
-type distinct []Key
-
-func (d distinct) keySetProto() (*sppb.KeySet, error) {
-	upb := &sppb.KeySet{Keys: make([]*proto3.ListValue, len(d))}
-	for j, k := range d {
-		pb, err := k.proto()
-		if err != nil {
-			return nil, err
-		}
-		upb.Keys[j] = pb
-	}
-	return upb, nil
-}
+var DistinctKeys = KeySetFromKeys
