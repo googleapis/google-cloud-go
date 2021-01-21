@@ -311,6 +311,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1beta2",
     "release_level": "beta"
   },
+  "cloud.google.com/go/dataqna/apiv1alpha": {
+    "distribution_name": "cloud.google.com/go/dataqna/apiv1alpha",
+    "description": "Data QnA API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/dataqna/apiv1alpha",
+    "release_level": "alpha"
+  },
   "cloud.google.com/go/datastore": {
     "distribution_name": "cloud.google.com/go/datastore",
     "description": "Cloud Datastore",
