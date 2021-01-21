@@ -18,7 +18,6 @@ import (
 	"context"
 	"fmt"
 	"io"
-	"log"
 	"sync"
 	"testing"
 	"time"
@@ -187,7 +186,7 @@ func TestSimpleMessageWithDefaultStream(t *testing.T) {
 				break
 			}
 			if err != nil {
-				log.Printf("got err on recv: %v", err)
+				t.Errorf("got err on recv: %v", err)
 				break
 			}
 
