@@ -1349,6 +1349,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NUMERIC to NullNumeric", proto: numericProto(numValuePtr), protoType: numericType(), want: NullNumeric{*numValuePtr, true}},
 		{desc: "decode NULL to NullNumeric", proto: nullProto(), protoType: numericType(), want: NullNumeric{}},
 		{desc: "decode NUMERIC to *big.Rat", proto: numericProto(numValuePtr), protoType: numericType(), want: numValuePtr},
+		{desc: "decode NULL to big.Rat", proto: nullProto(), protoType: numericType(), want: big.Rat{}},
 		{desc: "decode NULL to *big.Rat", proto: nullProto(), protoType: numericType(), want: numNilPtr},
 		// NUMERIC ARRAY with []NullNumeric
 		{desc: "decode ARRAY<Numeric> to []NullNumeric", proto: listProto(numericProto(numValuePtr), numericProto(num2ValuePtr), nullProto()), protoType: listType(numericType()), want: []NullNumeric{{*numValuePtr, true}, {*num2ValuePtr, true}, {}}},
@@ -1607,7 +1608,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<FLOAT64> to []CustomNullFloat64", proto: listProto(floatProto(3.14), nullProto(), floatProto(6.626)), protoType: listType(floatType()), want: []CustomNullFloat64{{3.14, true}, {}, {6.626, true}}},
 		// NUMERIC ARRAY
 		{desc: "decode NULL to []CustomNumeric", proto: nullProto(), protoType: listType(numericType()), want: []CustomNumeric(nil)},
-		{desc: "decode ARRAY<NUMERIC> with NULL values to []CustomNumeric", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNumeric{}, wantErr: true},
+		{desc: "decode ARRAY<NUMERIC> with NULL values to []CustomNumeric", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNumeric{CustomNumeric(*numValuePtr), {}, CustomNumeric(*num2ValuePtr)}},
 		{desc: "decode ARRAY<NUMERIC> to []CustomNumeric", proto: listProto(numericProto(numValuePtr), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNumeric{CustomNumeric(*numValuePtr), CustomNumeric(*num2ValuePtr)}},
 		{desc: "decode NULL to []CustomNullNumeric", proto: nullProto(), protoType: listType(numericType()), want: []CustomNullNumeric(nil)},
 		{desc: "decode ARRAY<NUMERIC> to []CustomNullNumeric", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNullNumeric{{*numValuePtr, true}, {}, {*num2ValuePtr, true}}},

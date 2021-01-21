@@ -1028,7 +1028,8 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			return errDstNotForNull(ptr)
+			*p = big.Rat{}
+			break
 		}
 		x := v.GetStringValue()
 		y, ok := (&big.Rat{}).SetString(x)
@@ -1701,7 +1702,11 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			result = &NullNumeric{}
+			if dsc == spannerTypeNonNullNumeric {
+				result = big.Rat{}
+			} else {
+				result = &NullNumeric{}
+			}
 			break
 		}
 		x := v.GetStringValue()
