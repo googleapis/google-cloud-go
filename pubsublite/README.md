@@ -14,8 +14,7 @@
 ```go
 import (
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite"
-	"cloud.google.com/go/pubsublite/ps"
+	"cloud.google.com/go/pubsublite/pscompat"
 )
 ```
 
@@ -23,14 +22,10 @@ To publish messages to a topic:
 
 [snip]:# (publish)
 ```go
-// Create a PublisherClient for topic1.
+// Create a PublisherClient for topic1 in zone us-central1-b.
 // See https://cloud.google.com/pubsub/lite/docs/locations for available zones.
-topic := pubsublite.TopicPath{
-    Project: "project-id",
-    Zone:    "us-central1-b",
-    TopicID: "topic1",
-}
-publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topic)
+const topic = "projects/project-id/locations/us-central1-b/topics/topic1",
+publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topic)
 if err != nil {
     log.Fatal(err)
 }
@@ -52,13 +47,9 @@ To receive messages for a subscription:
 
 [snip]:# (subscribe)
 ```go
-// Create a SubscriberClient for subscription1.
-subscription := pubsublite.SubscriptionPath{
-    Project:        "project-id",
-    Zone:           "us-central1-b",
-    SubscriptionID: "subscription1",
-}
-subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscription)
+// Create a SubscriberClient for subscription1 in zone us-central1-b.
+const subscription = "projects/project-id/locations/us-central1-b/subscriptions/subscription1"
+subscriber, err := pscompat.NewSubscriberClient(ctx, pscompat.DefaultReceiveSettings, subscription)
 if err != nil {
 	log.Fatal(err)
 }

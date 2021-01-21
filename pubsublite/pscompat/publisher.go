@@ -11,14 +11,13 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package ps
+package pscompat
 
 import (
 	"context"
 	"sync"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/wire"
 	"cloud.google.com/go/pubsublite/publish"
 	"golang.org/x/xerrors"
@@ -55,7 +54,7 @@ func translateError(err error) error {
 	return err
 }
 
-// PublisherClient is a Cloud Pub/Sub Lite client to publish messages to a given
+// PublisherClient is a Pub/Sub Lite client to publish messages to a given
 // topic. A PublisherClient is safe to use from multiple goroutines.
 //
 // See https://cloud.google.com/pubsub/lite/docs/publishing for more information
@@ -69,13 +68,15 @@ type PublisherClient struct {
 	err error
 }
 
-// NewPublisherClient creates a new Cloud Pub/Sub Lite client to publish
-// messages to a given topic.
-//
-// See https://cloud.google.com/pubsub/lite/docs/publishing for more information
-// about publishing.
-func NewPublisherClient(ctx context.Context, settings PublishSettings, topic pubsublite.TopicPath, opts ...option.ClientOption) (*PublisherClient, error) {
-	region, err := pubsublite.ZoneToRegion(topic.Zone)
+// NewPublisherClient creates a new Pub/Sub Lite client to publish messages to a
+// given topic. A valid topic path has the format:
+// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+func NewPublisherClient(ctx context.Context, settings PublishSettings, topic string, opts ...option.ClientOption) (*PublisherClient, error) {
+	topicPath, err := wire.ParseTopicPath(topic)
+	if err != nil {
+		return nil, err
+	}
+	region, err := wire.ZoneToRegion(topicPath.Zone)
 	if err != nil {
 		return nil, err
 	}
@@ -83,7 +84,7 @@ func NewPublisherClient(ctx context.Context, settings PublishSettings, topic pub
 	// Note: ctx is not used to create the wire publisher, because if it is
 	// cancelled, the publisher will not be able to perform graceful shutdown
 	// (e.g. flush pending messages).
-	wirePub, err := wire.NewPublisher(context.Background(), settings.toWireSettings(), region, topic.String(), opts...)
+	wirePub, err := wire.NewPublisher(context.Background(), settings.toWireSettings(), region, topic, opts...)
 	if err != nil {
 		return nil, err
 	}
