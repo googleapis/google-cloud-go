@@ -10,6 +10,7 @@ require (
 	go.opencensus.io v0.22.5
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
+	golang.org/x/sys v0.0.0-20210122093101-04d7465088b8 // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.36.0
