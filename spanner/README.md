@@ -1,4 +1,4 @@
-## Cloud Spanner [![Go Reference](https://pkg.go.dev/cloud.google.com/go/spanner.svg)](https://pkg.go.dev/cloud.google.com/go/spanner)
+## Cloud Spanner [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/spanner.svg)](https://pkg.go.dev/cloud.google.com/go/spanner)
 
 - [About Cloud Spanner](https://cloud.google.com/spanner/)
 - [API documentation](https://cloud.google.com/spanner/docs)
