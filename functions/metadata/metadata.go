@@ -77,6 +77,24 @@ func (r *Resource) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+// MarshalJSON specializes the Resource marshalling to handle the case where the
+// value is a string instead of a map. See the comment above on RawPath for why this
+// needs to be handled.
+func (r *Resource) MarshalJSON() ([]byte, error) {
+	// If RawPath is set, use that as the whole value.
+	if r.RawPath != "" {
+		return []byte(fmt.Sprintf("%q", r.RawPath)), nil
+	}
+
+	// Otherwise, accept whatever the result of the normal marshal would be.
+	res := *r
+	b, err := json.Marshal(res)
+	if err != nil {
+		return nil, err
+	}
+	return b, nil
+}
+
 type contextKey string
 
 // GCFContextKey satisfies an interface to be able to use contextKey to read

@@ -632,7 +632,7 @@ func TestIntegration_WriteBatch(t *testing.T) {
 	// TODO(jba): test verify when it is supported.
 }
 
-func TestIntegration_Query(t *testing.T) {
+func TestIntegration_QueryDocuments(t *testing.T) {
 	ctx := context.Background()
 	coll := integrationColl(t)
 	h := testHelper{t}
@@ -644,20 +644,32 @@ func TestIntegration_Query(t *testing.T) {
 		h.mustCreate(doc, map[string]interface{}{"q": i, "x": 1})
 		wants = append(wants, map[string]interface{}{"q": int64(i)})
 	}
-	q := coll.Select("q").OrderBy("q", Asc)
+	q := coll.Select("q")
 	for i, test := range []struct {
-		q    Query
-		want []map[string]interface{}
+		q       Query
+		want    []map[string]interface{}
+		orderBy bool // Some query types do not allow ordering.
 	}{
-		{q, wants},
-		{q.Where("q", ">", 1), wants[2:]},
-		{q.WherePath([]string{"q"}, ">", 1), wants[2:]},
-		{q.Offset(1).Limit(1), wants[1:2]},
-		{q.StartAt(1), wants[1:]},
-		{q.StartAfter(1), wants[2:]},
-		{q.EndAt(1), wants[:2]},
-		{q.EndBefore(1), wants[:1]},
+		{q, wants, true},
+		{q.Where("q", ">", 1), wants[2:], true},
+		{q.Where("q", "<", 1), wants[:1], true},
+		{q.Where("q", "==", 1), wants[1:2], false},
+		{q.Where("q", "!=", 0), wants[1:], true},
+		{q.Where("q", ">=", 1), wants[1:], true},
+		{q.Where("q", "<=", 1), wants[:2], true},
+		{q.Where("q", "in", []int{0}), wants[:1], false},
+		{q.Where("q", "not-in", []int{0, 1}), wants[2:], true},
+		{q.WherePath([]string{"q"}, ">", 1), wants[2:], true},
+		{q.Offset(1).Limit(1), wants[1:2], true},
+		{q.StartAt(1), wants[1:], true},
+		{q.StartAfter(1), wants[2:], true},
+		{q.EndAt(1), wants[:2], true},
+		{q.EndBefore(1), wants[:1], true},
+		{q.LimitToLast(2), wants[1:], true},
 	} {
+		if test.orderBy {
+			test.q = test.q.OrderBy("q", Asc)
+		}
 		gotDocs, err := test.q.Documents(ctx).GetAll()
 		if err != nil {
 			t.Errorf("#%d: %+v: %v", i, test.q, err)
@@ -681,7 +693,7 @@ func TestIntegration_Query(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	seen := map[int64]bool{} // "q" values we see
+	seen := map[int64]bool{} // "q" values we see.
 	for _, d := range allDocs {
 		data := d.Data()
 		q, ok := data["q"]
@@ -702,6 +714,16 @@ func TestIntegration_Query(t *testing.T) {
 	}
 	if got, want := len(seen), len(wants); got != want {
 		t.Errorf("got %d docs with 'q', want %d", len(seen), len(wants))
+	}
+}
+
+func TestIntegration_QueryDocuments_LimitToLast_Fail(t *testing.T) {
+	ctx := context.Background()
+	coll := integrationColl(t)
+	q := coll.Select("q").OrderBy("q", Asc).LimitToLast(1)
+	got, err := q.Documents(ctx).Next()
+	if err == nil {
+		t.Errorf("got %v doc, want error", got)
 	}
 }
 
@@ -1121,139 +1143,177 @@ func TestIntegration_ArrayRemove_Set(t *testing.T) {
 	}
 }
 
-func TestIntegration_Increment_Create(t *testing.T) {
-	doc := integrationColl(t).NewDoc()
-	h := testHelper{t}
-	path := "somePath"
-	want := 7
-
-	h.mustCreate(doc, map[string]interface{}{
-		path: Increment(want),
-	})
-
-	ds := h.mustGet(doc)
-	var gotMap map[string]int
-	if err := ds.DataTo(&gotMap); err != nil {
-		t.Fatal(err)
+func makeFieldTransform(transform string, value interface{}) interface{} {
+	switch transform {
+	case "inc":
+		return FieldTransformIncrement(value)
+	case "max":
+		return FieldTransformMaximum(value)
+	case "min":
+		return FieldTransformMinimum(value)
 	}
-	if _, ok := gotMap[path]; !ok {
-		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
-	}
-
-	if gotMap[path] != want {
-		t.Fatalf("want %d, got %d", want, gotMap[path])
-	}
+	panic(fmt.Sprintf("Invalid transform %v", transform))
 }
 
-// Also checks that all appropriate types are supported.
-func TestIntegration_Increment_Update(t *testing.T) {
-	type MyInt = int // Test a custom type.
-	for _, tc := range []struct {
-		// All three should be same type.
-		start interface{}
-		inc   interface{}
-		want  interface{}
-
-		wantErr bool
-	}{
-		{start: int(7), inc: int(4), want: int(11)},
-		{start: int8(7), inc: int8(4), want: int8(11)},
-		{start: int16(7), inc: int16(4), want: int16(11)},
-		{start: int32(7), inc: int32(4), want: int32(11)},
-		{start: int64(7), inc: int64(4), want: int64(11)},
-		{start: uint8(7), inc: uint8(4), want: uint8(11)},
-		{start: uint16(7), inc: uint16(4), want: uint16(11)},
-		{start: uint32(7), inc: uint32(4), want: uint32(11)},
-		{start: float32(7.7), inc: float32(4.1), want: float32(11.8)},
-		{start: float64(7.7), inc: float64(4.1), want: float64(11.8)},
-		{start: MyInt(7), inc: MyInt(4), want: MyInt(11)},
-		{start: 7, inc: "strings are not allowed", wantErr: true},
-		{start: 7, inc: uint(3), wantErr: true},
-		{start: 7, inc: uint64(3), wantErr: true},
-	} {
-		typeStr := reflect.TypeOf(tc.inc).String()
-		t.Run(typeStr, func(t *testing.T) {
+func TestIntegration_FieldTransforms_Create(t *testing.T) {
+	for _, transform := range []string{"inc", "max", "min"} {
+		t.Run(transform, func(t *testing.T) {
 			doc := integrationColl(t).NewDoc()
 			h := testHelper{t}
 			path := "somePath"
+			want := 7
 
 			h.mustCreate(doc, map[string]interface{}{
-				path: tc.start,
+				path: makeFieldTransform(transform, want),
 			})
-			fpus := []Update{
-				{
-					Path:  path,
-					Value: Increment(tc.inc),
-				},
-			}
-			_, err := doc.Update(context.Background(), fpus)
-			if err != nil {
-				if tc.wantErr {
-					return
-				}
-				h.t.Fatalf("%s: updating: %v", loc(), err)
-			}
+
 			ds := h.mustGet(doc)
-			var gotMap map[string]interface{}
+			var gotMap map[string]int
 			if err := ds.DataTo(&gotMap); err != nil {
 				t.Fatal(err)
 			}
+			if _, ok := gotMap[path]; !ok {
+				t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+			}
 
-			switch tc.want.(type) {
-			case int, int8, int16, int32, int64:
-				if _, ok := gotMap[path]; !ok {
-					t.Fatalf("expected a %v key in data, got %v", path, gotMap)
-				}
-				if got, want := reflect.ValueOf(gotMap[path]).Int(), reflect.ValueOf(tc.want).Int(); got != want {
-					t.Fatalf("want %v, got %v", want, got)
-				}
-			case uint8, uint16, uint32:
-				if _, ok := gotMap[path]; !ok {
-					t.Fatalf("expected a %v key in data, got %v", path, gotMap)
-				}
-				if got, want := uint64(reflect.ValueOf(gotMap[path]).Int()), reflect.ValueOf(tc.want).Uint(); got != want {
-					t.Fatalf("want %v, got %v", want, got)
-				}
-			case float32, float64:
-				if _, ok := gotMap[path]; !ok {
-					t.Fatalf("expected a %v key in data, got %v", path, gotMap)
-				}
-				const precision = 1e-6 // Floats are never precisely comparable.
-				if got, want := reflect.ValueOf(gotMap[path]).Float(), reflect.ValueOf(tc.want).Float(); math.Abs(got-want) > precision {
-					t.Fatalf("want %v, got %v", want, got)
-				}
-			default:
-				// Either some unsupported type was added without specifying
-				// wantErr, or a supported type needs to be added to this
-				// switch statement.
-				t.Fatalf("unsupported type %T", tc.want)
+			if gotMap[path] != want {
+				t.Fatalf("want %d, got %d", want, gotMap[path])
 			}
 		})
 	}
 }
 
-func TestIntegration_Increment_Set(t *testing.T) {
-	coll := integrationColl(t)
-	h := testHelper{t}
-	path := "somePath"
-	want := 9
+// Also checks that all appropriate types are supported.
+func TestIntegration_FieldTransforms_Update(t *testing.T) {
+	type MyInt = int // Test a custom type.
+	for _, tc := range []struct {
+		// All three should be same type.
+		start interface{}
+		val   interface{}
+		inc   interface{}
+		max   interface{}
+		min   interface{}
 
-	doc := coll.NewDoc()
-	newData := map[string]interface{}{
-		path: Increment(want),
-	}
-	h.mustSet(doc, newData)
-	ds := h.mustGet(doc)
-	var gotMap map[string]int
-	if err := ds.DataTo(&gotMap); err != nil {
-		t.Fatal(err)
-	}
-	if _, ok := gotMap[path]; !ok {
-		t.Fatalf("expected a %v key in data, got %v", path, gotMap)
-	}
+		wantErr bool
+	}{
+		{start: int(7), val: int(4), inc: int(11), max: int(7), min: int(4)},
+		{start: int8(2), val: int8(4), inc: int8(6), max: int8(4), min: int8(2)},
+		{start: int16(7), val: int16(4), inc: int16(11), max: int16(7), min: int16(4)},
+		{start: int32(7), val: int32(4), inc: int32(11), max: int32(7), min: int32(4)},
+		{start: int64(7), val: int64(4), inc: int64(11), max: int64(7), min: int64(4)},
+		{start: uint8(7), val: uint8(4), inc: uint8(11), max: uint8(7), min: uint8(4)},
+		{start: uint16(7), val: uint16(4), inc: uint16(11), max: int16(7), min: int16(4)},
+		{start: uint32(7), val: uint32(4), inc: uint32(11), max: int32(7), min: int32(4)},
+		{start: float32(7.7), val: float32(4.1), inc: float32(11.8), max: float32(7.7), min: float32(4.1)},
+		{start: float64(2.2), val: float64(4.1), inc: float64(6.3), max: float64(4.1), min: float64(2.2)},
+		{start: MyInt(7), val: MyInt(4), inc: MyInt(11), max: MyInt(7), min: MyInt(4)},
+		{start: 7, val: "strings are not allowed", wantErr: true},
+		{start: 7, val: uint(3), wantErr: true},
+		{start: 7, val: uint64(3), wantErr: true},
+	} {
+		for _, transform := range []string{"inc", "max", "min"} {
+			t.Run(transform, func(t *testing.T) {
+				typeStr := reflect.TypeOf(tc.val).String()
+				t.Run(typeStr, func(t *testing.T) {
+					doc := integrationColl(t).NewDoc()
+					h := testHelper{t}
+					path := "somePath"
 
-	if gotMap[path] != want {
-		t.Fatalf("want %d, got %d", want, gotMap[path])
+					h.mustCreate(doc, map[string]interface{}{
+						path: tc.start,
+					})
+					fpus := []Update{
+						{
+							Path:  path,
+							Value: makeFieldTransform(transform, tc.val),
+						},
+					}
+					_, err := doc.Update(context.Background(), fpus)
+					if err != nil {
+						if tc.wantErr {
+							return
+						}
+						h.t.Fatalf("%s: updating: %v", loc(), err)
+					}
+					ds := h.mustGet(doc)
+					var gotMap map[string]interface{}
+					if err := ds.DataTo(&gotMap); err != nil {
+						t.Fatal(err)
+					}
+
+					var want interface{}
+					switch transform {
+					case "inc":
+						want = tc.inc
+					case "max":
+						want = tc.max
+					case "min":
+						want = tc.min
+					default:
+						t.Fatalf("unsupported transform type %s", transform)
+					}
+
+					switch want.(type) {
+					case int, int8, int16, int32, int64:
+						if _, ok := gotMap[path]; !ok {
+							t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+						}
+						if got, want := reflect.ValueOf(gotMap[path]).Int(), reflect.ValueOf(want).Int(); got != want {
+							t.Fatalf("want %v, got %v", want, got)
+						}
+					case uint8, uint16, uint32:
+						if _, ok := gotMap[path]; !ok {
+							t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+						}
+						if got, want := uint64(reflect.ValueOf(gotMap[path]).Int()), reflect.ValueOf(want).Uint(); got != want {
+							t.Fatalf("want %v, got %v", want, got)
+						}
+					case float32, float64:
+						if _, ok := gotMap[path]; !ok {
+							t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+						}
+						const precision = 1e-6 // Floats are never precisely comparable.
+						if got, want := reflect.ValueOf(gotMap[path]).Float(), reflect.ValueOf(want).Float(); math.Abs(got-want) > precision {
+							t.Fatalf("want %v, got %v", want, got)
+						}
+					default:
+						// Either some unsupported type was added without specifying
+						// wantErr, or a supported type needs to be added to this
+						// switch statement.
+						t.Fatalf("unsupported type %T", want)
+					}
+				})
+			})
+		}
+	}
+}
+
+func TestIntegration_FieldTransforms_Set(t *testing.T) {
+	for _, transform := range []string{"inc", "max", "min"} {
+		t.Run(transform, func(t *testing.T) {
+			coll := integrationColl(t)
+			h := testHelper{t}
+			path := "somePath"
+			want := 9
+
+			doc := coll.NewDoc()
+			newData := map[string]interface{}{
+				path: makeFieldTransform(transform, want),
+			}
+			h.mustSet(doc, newData)
+			ds := h.mustGet(doc)
+			var gotMap map[string]int
+			if err := ds.DataTo(&gotMap); err != nil {
+				t.Fatal(err)
+			}
+			if _, ok := gotMap[path]; !ok {
+				t.Fatalf("expected a %v key in data, got %v", path, gotMap)
+			}
+
+			if gotMap[path] != want {
+				t.Fatalf("want %d, got %d", want, gotMap[path])
+			}
+		})
 	}
 }
 

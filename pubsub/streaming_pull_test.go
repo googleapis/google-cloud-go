@@ -67,7 +67,7 @@ func TestStreamingPullMultipleFetches(t *testing.T) {
 func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer, msgs []*pb.ReceivedMessage) {
 	sub := client.Subscription("S")
 	gotMsgs, err := pullN(context.Background(), sub, len(msgs), func(_ context.Context, m *Message) {
-		id, err := strconv.Atoi(m.ackID)
+		id, err := strconv.Atoi(msgAckID(m))
 		if err != nil {
 			panic(err)
 		}
@@ -83,20 +83,21 @@ func testStreamingPullIteration(t *testing.T, client *Client, server *mockServer
 	}
 	gotMap := map[string]*Message{}
 	for _, m := range gotMsgs {
-		gotMap[m.ackID] = m
+		gotMap[msgAckID(m)] = m
 	}
 	for i, msg := range msgs {
-		want, err := toMessage(msg)
+		want, err := toMessage(msg, time.Time{}, nil)
 		if err != nil {
 			t.Fatal(err)
 		}
-		want.calledDone = true
-		got := gotMap[want.ackID]
+		wantAckh, _ := msgAckHandler(want)
+		wantAckh.calledDone = true
+		got := gotMap[wantAckh.ackID]
 		if got == nil {
-			t.Errorf("%d: no message for ackID %q", i, want.ackID)
+			t.Errorf("%d: no message for ackID %q", i, wantAckh.ackID)
 			continue
 		}
-		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
+		if !testutil.Equal(got, want, cmp.AllowUnexported(Message{}, psAckHandler{}), cmpopts.IgnoreTypes(time.Time{}, func(string, bool, time.Time) {})) {
 			t.Errorf("%d: got\n%#v\nwant\n%#v", i, got, want)
 		}
 	}
@@ -162,7 +163,7 @@ func TestStreamingPullCancel(t *testing.T) {
 		m.Ack()
 	})
 	if got := atomic.LoadInt32(&n); got != 0 {
-		t.Errorf("Receive returned with %d callbacks still running", got)
+		t.Fatalf("Receive returned with %d callbacks still running", got)
 	}
 	if err != nil {
 		t.Fatalf("Receive got <%v>, want nil", err)
@@ -235,10 +236,10 @@ func TestStreamingPullConcurrent(t *testing.T) {
 	}
 	seen := map[string]bool{}
 	for _, gm := range gotMsgs {
-		if seen[gm.ackID] {
-			t.Fatalf("duplicate ID %q", gm.ackID)
+		if seen[msgAckID(gm)] {
+			t.Fatalf("duplicate ID %q", msgAckID(gm))
 		}
-		seen[gm.ackID] = true
+		seen[msgAckID(gm)] = true
 	}
 	if len(seen) != nMessages {
 		t.Fatalf("got %d messages, want %d", len(seen), nMessages)
@@ -266,8 +267,13 @@ func TestStreamingPullFlowControl(t *testing.T) {
 	}()
 	// Here, two callbacks are active. Receive should be blocked in the flow
 	// control acquire method on the third message.
-	<-activec
-	<-activec
+	for i := 0; i < 2; i++ {
+		select {
+		case <-activec:
+		case <-time.After(time.Second):
+			t.Fatalf("timed out waiting for message %d", i+1)
+		}
+	}
 	select {
 	case <-activec:
 		t.Fatal("third callback in progress")
@@ -310,9 +316,8 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	// wait for receives to happen
 	time.Sleep(100 * time.Millisecond)
 
-	err := client.Close()
-	if err != nil {
-		t.Fatal(err)
+	if err := client.Close(); err != nil {
+		t.Fatalf("Got error while closing client: %v", err)
 	}
 
 	// wait for things to close
@@ -322,7 +327,7 @@ func TestStreamingPull_ClosedClient(t *testing.T) {
 	case recvErr := <-recvFinished:
 		s, ok := status.FromError(recvErr)
 		if !ok {
-			t.Fatalf("Expected a gRPC failure, got %v", err)
+			t.Fatalf("Expected a gRPC failure, got %v", recvErr)
 		}
 		if s.Code() != codes.Canceled {
 			t.Fatalf("Expected canceled, got %v", s.Code())

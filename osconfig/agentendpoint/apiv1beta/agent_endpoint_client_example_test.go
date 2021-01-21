@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -106,6 +106,26 @@ func ExampleClient_LookupEffectiveGuestPolicy() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.LookupEffectiveGuestPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RegisterAgent() {
+	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
+
+	ctx := context.Background()
+	c, err := agentendpoint.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &agentendpointpb.RegisterAgentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.RegisterAgent(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

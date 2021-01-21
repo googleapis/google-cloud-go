@@ -40,17 +40,26 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	"google.golang.org/genproto/protobuf/field_mask"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/grpc/status"
 )
 
 const adminAddr = "bigtableadmin.googleapis.com:443"
+const mtlsAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
+
+// ErrPartiallyUnavailable is returned when some locations (clusters) are
+// unavailable. Both partial results (retrieved from available locations)
+// and the error are returned when this exception occurred.
+type ErrPartiallyUnavailable struct {
+	Locations []string // unavailable locations
+}
+
+func (e ErrPartiallyUnavailable) Error() string {
+	return fmt.Sprintf("Unavailable locations: %v", e.Locations)
+}
 
 // AdminClient is a client type for performing admin operations within a specific instance.
 type AdminClient struct {
-	conn      *grpc.ClientConn
+	connPool  gtransport.ConnPool
 	tClient   btapb.BigtableTableAdminClient
 	lroClient *lroauto.OperationsClient
 
@@ -62,7 +71,7 @@ type AdminClient struct {
 
 // NewAdminClient creates a new AdminClient for a given project and instance.
 func NewAdminClient(ctx context.Context, project, instance string, opts ...option.ClientOption) (*AdminClient, error) {
-	o, err := btopt.DefaultClientOptions(adminAddr, AdminScope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(adminAddr, mtlsAdminAddr, AdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -71,12 +80,12 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	// Need to add scopes for long running operations (for create table & snapshots)
 	o = append(o, option.WithScopes(cloudresourcemanager.CloudPlatformScope))
 	o = append(o, opts...)
-	conn, err := gtransport.Dial(ctx, o...)
+	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 
-	lroClient, err := lroauto.NewOperationsClient(ctx, option.WithGRPCConn(conn))
+	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection
 		// and never actually need to dial.
@@ -88,8 +97,8 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 	}
 
 	return &AdminClient{
-		conn:      conn,
-		tClient:   btapb.NewBigtableTableAdminClient(conn),
+		connPool:  connPool,
+		tClient:   btapb.NewBigtableTableAdminClient(connPool),
 		lroClient: lroClient,
 		project:   project,
 		instance:  instance,
@@ -99,11 +108,15 @@ func NewAdminClient(ctx context.Context, project, instance string, opts ...optio
 
 // Close closes the AdminClient.
 func (ac *AdminClient) Close() error {
-	return ac.conn.Close()
+	return ac.connPool.Close()
 }
 
 func (ac *AdminClient) instancePrefix() string {
 	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
+}
+
+func (ac *AdminClient) backupPath(cluster, backup string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
 }
 
 // Tables returns a list of the tables in the instance.
@@ -588,18 +601,24 @@ func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) err
 	}
 }
 
-// TableIAM creates an IAM client specific to a given Instance and Table within the configured project.
+// TableIAM creates an IAM Handle specific to a given Instance and Table within the configured project.
 func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient,
 		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
 }
 
+// BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
+func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
+	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, backup))
+}
+
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
+const mtlsInstanceAdminAddr = "bigtableadmin.mtls.googleapis.com:443"
 
 // InstanceAdminClient is a client type for performing admin operations on instances.
 // These operations can be substantially more dangerous than those provided by AdminClient.
 type InstanceAdminClient struct {
-	conn      *grpc.ClientConn
+	connPool  gtransport.ConnPool
 	iClient   btapb.BigtableInstanceAdminClient
 	lroClient *lroauto.OperationsClient
 
@@ -611,19 +630,19 @@ type InstanceAdminClient struct {
 
 // NewInstanceAdminClient creates a new InstanceAdminClient for a given project.
 func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.ClientOption) (*InstanceAdminClient, error) {
-	o, err := btopt.DefaultClientOptions(instanceAdminAddr, InstanceAdminScope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(instanceAdminAddr, mtlsInstanceAdminAddr, InstanceAdminScope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
 	o = append(o, opts...)
-	conn, err := gtransport.Dial(ctx, o...)
+	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 
-	lroClient, err := lroauto.NewOperationsClient(ctx, option.WithGRPCConn(conn))
+	lroClient, err := lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection
 		// and never actually need to dial.
@@ -635,8 +654,8 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 	}
 
 	return &InstanceAdminClient{
-		conn:      conn,
-		iClient:   btapb.NewBigtableInstanceAdminClient(conn),
+		connPool:  connPool,
+		iClient:   btapb.NewBigtableInstanceAdminClient(connPool),
 		lroClient: lroClient,
 
 		project: project,
@@ -646,7 +665,7 @@ func NewInstanceAdminClient(ctx context.Context, project string, opts ...option.
 
 // Close closes the InstanceAdminClient.
 func (iac *InstanceAdminClient) Close() error {
-	return iac.conn.Close()
+	return iac.connPool.Close()
 }
 
 // StorageType is the type of storage used for all tables in an instance
@@ -672,7 +691,19 @@ func storageTypeFromProto(st btapb.StorageType) StorageType {
 	return SSD
 }
 
-// InstanceType is the type of the instance
+// InstanceState is the state of the instance. This is output-only.
+type InstanceState int32
+
+const (
+	// NotKnown represents the state of an instance that could not be determined.
+	NotKnown InstanceState = InstanceState(btapb.Instance_STATE_NOT_KNOWN)
+	// Ready represents the state of an instance that has been successfully created.
+	Ready = InstanceState(btapb.Instance_READY)
+	// Creating represents the state of an instance that is currently being created.
+	Creating = InstanceState(btapb.Instance_CREATING)
+)
+
+// InstanceType is the type of the instance.
 type InstanceType int32
 
 const (
@@ -684,9 +715,11 @@ const (
 
 // InstanceInfo represents information about an instance
 type InstanceInfo struct {
-	Name         string // name of the instance
-	DisplayName  string // display name for UIs
-	InstanceType InstanceType
+	Name          string // name of the instance
+	DisplayName   string // display name for UIs
+	InstanceState InstanceState
+	InstanceType  InstanceType
+	Labels        map[string]string
 }
 
 // InstanceConf contains the information necessary to create an Instance
@@ -696,6 +729,7 @@ type InstanceConf struct {
 	NumNodes     int32
 	StorageType  StorageType
 	InstanceType InstanceType
+	Labels       map[string]string
 }
 
 // InstanceWithClustersConfig contains the information necessary to create an Instance
@@ -703,6 +737,7 @@ type InstanceWithClustersConfig struct {
 	InstanceID, DisplayName string
 	Clusters                []ClusterConfig
 	InstanceType            InstanceType
+	Labels                  map[string]string
 }
 
 var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][-a-z0-9]*)$`)
@@ -715,6 +750,7 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 		InstanceID:   conf.InstanceId,
 		DisplayName:  conf.DisplayName,
 		InstanceType: conf.InstanceType,
+		Labels:       conf.Labels,
 		Clusters: []ClusterConfig{
 			{
 				InstanceID:  conf.InstanceId,
@@ -740,8 +776,12 @@ func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, 
 	req := &btapb.CreateInstanceRequest{
 		Parent:     "projects/" + iac.project,
 		InstanceId: conf.InstanceID,
-		Instance:   &btapb.Instance{DisplayName: conf.DisplayName, Type: btapb.Instance_Type(conf.InstanceType)},
-		Clusters:   clusters,
+		Instance: &btapb.Instance{
+			DisplayName: conf.DisplayName,
+			Type:        btapb.Instance_Type(conf.InstanceType),
+			Labels:      conf.Labels,
+		},
+		Clusters: clusters,
 	}
 
 	lro, err := iac.iClient.CreateInstance(ctx, req)
@@ -774,6 +814,10 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 	if btapb.Instance_Type(conf.InstanceType) != btapb.Instance_TYPE_UNSPECIFIED {
 		ireq.Instance.Type = btapb.Instance_Type(conf.InstanceType)
 		mask.Paths = append(mask.Paths, "type")
+	}
+	if conf.Labels != nil {
+		ireq.Instance.Labels = conf.Labels
+		mask.Paths = append(mask.Paths, "labels")
 	}
 
 	if len(mask.Paths) == 0 {
@@ -841,7 +885,10 @@ func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceID s
 	return err
 }
 
-// Instances returns a list of instances in the project.
+// Instances returns a list of instances in the project. If any location
+// (cluster) is unavailable due to some transient conditions, Instances
+// returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
 func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListInstancesRequest{
@@ -856,11 +903,6 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 	if err != nil {
 		return nil, err
 	}
-	if len(res.FailedLocations) > 0 {
-		// We don't have a good way to return a partial result in the face of some zones being unavailable.
-		// Fail the entire request.
-		return nil, status.Errorf(codes.Unavailable, "Failed locations: %v", res.FailedLocations)
-	}
 
 	var is []*InstanceInfo
 	for _, i := range res.Instances {
@@ -869,10 +911,17 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 			return nil, fmt.Errorf("malformed instance name %q", i.Name)
 		}
 		is = append(is, &InstanceInfo{
-			Name:         m[2],
-			DisplayName:  i.DisplayName,
-			InstanceType: InstanceType(i.Type),
+			Name:          m[2],
+			DisplayName:   i.DisplayName,
+			InstanceState: InstanceState(i.State),
+			InstanceType:  InstanceType(i.Type),
+			Labels:        i.Labels,
 		})
+	}
+	if len(res.FailedLocations) > 0 {
+		// Return partial results and an error in
+		// case of some locations are unavailable.
+		return is, ErrPartiallyUnavailable{res.FailedLocations}
 	}
 	return is, nil
 }
@@ -898,9 +947,11 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 		return nil, fmt.Errorf("malformed instance name %q", res.Name)
 	}
 	return &InstanceInfo{
-		Name:         m[2],
-		DisplayName:  res.DisplayName,
-		InstanceType: InstanceType(res.Type),
+		Name:          m[2],
+		DisplayName:   res.DisplayName,
+		InstanceState: InstanceState(res.State),
+		InstanceType:  InstanceType(res.Type),
+		Labels:        res.Labels,
 	}, nil
 }
 
@@ -1395,4 +1446,223 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 	}
 
 	return results, nil
+}
+
+// RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
+func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	backupPath := ac.backupPath(cluster, backup)
+
+	req := &btapb.RestoreTableRequest{
+		Parent:  prefix,
+		TableId: table,
+		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
+	}
+	op, err := ac.tClient.RestoreTable(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Table{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// CreateBackup creates a new backup in the specified cluster from the
+// specified source table with the user-provided expire time.
+func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+
+	parsedExpireTime, err := ptypes.TimestampProto(expireTime)
+	if err != nil {
+		return err
+	}
+
+	req := &btapb.CreateBackupRequest{
+		Parent:   prefix + "/clusters/" + cluster,
+		BackupId: backup,
+		Backup: &btapb.Backup{
+			ExpireTime:  parsedExpireTime,
+			SourceTable: prefix + "/tables/" + table,
+		},
+	}
+
+	op, err := ac.tClient.CreateBackup(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.Backup{}
+	return longrunning.InternalNewOperation(ac.lroClient, op).Wait(ctx, &resp)
+}
+
+// Backups returns a BackupIterator for iterating over the backups in a cluster.
+// To list backups across all of the clusters in the instance specify "-" as the cluster.
+func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupIterator {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	prefix := ac.instancePrefix()
+	clusterPath := prefix + "/clusters/" + cluster
+
+	it := &BackupIterator{}
+	req := &btapb.ListBackupsRequest{
+		Parent: clusterPath,
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+
+		var resp *btapb.ListBackupsResponse
+		err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+			var err error
+			resp, err = ac.tClient.ListBackups(ctx, req)
+			return err
+		}, retryOptions...)
+		if err != nil {
+			return "", err
+		}
+		for _, s := range resp.Backups {
+			backupInfo, err := newBackupInfo(s)
+			if err != nil {
+				return "", fmt.Errorf("failed to parse backup proto %v", err)
+			}
+			it.items = append(it.items, backupInfo)
+		}
+		return resp.NextPageToken, nil
+	}
+	bufLen := func() int { return len(it.items) }
+	takeBuf := func() interface{} { b := it.items; it.items = nil; return b }
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, bufLen, takeBuf)
+
+	return it
+}
+
+// newBackupInfo creates a BackupInfo struct from a btapb.Backup protocol buffer.
+func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
+	nameParts := strings.Split(backup.Name, "/")
+	name := nameParts[len(nameParts)-1]
+	tablePathParts := strings.Split(backup.SourceTable, "/")
+	tableID := tablePathParts[len(tablePathParts)-1]
+
+	startTime, err := ptypes.Timestamp(backup.StartTime)
+	if err != nil {
+		return nil, fmt.Errorf("invalid startTime: %v", err)
+	}
+
+	endTime, err := ptypes.Timestamp(backup.EndTime)
+	if err != nil {
+		return nil, fmt.Errorf("invalid endTime: %v", err)
+	}
+
+	expireTime, err := ptypes.Timestamp(backup.ExpireTime)
+	if err != nil {
+		return nil, fmt.Errorf("invalid expireTime: %v", err)
+	}
+
+	return &BackupInfo{
+		Name:        name,
+		SourceTable: tableID,
+		SizeBytes:   backup.SizeBytes,
+		StartTime:   startTime,
+		EndTime:     endTime,
+		ExpireTime:  expireTime,
+		State:       backup.State.String(),
+	}, nil
+}
+
+// BackupIterator is an EntryIterator that iterates over log entries.
+type BackupIterator struct {
+	items    []*BackupInfo
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+}
+
+// PageInfo supports pagination. See https://godoc.org/google.golang.org/api/iterator package for details.
+func (it *BackupIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done
+// (https://godoc.org/google.golang.org/api/iterator) if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *BackupIterator) Next() (*BackupInfo, error) {
+	if err := it.nextFunc(); err != nil {
+		return nil, err
+	}
+	item := it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+// BackupInfo contains backup metadata. This struct is read-only.
+type BackupInfo struct {
+	Name        string
+	SourceTable string
+	SizeBytes   int64
+	StartTime   time.Time
+	EndTime     time.Time
+	ExpireTime  time.Time
+	State       string
+}
+
+// BackupInfo gets backup metadata.
+func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	backupPath := ac.backupPath(cluster, backup)
+
+	req := &btapb.GetBackupRequest{
+		Name: backupPath,
+	}
+
+	var resp *btapb.Backup
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		resp, err = ac.tClient.GetBackup(ctx, req)
+		return err
+	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	return newBackupInfo(resp)
+}
+
+// DeleteBackup deletes a backup in a cluster.
+func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	backupPath := ac.backupPath(cluster, backup)
+
+	req := &btapb.DeleteBackupRequest{
+		Name: backupPath,
+	}
+	_, err := ac.tClient.DeleteBackup(ctx, req)
+	return err
+}
+
+// UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
+func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+	backupPath := ac.backupPath(cluster, backup)
+
+	expireTimestamp, err := ptypes.TimestampProto(expireTime)
+	if err != nil {
+		return err
+	}
+
+	updateMask := &field_mask.FieldMask{}
+	updateMask.Paths = append(updateMask.Paths, "expire_time")
+
+	req := &btapb.UpdateBackupRequest{
+		Backup: &btapb.Backup{
+			Name:       backupPath,
+			ExpireTime: expireTimestamp,
+		},
+		UpdateMask: updateMask,
+	}
+	_, err = ac.tClient.UpdateBackup(ctx, req)
+	return err
 }

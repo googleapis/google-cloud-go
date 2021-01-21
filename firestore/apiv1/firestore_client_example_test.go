@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -80,26 +80,6 @@ func ExampleClient_ListDocuments() {
 		// TODO: Use resp.
 		_ = resp
 	}
-}
-
-func ExampleClient_CreateDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
-	ctx := context.Background()
-	c, err := firestore.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &firestorepb.CreateDocumentRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateDocument(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleClient_UpdateDocument() {
@@ -191,6 +171,33 @@ func ExampleClient_Rollback() {
 	err = c.Rollback(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_PartitionQuery() {
+	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &firestorepb.PartitionQueryRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.PartitionQuery(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
 }
 
@@ -291,4 +298,44 @@ func ExampleClient_ListCollectionIds() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleClient_BatchWrite() {
+	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+
+	ctx := context.Background()
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &firestorepb.BatchWriteRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.BatchWrite(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_CreateDocument() {
+	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+
+	ctx := context.Background()
+	c, err := firestore.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &firestorepb.CreateDocumentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateDocument(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

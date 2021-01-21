@@ -236,7 +236,7 @@ func (s *watchStream) handleNextMessage() bool {
 	return false
 }
 
-// Return true iff in a consistent state, or there is a permanent error.
+// Return true if in a consistent state, or there is a permanent error.
 func (s *watchStream) handleTargetChange(tc *pb.TargetChange) bool {
 	switch tc.TargetChangeType {
 	case pb.TargetChange_NO_CHANGE:

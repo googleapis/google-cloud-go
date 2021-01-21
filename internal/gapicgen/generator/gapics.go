@@ -15,63 +15,78 @@
 package generator
 
 import (
-	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"regexp"
 	"strings"
+
+	"gopkg.in/yaml.v2"
 )
 
-var dockerPullRegex = regexp.MustCompile("(googleapis/artman:[0-9]+.[0-9]+.[0-9]+)")
+// GapicGenerator is used to regenerate gapic libraries.
+type GapicGenerator struct {
+	googleapisDir   string
+	protoDir        string
+	googleCloudDir  string
+	genprotoDir     string
+	gapicToGenerate string
+}
 
-// generateGapics generates gapics.
-func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, genprotoDir string) error {
-	if err := artman(artmanGapicConfigPaths, googleapisDir); err != nil {
-		return err
+// NewGapicGenerator creates a GapicGenerator.
+func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string) *GapicGenerator {
+	return &GapicGenerator{
+		googleapisDir:   googleapisDir,
+		protoDir:        protoDir,
+		googleCloudDir:  googleCloudDir,
+		genprotoDir:     genprotoDir,
+		gapicToGenerate: gapicToGenerate,
 	}
+}
 
-	if err := copyArtmanFiles(googleapisDir, gocloudDir); err != nil {
-		return err
-	}
-
+// Regen generates gapics.
+func (g *GapicGenerator) Regen(ctx context.Context) error {
+	log.Println("regenerating gapics")
 	for _, c := range microgenGapicConfigs {
-		if err := microgen(c, googleapisDir, protoDir, gocloudDir); err != nil {
+		// Skip generation if generating all of the gapics and the associated
+		// config has a block on it. Or if generating a single gapic and it does
+		// not match the specified import path.
+		if (c.stopGeneration && g.gapicToGenerate == "") ||
+			(g.gapicToGenerate != "" && g.gapicToGenerate != c.importPath) {
+			continue
+		}
+		if err := g.microgen(c); err != nil {
 			return err
 		}
 	}
 
-	if err := copyMicrogenFiles(gocloudDir); err != nil {
+	if err := g.copyMicrogenFiles(); err != nil {
 		return err
 	}
 
-	if err := setVersion(gocloudDir); err != nil {
+	if err := g.manifest(microgenGapicConfigs); err != nil {
 		return err
 	}
 
-	for _, m := range gapicsWithManual {
-		if err := setGoogleClientInfo(gocloudDir + "/" + m); err != nil {
-			return err
-		}
-	}
-
-	if err := addModReplaceGenproto(gocloudDir, genprotoDir); err != nil {
+	if err := g.setVersion(); err != nil {
 		return err
 	}
 
-	if err := vet(gocloudDir); err != nil {
+	if err := g.addModReplaceGenproto(); err != nil {
 		return err
 	}
 
-	if err := build(gocloudDir); err != nil {
+	if err := vet(g.googleCloudDir); err != nil {
 		return err
 	}
 
-	if err := dropModReplaceGenproto(gocloudDir); err != nil {
+	if err := build(g.googleCloudDir); err != nil {
+		return err
+	}
+
+	if err := g.dropModReplaceGenproto(); err != nil {
 		return err
 	}
 
@@ -81,18 +96,17 @@ func generateGapics(ctx context.Context, googleapisDir, protoDir, gocloudDir, ge
 // addModReplaceGenproto adds a genproto replace statement that points genproto
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
-func addModReplaceGenproto(gocloudDir, genprotoDir string) error {
-	c := exec.Command("bash", "-c", `
+func (g *GapicGenerator) addModReplaceGenproto() error {
+	log.Println("adding temporary genproto replace statement")
+	c := command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | awk '{print $2}')
 go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR"
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	c.Env = []string{
-		"GENPROTO_DIR=" + genprotoDir,
+		"GENPROTO_DIR=" + g.genprotoDir,
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 	}
@@ -101,16 +115,15 @@ go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR
 
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
-func dropModReplaceGenproto(gocloudDir string) error {
-	c := exec.Command("bash", "-c", `
+func (g *GapicGenerator) dropModReplaceGenproto() error {
+	log.Println("removing genproto replace statement")
+	c := command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | grep -v replace | awk '{print $2}')
 go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -118,29 +131,14 @@ go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
 	return c.Run()
 }
 
-// setGoogleClientInfo enters a directory and updates setGoogleClientInfo
-// to be public. It is used for gapics which have manuals that use them, since
-// the manual needs to call this function.
-func setGoogleClientInfo(manualDir string) error {
-	// TODO(deklerk): Migrate this all to Go instead of using bash.
-
-	c := exec.Command("bash", "-c", `
-find . -name '*.go' -exec sed -i.backup -e 's/setGoogleClientInfo/SetGoogleClientInfo/g' '{}' '+'
-find . -name '*.backup' -delete
-`)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = manualDir
-	return c.Run()
-}
-
 // setVersion updates the versionClient constant in all .go files. It may create
 // .backup files on certain systems (darwin), and so should be followed by a
 // clean-up of .backup files.
-func setVersion(gocloudDir string) error {
+func (g *GapicGenerator) setVersion() error {
+	log.Println("updating client version")
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
 
-	c := exec.Command("bash", "-c", `
+	c := command("bash", "-c", `
 ver=$(date +%Y%m%d)
 git ls-files -mo | while read modified; do
 	dir=${modified%/*.*}
@@ -148,94 +146,16 @@ git ls-files -mo | while read modified; do
 done
 find . -name '*.backup' -delete
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c.Dir = g.googleCloudDir
 	return c.Run()
 }
 
-// artman runs artman on a single artman gapic config path.
-func artman(gapicConfigPaths []string, googleapisDir string) error {
-	// Prepare virtualenv.
-	//
-	// TODO(deklerk): Why do we have to install cachetools at a specific
-	// version - doesn't virtualenv solve the diamond dependency issues?
-	//
-	// TODO(deklerk): Why do we have to create artman-genfiles?
-	// (pip install googleapis-artman fails with an "lstat file not found"
-	// without doing so)
-	c := exec.Command("bash", "-c", `
-set -ex
-
-python3 -m venv artman-venv
-source ./artman-venv/bin/activate
-mkdir artman-genfiles
-pip3 install cachetools==2.0.0
-pip3 install googleapis-artman`)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-	c.Dir = googleapisDir
-	if err := c.Run(); err != nil {
-		return nil
-	}
-
-	for _, config := range gapicConfigPaths {
-		log.Println("artman generating", config)
-
-		// Write command output to both os.Stderr and local, so that we can check
-		// for `Cannot find artman Docker image. Run `docker pull googleapis/artman:0.41.0` to pull the image.`.
-		inmem := bytes.NewBuffer([]byte{})
-		w := io.MultiWriter(os.Stderr, inmem)
-
-		c := exec.Command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
-		c.Stdout = os.Stdout
-		c.Stderr = w
-		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-		c.Dir = googleapisDir
-		err := c.Run()
-		if err == nil {
-			continue
-		}
-
-		// We got an error. Check if it's a need-to-docker-pull error (which we
-		// can fix here), or something else (which we'll need to panic on).
-		stderr := inmem.Bytes()
-		if dockerPullRegex.Match(stderr) {
-			artmanImg := dockerPullRegex.FindString(string(stderr))
-			c := exec.Command("docker", "pull", artmanImg)
-			c.Stdout = os.Stdout
-			c.Stderr = os.Stderr
-			c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-			if err := c.Run(); err != nil {
-				return err
-			}
-		} else {
-			return err
-		}
-
-		// If the last command failed, and we were able to fix it with `docker pull`,
-		// then let's try regenerating. When https://github.com/googleapis/artman/issues/732
-		// is solved, we won't have to do this.
-		c = exec.Command("bash", "-c", "./artman-venv/bin/artman --config "+config+" generate go_gapic")
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
-		c.Dir = googleapisDir
-		if err := c.Run(); err != nil {
-			return err
-		}
-	}
-
-	return nil
-}
-
 // microgen runs the microgenerator on a single microgen config.
-func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) error {
+func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	log.Println("microgen generating", conf.pkg)
 
 	var protoFiles []string
-	if err := filepath.Walk(googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(g.googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
@@ -247,78 +167,193 @@ func microgen(conf *microgenConfig, googleapisDir, protoDir, gocloudDir string) 
 		return err
 	}
 
-	args := []string{"-I", googleapisDir,
-		"-I", protoDir,
-		"--go_gapic_out", gocloudDir,
+	args := []string{"-I", g.googleapisDir,
+		"--experimental_allow_proto3_optional",
+		"-I", g.protoDir,
+		"--go_gapic_out", g.googleCloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
-		"--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("gapic-service-config=%s", conf.apiServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel)}
+
+	if conf.gRPCServiceConfigPath != "" {
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath))
+	}
 	args = append(args, protoFiles...)
-	c := exec.Command("protoc", args...)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = googleapisDir
+	c := command("protoc", args...)
+	c.Dir = g.googleapisDir
 	return c.Run()
+}
+
+// manifestEntry is used for JSON marshaling in manifest.
+type manifestEntry struct {
+	DistributionName  string `json:"distribution_name"`
+	Description       string `json:"description"`
+	Language          string `json:"language"`
+	ClientLibraryType string `json:"client_library_type"`
+	DocsURL           string `json:"docs_url"`
+	ReleaseLevel      string `json:"release_level"`
+}
+
+// TODO: consider getting Description from the gapic, if there is one.
+var manualEntries = []manifestEntry{
+	// Pure manual clients.
+	{
+		DistributionName:  "cloud.google.com/go/bigquery",
+		Description:       "BigQuery",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigquery",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/bigtable",
+		Description:       "Cloud BigTable",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigtable",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/datastore",
+		Description:       "Cloud Datastore",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/datastore",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/iam",
+		Description:       "Cloud IAM",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/iam",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/storage",
+		Description:       "Cloud Storage (GCS)",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/storage",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/rpcreplay",
+		Description:       "RPC Replay",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/profiler",
+		Description:       "Cloud Profiler",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
+		ReleaseLevel:      "ga",
+	},
+	// Manuals with a GAPIC.
+	{
+		DistributionName:  "cloud.google.com/go/errorreporting",
+		Description:       "Cloud Error Reporting API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
+		ReleaseLevel:      "beta",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/firestore",
+		Description:       "Cloud Firestore API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/firestore",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/logging",
+		Description:       "Cloud Logging API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/logging",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/pubsub",
+		Description:       "Cloud PubSub",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/pubsub",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/spanner",
+		Description:       "Cloud Spanner",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/spanner",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/trace",
+		Description:       "Stackdriver Trace",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/trace",
+		ReleaseLevel:      "ga",
+	},
+}
+
+// manifest writes a manifest file with info about all of the confs.
+func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
+	log.Println("updating gapic manifest")
+	entries := map[string]manifestEntry{} // Key is the package name.
+	f, err := os.Create(filepath.Join(g.googleCloudDir, "internal", ".repo-metadata-full.json"))
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+	for _, manual := range manualEntries {
+		entries[manual.DistributionName] = manual
+	}
+	for _, conf := range confs {
+		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return err
+		}
+		yamlConfig := struct {
+			Title string `yaml:"title"` // We only need the title field.
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
+			return fmt.Errorf("Decode: %v", err)
+		}
+		entry := manifestEntry{
+			DistributionName:  conf.importPath,
+			Description:       yamlConfig.Title,
+			Language:          "Go",
+			ClientLibraryType: "generated",
+			DocsURL:           "https://pkg.go.dev/" + conf.importPath,
+			ReleaseLevel:      conf.releaseLevel,
+		}
+		entries[conf.importPath] = entry
+	}
+	enc := json.NewEncoder(f)
+	enc.SetIndent("", "  ")
+	return enc.Encode(entries)
 }
 
 // copyMicrogenFiles takes microgen files from gocloudDir/cloud.google.com/go
 // and places them in gocloudDir.
-func copyMicrogenFiles(gocloudDir string) error {
+func (g *GapicGenerator) copyMicrogenFiles() error {
 	// The period at the end is analagous to * (copy everything in this dir).
-	c := exec.Command("cp", "-R", gocloudDir+"/cloud.google.com/go/.", ".")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c := command("cp", "-R", g.googleCloudDir+"/cloud.google.com/go/.", ".")
+	c.Dir = g.googleCloudDir
 	if err := c.Run(); err != nil {
 		return err
 	}
 
-	c = exec.Command("rm", "-rf", "cloud.google.com")
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Dir = gocloudDir
+	c = command("rm", "-rf", "cloud.google.com")
+	c.Dir = g.googleCloudDir
 	return c.Run()
-}
-
-// gapiFolderRegex finds gapi folders, such as gapi-cloud-cel-go/cloud.google.com/go
-// in paths like [...]/artman-genfiles/gapi-cloud-cel-go/cloud.google.com/go/expr/apiv1alpha1/cel_client.go.
-var gapiFolderRegex = regexp.MustCompile("gapi-.+/cloud.google.com/go/")
-
-// copyArtmanFiles copies artman files from the generated googleapisDir location
-// to their appropriate spots in gocloudDir.
-func copyArtmanFiles(googleapisDir, gocloudDir string) error {
-	// For some reason os.Exec doesn't like to cp globs, so we can't do the
-	// much simpler cp -r <googleapisDir>/artman-genfiles/gapi-*/cloud.google.com/go/* <gocloudDir>.
-	//
-	// (Possibly only specific to /var/folders (os.Tmpdir()) on darwin?)
-	gapiFolders := make(map[string]struct{})
-	root := googleapisDir + "/artman-genfiles"
-	if err := filepath.Walk(root, func(path string, info os.FileInfo, err error) error {
-		if err != nil {
-			return err
-		}
-		// Things like [...]/artman-genfiles/gapi-cloud-cel-go/cloud.google.com/go/expr/apiv1alpha1/cel_client.go
-		// become gapi-cloud-cel-go/cloud.google.com/go/.
-		//
-		// The period at the end is analagous to * (copy everything in this dir).
-		if gapiFolderRegex.MatchString(path) {
-			gapiFolders[root+"/"+gapiFolderRegex.FindString(path)+"."] = struct{}{}
-		}
-		return nil
-	}); err != nil {
-		return err
-	}
-
-	for f := range gapiFolders {
-		c := exec.Command("cp", "-R", f, gocloudDir)
-		c.Stdout = os.Stdout
-		c.Stderr = os.Stderr
-		c.Dir = googleapisDir
-		if err := c.Run(); err != nil {
-			return err
-		}
-	}
-
-	return nil
 }

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,13 +29,16 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
+
+var newFirestoreAdminClientHook clientHook
 
 // FirestoreAdminCallOptions contains the retry settings for each method of FirestoreAdminClient.
 type FirestoreAdminCallOptions struct {
@@ -52,9 +55,11 @@ type FirestoreAdminCallOptions struct {
 
 func defaultFirestoreAdminClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("firestore.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("firestore.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("firestore.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://firestore.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -138,8 +143,11 @@ func defaultFirestoreAdminCallOptions() *FirestoreAdminCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type FirestoreAdminClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	firestoreAdminClient adminpb.FirestoreAdminClient
@@ -161,55 +169,78 @@ type FirestoreAdminClient struct {
 // Operations are created by service FirestoreAdmin, but are accessed via
 // service google.longrunning.Operations.
 func NewFirestoreAdminClient(ctx context.Context, opts ...option.ClientOption) (*FirestoreAdminClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultFirestoreAdminClientOptions(), opts...)...)
+	clientOpts := defaultFirestoreAdminClientOptions()
+
+	if newFirestoreAdminClientHook != nil {
+		hookOpts, err := newFirestoreAdminClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &FirestoreAdminClient{
-		conn:        conn,
-		CallOptions: defaultFirestoreAdminCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultFirestoreAdminCallOptions(),
 
-		firestoreAdminClient: adminpb.NewFirestoreAdminClient(conn),
+		firestoreAdminClient: adminpb.NewFirestoreAdminClient(connPool),
 	}
-	c.SetGoogleClientInfo()
+	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, option.WithGRPCConn(conn))
+	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
-		// This error "should not happen", since we are just reusing old connection
+		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
-		// If this does happen, we could leak conn. However, we cannot close conn:
-		// If the user invoked the function with option.WithGRPCConn,
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
 		// we would close a connection that's still in use.
-		// TODO(pongad): investigate error conditions.
+		// TODO: investigate error conditions.
 		return nil, err
 	}
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *FirestoreAdminClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *FirestoreAdminClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
-// SetGoogleClientInfo sets the name and version of the application in
+// setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *FirestoreAdminClient) SetGoogleClientInfo(keyval ...string) {
+func (c *FirestoreAdminClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateIndex creates a composite index. This returns a [google.longrunning.Operation][google.longrunning.Operation]
+// CreateIndex creates a composite index. This returns a google.longrunning.Operation
 // which may be used to track the status of the creation. The metadata for
-// the operation will be the type [IndexOperationMetadata][google.firestore.admin.v1.IndexOperationMetadata].
+// the operation will be the type IndexOperationMetadata.
 func (c *FirestoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateIndex[0:len(c.CallOptions.CreateIndex):len(c.CallOptions.CreateIndex)], opts...)
@@ -252,7 +283,7 @@ func (c *FirestoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		}
 
 		it.Response = resp
-		return resp.Indexes, resp.NextPageToken, nil
+		return resp.GetIndexes(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -263,13 +294,18 @@ func (c *FirestoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // GetIndex gets a composite index.
 func (c *FirestoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetIndex[0:len(c.CallOptions.GetIndex):len(c.CallOptions.GetIndex)], opts...)
@@ -287,6 +323,11 @@ func (c *FirestoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetInd
 
 // DeleteIndex deletes a composite index.
 func (c *FirestoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteIndex[0:len(c.CallOptions.DeleteIndex):len(c.CallOptions.DeleteIndex)], opts...)
@@ -300,6 +341,11 @@ func (c *FirestoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.Del
 
 // GetField gets the metadata and configuration for a Field.
 func (c *FirestoreAdminClient) GetField(ctx context.Context, req *adminpb.GetFieldRequest, opts ...gax.CallOption) (*adminpb.Field, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetField[0:len(c.CallOptions.GetField):len(c.CallOptions.GetField)], opts...)
@@ -317,18 +363,23 @@ func (c *FirestoreAdminClient) GetField(ctx context.Context, req *adminpb.GetFie
 
 // UpdateField updates a field configuration. Currently, field updates apply only to
 // single field index configuration. However, calls to
-// [FirestoreAdmin.UpdateField][google.firestore.admin.v1.FirestoreAdmin.UpdateField] should provide a field mask to avoid
+// FirestoreAdmin.UpdateField should provide a field mask to avoid
 // changing any configuration that the caller isn’t aware of. The field mask
 // should be specified as: { paths: "index_config" }.
 //
-// This call returns a [google.longrunning.Operation][google.longrunning.Operation] which may be used to
+// This call returns a google.longrunning.Operation which may be used to
 // track the status of the field update. The metadata for
-// the operation will be the type [FieldOperationMetadata][google.firestore.admin.v1.FieldOperationMetadata].
+// the operation will be the type FieldOperationMetadata.
 //
 // To configure the default field settings for the database, use
 // the special Field with resource name:
 // projects/{project_id}/databases/{database_id}/collectionGroups/__default__/fields/*.
 func (c *FirestoreAdminClient) UpdateField(ctx context.Context, req *adminpb.UpdateFieldRequest, opts ...gax.CallOption) (*UpdateFieldOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "field.name", url.QueryEscape(req.GetField().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateField[0:len(c.CallOptions.UpdateField):len(c.CallOptions.UpdateField)], opts...)
@@ -348,9 +399,9 @@ func (c *FirestoreAdminClient) UpdateField(ctx context.Context, req *adminpb.Upd
 
 // ListFields lists the field configuration and metadata for this database.
 //
-// Currently, [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields] only supports listing fields
+// Currently, FirestoreAdmin.ListFields only supports listing fields
 // that have been explicitly overridden. To issue this query, call
-// [FirestoreAdmin.ListFields][google.firestore.admin.v1.FirestoreAdmin.ListFields] with the filter set to
+// FirestoreAdmin.ListFields with the filter set to
 // indexConfig.usesAncestorConfig:false.
 func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.ListFieldsRequest, opts ...gax.CallOption) *FieldIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
@@ -376,7 +427,7 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.List
 		}
 
 		it.Response = resp
-		return resp.Fields, resp.NextPageToken, nil
+		return resp.GetFields(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -387,8 +438,8 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.List
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
@@ -401,6 +452,11 @@ func (c *FirestoreAdminClient) ListFields(ctx context.Context, req *adminpb.List
 // cancelled before completion it may leave partial data behind in Google
 // Cloud Storage.
 func (c *FirestoreAdminClient) ExportDocuments(ctx context.Context, req *adminpb.ExportDocumentsRequest, opts ...gax.CallOption) (*ExportDocumentsOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ExportDocuments[0:len(c.CallOptions.ExportDocuments):len(c.CallOptions.ExportDocuments)], opts...)
@@ -424,6 +480,11 @@ func (c *FirestoreAdminClient) ExportDocuments(ctx context.Context, req *adminpb
 // created. If an ImportDocuments operation is cancelled, it is possible
 // that a subset of the data has already been imported to Cloud Firestore.
 func (c *FirestoreAdminClient) ImportDocuments(ctx context.Context, req *adminpb.ImportDocumentsRequest, opts ...gax.CallOption) (*ImportDocumentsOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ImportDocuments[0:len(c.CallOptions.ImportDocuments):len(c.CallOptions.ImportDocuments)], opts...)

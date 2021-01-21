@@ -18,11 +18,22 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"math"
 	"reflect"
 	"strconv"
 	"time"
 
 	"cloud.google.com/go/civil"
+)
+
+var (
+	jsonNull      = []byte("null")
+	posInf        = []byte(`"+Inf"`)
+	inf           = []byte(`"Inf"`)
+	minusInf      = []byte(`"-Inf"`)
+	infinity      = []byte(`"Infinity"`)
+	minusInfinity = []byte(`"-Infinity"`)
+	nan           = []byte(`"NaN"`)
 )
 
 // NullInt64 represents a BigQuery INT64 that may be NULL.
@@ -111,7 +122,21 @@ func (n NullDateTime) String() string {
 func (n NullInt64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Int64) }
 
 // MarshalJSON converts the NullFloat64 to JSON.
-func (n NullFloat64) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Float64) }
+func (n NullFloat64) MarshalJSON() (b []byte, err error) {
+	if n.Valid {
+		switch {
+		case math.IsInf(n.Float64, 1):
+			return infinity, nil
+		case math.IsInf(n.Float64, -1):
+			return minusInfinity, nil
+		case math.IsNaN(n.Float64):
+			return nan, nil
+		default:
+			return json.Marshal(n.Float64)
+		}
+	}
+	return jsonNull, nil
+}
 
 // MarshalJSON converts the NullBool to JSON.
 func (n NullBool) MarshalJSON() ([]byte, error) { return nulljson(n.Valid, n.Bool) }
@@ -151,8 +176,6 @@ func nullstr(valid bool, v interface{}) string {
 	return fmt.Sprint(v)
 }
 
-var jsonNull = []byte("null")
-
 func nulljson(valid bool, v interface{}) ([]byte, error) {
 	if !valid {
 		return jsonNull, nil
@@ -181,8 +204,19 @@ func (n *NullFloat64) UnmarshalJSON(b []byte) error {
 	n.Float64 = 0
 	if bytes.Equal(b, jsonNull) {
 		return nil
+	} else if bytes.Equal(b, posInf) || bytes.Equal(b, inf) || bytes.Equal(b, infinity) {
+		n.Float64 = math.Inf(1)
+		n.Valid = true
+		return nil
+	} else if bytes.Equal(b, minusInf) || bytes.Equal(b, minusInfinity) {
+		n.Float64 = math.Inf(-1)
+		n.Valid = true
+		return nil
+	} else if bytes.Equal(b, nan) {
+		n.Float64 = math.NaN()
+		n.Valid = true
+		return nil
 	}
-
 	if err := json.Unmarshal(b, &n.Float64); err != nil {
 		return err
 	}

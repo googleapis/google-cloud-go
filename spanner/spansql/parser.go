@@ -44,11 +44,13 @@ This file is structured as follows:
 
 import (
 	"fmt"
-	"io"
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode/utf8"
+
+	"cloud.google.com/go/civil"
 )
 
 const debug = false
@@ -61,10 +63,15 @@ func debugf(format string, args ...interface{}) {
 }
 
 // ParseDDL parses a DDL file.
-func ParseDDL(s string) (DDL, error) {
-	p := newParser(s)
+//
+// The provided filename is used for error reporting and will
+// appear in the returned structure.
+func ParseDDL(filename, s string) (*DDL, error) {
+	p := newParser(filename, s)
 
-	var ddl DDL
+	ddl := &DDL{
+		Filename: filename,
+	}
 	for {
 		p.skipSpace()
 		if p.done {
@@ -73,32 +80,85 @@ func ParseDDL(s string) (DDL, error) {
 
 		stmt, err := p.parseDDLStmt()
 		if err != nil {
-			return DDL{}, err
+			return nil, err
 		}
 		ddl.List = append(ddl.List, stmt)
 
 		tok := p.next()
-		if tok.err == io.EOF {
+		if tok.err == eof {
 			break
 		} else if tok.err != nil {
-			return DDL{}, tok.err
+			return nil, tok.err
 		}
 		if tok.value == ";" {
 			continue
 		} else {
-			return DDL{}, p.errorf("unexpected token %q", tok.value)
+			return nil, p.errorf("unexpected token %q", tok.value)
 		}
 	}
 	if p.Rem() != "" {
-		return DDL{}, fmt.Errorf("unexpected trailing contents %q", p.Rem())
+		return nil, fmt.Errorf("unexpected trailing contents %q", p.Rem())
 	}
+
+	// Handle comments.
+	for _, com := range p.comments {
+		c := &Comment{
+			Marker:   com.marker,
+			Isolated: com.isolated,
+			Start:    com.start,
+			End:      com.end,
+			Text:     com.text,
+		}
+
+		// Strip common whitespace prefix and any whitespace suffix.
+		// TODO: This is a bodgy implementation of Longest Common Prefix,
+		// and also doesn't do tabs vs. spaces well.
+		var prefix string
+		for i, line := range c.Text {
+			line = strings.TrimRight(line, " \b\t")
+			c.Text[i] = line
+			trim := len(line) - len(strings.TrimLeft(line, " \b\t"))
+			if i == 0 {
+				prefix = line[:trim]
+			} else {
+				// Check how much of prefix is in common.
+				for !strings.HasPrefix(line, prefix) {
+					prefix = prefix[:len(prefix)-1]
+				}
+			}
+			if prefix == "" {
+				break
+			}
+		}
+		if prefix != "" {
+			for i, line := range c.Text {
+				c.Text[i] = strings.TrimPrefix(line, prefix)
+			}
+		}
+
+		ddl.Comments = append(ddl.Comments, c)
+	}
+
 	return ddl, nil
 }
 
 // ParseDDLStmt parses a single DDL statement.
 func ParseDDLStmt(s string) (DDLStmt, error) {
-	p := newParser(s)
+	p := newParser("-", s)
 	stmt, err := p.parseDDLStmt()
+	if err != nil {
+		return nil, err
+	}
+	if p.Rem() != "" {
+		return nil, fmt.Errorf("unexpected trailing contents %q", p.Rem())
+	}
+	return stmt, nil
+}
+
+// ParseDMLStmt parses a single DML statement.
+func ParseDMLStmt(s string) (DMLStmt, error) {
+	p := newParser("-", s)
+	stmt, err := p.parseDMLStmt()
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +170,7 @@ func ParseDDLStmt(s string) (DDLStmt, error) {
 
 // ParseQuery parses a query string.
 func ParseQuery(s string) (Query, error) {
-	p := newParser(s)
+	p := newParser("-", s)
 	q, err := p.parseQuery()
 	if err != nil {
 		return Query{}, err
@@ -122,13 +182,18 @@ func ParseQuery(s string) (Query, error) {
 }
 
 type token struct {
-	value string
-	err   error
+	value        string
+	err          *parseError
+	line, offset int
 
 	typ     tokenType
-	int64   int64
 	float64 float64
-	string  string // unquoted form
+	string  string // unquoted form for stringToken/bytesToken/quotedID
+
+	// int64Token is parsed as a number only when it is known to be a literal.
+	// This permits correct handling of operators preceding such a token,
+	// which cannot be identified as part of the int64 until later.
+	int64Base int
 }
 
 type tokenType int
@@ -139,6 +204,8 @@ const (
 	float64Token
 	stringToken
 	bytesToken
+	unquotedID
+	quotedID
 )
 
 func (t *token) String() string {
@@ -148,16 +215,55 @@ func (t *token) String() string {
 	return strconv.Quote(t.value)
 }
 
+type parseError struct {
+	message  string
+	filename string
+	line     int // 1-based line number
+	offset   int // 0-based byte offset from start of input
+}
+
+func (pe *parseError) Error() string {
+	if pe == nil {
+		return "<nil>"
+	}
+	if pe.line == 1 {
+		return fmt.Sprintf("%s:1.%d: %v", pe.filename, pe.offset, pe.message)
+	}
+	return fmt.Sprintf("%s:%d: %v", pe.filename, pe.line, pe.message)
+}
+
+var eof = &parseError{message: "EOF"}
+
 type parser struct {
 	s      string // Remaining input.
 	done   bool   // Whether the parsing is finished (success or error).
 	backed bool   // Whether back() was called.
 	cur    token
+
+	filename     string
+	line, offset int // updated by places that shrink s
+
+	comments []comment // accumulated during parse
 }
 
-func newParser(s string) *parser {
+type comment struct {
+	marker     string // "#" or "--" or "/*"
+	isolated   bool   // if it starts on its own line
+	start, end Position
+	text       []string
+}
+
+// Pos reports the position of the current token.
+func (p *parser) Pos() Position { return Position{Line: p.cur.line, Offset: p.cur.offset} }
+
+func newParser(filename, s string) *parser {
 	return &parser{
 		s: s,
+
+		cur: token{line: 1},
+
+		filename: filename,
+		line:     1,
 	}
 }
 
@@ -183,11 +289,16 @@ func (p *parser) String() string {
 	return fmt.Sprintf("rem: %q", p.s)
 }
 
-func (p *parser) errorf(format string, args ...interface{}) error {
-	err := fmt.Errorf(format, args...)
-	p.cur.err = err
+func (p *parser) errorf(format string, args ...interface{}) *parseError {
+	pe := &parseError{
+		message:  fmt.Sprintf(format, args...),
+		filename: p.filename,
+		line:     p.cur.line,
+		offset:   p.cur.offset,
+	}
+	p.cur.err = pe
 	p.done = true
-	return err
+	return pe
 }
 
 func isInitialIdentifierChar(c byte) bool {
@@ -304,13 +415,16 @@ digitLoop:
 		sign = "-"
 	}
 	p.cur.value, p.s = p.s[:i], p.s[i:]
+	p.offset += i
 	var err error
 	if float {
 		p.cur.typ = float64Token
 		p.cur.float64, err = strconv.ParseFloat(sign+p.cur.value[d0:], 64)
 	} else {
 		p.cur.typ = int64Token
-		p.cur.int64, err = strconv.ParseInt(sign+p.cur.value[d0:], base, 64)
+		p.cur.value = sign + p.cur.value[d0:]
+		p.cur.int64Base = base
+		// This is parsed on demand.
 	}
 	if err != nil {
 		p.errorf("bad numeric literal %q: %v", p.cur.value, err)
@@ -384,13 +498,13 @@ func (p *parser) stringDelimiter() string {
 
 // consumeStringContent consumes a string-like literal, including its delimiters.
 //
-//   - delim is opening delimiter.
-//   - raw is true on consuming raw string, otherwise it is false.
-//   - unicode is true if unicode escape sequence (\uXXXX or \UXXXXXXXX), otherwise it is false.
-//   - name is current consuming token name.
+//   - delim is the opening/closing delimiter.
+//   - raw is true if consuming a raw string.
+//   - unicode is true if unicode escape sequence (\uXXXX or \UXXXXXXXX) are permitted.
+//   - name identifies the name of the consuming token.
 //
 // It is designed for consuming string, bytes literals, and also backquoted identifiers.
-func (p *parser) consumeStringContent(delim string, raw, unicode bool, name string) (string, error) {
+func (p *parser) consumeStringContent(delim string, raw, unicode bool, name string) (string, *parseError) {
 	// https://cloud.google.com/spanner/docs/lexical#string-and-bytes-literals
 
 	if len(delim) == 3 {
@@ -404,6 +518,7 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 		if strings.HasPrefix(p.s[i:], delim) {
 			i += len(delim)
 			p.s = p.s[i:]
+			p.offset += i
 			return string(content), nil
 		}
 
@@ -517,8 +632,11 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 			continue
 		}
 
-		if p.s[i] == '\n' && len(delim) != 3 { // newline is only allowed inside triple-quoted.
-			return "", p.errorf("newline forbidden in %s", name)
+		if p.s[i] == '\n' {
+			if len(delim) != 3 { // newline is only allowed inside triple-quoted.
+				return "", p.errorf("newline forbidden in %s", name)
+			}
+			p.line++
 		}
 
 		content = append(content, p.s[i])
@@ -529,8 +647,20 @@ func (p *parser) consumeStringContent(delim string, raw, unicode bool, name stri
 }
 
 var operators = map[string]bool{
-	// TODO: There's duplication here with symbolicOperators,
-	// but this should go away with more bespoke handling inside parser.advance.
+	// Arithmetic operators.
+	"-":  true, // both unary and binary
+	"~":  true,
+	"*":  true,
+	"/":  true,
+	"||": true,
+	"+":  true,
+	"<<": true,
+	">>": true,
+	"&":  true,
+	"^":  true,
+	"|":  true,
+
+	// Comparison operators.
 	"<":  true,
 	"<=": true,
 	">":  true,
@@ -552,32 +682,78 @@ func isSpace(c byte) bool {
 
 // skipSpace skips past any space or comments.
 func (p *parser) skipSpace() bool {
+	initLine := p.line
+	// If we start capturing a comment in this method,
+	// this is set to its comment value. Multi-line comments
+	// are only joined during a single skipSpace invocation.
+	var com *comment
+
 	i := 0
 	for i < len(p.s) {
 		if isSpace(p.s[i]) {
+			if p.s[i] == '\n' {
+				p.line++
+			}
 			i++
 			continue
 		}
 		// Comments.
-		term := ""
+		marker, term := "", ""
 		if p.s[i] == '#' {
-			term = "\n"
+			marker, term = "#", "\n"
 		} else if i+1 < len(p.s) && p.s[i] == '-' && p.s[i+1] == '-' {
-			term = "\n"
+			marker, term = "--", "\n"
 		} else if i+1 < len(p.s) && p.s[i] == '/' && p.s[i+1] == '*' {
-			term = "*/"
+			marker, term = "/*", "*/"
 		}
 		if term == "" {
 			break
 		}
-		ti := strings.Index(p.s[i:], term)
+		// Search for the terminator, starting after the marker.
+		ti := strings.Index(p.s[i+len(marker):], term)
 		if ti < 0 {
 			p.errorf("unterminated comment")
 			return false
 		}
+		ti += len(marker) // make ti relative to p.s[i:]
+		if com != nil && (com.end.Line+1 < p.line || com.marker != marker) {
+			// There's a previous comment, but there's an
+			// intervening blank line, or the marker changed.
+			// Terminate the previous comment.
+			com = nil
+		}
+		if com == nil {
+			// New comment.
+			p.comments = append(p.comments, comment{
+				marker:   marker,
+				isolated: (p.line != initLine) || p.line == 1,
+				start: Position{
+					Line:   p.line,
+					Offset: p.offset + i,
+				},
+			})
+			com = &p.comments[len(p.comments)-1]
+		}
+		textLines := strings.Split(p.s[i+len(marker):i+ti], "\n")
+		com.text = append(com.text, textLines...)
+		com.end = Position{
+			Line:   p.line + len(textLines) - 1,
+			Offset: p.offset + i + ti,
+		}
+		p.line = com.end.Line
+		if term == "\n" {
+			p.line++
+		}
 		i += ti + len(term)
+
+		// A non-isolated comment is always complete and doesn't get
+		// combined with any future comment.
+		if !com.isolated {
+			com = nil
+		}
 	}
 	p.s = p.s[i:]
+	p.offset += i
 	if p.s == "" {
 		p.done = true
 	}
@@ -586,18 +762,33 @@ func (p *parser) skipSpace() bool {
 
 // advance moves the parser to the next token, which will be available in p.cur.
 func (p *parser) advance() {
+	prevID := p.cur.typ == quotedID || p.cur.typ == unquotedID
+
 	p.skipSpace()
 	if p.done {
 		return
 	}
+
+	// If the previous token was an identifier (quoted or unquoted),
+	// the next token being a dot means this is a path expression (not a number).
+	if prevID && p.s[0] == '.' {
+		p.cur.err = nil
+		p.cur.line, p.cur.offset = p.line, p.offset
+		p.cur.typ = unknownToken
+		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
+		return
+	}
+
 	p.cur.err = nil
+	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
-	// TODO: backtick (`) for quoted identifiers.
-	// TODO: array, struct, date, timestamp literals
+	// TODO: struct literals
 	switch p.s[0] {
-	case ',', ';', '(', ')', '*':
+	case ',', ';', '(', ')', '{', '}', '[', ']', '*', '+', '-':
 		// Single character symbol.
 		p.cur.value, p.s = p.s[:1], p.s[1:]
+		p.offset++
 		return
 	// String literal prefix.
 	case 'B', 'b', 'R', 'r', '"', '\'':
@@ -626,6 +817,11 @@ func (p *parser) advance() {
 			}
 			break
 		}
+	case '`':
+		// Quoted identifier.
+		p.cur.string, p.cur.err = p.consumeStringContent("`", false, true, "quoted identifier")
+		p.cur.typ = quotedID
+		return
 	}
 	if p.s[0] == '@' || isInitialIdentifierChar(p.s[0]) {
 		// Start consuming identifier.
@@ -634,10 +830,12 @@ func (p *parser) advance() {
 			i++
 		}
 		p.cur.value, p.s = p.s[:i], p.s[i:]
+		p.cur.typ = unquotedID
+		p.offset += i
 		return
 	}
-	if len(p.s) >= 2 && (p.s[0] == '+' || p.s[0] == '-' || p.s[0] == '.') && ('0' <= p.s[1] && p.s[1] <= '9') {
-		// [-+.] followed by a digit.
+	if len(p.s) >= 2 && p.s[0] == '.' && ('0' <= p.s[1] && p.s[1] <= '9') {
+		// dot followed by a digit.
 		p.consumeNumber()
 		return
 	}
@@ -645,18 +843,12 @@ func (p *parser) advance() {
 		p.consumeNumber()
 		return
 	}
-	// More single character symbols.
-	// These are deliberately below the numeric literal parsing.
-	switch p.s[0] {
-	case '-', '+':
-		p.cur.value, p.s = p.s[:1], p.s[1:]
-		return
-	}
 
 	// Look for operator (two or one bytes).
 	for i := 2; i >= 1; i-- {
 		if i <= len(p.s) && operators[p.s[:i]] {
 			p.cur.value, p.s = p.s[:i], p.s[i:]
+			p.offset += i
 			return
 		}
 	}
@@ -672,8 +864,8 @@ func (p *parser) back() {
 	p.done = false
 	p.backed = true
 	// If an error was being recovered, we wish to ignore the error.
-	// Don't do that for io.EOF since that'll be returned next.
-	if p.cur.err != io.EOF {
+	// Don't do that for eof since that'll be returned next.
+	if p.cur.err != eof {
 		p.cur.err = nil
 	}
 }
@@ -687,8 +879,9 @@ func (p *parser) next() *token {
 	p.advance()
 	if p.done && p.cur.err == nil {
 		p.cur.value = ""
-		p.cur.err = io.EOF
+		p.cur.err = eof
 	}
+	debugf("parser·next(): returning [%v] [err: %v] @l%d,o%d", p.cur.value, p.cur.err, p.cur.line, p.cur.offset)
 	return &p.cur
 }
 
@@ -724,7 +917,7 @@ func (p *parser) eat(want ...string) bool {
 	return true
 }
 
-func (p *parser) expect(want string) error {
+func (p *parser) expect(want string) *parseError {
 	tok := p.next()
 	if tok.err != nil {
 		return tok.err
@@ -735,7 +928,7 @@ func (p *parser) expect(want string) error {
 	return nil
 }
 
-func (p *parser) parseDDLStmt() (DDLStmt, error) {
+func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 	debugf("parseDDLStmt: %v", p)
 
 	/*
@@ -757,6 +950,7 @@ func (p *parser) parseDDLStmt() (DDLStmt, error) {
 		a, err := p.parseAlterTable()
 		return a, err
 	} else if p.eat("DROP") {
+		pos := p.Pos()
 		// These statements are simple.
 		//	DROP TABLE table_name
 		//	DROP INDEX index_name
@@ -773,20 +967,20 @@ func (p *parser) parseDDLStmt() (DDLStmt, error) {
 			return nil, err
 		}
 		if kind == "TABLE" {
-			return DropTable{Name: name}, nil
+			return &DropTable{Name: name, Position: pos}, nil
 		}
-		return DropIndex{Name: name}, nil
+		return &DropIndex{Name: name, Position: pos}, nil
 	}
 
 	return nil, p.errorf("unknown DDL statement")
 }
 
-func (p *parser) parseCreateTable() (CreateTable, error) {
+func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 	debugf("parseCreateTable: %v", p)
 
 	/*
 		CREATE TABLE table_name(
-			[column_def, ...] )
+			[column_def, ...] [ table_constraint, ...] )
 			primary_key [, cluster]
 
 		primary_key:
@@ -797,18 +991,28 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 	*/
 
 	if err := p.expect("CREATE"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
+	pos := p.Pos()
 	if err := p.expect("TABLE"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 
-	ct := CreateTable{Name: tname}
-	err = p.parseCommaList(func(p *parser) error {
+	ct := &CreateTable{Name: tname, Position: pos}
+	err = p.parseCommaList("(", ")", func(p *parser) *parseError {
+		if p.sniffTableConstraint() {
+			tc, err := p.parseTableConstraint()
+			if err != nil {
+				return err
+			}
+			ct.Constraints = append(ct.Constraints, tc)
+			return nil
+		}
+
 		cd, err := p.parseColumnDef()
 		if err != nil {
 			return err
@@ -817,30 +1021,30 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 		return nil
 	})
 	if err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 
 	if err := p.expect("PRIMARY"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 	if err := p.expect("KEY"); err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 	ct.PrimaryKey, err = p.parseKeyPartList()
 	if err != nil {
-		return CreateTable{}, err
+		return nil, err
 	}
 
 	if p.eat(",", "INTERLEAVE") {
 		if err := p.expect("IN"); err != nil {
-			return CreateTable{}, err
+			return nil, err
 		}
 		if err := p.expect("PARENT"); err != nil {
-			return CreateTable{}, err
+			return nil, err
 		}
 		pname, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return CreateTable{}, err
+			return nil, err
 		}
 		ct.Interleave = &Interleave{
 			Parent:   pname,
@@ -850,7 +1054,7 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 		if p.eat("ON", "DELETE") {
 			od, err := p.parseOnDelete()
 			if err != nil {
-				return CreateTable{}, err
+				return nil, err
 			}
 			ct.Interleave.OnDelete = od
 		}
@@ -859,7 +1063,35 @@ func (p *parser) parseCreateTable() (CreateTable, error) {
 	return ct, nil
 }
 
-func (p *parser) parseCreateIndex() (CreateIndex, error) {
+func (p *parser) sniffTableConstraint() bool {
+	// Unfortunately the Cloud Spanner grammar is LL(3) because
+	//	CONSTRAINT BOOL
+	// could be the start of a declaration of a column called "CONSTRAINT" of boolean type,
+	// or it could be the start of a foreign key constraint called "BOOL".
+	// We have to sniff up to the third token to see what production it is.
+	// If we have "FOREIGN" and "KEY" (or "CHECK"), this is an unnamed table constraint.
+	// If we have "CONSTRAINT", an identifier and "FOREIGN" (or "CHECK"), this is a table constraint.
+	// Otherwise, this is a column definition.
+
+	if p.sniff("FOREIGN", "KEY") || p.sniff("CHECK") {
+		return true
+	}
+
+	// Store parser state, and peek ahead.
+	// Restore on the way out.
+	orig := *p
+	defer func() { *p = orig }()
+
+	if !p.eat("CONSTRAINT") {
+		return false
+	}
+	if _, err := p.parseTableOrIndexOrColumnName(); err != nil {
+		return false
+	}
+	return p.sniff("FOREIGN") || p.sniff("CHECK")
+}
+
+func (p *parser) parseCreateIndex() (*CreateIndex, *parseError) {
 	debugf("parseCreateIndex: %v", p)
 
 	/*
@@ -879,8 +1111,9 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 	var unique, nullFiltered bool
 
 	if err := p.expect("CREATE"); err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
+	pos := p.Pos()
 	if p.eat("UNIQUE") {
 		unique = true
 	}
@@ -888,49 +1121,51 @@ func (p *parser) parseCreateIndex() (CreateIndex, error) {
 		nullFiltered = true
 	}
 	if err := p.expect("INDEX"); err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 	iname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 	if err := p.expect("ON"); err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
-	ci := CreateIndex{
+	ci := &CreateIndex{
 		Name:  iname,
 		Table: tname,
 
 		Unique:       unique,
 		NullFiltered: nullFiltered,
+
+		Position: pos,
 	}
 	ci.Columns, err = p.parseKeyPartList()
 	if err != nil {
-		return CreateIndex{}, err
+		return nil, err
 	}
 
 	if p.eat("STORING") {
 		ci.Storing, err = p.parseColumnNameList()
 		if err != nil {
-			return CreateIndex{}, err
+			return nil, err
 		}
 	}
 
 	if p.eat(",", "INTERLEAVE", "IN") {
 		ci.Interleave, err = p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return CreateIndex{}, err
+			return nil, err
 		}
 	}
 
 	return ci, nil
 }
 
-func (p *parser) parseAlterTable() (AlterTable, error) {
+func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	debugf("parseAlterTable: %v", p)
 
 	/*
@@ -938,75 +1173,210 @@ func (p *parser) parseAlterTable() (AlterTable, error) {
 			ALTER TABLE table_name { table_alteration | table_column_alteration }
 
 		table_alteration:
-			{ ADD COLUMN column_def | DROP COLUMN column_name |
-				SET ON DELETE { CASCADE | NO ACTION } }
+			{ ADD [ COLUMN ] column_def
+			| DROP [ COLUMN ] column_name
+			| ADD table_constraint
+			| DROP CONSTRAINT constraint_name
+			| SET ON DELETE { CASCADE | NO ACTION } }
 
 		table_column_alteration:
-			ALTER COLUMN column_name { { scalar_type | array_type } [NOT NULL] | SET options_def }
+			ALTER [ COLUMN ] column_name { { scalar_type | array_type } [NOT NULL] | SET options_def }
 	*/
 
 	if err := p.expect("ALTER"); err != nil {
-		return AlterTable{}, err
+		return nil, err
 	}
+	pos := p.Pos()
 	if err := p.expect("TABLE"); err != nil {
-		return AlterTable{}, err
+		return nil, err
 	}
 	tname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
-		return AlterTable{}, err
+		return nil, err
 	}
-	a := AlterTable{Name: tname}
+	a := &AlterTable{Name: tname, Position: pos}
 
 	tok := p.next()
 	if tok.err != nil {
-		return AlterTable{}, tok.err
+		return nil, tok.err
 	}
 	switch tok.value {
 	default:
-		return AlterTable{}, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
+		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
 	case "ADD":
+		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") || p.sniff("CHECK") {
+			tc, err := p.parseTableConstraint()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = AddConstraint{Constraint: tc}
+			return a, nil
+		}
+
+		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		cd, err := p.parseColumnDef()
 		if err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		a.Alteration = AddColumn{Def: cd}
 		return a, nil
 	case "DROP":
+		if p.eat("CONSTRAINT") {
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			a.Alteration = DropConstraint{Name: name}
+			return a, nil
+		}
+
+		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		name, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		a.Alteration = DropColumn{Name: name}
 		return a, nil
 	case "SET":
 		if err := p.expect("ON"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		if err := p.expect("DELETE"); err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		od, err := p.parseOnDelete()
 		if err != nil {
-			return AlterTable{}, err
+			return nil, err
 		}
 		a.Alteration = SetOnDelete{Action: od}
 		return a, nil
+	case "ALTER":
+		// TODO: "COLUMN" is optional.
+		if err := p.expect("COLUMN"); err != nil {
+			return nil, err
+		}
+		name, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		ca, err := p.parseColumnAlteration()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = AlterColumn{
+			Name:       name,
+			Alteration: ca,
+		}
+		return a, nil
 	}
-	// TODO: "ALTER"
 }
 
-func (p *parser) parseColumnDef() (ColumnDef, error) {
+func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
+	debugf("parseDMLStmt: %v", p)
+
+	/*
+		DELETE [FROM] target_name [[AS] alias]
+		WHERE condition
+
+		UPDATE target_name [[AS] alias]
+		SET update_item [, ...]
+		WHERE condition
+
+		update_item: path_expression = expression | path_expression = DEFAULT
+
+		TODO: Insert.
+	*/
+
+	if p.eat("DELETE") {
+		p.eat("FROM") // optional
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		// TODO: parse alias.
+		if err := p.expect("WHERE"); err != nil {
+			return nil, err
+		}
+		where, err := p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+		return &Delete{
+			Table: tname,
+			Where: where,
+		}, nil
+	}
+
+	if p.eat("UPDATE") {
+		tname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return nil, err
+		}
+		u := &Update{
+			Table: tname,
+		}
+		// TODO: parse alias.
+		if err := p.expect("SET"); err != nil {
+			return nil, err
+		}
+		for {
+			ui, err := p.parseUpdateItem()
+			if err != nil {
+				return nil, err
+			}
+			u.Items = append(u.Items, ui)
+			if p.eat(",") {
+				continue
+			}
+			break
+		}
+		if err := p.expect("WHERE"); err != nil {
+			return nil, err
+		}
+		where, err := p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+		u.Where = where
+		return u, nil
+	}
+
+	return nil, p.errorf("unknown DML statement")
+}
+
+func (p *parser) parseUpdateItem() (UpdateItem, *parseError) {
+	col, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	ui := UpdateItem{
+		Column: col,
+	}
+	if err := p.expect("="); err != nil {
+		return UpdateItem{}, err
+	}
+	if p.eat("DEFAULT") {
+		return ui, nil
+	}
+	ui.Value, err = p.parseExpr()
+	if err != nil {
+		return UpdateItem{}, err
+	}
+	return ui, nil
+}
+
+func (p *parser) parseColumnDef() (ColumnDef, *parseError) {
 	debugf("parseColumnDef: %v", p)
 
 	/*
 		column_def:
-			column_name {scalar_type | array_type} [NOT NULL] [options_def]
+			column_name {scalar_type | array_type} [NOT NULL] [AS ( expression ) STORED] [options_def]
 	*/
 
 	name, err := p.parseTableOrIndexOrColumnName()
@@ -1014,7 +1384,7 @@ func (p *parser) parseColumnDef() (ColumnDef, error) {
 		return ColumnDef{}, err
 	}
 
-	cd := ColumnDef{Name: name}
+	cd := ColumnDef{Name: name, Position: p.Pos()}
 
 	cd.Type, err = p.parseType()
 	if err != nil {
@@ -1025,8 +1395,22 @@ func (p *parser) parseColumnDef() (ColumnDef, error) {
 		cd.NotNull = true
 	}
 
-	if p.eat("OPTIONS") {
-		if cd.AllowCommitTimestamp, err = p.parseColumnOptions(); err != nil {
+	if p.eat("AS", "(") {
+		cd.Generated, err = p.parseExpr()
+		if err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect(")"); err != nil {
+			return ColumnDef{}, err
+		}
+		if err := p.expect("STORED"); err != nil {
+			return ColumnDef{}, err
+		}
+	}
+
+	if p.sniff("OPTIONS") {
+		cd.Options, err = p.parseColumnOptions()
+		if err != nil {
 			return ColumnDef{}, err
 		}
 	}
@@ -1034,44 +1418,75 @@ func (p *parser) parseColumnDef() (ColumnDef, error) {
 	return cd, nil
 }
 
-// parseColumnOptions returns allow_commit_timestamp.
-func (p *parser) parseColumnOptions() (allowCommitTimestamp *bool, err error) {
+func (p *parser) parseColumnAlteration() (ColumnAlteration, *parseError) {
+	debugf("parseColumnAlteration: %v", p)
+	/*
+		{ data_type } [ NOT NULL ] | SET [ options_def ]
+	*/
+
+	if p.eat("SET") {
+		co, err := p.parseColumnOptions()
+		if err != nil {
+			return nil, err
+		}
+		return SetColumnOptions{Options: co}, nil
+	}
+
+	typ, err := p.parseType()
+	if err != nil {
+		return nil, err
+	}
+	sct := SetColumnType{Type: typ}
+
+	if p.eat("NOT", "NULL") {
+		sct.NotNull = true
+	}
+
+	return sct, nil
+}
+
+func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 	debugf("parseColumnOptions: %v", p)
 	/*
 		options_def:
 			OPTIONS (allow_commit_timestamp = { true | null })
 	*/
 
-	if err = p.expect("("); err != nil {
-		return nil, err
+	if err := p.expect("OPTIONS"); err != nil {
+		return ColumnOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return ColumnOptions{}, err
 	}
 
+	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
 		if tok.err != nil {
-			return nil, tok.err
+			return ColumnOptions{}, tok.err
 		}
-		allowCommitTimestamp = new(bool)
+		allowCommitTimestamp := new(bool)
 		switch tok.value {
 		case "true":
 			*allowCommitTimestamp = true
 		case "null":
 			*allowCommitTimestamp = false
 		default:
-			return nil, p.errorf("got %q, want true or null", tok.value)
+			return ColumnOptions{}, p.errorf("got %q, want true or null", tok.value)
 		}
+		co.AllowCommitTimestamp = allowCommitTimestamp
 	}
 
 	if err := p.expect(")"); err != nil {
-		return nil, err
+		return ColumnOptions{}, err
 	}
 
-	return
+	return co, nil
 }
 
-func (p *parser) parseKeyPartList() ([]KeyPart, error) {
+func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
 	var list []KeyPart
-	err := p.parseCommaList(func(p *parser) error {
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		kp, err := p.parseKeyPart()
 		if err != nil {
 			return err
@@ -1082,7 +1497,7 @@ func (p *parser) parseKeyPartList() ([]KeyPart, error) {
 	return list, err
 }
 
-func (p *parser) parseKeyPart() (KeyPart, error) {
+func (p *parser) parseKeyPart() (KeyPart, *parseError) {
 	debugf("parseKeyPart: %v", p)
 
 	/*
@@ -1114,9 +1529,116 @@ func (p *parser) parseKeyPart() (KeyPart, error) {
 	return kp, nil
 }
 
-func (p *parser) parseColumnNameList() ([]string, error) {
-	var list []string
-	err := p.parseCommaList(func(p *parser) error {
+func (p *parser) parseTableConstraint() (TableConstraint, *parseError) {
+	debugf("parseTableConstraint: %v", p)
+
+	/*
+		table_constraint:
+			[ CONSTRAINT constraint_name ]
+			{ check | foreign_key }
+	*/
+
+	if p.eat("CONSTRAINT") {
+		pos := p.Pos()
+		// Named constraint.
+		cname, err := p.parseTableOrIndexOrColumnName()
+		if err != nil {
+			return TableConstraint{}, err
+		}
+		c, err := p.parseConstraint()
+		if err != nil {
+			return TableConstraint{}, err
+		}
+		return TableConstraint{
+			Name:       cname,
+			Constraint: c,
+			Position:   pos,
+		}, nil
+	}
+
+	// Unnamed constraint.
+	c, err := p.parseConstraint()
+	if err != nil {
+		return TableConstraint{}, err
+	}
+	return TableConstraint{
+		Constraint: c,
+		Position:   c.Pos(),
+	}, nil
+}
+
+func (p *parser) parseConstraint() (Constraint, *parseError) {
+	if p.sniff("FOREIGN") {
+		fk, err := p.parseForeignKey()
+		return fk, err
+	}
+	c, err := p.parseCheck()
+	return c, err
+}
+
+func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
+	debugf("parseForeignKey: %v", p)
+
+	/*
+		foreign_key:
+			FOREIGN KEY ( column_name [, ... ] ) REFERENCES ref_table ( ref_column [, ... ] )
+	*/
+
+	if err := p.expect("FOREIGN"); err != nil {
+		return ForeignKey{}, err
+	}
+	fk := ForeignKey{Position: p.Pos()}
+	if err := p.expect("KEY"); err != nil {
+		return ForeignKey{}, err
+	}
+	var err *parseError
+	fk.Columns, err = p.parseColumnNameList()
+	if err != nil {
+		return ForeignKey{}, err
+	}
+	if err := p.expect("REFERENCES"); err != nil {
+		return ForeignKey{}, err
+	}
+	fk.RefTable, err = p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return ForeignKey{}, err
+	}
+	fk.RefColumns, err = p.parseColumnNameList()
+	if err != nil {
+		return ForeignKey{}, err
+	}
+	return fk, nil
+}
+
+func (p *parser) parseCheck() (Check, *parseError) {
+	debugf("parseCheck: %v", p)
+
+	/*
+		check:
+			CHECK ( expression )
+	*/
+
+	if err := p.expect("CHECK"); err != nil {
+		return Check{}, err
+	}
+	c := Check{Position: p.Pos()}
+	if err := p.expect("("); err != nil {
+		return Check{}, err
+	}
+	var err *parseError
+	c.Expr, err = p.parseBoolExpr()
+	if err != nil {
+		return Check{}, err
+	}
+	if err := p.expect(")"); err != nil {
+		return Check{}, err
+	}
+	return c, nil
+}
+
+func (p *parser) parseColumnNameList() ([]ID, *parseError) {
+	var list []ID
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		n, err := p.parseTableOrIndexOrColumnName()
 		if err != nil {
 			return err
@@ -1131,13 +1653,14 @@ var baseTypes = map[string]TypeBase{
 	"BOOL":      Bool,
 	"INT64":     Int64,
 	"FLOAT64":   Float64,
+	"NUMERIC":   Numeric,
 	"STRING":    String,
 	"BYTES":     Bytes,
 	"DATE":      Date,
 	"TIMESTAMP": Timestamp,
 }
 
-func (p *parser) parseType() (Type, error) {
+func (p *parser) parseType() (Type, *parseError) {
 	debugf("parseType: %v", p)
 
 	/*
@@ -1145,7 +1668,7 @@ func (p *parser) parseType() (Type, error) {
 			ARRAY< scalar_type >
 
 		scalar_type:
-			{ BOOL | INT64 | FLOAT64 | STRING( length ) | BYTES( length ) | DATE | TIMESTAMP }
+			{ BOOL | INT64 | FLOAT64 | NUMERIC | STRING( length ) | BYTES( length ) | DATE | TIMESTAMP }
 		length:
 			{ int64_value | MAX }
 	*/
@@ -1184,7 +1707,11 @@ func (p *parser) parseType() (Type, error) {
 		if tok.value == "MAX" {
 			t.Len = MaxLen
 		} else if tok.typ == int64Token {
-			t.Len = tok.int64
+			n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+			if err != nil {
+				return Type{}, p.errorf("%v", err)
+			}
+			t.Len = n
 		} else {
 			return Type{}, p.errorf("got %q, want MAX or int64", tok.value)
 		}
@@ -1203,7 +1730,7 @@ func (p *parser) parseType() (Type, error) {
 	return t, nil
 }
 
-func (p *parser) parseQuery() (Query, error) {
+func (p *parser) parseQuery() (Query, *parseError) {
 	debugf("parseQuery: %v", p)
 
 	/*
@@ -1245,17 +1772,28 @@ func (p *parser) parseQuery() (Query, error) {
 	}
 
 	if p.eat("LIMIT") {
-		lim, err := p.parseLimitCount()
+		// "only literal or parameter values"
+		// https://cloud.google.com/spanner/docs/query-syntax#limit-clause-and-offset-clause
+
+		lim, err := p.parseLiteralOrParam()
 		if err != nil {
 			return Query{}, err
 		}
 		q.Limit = lim
+
+		if p.eat("OFFSET") {
+			off, err := p.parseLiteralOrParam()
+			if err != nil {
+				return Query{}, err
+			}
+			q.Offset = off
+		}
 	}
 
 	return q, nil
 }
 
-func (p *parser) parseSelect() (Select, error) {
+func (p *parser) parseSelect() (Select, *parseError) {
 	debugf("parseSelect: %v", p)
 
 	/*
@@ -1273,41 +1811,50 @@ func (p *parser) parseSelect() (Select, error) {
 
 	var sel Select
 
-	// TODO: ALL|DISTINCT
-
-	// Read expressions for the SELECT list.
-	for {
-		expr, err := p.parseExpr()
-		if err != nil {
-			return Select{}, err
-		}
-		sel.List = append(sel.List, expr)
-
-		if p.eat(",") {
-			continue
-		}
-		break
+	if p.eat("ALL") {
+		// Nothing to do; this is the default.
+	} else if p.eat("DISTINCT") {
+		sel.Distinct = true
 	}
 
+	// Read expressions for the SELECT list.
+	list, aliases, err := p.parseSelectList()
+	if err != nil {
+		return Select{}, err
+	}
+	sel.List, sel.ListAliases = list, aliases
+
 	if p.eat("FROM") {
+		padTS := func() {
+			for len(sel.TableSamples) < len(sel.From) {
+				sel.TableSamples = append(sel.TableSamples, nil)
+			}
+		}
+
 		for {
 			from, err := p.parseSelectFrom()
 			if err != nil {
 				return Select{}, err
 			}
+			sel.From = append(sel.From, from)
+
 			if p.sniff("TABLESAMPLE") {
 				ts, err := p.parseTableSample()
 				if err != nil {
 					return Select{}, err
 				}
-				from.TableSample = &ts
+				padTS()
+				sel.TableSamples[len(sel.TableSamples)-1] = &ts
 			}
-			sel.From = append(sel.From, from)
 
 			if p.eat(",") {
 				continue
 			}
 			break
+		}
+
+		if sel.TableSamples != nil {
+			padTS()
 		}
 	}
 
@@ -1319,18 +1866,233 @@ func (p *parser) parseSelect() (Select, error) {
 		sel.Where = where
 	}
 
-	// TODO: GROUP BY, HAVING
+	if p.eat("GROUP", "BY") {
+		list, err := p.parseExprList()
+		if err != nil {
+			return Select{}, err
+		}
+		sel.GroupBy = list
+	}
+
+	// TODO: HAVING
 
 	return sel, nil
 }
 
-func (p *parser) parseSelectFrom() (SelectFrom, error) {
-	// TODO: support more than a single table name.
-	tname, err := p.parseTableOrIndexOrColumnName()
-	return SelectFrom{Table: tname}, err
+func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
+	var list []Expr
+	var aliases []ID // Only set if any aliases are seen.
+	padAliases := func() {
+		for len(aliases) < len(list) {
+			aliases = append(aliases, "")
+		}
+	}
+
+	for {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, nil, err
+		}
+		list = append(list, expr)
+
+		// TODO: The "AS" keyword is optional.
+		if p.eat("AS") {
+			alias, err := p.parseAlias()
+			if err != nil {
+				return nil, nil, err
+			}
+
+			padAliases()
+			aliases[len(aliases)-1] = alias
+		}
+
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+	if aliases != nil {
+		padAliases()
+	}
+	return list, aliases, nil
 }
 
-func (p *parser) parseTableSample() (TableSample, error) {
+func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
+	debugf("parseSelectFrom: %v", p)
+
+	/*
+		from_item: {
+			table_name [ table_hint_expr ] [ [ AS ] alias ] |
+			join |
+			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
+			field_path |
+			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
+				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
+			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
+		}
+
+		join:
+			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
+				[ ON bool_expression | USING ( join_column [, ...] ) ]
+
+		join_type:
+			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
+	*/
+
+	if p.eat("UNNEST") {
+		if err := p.expect("("); err != nil {
+			return nil, err
+		}
+		e, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		if err := p.expect(")"); err != nil {
+			return nil, err
+		}
+		sfu := SelectFromUnnest{Expr: e}
+		if p.eat("AS") { // TODO: The "AS" keyword is optional.
+			alias, err := p.parseAlias()
+			if err != nil {
+				return nil, err
+			}
+			sfu.Alias = alias
+		}
+		// TODO: hint, offset
+		return sfu, nil
+	}
+
+	// A join starts with a from_item, so that can't be detected in advance.
+	// TODO: Support subquery, field_path, array_path, WITH.
+	// TODO: Verify associativity of multile joins.
+
+	tname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	sf := SelectFromTable{Table: tname}
+
+	// TODO: The "AS" keyword is optional.
+	if p.eat("AS") {
+		alias, err := p.parseAlias()
+		if err != nil {
+			return nil, err
+		}
+		sf.Alias = alias
+	}
+
+	// Look ahead to see if this is a join.
+	tok := p.next()
+	if tok.err != nil {
+		p.back()
+		return sf, nil
+	}
+	var hashJoin bool // Special case for "HASH JOIN" syntax.
+	if tok.value == "HASH" {
+		hashJoin = true
+		tok = p.next()
+		if tok.err != nil {
+			return nil, err
+		}
+	}
+	var jt JoinType
+	if tok.value == "JOIN" {
+		// This is implicitly an inner join.
+		jt = InnerJoin
+	} else if j, ok := joinKeywords[tok.value]; ok {
+		jt = j
+		switch jt {
+		case FullJoin, LeftJoin, RightJoin:
+			// These join types are implicitly "outer" joins,
+			// so the "OUTER" keyword is optional.
+			p.eat("OUTER")
+		}
+		if err := p.expect("JOIN"); err != nil {
+			return nil, err
+		}
+	} else {
+		p.back()
+		return sf, nil
+	}
+
+	sfj := SelectFromJoin{
+		Type: jt,
+		LHS:  sf,
+	}
+	setHint := func(k, v string) {
+		if sfj.Hints == nil {
+			sfj.Hints = make(map[string]string)
+		}
+		sfj.Hints[k] = v
+	}
+	if hashJoin {
+		setHint("JOIN_METHOD", "HASH_JOIN")
+	}
+
+	if p.eat("@") {
+		if err := p.expect("{"); err != nil {
+			return nil, err
+		}
+		for {
+			if p.sniff("}") {
+				break
+			}
+			tok := p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			k := tok.value
+			if err := p.expect("="); err != nil {
+				return nil, err
+			}
+			tok = p.next()
+			if tok.err != nil {
+				return nil, tok.err
+			}
+			v := tok.value
+			setHint(k, v)
+			if !p.eat(",") {
+				break
+			}
+		}
+		if err := p.expect("}"); err != nil {
+			return nil, err
+		}
+	}
+
+	sfj.RHS, err = p.parseSelectFrom()
+	if err != nil {
+		return nil, err
+	}
+
+	if p.eat("ON") {
+		sfj.On, err = p.parseBoolExpr()
+		if err != nil {
+			return nil, err
+		}
+	}
+	if p.eat("USING") {
+		if sfj.On != nil {
+			return nil, p.errorf("join may not have both ON and USING clauses")
+		}
+		sfj.Using, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	return sfj, nil
+}
+
+var joinKeywords = map[string]JoinType{
+	"INNER": InnerJoin,
+	"CROSS": CrossJoin,
+	"FULL":  FullJoin,
+	"LEFT":  LeftJoin,
+	"RIGHT": RightJoin,
+}
+
+func (p *parser) parseTableSample() (TableSample, *parseError) {
 	var ts TableSample
 
 	if err := p.expect("TABLESAMPLE"); err != nil {
@@ -1380,7 +2142,7 @@ func (p *parser) parseTableSample() (TableSample, error) {
 	return ts, nil
 }
 
-func (p *parser) parseOrder() (Order, error) {
+func (p *parser) parseOrder() (Order, *parseError) {
 	/*
 		expression [{ ASC | DESC }]
 	*/
@@ -1403,16 +2165,17 @@ func (p *parser) parseOrder() (Order, error) {
 	return o, nil
 }
 
-func (p *parser) parseLimitCount() (Limit, error) {
-	// "only literal or parameter values"
-	// https://cloud.google.com/spanner/docs/query-syntax#limit-clause-and-offset-clause
-
+func (p *parser) parseLiteralOrParam() (LiteralOrParam, *parseError) {
 	tok := p.next()
 	if tok.err != nil {
 		return nil, tok.err
 	}
 	if tok.typ == int64Token {
-		return IntegerLiteral(tok.int64), nil
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
 	}
 	// TODO: check character sets.
 	if strings.HasPrefix(tok.value, "@") {
@@ -1421,9 +2184,26 @@ func (p *parser) parseLimitCount() (Limit, error) {
 	return nil, p.errorf("got %q, want literal or parameter", tok.value)
 }
 
-func (p *parser) parseExprList() ([]Expr, error) {
+func (p *parser) parseExprList() ([]Expr, *parseError) {
 	var list []Expr
-	err := p.parseCommaList(func(p *parser) error {
+	for {
+		expr, err := p.parseExpr()
+		if err != nil {
+			return nil, err
+		}
+		list = append(list, expr)
+
+		if p.eat(",") {
+			continue
+		}
+		break
+	}
+	return list, nil
+}
+
+func (p *parser) parseParenExprList() ([]Expr, *parseError) {
+	var list []Expr
+	err := p.parseCommaList("(", ")", func(p *parser) *parseError {
 		e, err := p.parseExpr()
 		if err != nil {
 			return err
@@ -1448,14 +2228,14 @@ ascending order of precedence:
 	orParser
 	andParser
 	parseIsOp
+	parseInOp
 	parseComparisonOp
-	parseArithOp
+	parseArithOp: |, ^, &, << and >>, + and -, * and / and ||
+	parseUnaryArithOp: - and ~
 	parseLit
-
-TODO: there are more levels to break out, esp. in parseArithOp
 */
 
-func (p *parser) parseExpr() (Expr, error) {
+func (p *parser) parseExpr() (Expr, *parseError) {
 	debugf("parseExpr: %v", p)
 
 	return orParser.parse(p)
@@ -1464,13 +2244,13 @@ func (p *parser) parseExpr() (Expr, error) {
 // binOpParser is a generic meta-parser for binary operations.
 // It assumes the operation is left associative.
 type binOpParser struct {
-	LHS, RHS func(*parser) (Expr, error)
+	LHS, RHS func(*parser) (Expr, *parseError)
 	Op       string
 	ArgCheck func(Expr) error
 	Combiner func(lhs, rhs Expr) Expr
 }
 
-func (bin binOpParser) parse(p *parser) (Expr, error) {
+func (bin binOpParser) parse(p *parser) (Expr, *parseError) {
 	expr, err := bin.LHS(p)
 	if err != nil {
 		return nil, err
@@ -1528,9 +2308,32 @@ var (
 			return LogicalOp{LHS: lhs.(BoolExpr), Op: And, RHS: rhs.(BoolExpr)}
 		},
 	}
+
+	bitOrParser  = newBinArithParser("|", BitOr, bitXorParser.parse)
+	bitXorParser = newBinArithParser("^", BitXor, bitAndParser.parse)
+	bitAndParser = newBinArithParser("&", BitAnd, bitShrParser.parse)
+	bitShrParser = newBinArithParser(">>", BitShr, bitShlParser.parse)
+	bitShlParser = newBinArithParser("<<", BitShl, subParser.parse)
+	subParser    = newBinArithParser("-", Sub, addParser.parse)
+	addParser    = newBinArithParser("+", Add, concatParser.parse)
+	concatParser = newBinArithParser("||", Concat, divParser.parse)
+	divParser    = newBinArithParser("/", Div, mulParser.parse)
+	mulParser    = newBinArithParser("*", Mul, (*parser).parseUnaryArithOp)
 )
 
-func (p *parser) parseLogicalNot() (Expr, error) {
+func newBinArithParser(opStr string, op ArithOperator, nextPrec func(*parser) (Expr, *parseError)) binOpParser {
+	return binOpParser{
+		LHS: nextPrec,
+		RHS: nextPrec,
+		Op:  opStr,
+		// TODO: ArgCheck? numeric inputs only, except for ||.
+		Combiner: func(lhs, rhs Expr) Expr {
+			return ArithOp{LHS: lhs, Op: op, RHS: rhs}
+		},
+	}
+}
+
+func (p *parser) parseLogicalNot() (Expr, *parseError) {
 	if !p.eat("NOT") {
 		return p.parseIsOp()
 	}
@@ -1541,10 +2344,10 @@ func (p *parser) parseLogicalNot() (Expr, error) {
 	return LogicalOp{Op: Not, RHS: be}, nil
 }
 
-func (p *parser) parseIsOp() (Expr, error) {
+func (p *parser) parseIsOp() (Expr, *parseError) {
 	debugf("parseIsOp: %v", p)
 
-	expr, err := p.parseComparisonOp()
+	expr, err := p.parseInOp()
 	if err != nil {
 		return nil, err
 	}
@@ -1578,6 +2381,37 @@ func (p *parser) parseIsOp() (Expr, error) {
 	return isOp, nil
 }
 
+func (p *parser) parseInOp() (Expr, *parseError) {
+	debugf("parseInOp: %v", p)
+
+	expr, err := p.parseComparisonOp()
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: do we need to do lookahead?
+
+	inOp := InOp{LHS: expr}
+	if p.eat("NOT") {
+		inOp.Neg = true
+	}
+
+	if !p.eat("IN") {
+		// TODO: push back the "NOT"?
+		return expr, nil
+	}
+
+	if p.eat("UNNEST") {
+		inOp.Unnest = true
+	}
+
+	inOp.RHS, err = p.parseParenExprList()
+	if err != nil {
+		return nil, err
+	}
+	return inOp, nil
+}
+
 var symbolicOperators = map[string]ComparisonOperator{
 	"<":  Lt,
 	"<=": Le,
@@ -1588,7 +2422,7 @@ var symbolicOperators = map[string]ComparisonOperator{
 	"<>": Ne,
 }
 
-func (p *parser) parseComparisonOp() (Expr, error) {
+func (p *parser) parseComparisonOp() (Expr, *parseError) {
 	debugf("parseComparisonOp: %v", p)
 
 	expr, err := p.parseArithOp()
@@ -1652,10 +2486,84 @@ func (p *parser) parseComparisonOp() (Expr, error) {
 	return expr, nil
 }
 
-func (p *parser) parseArithOp() (Expr, error) {
-	// TODO: actually parse arithmetic operations.
+func (p *parser) parseArithOp() (Expr, *parseError) {
+	return bitOrParser.parse(p)
+}
 
-	if p.eat("(") {
+var unaryArithOperators = map[string]ArithOperator{
+	"-": Neg,
+	"~": BitNot,
+	"+": Plus,
+}
+
+func (p *parser) parseUnaryArithOp() (Expr, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+
+	op := tok.value
+
+	if op == "-" || op == "+" {
+		// If the next token is a numeric token, combine and parse as a literal.
+		ntok := p.next()
+		if ntok.err == nil {
+			switch ntok.typ {
+			case int64Token:
+				comb := op + ntok.value
+				n, err := strconv.ParseInt(comb, ntok.int64Base, 64)
+				if err != nil {
+					return nil, p.errorf("%v", err)
+				}
+				return IntegerLiteral(n), nil
+			case float64Token:
+				f := ntok.float64
+				if op == "-" {
+					f = -f
+				}
+				return FloatLiteral(f), nil
+			}
+		}
+		// It is not possible for the p.back() lower down to fire
+		// because - and + are in unaryArithOperators.
+		p.back()
+	}
+
+	if op, ok := unaryArithOperators[op]; ok {
+		e, err := p.parseLit()
+		if err != nil {
+			return nil, err
+		}
+		return ArithOp{Op: op, RHS: e}, nil
+	}
+	p.back()
+
+	return p.parseLit()
+}
+
+func (p *parser) parseLit() (Expr, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+
+	switch tok.typ {
+	case int64Token:
+		n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
+		if err != nil {
+			return nil, p.errorf("%v", err)
+		}
+		return IntegerLiteral(n), nil
+	case float64Token:
+		return FloatLiteral(tok.float64), nil
+	case stringToken:
+		return StringLiteral(tok.string), nil
+	case bytesToken:
+		return BytesLiteral(tok.string), nil
+	}
+
+	// Handle parenthesized expressions.
+	if tok.value == "(" {
 		e, err := p.parseExpr()
 		if err != nil {
 			return nil, err
@@ -1666,46 +2574,21 @@ func (p *parser) parseArithOp() (Expr, error) {
 		return Paren{Expr: e}, nil
 	}
 
-	lit, err := p.parseLit()
-	if err != nil {
-		return nil, err
-	}
-
 	// If the literal was an identifier, and there's an open paren next,
 	// this is a function invocation.
-	if id, ok := lit.(ID); ok && p.sniff("(") {
-		list, err := p.parseExprList()
+	// TODO: Case-insensitivity.
+	if name := tok.value; funcs[name] && p.sniff("(") {
+		list, err := p.parseParenExprList()
 		if err != nil {
 			return nil, err
 		}
 		return Func{
-			Name: string(id),
+			Name: name,
 			Args: list,
 		}, nil
 	}
 
-	return lit, nil
-}
-
-func (p *parser) parseLit() (Expr, error) {
-	tok := p.next()
-	if tok.err != nil {
-		return nil, tok.err
-	}
-
-	switch tok.typ {
-	case int64Token:
-		return IntegerLiteral(tok.int64), nil
-	case float64Token:
-		return FloatLiteral(tok.float64), nil
-	case stringToken:
-		return StringLiteral(tok.string), nil
-	case bytesToken:
-		return BytesLiteral(tok.string), nil
-	}
-
 	// Handle some reserved keywords and special tokens that become specific values.
-	// TODO: Handle the other 92 keywords.
 	switch tok.value {
 	case "TRUE":
 		return True, nil
@@ -1715,19 +2598,157 @@ func (p *parser) parseLit() (Expr, error) {
 		return Null, nil
 	case "*":
 		return Star, nil
+	default:
+		// TODO: Check IsKeyWord(tok.value), and return a distinguished type,
+		// then only accept that when parsing. That will also permit
+		// case insensitivity for keywords.
 	}
 
-	// TODO: more types of literals (array, struct, date, timestamp).
+	// Handle typed literals.
+	switch tok.value {
+	case "ARRAY", "[":
+		p.back()
+		return p.parseArrayLit()
+	case "DATE":
+		p.back()
+		return p.parseDateLit()
+	case "TIMESTAMP":
+		p.back()
+		return p.parseTimestampLit()
+	}
+
+	// TODO: struct literals
 
 	// Try a parameter.
 	// TODO: check character sets.
 	if strings.HasPrefix(tok.value, "@") {
 		return Param(tok.value[1:]), nil
 	}
-	return ID(tok.value), nil
+
+	// Only thing left is a path expression or standalone identifier.
+	p.back()
+	pe, err := p.parsePathExp()
+	if err != nil {
+		return nil, err
+	}
+	if len(pe) == 1 {
+		return pe[0], nil // identifier
+	}
+	return pe, nil
 }
 
-func (p *parser) parseBoolExpr() (BoolExpr, error) {
+func (p *parser) parseArrayLit() (Array, *parseError) {
+	// ARRAY keyword is optional.
+	// TODO: If it is present, consume any <T> after it.
+	p.eat("ARRAY")
+
+	var arr Array
+	err := p.parseCommaList("[", "]", func(p *parser) *parseError {
+		e, err := p.parseLit()
+		if err != nil {
+			return err
+		}
+		// TODO: Do type consistency checking here?
+		arr = append(arr, e)
+		return nil
+	})
+	return arr, err
+}
+
+// TODO: There should be exported Parse{Date,Timestamp}Literal package-level funcs
+// to support spannertest coercing plain string literals when used in a typed context.
+// Those should wrap parseDateLit and parseTimestampLit below.
+
+func (p *parser) parseDateLit() (DateLiteral, *parseError) {
+	if err := p.expect("DATE"); err != nil {
+		return DateLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return DateLiteral{}, err
+	}
+	d, perr := civil.ParseDate(string(s))
+	if perr != nil {
+		return DateLiteral{}, p.errorf("bad date literal %q: %v", s, perr)
+	}
+	// TODO: Enforce valid range.
+	return DateLiteral(d), nil
+}
+
+// TODO: A manual parser is probably better than this.
+// There are a lot of variations that this does not handle.
+var timestampFormats = []string{
+	// 'YYYY-[M]M-[D]D [[H]H:[M]M:[S]S[.DDDDDD] [timezone]]'
+	"2006-01-02",
+	"2006-01-02 15:04:05",
+	"2006-01-02 15:04:05.000000",
+	"2006-01-02 15:04:05 -07:00",
+	"2006-01-02 15:04:05.000000 -07:00",
+}
+
+var defaultLocation = func() *time.Location {
+	// The docs say "America/Los_Angeles" is the default.
+	// Use that if we can load it, but fall back on UTC if we don't have timezone data.
+	loc, err := time.LoadLocation("America/Los_Angeles")
+	if err == nil {
+		return loc
+	}
+	return time.UTC
+}()
+
+func (p *parser) parseTimestampLit() (TimestampLiteral, *parseError) {
+	if err := p.expect("TIMESTAMP"); err != nil {
+		return TimestampLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return TimestampLiteral{}, err
+	}
+	for _, format := range timestampFormats {
+		t, err := time.ParseInLocation(format, string(s), defaultLocation)
+		if err == nil {
+			// TODO: Enforce valid range.
+			return TimestampLiteral(t), nil
+		}
+	}
+	return TimestampLiteral{}, p.errorf("invalid timestamp literal %q", s)
+}
+
+func (p *parser) parseStringLit() (StringLiteral, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return "", tok.err
+	}
+	if tok.typ != stringToken {
+		return "", p.errorf("got %q, want string literal", tok.value)
+	}
+	return StringLiteral(tok.string), nil
+}
+
+func (p *parser) parsePathExp() (PathExp, *parseError) {
+	var pe PathExp
+	for {
+		tok := p.next()
+		if tok.err != nil {
+			return nil, tok.err
+		}
+		switch tok.typ {
+		case quotedID:
+			pe = append(pe, ID(tok.string))
+		case unquotedID:
+			pe = append(pe, ID(tok.value))
+		default:
+			// TODO: Is this correct?
+			return nil, p.errorf("expected identifer")
+		}
+		if !p.eat(".") {
+			break
+		}
+	}
+	return pe, nil
+}
+
+func (p *parser) parseBoolExpr() (BoolExpr, *parseError) {
 	expr, err := p.parseExpr()
 	if err != nil {
 		return nil, err
@@ -1739,7 +2760,13 @@ func (p *parser) parseBoolExpr() (BoolExpr, error) {
 	return be, nil
 }
 
-func (p *parser) parseTableOrIndexOrColumnName() (string, error) {
+func (p *parser) parseAlias() (ID, *parseError) {
+	// The docs don't specify what lexical token is valid for an alias,
+	// but it seems likely that it is an identifier.
+	return p.parseTableOrIndexOrColumnName()
+}
+
+func (p *parser) parseTableOrIndexOrColumnName() (ID, *parseError) {
 	/*
 		table_name and column_name and index_name:
 				{a—z|A—Z}[{a—z|A—Z|0—9|_}+]
@@ -1749,11 +2776,18 @@ func (p *parser) parseTableOrIndexOrColumnName() (string, error) {
 	if tok.err != nil {
 		return "", tok.err
 	}
-	// TODO: enforce restrictions
-	return tok.value, nil
+	switch tok.typ {
+	case quotedID:
+		return ID(tok.string), nil
+	case unquotedID:
+		// TODO: enforce restrictions
+		return ID(tok.value), nil
+	default:
+		return "", p.errorf("expected identifier")
+	}
 }
 
-func (p *parser) parseOnDelete() (OnDelete, error) {
+func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 	/*
 		CASCADE
 		NO ACTION
@@ -1775,14 +2809,14 @@ func (p *parser) parseOnDelete() (OnDelete, error) {
 	return NoActionOnDelete, nil
 }
 
-// parseCommaList parses a parenthesized comma-separated list,
+// parseCommaList parses a comma-separated list enclosed by bra and ket,
 // delegating to f for the individual element parsing.
-func (p *parser) parseCommaList(f func(*parser) error) error {
-	if err := p.expect("("); err != nil {
+func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *parseError {
+	if err := p.expect(bra); err != nil {
 		return err
 	}
 	for {
-		if p.eat(")") {
+		if p.eat(ket) {
 			return nil
 		}
 
@@ -1791,17 +2825,17 @@ func (p *parser) parseCommaList(f func(*parser) error) error {
 			return err
 		}
 
-		// ")" or "," should be next.
+		// ket or "," should be next.
 		tok := p.next()
 		if tok.err != nil {
 			return err
 		}
-		if tok.value == ")" {
+		if tok.value == ket {
 			return nil
 		} else if tok.value == "," {
 			continue
 		} else {
-			return p.errorf(`got %q, want ")" or ","`, tok.value)
+			return p.errorf(`got %q, want %q or ","`, tok.value, ket)
 		}
 	}
 }

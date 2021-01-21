@@ -25,6 +25,8 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam"
+	ipubsub "cloud.google.com/go/internal/pubsub"
+	"cloud.google.com/go/pubsub/internal/scheduler"
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
@@ -62,9 +64,12 @@ type Topic struct {
 	// first call to Publish. The default is DefaultPublishSettings.
 	PublishSettings PublishSettings
 
-	mu      sync.RWMutex
-	stopped bool
-	bundler *bundler.Bundler
+	mu        sync.RWMutex
+	stopped   bool
+	scheduler *scheduler.PublishScheduler
+
+	// EnableMessageOrdering enables delivery of ordered keys.
+	EnableMessageOrdering bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -80,7 +85,9 @@ type PublishSettings struct {
 	// Publish a batch when its size in bytes reaches this value.
 	ByteThreshold int
 
-	// The number of goroutines that invoke the Publish RPC concurrently.
+	// The number of goroutines used in each of the data structures that are
+	// involved along the the Publish path. Adjusting this value adjusts
+	// concurrency along the publish path.
 	//
 	// Defaults to a multiple of GOMAXPROCS.
 	NumGoroutines int
@@ -215,6 +222,24 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
 		KMSKeyName:           pbt.KmsKeyName,
 	}
+}
+
+// DetachSubscriptionResult is the response for the DetachSubscription method.
+// Reserved for future use.
+type DetachSubscriptionResult struct{}
+
+// DetachSubscription detaches a subscription from its topic. All messages
+// retained in the subscription are dropped. Subsequent `Pull` and `StreamingPull`
+// requests will return FAILED_PRECONDITION. If the subscription is a push
+// subscription, pushes to the endpoint will stop.
+func (c *Client) DetachSubscription(ctx context.Context, sub string) (*DetachSubscriptionResult, error) {
+	_, err := c.pubc.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: sub,
+	})
+	if err != nil {
+		return nil, err
+	}
+	return &DetachSubscriptionResult{}, nil
 }
 
 // MessageStoragePolicy constrains how messages published to the topic may be stored. It
@@ -376,6 +401,16 @@ func (t *Topic) Subscriptions(ctx context.Context) *SubscriptionIterator {
 
 var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 
+// A PublishResult holds the result from a call to Publish.
+//
+// Call Get to obtain the result of the Publish call. Example:
+//   // Get blocks until Publish completes or ctx is done.
+//   id, err := r.Get(ctx)
+//   if err != nil {
+//       // TODO: Handle error.
+//   }
+type PublishResult = ipubsub.PublishResult
+
 // Publish publishes msg to the topic asynchronously. Messages are batched and
 // sent according to the topic's PublishSettings. Publish never blocks.
 //
@@ -386,34 +421,41 @@ var errTopicStopped = errors.New("pubsub: Stop has been called for this topic")
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	r := ipubsub.NewPublishResult()
+	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
+		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
+		return r
+	}
+
 	// Use a PublishRequest with only the Messages field to calculate the size
 	// of an individual message. This accurately calculates the size of the
 	// encoded proto message by accounting for the length of an individual
 	// PubSubMessage and Data/Attributes field.
 	// TODO(hongalex): if this turns out to take significant time, try to approximate it.
-	msg.size = proto.Size(&pb.PublishRequest{
+	msgSize := proto.Size(&pb.PublishRequest{
 		Messages: []*pb.PubsubMessage{
 			{
-				Data:       msg.Data,
-				Attributes: msg.Attributes,
+				Data:        msg.Data,
+				Attributes:  msg.Attributes,
+				OrderingKey: msg.OrderingKey,
 			},
 		},
 	})
-	r := &PublishResult{ready: make(chan struct{})}
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
 	// TODO(aboulhosn) [from bcmills] consider changing the semantics of bundler to perform this logic so we don't have to do it here
 	if t.stopped {
-		r.set("", errTopicStopped)
+		ipubsub.SetPublishResult(r, "", errTopicStopped)
 		return r
 	}
 
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
-	err := t.bundler.Add(&bundledMessage{msg, r}, msg.size)
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msgSize)
 	if err != nil {
-		r.set("", err)
+		t.scheduler.Pause(msg.OrderingKey)
+		ipubsub.SetPublishResult(r, "", err)
 	}
 	return r
 }
@@ -423,47 +465,13 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 // failed to be sent.
 func (t *Topic) Stop() {
 	t.mu.Lock()
-	noop := t.stopped || t.bundler == nil
+	noop := t.stopped || t.scheduler == nil
 	t.stopped = true
 	t.mu.Unlock()
 	if noop {
 		return
 	}
-	t.bundler.Flush()
-}
-
-// A PublishResult holds the result from a call to Publish.
-type PublishResult struct {
-	ready    chan struct{}
-	serverID string
-	err      error
-}
-
-// Ready returns a channel that is closed when the result is ready.
-// When the Ready channel is closed, Get is guaranteed not to block.
-func (r *PublishResult) Ready() <-chan struct{} { return r.ready }
-
-// Get returns the server-generated message ID and/or error result of a Publish call.
-// Get blocks until the Publish call completes or the context is done.
-func (r *PublishResult) Get(ctx context.Context) (serverID string, err error) {
-	// If the result is already ready, return it even if the context is done.
-	select {
-	case <-r.Ready():
-		return r.serverID, r.err
-	default:
-	}
-	select {
-	case <-ctx.Done():
-		return "", ctx.Err()
-	case <-r.Ready():
-		return r.serverID, r.err
-	}
-}
-
-func (r *PublishResult) set(sid string, err error) {
-	r.serverID = sid
-	r.err = err
-	close(r.ready)
+	t.scheduler.FlushAndStop()
 }
 
 type bundledMessage struct {
@@ -473,7 +481,7 @@ type bundledMessage struct {
 
 func (t *Topic) initBundler() {
 	t.mu.RLock()
-	noop := t.stopped || t.bundler != nil
+	noop := t.stopped || t.scheduler != nil
 	t.mu.RUnlock()
 	if noop {
 		return
@@ -481,12 +489,21 @@ func (t *Topic) initBundler() {
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	// Must re-check, since we released the lock.
-	if t.stopped || t.bundler != nil {
+	if t.stopped || t.scheduler != nil {
 		return
 	}
 
 	timeout := t.PublishSettings.Timeout
-	t.bundler = bundler.NewBundler(&bundledMessage{}, func(items interface{}) {
+
+	workers := t.PublishSettings.NumGoroutines
+	// Unless overridden, allow many goroutines per CPU to call the Publish RPC
+	// concurrently. The default value was determined via extensive load
+	// testing (see the loadtest subdirectory).
+	if t.PublishSettings.NumGoroutines == 0 {
+		workers = 25 * runtime.GOMAXPROCS(0)
+	}
+
+	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
 		ctx := context.TODO()
 		if timeout != 0 {
@@ -494,30 +511,22 @@ func (t *Topic) initBundler() {
 			ctx, cancel = context.WithTimeout(ctx, timeout)
 			defer cancel()
 		}
-		t.publishMessageBundle(ctx, items.([]*bundledMessage))
+		t.publishMessageBundle(ctx, bundle.([]*bundledMessage))
 	})
-	t.bundler.DelayThreshold = t.PublishSettings.DelayThreshold
-	t.bundler.BundleCountThreshold = t.PublishSettings.CountThreshold
-	if t.bundler.BundleCountThreshold > MaxPublishRequestCount {
-		t.bundler.BundleCountThreshold = MaxPublishRequestCount
+	t.scheduler.DelayThreshold = t.PublishSettings.DelayThreshold
+	t.scheduler.BundleCountThreshold = t.PublishSettings.CountThreshold
+	if t.scheduler.BundleCountThreshold > MaxPublishRequestCount {
+		t.scheduler.BundleCountThreshold = MaxPublishRequestCount
 	}
-	t.bundler.BundleByteThreshold = t.PublishSettings.ByteThreshold
+	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
 		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
 	}
-	t.bundler.BufferedByteLimit = bufferedByteLimit
+	t.scheduler.BufferedByteLimit = bufferedByteLimit
 
-	// Set the bundler's max size per payload, accounting for topic name's overhead.
-	t.bundler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
-	// Unless overridden, allow many goroutines per CPU to call the Publish RPC concurrently.
-	// The default value was determined via extensive load testing (see the loadtest subdirectory).
-	if t.PublishSettings.NumGoroutines > 0 {
-		t.bundler.HandlerLimit = t.PublishSettings.NumGoroutines
-	} else {
-		t.bundler.HandlerLimit = 25 * runtime.GOMAXPROCS(0)
-	}
+	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
@@ -526,20 +535,29 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		log.Printf("pubsub: cannot create context with tag in publishMessageBundle: %v", err)
 	}
 	pbMsgs := make([]*pb.PubsubMessage, len(bms))
+	var orderingKey string
 	for i, bm := range bms {
+		orderingKey = bm.msg.OrderingKey
 		pbMsgs[i] = &pb.PubsubMessage{
-			Data:       bm.msg.Data,
-			Attributes: bm.msg.Attributes,
+			Data:        bm.msg.Data,
+			Attributes:  bm.msg.Attributes,
+			OrderingKey: bm.msg.OrderingKey,
 		}
 		bm.msg = nil // release bm.msg for GC
 	}
+	var res *pb.PublishResponse
 	start := time.Now()
-	res, err := t.c.pubc.Publish(ctx, &pb.PublishRequest{
-		Topic:    t.name,
-		Messages: pbMsgs,
-	}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+	if orderingKey != "" && t.scheduler.IsPaused(orderingKey) {
+		err = fmt.Errorf("pubsub: Publishing for ordering key, %s, paused due to previous error. Call topic.ResumePublish(orderingKey) before resuming publishing", orderingKey)
+	} else {
+		res, err = t.c.pubc.Publish(ctx, &pb.PublishRequest{
+			Topic:    t.name,
+			Messages: pbMsgs,
+		}, gax.WithGRPCOptions(grpc.MaxCallSendMsgSize(maxSendRecvBytes)))
+	}
 	end := time.Now()
 	if err != nil {
+		t.scheduler.Pause(orderingKey)
 		// Update context with error tag for OpenCensus,
 		// using same stats.Record() call as success case.
 		ctx, _ = tag.New(ctx, tag.Upsert(keyStatus, "ERROR"),
@@ -550,9 +568,24 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
 		if err != nil {
-			bm.res.set("", err)
+			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {
-			bm.res.set(res.MessageIds[i], nil)
+			ipubsub.SetPublishResult(bm.res, res.MessageIds[i], nil)
 		}
 	}
+}
+
+// ResumePublish resumes accepting messages for the provided ordering key.
+// Publishing using an ordering key might be paused if an error is
+// encountered while publishing, to prevent messages from being published
+// out of order.
+func (t *Topic) ResumePublish(orderingKey string) {
+	t.mu.RLock()
+	noop := t.scheduler == nil
+	t.mu.RUnlock()
+	if noop {
+		return
+	}
+
+	t.scheduler.Resume(orderingKey)
 }

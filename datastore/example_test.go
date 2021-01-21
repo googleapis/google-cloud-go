@@ -516,7 +516,7 @@ func ExampleIterator_Cursor() {
 			// TODO: Handle error.
 		}
 		// When printed, a cursor will display as a string that can be passed
-		// to datastore.NewCursor.
+		// to datastore.DecodeCursor.
 		fmt.Printf("to resume with this post, use cursor %s\n", cursor)
 	}
 }

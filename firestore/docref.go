@@ -122,9 +122,11 @@ func (d *DocumentRef) Get(ctx context.Context) (_ *DocumentSnapshot, err error) 
 //
 //   - omitempty: Do not encode this field if it is empty. A value is empty
 //     if it is a zero value, or an array, slice or map of length zero.
-//   - serverTimestamp: The field must be of type time.Time. When writing, if
-//     the field has the zero value, the server will populate the stored document with
-//     the time that the request is processed.
+//   - serverTimestamp: The field must be of type time.Time. serverTimestamp
+//     is a sentinel token that tells Firestore to substitute the server time
+//     into that field. When writing, if the field has the zero value, the
+//     server will populate the stored document with the time that the request
+//     is processed. However, if the field value is non-zero it won't be saved.
 func (d *DocumentRef) Create(ctx context.Context, data interface{}) (_ *WriteResult, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.DocumentRef.Create")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -314,8 +316,8 @@ func (d *DocumentRef) fpvsToWrites(fpvs []fpv, pc *pb.Precondition) ([]*pb.Write
 				return nil, err
 			}
 			transforms = append(transforms, t)
-		case increment:
-			t, err := incrementTransform(fpv.value.(increment), fpv.fieldPath)
+		case transform:
+			t, err := fieldTransform(fpv.value.(transform), fpv.fieldPath)
 			if err != nil {
 				return nil, err
 			}
@@ -474,12 +476,16 @@ func arrayRemoveTransform(ar arrayRemove, fp FieldPath) (*pb.DocumentTransform_F
 	}, nil
 }
 
-type increment struct {
-	n interface{}
+type transform struct {
+	t *pb.DocumentTransform_FieldTransform
+
+	// For v2 of this package, we may want to remove this field and
+	// return an error directly from the FieldTransformX functions.
+	err error
 }
 
-// Increment returns a special value that can be used with Set, Create, or
-// Update that tells the server to increment the field's current value
+// FieldTransformIncrement returns a special value that can be used with Set, Create, or
+// Update that tells the server to transform the field's current value
 // by the given value.
 //
 // The supported values are:
@@ -490,29 +496,106 @@ type increment struct {
 //
 // If the field does not yet exist, the transformation will set the field to
 // the given value.
-func Increment(n interface{}) increment {
-	return increment{n: n}
+func FieldTransformIncrement(n interface{}) transform {
+	v, err := numericTransformValue(n)
+	return transform{
+		t: &pb.DocumentTransform_FieldTransform{
+			TransformType: &pb.DocumentTransform_FieldTransform_Increment{
+				Increment: v,
+			},
+		},
+		err: err,
+	}
 }
 
-func incrementTransform(ar increment, fp FieldPath) (*pb.DocumentTransform_FieldTransform, error) {
-	switch ar.n.(type) {
+// Increment is an alias for FieldTransformIncrement.
+func Increment(n interface{}) transform {
+	return FieldTransformIncrement(n)
+}
+
+// FieldTransformMaximum returns a special value that can be used with Set, Create, or
+// Update that tells the server to set the field to the maximum of the
+// field's current value and the given value.
+//
+// The supported values are:
+//
+//    int, int8, int16, int32, int64
+//    uint8, uint16, uint32
+//    float32, float64
+//
+// If the field is not an integer or double, or if the field does not yet
+// exist,  the transformation will set the field to the given value. If a
+// maximum operation is applied where the field and the input value are of
+// mixed types (that is - one is an integer and one is a double) the field
+// takes on the type of the larger operand. If the operands are equivalent
+// (e.g. 3 and 3.0), the field does not change. 0, 0.0, and -0.0 are all zero.
+// The maximum of a zero stored value and zero input value is always the
+// stored value. The maximum of any numeric value x and NaN is NaN.
+func FieldTransformMaximum(n interface{}) transform {
+	v, err := numericTransformValue(n)
+	return transform{
+		t: &pb.DocumentTransform_FieldTransform{
+			TransformType: &pb.DocumentTransform_FieldTransform_Maximum{
+				Maximum: v,
+			},
+		},
+		err: err,
+	}
+}
+
+// FieldTransformMinimum returns a special value that can be used with Set, Create, or
+// Update that tells the server to set the field to the minimum of the
+// field's current value and the given value.
+//
+// The supported values are:
+//
+//    int, int8, int16, int32, int64
+//    uint8, uint16, uint32
+//    float32, float64
+//
+// If the field is not an integer or double, or if the field does not yet
+// exist,  the transformation will set the field to the given value. If a
+// minimum operation is applied where the field and the input value are of
+// mixed types (that is - one is an integer and one is a double) the field
+// takes on the type of the smaller operand. If the operands are equivalent
+// (e.g. 3 and 3.0), the field does not change. 0, 0.0, and -0.0 are all zero.
+// The minimum of a zero stored value and zero input value is always the
+// stored value. The minimum of any numeric value x and NaN is NaN.
+func FieldTransformMinimum(n interface{}) transform {
+	v, err := numericTransformValue(n)
+	return transform{
+		t: &pb.DocumentTransform_FieldTransform{
+			TransformType: &pb.DocumentTransform_FieldTransform_Minimum{
+				Minimum: v,
+			},
+		},
+		err: err,
+	}
+}
+
+func numericTransformValue(n interface{}) (*pb.Value, error) {
+	switch n.(type) {
 	case int, int8, int16, int32, int64,
 		uint8, uint16, uint32,
 		float32, float64:
 	default:
-		return nil, fmt.Errorf("unsupported type %T for Increment; supported values include int, int8, int16, int32, int64, uint8, uint16, uint32, float32, float64", ar.n)
+		return nil, fmt.Errorf("unsupported type %T for Increment; supported values include int, int8, int16, int32, int64, uint8, uint16, uint32, float32, float64", n)
 	}
 
-	v, _, err := toProtoValue(reflect.ValueOf(ar.n))
+	v, _, err := toProtoValue(reflect.ValueOf(n))
 	if err != nil {
 		return nil, err
 	}
-	return &pb.DocumentTransform_FieldTransform{
-		FieldPath: fp.toServiceFieldPath(),
-		TransformType: &pb.DocumentTransform_FieldTransform_Increment{
-			Increment: v,
-		},
-	}, nil
+	return v, nil
+}
+
+func fieldTransform(ar transform, fp FieldPath) (*pb.DocumentTransform_FieldTransform, error) {
+	if ar.err != nil {
+		return nil, ar.err
+	}
+	ft := *ar.t
+	ft.FieldPath = fp.toServiceFieldPath()
+	return &ft, nil
 }
 
 type sentinel int

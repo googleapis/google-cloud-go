@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -209,4 +209,24 @@ func ExampleAgentsClient_RestoreAgent() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+}
+
+func ExampleAgentsClient_GetValidationResult() {
+	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
+	ctx := context.Background()
+	c, err := dialogflow.NewAgentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.GetValidationResultRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetValidationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

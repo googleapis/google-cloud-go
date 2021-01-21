@@ -284,21 +284,18 @@ func (j *Job) read(ctx context.Context, waitForQuery func(context.Context, strin
 	if !j.isQuery() {
 		return nil, errors.New("bigquery: cannot read from a non-query job")
 	}
-	destTable := j.config.Query.DestinationTable
-	// The destination table should only be nil if there was a query error.
-	projectID := j.projectID
-	if destTable != nil && projectID != destTable.ProjectId {
-		return nil, fmt.Errorf("bigquery: job project ID is %q, but destination table's is %q", projectID, destTable.ProjectId)
-	}
-	schema, totalRows, err := waitForQuery(ctx, projectID)
+	schema, totalRows, err := waitForQuery(ctx, j.projectID)
 	if err != nil {
 		return nil, err
 	}
-	if destTable == nil {
-		return nil, errors.New("bigquery: query job missing destination table")
+	// Shave off some potential overhead by only retaining the minimal job representation in the iterator.
+	itJob := &Job{
+		c:         j.c,
+		projectID: j.projectID,
+		jobID:     j.jobID,
+		location:  j.location,
 	}
-	dt := bqToTable(destTable, j.c)
-	it := newRowIterator(ctx, dt, pf)
+	it := newRowIterator(ctx, &rowSource{j: itJob}, pf)
 	it.Schema = schema
 	it.TotalRows = totalRows
 	return it, nil
@@ -350,6 +347,9 @@ type JobStatistics struct {
 	// ScriptStatistics includes information run as part of a child job within
 	// a script.
 	ScriptStatistics *ScriptStatistics
+
+	// ReservationUsage attributes slot consumption to reservations.
+	ReservationUsage []*ReservationUsage
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -404,7 +404,7 @@ type QueryStatistics struct {
 	// UNKNOWN: accuracy of the estimate is unknown.
 	// PRECISE: estimate is precise.
 	// LOWER_BOUND: estimate is lower bound of what the query would cost.
-	// UPPER_BOUND: estiamte is upper bound of what the query would cost.
+	// UPPER_BOUND: estimate is upper bound of what the query would cost.
 	TotalBytesProcessedAccuracy string
 
 	// Describes execution plan for the query.
@@ -562,6 +562,25 @@ type QueryTimelineSample struct {
 
 	// Cumulative slot-milliseconds consumed by the query.
 	SlotMillis int64
+}
+
+// ReservationUsage contains information about a job's usage of a single reservation.
+type ReservationUsage struct {
+	// SlotMillis reports the slot milliseconds utilized within in the given reservation.
+	SlotMillis int64
+	// Name indicates the utilized reservation name, or "unreserved" for ondemand usage.
+	Name string
+}
+
+func bqToReservationUsage(ru []*bq.JobStatisticsReservationUsage) []*ReservationUsage {
+	var usage []*ReservationUsage
+	for _, in := range ru {
+		usage = append(usage, &ReservationUsage{
+			SlotMillis: in.SlotMs,
+			Name:       in.Name,
+		})
+	}
+	return usage
 }
 
 // ScriptStatistics report information about script-based query jobs.
@@ -813,6 +832,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		NumChildJobs:        s.NumChildJobs,
 		ParentJobID:         s.ParentJobId,
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
+		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
 	}
 	switch {
 	case s.Extract != nil:

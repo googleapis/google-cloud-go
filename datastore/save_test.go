@@ -15,9 +15,11 @@
 package datastore
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
@@ -288,6 +290,24 @@ func TestSaveEmptySlice(t *testing.T) {
 	}
 }
 
+// Map is used by TestSaveFieldsWithInterface
+// to test a custom type property save.
+type Map map[int]int
+
+func (*Map) Load(_ []Property) error {
+	return nil
+}
+
+func (*Map) Save() ([]Property, error) {
+	return []Property{}, nil
+}
+
+// Struct is used by TestSaveFieldsWithInterface
+// to test a custom type property save.
+type Struct struct {
+	Map Map
+}
+
 func TestSaveFieldsWithInterface(t *testing.T) {
 	// We should be able to extract the underlying value behind an interface.
 	// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
@@ -302,6 +322,27 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 	type n3 struct {
 		N2 interface{}
 	}
+
+	civDateVal := civil.Date{
+		Year:  2020,
+		Month: 11,
+		Day:   10,
+	}
+	civTimeValNano := civil.Time{
+		Hour:       1,
+		Minute:     1,
+		Second:     1,
+		Nanosecond: 1,
+	}
+	civTimeVal := civil.Time{
+		Hour:   1,
+		Minute: 1,
+		Second: 1,
+	}
+	timeValNano, _ := time.Parse("15:04:05.000000000", civTimeValNano.String())
+	timeVal, _ := time.Parse("15:04:05", civTimeVal.String())
+	dateTimeStr := fmt.Sprintf("%v %v", civDateVal.String(), civTimeVal.String())
+	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", dateTimeStr, time.UTC)
 
 	cases := []struct {
 		name string
@@ -332,6 +373,85 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 				foo: (*string)(nil),
 			},
 			want: nil,
+		},
+		{
+			name: "Nil interface",
+			in: &struct {
+				Value interface{}
+				key   interface{}
+			}{
+				Value: nil,
+				key:   "key1",
+			},
+			want: []Property{
+				{Name: "Value", Value: nil},
+			},
+		},
+		{
+			name: "Nil map",
+			in:   &Struct{},
+			want: []Property{
+				{Name: "Map", Value: []Property{}},
+			},
+		},
+		{
+			name: "civil.Date",
+			in: &struct {
+				CivDate civil.Date
+			}{
+				CivDate: civDateVal,
+			},
+			want: []Property{
+				{
+					Name:  "CivDate",
+					Value: civDateVal.In(time.UTC),
+				},
+			},
+		},
+		{
+			name: "civil.Time-nano",
+			in: &struct {
+				CivTimeNano civil.Time
+			}{
+				CivTimeNano: civTimeValNano,
+			},
+			want: []Property{
+				{
+					Name:  "CivTimeNano",
+					Value: timeValNano,
+				},
+			},
+		},
+		{
+			name: "civil.Time",
+			in: &struct {
+				CivTime civil.Time
+			}{
+				CivTime: civTimeVal,
+			},
+			want: []Property{
+				{
+					Name:  "CivTime",
+					Value: timeVal,
+				},
+			},
+		},
+		{
+			name: "civil.DateTime",
+			in: &struct {
+				CivDateTime civil.DateTime
+			}{
+				CivDateTime: civil.DateTime{
+					Date: civDateVal,
+					Time: civTimeVal,
+				},
+			},
+			want: []Property{
+				{
+					Name:  "CivDateTime",
+					Value: dateTimeVal,
+				},
+			},
 		},
 		{
 			name: "Nested",

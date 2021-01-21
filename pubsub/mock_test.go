@@ -168,13 +168,14 @@ func (s *mockServer) Acknowledge(ctx context.Context, req *pb.AcknowledgeRequest
 		err = s.ackErrs[0]
 		s.ackErrs = s.ackErrs[1:]
 	}
-	s.mu.Unlock()
 	if err != nil {
+		s.mu.Unlock()
 		return nil, err
 	}
 	for _, id := range req.AckIds {
 		s.Acked[id] = true
 	}
+	s.mu.Unlock()
 	return &emptypb.Empty{}, nil
 }
 
@@ -185,13 +186,14 @@ func (s *mockServer) ModifyAckDeadline(ctx context.Context, req *pb.ModifyAckDea
 		err = s.modAckErrs[0]
 		s.modAckErrs = s.modAckErrs[1:]
 	}
-	s.mu.Unlock()
 	if err != nil {
+		s.mu.Unlock()
 		return nil, err
 	}
 	for _, id := range req.AckIds {
 		s.Deadlines[id] = req.AckDeadlineSeconds
 	}
+	s.mu.Unlock()
 	return &emptypb.Empty{}, nil
 }
 

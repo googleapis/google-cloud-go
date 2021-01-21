@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package profiler is a client for the Stackdriver Profiler service.
-//
-// This package is still experimental and subject to change.
+// Package profiler is a client for the Cloud Profiler service.
 //
 // Usage example:
 //
@@ -77,7 +75,7 @@ var (
 	stopCPUProfile   = pprof.StopCPUProfile
 	writeHeapProfile = pprof.WriteHeapProfile
 	sleep            = gax.Sleep
-	dialGRPC         = gtransport.Dial
+	dialGRPC         = gtransport.DialPool
 	onGCE            = gcemd.OnGCE
 	serviceRegexp    = regexp.MustCompile(`^[a-z]([-a-z0-9_.]{0,253}[a-z0-9])?$`)
 
@@ -150,6 +148,11 @@ type Config struct {
 
 	// When true, collecting the goroutine profiles is disabled.
 	NoGoroutineProfiling bool
+
+	// When true, the agent sends all telemetries via OpenCensus exporter, which
+	// can be viewed in Cloud Trace and Cloud Monitoring.
+	// Default is false.
+	EnableOCTelemetry bool
 
 	// ProjectID is the Cloud Console project ID to use instead of the one set by
 	// GOOGLE_CLOUD_PROJECT environment variable or read from the VM metadata
@@ -236,15 +239,18 @@ func start(cfg Config, options ...option.ClientOption) error {
 		option.WithScopes(scope),
 		option.WithUserAgent(fmt.Sprintf("gcloud-go-profiler/%s", version.Repo)),
 	}
+	if !config.EnableOCTelemetry {
+		opts = append(opts, option.WithTelemetryDisabled())
+	}
 	opts = append(opts, options...)
 
-	conn, err := dialGRPC(ctx, opts...)
+	connPool, err := dialGRPC(ctx, opts...)
 	if err != nil {
 		debugLog("failed to dial GRPC: %v", err)
 		return err
 	}
 
-	a, err := initializeAgent(pb.NewProfilerServiceClient(conn))
+	a, err := initializeAgent(pb.NewProfilerServiceClient(connPool))
 	if err != nil {
 		debugLog("failed to start the profiling agent: %v", err)
 		return err
@@ -347,6 +353,19 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 	var prof bytes.Buffer
 	pt := p.GetProfileType()
 
+	ptEnabled := false
+	for _, enabled := range a.profileTypes {
+		if enabled == pt {
+			ptEnabled = true
+			break
+		}
+	}
+
+	if !ptEnabled {
+		debugLog("skipping collection of disabled profile type: %v", pt)
+		return
+	}
+
 	switch pt {
 	case pb.ProfileType_CPU:
 		duration, err := ptypes.Duration(p.Duration)
@@ -395,15 +414,6 @@ func (a *agent) profileAndUpload(ctx context.Context, p *pb.Profile) {
 		return
 	}
 
-	// Starting Go 1.9 the profiles are symbolized by runtime/pprof.
-	// TODO(jianqiaoli): Remove the symbolization code when we decide to
-	// stop supporting Go 1.8.
-	if !shouldAssumeSymbolized && pt != pb.ProfileType_CONTENTION {
-		if err := parseAndSymbolize(&prof); err != nil {
-			debugLog("failed to symbolize profile: %v", err)
-		}
-	}
-
 	p.ProfileBytes = prof.Bytes()
 	p.Labels = a.profileLabels
 	req := pb.UpdateProfileRequest{Profile: p}
@@ -437,9 +447,6 @@ func deltaMutexProfile(ctx context.Context, duration time.Duration, prof *bytes.
 		return err
 	}
 
-	// The mutex profile is not symbolized by runtime.pprof until
-	// golang.org/issue/21474 is fixed in go1.10.
-	symbolize(p)
 	return p.Write(prof)
 }
 
@@ -594,7 +601,7 @@ func initializeConfig(cfg Config) error {
 // server for instructions, and collects and uploads profiles as
 // requested.
 func pollProfilerService(ctx context.Context, a *agent) {
-	debugLog("Stackdriver Profiler Go Agent version: %s", version.Repo)
+	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)

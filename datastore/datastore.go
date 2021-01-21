@@ -53,9 +53,9 @@ const resourcePrefixHeader = "google-cloud-resource-prefix"
 
 // Client is a client for reading and writing data in a datastore dataset.
 type Client struct {
-	conn    *grpc.ClientConn
-	client  pb.DatastoreClient
-	dataset string // Called dataset by the datastore API, synonym for project ID.
+	connPool gtransport.ConnPool
+	client   pb.DatastoreClient
+	dataset  string // Called dataset by the datastore API, synonym for project ID.
 }
 
 // NewClient creates a new Client for a given dataset.  If the project ID is
@@ -64,6 +64,7 @@ type Client struct {
 // its value to connect to a locally-running datastore emulator.
 // DetectProjectID can be passed as the projectID argument to instruct
 // NewClient to detect the project ID from the credentials.
+// Call (*Client).Close() when done with the client.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
 	// Environment variables for gcd emulator:
@@ -74,6 +75,12 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 			option.WithEndpoint(addr),
 			option.WithoutAuthentication(),
 			option.WithGRPCDialOption(grpc.WithInsecure()),
+		}
+		if projectID == DetectProjectID {
+			projectID, _ = detectProjectID(ctx, opts...)
+			if projectID == "" {
+				projectID = "dummy-emulator-datastore-project"
+			}
 		}
 	} else {
 		o = []option.ClientOption{
@@ -96,30 +103,36 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	o = append(o, opts...)
 
 	if projectID == DetectProjectID {
-		creds, err := transport.Creds(ctx, o...)
+		detected, err := detectProjectID(ctx, opts...)
 		if err != nil {
-			return nil, fmt.Errorf("fetching creds: %v", err)
+			return nil, err
 		}
-
-		if creds.ProjectID == "" {
-			return nil, errors.New("datastore: see the docs on DetectProjectID")
-		}
-
-		projectID = creds.ProjectID
+		projectID = detected
 	}
 
 	if projectID == "" {
 		return nil, errors.New("datastore: missing project/dataset id")
 	}
-	conn, err := gtransport.Dial(ctx, o...)
+	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 	return &Client{
-		conn:    conn,
-		client:  newDatastoreClient(conn, projectID),
-		dataset: projectID,
+		connPool: connPool,
+		client:   newDatastoreClient(connPool, projectID),
+		dataset:  projectID,
 	}, nil
+}
+
+func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
+	creds, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return "", fmt.Errorf("fetching creds: %v", err)
+	}
+	if creds.ProjectID == "" {
+		return "", errors.New("datastore: see the docs on DetectProjectID")
+	}
+	return creds.ProjectID, nil
 }
 
 var (
@@ -310,9 +323,10 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
-// Close closes the Client.
+// Close closes the Client. Call Close to clean up resources when done with the
+// Client.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // Get loads the entity stored for key into dst, which must be a struct pointer
@@ -364,7 +378,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	v := reflect.ValueOf(dst)
 	multiArgType, _ := checkMultiArg(v)
 
-	// Sanity checks
+	// Confidence checks
 	if multiArgType == multiArgTypeInvalid {
 		return errors.New("datastore: dst has invalid type")
 	}
@@ -409,15 +423,11 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	}
 	found := resp.Found
 	missing := resp.Missing
-	// Upper bound 100 iterations to prevent infinite loop.
-	// We choose 100 iterations somewhat logically:
-	// Max number of Entities you can request from Datastore is 1,000.
-	// Max size for a Datastore Entity is 1 MiB.
-	// Max request size is 10 MiB, so we assume max response size is also 10 MiB.
-	// 1,000 / 10 = 100.
+	// Upper bound 1000 iterations to prevent infinite loop. This matches the max
+	// number of Entities you can request from Datastore.
 	// Note that if ctx has a deadline, the deadline will probably
-	// be hit before we reach 100 iterations.
-	for i := 0; len(resp.Deferred) > 0 && i < 100; i++ {
+	// be hit before we reach 1000 iterations.
+	for i := 0; len(resp.Deferred) > 0 && i < 1000; i++ {
 		req.Keys = resp.Deferred
 		resp, err = c.client.Lookup(ctx, req)
 		if err != nil {
@@ -630,7 +640,8 @@ func deleteMutations(keys []*Key) ([]*pb.Mutation, error) {
 	return mutations, nil
 }
 
-// Mutate applies one or more mutations atomically.
+// Mutate applies one or more mutations. Mutations are applied in
+// non-transactional mode. If you need atomicity, use Transaction.Mutate.
 // It returns the keys of the argument Mutations, in the same order.
 //
 // If any of the mutations are invalid, Mutate returns a MultiError with the errors.

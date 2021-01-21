@@ -789,7 +789,7 @@ func TestClusterControllerListClustersError(t *testing.T) {
 	_ = resp
 }
 func TestClusterControllerDiagnoseCluster(t *testing.T) {
-	var expectedResponse *emptypb.Empty = &emptypb.Empty{}
+	var expectedResponse *dataprocpb.DiagnoseClusterResults = &dataprocpb.DiagnoseClusterResults{}
 
 	mockClusterController.err = nil
 	mockClusterController.reqs = nil
@@ -822,7 +822,7 @@ func TestClusterControllerDiagnoseCluster(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = respLRO.Wait(context.Background())
+	_, err = respLRO.Wait(context.Background())
 
 	if err != nil {
 		t.Fatal(err)
@@ -866,7 +866,7 @@ func TestClusterControllerDiagnoseClusterError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	err = respLRO.Wait(context.Background())
+	_, err = respLRO.Wait(context.Background())
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

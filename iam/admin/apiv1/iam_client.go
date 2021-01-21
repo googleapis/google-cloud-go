@@ -27,7 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	gtransport "google.golang.org/api/transport/grpc"
 	adminpb "google.golang.org/genproto/googleapis/iam/admin/v1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	"google.golang.org/grpc"
@@ -116,7 +116,7 @@ func defaultIamCallOptions() *IamCallOptions {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type IamClient struct {
 	// The connection to the service.
-	conn *grpc.ClientConn
+	connPool gtransport.ConnPool
 
 	// The gRPC API client.
 	iamClient adminpb.IAMClient
@@ -147,15 +147,15 @@ type IamClient struct {
 // the account. The account value can be the email address or the
 // unique_id of the service account.
 func NewIamClient(ctx context.Context, opts ...option.ClientOption) (*IamClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultIamClientOptions(), opts...)...)
+	connPool, err := gtransport.DialPool(ctx, append(defaultIamClientOptions(), opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IamClient{
-		conn:        conn,
+		connPool:    connPool,
 		CallOptions: defaultIamCallOptions(),
 
-		iamClient: adminpb.NewIAMClient(conn),
+		iamClient: adminpb.NewIAMClient(connPool),
 	}
 	c.setGoogleClientInfo()
 	return c, nil
@@ -163,13 +163,13 @@ func NewIamClient(ctx context.Context, opts ...option.ClientOption) (*IamClient,
 
 // Connection returns the client's connection to the API service.
 func (c *IamClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *IamClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in

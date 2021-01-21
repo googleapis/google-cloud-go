@@ -31,6 +31,17 @@ var sentinels = []string{
 
 func TestLicense(t *testing.T) {
 	t.Parallel()
+	skip := map[string]bool{
+		// Automatically generated.
+		"bigtable/cmd/cbt/cbtdoc.go": true,
+
+		// BSD license, which is compatible, is embedded in the file.
+		"cmd/go-cloud-debug-agent/internal/debug/elf/elf.go": true,
+
+		// From https://github.com/golang/pkgsite.
+		"third_party/pkgsite/print_type.go": true,
+		"third_party/pkgsite/synopsis.go":   true,
+	}
 	err := filepath.Walk(".", func(path string, fi os.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -44,12 +55,7 @@ func TestLicense(t *testing.T) {
 			// .proto files must have license headers.
 			return nil
 		}
-		if path == "bigtable/cmd/cbt/cbtdoc.go" {
-			// Automatically generated.
-			return nil
-		}
-		if path == "cmd/go-cloud-debug-agent/internal/debug/elf/elf.go" {
-			// BSD license, which is compatible, is embedded in the file.
+		if skip[path] {
 			return nil
 		}
 		src, err := ioutil.ReadFile(path)

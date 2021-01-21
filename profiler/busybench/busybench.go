@@ -76,7 +76,6 @@ func busyworkOnce(mu *sync.Mutex) {
 func main() {
 	flag.Parse()
 	log.Printf("busybench using %s.", runtime.Version())
-	defer log.Printf("busybench finished profiling.")
 
 	if *service == "" {
 		log.Print("Service name must be configured using --service flag.")

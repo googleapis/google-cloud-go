@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,12 +25,15 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
+
+var newIamCredentialsClientHook clientHook
 
 // IamCredentialsCallOptions contains the retry settings for each method of IamCredentialsClient.
 type IamCredentialsCallOptions struct {
@@ -42,9 +45,11 @@ type IamCredentialsCallOptions struct {
 
 func defaultIamCredentialsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("iamcredentials.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("iamcredentials.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("iamcredentials.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://iamcredentials.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -107,8 +112,11 @@ func defaultIamCredentialsCallOptions() *IamCredentialsCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type IamCredentialsClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	iamCredentialsClient credentialspb.IAMCredentialsClient
@@ -132,30 +140,48 @@ type IamCredentialsClient struct {
 // tokens, OpenID Connect ID tokens, self-signed JSON Web Tokens (JWTs), and
 // more.
 func NewIamCredentialsClient(ctx context.Context, opts ...option.ClientOption) (*IamCredentialsClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultIamCredentialsClientOptions(), opts...)...)
+	clientOpts := defaultIamCredentialsClientOptions()
+
+	if newIamCredentialsClientHook != nil {
+		hookOpts, err := newIamCredentialsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &IamCredentialsClient{
-		conn:        conn,
-		CallOptions: defaultIamCredentialsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultIamCredentialsCallOptions(),
 
-		iamCredentialsClient: credentialspb.NewIAMCredentialsClient(conn),
+		iamCredentialsClient: credentialspb.NewIAMCredentialsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *IamCredentialsClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *IamCredentialsClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
@@ -169,6 +195,11 @@ func (c *IamCredentialsClient) setGoogleClientInfo(keyval ...string) {
 
 // GenerateAccessToken generates an OAuth 2.0 access token for a service account.
 func (c *IamCredentialsClient) GenerateAccessToken(ctx context.Context, req *credentialspb.GenerateAccessTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateAccessTokenResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GenerateAccessToken[0:len(c.CallOptions.GenerateAccessToken):len(c.CallOptions.GenerateAccessToken)], opts...)
@@ -186,6 +217,11 @@ func (c *IamCredentialsClient) GenerateAccessToken(ctx context.Context, req *cre
 
 // GenerateIdToken generates an OpenID Connect ID token for a service account.
 func (c *IamCredentialsClient) GenerateIdToken(ctx context.Context, req *credentialspb.GenerateIdTokenRequest, opts ...gax.CallOption) (*credentialspb.GenerateIdTokenResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GenerateIdToken[0:len(c.CallOptions.GenerateIdToken):len(c.CallOptions.GenerateIdToken)], opts...)
@@ -203,6 +239,11 @@ func (c *IamCredentialsClient) GenerateIdToken(ctx context.Context, req *credent
 
 // SignBlob signs a blob using a service account’s system-managed private key.
 func (c *IamCredentialsClient) SignBlob(ctx context.Context, req *credentialspb.SignBlobRequest, opts ...gax.CallOption) (*credentialspb.SignBlobResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SignBlob[0:len(c.CallOptions.SignBlob):len(c.CallOptions.SignBlob)], opts...)
@@ -220,6 +261,11 @@ func (c *IamCredentialsClient) SignBlob(ctx context.Context, req *credentialspb.
 
 // SignJwt signs a JWT using a service account’s system-managed private key.
 func (c *IamCredentialsClient) SignJwt(ctx context.Context, req *credentialspb.SignJwtRequest, opts ...gax.CallOption) (*credentialspb.SignJwtResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.SignJwt[0:len(c.CallOptions.SignJwt):len(c.CallOptions.SignJwt)], opts...)

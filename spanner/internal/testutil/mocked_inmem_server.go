@@ -143,6 +143,45 @@ func (s *MockedSpannerInMemTestServer) setupFooResults() {
 }
 
 func (s *MockedSpannerInMemTestServer) setupSingersResults() {
+	metadata := createSingersMetadata()
+	rows := make([]*structpb.ListValue, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	var idx int64
+	for idx = 0; idx < SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount; idx++ {
+		rows[idx] = createSingersRow(idx)
+	}
+	resultSet := &spannerpb.ResultSet{
+		Metadata: metadata,
+		Rows:     rows,
+	}
+	result := &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet}
+	s.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, result)
+}
+
+// CreateSingleRowSingersResult creates a result set containing a single row of
+// the SelectSingerIDAlbumIDAlbumTitleFromAlbums result set, or zero rows if
+// the given rowNum is greater than the number of rows in the result set. This
+// method can be used to mock results for different partitions of a
+// BatchReadOnlyTransaction.
+func (s *MockedSpannerInMemTestServer) CreateSingleRowSingersResult(rowNum int64) *StatementResult {
+	metadata := createSingersMetadata()
+	var returnedRows int
+	if rowNum < SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		returnedRows = 1
+	} else {
+		returnedRows = 0
+	}
+	rows := make([]*structpb.ListValue, returnedRows)
+	if returnedRows > 0 {
+		rows[0] = createSingersRow(rowNum)
+	}
+	resultSet := &spannerpb.ResultSet{
+		Metadata: metadata,
+		Rows:     rows,
+	}
+	return &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet}
+}
+
+func createSingersMetadata() *spannerpb.ResultSetMetadata {
 	fields := make([]*spannerpb.StructType_Field, SelectSingerIDAlbumIDAlbumTitleFromAlbumsColCount)
 	fields[0] = &spannerpb.StructType_Field{
 		Name: "SingerId",
@@ -159,30 +198,23 @@ func (s *MockedSpannerInMemTestServer) setupSingersResults() {
 	rowType := &spannerpb.StructType{
 		Fields: fields,
 	}
-	metadata := &spannerpb.ResultSetMetadata{
+	return &spannerpb.ResultSetMetadata{
 		RowType: rowType,
 	}
-	rows := make([]*structpb.ListValue, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
-	var idx int64
-	for idx = 0; idx < SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount; idx++ {
-		rowValue := make([]*structpb.Value, SelectSingerIDAlbumIDAlbumTitleFromAlbumsColCount)
-		rowValue[0] = &structpb.Value{
-			Kind: &structpb.Value_StringValue{StringValue: strconv.FormatInt(idx+1, 10)},
-		}
-		rowValue[1] = &structpb.Value{
-			Kind: &structpb.Value_StringValue{StringValue: strconv.FormatInt(idx*10+idx, 10)},
-		}
-		rowValue[2] = &structpb.Value{
-			Kind: &structpb.Value_StringValue{StringValue: fmt.Sprintf("Album title %d", idx)},
-		}
-		rows[idx] = &structpb.ListValue{
-			Values: rowValue,
-		}
+}
+
+func createSingersRow(idx int64) *structpb.ListValue {
+	rowValue := make([]*structpb.Value, SelectSingerIDAlbumIDAlbumTitleFromAlbumsColCount)
+	rowValue[0] = &structpb.Value{
+		Kind: &structpb.Value_StringValue{StringValue: strconv.FormatInt(idx+1, 10)},
 	}
-	resultSet := &spannerpb.ResultSet{
-		Metadata: metadata,
-		Rows:     rows,
+	rowValue[1] = &structpb.Value{
+		Kind: &structpb.Value_StringValue{StringValue: strconv.FormatInt(idx*10+idx, 10)},
 	}
-	result := &StatementResult{Type: StatementResultResultSet, ResultSet: resultSet}
-	s.TestSpanner.PutStatementResult(SelectSingerIDAlbumIDAlbumTitleFromAlbums, result)
+	rowValue[2] = &structpb.Value{
+		Kind: &structpb.Value_StringValue{StringValue: fmt.Sprintf("Album title %d", idx)},
+	}
+	return &structpb.ListValue{
+		Values: rowValue,
+	}
 }

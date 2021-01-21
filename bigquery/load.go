@@ -61,6 +61,10 @@ type LoadConfig struct {
 	// See https://cloud.google.com/bigquery/docs/loading-data-cloud-storage-avro#logical_types
 	// for additional information.
 	UseAvroLogicalTypes bool
+
+	// For ingestion from datastore backups, ProjectionFields governs which fields
+	// are projected from the backup.  The default behavior projects all fields.
+	ProjectionFields []string
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -76,6 +80,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			DestinationEncryptionConfiguration: l.DestinationEncryptionConfig.toBQ(),
 			SchemaUpdateOptions:                l.SchemaUpdateOptions,
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
+			ProjectionFields:                   l.ProjectionFields,
 		},
 	}
 	media := l.Src.populateLoadConfig(config.Load)
@@ -94,6 +99,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		DestinationEncryptionConfig: bqToEncryptionConfig(q.Load.DestinationEncryptionConfiguration),
 		SchemaUpdateOptions:         q.Load.SchemaUpdateOptions,
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
+		ProjectionFields:            q.Load.ProjectionFields,
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {

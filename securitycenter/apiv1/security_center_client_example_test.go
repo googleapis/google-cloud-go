@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -75,6 +75,42 @@ func ExampleClient_CreateFinding() {
 	_ = resp
 }
 
+func ExampleClient_CreateNotificationConfig() {
+	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
+
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &securitycenterpb.CreateNotificationConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateNotificationConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_DeleteNotificationConfig() {
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &securitycenterpb.DeleteNotificationConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteNotificationConfig(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
 func ExampleClient_GetIamPolicy() {
 	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
 
@@ -88,6 +124,26 @@ func ExampleClient_GetIamPolicy() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetNotificationConfig() {
+	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
+
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &securitycenterpb.GetNotificationConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetNotificationConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -243,6 +299,33 @@ func ExampleClient_ListFindings() {
 	}
 }
 
+func ExampleClient_ListNotificationConfigs() {
+	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &securitycenterpb.ListNotificationConfigsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListNotificationConfigs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_ListSources() {
 	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
 	// import "google.golang.org/api/iterator"
@@ -368,6 +451,26 @@ func ExampleClient_UpdateFinding() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateFinding(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateNotificationConfig() {
+	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
+
+	ctx := context.Background()
+	c, err := securitycenter.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &securitycenterpb.UpdateNotificationConfigRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateNotificationConfig(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

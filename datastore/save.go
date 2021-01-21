@@ -21,6 +21,7 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"cloud.google.com/go/civil"
 	timepb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 	llpb "google.golang.org/genproto/googleapis/type/latlng"
@@ -53,6 +54,28 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 	switch x := v.Interface().(type) {
 	case *Key, time.Time, GeoPoint:
 		p.Value = x
+	case civil.Date:
+		p.Value = x.In(time.UTC)
+		*props = append(*props, p)
+		return nil
+	case civil.Time:
+		var format string
+		if x.Nanosecond == 0 {
+			format = "15:04:05"
+		} else {
+			format = "15:04:05.000000000"
+		}
+		val, err := time.Parse(format, x.String())
+		if err != nil {
+			return fmt.Errorf("datastore: error while parsing civil.Time: %v", err)
+		}
+		p.Value = val
+		*props = append(*props, p)
+		return nil
+	case civil.DateTime:
+		p.Value = x.In(time.UTC)
+		*props = append(*props, p)
+		return nil
 	default:
 		switch v.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:
@@ -67,8 +90,14 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		case reflect.Interface:
 			// Extract the interface's underlying value and then retry the save.
 			// See issue https://github.com/googleapis/google-cloud-go/issues/1474.
-			v = v.Elem()
-			return reflectFieldSave(props, p, name, opts, v)
+			if v.IsNil() {
+				// Nil interface becomes a nil property value (unless
+				// omitEmpty is true, which is handled by the caller).
+				p.Value = nil
+				*props = append(*props, p)
+				return nil
+			}
+			return reflectFieldSave(props, p, name, opts, v.Elem())
 
 		case reflect.Slice:
 			if v.Type().Elem().Kind() == reflect.Uint8 {
@@ -79,7 +108,8 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		case reflect.Ptr:
 			if isValidPointerType(v.Type().Elem()) {
 				if v.IsNil() {
-					// Nil pointer becomes a nil property value (unless omitempty, handled above).
+					// Nil pointer becomes a nil property value (unless
+					// omitEmpty is true, which is handled by the caller).
 					p.Value = nil
 					*props = append(*props, p)
 					return nil
@@ -128,6 +158,17 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 				Key:        subKey,
 				Properties: subProps,
 			}
+		}
+	}
+
+	if v.CanAddr() {
+		vi := v.Addr().Interface()
+		if pSaver, ok := vi.(PropertyLoadSaver); ok {
+			val, err := pSaver.Save()
+			if err != nil {
+				return fmt.Errorf("field save error: %v", err)
+			}
+			p.Value = val
 		}
 	}
 

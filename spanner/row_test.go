@@ -747,7 +747,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*proto3.Value{stringProto("nan")},
 			},
 			&NullFloat64{},
-			errDecodeColumn(0, errUnexpectedNumStr("nan")),
+			errDecodeColumn(0, errUnexpectedFloat64Str("nan")),
 		},
 		{
 			// Field specifies FLOAT64 type, but value is wrongly encoded.
@@ -758,7 +758,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*proto3.Value{stringProto("nan")},
 			},
 			proto.Float64(0),
-			errDecodeColumn(0, errUnexpectedNumStr("nan")),
+			errDecodeColumn(0, errUnexpectedFloat64Str("nan")),
 		},
 		{
 			// Field specifies BYTES type, value is having a nil Kind.

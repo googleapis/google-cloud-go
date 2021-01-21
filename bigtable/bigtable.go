@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net/url"
 	"strconv"
 	"time"
 
@@ -29,6 +30,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
@@ -38,12 +40,13 @@ import (
 )
 
 const prodAddr = "bigtable.googleapis.com:443"
+const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 
 // Client is a client for reading and writing data to tables in an instance.
 //
 // A Client is safe to use concurrently, except for its Close method.
 type Client struct {
-	conn              *grpc.ClientConn
+	connPool          gtransport.ConnPool
 	client            btpb.BigtableClient
 	project, instance string
 	appProfile        string
@@ -64,7 +67,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
-	o, err := btopt.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -79,15 +82,18 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// TODO(grpc/grpc-go#1388) using connection pool without WithBlock
 		// can cause RPCs to fail randomly. We can delete this after the issue is fixed.
 		option.WithGRPCDialOption(grpc.WithBlock()))
+	// Attempts direct access to spanner service over gRPC to improve throughput,
+	// whether the attempt is allowed is totally controlled by service owner.
+	o = append(o, internaloption.EnableDirectPath(true))
 	o = append(o, opts...)
-	conn, err := gtransport.Dial(ctx, o...)
+	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
 
 	return &Client{
-		conn:       conn,
-		client:     btpb.NewBigtableClient(conn),
+		connPool:   connPool,
+		client:     btpb.NewBigtableClient(connPool),
 		project:    project,
 		instance:   instance,
 		appProfile: config.AppProfile,
@@ -96,7 +102,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 
 // Close closes the Client.
 func (c *Client) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 var (
@@ -121,6 +127,10 @@ func init() {
 
 func (c *Client) fullTableName(table string) string {
 	return fmt.Sprintf("projects/%s/instances/%s/tables/%s", c.project, c.instance, table)
+}
+
+func (c *Client) requestParamsHeaderValue(table string) string {
+	return fmt.Sprintf("table_name=%s&app_profile=%s", url.QueryEscape(c.fullTableName(table)), url.QueryEscape(c.appProfile))
 }
 
 // mergeOutgoingMetadata returns a context populated by the existing outgoing
@@ -148,7 +158,7 @@ func (c *Client) Open(table string) *Table {
 	return &Table{
 		c:     c,
 		table: table,
-		md:    metadata.Pairs(resourcePrefixHeader, c.fullTableName(table)),
+		md:    metadata.Pairs(resourcePrefixHeader, c.fullTableName(table), requestParamsHeader, c.requestParamsHeaderValue(table)),
 	}
 }
 
@@ -813,7 +823,7 @@ func Time(t time.Time) Timestamp { return Timestamp(t.UnixNano() / 1e3) }
 func Now() Timestamp { return Time(time.Now()) }
 
 // Time converts a Timestamp into a time.Time.
-func (ts Timestamp) Time() time.Time { return time.Unix(0, int64(ts)*1e3) }
+func (ts Timestamp) Time() time.Time { return time.Unix(int64(ts)/1e6, int64(ts)%1e6*1e3) }
 
 // TruncateToMilliseconds truncates a Timestamp to millisecond granularity,
 // which is currently the only granularity supported.

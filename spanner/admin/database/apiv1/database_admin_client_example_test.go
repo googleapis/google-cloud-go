@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -224,4 +224,191 @@ func ExampleDatabaseAdminClient_TestIamPermissions() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleDatabaseAdminClient_CreateBackup() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.CreateBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.CreateBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_GetBackup() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.GetBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_UpdateBackup() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.UpdateBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_DeleteBackup() {
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.DeleteBackupRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteBackup(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDatabaseAdminClient_ListBackups() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.ListBackupsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListBackups(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDatabaseAdminClient_RestoreDatabase() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.RestoreDatabaseRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.RestoreDatabase(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatabaseAdminClient_ListDatabaseOperations() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.ListDatabaseOperationsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListDatabaseOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDatabaseAdminClient_ListBackupOperations() {
+	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := database.NewDatabaseAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &databasepb.ListBackupOperationsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListBackupOperations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }

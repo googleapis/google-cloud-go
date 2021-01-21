@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -1882,7 +1882,7 @@ func TestJobServiceSearchJobs(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.SearchJobs(context.Background(), request).Next()
+	resp, err := c.SearchJobs(context.Background(), request)
 
 	if err != nil {
 		t.Fatal(err)
@@ -1893,7 +1893,7 @@ func TestJobServiceSearchJobs(t *testing.T) {
 	}
 
 	want := (interface{})(expectedResponse.MatchingJobs[0])
-	got := (interface{})(resp)
+	got := (interface{})(resp.MatchingJobs[0])
 	var ok bool
 
 	switch want := (want).(type) {
@@ -1923,7 +1923,7 @@ func TestJobServiceSearchJobsError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.SearchJobs(context.Background(), request).Next()
+	resp, err := c.SearchJobs(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)
@@ -2557,7 +2557,7 @@ func TestProfileServiceSearchProfiles(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.SearchProfiles(context.Background(), request).Next()
+	resp, err := c.SearchProfiles(context.Background(), request)
 
 	if err != nil {
 		t.Fatal(err)
@@ -2568,7 +2568,7 @@ func TestProfileServiceSearchProfiles(t *testing.T) {
 	}
 
 	want := (interface{})(expectedResponse.SummarizedProfiles[0])
-	got := (interface{})(resp)
+	got := (interface{})(resp.SummarizedProfiles[0])
 	var ok bool
 
 	switch want := (want).(type) {
@@ -2598,7 +2598,7 @@ func TestProfileServiceSearchProfilesError(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	resp, err := c.SearchProfiles(context.Background(), request).Next()
+	resp, err := c.SearchProfiles(context.Background(), request)
 
 	if st, ok := gstatus.FromError(err); !ok {
 		t.Errorf("got error %v, expected grpc error", err)

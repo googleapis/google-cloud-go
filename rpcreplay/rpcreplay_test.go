@@ -24,7 +24,6 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	ipb "cloud.google.com/go/rpcreplay/proto/intstore"
-	pb "cloud.google.com/go/rpcreplay/proto/intstore"
 	rpb "cloud.google.com/go/rpcreplay/proto/rpcreplay"
 	"github.com/golang/protobuf/proto"
 	"github.com/google/go-cmp/cmp"
@@ -379,9 +378,9 @@ func listItems(t *testing.T, client ipb.IntStoreClient, greaterThan int) []*ipb.
 	return items
 }
 
-func compareLists(t *testing.T, got, want []*pb.Item) {
+func compareLists(t *testing.T, got, want []*ipb.Item) {
 	t.Helper()
-	diff := cmp.Diff(got, want, cmp.Comparer(proto.Equal), cmpopts.SortSlices(func(i1, i2 *pb.Item) bool {
+	diff := cmp.Diff(got, want, cmp.Comparer(proto.Equal), cmpopts.SortSlices(func(i1, i2 *ipb.Item) bool {
 		return i1.Value < i2.Value
 	}))
 	if diff != "" {

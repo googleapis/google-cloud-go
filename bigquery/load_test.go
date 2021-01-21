@@ -102,7 +102,7 @@ func TestLoad(t *testing.T) {
 				CreateDisposition:           CreateNever,
 				WriteDisposition:            WriteTruncate,
 				Labels:                      map[string]string{"a": "b"},
-				TimePartitioning:            &TimePartitioning{Expiration: 1234 * time.Millisecond},
+				TimePartitioning:            &TimePartitioning{Type: MonthPartitioningType, Expiration: 1234 * time.Millisecond},
 				Clustering:                  &Clustering{Fields: []string{"cfield1"}},
 				DestinationEncryptionConfig: &EncryptionConfig{KMSKeyName: "keyName"},
 				SchemaUpdateOptions:         []string{"ALLOW_FIELD_ADDITION"},
@@ -114,7 +114,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.CreateDisposition = "CREATE_NEVER"
 				j.Configuration.Load.WriteDisposition = "WRITE_TRUNCATE"
 				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
-					Type:         "DAY",
+					Type:         "MONTH",
 					ExpirationMs: 1234,
 				}
 				j.Configuration.Load.Clustering = &bq.Clustering{
@@ -280,6 +280,7 @@ func TestLoad(t *testing.T) {
 			}(),
 			config: LoadConfig{
 				TimePartitioning: &TimePartitioning{
+					Type:  HourPartitioningType,
 					Field: "somefield",
 				},
 			},
@@ -288,7 +289,7 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.SourceUris = nil
 				j.Configuration.Load.TimePartitioning = &bq.TimePartitioning{
 					Field: "somefield",
-					Type:  "DAY",
+					Type:  "HOUR",
 				}
 				return j
 			}(),
@@ -315,11 +316,29 @@ func TestLoad(t *testing.T) {
 				j.Configuration.Load.RangePartitioning = &bq.RangePartitioning{
 					Field: "somefield",
 					Range: &bq.RangePartitioningRange{
-						Start:    1,
-						End:      2,
-						Interval: 3,
+						Start:           1,
+						End:             2,
+						Interval:        3,
+						ForceSendFields: []string{"Start", "End", "Interval"},
 					},
 				}
+				return j
+			}(),
+		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = DatastoreBackup
+				return g
+			}(),
+			config: LoadConfig{
+				ProjectionFields: []string{"foo", "bar", "baz"},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "DATASTORE_BACKUP"
+				j.Configuration.Load.ProjectionFields = []string{"foo", "bar", "baz"}
 				return j
 			}(),
 		},

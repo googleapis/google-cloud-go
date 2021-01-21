@@ -1,4 +1,4 @@
-// Copyright 2019 Google LLC
+// Copyright 2020 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import (
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	"google.golang.org/api/option"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
-	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	field_maskpb "google.golang.org/genproto/protobuf/field_mask"
 
 	status "google.golang.org/genproto/googleapis/rpc/status"
@@ -60,30 +59,6 @@ type mockAssetServer struct {
 
 	// responses to return if err == nil
 	resps []proto.Message
-}
-
-func (s *mockAssetServer) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequest) (*longrunningpb.Operation, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*longrunningpb.Operation), nil
-}
-
-func (s *mockAssetServer) BatchGetAssetsHistory(ctx context.Context, req *assetpb.BatchGetAssetsHistoryRequest) (*assetpb.BatchGetAssetsHistoryResponse, error) {
-	md, _ := metadata.FromIncomingContext(ctx)
-	if xg := md["x-goog-api-client"]; len(xg) == 0 || !strings.Contains(xg[0], "gl-go/") {
-		return nil, fmt.Errorf("x-goog-api-client = %v, expected gl-go key", xg)
-	}
-	s.reqs = append(s.reqs, req)
-	if s.err != nil {
-		return nil, s.err
-	}
-	return s.resps[0].(*assetpb.BatchGetAssetsHistoryResponse), nil
 }
 
 func (s *mockAssetServer) CreateFeed(ctx context.Context, req *assetpb.CreateFeedRequest) (*assetpb.Feed, error) {
@@ -175,156 +150,6 @@ func TestMain(m *testing.M) {
 	os.Exit(m.Run())
 }
 
-func TestAssetServiceExportAssets(t *testing.T) {
-	var expectedResponse *assetpb.ExportAssetsResponse = &assetpb.ExportAssetsResponse{}
-
-	mockAsset.err = nil
-	mockAsset.reqs = nil
-
-	any, err := ptypes.MarshalAny(expectedResponse)
-	if err != nil {
-		t.Fatal(err)
-	}
-	mockAsset.resps = append(mockAsset.resps[:0], &longrunningpb.Operation{
-		Name:   "longrunning-test",
-		Done:   true,
-		Result: &longrunningpb.Operation_Response{Response: any},
-	})
-
-	var parent string = "parent-995424086"
-	var outputConfig *assetpb.OutputConfig = &assetpb.OutputConfig{}
-	var request = &assetpb.ExportAssetsRequest{
-		Parent:       parent,
-		OutputConfig: outputConfig,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	respLRO, err := c.ExportAssets(context.Background(), request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp, err := respLRO.Wait(context.Background())
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockAsset.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestAssetServiceExportAssetsError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockAsset.err = nil
-	mockAsset.resps = append(mockAsset.resps[:0], &longrunningpb.Operation{
-		Name: "longrunning-test",
-		Done: true,
-		Result: &longrunningpb.Operation_Error{
-			Error: &status.Status{
-				Code:    int32(errCode),
-				Message: "test error",
-			},
-		},
-	})
-
-	var parent string = "parent-995424086"
-	var outputConfig *assetpb.OutputConfig = &assetpb.OutputConfig{}
-	var request = &assetpb.ExportAssetsRequest{
-		Parent:       parent,
-		OutputConfig: outputConfig,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	respLRO, err := c.ExportAssets(context.Background(), request)
-	if err != nil {
-		t.Fatal(err)
-	}
-	resp, err := respLRO.Wait(context.Background())
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
-func TestAssetServiceBatchGetAssetsHistory(t *testing.T) {
-	var expectedResponse *assetpb.BatchGetAssetsHistoryResponse = &assetpb.BatchGetAssetsHistoryResponse{}
-
-	mockAsset.err = nil
-	mockAsset.reqs = nil
-
-	mockAsset.resps = append(mockAsset.resps[:0], expectedResponse)
-
-	var parent string = "parent-995424086"
-	var assetNames []string = nil
-	var contentType assetpb.ContentType = assetpb.ContentType_CONTENT_TYPE_UNSPECIFIED
-	var request = &assetpb.BatchGetAssetsHistoryRequest{
-		Parent:      parent,
-		AssetNames:  assetNames,
-		ContentType: contentType,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.BatchGetAssetsHistory(context.Background(), request)
-
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	if want, got := request, mockAsset.reqs[0]; !proto.Equal(want, got) {
-		t.Errorf("wrong request %q, want %q", got, want)
-	}
-
-	if want, got := expectedResponse, resp; !proto.Equal(want, got) {
-		t.Errorf("wrong response %q, want %q)", got, want)
-	}
-}
-
-func TestAssetServiceBatchGetAssetsHistoryError(t *testing.T) {
-	errCode := codes.PermissionDenied
-	mockAsset.err = gstatus.Error(errCode, "test error")
-
-	var parent string = "parent-995424086"
-	var assetNames []string = nil
-	var contentType assetpb.ContentType = assetpb.ContentType_CONTENT_TYPE_UNSPECIFIED
-	var request = &assetpb.BatchGetAssetsHistoryRequest{
-		Parent:      parent,
-		AssetNames:  assetNames,
-		ContentType: contentType,
-	}
-
-	c, err := NewClient(context.Background(), clientOpt)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	resp, err := c.BatchGetAssetsHistory(context.Background(), request)
-
-	if st, ok := gstatus.FromError(err); !ok {
-		t.Errorf("got error %v, expected grpc error", err)
-	} else if c := st.Code(); c != errCode {
-		t.Errorf("got error code %q, want %q", c, errCode)
-	}
-	_ = resp
-}
 func TestAssetServiceCreateFeed(t *testing.T) {
 	var name string = "name3373707"
 	var expectedResponse = &assetpb.Feed{

@@ -46,6 +46,14 @@ func (m *Model) FullyQualifiedName() string {
 	return fmt.Sprintf("%s:%s.%s", m.ProjectID, m.DatasetID, m.ModelID)
 }
 
+func (m *Model) toBQ() *bq.ModelReference {
+	return &bq.ModelReference{
+		ProjectId: m.ProjectID,
+		DatasetId: m.DatasetID,
+		ModelId:   m.ModelID,
+	}
+}
+
 // Metadata fetches the metadata for a model, which includes ML training statistics.
 func (m *Model) Metadata(ctx context.Context) (mm *ModelMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Model.Metadata")

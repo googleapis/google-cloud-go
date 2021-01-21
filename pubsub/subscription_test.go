@@ -342,21 +342,60 @@ func TestDeadLettering_toMessage(t *testing.T) {
 			PublishTime: ptypes.TimestampNow(),
 		},
 	}
-	got, err := toMessage(receivedMsg)
+	got, err := toMessage(receivedMsg, time.Time{}, nil)
 	if err != nil {
 		t.Errorf("toMessage failed: %v", err)
 	}
-	if got.DeliveryAttempt != 0 {
-		t.Errorf("toMessage with dead-lettering disabled failed\ngot: %d, want 0", got.DeliveryAttempt)
+	if got.DeliveryAttempt != nil {
+		t.Errorf("toMessage with dead-lettering disabled failed\ngot: %d, want nil", *got.DeliveryAttempt)
 	}
 
 	// If dead lettering is enabled, toMessage should properly pass through the DeliveryAttempt field.
 	receivedMsg.DeliveryAttempt = 10
-	got, err = toMessage(receivedMsg)
+	got, err = toMessage(receivedMsg, time.Time{}, nil)
 	if err != nil {
 		t.Errorf("toMessage failed: %v", err)
 	}
-	if got.DeliveryAttempt != int(receivedMsg.DeliveryAttempt) {
-		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
+	if *got.DeliveryAttempt != int(receivedMsg.DeliveryAttempt) {
+		t.Errorf("toMessage with dead-lettered enabled failed\ngot: %d, want %d", *got.DeliveryAttempt, receivedMsg.DeliveryAttempt)
+	}
+}
+
+func TestRetryPolicy_toProto(t *testing.T) {
+	in := &RetryPolicy{
+		MinimumBackoff: 20 * time.Second,
+		MaximumBackoff: 300 * time.Second,
+	}
+	got := in.toProto()
+	want := &pb.RetryPolicy{
+		MinimumBackoff: ptypes.DurationProto(20 * time.Second),
+		MaximumBackoff: ptypes.DurationProto(300 * time.Second),
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)
+	}
+}
+
+func TestOrdering_CreateSubscription(t *testing.T) {
+	ctx := context.Background()
+	client, srv := newFake(t)
+	defer client.Close()
+	defer srv.Close()
+
+	topic := mustCreateTopic(t, client, "t")
+	subConfig := SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: true,
+	}
+	orderSub, err := client.CreateSubscription(ctx, "s", subConfig)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cfg, err := orderSub.Config(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !cfg.EnableMessageOrdering {
+		t.Fatalf("Expected EnableMessageOrdering to be true in %s", orderSub.String())
 	}
 }

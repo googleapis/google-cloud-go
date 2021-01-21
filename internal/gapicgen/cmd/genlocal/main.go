@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build !windows
+
 // genlocal is a binary for generating gapics locally. It may be used to test out
 // new changes, test the generation of a new library, test new generator tweaks,
 // run generators against googleapis-private, and various other local tasks.
@@ -20,11 +22,11 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"cloud.google.com/go/internal/gapicgen"
 	"cloud.google.com/go/internal/gapicgen/generator"
@@ -33,80 +35,79 @@ import (
 )
 
 var (
-	toolsNeeded = []string{"pip3", "virtualenv", "python3", "go", "protoc", "docker"}
-
-	usage = func() {
-		fmt.Fprintln(os.Stderr, "genlocal")
-		os.Exit(2)
-	}
+	toolsNeeded = []string{"go", "protoc"}
 )
 
 func main() {
 	log.SetFlags(0)
-
-	flag.Usage = usage
-	flag.Parse()
-
-	ctx := context.Background()
-
 	if err := gapicgen.VerifyAllToolsExist(toolsNeeded); err != nil {
 		log.Fatal(err)
 	}
-
-	// Create temp dirs.
 
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("temp dir created at %s\n", tmpDir)
 
-	log.Printf("working out %s\n", tmpDir)
+	googleapisDir := flag.String("googleapis-dir", filepath.Join(tmpDir, "googleapis"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	gocloudDir := flag.String("gocloud-dir", filepath.Join(tmpDir, "gocloud"), "Directory where sources of googleapis/google-cloud-go resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	genprotoDir := flag.String("genproto-dir", filepath.Join(tmpDir, "genproto"), "Directory where sources of googleapis/go-genproto resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	protoDir := flag.String("proto-dir", filepath.Join(tmpDir, "proto"), "Directory where sources of google/protobuf resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
+	gapicToGenerate := flag.String("gapic", "", `Specifies which gapic to generate. The value should be in the form of an import path (Ex: cloud.google.com/go/pubsub/apiv1). The default "" generates all gapics.`)
+	onlyGapics := flag.Bool("only-gapics", false, "Enabling stops regenerating genproto.")
+	verbose := flag.Bool("verbose", false, "Enables verbose logging.")
+	flag.Parse()
 
-	googleapisDir := filepath.Join(tmpDir, "googleapis")
-	gocloudDir := filepath.Join(tmpDir, "gocloud")
-	genprotoDir := filepath.Join(tmpDir, "genproto")
-	protoDir := filepath.Join(tmpDir, "proto")
+	ctx := context.Background()
 
-	// Clone repos.
-
+	// Clone repositories if needed.
 	grp, _ := errgroup.WithContext(ctx)
-	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/googleapis.git", googleapisDir)
-	})
-	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/go-genproto", genprotoDir)
-	})
-	grp.Go(func() error {
-		return gitClone("https://code.googlesource.com/gocloud", gocloudDir)
-	})
-	grp.Go(func() error {
-		return gitClone("https://github.com/google/protobuf", protoDir)
-	})
+	gitClone(grp, "https://github.com/googleapis/googleapis.git", *googleapisDir, tmpDir)
+	gitClone(grp, "https://github.com/googleapis/go-genproto", *genprotoDir, tmpDir)
+	gitClone(grp, "https://github.com/googleapis/google-cloud-go", *gocloudDir, tmpDir)
+	gitClone(grp, "https://github.com/protocolbuffers/protobuf", *protoDir, tmpDir)
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
 	}
 
 	// Regen.
-
-	if err := generator.Generate(ctx, googleapisDir, genprotoDir, gocloudDir, protoDir); err != nil {
+	conf := &generator.Config{
+		GoogleapisDir:     *googleapisDir,
+		GenprotoDir:       *genprotoDir,
+		GapicDir:          *gocloudDir,
+		ProtoDir:          *protoDir,
+		GapicToGenerate:   *gapicToGenerate,
+		OnlyGenerateGapic: *onlyGapics,
+	}
+	changes, err := generator.Generate(ctx, conf)
+	if err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)
 		log.Fatal(err)
 	}
 
 	// Log results.
-
 	log.Println(genprotoDir)
 	log.Println(gocloudDir)
+
+	if *verbose {
+		log.Println(generator.FormatChanges(changes, false))
+	}
 }
 
-// gitClone clones a repository in the given directory.
-func gitClone(repo, dir string) error {
-	log.Printf("cloning %s\n", repo)
+// gitClone clones a repository in the given directory if dir is not in tmpDir.
+func gitClone(eg *errgroup.Group, repo, dir, tmpDir string) {
+	if !strings.HasPrefix(dir, tmpDir) {
+		return
+	}
+	eg.Go(func() error {
+		log.Printf("cloning %s\n", repo)
 
-	_, err := git.PlainClone(dir, false, &git.CloneOptions{
-		URL:      repo,
-		Progress: os.Stdout,
+		_, err := git.PlainClone(dir, false, &git.CloneOptions{
+			URL:      repo,
+			Progress: os.Stdout,
+		})
+		return err
 	})
-	return err
 }

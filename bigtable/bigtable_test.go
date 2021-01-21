@@ -248,3 +248,44 @@ func TestReadRowsInvalidRowSet(t *testing.T) {
 		}
 	}
 }
+
+// TestHeaderPopulatedWithAppProfile verifies that request params header is populated with table name and app profile
+func TestHeaderPopulatedWithAppProfile(t *testing.T) {
+	testEnv, err := NewEmulatedEnv(IntegrationTestConfig{})
+	if err != nil {
+		t.Fatalf("NewEmulatedEnv failed: %v", err)
+	}
+	conn, err := grpc.Dial(testEnv.server.Addr, grpc.WithInsecure(), grpc.WithBlock())
+	if err != nil {
+		t.Fatalf("grpc.Dial failed: %v", err)
+	}
+	ctx := context.Background()
+	opt := option.WithGRPCConn(conn)
+	config := ClientConfig{
+		AppProfile: "my-app-profile",
+	}
+	client, err := NewClientWithConfig(ctx, "my-project", "my-instance", config, opt)
+	if err != nil {
+		t.Fatalf("Failed to create client %v", err)
+	}
+	table := client.Open("my-table")
+	if table == nil {
+		t.Fatal("Failed to open table")
+	}
+
+	resourcePrefixHeaderValue := table.md.Get(resourcePrefixHeader)
+	if got, want := len(resourcePrefixHeaderValue), 1; got != want {
+		t.Fatalf("Incorrect number of header values in resourcePrefixHeader. Got %d, want %d", got, want)
+	}
+	if got, want := resourcePrefixHeaderValue[0], "projects/my-project/instances/my-instance/tables/my-table"; got != want {
+		t.Errorf("Incorrect value in resourcePrefixHeader. Got %s, want %s", got, want)
+	}
+
+	requestParamsHeaderValue := table.md.Get(requestParamsHeader)
+	if got, want := len(requestParamsHeaderValue), 1; got != want {
+		t.Fatalf("Incorrect number of header values in requestParamsHeader. Got %d, want %d", got, want)
+	}
+	if got, want := requestParamsHeaderValue[0], "table_name=projects%2Fmy-project%2Finstances%2Fmy-instance%2Ftables%2Fmy-table&app_profile=my-app-profile"; got != want {
+		t.Errorf("Incorrect value in resourcePrefixHeader. Got %s, want %s", got, want)
+	}
+}

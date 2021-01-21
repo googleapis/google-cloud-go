@@ -18,6 +18,8 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -25,6 +27,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -123,6 +126,14 @@ func TestSubscriptions(t *testing.T) {
 		}
 	}
 
+	subToDetach := "projects/P/subscriptions/S0"
+	_, err = pclient.DetachSubscription(ctx, &pb.DetachSubscriptionRequest{
+		Subscription: subToDetach,
+	})
+	if err != nil {
+		t.Fatalf("attempted to detach sub %s, got error: %v", subToDetach, err)
+	}
+
 	for _, s := range subs {
 		if _, err := sclient.DeleteSubscription(ctx, &pb.DeleteSubscriptionRequest{Subscription: s.Name}); err != nil {
 			t.Fatal(err)
@@ -196,6 +207,35 @@ func TestPublish(t *testing.T) {
 	}
 	for i, id := range ids {
 		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+	}
+
+	m := s.Message(ids[1])
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+}
+
+func TestPublishOrdered(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	const orderingKey = "ordering-key"
+	var ids []string
+	for i := 0; i < 3; i++ {
+		ids = append(ids, s.PublishOrdered("projects/p/topics/t", []byte("hello"), nil, orderingKey))
+	}
+	s.Wait()
+	ms := s.Messages()
+	if got, want := len(ms), len(ids); got != want {
+		t.Errorf("got %d messages, want %d", got, want)
+	}
+	for i, id := range ids {
+		if got, want := ms[i].ID, id; got != want {
+			t.Errorf("got %s, want %s", got, want)
+		}
+		if got, want := ms[i].OrderingKey, orderingKey; got != want {
 			t.Errorf("got %s, want %s", got, want)
 		}
 	}
@@ -620,7 +660,7 @@ func TestTryDeliverMessage(t *testing.T) {
 		{availStreamIdx: 3, expectedOutIdx: 2}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=2.
 	} {
 		top := newTopic(&pb.Topic{Name: "some-topic"})
-		sub := newSubscription(top, &sync.Mutex{}, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
+		sub := newSubscription(top, &sync.Mutex{}, time.Now, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
 
 		done := make(chan struct{}, 1)
 		done <- struct{}{}
@@ -642,6 +682,173 @@ func TestTryDeliverMessage(t *testing.T) {
 		default:
 			t.Fatalf("[avail=%d]: expected msg to be put on stream %d's channel, but it was not", test.availStreamIdx, idx)
 		}
+	}
+}
+
+func TestTimeNowFunc(t *testing.T) {
+	s := NewServer()
+	defer s.Close()
+
+	timeFunc := func() time.Time {
+		t, _ := time.Parse(time.RFC3339, "2006-01-02T15:04:05Z")
+		return t
+	}
+	s.SetTimeNowFunc(timeFunc)
+
+	id := s.Publish("projects/p/topics/t", []byte("hello"), nil)
+	s.Wait()
+
+	m := s.Message(id)
+	if m == nil {
+		t.Error("got nil, want a message")
+	}
+	if got, want := m.PublishTime, timeFunc(); got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestModAck_Race(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, server, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		AckDeadlineSeconds: 10,
+	})
+
+	publish(t, pclient, top, []*pb.PubsubMessage{
+		{Data: []byte("d1")},
+		{Data: []byte("d2")},
+		{Data: []byte("d3")},
+	})
+	msgs := streamingPullN(ctx, t, 3, sclient, sub)
+	var ackIDs []string
+	for _, m := range msgs {
+		ackIDs = append(ackIDs, m.AckId)
+	}
+
+	// Try to access m.Modacks while simultaneously calling ModifyAckDeadline
+	// so as to try and create a race condition.
+	// Invoke ModifyAckDeadline from the server rather than the client
+	// to increase replicability of simultaneous data access.
+	go func() {
+		req := &pb.ModifyAckDeadlineRequest{
+			Subscription:       sub.Name,
+			AckIds:             ackIDs,
+			AckDeadlineSeconds: 0,
+		}
+		server.GServer.ModifyAckDeadline(ctx, req)
+	}()
+
+	sm := server.Messages()
+	for _, m := range sm {
+		t.Logf("got modacks: %v\n", m.Modacks)
+	}
+}
+
+func TestUpdateDeadLetterPolicy(t *testing.T) {
+	pclient, sclient, _, cleanup := newFake(context.TODO(), t)
+	defer cleanup()
+
+	top := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	deadTop := mustCreateTopic(context.TODO(), t, pclient, &pb.Topic{Name: "projects/P/topics/TD"})
+	sub := mustCreateSubscription(context.TODO(), t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic:     deadTop.Name,
+			MaxDeliveryAttempts: 5,
+		},
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		DeadLetterPolicy: &pb.DeadLetterPolicy{
+			DeadLetterTopic: deadTop.Name,
+			// update max delivery attempts
+			MaxDeliveryAttempts: 10,
+		},
+	}
+
+	updated := mustUpdateSubscription(context.TODO(), t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"dead_letter_policy"}},
+	})
+
+	if got, want := updated.DeadLetterPolicy.MaxDeliveryAttempts, update.DeadLetterPolicy.MaxDeliveryAttempts; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestUpdateRetryPolicy(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		RetryPolicy: &pb.RetryPolicy{
+			MinimumBackoff: ptypes.DurationProto(10 * time.Second),
+			MaximumBackoff: ptypes.DurationProto(60 * time.Second),
+		},
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		RetryPolicy: &pb.RetryPolicy{
+			MinimumBackoff: ptypes.DurationProto(20 * time.Second),
+			MaximumBackoff: ptypes.DurationProto(100 * time.Second),
+		},
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"retry_policy"}},
+	})
+
+	if got, want := updated.RetryPolicy, update.RetryPolicy; testutil.Diff(got, want) != "" {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestUpdateFilter(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		Filter:             "some-filter",
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		Filter:             "new-filter",
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"filter"}},
+	})
+
+	if got, want := updated.Filter, update.Filter; got != want {
+		t.Fatalf("got %v, want %v", got, want)
 	}
 }
 
@@ -716,12 +923,20 @@ func mustCreateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberC
 	return sub
 }
 
+func mustUpdateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberClient, req *pb.UpdateSubscriptionRequest) *pb.Subscription {
+	sub, err := sc.UpdateSubscription(ctx, req)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return sub
+}
+
 // newFake creates a new fake server along  with a publisher and subscriber
 // client. Its final return is a cleanup function.
 //
 // Note: be sure to call cleanup!
-func newFake(ctx context.Context, t *testing.T) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
-	srv := NewServer()
+func newFake(ctx context.Context, t *testing.T, opts ...ServerReactorOption) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
+	srv := NewServer(opts...)
 	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
@@ -729,5 +944,106 @@ func newFake(ctx context.Context, t *testing.T) (pb.PublisherClient, pb.Subscrib
 	return pb.NewPublisherClient(conn), pb.NewSubscriberClient(conn), srv, func() {
 		srv.Close()
 		conn.Close()
+	}
+}
+
+func TestErrorInjection(t *testing.T) {
+	testcases := []struct {
+		funcName string
+		param    interface{}
+		code     codes.Code
+	}{
+		{
+			funcName: "CreateTopic",
+			code:     codes.Internal,
+		},
+		{
+			funcName: "GetTopic",
+			code:     codes.Aborted,
+		},
+		{
+			funcName: "UpdateTopic",
+			code:     codes.DeadlineExceeded,
+		},
+		{
+			funcName: "ListTopics",
+		},
+		{
+			funcName: "ListTopicSubscriptions",
+		},
+		{
+			funcName: "DeleteTopic",
+		},
+		{
+			funcName: "CreateSubscription",
+		},
+		{
+			funcName: "GetSubscription",
+		},
+		{
+			funcName: "UpdateSubscription",
+			param:    &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{}},
+		},
+		{
+			funcName: "ListSubscriptions",
+		},
+		{
+			funcName: "DeleteSubscription",
+		},
+		{
+			funcName: "DetachSubscription",
+		},
+		{
+			funcName: "Publish",
+		},
+		{
+			funcName: "Acknowledge",
+		},
+		{
+			funcName: "ModifyAckDeadline",
+		},
+		{
+			funcName: "Pull",
+		},
+		{
+			funcName: "Seek",
+			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}},
+		},
+	}
+
+	for _, tc := range testcases {
+		ctx := context.TODO()
+		errMsg := "error-injection-" + tc.funcName
+		// set error code to unknown unless specified
+		ec := codes.Unknown
+		if tc.code != codes.OK {
+			ec = tc.code
+		}
+		opts := []ServerReactorOption{
+			WithErrorInjection(tc.funcName, ec, errMsg),
+		}
+		_, _, server, cleanup := newFake(ctx, t, opts...)
+		defer cleanup()
+
+		// We used reflection here to blindly look up the function by name and pass
+		// context and a typed nil, as all the functions under test will have such
+		// a function signature.
+		f := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName)
+		if !f.IsValid() {
+			t.Fatalf("Method %v Not Found", tc.funcName)
+		}
+		// If param is provided, use the param, otherwise create a typed nil that matches the parameter type.
+		var req reflect.Value
+		if tc.param != nil {
+			req = reflect.ValueOf(tc.param)
+		} else {
+			req = reflect.New(f.Type().In(1).Elem())
+		}
+		ret := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName).Call([]reflect.Value{reflect.ValueOf(ctx), req})
+
+		got := ret[1].Interface().(error)
+		if got == nil || status.Code(got) != ec || !strings.Contains(got.Error(), errMsg) {
+			t.Errorf("Got error does not contain the right key %v", got)
+		}
 	}
 }

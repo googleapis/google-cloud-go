@@ -22,17 +22,16 @@ set -eo pipefail
 set -x
 
 # cd to project dir on Kokoro instance
-cd git/gocloud
+cd github/google-cloud-go
 
 go version
 
-# Set $GOPATH
-export GOPATH="$HOME/go"
-export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go/
+export GOCLOUD_HOME=$KOKORO_ARTIFACTS_DIR/google-cloud-go/
 export PATH="$GOPATH/bin:$PATH"
 export GO111MODULE=on
+export GOPROXY=https://proxy.golang.org
 
-# Move code into $GOPATH and get dependencies
+# Move code into artifacts dir
 mkdir -p $GOCLOUD_HOME
 git clone . $GOCLOUD_HOME
 cd $GOCLOUD_HOME
@@ -45,25 +44,29 @@ go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
 ./internal/kokoro/check_incompat_changes.sh
 
-mkdir $KOKORO_ARTIFACTS_DIR/tests
-
-# Takes the kokoro output log (raw stdout) and creates a machine-parseable xml
-# file (xUnit). Then it exits with whatever exit code the last command had.
-create_junit_xml() {
-  last_status_code=$?
-
-  cat $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt \
-    | go-junit-report > $KOKORO_ARTIFACTS_DIR/tests/sponge_log.xml
-
-  exit $last_status_code
-}
-
-trap create_junit_xml EXIT ERR
-
+set +e # Run all tests, don't stop after the first failure.
+exit_code=0
 # Run tests and tee output to log file, to be pushed to GCS as artifact.
 for i in `find . -name go.mod`; do
   pushd `dirname $i`;
-    go test -race -v -timeout 15m -short ./... 2>&1 \
-      | tee $KOKORO_ARTIFACTS_DIR/$KOKORO_GERRIT_CHANGE_NUMBER.txt
+    if [ -z ${RUN_INTEGRATION_TESTS} ]; then
+      go test -race -v -timeout 15m -short ./... 2>&1 \
+      | tee sponge_log.log
+    else
+      go test -race -v -timeout 45m ./... 2>&1 \
+      | tee sponge_log.log
+    fi
+    # Run integration tests against an emulator.
+    if [ -f "emulator_test.sh" ]; then
+      ./emulator_test.sh
+    fi
+    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
+    # xUnit XML file.
+    cat sponge_log.log \
+      | go-junit-report -set-exit-code > sponge_log.xml
+    # Add the exit codes together so we exit non-zero if any module fails.
+    exit_code=$(($exit_code + $?))
   popd;
 done
+
+exit $exit_code

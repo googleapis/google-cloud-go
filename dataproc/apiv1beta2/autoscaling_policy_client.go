@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,12 +27,15 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
+
+var newAutoscalingPolicyClientHook clientHook
 
 // AutoscalingPolicyCallOptions contains the retry settings for each method of AutoscalingPolicyClient.
 type AutoscalingPolicyCallOptions struct {
@@ -45,9 +48,11 @@ type AutoscalingPolicyCallOptions struct {
 
 func defaultAutoscalingPolicyClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://dataproc.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -100,8 +105,11 @@ func defaultAutoscalingPolicyCallOptions() *AutoscalingPolicyCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type AutoscalingPolicyClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	autoscalingPolicyClient dataprocpb.AutoscalingPolicyServiceClient
@@ -116,32 +124,50 @@ type AutoscalingPolicyClient struct {
 // NewAutoscalingPolicyClient creates a new autoscaling policy service client.
 //
 // The API interface for managing autoscaling policies in the
-// Google Cloud Dataproc API.
+// Cloud Dataproc API.
 func NewAutoscalingPolicyClient(ctx context.Context, opts ...option.ClientOption) (*AutoscalingPolicyClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultAutoscalingPolicyClientOptions(), opts...)...)
+	clientOpts := defaultAutoscalingPolicyClientOptions()
+
+	if newAutoscalingPolicyClientHook != nil {
+		hookOpts, err := newAutoscalingPolicyClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &AutoscalingPolicyClient{
-		conn:        conn,
-		CallOptions: defaultAutoscalingPolicyCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultAutoscalingPolicyCallOptions(),
 
-		autoscalingPolicyClient: dataprocpb.NewAutoscalingPolicyServiceClient(conn),
+		autoscalingPolicyClient: dataprocpb.NewAutoscalingPolicyServiceClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *AutoscalingPolicyClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *AutoscalingPolicyClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
@@ -155,6 +181,11 @@ func (c *AutoscalingPolicyClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateAutoscalingPolicy creates new autoscaling policy.
 func (c *AutoscalingPolicyClient) CreateAutoscalingPolicy(ctx context.Context, req *dataprocpb.CreateAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateAutoscalingPolicy[0:len(c.CallOptions.CreateAutoscalingPolicy):len(c.CallOptions.CreateAutoscalingPolicy)], opts...)
@@ -175,6 +206,11 @@ func (c *AutoscalingPolicyClient) CreateAutoscalingPolicy(ctx context.Context, r
 // Disabled check for update_mask, because all updates will be full
 // replacements.
 func (c *AutoscalingPolicyClient) UpdateAutoscalingPolicy(ctx context.Context, req *dataprocpb.UpdateAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "policy.name", url.QueryEscape(req.GetPolicy().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateAutoscalingPolicy[0:len(c.CallOptions.UpdateAutoscalingPolicy):len(c.CallOptions.UpdateAutoscalingPolicy)], opts...)
@@ -192,6 +228,11 @@ func (c *AutoscalingPolicyClient) UpdateAutoscalingPolicy(ctx context.Context, r
 
 // GetAutoscalingPolicy retrieves autoscaling policy.
 func (c *AutoscalingPolicyClient) GetAutoscalingPolicy(ctx context.Context, req *dataprocpb.GetAutoscalingPolicyRequest, opts ...gax.CallOption) (*dataprocpb.AutoscalingPolicy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetAutoscalingPolicy[0:len(c.CallOptions.GetAutoscalingPolicy):len(c.CallOptions.GetAutoscalingPolicy)], opts...)
@@ -232,7 +273,7 @@ func (c *AutoscalingPolicyClient) ListAutoscalingPolicies(ctx context.Context, r
 		}
 
 		it.Response = resp
-		return resp.Policies, resp.NextPageToken, nil
+		return resp.GetPolicies(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -243,14 +284,19 @@ func (c *AutoscalingPolicyClient) ListAutoscalingPolicies(ctx context.Context, r
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 
 // DeleteAutoscalingPolicy deletes an autoscaling policy. It is an error to delete an autoscaling
 // policy that is in use by one or more clusters.
 func (c *AutoscalingPolicyClient) DeleteAutoscalingPolicy(ctx context.Context, req *dataprocpb.DeleteAutoscalingPolicyRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteAutoscalingPolicy[0:len(c.CallOptions.DeleteAutoscalingPolicy):len(c.CallOptions.DeleteAutoscalingPolicy)], opts...)

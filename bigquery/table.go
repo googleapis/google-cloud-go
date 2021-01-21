@@ -54,7 +54,10 @@ type TableMetadata struct {
 	// The table schema. If provided on create, ViewQuery must be empty.
 	Schema Schema
 
-	// The query to use for a view. If provided on create, Schema must be nil.
+	// If non-nil, this table is a materialized view.
+	MaterializedView *MaterializedViewDefinition
+
+	// The query to use for a logical view. If provided on create, Schema must be nil.
 	ViewQuery string
 
 	// Use Legacy SQL for the view query.
@@ -70,7 +73,7 @@ type TableMetadata struct {
 	// time partitioning or range partitioning can be specified.
 	TimePartitioning *TimePartitioning
 
-	// It non-nil, the table is partitioned by integer range.  Only one of
+	// If non-nil, the table is partitioned by integer range.  Only one of
 	// time partitioning or range partitioning can be specified.
 	RangePartitioning *RangePartitioning
 
@@ -164,18 +167,86 @@ type TableType string
 const (
 	// RegularTable is a regular table.
 	RegularTable TableType = "TABLE"
-	// ViewTable is a table type describing that the table is view. See more
-	// information at https://cloud.google.com/bigquery/docs/views.
+	// ViewTable is a table type describing that the table is a logical view.
+	// See more information at https://cloud.google.com/bigquery/docs/views.
 	ViewTable TableType = "VIEW"
 	// ExternalTable is a table type describing that the table is an external
 	// table (also known as a federated data source). See more information at
 	// https://cloud.google.com/bigquery/external-data-sources.
 	ExternalTable TableType = "EXTERNAL"
+	// MaterializedView represents a managed storage table that's derived from
+	// a base table.
+	MaterializedView TableType = "MATERIALIZED_VIEW"
+)
+
+// MaterializedViewDefinition contains information for materialized views.
+type MaterializedViewDefinition struct {
+	// EnableRefresh governs whether the derived view is updated to reflect
+	// changes in the base table.
+	EnableRefresh bool
+
+	// LastRefreshTime reports the time, in millisecond precision, that the
+	// materialized view was last updated.
+	LastRefreshTime time.Time
+
+	// Query contains the SQL query used to define the materialized view.
+	Query string
+
+	// RefreshInterval defines the maximum frequency, in millisecond precision,
+	// at which this this materialized view will be refreshed.
+	RefreshInterval time.Duration
+}
+
+func (mvd *MaterializedViewDefinition) toBQ() *bq.MaterializedViewDefinition {
+	if mvd == nil {
+		return nil
+	}
+	return &bq.MaterializedViewDefinition{
+		EnableRefresh:     mvd.EnableRefresh,
+		Query:             mvd.Query,
+		LastRefreshTime:   mvd.LastRefreshTime.UnixNano() / 1e6,
+		RefreshIntervalMs: int64(mvd.RefreshInterval) / 1e6,
+		// force sending the bool in all cases due to how Go handles false.
+		ForceSendFields: []string{"EnableRefresh"},
+	}
+}
+
+func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *MaterializedViewDefinition {
+	if q == nil {
+		return nil
+	}
+	return &MaterializedViewDefinition{
+		EnableRefresh:   q.EnableRefresh,
+		Query:           q.Query,
+		LastRefreshTime: unixMillisToTime(q.LastRefreshTime),
+		RefreshInterval: time.Duration(q.RefreshIntervalMs) * time.Millisecond,
+	}
+}
+
+// TimePartitioningType defines the interval used to partition managed data.
+type TimePartitioningType string
+
+const (
+	// DayPartitioningType uses a day-based interval for time partitioning.
+	DayPartitioningType TimePartitioningType = "DAY"
+
+	// HourPartitioningType uses an hour-based interval for time partitioning.
+	HourPartitioningType TimePartitioningType = "HOUR"
+
+	// MonthPartitioningType uses a month-based interval for time partitioning.
+	MonthPartitioningType TimePartitioningType = "MONTH"
+
+	// YearPartitioningType uses a year-based interval for time partitioning.
+	YearPartitioningType TimePartitioningType = "YEAR"
 )
 
 // TimePartitioning describes the time-based date partitioning on a table.
 // For more information see: https://cloud.google.com/bigquery/docs/creating-partitioned-tables.
 type TimePartitioning struct {
+	// Defines the partition interval type.  Supported values are "HOUR", "DAY", "MONTH", and "YEAR".
+	// When the interval type is not specified, default behavior is DAY.
+	Type TimePartitioningType
+
 	// The amount of time to keep the storage for a partition.
 	// If the duration is empty (0), the data in the partitions do not expire.
 	Expiration time.Duration
@@ -197,8 +268,13 @@ func (p *TimePartitioning) toBQ() *bq.TimePartitioning {
 	if p == nil {
 		return nil
 	}
+	// Treat unspecified values as DAY-based partitioning.
+	intervalType := DayPartitioningType
+	if p.Type != "" {
+		intervalType = p.Type
+	}
 	return &bq.TimePartitioning{
-		Type:                   "DAY",
+		Type:                   string(intervalType),
 		ExpirationMs:           int64(p.Expiration / time.Millisecond),
 		Field:                  p.Field,
 		RequirePartitionFilter: p.RequirePartitionFilter,
@@ -210,6 +286,7 @@ func bqToTimePartitioning(q *bq.TimePartitioning) *TimePartitioning {
 		return nil
 	}
 	return &TimePartitioning{
+		Type:                   TimePartitioningType(q.Type),
 		Expiration:             time.Duration(q.ExpirationMs) * time.Millisecond,
 		Field:                  q.Field,
 		RequirePartitionFilter: q.RequirePartitionFilter,
@@ -272,9 +349,10 @@ func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
 		return nil
 	}
 	return &bq.RangePartitioningRange{
-		Start:    rpr.Start,
-		End:      rpr.End,
-		Interval: rpr.Interval,
+		Start:           rpr.Start,
+		End:             rpr.End,
+		Interval:        rpr.Interval,
+		ForceSendFields: []string{"Start", "End", "Interval"},
 	}
 }
 
@@ -413,6 +491,7 @@ func (tm *TableMetadata) toBQ() (*bq.Table, error) {
 	} else if tm.UseLegacySQL || tm.UseStandardSQL {
 		return nil, errors.New("bigquery: UseLegacy/StandardSQL requires ViewQuery")
 	}
+	t.MaterializedView = tm.MaterializedView.toBQ()
 	t.TimePartitioning = tm.TimePartitioning.toBQ()
 	t.RangePartitioning = tm.RangePartitioning.toBQ()
 	t.Clustering = tm.Clustering.toBQ()
@@ -496,6 +575,9 @@ func bqToTableMetadata(t *bq.Table) (*TableMetadata, error) {
 		EncryptionConfig:       bqToEncryptionConfig(t.EncryptionConfiguration),
 		RequirePartitionFilter: t.RequirePartitionFilter,
 	}
+	if t.MaterializedView != nil {
+		md.MaterializedView = bqToMaterializedViewDefinition(t.MaterializedView)
+	}
 	if t.Schema != nil {
 		md.Schema = bqToSchema(t.Schema)
 	}
@@ -528,9 +610,13 @@ func (t *Table) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Table.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
-	req := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
-	setClientHeader(req.Header())
-	return req.Do()
+	call := t.c.bqs.Tables.Delete(t.ProjectID, t.DatasetID, t.TableID).Context(ctx)
+	setClientHeader(call.Header())
+
+	return runWithRetry(ctx, func() (err error) {
+		err = call.Do()
+		return err
+	})
 }
 
 // Read fetches the contents of the table.
@@ -539,7 +625,7 @@ func (t *Table) Read(ctx context.Context) *RowIterator {
 }
 
 func (t *Table) read(ctx context.Context, pf pageFetcher) *RowIterator {
-	return newRowIterator(ctx, t, pf)
+	return newRowIterator(ctx, &rowSource{t: t}, pf)
 }
 
 // NeverExpire is a sentinel value used to remove a table'e expiration time.
@@ -582,6 +668,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 	if tm.Name != nil {
 		t.FriendlyName = optional.ToString(tm.Name)
 		forceSend("FriendlyName")
+	}
+	if tm.MaterializedView != nil {
+		t.MaterializedView = tm.MaterializedView.toBQ()
+		forceSend("MaterializedView")
 	}
 	if tm.Schema != nil {
 		t.Schema = tm.Schema.toBQ()
@@ -672,6 +762,11 @@ type TableMetadataToUpdate struct {
 
 	// Use Legacy SQL for the view query.
 	UseLegacySQL optional.Bool
+
+	// MaterializedView allows changes to the underlying materialized view
+	// definition. When calling Update, ensure that all mutable fields of
+	// MaterializedViewDefinition are populated.
+	MaterializedView *MaterializedViewDefinition
 
 	// TimePartitioning allows modification of certain aspects of partition
 	// configuration such as partition expiration and whether partition

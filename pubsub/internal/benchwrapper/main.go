@@ -67,6 +67,7 @@ type server struct {
 
 func (s *server) Recv(ctx context.Context, req *pb.PubsubRecv) (*pb.EmptyResponse, error) {
 	sub := s.c.Subscription(req.SubName)
+	sub.ReceiveSettings.NumGoroutines = 1
 	err := sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
 		msg.Ack()
 	})

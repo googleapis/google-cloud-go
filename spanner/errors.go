@@ -21,8 +21,8 @@ import (
 	"fmt"
 	"strings"
 
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 )
 
@@ -40,12 +40,29 @@ type Error struct {
 	err error
 	// Desc explains more details of the error.
 	Desc string
-	// trailers are the trailers returned in the response, if any.
-	trailers metadata.MD
 	// additionalInformation optionally contains any additional information
 	// about the error.
 	additionalInformation string
 }
+
+// TransactionOutcomeUnknownError is wrapped in a Spanner error when the error
+// occurred during a transaction, and the outcome of the transaction is
+// unknown as a result of the error. This could be the case if a timeout or
+// canceled error occurs after a Commit request has been sent, but before the
+// client has received a response from the server.
+type TransactionOutcomeUnknownError struct {
+	// err is the wrapped error that caused this TransactionOutcomeUnknownError
+	// error. The wrapped error can be read with the Unwrap method.
+	err error
+}
+
+const transactionOutcomeUnknownMsg = "transaction outcome unknown"
+
+// Error implements error.Error.
+func (*TransactionOutcomeUnknownError) Error() string { return transactionOutcomeUnknownMsg }
+
+// Unwrap returns the wrapped error (if any).
+func (e *TransactionOutcomeUnknownError) Unwrap() error { return e.err }
 
 // Error implements error.Error.
 func (e *Error) Error() string {
@@ -70,10 +87,9 @@ func (e *Error) Unwrap() error {
 func (e *Error) GRPCStatus() *status.Status {
 	err := unwrap(e)
 	for {
-		// No gRPC Status found in the chain of errors. Return 'Unknown' with
-		// the message of the original error.
+		// If the base error is nil, return status created from e.Code and e.Desc.
 		if err == nil {
-			return status.New(codes.Unknown, e.Desc)
+			return status.New(e.Code, e.Desc)
 		}
 		code := status.Code(err)
 		if code != codes.Unknown {
@@ -100,33 +116,50 @@ func spannerErrorf(code codes.Code, format string, args ...interface{}) error {
 	}
 }
 
-// toSpannerError converts general Go error to *spanner.Error.
-func toSpannerError(err error) error {
-	return toSpannerErrorWithMetadata(err, nil)
+// ToSpannerError converts a general Go error to *spanner.Error. If the given
+// error is already a *spanner.Error, the original error will be returned.
+//
+// Spanner Errors are normally created by the Spanner client library from the
+// returned status of a RPC. This method can also be used to create Spanner
+// errors for use in tests. The recommended way to create test errors is
+// calling this method with a status error, e.g.
+// ToSpannerError(status.New(codes.NotFound, "Table not found").Err())
+func ToSpannerError(err error) error {
+	return toSpannerErrorWithCommitInfo(err, false)
 }
 
-// toSpannerErrorWithMetadata converts general Go error and grpc trailers to
-// *spanner.Error.
+// toSpannerErrorWithCommitInfo converts general Go error to *spanner.Error
+// with additional information if the error occurred during a Commit request.
 //
-// Note: modifies original error if trailers aren't nil.
-func toSpannerErrorWithMetadata(err error, trailers metadata.MD) error {
+// If err is already a *spanner.Error, err is returned unmodified.
+func toSpannerErrorWithCommitInfo(err error, errorDuringCommit bool) error {
 	if err == nil {
 		return nil
 	}
 	var se *Error
 	if errorAs(err, &se) {
-		if trailers != nil {
-			se.trailers = metadata.Join(se.trailers, trailers)
-		}
 		return se
 	}
 	switch {
 	case err == context.DeadlineExceeded || err == context.Canceled:
-		return &Error{status.FromContextError(err).Code(), status.FromContextError(err).Err(), err.Error(), trailers, ""}
+		desc := err.Error()
+		wrapped := status.FromContextError(err).Err()
+		if errorDuringCommit {
+			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
+			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
+		}
+		return &Error{status.FromContextError(err).Code(), wrapped, desc, ""}
 	case status.Code(err) == codes.Unknown:
-		return &Error{codes.Unknown, err, err.Error(), trailers, ""}
+		return &Error{codes.Unknown, err, err.Error(), ""}
 	default:
-		return &Error{status.Convert(err).Code(), err, status.Convert(err).Message(), trailers, ""}
+		statusErr := status.Convert(err)
+		code, desc := statusErr.Code(), statusErr.Message()
+		wrapped := err
+		if errorDuringCommit && (code == codes.DeadlineExceeded || code == codes.Canceled) {
+			desc = fmt.Sprintf("%s, %s", desc, transactionOutcomeUnknownMsg)
+			wrapped = &TransactionOutcomeUnknownError{err: wrapped}
+		}
+		return &Error{code, wrapped, desc, ""}
 	}
 }
 
@@ -148,13 +181,26 @@ func ErrDesc(err error) string {
 	return se.Desc
 }
 
-// errTrailers extracts the grpc trailers if present from a Go error.
-func errTrailers(err error) metadata.MD {
+// extractResourceType extracts the resource type from any ResourceInfo detail
+// included in the error.
+func extractResourceType(err error) (string, bool) {
+	var s *status.Status
 	var se *Error
-	if !errorAs(err, &se) {
-		return nil
+	if errorAs(err, &se) {
+		// Unwrap statusError.
+		s = status.Convert(se.Unwrap())
+	} else {
+		s = status.Convert(err)
 	}
-	return se.trailers
+	if s == nil {
+		return "", false
+	}
+	for _, detail := range s.Details() {
+		if resourceInfo, ok := detail.(*errdetails.ResourceInfo); ok {
+			return resourceInfo.ResourceType, true
+		}
+	}
+	return "", false
 }
 
 func IsRetryable(err error) bool {

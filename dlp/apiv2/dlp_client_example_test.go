@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -380,6 +380,26 @@ func ExampleClient_UpdateJobTrigger() {
 	_ = resp
 }
 
+func ExampleClient_HybridInspectJobTrigger() {
+	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
+
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.HybridInspectJobTriggerRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.HybridInspectJobTrigger(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetJobTrigger() {
 	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 
@@ -660,6 +680,42 @@ func ExampleClient_DeleteStoredInfoType() {
 		// TODO: Fill request struct fields.
 	}
 	err = c.DeleteStoredInfoType(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_HybridInspectDlpJob() {
+	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
+
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.HybridInspectDlpJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.HybridInspectDlpJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_FinishDlpJob() {
+	ctx := context.Background()
+	c, err := dlp.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dlppb.FinishDlpJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.FinishDlpJob(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

@@ -206,6 +206,7 @@ func (u *Inserter) newInsertRequest(savers []ValueSaver) (*bq.TableDataInsertAll
 			return nil, err
 		}
 		if insertID == NoDedupeID {
+			// User wants to opt-out of sending deduplication ID.
 			insertID = ""
 		} else if insertID == "" {
 			insertID = randomIDFn()
@@ -228,7 +229,7 @@ func handleInsertErrors(ierrs []*bq.TableDataInsertAllResponseInsertErrors, rows
 	}
 	var errs PutMultiError
 	for _, e := range ierrs {
-		if int(e.Index) > len(rows) {
+		if int(e.Index) >= len(rows) {
 			return fmt.Errorf("internal error: unexpected row index: %v", e.Index)
 		}
 		rie := RowInsertionError{

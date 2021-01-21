@@ -23,8 +23,11 @@ import (
 	"fmt"
 	"log"
 	"math"
+	"math/big"
 	"os"
+	"os/exec"
 	"reflect"
+	"regexp"
 	"strings"
 	"sync"
 	"testing"
@@ -39,9 +42,16 @@ import (
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
+	sppb "google.golang.org/genproto/googleapis/spanner/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
+)
+
+const (
+	directPathIPV6Prefix = "[2001:4860:8040"
+	directPathIPV4Prefix = "34.126"
 )
 
 var (
@@ -49,8 +59,13 @@ var (
 	// by setting environment variable GCLOUD_TESTS_GOLANG_PROJECT_ID.
 	testProjectID = testutil.ProjID()
 
+	// spannerHost specifies the spanner API host used for testing. It can be changed
+	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
+	spannerHost = getSpannerHost()
+
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
+	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	testInstanceID    = instanceNameSpace.New()
 
 	testTable        = "TestTable"
@@ -59,6 +74,9 @@ var (
 
 	databaseAdmin *database.DatabaseAdminClient
 	instanceAdmin *instance.InstanceAdminClient
+
+	dpConfig directPathTestConfig
+	peerInfo *peer.Peer
 
 	singerDBStatements = []string{
 		`CREATE TABLE Singers (
@@ -116,7 +134,75 @@ var (
 		    Ts   TIMESTAMP OPTIONS (allow_commit_timestamp = true),
 	    ) PRIMARY KEY (Key)`,
 	}
+	backuDBStatements = []string{
+		`CREATE TABLE Singers (
+						SingerId	INT64 NOT NULL,
+						FirstName	STRING(1024),
+						LastName	STRING(1024),
+						SingerInfo	BYTES(MAX)
+					) PRIMARY KEY (SingerId)`,
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
+						AccountId	INT64 NOT NULL,
+						Nickname	STRING(100),
+						Balance		INT64 NOT NULL,
+					) PRIMARY KEY (AccountId)`,
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
+						RowID		INT64 NOT NULL,
+						String		STRING(MAX),
+						StringArray	ARRAY<STRING(MAX)>,
+						Bytes		BYTES(MAX),
+						BytesArray	ARRAY<BYTES(MAX)>,
+						Int64a		INT64,
+						Int64Array	ARRAY<INT64>,
+						Bool		BOOL,
+						BoolArray	ARRAY<BOOL>,
+						Float64		FLOAT64,
+						Float64Array	ARRAY<FLOAT64>,
+						Date		DATE,
+						DateArray	ARRAY<DATE>,
+						Timestamp	TIMESTAMP,
+						TimestampArray	ARRAY<TIMESTAMP>,
+					) PRIMARY KEY (RowID)`,
+	}
+
+	validInstancePattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)$")
+
+	blackholeDpv6Cmd string
+	blackholeDpv4Cmd string
+	allowDpv6Cmd     string
+	allowDpv4Cmd     string
 )
+
+func init() {
+	flag.BoolVar(&dpConfig.attemptDirectPath, "it.attempt-directpath", false, "DirectPath integration test flag")
+	flag.BoolVar(&dpConfig.directPathIPv4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a IPv4-only VM")
+	peerInfo = &peer.Peer{}
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
+}
+
+type directPathTestConfig struct {
+	attemptDirectPath  bool
+	directPathIPv4Only bool
+}
+
+func parseInstanceName(inst string) (project, instance string, err error) {
+	matches := validInstancePattern.FindStringSubmatch(inst)
+	if len(matches) == 0 {
+		return "", "", fmt.Errorf("Failed to parse instance name from %q according to pattern %q",
+			inst, validInstancePattern.String())
+	}
+	return matches[1], matches[2], nil
+}
+
+func getSpannerHost() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+}
 
 const (
 	str1 = "alice"
@@ -147,28 +233,14 @@ func initIntegrationTests() (cleanup func()) {
 		return noop
 	}
 
-	ts := testutil.TokenSource(ctx, AdminScope, Scope)
-	if ts == nil {
-		log.Printf("Integration test skipped: cannot get service account credential from environment variable %v", "GCLOUD_TESTS_GOLANG_KEY")
-		return noop
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
+	}
+	if dpConfig.attemptDirectPath {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	var err error
-
-	opts := append(grpcHeaderChecker.CallOptions(), option.WithTokenSource(ts), option.WithEndpoint(endpoint))
-
-	// Run integration tests against the given emulator. Currently, the database and
-	// instance admin clients are auto-generated, which do not support to configure
-	// SPANNER_EMULATOR_HOST.
-	emulatorAddr := os.Getenv("SPANNER_EMULATOR_HOST")
-	if emulatorAddr != "" {
-		opts = append(
-			grpcHeaderChecker.CallOptions(),
-			option.WithEndpoint(emulatorAddr),
-			option.WithGRPCDialOption(grpc.WithInsecure()),
-			option.WithoutAuthentication(),
-		)
-	}
-
 	// Create InstanceAdmin and DatabaseAdmin clients.
 	instanceAdmin, err = instance.NewInstanceAdminClient(ctx, opts...)
 	if err != nil {
@@ -190,6 +262,11 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
 	}
+
+	// First clean up any old test instances before we start the actual testing
+	// as these might cause this test run to fail.
+	cleanupInstances()
+
 	// Create a test instance to use for this test run.
 	op, err := instanceAdmin.CreateInstance(ctx, &instancepb.CreateInstanceRequest{
 		Parent:     fmt.Sprintf("projects/%s", testProjectID),
@@ -215,12 +292,7 @@ func initIntegrationTests() (cleanup func()) {
 	return func() {
 		// Delete this test instance.
 		instanceName := fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID)
-		if err = instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{
-			Name: instanceName,
-		}); err != nil {
-			log.Printf("failed to drop instance %s (error %v), might need a manual removal",
-				instanceName, err)
-		}
+		deleteInstanceAndBackups(ctx, instanceName)
 		// Delete other test instances that may be lingering around.
 		cleanupInstances()
 		databaseAdmin.Close()
@@ -231,14 +303,15 @@ func initIntegrationTests() (cleanup func()) {
 func TestIntegration_InitSessionPool(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	// Set up testing environment.
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	// Set up an empty testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, []string{})
 	defer cleanup()
 	sp := client.idleSessions
 	sp.mu.Lock()
 	want := sp.MinOpened
 	sp.mu.Unlock()
 	var numOpened int
+loop:
 	for {
 		select {
 		case <-ctx.Done():
@@ -248,9 +321,41 @@ func TestIntegration_InitSessionPool(t *testing.T) {
 			numOpened = sp.idleList.Len() + sp.idleWriteList.Len()
 			sp.mu.Unlock()
 			if uint64(numOpened) == want {
-				return
+				break loop
 			}
 		}
+	}
+	// Delete all sessions in the pool on the backend and then try to execute a
+	// simple query. The 'Session not found' error should cause an automatic
+	// retry of the read-only transaction.
+	sp.mu.Lock()
+	s := sp.idleList.Front()
+	for {
+		if s == nil {
+			break
+		}
+		// This will delete the session on the backend without removing it
+		// from the pool.
+		s.Value.(*session).delete(context.Background())
+		s = s.Next()
+	}
+	sp.mu.Unlock()
+	sql := "SELECT 1, 'FOO', 'BAR'"
+	tx := client.ReadOnlyTransaction()
+	defer tx.Close()
+	iter := tx.Query(context.Background(), NewStatement(sql))
+	rows, err := readAll(iter)
+	if err != nil {
+		t.Fatalf("Unexpected error for query %q: %v", sql, err)
+	}
+	if got, want := len(rows), 1; got != want {
+		t.Fatalf("Row count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
+	}
+	if got, want := len(rows[0]), 3; got != want {
+		t.Fatalf("Column count mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
+	}
+	if got, want := rows[0][0].(int64), int64(1); got != want {
+		t.Fatalf("Column value mismatch for query %q\nGot: %v\nWant: %v", sql, got, want)
 	}
 }
 
@@ -282,6 +387,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 		if writes[i].ts, err = client.Apply(ctx, []*Mutation{m}, ApplyAtLeastOnce()); err != nil {
 			t.Fatal(err)
 		}
+		verifyDirectPathRemoteAddress(t)
 	}
 	// Calculate time difference between Cloud Spanner server and localhost to
 	// use to determine the exact staleness value to use.
@@ -359,12 +465,13 @@ func TestIntegration_SingleUse(t *testing.T) {
 			got, err := readAll(su.Query(
 				ctx,
 				Statement{
-					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+					"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
 					map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
 				}))
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query returns error %v, want nil", i, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 			rts, err := su.Timestamp()
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Query doesn't return a timestamp, error: %v", i, err)
@@ -381,6 +488,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Read returns error %v, want nil", i, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 			rts, err = su.Timestamp()
 			if err != nil {
 				t.Fatalf("%d: SingleUse.Read doesn't return a timestamp, error: %v", i, err)
@@ -399,6 +507,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 				if err != nil {
 					continue
 				}
+				verifyDirectPathRemoteAddress(t)
 				v, err := rowToValues(r)
 				if err != nil {
 					continue
@@ -421,6 +530,7 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err != nil {
 				t.Fatalf("%d: SingleUse.ReadUsingIndex returns error %v, want nil", i, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 			// The results from ReadUsingIndex is sorted by the index rather than primary key.
 			if len(got) != len(test.want) {
 				t.Fatalf("%d: got unexpected result from SingleUse.ReadUsingIndex: %v, want %v", i, got, test.want)
@@ -451,14 +561,39 @@ func TestIntegration_SingleUse(t *testing.T) {
 			if err := test.checkTs(rts); err != nil {
 				t.Fatalf("%d: SingleUse.ReadUsingIndex doesn't return expected timestamp: %v", i, err)
 			}
+			// SingleUse.ReadRowUsingIndex
+			got = nil
+			for _, k := range []Key{{"Marc", "Foo"}, {"Alpha", "Beta"}, {"Last", "End"}} {
+				su = client.Single().WithTimestampBound(test.tb)
+				r, err := su.ReadRowUsingIndex(ctx, "Singers", "SingerByName", k, []string{"SingerId", "FirstName", "LastName"})
+				if err != nil {
+					continue
+				}
+				verifyDirectPathRemoteAddress(t)
+				v, err := rowToValues(r)
+				if err != nil {
+					continue
+				}
+				got = append(got, v)
+				rts, err = su.Timestamp()
+				if err != nil {
+					t.Fatalf("%d: SingleUse.ReadRowUsingIndex(%v) doesn't return a timestamp, error: %v", i, k, err)
+				}
+				if err := test.checkTs(rts); err != nil {
+					t.Fatalf("%d: SingleUse.ReadRowUsingIndex(%v) doesn't return expected timestamp: %v", i, k, err)
+				}
+			}
+			if !testEqual(got, test.want) {
+				t.Fatalf("%d: got unexpected results from SingleUse.ReadRowUsingIndex: %v, want %v", i, got, test.want)
+			}
 		})
 	}
 }
 
-// Test resource-based routing enabled.
-func TestIntegration_SingleUse_WithResourceBasedRouting(t *testing.T) {
-	os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "true")
-	defer os.Setenv("GOOGLE_CLOUD_SPANNER_ENABLE_RESOURCE_BASED_ROUTING", "")
+// Test custom query options provided on query-level configuration.
+func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -485,17 +620,19 @@ func TestIntegration_SingleUse_WithResourceBasedRouting(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
+		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+		map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
+	}, qo))
 
-	row, err := client.Single().ReadRow(ctx, "Singers", Key{3}, []string{"FirstName"})
 	if err != nil {
-		t.Errorf("SingleUse.ReadRow returns error %v, want nil", err)
+		t.Errorf("ReadOnlyTransaction.QueryWithOptions returns error %v, want nil", err)
 	}
-	var got string
-	if err := row.Column(0, &got); err != nil {
-		t.Errorf("row.Column returns error %v, want nil", err)
-	}
-	if want := "Alpha"; got != want {
-		t.Errorf("got %q, want %q", got, want)
+
+	want := [][]interface{}{{int64(1), "Marc", "Foo"}, {int64(3), "Alpha", "Beta"}, {int64(4), "Last", "End"}}
+	if !testEqual(got, want) {
+		t.Errorf("got unexpected result from ReadOnlyTransaction.QueryWithOptions: %v, want %v", got, want)
 	}
 }
 
@@ -545,7 +682,8 @@ func TestIntegration_SingleUse_ReadingWithLimit(t *testing.T) {
 func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctxTimeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), ctxTimeout)
 	defer cancel()
 	// Set up testing environment.
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
@@ -607,9 +745,8 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		{
 			// exact_staleness
 			nil,
-			// Specify a staleness which should be already before this test
-			// because context timeout is set to be 10s.
-			ExactStaleness(11 * time.Second),
+			// Specify a staleness which should be already before this test.
+			ExactStaleness(ctxTimeout + 1),
 			func(ts time.Time) error {
 				if ts.After(writes[0].ts) {
 					return fmt.Errorf("read got timestamp %v, want it to be no earlier than %v", ts, writes[0].ts)
@@ -623,7 +760,7 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		got, err := readAll(ro.Query(
 			ctx,
 			Statement{
-				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
+				"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4) ORDER BY SingerId",
 				map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
 			}))
 		if err != nil {
@@ -723,6 +860,32 @@ func TestIntegration_ReadOnlyTransaction(t *testing.T) {
 		if roTs != rts {
 			t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
 		}
+		// ReadOnlyTransaction.ReadRowUsingIndex
+		got = nil
+		for _, k := range []Key{{"Marc", "Foo"}, {"Alpha", "Beta"}, {"Last", "End"}} {
+			r, err := ro.ReadRowUsingIndex(ctx, "Singers", "SingerByName", k, []string{"SingerId", "FirstName", "LastName"})
+			if err != nil {
+				continue
+			}
+			v, err := rowToValues(r)
+			if err != nil {
+				continue
+			}
+			got = append(got, v)
+			rts, err = ro.Timestamp()
+			if err != nil {
+				t.Errorf("%d: ReadOnlyTransaction.ReadRowUsingIndex(%v) doesn't return a timestamp, error: %v", i, k, err)
+			}
+			if err := test.checkTs(rts); err != nil {
+				t.Errorf("%d: ReadOnlyTransaction.ReadRowUsingIndex(%v) doesn't return expected timestamp: %v", i, k, err)
+			}
+			if roTs != rts {
+				t.Errorf("%d: got two read timestamps: %v, %v, want ReadOnlyTransaction to return always the same read timestamp", i, roTs, rts)
+			}
+		}
+		if !testEqual(got, test.want) {
+			t.Errorf("%d: got unexpected results from ReadOnlyTransaction.ReadRowUsingIndex: %v, want %v", i, got, test.want)
+		}
 		ro.Close()
 	}
 }
@@ -808,10 +971,12 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 				if e != nil {
 					return e
 				}
+				verifyDirectPathRemoteAddress(t)
 				bb, e := readBalance(tx.Read(ctx, "Accounts", KeySets(Key{int64(2)}), []string{"Balance"}))
 				if e != nil {
 					return e
 				}
+				verifyDirectPathRemoteAddress(t)
 				if bf <= 0 {
 					return nil
 				}
@@ -825,6 +990,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 			if err != nil {
 				t.Errorf("%d: failed to execute transaction: %v", iter, err)
 			}
+			verifyDirectPathRemoteAddress(t)
 		}(i)
 	}
 	// Because of context timeout, all goroutines will eventually return.
@@ -835,6 +1001,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 		if e != nil {
 			return e
 		}
+		verifyDirectPathRemoteAddress(t)
 		if ce := r.Column(0, &bf); ce != nil {
 			return ce
 		}
@@ -842,6 +1009,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 		if e != nil {
 			return e
 		}
+		verifyDirectPathRemoteAddress(t)
 		if bf != 30 || bb != 21 {
 			t.Errorf("Foo's balance is now %v and Bar's balance is now %v, want %v and %v", bf, bb, 30, 21)
 		}
@@ -849,6 +1017,99 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	})
 	if err != nil {
 		t.Errorf("failed to check balances: %v", err)
+	}
+	verifyDirectPathRemoteAddress(t)
+}
+
+func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
+	t.Parallel()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
+		outBalance, err := getBalance(txn, Key{1})
+		if err != nil {
+			return err
+		}
+		const transferAmt = 20
+		if outBalance >= transferAmt {
+			inBalance, err := getBalance(txn, Key{2})
+			if err != nil {
+				return err
+			}
+			inBalance += transferAmt
+			outBalance -= transferAmt
+			cols := []string{"AccountId", "Balance"}
+			txn.BufferWrite([]*Mutation{
+				Update("Accounts", cols, []interface{}{1, outBalance}),
+				Update("Accounts", cols, []interface{}{2, inBalance}),
+			})
+		}
+		return nil
+	}
+
+	for {
+		tx, err := NewReadWriteStmtBasedTransaction(ctx, client)
+		if err != nil {
+			t.Fatalf("failed to begin a transaction: %v", err)
+		}
+		err = statements(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			t.Fatalf("failed to execute statements: %v", err)
+		} else if err == nil {
+			_, err = tx.Commit(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				t.Fatalf("failed to commit a transaction: %v", err)
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+
+	// Query the updated values.
+	stmt := Statement{SQL: `SELECT AccountId, Nickname, Balance FROM Accounts ORDER BY AccountId`}
+	iter := client.Single().Query(ctx, stmt)
+	got, err := readAllAccountsTable(iter)
+	if err != nil {
+		t.Fatalf("failed to read data: %v", err)
+	}
+	want := [][]interface{}{
+		{int64(1), "Foo", int64(30)},
+		{int64(2), "Bar", int64(21)},
+	}
+	if !testEqual(got, want) {
+		t.Errorf("\ngot %v\nwant%v", got, want)
 	}
 }
 
@@ -872,6 +1133,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if _, err := client.Apply(ctx, ms); err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 
 	// Empty read.
 	rows, err := readAllTestTable(client.Single().Read(ctx, testTable,
@@ -879,6 +1141,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	if got, want := len(rows), 0; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
@@ -889,6 +1152,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	if got, want := len(rows), 0; got != want {
 		t.Errorf("got %d, want %d", got, want)
 	}
@@ -898,6 +1162,7 @@ func TestIntegration_Reads(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	verifyDirectPathRemoteAddress(t)
 	var got testTableRow
 	if err := row.ToStruct(&got); err != nil {
 		t.Fatal(err)
@@ -911,9 +1176,27 @@ func TestIntegration_Reads(t *testing.T) {
 	if ErrCode(err) != codes.NotFound {
 		t.Fatalf("got %v, want NotFound", err)
 	}
+	verifyDirectPathRemoteAddress(t)
 
-	// No index point read not found, because Go does not have ReadRowUsingIndex.
-
+	// Index point read.
+	rowIndex, err := client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v1"}, testTableColumns)
+	if err != nil {
+		t.Fatal(err)
+	}
+	verifyDirectPathRemoteAddress(t)
+	var gotIndex testTableRow
+	if err := rowIndex.ToStruct(&gotIndex); err != nil {
+		t.Fatal(err)
+	}
+	if wantIndex := (testTableRow{"k1", "v1"}); gotIndex != wantIndex {
+		t.Errorf("got %v, want %v", gotIndex, wantIndex)
+	}
+	// Index point read not found.
+	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v999"}, testTableColumns)
+	if ErrCode(err) != codes.NotFound {
+		t.Fatalf("got %v, want NotFound", err)
+	}
+	verifyDirectPathRemoteAddress(t)
 	rangeReads(ctx, t, client)
 	indexRangeReads(ctx, t, client)
 }
@@ -998,6 +1281,49 @@ func TestIntegration_NestedTransaction(t *testing.T) {
 	}
 }
 
+func TestIntegration_CreateDBRetry(t *testing.T) {
+	t.Parallel()
+
+	if databaseAdmin == nil {
+		t.Skip("Integration tests skipped")
+	}
+	skipEmulatorTest(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	dbName := dbNameSpace.New()
+
+	// Simulate an Unavailable error on the CreateDatabase RPC.
+	hasReturnedUnavailable := false
+	interceptor := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		err := invoker(ctx, method, req, reply, cc, opts...)
+		if !hasReturnedUnavailable && err == nil {
+			hasReturnedUnavailable = true
+			return status.Error(codes.Unavailable, "Injected unavailable error")
+		}
+		return err
+	}
+
+	dbAdmin, err := database.NewDatabaseAdminClient(ctx, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(interceptor)))
+	if err != nil {
+		log.Fatalf("cannot create dbAdmin client: %v", err)
+	}
+	op, err := dbAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
+		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
+		CreateStatement: "CREATE DATABASE " + dbName,
+	})
+	if err != nil {
+		t.Fatalf("failed to create database: %v", err)
+	}
+	_, err = op.Wait(ctx)
+	if err != nil {
+		t.Fatalf("failed to create database: %v", err)
+	}
+	if !hasReturnedUnavailable {
+		t.Fatalf("interceptor did not return Unavailable")
+	}
+}
+
 // Test client recovery on database recreation.
 func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	t.Parallel()
@@ -1020,10 +1346,11 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	if _, err := iter.Next(); err == nil {
 		t.Errorf("client sends query to removed database successfully, want it to fail")
 	}
+	verifyDirectPathRemoteAddress(t)
 
 	// Recreate database and table.
 	dbName := dbPath[strings.LastIndex(dbPath, "/")+1:]
-	op, err := databaseAdmin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: []string{
@@ -1049,6 +1376,7 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	if err != nil && err != iterator.Done {
 		t.Errorf("failed to send query to database %v: %v", dbPath, err)
 	}
+	verifyDirectPathRemoteAddress(t)
 }
 
 // Test encoding/decoding non-struct Cloud Spanner types.
@@ -1057,7 +1385,44 @@ func TestIntegration_BasicTypes(t *testing.T) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
-	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	stmts := singerDBStatements
+	if !isEmulatorEnvSet() {
+		stmts = []string{
+			`CREATE TABLE Singers (
+					SingerId	INT64 NOT NULL,
+					FirstName	STRING(1024),
+					LastName	STRING(1024),
+					SingerInfo	BYTES(MAX)
+				) PRIMARY KEY (SingerId)`,
+			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+			`CREATE TABLE Accounts (
+					AccountId	INT64 NOT NULL,
+					Nickname	STRING(100),
+					Balance		INT64 NOT NULL,
+				) PRIMARY KEY (AccountId)`,
+			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+			`CREATE TABLE Types (
+					RowID		INT64 NOT NULL,
+					String		STRING(MAX),
+					StringArray	ARRAY<STRING(MAX)>,
+					Bytes		BYTES(MAX),
+					BytesArray	ARRAY<BYTES(MAX)>,
+					Int64a		INT64,
+					Int64Array	ARRAY<INT64>,
+					Bool		BOOL,
+					BoolArray	ARRAY<BOOL>,
+					Float64		FLOAT64,
+					Float64Array	ARRAY<FLOAT64>,
+					Date		DATE,
+					DateArray	ARRAY<DATE>,
+					Timestamp	TIMESTAMP,
+					TimestampArray	ARRAY<TIMESTAMP>,
+					Numeric		NUMERIC,
+					NumericArray	ARRAY<NUMERIC>
+				) PRIMARY KEY (RowID)`,
+		}
+	}
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
 
 	t1, _ := time.Parse(time.RFC3339Nano, "2016-11-15T15:04:05.999999999Z")
@@ -1068,6 +1433,12 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	// Boundaries
 	d2, _ := civil.ParseDate("0001-01-01")
 	d3, _ := civil.ParseDate("9999-12-31")
+
+	n0 := big.Rat{}
+	n1p, _ := (&big.Rat{}).SetString("123456789")
+	n2p, _ := (&big.Rat{}).SetString("123456789/1000000000")
+	n1 := *n1p
+	n2 := *n2p
 
 	tests := []struct {
 		col  string
@@ -1159,6 +1530,31 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
 	}
 
+	if !isEmulatorEnvSet() {
+		for _, tc := range []struct {
+			col  string
+			val  interface{}
+			want interface{}
+		}{
+			{col: "Numeric", val: n1},
+			{col: "Numeric", val: n2},
+			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+			{col: "Numeric", val: NullNumeric{n0, false}},
+			{col: "Numeric", val: nil, want: NullNumeric{}},
+			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+			{col: "NumericArray", val: []NullNumeric(nil)},
+			{col: "NumericArray", val: []NullNumeric{}},
+			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
+		} {
+			tests = append(tests, tc)
+		}
+	}
+
 	// Write rows into table first.
 	var muts []*Mutation
 	for i, test := range tests {
@@ -1173,6 +1569,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		if err != nil {
 			t.Fatalf("Unable to fetch row %v: %v", i, err)
 		}
+		verifyDirectPathRemoteAddress(t)
 		// Create new instance of type of test.want.
 		want := test.want
 		if want == nil {
@@ -1288,6 +1685,7 @@ func TestIntegration_StructTypes(t *testing.T) {
 }
 
 func TestIntegration_StructParametersUnsupported(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1460,6 +1858,16 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
 	defer cleanup()
 
+	var ms []*Mutation
+	for i := 0; i < 2; i++ {
+		ms = append(ms, InsertOrUpdate(testTable,
+			testTableColumns,
+			[]interface{}{fmt.Sprintf("k%d", i), fmt.Sprintf("v")}))
+	}
+	if _, err := client.Apply(ctx, ms); err != nil {
+		t.Fatal(err)
+	}
+
 	// Read over invalid table fails
 	_, err := client.Single().ReadRow(ctx, "badTable", Key{1}, []string{"StringValue"})
 	if msg, ok := matchError(err, codes.NotFound, "badTable"); !ok {
@@ -1494,11 +1902,18 @@ func TestIntegration_ReadErrors(t *testing.T) {
 	if msg, ok := matchError(err, codes.DeadlineExceeded, ""); !ok {
 		t.Error(msg)
 	}
+	// Read should fail if there are multiple rows returned.
+	_, err = client.Single().ReadRowUsingIndex(ctx, testTable, testTableIndex, Key{"v"}, testTableColumns)
+	wantMsgPart := fmt.Sprintf("more than one row found by index(Table: %v, IndexKey: %v, Index: %v)", testTable, Key{"v"}, testTableIndex)
+	if msg, ok := matchError(err, codes.FailedPrecondition, wantMsgPart); !ok {
+		t.Error(msg)
+	}
 }
 
 // Test TransactionRunner. Test that transactions are aborted and retried as
 // expected.
 func TestIntegration_TransactionRunner(t *testing.T) {
+	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1549,8 +1964,13 @@ func TestIntegration_TransactionRunner(t *testing.T) {
 		var b int64
 		r, e := tx.ReadRow(ctx, "Accounts", Key{int64(key)}, []string{"Balance"})
 		if e != nil {
-			if expectAbort && !isAbortErr(e) {
+			if expectAbort && !isAbortedErr(e) {
 				t.Errorf("ReadRow got %v, want Abort error.", e)
+			}
+			// Verify that we received and are able to extract retry info from
+			// the aborted error.
+			if _, hasRetryInfo := ExtractRetryDelay(e); !hasRetryInfo {
+				t.Errorf("Got Abort error without RetryInfo\nGot: %v", e)
 			}
 			return b, e
 		}
@@ -1961,7 +2381,11 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `INSERT INTO Singers (SingerId, FirstName, LastName) VALUES (1, "Umm", "Kulthum")`,
 		})
 		defer iter.Stop()
-		if row, err := iter.Next(); err != iterator.Done {
+		row, err := iter.Next()
+		if ErrCode(err) == codes.Aborted {
+			return err
+		}
+		if err != iterator.Done {
 			t.Fatalf("got results from iterator, want none: %#v, err = %v\n", row, err)
 		}
 		if iter.RowCount != 1 {
@@ -1987,7 +2411,7 @@ func TestIntegration_DML(t *testing.T) {
 			SQL: `Insert INTO Singers (SingerId, FirstName, LastName) VALUES (2, "Eduard", "Khil")`,
 		})
 		if err != nil {
-			t.Fatal(err)
+			return err
 		}
 		if count != 1 {
 			t.Errorf("row count: got %d, want 1", count)
@@ -2249,7 +2673,6 @@ func TestIntegration_StructParametersBind(t *testing.T) {
 }
 
 func TestIntegration_PDML(t *testing.T) {
-	skipEmulatorTest(t)
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2303,7 +2726,7 @@ func TestIntegration_PDML(t *testing.T) {
 	}
 }
 
-func TestBatchDML(t *testing.T) {
+func TestIntegration_BatchDML(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2356,7 +2779,7 @@ func TestBatchDML(t *testing.T) {
 	}
 }
 
-func TestBatchDML_NoStatements(t *testing.T) {
+func TestIntegration_BatchDML_NoStatements(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2380,7 +2803,7 @@ func TestBatchDML_NoStatements(t *testing.T) {
 	}
 }
 
-func TestBatchDML_TwoStatements(t *testing.T) {
+func TestIntegration_BatchDML_TwoStatements(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2429,9 +2852,7 @@ func TestBatchDML_TwoStatements(t *testing.T) {
 	}
 }
 
-// TODO(deklerk): this currently does not work because the transaction appears to
-// get rolled back after a single statement fails. b/120158761
-func TestBatchDML_Error(t *testing.T) {
+func TestIntegration_BatchDML_Error(t *testing.T) {
 	t.Parallel()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -2463,11 +2884,20 @@ func TestBatchDML_Error(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected err, got nil")
 		}
+		// The statement may also have been aborted by Spanner, and in that
+		// case we should just let the client library retry the transaction.
+		if status.Code(err) == codes.Aborted {
+			return err
+		}
 		if want := []int64{1}; !testEqual(counts, want) {
 			t.Fatalf("got %d, want %d", counts, want)
 		}
 
 		got, err := readAll(tx.Read(ctx, "Singers", AllKeys(), columns))
+		// Aborted error is ok, just retry the transaction.
+		if status.Code(err) == codes.Aborted {
+			return err
+		}
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -2487,6 +2917,100 @@ func TestBatchDML_Error(t *testing.T) {
 	}
 }
 
+func TestIntegration_StartBackupOperation(t *testing.T) {
+	skipEmulatorTest(t)
+	t.Parallel()
+
+	// Backups can be slow, so use a 30 minute timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Minute)
+	defer cancel()
+	_, testDatabaseName, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, backuDBStatements)
+	defer cleanup()
+
+	backupID := backupIDSpace.New()
+	backupName := fmt.Sprintf("projects/%s/instances/%s/backups/%s", testProjectID, testInstanceID, backupID)
+	// Minimum expiry time is 6 hours
+	expires := time.Now().Add(time.Hour * 7)
+	respLRO, err := databaseAdmin.StartBackupOperation(ctx, backupID, testDatabaseName, expires)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	_, err = respLRO.Wait(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	respMetadata, err := respLRO.Metadata()
+	if err != nil {
+		t.Fatalf("backup response metadata, got error %v, want nil", err)
+	}
+	if respMetadata.Database != testDatabaseName {
+		t.Fatalf("backup database name, got %s, want %s", respMetadata.Database, testDatabaseName)
+	}
+	if respMetadata.Progress.ProgressPercent != 100 {
+		t.Fatalf("backup progress percent, got %d, want 100", respMetadata.Progress.ProgressPercent)
+	}
+	respCheck, err := databaseAdmin.GetBackup(ctx, &adminpb.GetBackupRequest{Name: backupName})
+	if err != nil {
+		t.Fatalf("backup metadata, got error %v, want nil", err)
+	}
+	if respCheck.CreateTime == nil {
+		t.Fatal("backup create time, got nil, want non-nil")
+	}
+	if respCheck.State != adminpb.Backup_READY {
+		t.Fatalf("backup state, got %v, want %v", respCheck.State, adminpb.Backup_READY)
+	}
+	if respCheck.SizeBytes == 0 {
+		t.Fatalf("backup size, got %d, want non-zero", respCheck.SizeBytes)
+	}
+}
+
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	defer cleanup()
+
+	if !dpConfig.attemptDirectPath {
+		return
+	}
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	countEnough := examineTraffic(ctx, client /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeOrAllowDirectPath(t /*blackholeDP = */, true)
+	countEnough = examineTraffic(ctx, client /*blackholeDP = */, true)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	blackholeOrAllowDirectPath(t /*blackholeDP = */, false)
+	countEnough = examineTraffic(ctx, client /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	if databaseAdmin == nil {
@@ -2497,7 +3021,7 @@ func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolCo
 
 	dbPath := fmt.Sprintf("projects/%v/instances/%v/databases/%v", testProjectID, testInstanceID, dbName)
 	// Create database and tables.
-	op, err := databaseAdmin.CreateDatabase(ctx, &adminpb.CreateDatabaseRequest{
+	op, err := databaseAdmin.CreateDatabaseWithRetry(ctx, &adminpb.CreateDatabaseRequest{
 		Parent:          fmt.Sprintf("projects/%v/instances/%v", testProjectID, testInstanceID),
 		CreateStatement: "CREATE DATABASE " + dbName,
 		ExtraStatements: statements,
@@ -2539,14 +3063,40 @@ func cleanupInstances() {
 		if err != nil {
 			panic(err)
 		}
-		if instanceNameSpace.Older(inst.Name, expireAge) {
-			log.Printf("Deleting instance %s", inst.Name)
 
-			if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: inst.Name}); err != nil {
-				log.Printf("failed to delete instance %s (error %v), might need a manual removal",
-					inst.Name, err)
-			}
+		_, instID, err := parseInstanceName(inst.Name)
+		if err != nil {
+			log.Printf("Error: %v\n", err)
+			continue
 		}
+		if instanceNameSpace.Older(instID, expireAge) {
+			log.Printf("Deleting instance %s", inst.Name)
+			deleteInstanceAndBackups(ctx, inst.Name)
+		}
+	}
+}
+
+func deleteInstanceAndBackups(ctx context.Context, instanceName string) {
+	// First delete any lingering backups that might have been left on
+	// the instance.
+	backups := databaseAdmin.ListBackups(ctx, &adminpb.ListBackupsRequest{Parent: instanceName})
+	for {
+		backup, err := backups.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			log.Printf("failed to retrieve backups from instance %s because of error %v", instanceName, err)
+			break
+		}
+		if err := databaseAdmin.DeleteBackup(ctx, &adminpb.DeleteBackupRequest{Name: backup.Name}); err != nil {
+			log.Printf("failed to delete backup %s (error %v)", backup.Name, err)
+		}
+	}
+
+	if err := instanceAdmin.DeleteInstance(ctx, &instancepb.DeleteInstanceRequest{Name: instanceName}); err != nil {
+		log.Printf("failed to delete instance %s (error %v), might need a manual removal",
+			instanceName, err)
 	}
 }
 
@@ -2653,17 +3203,14 @@ func isNaN(x interface{}) bool {
 
 // createClient creates Cloud Spanner data client.
 func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (client *Client, err error) {
-	if os.Getenv("SPANNER_EMULATOR_HOST") == "" {
-		client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{
-			SessionPoolConfig: spc,
-		}, option.WithTokenSource(testutil.TokenSource(ctx, Scope, AdminScope)), option.WithEndpoint(endpoint))
-	} else {
-		// When the emulator is enabled, option.WithoutAuthentication()
-		// will be added automatically which is incompatible with
-		// option.WithTokenSource(testutil.TokenSource(ctx, Scope)).
-		client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc})
+	opts := grpcHeaderChecker.CallOptions()
+	if spannerHost != "" {
+		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
-
+	if dpConfig.attemptDirectPath {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
+	}
+	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("cannot create data client on DB %v: %v", dbPath, err)
 	}
@@ -2729,6 +3276,11 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 	for {
 		row, err := iter.Next()
 		if err == iterator.Done {
+			if iter.Metadata == nil {
+				// All queries should always return metadata, regardless whether
+				// they return any rows or not.
+				return nil, errors.New("missing metadata from query")
+			}
 			return vals, nil
 		}
 		if err != nil {
@@ -2742,6 +3294,27 @@ func readAllTestTable(iter *RowIterator) ([]testTableRow, error) {
 	}
 }
 
+func readAllAccountsTable(iter *RowIterator) ([][]interface{}, error) {
+	defer iter.Stop()
+	var vals [][]interface{}
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			return vals, nil
+		}
+		if err != nil {
+			return nil, err
+		}
+		var id, balance int64
+		var nickname string
+		err = row.Columns(&id, &nickname, &balance)
+		if err != nil {
+			return nil, err
+		}
+		vals = append(vals, []interface{}{id, nickname, balance})
+	}
+}
+
 func maxDuration(a, b time.Duration) time.Duration {
 	if a > b {
 		return a
@@ -2749,8 +3322,89 @@ func maxDuration(a, b time.Duration) time.Duration {
 	return b
 }
 
+func isEmulatorEnvSet() bool {
+	return os.Getenv("SPANNER_EMULATOR_HOST") != ""
+}
+
 func skipEmulatorTest(t *testing.T) {
-	if os.Getenv("SPANNER_EMULATOR_HOST") != "" {
+	if isEmulatorEnvSet() {
 		t.Skip("Skipping testing against the emulator.")
+	}
+}
+
+func verifyDirectPathRemoteAddress(t *testing.T) {
+	t.Helper()
+	if !dpConfig.attemptDirectPath {
+		return
+	}
+	if remoteIP, res := isDirectPathRemoteAddress(); !res {
+		if dpConfig.directPathIPv4Only {
+			t.Fatalf("Expect to access DirectPath via ipv4 only, but RPC was destined to %s", remoteIP)
+		} else {
+			t.Fatalf("Expect to access DirectPath via ipv4 or ipv6, but RPC was destined to %s", remoteIP)
+		}
+	}
+}
+
+func isDirectPathRemoteAddress() (_ string, _ bool) {
+	remoteIP := peerInfo.Addr.String()
+	// DirectPath ipv4-only can only use ipv4 traffic.
+	if dpConfig.directPathIPv4Only {
+		return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix)
+	}
+	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
+	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+// examineTraffic counts RPCs use DirectPath or CFE traffic.
+func examineTraffic(ctx context.Context, client *Client, expectDP bool) bool {
+	var numCount uint64
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+	countEnough := false
+	start := time.Now()
+	for !countEnough && time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = readAllTestTable(client.Single().Read(ctx, testTable, Key{"k1"}, testTableColumns))
+			if _, useDP := isDirectPathRemoteAddress(); useDP != expectDP {
+				numCount++
+			}
+			time.Sleep(100 * time.Millisecond)
+			countEnough = numCount >= minCompleteRPC
+		}
+	}
+	return countEnough
+}
+
+func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
+	if dpConfig.directPathIPv4Only {
+		if blackholeDP {
+			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		} else {
+			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		}
+		return
+	}
+	// DirectPath supports both ipv4 and ipv6
+	if blackholeDP {
+		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
+	} else {
+		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
 	}
 }

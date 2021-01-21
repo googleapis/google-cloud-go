@@ -26,7 +26,7 @@ import (
 )
 
 type pageFetcherArgs struct {
-	table      *Table
+	src        *rowSource
 	schema     Schema
 	startIndex uint64
 	pageSize   int64
@@ -43,9 +43,9 @@ type pageFetcherReadStub struct {
 	calls []pageFetcherArgs
 }
 
-func (s *pageFetcherReadStub) fetchPage(ctx context.Context, t *Table, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
+func (s *pageFetcherReadStub) fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
 	s.calls = append(s.calls,
-		pageFetcherArgs{t, schema, startIndex, pageSize, pageToken})
+		pageFetcherArgs{src, schema, startIndex, pageSize, pageToken})
 	result := &fetchPageResult{
 		pageToken: s.pageTokens[pageToken],
 		rows:      s.values[0],
@@ -156,7 +156,7 @@ func TestNoMoreValues(t *testing.T) {
 
 var errBang = errors.New("bang")
 
-func errorFetchPage(context.Context, *Table, Schema, uint64, int64, string) (*fetchPageResult, error) {
+func errorFetchPage(context.Context, *rowSource, Schema, uint64, int64, string) (*fetchPageResult, error) {
 	return nil, errBang
 }
 
@@ -184,11 +184,13 @@ func TestReadTabledataOptions(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := []pageFetcherArgs{{
-		table:     tr,
+		src: &rowSource{
+			t: tr,
+		},
 		pageSize:  5,
 		pageToken: "",
 	}}
-	if diff := testutil.Diff(s.calls, want, cmp.AllowUnexported(pageFetcherArgs{}, pageFetcherReadStub{}, Table{}, Client{})); diff != "" {
+	if diff := testutil.Diff(s.calls, want, cmp.AllowUnexported(pageFetcherArgs{}, pageFetcherReadStub{}, rowSource{}, Table{}, Client{})); diff != "" {
 		t.Errorf("reading (got=-, want=+):\n%s", diff)
 	}
 }
@@ -223,11 +225,18 @@ func TestReadQueryOptions(t *testing.T) {
 	}
 
 	want := []pageFetcherArgs{{
-		table:     bqToTable(tr, c),
+		src: &rowSource{
+			j: &Job{
+				c:         queryJob.c,
+				jobID:     queryJob.jobID,
+				projectID: queryJob.projectID,
+				location:  queryJob.location,
+			},
+		},
 		pageSize:  5,
 		pageToken: "",
 	}}
-	if !testutil.Equal(pf.calls, want, cmp.AllowUnexported(pageFetcherArgs{}, Table{}, Client{})) {
+	if !testutil.Equal(pf.calls, want, cmp.AllowUnexported(pageFetcherArgs{}, rowSource{}, Job{}, Client{})) {
 		t.Errorf("reading: got:\n%v\nwant:\n%v", pf.calls, want)
 	}
 }

@@ -6,26 +6,29 @@ run generators against googleapis-private, and various other local tasks.
 
 ## Required tools
 
-1. Install [docker](https://www.docker.com/get-started)
-1. Install [protoc](https://github.com/protocolbuffers/protobuf/releases)
-1. Install [Go](http://golang.org/dl)
-1. Install python3, pip3
-1. Install virtualenv `pip3 install virtualenv`
-1. Install Go tools:
+*Note*: If you are on a Windows platform you will need to install these tools
+in a linux docker container: [Install docker](https://www.docker.com/get-started)
 
-    ```
-    go get \
-        github.com/golang/protobuf/protoc-gen-go \
-        golang.org/x/lint/golint \
-        golang.org/x/tools/cmd/goimports \
-        honnef.co/go/tools/cmd/staticcheck \
-        golang.org/x/review/git-codereview \
-        github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-    ```
+1. Install [protoc](https://github.com/protocolbuffers/protobuf/releases)
+2. Install [Go](http://golang.org/dl)
+3. Install python3, pip3
+4. Install virtualenv `pip3 install virtualenv`
+5. Install Go tools:
+
+```bash
+go get \
+    github.com/golang/protobuf/protoc-gen-go \
+    golang.org/x/lint/golint \
+    golang.org/x/tools/cmd/goimports \
+    honnef.co/go/tools/cmd/staticcheck \
+    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
+```
 
 ## Running
 
-```
-cd /path/to/internal/gapicgen
+`git clone` this project if you don't already have it checked-out locally.
+
+```bash
+cd /path/to/google-cloud-go/internal/gapicgen
 go run cloud.google.com/go/internal/gapicgen/cmd/genlocal
 ```

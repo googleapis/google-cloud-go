@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,14 +21,19 @@ import (
 	"fmt"
 	"math"
 	"net/url"
+	"time"
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/transport"
+	"google.golang.org/api/option/internaloption"
+	gtransport "google.golang.org/api/transport/grpc"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
+
+var newSessionsClientHook clientHook
 
 // SessionsCallOptions contains the retry settings for each method of SessionsClient.
 type SessionsCallOptions struct {
@@ -38,9 +43,11 @@ type SessionsCallOptions struct {
 
 func defaultSessionsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -48,7 +55,17 @@ func defaultSessionsClientOptions() []option.ClientOption {
 
 func defaultSessionsCallOptions() *SessionsCallOptions {
 	return &SessionsCallOptions{
-		DetectIntent:          []gax.CallOption{},
+		DetectIntent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		StreamingDetectIntent: []gax.CallOption{},
 	}
 }
@@ -57,8 +74,11 @@ func defaultSessionsCallOptions() *SessionsCallOptions {
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type SessionsClient struct {
-	// The connection to the service.
-	conn *grpc.ClientConn
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
 
 	// The gRPC API client.
 	sessionsClient dialogflowpb.SessionsClient
@@ -72,35 +92,53 @@ type SessionsClient struct {
 
 // NewSessionsClient creates a new sessions client.
 //
-// A session represents an interaction with a user. You retrieve user input
-// and pass it to the [DetectIntent][google.cloud.dialogflow.v2.Sessions.DetectIntent] (or
-// [StreamingDetectIntent][google.cloud.dialogflow.v2.Sessions.StreamingDetectIntent]) method to determine
-// user intent and respond.
+// A service used for session interactions.
+//
+// For more information, see the API interactions
+// guide (at https://cloud.google.com/dialogflow/docs/api-overview).
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
-	conn, err := transport.DialGRPC(ctx, append(defaultSessionsClientOptions(), opts...)...)
+	clientOpts := defaultSessionsClientOptions()
+
+	if newSessionsClientHook != nil {
+		hookOpts, err := newSessionsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &SessionsClient{
-		conn:        conn,
-		CallOptions: defaultSessionsCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultSessionsCallOptions(),
 
-		sessionsClient: dialogflowpb.NewSessionsClient(conn),
+		sessionsClient: dialogflowpb.NewSessionsClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
 	return c, nil
 }
 
-// Connection returns the client's connection to the API service.
+// Connection returns a connection to the API service.
+//
+// Deprecated.
 func (c *SessionsClient) Connection() *grpc.ClientConn {
-	return c.conn
+	return c.connPool.Conn()
 }
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *SessionsClient) Close() error {
-	return c.conn.Close()
+	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
@@ -116,7 +154,16 @@ func (c *SessionsClient) setGoogleClientInfo(keyval ...string) {
 // as a result. This method is not idempotent, because it may cause contexts
 // and session entity types to be updated, which in turn might affect
 // results of future queries.
+//
+// Note: Always use agent versions for production traffic.
+// See Versions and
+// environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
 func (c *SessionsClient) DetectIntent(ctx context.Context, req *dialogflowpb.DetectIntentRequest, opts ...gax.CallOption) (*dialogflowpb.DetectIntentResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "session", url.QueryEscape(req.GetSession())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DetectIntent[0:len(c.CallOptions.DetectIntent):len(c.CallOptions.DetectIntent)], opts...)
@@ -135,6 +182,10 @@ func (c *SessionsClient) DetectIntent(ctx context.Context, req *dialogflowpb.Det
 // StreamingDetectIntent processes a natural language query in audio format in a streaming fashion
 // and returns structured, actionable data as a result. This method is only
 // available via the gRPC API (not REST).
+//
+// Note: Always use agent versions for production traffic.
+// See Versions and
+// environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
 func (c *SessionsClient) StreamingDetectIntent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Sessions_StreamingDetectIntentClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	opts = append(c.CallOptions.StreamingDetectIntent[0:len(c.CallOptions.StreamingDetectIntent):len(c.CallOptions.StreamingDetectIntent)], opts...)

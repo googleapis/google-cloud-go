@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"context"
 	"net/http"
 	"reflect"
 	"testing"
@@ -72,14 +73,25 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 				},
 			}, {
 				Action: LifecycleAction{
+					Type:         SetStorageClassAction,
+					StorageClass: "ARCHIVE",
+				},
+				Condition: LifecycleCondition{
+					CustomTimeBefore:      time.Date(2020, 1, 2, 3, 0, 0, 0, time.UTC),
+					DaysSinceCustomTime:   100,
+					Liveness:              Live,
+					MatchesStorageClasses: []string{"STANDARD"},
+				},
+			}, {
+				Action: LifecycleAction{
 					Type: DeleteAction,
 				},
 				Condition: LifecycleCondition{
-					AgeInDays:             30,
-					Liveness:              Live,
-					CreatedBefore:         time.Date(2017, 1, 2, 3, 4, 5, 6, time.UTC),
-					MatchesStorageClasses: []string{"NEARLINE"},
-					NumNewerVersions:      10,
+					DaysSinceNoncurrentTime: 30,
+					Liveness:                Live,
+					NoncurrentTimeBefore:    time.Date(2017, 1, 2, 3, 4, 5, 6, time.UTC),
+					MatchesStorageClasses:   []string{"NEARLINE"},
+					NumNewerVersions:        10,
 				},
 			}, {
 				Action: LifecycleAction{
@@ -136,25 +148,38 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 					MatchesStorageClass: []string{"STANDARD"},
 					NumNewerVersions:    3,
 				},
-			}, {
-				Action: &raw.BucketLifecycleRuleAction{
-					Type: DeleteAction,
+			},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						StorageClass: "ARCHIVE",
+						Type:         SetStorageClassAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						IsLive:              googleapi.Bool(true),
+						CustomTimeBefore:    "2020-01-02",
+						DaysSinceCustomTime: 100,
+						MatchesStorageClass: []string{"STANDARD"},
+					},
 				},
-				Condition: &raw.BucketLifecycleRuleCondition{
-					Age:                 30,
-					IsLive:              googleapi.Bool(true),
-					CreatedBefore:       "2017-01-02",
-					MatchesStorageClass: []string{"NEARLINE"},
-					NumNewerVersions:    10,
-				},
-			}, {
-				Action: &raw.BucketLifecycleRuleAction{
-					Type: DeleteAction,
-				},
-				Condition: &raw.BucketLifecycleRuleCondition{
-					IsLive: googleapi.Bool(false),
-				},
-			}},
+				{
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						DaysSinceNoncurrentTime: 30,
+						IsLive:                  googleapi.Bool(true),
+						NoncurrentTimeBefore:    "2017-01-02",
+						MatchesStorageClass:     []string{"NEARLINE"},
+						NumNewerVersions:        10,
+					},
+				}, {
+					Action: &raw.BucketLifecycleRuleAction{
+						Type: DeleteAction,
+					},
+					Condition: &raw.BucketLifecycleRuleCondition{
+						IsLive: googleapi.Bool(false),
+					},
+				}},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -243,8 +268,9 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				},
 			},
 		},
-		Logging: &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website: &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		StorageClass: "NEARLINE",
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -283,7 +309,8 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
-		ForceSendFields: []string{"DefaultEventBasedHold"},
+		StorageClass:    "NEARLINE",
+		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Error(msg)
@@ -410,10 +437,25 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
 	}
+
+	// Set an empty Lifecycle and verify that it will be sent.
+	au9 := &BucketAttrsToUpdate{
+		Lifecycle: &Lifecycle{},
+	}
+	got = au9.toRawBucket()
+	want = &raw.Bucket{
+		Lifecycle: &raw.BucketLifecycle{
+			ForceSendFields: []string{"Rule"},
+		},
+		ForceSendFields: []string{"Lifecycle"},
+	}
+	if msg := testutil.Diff(got, want); msg != "" {
+		t.Errorf(msg)
+	}
 }
 
 func TestCallBuilders(t *testing.T) {
-	rc, err := raw.New(&http.Client{})
+	rc, err := raw.NewService(context.Background())
 	if err != nil {
 		t.Fatal(err)
 	}

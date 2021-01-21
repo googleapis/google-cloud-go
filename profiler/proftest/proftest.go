@@ -26,6 +26,8 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"text/template"
 	"time"
@@ -39,6 +41,14 @@ import (
 
 const (
 	monitorWriteScope = "https://www.googleapis.com/auth/monitoring.write"
+)
+
+var (
+	logtimeRE = regexp.MustCompile(`[A-Z][a-z]{2} [A-Z][a-z]{2}  ?\d+ \d\d:\d\d:\d\d [A-Z]{3} \d{4}`)
+
+	// "ms" must be specified before "m" in the regexp, to ensure "ms" is fully
+	// matched.
+	backoffTimeRE = regexp.MustCompile(`(\d+(\.\d+)?(ms|h|m|s|us))+`)
 )
 
 // BaseStartupTmpl is the common part of the startup script that
@@ -56,6 +66,7 @@ trap "sleep 300 && poweroff" EXIT
 
 retry() {
   for i in {1..3}; do
+    [ $i == 1 ] || sleep 10  # Backing off after a failed attempt.
     "${@}" && return 0
   done
   return 1
@@ -182,7 +193,7 @@ func (pr *ProfileResponse) HasFunction(functionName string) error {
 	return fmt.Errorf("failed to find function name %s in profile", functionName)
 }
 
-// HasFunctionInFile returns nil if function is present in the specifed file, and an
+// HasFunctionInFile returns nil if function is present in the specified file, and an
 // error if the function/file combination is not present in the profile.
 func (pr *ProfileResponse) HasFunctionInFile(functionName string, filename string) error {
 	if err := pr.CheckNonEmpty(); err != nil {
@@ -312,19 +323,166 @@ func (tr *GCETestRunner) DeleteInstance(ctx context.Context, inst *InstanceConfi
 	return nil
 }
 
-// PollForSerialOutput polls serial port 2 of the GCE instance specified by
+// CheckSerialOutputForBackoffs parses serial port output, and validates that
+// server-specified backoffs were respected by the agent.
+func CheckSerialOutputForBackoffs(output string, numBenchmarks int, serverBackoffSubstring, createProfileSubstring, benchmarkNumPrefix string) error {
+	benchmarkNumRE, err := regexp.Compile(fmt.Sprintf("%s (\\d+):", benchmarkNumPrefix))
+	if err != nil {
+		return fmt.Errorf("could not compile regexp to determine benchmark number: %v", err)
+	}
+
+	// Each CreateProfile request after a backoff should occur within
+	// createTimeBuffer of the time at which the request is expected.
+	createTimeBuffer := time.Minute
+	nextCreateTime := make([]time.Time, numBenchmarks)
+	benchmarkLogFounds := make([]bool, numBenchmarks)
+
+	var serverBackoff, createAfterBackoff bool
+	var logTime time.Time
+	for _, line := range strings.Split(output, "\n") {
+		if line == "" {
+			continue
+		}
+
+		// Find the benchmark number associated with line. Ignore cases when
+		// the benchmark number cannot be determined; the log line might just
+		// not be associated with a benchmark.
+		benchNum, err := parseBenchmarkNumber(line, numBenchmarks, benchmarkNumRE)
+		if err != nil {
+			continue
+		}
+		benchmarkLogFounds[benchNum] = true
+
+		// Find the time at which log statement was logged.
+		logTime, err = parseLogTime(line)
+		if err != nil {
+			return fmt.Errorf("failed to parse timestamp for log statement: %v", err)
+		}
+
+		switch {
+		// For a log indicating that the agent has received a server-specified
+		// backoff, record when the next CreateProfile request should happen
+		// if this backoff is respected.
+		case strings.Contains(line, serverBackoffSubstring):
+			serverBackoff = true
+			backoffDur, err := parseBackoffDuration(line)
+			if err != nil {
+				return fmt.Errorf("failed to parse backoff duration for line %q: %v", line, err)
+			}
+			nextCreateTime[benchNum] = logTime.Add(backoffDur)
+
+		// For a log indicating a CreateProfile request has been sent, confirm
+		// that if the agent has previously received a server-specified backoff,
+		// then this CreateProfile request is sent when the agent should sent
+		// its next CreateProfile request.
+		case strings.Contains(line, createProfileSubstring):
+			if time.Time.IsZero(nextCreateTime[benchNum]) {
+				continue
+			}
+			if logTime.Before(nextCreateTime[benchNum].Add(-1*createTimeBuffer)) || logTime.After(nextCreateTime[benchNum].Add(createTimeBuffer)) {
+				return fmt.Errorf("got next CreateProfile request for benchmark %d at %v, want next CreateProfile request within %v of %v", benchNum, logTime, createTimeBuffer, nextCreateTime[benchNum])
+			}
+			nextCreateTime[benchNum] = time.Time{}
+			createAfterBackoff = true
+		}
+	}
+
+	// Return an error if there is not at least one server-specified backoff
+	// in the logs. We can't validated that server-specified backoffs are
+	// respected if no server-specified backoffs appearred.
+	if !serverBackoff {
+		return errors.New("no server-specified backoff encountered")
+	}
+
+	// Return an error if there is not at least one CreateProfile request
+	// from an agent which had previously received a server-specified
+	// backoff. We cannot validate that agents send another CreateProfile
+	// request after the backoff duration has elapsed unless some agent
+	// has sent a CreateProfile request after having received a backoff.
+	if !createAfterBackoff {
+		return errors.New("did not encounter a CreateProfile request which occurred after a server-specified backoff")
+	}
+
+	// Confirm that no agent which was backed off at the time at which
+	// benchmark applications exited should have sent a CreateProfile request
+	// prior to the time at which benchmark applications exited.
+	for i, nct := range nextCreateTime {
+		// logTime will contain the timestamp for the last benchmark log
+		// statment, so is a proxy for when benchmarks have exitted.
+		// After benchmarks exit, any expected CreateProfile requests should
+		// either have been made (and so not be in nextCreateTime) or be
+		// expected to occur after the benchmark exits. Since not all
+		// benchmarks will exit at the same time and CreateProfile requests may
+		// not occur exactly when expected, fail only if CreateProfile requests
+		// occur more than 1 minute + createTimeBuffer before logTime.
+		if !time.Time.IsZero(nct) && nct.Add(createTimeBuffer+time.Minute).Before(logTime) {
+			return fmt.Errorf("got no CreateProfile request for benchmark %d before %v, want CreateProfileRequest at %v", i, logTime, nct)
+		}
+	}
+	return nil
+}
+
+// parseBenchmarkNumber returns the benchmark number associated with a line or
+// an error if the line is missing or has an invalid benchmark number.
+// Each instance of a benchmark run as part of a backoff integration test is
+// associated with a number to allow logs for each instance of each benchmark
+// to be considered independently.
+func parseBenchmarkNumber(line string, numBenchmarks int, benchmarkNumRE *regexp.Regexp) (int, error) {
+	m := benchmarkNumRE.FindStringSubmatch(line)
+	if m == nil || len(m) < 2 {
+		return 0, fmt.Errorf("line %q does not have benchmark number", line)
+	}
+	benchNum, err := strconv.Atoi(m[1])
+	if err != nil {
+		return 0, fmt.Errorf("line %q has invalid benchmark number %q: %v", line, benchNum, err)
+	}
+	if benchNum < 0 || benchNum >= numBenchmarks {
+		return 0, fmt.Errorf("line %q had invalid benchmark number %d: benchmark number must be between 0 and %d", line, benchNum, numBenchmarks-1)
+	}
+	return benchNum, nil
+}
+
+// parseLogTime returns the timestamp associated with a logged line, or an
+// error if the log's timestamp cannot be determined.
+func parseLogTime(line string) (time.Time, error) {
+	logTimeStr := logtimeRE.FindString(line)
+	if logTimeStr == "" {
+		return time.Time{}, fmt.Errorf("logged line %q does not include a timestamp", line)
+	}
+	return time.Parse("Mon Jan 2 15:04:05 UTC 2006", logTimeStr)
+}
+
+// parseBackoffDuration returns the backoff duration associated with a logged
+// line, or an error if the line does not contain a valid backoff duration.
+func parseBackoffDuration(line string) (time.Duration, error) {
+	backoffTimeStr := backoffTimeRE.FindString(line)
+	if backoffTimeStr == "" {
+		return 0, fmt.Errorf("log for server-specified backoff %q does not include a backoff time", line)
+	}
+	backoff, err := time.ParseDuration(backoffTimeStr)
+	if err != nil {
+		return 0, fmt.Errorf("failed to parse backoff duration %q", backoffTimeStr)
+	}
+	return backoff, nil
+}
+
+// PollForAndReturnSerialOutput polls serial port 2 of the GCE instance specified by
 // inst and returns when the finishString appears in the serial output
 // of the instance, or when the context times out.
-func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) error {
+func (tr *GCETestRunner) PollForAndReturnSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) (string, error) {
 	var output string
 	defer func() {
+		// Avoid escaping and double newlines in the rendered output (b/175999077).
+		// TODO: Use strings.ReplaceAll once support for Go 1.11 is dropped.
+		output = strings.Replace(output, "\r\n", "\n", -1)
+		output = strings.Replace(output, "\033", "\\033", -1)
 		log.Printf("Serial port output for %s:\n%s", inst.Name, output)
 	}()
 
 	for {
 		select {
 		case <-ctx.Done():
-			return ctx.Err()
+			return "", ctx.Err()
 		case <-time.After(20 * time.Second):
 			resp, err := tr.ComputeService.Instances.GetSerialPortOutput(inst.ProjectID, inst.Zone, inst.Name).Port(2).Context(ctx).Do()
 			if err != nil {
@@ -337,13 +495,21 @@ func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *Instance
 				continue
 			}
 			if output = resp.Contents; strings.Contains(output, finishString) {
-				return nil
+				return output, nil
 			}
 			if strings.Contains(output, errorString) {
-				return fmt.Errorf("failed to execute the prober benchmark script")
+				return output, fmt.Errorf("failed to execute the prober benchmark script")
 			}
 		}
 	}
+}
+
+// PollForSerialOutput polls serial port 2 of the GCE instance specified by
+// inst and returns when the finishString appears in the serial output
+// of the instance, or when the context times out.
+func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) error {
+	_, err := tr.PollForAndReturnSerialOutput(ctx, inst, finishString, errorString)
+	return err
 }
 
 // QueryProfiles retrieves profiles of a specific type, from a specific time

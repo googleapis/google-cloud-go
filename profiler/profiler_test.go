@@ -39,9 +39,11 @@ import (
 	"github.com/golang/protobuf/ptypes"
 	"github.com/google/pprof/profile"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	pb "google.golang.org/genproto/googleapis/devtools/cloudprofiler/v2"
 	edpb "google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	grpcmd "google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -74,7 +76,7 @@ func createTestAgent(psc pb.ProfilerServiceClient) *agent {
 		client:        psc,
 		deployment:    createTestDeployment(),
 		profileLabels: map[string]string{instanceLabel: testInstance},
-		profileTypes:  []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_THREADS},
+		profileTypes:  []pb.ProfileType{pb.ProfileType_CPU, pb.ProfileType_HEAP, pb.ProfileType_HEAP_ALLOC, pb.ProfileType_THREADS},
 	}
 }
 
@@ -138,11 +140,12 @@ func TestProfileAndUpload(t *testing.T) {
 	errFunc := func(io.Writer) error { return errors.New("") }
 	testDuration := time.Second * 5
 	tests := []struct {
-		profileType          pb.ProfileType
-		duration             *time.Duration
-		startCPUProfileFunc  func(io.Writer) error
-		writeHeapProfileFunc func(io.Writer) error
-		wantBytes            []byte
+		profileType           pb.ProfileType
+		duration              *time.Duration
+		startCPUProfileFunc   func(io.Writer) error
+		writeHeapProfileFunc  func(io.Writer) error
+		deltaMutexProfileFunc func(io.Writer) error
+		wantBytes             []byte
 	}{
 		{
 			profileType: pb.ProfileType_CPU,
@@ -215,6 +218,10 @@ func TestProfileAndUpload(t *testing.T) {
 				w.Write(heapCollected1.Bytes())
 				return nil
 			},
+		},
+		{
+			profileType:           pb.ProfileType_CONTENTION,
+			deltaMutexProfileFunc: errFunc,
 		},
 	}
 
@@ -782,20 +789,19 @@ func (fs *fakeProfilerServer) CreateOfflineProfile(_ context.Context, _ *pb.Crea
 }
 
 func profileeLoop(quit chan bool) {
+	data := make([]byte, 10*1024*1024)
+	rand.Read(data)
 	for {
 		select {
 		case <-quit:
 			return
 		default:
-			profileeWork()
+			profileeWork(data)
 		}
 	}
 }
 
-func profileeWork() {
-	data := make([]byte, 10*1024*1024)
-	rand.Read(data)
-
+func profileeWork(data []byte) {
 	var b bytes.Buffer
 	gz := gzip.NewWriter(&b)
 	if _, err := gz.Write(data); err != nil {
@@ -946,7 +952,17 @@ func TestAgentWithServer(t *testing.T) {
 	pb.RegisterProfilerServiceServer(srv.Gsrv, fakeServer)
 	srv.Start()
 
-	dialGRPC = gtransport.DialInsecure
+	dialGRPC = func(ctx context.Context, opts ...option.ClientOption) (gtransport.ConnPool, error) {
+		conn, err := gtransport.DialInsecure(ctx, opts...)
+		if err != nil {
+			return nil, err
+		}
+		return testConnPool{conn}, nil
+	}
+
+	quitProfilee := make(chan bool)
+	go profileeLoop(quitProfilee)
+
 	if err := Start(Config{
 		Service:     testService,
 		ProjectID:   testProjectID,
@@ -957,9 +973,6 @@ func TestAgentWithServer(t *testing.T) {
 	}); err != nil {
 		t.Fatalf("Start(): %v", err)
 	}
-
-	quitProfilee := make(chan bool)
-	go profileeLoop(quitProfilee)
 
 	select {
 	case <-profilingDone:
@@ -976,3 +989,9 @@ func TestAgentWithServer(t *testing.T) {
 		}
 	}
 }
+
+// testConnPool is a gtransport.ConnPool used for testing.
+type testConnPool struct{ *grpc.ClientConn }
+
+func (p testConnPool) Num() int               { return 1 }
+func (p testConnPool) Conn() *grpc.ClientConn { return p.ClientConn }
