@@ -159,3 +159,43 @@ func ExampleFlowsClient_TrainFlow() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleFlowsClient_ValidateFlow() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ValidateFlowRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ValidateFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFlowsClient_GetFlowValidationResult() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.GetFlowValidationResultRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetFlowValidationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
