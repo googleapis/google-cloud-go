@@ -18,12 +18,12 @@ than the official one) invoke it with the directory prefix like this:
 
 ## Documentation
 
-This tool gets documented on the [Go packages website](https://godoc.org/cloud.google.com/go/bigtable/cmd/cbt)
+This tool gets documented on the [Go packages website](https://pkg.go.dev/cloud.google.com/go/bigtable/cmd/cbt)
 as well as the [cloud site](https://cloud.google.com/bigtable/docs/cbt-reference).
 
 ### Go Package Documentation
 
-This command will generate a file with a package description which gets used for the godoc.org. You should update this after any changes to the usage or descriptions of the commands. To
+This command will generate a file with a package description which gets used for the pkg.go.dev. You should update this after any changes to the usage or descriptions of the commands. To
 generate the file, run:
 
 ```
