@@ -263,6 +263,15 @@ func TestTableSchemaUpdates(t *testing.T) {
 			ALTER TABLE Songwriters ALTER COLUMN Nickname BYTES(MAX);`,
 			codes.OK,
 		},
+		{
+			"Add NOT NULL to a non-key BOOL column",
+			`CREATE TABLE Songwriters (
+				Id INT64 NOT NULL,
+				IsTheRealSlimShady BOOL,
+			) PRIMARY KEY (Id);
+			ALTER TABLE Songwriters ALTER COLUMN IsTheRealSlimShady BOOL NOT NULL;`,
+			codes.OK,
+		},
 		// TODO: Increase or decrease the length limit for a STRING or BYTES type (including to MAX)
 		// TODO: Enable or disable commit timestamps in value and primary key columns
 	}
