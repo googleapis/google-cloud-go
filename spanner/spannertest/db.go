@@ -711,12 +711,25 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 	}
 
 	// TODO: check if the column isn't a primary key or array types.
+
+	// If changing a column to NOT NULL, verify there are no nulls.
+	if sct.NotNull && !t.cols[ci].NotNull {
+		for _, row := range t.rows {
+			if row[ci] == nil {
+				return status.Newf(codes.InvalidArgument, "Adding a NOT NULL constraint on a column %s is not allowed because it has a NULL value", t.cols[ci].Name)
+			}
+		}
+	}
 	t.cols[ci].NotNull = sct.NotNull
 
 	// Check and make type transformations.
 	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
+	// This was a no-op or a change in NOT NULL
+	if oldT == newT {
+		return nil
+	}
 	// TODO: We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
 
 	// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
