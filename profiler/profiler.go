@@ -217,7 +217,6 @@ func (o *allowUntilSuccess) do(f func() error) (err error) {
 // Config for details. Start should only be called once. Any
 // additional calls will be ignored.
 func Start(cfg Config, options ...option.ClientOption) error {
-	logger = log.New(os.Stderr, "Cloud Profiler: ", log.LstdFlags|log.Lmsgprefix)
 	startError := startOnce.do(func() error {
 		return start(cfg, options...)
 	})
@@ -225,6 +224,7 @@ func Start(cfg Config, options ...option.ClientOption) error {
 }
 
 func start(cfg Config, options ...option.ClientOption) error {
+	logger = log.New(os.Stderr, "Cloud Profiler: ", log.LstdFlags|log.Lmsgprefix)
 	if err := initializeConfig(cfg); err != nil {
 		debugLog("failed to initialize config: %v", err)
 		return err
