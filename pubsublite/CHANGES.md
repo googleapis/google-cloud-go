@@ -1,5 +1,39 @@
 # Changes
 
+## [0.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.4.0...v0.5.0) (2021-01-07)
+
+
+### Features
+
+* **pubsublite:** add client library metadata to headers ([#3458](https://www.github.com/googleapis/google-cloud-go/issues/3458)) ([8226811](https://www.github.com/googleapis/google-cloud-go/commit/822681105bc13f1e1f0784c4557faf849c1110b4))
+* **pubsublite:** publisher client ([#3303](https://www.github.com/googleapis/google-cloud-go/issues/3303)) ([1648ea0](https://www.github.com/googleapis/google-cloud-go/commit/1648ea06bbb08c3452f79551a9d45147379f13e4))
+* **pubsublite:** settings and message transforms for Cloud Pub/Sub shim ([#3281](https://www.github.com/googleapis/google-cloud-go/issues/3281)) ([74923c2](https://www.github.com/googleapis/google-cloud-go/commit/74923c27efd7936b3e18cd8ccb72882a40c7ff42))
+* **pubsublite:** subscriber client ([#3442](https://www.github.com/googleapis/google-cloud-go/issues/3442)) ([221bfba](https://www.github.com/googleapis/google-cloud-go/commit/221bfbae54107486ab9060b950081faa27489d1c))
+
+
+### Bug Fixes
+
+* **pubsublite:** return an error if no topic or subscription fields were updated ([#3502](https://www.github.com/googleapis/google-cloud-go/issues/3502)) ([a875969](https://www.github.com/googleapis/google-cloud-go/commit/a87596942d39fbfe47427c007e4029bd9be2ca0e))
+
+## [0.4.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.3.0...v0.4.0) (2020-12-09)
+
+
+### Features
+
+pubsublite/internal/wire implementation:
+
+* **pubsublite:** assigning subscriber ([#3238](https://www.github.com/googleapis/google-cloud-go/issues/3238)) ([d1c03da](https://www.github.com/googleapis/google-cloud-go/commit/d1c03dae383f5a175e4237d5f46dc1bdc2cd33f0))
+* **pubsublite:** committer ([#3198](https://www.github.com/googleapis/google-cloud-go/issues/3198)) ([ecc706b](https://www.github.com/googleapis/google-cloud-go/commit/ecc706b03079c6521a31e1066b00677aaf51e7dd))
+* **pubsublite:** receive settings ([#3195](https://www.github.com/googleapis/google-cloud-go/issues/3195)) ([bd837fc](https://www.github.com/googleapis/google-cloud-go/commit/bd837fc9aad4181b8aa574e41341000755875eca))
+* **pubsublite:** routing publisher ([#3277](https://www.github.com/googleapis/google-cloud-go/issues/3277)) ([88e5466](https://www.github.com/googleapis/google-cloud-go/commit/88e546600c7d4f7570530aa72355f51f44187890))
+* **pubsublite:** single and multi partition subscribers ([#3221](https://www.github.com/googleapis/google-cloud-go/issues/3221)) ([299b803](https://www.github.com/googleapis/google-cloud-go/commit/299b803aaee9a0dc0b2ec8c81fac66341045b8b2))
+* **pubsublite:** single partition publisher ([#3225](https://www.github.com/googleapis/google-cloud-go/issues/3225)) ([4982eeb](https://www.github.com/googleapis/google-cloud-go/commit/4982eeb32ebe85de211ae09d13fdaf6140d9e115))
+
+
+### Bug Fixes
+
+* **pubsublite:** fixed return value of AdminClient.TopicSubscriptions ([#3220](https://www.github.com/googleapis/google-cloud-go/issues/3220)) ([f37f118](https://www.github.com/googleapis/google-cloud-go/commit/f37f118c87d4d0a77a554515a430ae06e5852294))
+
 ## [0.3.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.2.0...v0.3.0) (2020-11-10)
 
 

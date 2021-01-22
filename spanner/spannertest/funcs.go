@@ -37,6 +37,19 @@ type aggregateFunc struct {
 
 // TODO: more aggregate funcs.
 var aggregateFuncs = map[string]aggregateFunc{
+	"ANY_VALUE": {
+		// https://cloud.google.com/spanner/docs/aggregate_functions#any_value
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+			// Return the first non-NULL value.
+			for _, v := range values {
+				if v != nil {
+					return v, typ, nil
+				}
+			}
+			// Either all values are NULL, or there are no values.
+			return nil, typ, nil
+		},
+	},
 	"ARRAY_AGG": {
 		// https://cloud.google.com/spanner/docs/aggregate_functions#array_agg
 		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
@@ -107,6 +120,43 @@ var aggregateFuncs = map[string]aggregateFunc{
 				return nil, typ, nil
 			}
 			return sum, typ, nil
+		},
+	},
+	"AVG": {
+		Eval: func(values []interface{}, typ spansql.Type) (interface{}, spansql.Type, error) {
+			if typ.Array || !(typ.Base == spansql.Int64 || typ.Base == spansql.Float64) {
+				return nil, spansql.Type{}, fmt.Errorf("AVG only supports arguments of INT64 or FLOAT64 type, not %s", typ.SQL())
+			}
+			if typ.Base == spansql.Int64 {
+				var sum int64
+				var n float64
+				for _, v := range values {
+					if v == nil {
+						continue
+					}
+					sum += v.(int64)
+					n++
+				}
+				if n == 0 {
+					// "Returns NULL if the input contains only NULLs".
+					return nil, typ, nil
+				}
+				return (float64(sum) / n), float64Type, nil
+			}
+			var sum float64
+			var n float64
+			for _, v := range values {
+				if v == nil {
+					continue
+				}
+				sum += v.(float64)
+				n++
+			}
+			if n == 0 {
+				// "Returns NULL if the input contains only NULLs".
+				return nil, typ, nil
+			}
+			return (sum / n), typ, nil
 		},
 	},
 }

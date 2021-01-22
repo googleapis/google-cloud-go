@@ -890,6 +890,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			// From https://cloud.google.com/spanner/docs/aggregate_functions#avg.
+			`SELECT AVG(x) AS avg FROM UNNEST([0, 2, 4, 4, 5]) AS x`,
+			nil,
+			[][]interface{}{
+				{float64(3)},
+			},
+		},
+		{
 			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
 			map[string]interface{}{"lim": "Teal'c"},
 			[][]interface{}{

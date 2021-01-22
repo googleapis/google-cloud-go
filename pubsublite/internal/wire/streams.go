@@ -38,6 +38,8 @@ const (
 	streamTerminated    streamStatus = 3
 )
 
+type initialResponseRequired bool
+
 // streamHandler provides hooks for different Pub/Sub Lite streaming APIs
 // (e.g. publish, subscribe, streaming cursor, etc.) to use retryableStream.
 // All Pub/Sub Lite streaming APIs implement a similar handshaking protocol,
@@ -47,13 +49,16 @@ const (
 // streamHandler methods must not be called while holding retryableStream.mu in
 // order to prevent the streamHandler calling back into the retryableStream and
 // deadlocking.
+//
+// If any streamHandler method implementations block, this will block the
+// retryableStream.connectStream goroutine processing the underlying stream.
 type streamHandler interface {
 	// newStream implementations must create the client stream with the given
 	// (cancellable) context.
 	newStream(context.Context) (grpc.ClientStream, error)
 	// initialRequest should return the initial request and whether an initial
 	// response is expected.
-	initialRequest() (interface{}, bool)
+	initialRequest() (interface{}, initialResponseRequired)
 	validateInitialResponse(interface{}) error
 
 	// onStreamStatusChange is used to notify stream handlers when the stream has
@@ -117,10 +122,9 @@ func (rs *retryableStream) Start() {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 
-	if rs.status != streamUninitialized {
-		return
+	if rs.status == streamUninitialized {
+		go rs.connectStream()
 	}
-	go rs.connectStream()
 }
 
 // Stop gracefully closes the stream without error.
@@ -133,6 +137,7 @@ func (rs *retryableStream) Stop() {
 // in progress.
 func (rs *retryableStream) Send(request interface{}) (sent bool) {
 	rs.mu.Lock()
+	defer rs.mu.Unlock()
 
 	if rs.stream != nil {
 		err := rs.stream.SendMsg(request)
@@ -147,13 +152,9 @@ func (rs *retryableStream) Send(request interface{}) (sent bool) {
 		case isRetryableSendError(err):
 			go rs.connectStream()
 		default:
-			rs.mu.Unlock() // terminate acquires the mutex.
-			rs.terminate(err)
-			return
+			rs.unsafeTerminate(err)
 		}
 	}
-
-	rs.mu.Unlock()
 	return
 }
 
@@ -193,6 +194,8 @@ func (rs *retryableStream) unsafeClearStream() {
 func (rs *retryableStream) setCancel(cancel context.CancelFunc) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
+
+	rs.unsafeClearStream()
 	rs.cancelStream = cancel
 }
 
@@ -334,7 +337,10 @@ func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 func (rs *retryableStream) terminate(err error) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
+	rs.unsafeTerminate(err)
+}
 
+func (rs *retryableStream) unsafeTerminate(err error) {
 	if rs.status == streamTerminated {
 		return
 	}

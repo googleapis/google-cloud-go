@@ -7,16 +7,19 @@ It is intended to be used as a bot, though it can be run locally too.
 
 ### Github
 
-For Github, you need to generate/supply a Personal Access Token.  More information on how that's done is here:
-https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line
+For Github, you need to generate/supply a Personal Access Token.  More
+information on how that's done can be found here:
+[creating a personal access token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line).
 
 ## Running locally
 
 Note: this may change your `~/.gitconfig`, `~/.gitcookies`, and use up
 non-trivial amounts of space on your computer.
 
-1. Make sure you have all the tools installed listed in genlocal's README.md
-2. Run:
+1. Make sure you are on a non-Windows platform. If you are using windows
+   continue on to the docker instructions.
+2. Make sure you have all the tools installed listed in genlocal's README.md
+3. Run:
 
 ```shell
 cd /path/to/internal/gapicgen
@@ -48,9 +51,9 @@ docker run -t --rm --privileged \
 
 ## FAQ
 
-#### How do I bump to a later version of the microgenerator?
+### How to bump to a later version of the microgenerator
 
-```
+```shell
 cd /path/to/internal/gapicgen
 go get -u github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
 ```

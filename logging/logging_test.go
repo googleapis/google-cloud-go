@@ -155,9 +155,6 @@ timestamp >= "%s"`,
 }
 
 func TestLogSync(t *testing.T) {
-	// TODO(deklerk): Un-flake and re-enable
-	t.Skip("Inherently flaky")
-
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)
@@ -198,9 +195,6 @@ func TestLogSync(t *testing.T) {
 }
 
 func TestLogAndEntries(t *testing.T) {
-	// TODO(deklerk): Un-flake and re-enable
-	t.Skip("Inherently flaky")
-
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	payloads := []string{"p1", "p2", "p3", "p4", "p5"}
@@ -306,6 +300,7 @@ func entryForTesting(payload interface{}) *logging.Entry {
 	}
 }
 
+// allTestLogEntries should be called sparingly. It takes ~10s to get logs, even with indexed filters.
 func allTestLogEntries(ctx context.Context) ([]*logging.Entry, error) {
 	return allEntries(ctx, aclient, testFilter)
 }
@@ -336,9 +331,6 @@ func cleanNext(it *logadmin.EntryIterator) (*logging.Entry, error) {
 }
 
 func TestStandardLogger(t *testing.T) {
-	// TODO(deklerk): Un-flake and re-enable
-	t.Skip("Inherently flaky")
-
 	initLogs() // Generate new testLogID
 	ctx := context.Background()
 	lg := client.Logger(testLogID)

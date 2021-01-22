@@ -20,29 +20,22 @@ import (
 	"testing"
 
 	"cloud.google.com/go/pubsublite/internal/test"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
 )
 
 var (
 	// Initialized in TestMain.
-	mockServer     test.MockServer
-	testClientOpts []option.ClientOption
+	testServer *test.Server
+	mockServer test.MockServer
 )
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	testServer, err := test.NewServer()
-	if err != nil {
+	var err error
+	if testServer, err = test.NewServer(); err != nil {
 		log.Fatal(err)
 	}
 	mockServer = testServer.LiteServer
-	conn, err := grpc.Dial(testServer.Addr(), grpc.WithInsecure())
-	if err != nil {
-		log.Fatal(err)
-	}
-	testClientOpts = []option.ClientOption{option.WithGRPCConn(conn)}
 
 	exit := m.Run()
 	testServer.Close()
