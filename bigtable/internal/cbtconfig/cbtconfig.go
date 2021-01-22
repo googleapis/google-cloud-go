@@ -28,13 +28,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
 
 	"golang.org/x/oauth2"
+	"golang.org/x/sys/execabs"
 	"google.golang.org/grpc/credentials"
 )
 
@@ -211,7 +211,7 @@ func (g *GcloudCmdTokenSource) Token() (*oauth2.Token, error) {
 // LoadGcloudConfig retrieves the gcloud configuration values we need use via the
 // 'config-helper' command
 func LoadGcloudConfig(gcloudCmd string, gcloudCmdArgs []string) (*GcloudConfig, error) {
-	out, err := exec.Command(gcloudCmd, gcloudCmdArgs...).Output()
+	out, err := execabs.Command(gcloudCmd, gcloudCmdArgs...).Output()
 	if err != nil {
 		return nil, fmt.Errorf("Could not retrieve gcloud configuration")
 	}

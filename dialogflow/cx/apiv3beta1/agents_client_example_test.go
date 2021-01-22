@@ -184,3 +184,43 @@ func ExampleAgentsClient_RestoreAgent() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleAgentsClient_ValidateAgent() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewAgentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ValidateAgentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ValidateAgent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAgentsClient_GetAgentValidationResult() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewAgentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.GetAgentValidationResultRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetAgentValidationResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
