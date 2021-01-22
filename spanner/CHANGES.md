@@ -1,5 +1,12 @@
 # Changes
 
+### [1.13.1](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.13.0...v1.13.1) (2021-01-22)
+
+
+### Bug Fixes
+
+* **spanner/spansql:** fix SelectFromJoin behavior ([#3571](https://www.github.com/googleapis/google-cloud-go/issues/3571)) ([e0887c7](https://www.github.com/googleapis/google-cloud-go/commit/e0887c762a4c58f29b3e5b49ee163a36a065463c))
+
 ## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.12.0...v1.13.0) (2021-01-15)
 
 
