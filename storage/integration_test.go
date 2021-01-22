@@ -1249,7 +1249,7 @@ func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
 		it := bkt.Objects(context.Background(), query)
 		attrs, err := it.Next()
 		if err == iterator.Done {
-			t.Fatalf("no objects")
+			t.Fatalf("iterator: no objects")
 		}
 		if err != nil {
 			t.Fatalf("iterator.Next: %v", err)
@@ -1257,17 +1257,17 @@ func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
 
 		if expectACL {
 			if attrs.Owner == "" {
-				t.Errorf("projection: %q, empty Owner", projection)
+				t.Errorf("projection %q: Owner is empty, want nonempty Owner", projection)
 			}
 			if len(attrs.ACL) == 0 {
-				t.Errorf("projection: %q, empty ACL", projection)
+				t.Errorf("projection %q: ACL is empty, want at least one ACL rule", projection)
 			}
 		} else {
 			if attrs.Owner != "" {
-				t.Errorf("projection: %q, expected empty Owner, got %q", projection, attrs.Owner)
+				t.Errorf("projection %q: got Owner = %q, want empty Owner", projection, attrs.Owner)
 			}
 			if len(attrs.ACL) != 0 {
-				t.Errorf("projection: %q, expected empty ACL, got %d entries", projection, len(attrs.ACL))
+				t.Errorf("projection %q: got %d ACL rules, want empty ACL", projection, len(attrs.ACL))
 			}
 		}
 	}
