@@ -24,9 +24,9 @@ import (
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 )
 
-func ExampleNewAgentsClient() {
+func ExampleNewTestCasesClient() {
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -34,20 +34,20 @@ func ExampleNewAgentsClient() {
 	_ = c
 }
 
-func ExampleAgentsClient_ListAgents() {
+func ExampleTestCasesClient_ListTestCases() {
 	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	// import "google.golang.org/api/iterator"
 
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.ListAgentsRequest{
+	req := &cxpb.ListTestCasesRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.ListAgents(ctx, req)
+	it := c.ListTestCases(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -61,19 +61,35 @@ func ExampleAgentsClient_ListAgents() {
 	}
 }
 
-func ExampleAgentsClient_GetAgent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
+func ExampleTestCasesClient_BatchDeleteTestCases() {
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.GetAgentRequest{
+	req := &cxpb.BatchDeleteTestCasesRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetAgent(ctx, req)
+	err = c.BatchDeleteTestCases(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleTestCasesClient_GetTestCase() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewTestCasesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.GetTestCaseRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetTestCase(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -81,19 +97,19 @@ func ExampleAgentsClient_GetAgent() {
 	_ = resp
 }
 
-func ExampleAgentsClient_CreateAgent() {
+func ExampleTestCasesClient_CreateTestCase() {
 	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.CreateAgentRequest{
+	req := &cxpb.CreateTestCaseRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.CreateAgent(ctx, req)
+	resp, err := c.CreateTestCase(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -101,19 +117,19 @@ func ExampleAgentsClient_CreateAgent() {
 	_ = resp
 }
 
-func ExampleAgentsClient_UpdateAgent() {
+func ExampleTestCasesClient_UpdateTestCase() {
 	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.UpdateAgentRequest{
+	req := &cxpb.UpdateTestCaseRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.UpdateAgent(ctx, req)
+	resp, err := c.UpdateTestCase(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -121,35 +137,19 @@ func ExampleAgentsClient_UpdateAgent() {
 	_ = resp
 }
 
-func ExampleAgentsClient_DeleteAgent() {
-	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &cxpb.DeleteAgentRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteAgent(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleAgentsClient_ExportAgent() {
+func ExampleTestCasesClient_RunTestCase() {
 	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.ExportAgentRequest{
+	req := &cxpb.RunTestCaseRequest{
 		// TODO: Fill request struct fields.
 	}
-	op, err := c.ExportAgent(ctx, req)
+	op, err := c.RunTestCase(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -162,42 +162,24 @@ func ExampleAgentsClient_ExportAgent() {
 	_ = resp
 }
 
-func ExampleAgentsClient_RestoreAgent() {
+func ExampleTestCasesClient_BatchRunTestCases() {
 	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.RestoreAgentRequest{
+	req := &cxpb.BatchRunTestCasesRequest{
 		// TODO: Fill request struct fields.
 	}
-	op, err := c.RestoreAgent(ctx, req)
+	op, err := c.BatchRunTestCases(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	err = op.Wait(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
-func ExampleAgentsClient_ValidateAgent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
-	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &cxpb.ValidateAgentRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.ValidateAgent(ctx, req)
+	resp, err := op.Wait(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -205,22 +187,99 @@ func ExampleAgentsClient_ValidateAgent() {
 	_ = resp
 }
 
-func ExampleAgentsClient_GetAgentValidationResult() {
+func ExampleTestCasesClient_CalculateCoverage() {
 	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 
 	ctx := context.Background()
-	c, err := cx.NewAgentsClient(ctx)
+	c, err := cx.NewTestCasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	req := &cxpb.GetAgentValidationResultRequest{
+	req := &cxpb.CalculateCoverageRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.GetAgentValidationResult(ctx, req)
+	resp, err := c.CalculateCoverage(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleTestCasesClient_ImportTestCases() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewTestCasesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ImportTestCasesRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ImportTestCases(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTestCasesClient_ExportTestCases() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+
+	ctx := context.Background()
+	c, err := cx.NewTestCasesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ExportTestCasesRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ExportTestCases(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTestCasesClient_ListTestCaseResults() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := cx.NewTestCasesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ListTestCaseResultsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListTestCaseResults(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
