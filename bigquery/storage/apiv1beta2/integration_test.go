@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log"
 	"sync"
 	"testing"
 	"time"
@@ -87,6 +88,27 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqClient *bigquery.Clie
 			t.Logf("could not cleanup dataset %s: %v", dataset.DatasetID, err)
 		}
 	}, nil
+}
+
+func queryRowCount(ctx context.Context, client *bigquery.Client, tbl *bigquery.Table) (int64, error) {
+
+	// Verify data is present in the table with a count query.
+	sql := fmt.Sprintf("SELECT COUNT(1) FROM `%s`.%s.%s", tbl.ProjectID, tbl.DatasetID, tbl.TableID)
+	q := client.Query(sql)
+	it, err := q.Read(ctx)
+	if err != nil {
+		return 0, fmt.Errorf("failed to issue validation query: %v", err)
+	}
+	var rowdata []bigquery.Value
+	err = it.Next(&rowdata)
+	if err != nil {
+		return 0, fmt.Errorf("iterator error: %v", err)
+	}
+
+	if count, ok := rowdata[0].(int64); ok {
+		return count, nil
+	}
+	return 0, fmt.Errorf("got unexpected value %v", rowdata[0])
 }
 
 func TestSimpleMessageWithDefaultStream(t *testing.T) {
@@ -202,25 +224,90 @@ func TestSimpleMessageWithDefaultStream(t *testing.T) {
 
 	wg.Wait()
 
-	if reqCount != respCount {
-		t.Errorf("sent %d requests, only got %d responses", reqCount, respCount)
+	gotRows, err := queryRowCount(ctx, bqClient, testTable)
+	if err != nil {
+		t.Errorf("failed to get row count: %v", err)
 	}
 
-	// Verify data is present in the table with a count query.
-	sql := fmt.Sprintf("SELECT COUNT(1) FROM `%s`.%s.%s", testTable.ProjectID, testTable.DatasetID, testTable.TableID)
-	q := bqClient.Query(sql)
-	it, err := q.Read(ctx)
-	if err != nil {
-		t.Fatalf("failed to issue validation query: %v", err)
-	}
-	var rowdata []bigquery.Value
-	err = it.Next(&rowdata)
-	if err != nil {
-		t.Fatalf("error iterating validation results: %v", err)
+	if gotRows != totalRows {
+		t.Errorf("query result mismatch, got %v want %v", gotRows, totalRows)
 	}
 
-	if rowdata[0] != totalRows {
-		t.Errorf("query result mismatch, got %v want %v", rowdata, totalRows)
+}
+
+func TestThickWriter(t *testing.T) {
+	setupCtx := context.Background()
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+
+	writeClient, bqClient := getClients(setupCtx, t)
+	defer writeClient.Close()
+	defer bqClient.Close()
+
+	dataset, cleanupFunc, err := setupTestDataset(setupCtx, t, bqClient)
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
 	}
+	defer cleanupFunc()
+
+	testTable := dataset.Table(tableIDs.New())
+
+	schema := bigquery.Schema{
+		{Name: "name", Type: bigquery.StringFieldType},
+		{Name: "value", Type: bigquery.IntegerFieldType},
+	}
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: schema}); err != nil {
+		t.Fatalf("couldn't create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+	writeStream := fmt.Sprintf("projects/%s/datasets/%s/tables/%s/_default", testTable.ProjectID, testTable.DatasetID, testTable.TableID)
+
+	testData := [][]*testdata.SimpleMessage{
+		[]*testdata.SimpleMessage{
+			{Name: "one", Value: 1},
+			{Name: "two", Value: 2},
+			{Name: "three", Value: 3},
+		},
+		[]*testdata.SimpleMessage{
+			{Name: "four", Value: 1},
+			{Name: "five", Value: 2},
+		},
+	}
+
+	tw, err := NewThickWriter(ctx, writeClient, writeStream)
+	if err != nil {
+		t.Fatalf("failed to create writer: %v", err)
+	}
+	tw.RegisterProto(&testdata.SimpleMessage{})
+
+	var totalRows int64
+
+	var results []*AppendResult
+	for k, rowSet := range testData {
+		totalRows = totalRows + int64(len(rowSet))
+		res, err := tw.AppendRows(rowSet)
+		if err != nil {
+			t.Errorf("error on append %d: %v", k, err)
+			break
+		}
+		results = append(results, res)
+	}
+
+	for k, result := range results {
+		fmt.Printf("checking result %d ", k)
+		_, err := result.GetResult(ctx)
+		if err != nil {
+			t.Errorf("got err: %v", err)
+		}
+		fmt.Printf("...done\n")
+	}
+
+	gotRows, err := queryRowCount(ctx, bqClient, testTable)
+	if err != nil {
+		t.Errorf("failed to get row count: %v", err)
+	}
+
+	if gotRows != totalRows {
+		t.Errorf("query result mismatch, got %v want %v", gotRows, totalRows)
+	}
+	log.Printf("got %d rows", gotRows)
 
 }
