@@ -698,6 +698,7 @@ func TestIntegration_Objects(t *testing.T) {
 	testObjectsIterateSelectedAttrs(t, bkt, objects)
 	testObjectsIterateAllSelectedAttrs(t, bkt, objects)
 	testObjectIteratorWithOffset(t, bkt, objects)
+	testObjectsIterateWithProjection(t, bkt)
 	t.Run("testObjectsIterateSelectedAttrsDelimiter", func(t *testing.T) {
 		query := &Query{Prefix: "", Delimiter: "/"}
 		if err := query.SetAttrSelection([]string{"Name"}); err != nil {
@@ -1233,6 +1234,42 @@ func testObjectsIterateAllSelectedAttrs(t *testing.T, bkt *BucketHandle, objects
 
 	if count != len(objects)-1 {
 		t.Errorf("count = %v, want %v", count, len(objects)-1)
+	}
+}
+
+func testObjectsIterateWithProjection(t *testing.T, bkt *BucketHandle) {
+	projections := map[Projection]bool{
+		ProjectionDefault: true,
+		ProjectionFull:    true,
+		ProjectionNoACL:   false,
+	}
+
+	for projection, expectACL := range projections {
+		query := &Query{Projection: projection}
+		it := bkt.Objects(context.Background(), query)
+		attrs, err := it.Next()
+		if err == iterator.Done {
+			t.Fatalf("iterator: no objects")
+		}
+		if err != nil {
+			t.Fatalf("iterator.Next: %v", err)
+		}
+
+		if expectACL {
+			if attrs.Owner == "" {
+				t.Errorf("projection %q: Owner is empty, want nonempty Owner", projection)
+			}
+			if len(attrs.ACL) == 0 {
+				t.Errorf("projection %q: ACL is empty, want at least one ACL rule", projection)
+			}
+		} else {
+			if attrs.Owner != "" {
+				t.Errorf("projection %q: got Owner = %q, want empty Owner", projection, attrs.Owner)
+			}
+			if len(attrs.ACL) != 0 {
+				t.Errorf("projection %q: got %d ACL rules, want empty ACL", projection, len(attrs.ACL))
+			}
+		}
 	}
 }
 

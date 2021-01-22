@@ -16,7 +16,7 @@ require (
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b
 	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423
-	golang.org/x/sys v0.0.0-20210122093101-04d7465088b8 // indirect
+	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/text v0.3.5
 	golang.org/x/tools v0.1.0
 	google.golang.org/api v0.36.0

@@ -339,9 +339,16 @@ func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents
 	toc := tableOfContents{}
 
 	modTOC := &tocItem{
-		UID:  mod, // Assume the module root has a package.
+		UID:  mod,
 		Name: mod,
 	}
+
+	// Assume the module root has a package.
+	modTOC.addItem(&tocItem{
+		UID:  mod,
+		Name: mod,
+	})
+
 	for _, ef := range extraFiles {
 		modTOC.addItem(&tocItem{
 			Href: ef.dstRelativePath,
