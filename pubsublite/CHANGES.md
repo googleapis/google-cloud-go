@@ -1,5 +1,12 @@
 # Changes
 
+### [0.5.1](https://www.github.com/googleapis/google-cloud-go/compare/v0.5.0...v0.5.1) (2021-01-22)
+
+
+### Bug Fixes
+
+* **pubsublite:** close clients after publisher and subscriber have terminated ([#3512](https://www.github.com/googleapis/google-cloud-go/issues/3512)) ([72d2aff](https://www.github.com/googleapis/google-cloud-go/commit/72d2affb957cea7b6a223b108d0fe67c5635b25c))
+
 ## [0.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.4.0...v0.5.0) (2021-01-07)
 
 
