@@ -924,6 +924,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/datalabeling/v1beta1/datalabeling_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/dataqna/v1alpha",
+		pkg:                   "dataqna",
+		importPath:            "cloud.google.com/go/dataqna/apiv1alpha",
+		gRPCServiceConfigPath: "google/cloud/dataqna/v1alpha/dataqna_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/dataqna/v1alpha/dataqna_v1alpha.yaml",
+		releaseLevel:          "alpha",
+	},
 
 	// Non-Cloud APIs
 	{
