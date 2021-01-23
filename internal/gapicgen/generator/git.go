@@ -22,9 +22,55 @@ import (
 
 // ChangeInfo represents a change and its associated metadata.
 type ChangeInfo struct {
-	Body            string
-	GoogleapisHash  string
-	HasGapicChanges bool
+	Body           string
+	Title          string
+	Package        string
+	GoogleapisHash string
+}
+
+// FormatChanges turns a slice of changes into formatted string that will match
+// the conventional commit footer pattern. This will allow these changes to be
+// parsed into the changelog.
+func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
+	if len(changes) == 0 {
+		return ""
+	}
+	var sb strings.Builder
+	sb.WriteString("\nChanges:\n\n")
+	for _, c := range changes {
+		if onlyGapicChanges && c.Package == "" {
+			continue
+		}
+
+		title := c.Title
+		if c.Package != "" {
+			// Try to add in pkg affected into conventional commit scope.
+			titleParts := strings.SplitN(c.Title, ":", 2)
+			if len(titleParts) == 2 {
+				// If a scope is already provided, remove it.
+				if i := strings.Index(titleParts[0], "("); i > 0 {
+					titleParts[0] = titleParts[0][:i]
+				}
+				titleParts[0] = fmt.Sprintf("%s(%s)", titleParts[0], c.Package)
+			}
+			title = strings.Join(titleParts, ":")
+		}
+		sb.WriteString(fmt.Sprintf("%s\n", title))
+
+		// Format the commit body to conventional commit footer standards.
+		splitBody := strings.Split(c.Body, "\n")
+		for i := range splitBody {
+			splitBody[i] = fmt.Sprintf("  %s", splitBody[i])
+		}
+		body := strings.Join(splitBody, "\n")
+		sb.WriteString(fmt.Sprintf("%s\n\n", body))
+	}
+	// If the buffer is empty except for the "Changes:" text return an empty
+	// string.
+	if sb.Len() == 11 {
+		return ""
+	}
+	return sb.String()
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
@@ -40,15 +86,21 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 	for _, hash := range hashes {
 		// Get commit title and body
 		rawBody := bytes.NewBuffer(nil)
-		c := command("git", "show", "--pretty=format:%B", "-s", hash)
+		c := command("git", "show", "--pretty=format:%s~~%b", "-s", hash)
 		c.Stdout = rawBody
 		c.Dir = googleapisDir
 		if err := c.Run(); err != nil {
 			return nil, err
 		}
 
+		ss := strings.Split(rawBody.String(), "~~")
+		if len(ss) != 2 {
+			return nil, fmt.Errorf("expected two segments for commit, got %d: %q", len(ss), rawBody.String())
+		}
+		title, body := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
+
 		// Add link so corresponding googleapis commit.
-		body := fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", strings.TrimSpace(rawBody.String()), hash)
+		body = fmt.Sprintf("%s\nSource-Link: https://github.com/googleapis/googleapis/commit/%s", body, hash)
 
 		// Try to map files updated to a package in google-cloud-go. Assumes only
 		// one servies protos are updated per commit. Multile versions are okay.
@@ -70,33 +122,12 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 				break
 			}
 		}
-		if pkg == "" {
-			changes = append(changes, &ChangeInfo{
-				Body:           body,
-				GoogleapisHash: hash,
-			})
-			continue
-		}
-
-		// Try to add in pkg affected into conventional commit scope.
-		bodyParts := strings.SplitN(body, "\n", 2)
-		if len(bodyParts) > 0 {
-			titleParts := strings.SplitN(bodyParts[0], ":", 2)
-			if len(titleParts) == 2 {
-				// If a scope is already provided, remove it.
-				if i := strings.Index(titleParts[0], "("); i > 0 {
-					titleParts[0] = titleParts[0][:i]
-				}
-				titleParts[0] = fmt.Sprintf("%s(%s)", titleParts[0], pkg)
-				bodyParts[0] = strings.Join(titleParts, ":")
-			}
-			body = strings.Join(bodyParts, "\n")
-		}
 
 		changes = append(changes, &ChangeInfo{
-			Body:            body,
-			GoogleapisHash:  hash,
-			HasGapicChanges: true,
+			Title:          title,
+			Body:           body,
+			Package:        pkg,
+			GoogleapisHash: hash,
 		})
 	}
 	return changes, nil
@@ -134,7 +165,12 @@ func CommitsSinceHash(gitDir, hash string, inclusive bool) ([]string, error) {
 // hash for the given gitDir.
 func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
 	out := bytes.NewBuffer(nil)
-	c := command("git", "diff-tree", "--no-commit-id", "--name-only", "-r", fmt.Sprintf("%s..HEAD", hash))
+	// The provided diff-filter flags restricts to files that have been:
+	// - (A) Added
+	// - (C) Copied
+	// - (M) Modified
+	// - (R) Renamed
+	c := command("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash))
 	c.Stdout = out
 	c.Dir = gitDir
 	if err := c.Run(); err != nil {

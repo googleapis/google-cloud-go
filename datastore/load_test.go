@@ -439,43 +439,6 @@ type withUntypedInterface struct {
 	Field interface{}
 }
 
-func TestLoadCivilTimeInNonUTCZone(t *testing.T) {
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/3402")
-	src := &pb.Entity{
-		Key: keyToProto(testKey0),
-		Properties: map[string]*pb.Value{
-			"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
-		},
-	}
-	dst := &struct{ Time civil.Time }{
-		Time: civil.Time{},
-	}
-	want := &struct{ Time civil.Time }{
-		Time: civil.Time{
-			Hour:   5,
-			Minute: 30,
-		},
-	}
-	loc, err := time.LoadLocation("Africa/Cairo")
-	if err != nil {
-		t.Fatalf("LoadLocation: %v", err)
-	}
-	time.Local = loc
-
-	err = loadEntityProto(dst, src)
-	if err != nil {
-		t.Fatalf("loadEntityProto: %v", err)
-	}
-	if diff := testutil.Diff(dst, want); diff != "" {
-		t.Fatalf("Mismatch: got - want +\n%s", diff)
-	}
-	loc, err = time.LoadLocation("UTC")
-	if err != nil {
-		t.Fatalf("LoadLocation: %v", err)
-	}
-	time.Local = loc
-}
-
 func TestLoadToInterface(t *testing.T) {
 	testCases := []struct {
 		name    string
@@ -603,6 +566,38 @@ func TestLoadToInterface(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// Expect Local times to be represented in UTC
+func TestTimezone(t *testing.T) {
+	src := &pb.Entity{
+		Key: keyToProto(testKey0),
+		Properties: map[string]*pb.Value{
+			"Time": {ValueType: &pb.Value_TimestampValue{TimestampValue: &timestamppb.Timestamp{Seconds: 1605504600}}},
+		},
+	}
+
+	dst := &struct{ Time time.Time }{
+		Time: time.Time{},
+	}
+	want := &struct{ Time time.Time }{
+		Time: time.Unix(1605504600, 0).In(time.UTC),
+	}
+
+	err := loadEntityProto(dst, src)
+	if err != nil {
+		t.Fatalf("loadEntityProto: %v", err)
+	}
+
+	if diff := testutil.Diff(dst, want); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
+	}
+	// Also, the Zones need to be compared as comparing times will not detect this difference.
+	dstZone, _ := dst.Time.Zone()
+	wantZone, _ := want.Time.Zone()
+	if diff := testutil.Diff(dstZone, wantZone); diff != "" {
+		t.Fatalf("Mismatch: got - want +\n%s", diff)
 	}
 }
 

@@ -65,6 +65,7 @@ type assigner struct {
 	assignmentClient  *vkit.PartitionAssignmentClient
 	initialReq        *pb.PartitionAssignmentRequest
 	receiveAssignment partitionAssignmentReceiver
+	metadata          pubsubMetadata
 
 	// Fields below must be guarded with mu.
 	stream *retryableStream
@@ -89,8 +90,10 @@ func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignment
 			},
 		},
 		receiveAssignment: receiver,
+		metadata:          newPubsubMetadata(),
 	}
 	a.stream = newRetryableStream(ctx, a, settings.Timeout, reflect.TypeOf(pb.PartitionAssignment{}))
+	a.metadata.AddClientInfo(settings.Framework)
 	return a, nil
 }
 
@@ -109,15 +112,15 @@ func (a *assigner) Stop() {
 }
 
 func (a *assigner) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return a.assignmentClient.AssignPartitions(ctx)
+	return a.assignmentClient.AssignPartitions(a.metadata.AddToContext(ctx))
 }
 
-func (a *assigner) initialRequest() (interface{}, bool) {
-	return a.initialReq, false // No initial response expected
+func (a *assigner) initialRequest() (interface{}, initialResponseRequired) {
+	return a.initialReq, initialResponseRequired(false)
 }
 
 func (a *assigner) validateInitialResponse(_ interface{}) error {
-	// Should not be called.
+	// Should not be called as initialResponseRequired=false above.
 	return errors.New("pubsublite: unexpected initial response")
 }
 

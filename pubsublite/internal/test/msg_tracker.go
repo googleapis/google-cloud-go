@@ -75,6 +75,10 @@ func (mt *MsgTracker) Wait(timeout time.Duration) error {
 	totalCount := len(mt.msgMap)
 	mt.mu.Unlock()
 
+	if totalCount == 0 {
+		return nil
+	}
+
 	select {
 	case <-time.After(timeout):
 		mt.mu.Lock()
@@ -87,4 +91,22 @@ func (mt *MsgTracker) Wait(timeout time.Duration) error {
 	case <-mt.done:
 		return nil
 	}
+}
+
+// Empty returns true if there are no tracked messages remaining.
+func (mt *MsgTracker) Empty() bool {
+	mt.mu.Lock()
+	defer mt.mu.Unlock()
+	return len(mt.msgMap) == 0
+}
+
+// Status returns an error if there are tracked messages remaining.
+func (mt *MsgTracker) Status() error {
+	mt.mu.Lock()
+	defer mt.mu.Unlock()
+
+	if len(mt.msgMap) == 0 {
+		return nil
+	}
+	return fmt.Errorf("%d messages not received", len(mt.msgMap))
 }
