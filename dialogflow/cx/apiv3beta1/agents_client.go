@@ -43,13 +43,15 @@ var newAgentsClientHook clientHook
 
 // AgentsCallOptions contains the retry settings for each method of AgentsClient.
 type AgentsCallOptions struct {
-	ListAgents   []gax.CallOption
-	GetAgent     []gax.CallOption
-	CreateAgent  []gax.CallOption
-	UpdateAgent  []gax.CallOption
-	DeleteAgent  []gax.CallOption
-	ExportAgent  []gax.CallOption
-	RestoreAgent []gax.CallOption
+	ListAgents               []gax.CallOption
+	GetAgent                 []gax.CallOption
+	CreateAgent              []gax.CallOption
+	UpdateAgent              []gax.CallOption
+	DeleteAgent              []gax.CallOption
+	ExportAgent              []gax.CallOption
+	RestoreAgent             []gax.CallOption
+	ValidateAgent            []gax.CallOption
+	GetAgentValidationResult []gax.CallOption
 }
 
 func defaultAgentsClientOptions() []option.ClientOption {
@@ -133,6 +135,28 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		RestoreAgent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ValidateAgent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAgentValidationResult: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -412,6 +436,53 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAgentR
 	return &RestoreAgentOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
+}
+
+// ValidateAgent validates the specified agent and creates or updates validation results.
+// The agent in draft version is validated. Please call this API after the
+// training is completed to get the complete validation results.
+func (c *AgentsClient) ValidateAgent(ctx context.Context, req *cxpb.ValidateAgentRequest, opts ...gax.CallOption) (*cxpb.AgentValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ValidateAgent[0:len(c.CallOptions.ValidateAgent):len(c.CallOptions.ValidateAgent)], opts...)
+	var resp *cxpb.AgentValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.ValidateAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetAgentValidationResult gets the latest agent validation result. Agent validation is performed
+// when ValidateAgent is called.
+func (c *AgentsClient) GetAgentValidationResult(ctx context.Context, req *cxpb.GetAgentValidationResultRequest, opts ...gax.CallOption) (*cxpb.AgentValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetAgentValidationResult[0:len(c.CallOptions.GetAgentValidationResult):len(c.CallOptions.GetAgentValidationResult)], opts...)
+	var resp *cxpb.AgentValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.GetAgentValidationResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // ExportAgentOperation manages a long-running operation from ExportAgent.

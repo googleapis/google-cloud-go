@@ -40,7 +40,6 @@ import (
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -239,8 +238,6 @@ func initIntegrationTests() (cleanup func()) {
 		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
-		// TODO(mohanli): Move EnableDirectPath internal option to client.go when DirectPath is ready for public beta.
-		opts = append(opts, internaloption.EnableDirectPath(true))
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	var err error
@@ -3211,8 +3208,6 @@ func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (cl
 		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
-		// TODO(mohanli): Move EnableDirectPath internal option to client.go when DirectPath is ready for public beta.
-		opts = append(opts, internaloption.EnableDirectPath(true))
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
