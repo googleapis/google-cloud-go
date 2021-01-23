@@ -78,7 +78,7 @@ func TestReadOnlyTransaction_RecoverFromFailure(t *testing.T) {
 		})
 
 	_, _, e := txn.acquire(ctx)
-	if wantErr := toSpannerError(errUsr); !testEqual(e, wantErr) {
+	if wantErr := ToSpannerError(errUsr); !testEqual(e, wantErr) {
 		t.Fatalf("Acquire for multi use, got %v, want %v.", e, wantErr)
 	}
 	_, _, e = txn.acquire(ctx)
@@ -238,7 +238,7 @@ func TestTransaction_SessionNotFound(t *testing.T) {
 		t.Fatalf("Expect Read to succeed, got %v, want %v.", got.err, wantErr)
 	}
 
-	wantErr = toSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
+	wantErr = ToSpannerError(newSessionNotFoundError("projects/p/instances/i/databases/d/sessions/s"))
 	ms := []*Mutation{
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
 		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),

@@ -118,8 +118,10 @@ func TestMaxExtensionPeriod(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := time.Duration(1) * time.Second
-	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &want, &pullOptions{})
+	want := 1 * time.Second
+	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{
+		maxExtensionPeriod: want,
+	})
 
 	receiveTime := time.Now().Add(time.Duration(-3) * time.Second)
 	iter.ackTimeDist.Record(int(time.Since(receiveTime) / time.Second))
@@ -365,4 +367,36 @@ func modackDeadlines(m map[time.Time][]pstest.Modack) []int32 {
 		}
 	}
 	return u
+}
+
+func TestIterator_ModifyAckContextDeadline(t *testing.T) {
+	// Test that all context deadline exceeded errors in ModAckDeadline
+	// are not propagated to the client.
+	opts := []pstest.ServerReactorOption{
+		pstest.WithErrorInjection("ModifyAckDeadline", codes.Unknown, "context deadline exceeded"),
+	}
+	srv := pstest.NewServer(opts...)
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	s, client, err := initConn(ctx, srv.Addr)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	srv.Publish(fullyQualifiedTopicName, []byte("some-message"), nil)
+	cctx, cancel := context.WithTimeout(ctx, time.Duration(5*time.Second))
+	defer cancel()
+	err = s.Receive(cctx, func(ctx context.Context, m *Message) {
+		m.Ack()
+	})
+	if err != nil {
+		t.Fatalf("Got error in Receive: %v", err)
+	}
+
+	err = client.Close()
+	if err != nil {
+		t.Fatal(err)
+	}
 }

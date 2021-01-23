@@ -18,6 +18,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 
 	"cloud.google.com/go/logging"
@@ -84,6 +85,25 @@ func ExampleClient_Logger() {
 	}
 	lg := client.Logger("my-log")
 	_ = lg // TODO: use the Logger.
+}
+
+func ExampleHTTPRequest() {
+	ctx := context.Background()
+	client, err := logging.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	lg := client.Logger("my-log")
+	httpEntry := logging.Entry{
+		Payload: "optional message",
+		HTTPRequest: &logging.HTTPRequest{
+			// TODO: pass in request
+			Request: &http.Request{},
+			// TODO: set the status code
+			Status: http.StatusOK,
+		},
+	}
+	lg.Log(httpEntry)
 }
 
 func ExampleLogger_LogSync() {

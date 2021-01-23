@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2"
 	"google.golang.org/grpc"
@@ -46,9 +47,11 @@ type BigQueryWriteCallOptions struct {
 
 func defaultBigQueryWriteClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("bigquerystorage.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("bigquerystorage.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("bigquerystorage.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://bigquerystorage.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}

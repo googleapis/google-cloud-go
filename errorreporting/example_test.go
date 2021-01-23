@@ -34,7 +34,7 @@ func Example() {
 	}
 	defer func() {
 		if err := ec.Close(); err != nil {
-			log.Printf("failed to report errors to Stackdriver: %v", err)
+			log.Printf("failed to report errors to Cloud Error Reporting: %v", err)
 		}
 	}()
 

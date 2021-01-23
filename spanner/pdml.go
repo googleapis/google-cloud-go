@@ -51,7 +51,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 
 	sh, err := c.idleSessions.take(ctx)
 	if err != nil {
-		return 0, toSpannerError(err)
+		return 0, ToSpannerError(err)
 	}
 	if sh != nil {
 		defer sh.recycle()
@@ -61,7 +61,7 @@ func (c *Client) partitionedUpdate(ctx context.Context, statement Statement, opt
 	// The transaction reference will be added by the executePdml method.
 	params, paramTypes, err := statement.convertParams()
 	if err != nil {
-		return 0, toSpannerError(err)
+		return 0, ToSpannerError(err)
 	}
 	req := &sppb.ExecuteSqlRequest{
 		Session:      sh.getID(),
@@ -107,7 +107,7 @@ func executePdml(ctx context.Context, sh *sessionHandle, req *sppb.ExecuteSqlReq
 		},
 	})
 	if err != nil {
-		return 0, toSpannerError(err)
+		return 0, ToSpannerError(err)
 	}
 	// Add a reference to the PDML transaction on the ExecuteSql request.
 	req.Transaction = &sppb.TransactionSelector{

@@ -18,11 +18,23 @@ package spansql
 
 // This file holds SQL methods for rendering the types in types.go
 // as the SQL dialect that this package parses.
+//
+// Every exported type has an SQL method that returns a string.
+// Some also have an addSQL method that efficiently builds that string
+// in a provided strings.Builder.
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
+
+func buildSQL(x interface{ addSQL(*strings.Builder) }) string {
+	var sb strings.Builder
+	x.addSQL(&sb)
+	return sb.String()
+}
 
 func (ct CreateTable) SQL() string {
 	str := "CREATE TABLE " + ct.Name.SQL() + " (\n"
@@ -63,7 +75,7 @@ func (ci CreateIndex) SQL() string {
 	}
 	str += ")"
 	if len(ci.Storing) > 0 {
-		str += " STORING (" + idList(ci.Storing) + ")"
+		str += " STORING (" + idList(ci.Storing, ", ") + ")"
 	}
 	if ci.Interleave != "" {
 		str += ", INTERLEAVE IN " + ci.Interleave.SQL()
@@ -147,10 +159,30 @@ func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
 
+func (u *Update) SQL() string {
+	str := "UPDATE " + u.Table.SQL() + " SET "
+	for i, item := range u.Items {
+		if i > 0 {
+			str += ", "
+		}
+		str += item.Column.SQL() + " = "
+		if item.Value != nil {
+			str += item.Value.SQL()
+		} else {
+			str += "DEFAULT"
+		}
+	}
+	str += " WHERE " + u.Where.SQL()
+	return str
+}
+
 func (cd ColumnDef) SQL() string {
 	str := cd.Name.SQL() + " " + cd.Type.SQL()
 	if cd.NotNull {
 		str += " NOT NULL"
+	}
+	if cd.Generated != nil {
+		str += " AS (" + cd.Generated.SQL() + ") STORED"
 	}
 	if cd.Options != (ColumnOptions{}) {
 		str += " " + cd.Options.SQL()
@@ -163,15 +195,19 @@ func (tc TableConstraint) SQL() string {
 	if tc.Name != "" {
 		str += "CONSTRAINT " + tc.Name.SQL() + " "
 	}
-	str += tc.ForeignKey.SQL()
+	str += tc.Constraint.SQL()
 	return str
 }
 
 func (fk ForeignKey) SQL() string {
-	str := "FOREIGN KEY (" + idList(fk.Columns)
+	str := "FOREIGN KEY (" + idList(fk.Columns, ", ")
 	str += ") REFERENCES " + fk.RefTable.SQL() + " ("
-	str += idList(fk.RefColumns) + ")"
+	str += idList(fk.RefColumns, ", ") + ")"
 	return str
+}
+
+func (c Check) SQL() string {
+	return "CHECK (" + c.Expr.SQL() + ")"
 }
 
 func (t Type) SQL() string {
@@ -199,6 +235,8 @@ func (tb TypeBase) SQL() string {
 		return "INT64"
 	case Float64:
 		return "FLOAT64"
+	case Numeric:
+		return "NUMERIC"
 	case String:
 		return "STRING"
 	case Bytes:
@@ -219,81 +257,109 @@ func (kp KeyPart) SQL() string {
 	return str
 }
 
-func (q Query) SQL() string {
-	str := q.Select.SQL()
+func (q Query) SQL() string { return buildSQL(q) }
+func (q Query) addSQL(sb *strings.Builder) {
+	q.Select.addSQL(sb)
 	if len(q.Order) > 0 {
-		str += " ORDER BY "
+		sb.WriteString(" ORDER BY ")
 		for i, o := range q.Order {
 			if i > 0 {
-				str += ", "
+				sb.WriteString(", ")
 			}
-			str += o.SQL()
+			o.addSQL(sb)
 		}
 	}
 	if q.Limit != nil {
-		str += " LIMIT " + q.Limit.SQL()
+		sb.WriteString(" LIMIT ")
+		sb.WriteString(q.Limit.SQL())
 		if q.Offset != nil {
-			str += " OFFSET " + q.Offset.SQL()
+			sb.WriteString(" OFFSET ")
+			sb.WriteString(q.Offset.SQL())
 		}
 	}
-	return str
 }
 
-func (sel Select) SQL() string {
-	str := "SELECT "
+func (sel Select) SQL() string { return buildSQL(sel) }
+func (sel Select) addSQL(sb *strings.Builder) {
+	sb.WriteString("SELECT ")
 	if sel.Distinct {
-		str += "DISTINCT "
+		sb.WriteString("DISTINCT ")
 	}
 	for i, e := range sel.List {
 		if i > 0 {
-			str += ", "
+			sb.WriteString(", ")
 		}
-		str += e.SQL()
+		e.addSQL(sb)
 		if len(sel.ListAliases) > 0 {
 			alias := sel.ListAliases[i]
 			if alias != "" {
-				str += " AS " + alias.SQL()
+				sb.WriteString(" AS ")
+				sb.WriteString(alias.SQL())
 			}
 		}
 	}
 	if len(sel.From) > 0 {
-		str += " FROM "
+		sb.WriteString(" FROM ")
 		for i, f := range sel.From {
 			if i > 0 {
-				str += ", "
+				sb.WriteString(", ")
 			}
-			str += f.SQL()
+			sb.WriteString(f.SQL())
 		}
 	}
 	if sel.Where != nil {
-		str += " WHERE " + sel.Where.SQL()
+		sb.WriteString(" WHERE ")
+		sel.Where.addSQL(sb)
 	}
 	if len(sel.GroupBy) > 0 {
-		str += " GROUP BY "
-		for i, gb := range sel.GroupBy {
-			if i > 0 {
-				str += ", "
-			}
-			str += gb.SQL()
-		}
+		sb.WriteString(" GROUP BY ")
+		addExprList(sb, sel.GroupBy, ", ")
 	}
-	return str
 }
 
 func (sft SelectFromTable) SQL() string {
-	str := ID(sft.Table).SQL()
+	str := sft.Table.SQL()
 	if sft.Alias != "" {
-		str += " AS " + ID(sft.Alias).SQL()
+		str += " AS " + sft.Alias.SQL()
 	}
 	return str
 }
 
-func (o Order) SQL() string {
-	str := o.Expr.SQL()
-	if o.Desc {
-		str += " DESC"
+func (sfj SelectFromJoin) SQL() string {
+	// TODO: The grammar permits arbitrary nesting. Does this need to add parens?
+	str := sfj.LHS.SQL() + " " + joinTypes[sfj.Type] + " JOIN "
+	// TODO: hints go here
+	str += sfj.RHS.SQL()
+	if sfj.On != nil {
+		str += " ON " + sfj.On.SQL()
+	} else if len(sfj.Using) > 0 {
+		str += " USING (" + idList(sfj.Using, ", ") + ")"
 	}
 	return str
+}
+
+var joinTypes = map[JoinType]string{
+	InnerJoin: "INNER",
+	CrossJoin: "CROSS",
+	FullJoin:  "FULL",
+	LeftJoin:  "LEFT",
+	RightJoin: "RIGHT",
+}
+
+func (sfu SelectFromUnnest) SQL() string {
+	str := "UNNEST(" + sfu.Expr.SQL() + ")"
+	if sfu.Alias != "" {
+		str += " AS " + sfu.Alias.SQL()
+	}
+	return str
+}
+
+func (o Order) SQL() string { return buildSQL(o) }
+func (o Order) addSQL(sb *strings.Builder) {
+	o.Expr.addSQL(sb)
+	if o.Desc {
+		sb.WriteString(" DESC")
+	}
 }
 
 var arithOps = map[ArithOperator]string{
@@ -310,33 +376,55 @@ var arithOps = map[ArithOperator]string{
 	BitOr:  "|",
 }
 
-func (ao ArithOp) SQL() string {
+func (ao ArithOp) SQL() string { return buildSQL(ao) }
+func (ao ArithOp) addSQL(sb *strings.Builder) {
 	// Extra parens inserted to ensure the correct precedence.
 
 	switch ao.Op {
 	case Neg:
-		return "-(" + ao.RHS.SQL() + ")"
+		sb.WriteString("-(")
+		ao.RHS.addSQL(sb)
+		sb.WriteString(")")
+		return
+	case Plus:
+		sb.WriteString("+(")
+		ao.RHS.addSQL(sb)
+		sb.WriteString(")")
+		return
 	case BitNot:
-		return "~(" + ao.RHS.SQL() + ")"
+		sb.WriteString("~(")
+		ao.RHS.addSQL(sb)
+		sb.WriteString(")")
+		return
 	}
 	op, ok := arithOps[ao.Op]
 	if !ok {
 		panic("unknown ArithOp")
 	}
-	return "(" + ao.LHS.SQL() + ")" + op + "(" + ao.RHS.SQL() + ")"
+	sb.WriteString("(")
+	ao.LHS.addSQL(sb)
+	sb.WriteString(")")
+	sb.WriteString(op)
+	sb.WriteString("(")
+	ao.RHS.addSQL(sb)
+	sb.WriteString(")")
 }
 
-func (lo LogicalOp) SQL() string {
+func (lo LogicalOp) SQL() string { return buildSQL(lo) }
+func (lo LogicalOp) addSQL(sb *strings.Builder) {
 	switch lo.Op {
 	default:
 		panic("unknown LogicalOp")
 	case And:
-		return lo.LHS.SQL() + " AND " + lo.RHS.SQL()
+		lo.LHS.addSQL(sb)
+		sb.WriteString(" AND ")
 	case Or:
-		return lo.LHS.SQL() + " OR " + lo.RHS.SQL()
+		lo.LHS.addSQL(sb)
+		sb.WriteString(" OR ")
 	case Not:
-		return "NOT " + lo.RHS.SQL()
+		sb.WriteString("NOT ")
 	}
+	lo.RHS.addSQL(sb)
 }
 
 var compOps = map[ComparisonOperator]string{
@@ -352,98 +440,159 @@ var compOps = map[ComparisonOperator]string{
 	NotBetween: "NOT BETWEEN",
 }
 
-func (co ComparisonOp) SQL() string {
+func (co ComparisonOp) SQL() string { return buildSQL(co) }
+func (co ComparisonOp) addSQL(sb *strings.Builder) {
 	op, ok := compOps[co.Op]
 	if !ok {
 		panic("unknown ComparisonOp")
 	}
-	s := co.LHS.SQL() + " " + op + " " + co.RHS.SQL()
+	co.LHS.addSQL(sb)
+	sb.WriteString(" ")
+	sb.WriteString(op)
+	sb.WriteString(" ")
+	co.RHS.addSQL(sb)
 	if co.Op == Between || co.Op == NotBetween {
-		s += " AND " + co.RHS2.SQL()
+		sb.WriteString(" AND ")
+		co.RHS2.addSQL(sb)
 	}
-	return s
 }
 
-func (io InOp) SQL() string {
-	str := io.LHS.SQL()
+func (io InOp) SQL() string { return buildSQL(io) }
+func (io InOp) addSQL(sb *strings.Builder) {
+	io.LHS.addSQL(sb)
 	if io.Neg {
-		str += " NOT"
+		sb.WriteString(" NOT")
 	}
-	str += " IN "
+	sb.WriteString(" IN ")
 	if io.Unnest {
-		str += "UNNEST"
+		sb.WriteString("UNNEST")
 	}
-	str += "("
-	for i, e := range io.RHS {
-		if i > 0 {
-			str += ", "
-		}
-		str += e.SQL()
-	}
-	str += ")"
-	return str
+	sb.WriteString("(")
+	addExprList(sb, io.RHS, ", ")
+	sb.WriteString(")")
 }
 
-func (io IsOp) SQL() string {
-	str := io.LHS.SQL() + " IS "
+func (io IsOp) SQL() string { return buildSQL(io) }
+func (io IsOp) addSQL(sb *strings.Builder) {
+	io.LHS.addSQL(sb)
+	sb.WriteString(" IS ")
 	if io.Neg {
-		str += "NOT "
+		sb.WriteString("NOT ")
 	}
-	str += io.RHS.SQL()
-	return str
+	io.RHS.addSQL(sb)
 }
 
-func (f Func) SQL() string {
-	str := f.Name + "("
-	for i, e := range f.Args {
-		if i > 0 {
-			str += ", "
-		}
-		str += e.SQL()
-	}
-	str += ")"
-	return str
+func (f Func) SQL() string { return buildSQL(f) }
+func (f Func) addSQL(sb *strings.Builder) {
+	sb.WriteString(f.Name)
+	sb.WriteString("(")
+	addExprList(sb, f.Args, ", ")
+	sb.WriteString(")")
 }
 
-func idList(l []ID) string {
+func idList(l []ID, join string) string {
 	var ss []string
 	for _, s := range l {
 		ss = append(ss, s.SQL())
 	}
-	return strings.Join(ss, ", ")
+	return strings.Join(ss, join)
 }
 
-func (p Paren) SQL() string { return "(" + p.Expr.SQL() + ")" }
+func addExprList(sb *strings.Builder, l []Expr, join string) {
+	for i, s := range l {
+		if i > 0 {
+			sb.WriteString(join)
+		}
+		s.addSQL(sb)
+	}
+}
 
-func (id ID) SQL() string {
+func addIDList(sb *strings.Builder, l []ID, join string) {
+	for i, s := range l {
+		if i > 0 {
+			sb.WriteString(join)
+		}
+		s.addSQL(sb)
+	}
+}
+
+func (pe PathExp) SQL() string { return buildSQL(pe) }
+func (pe PathExp) addSQL(sb *strings.Builder) {
+	addIDList(sb, []ID(pe), ".")
+}
+
+func (p Paren) SQL() string { return buildSQL(p) }
+func (p Paren) addSQL(sb *strings.Builder) {
+	sb.WriteString("(")
+	p.Expr.addSQL(sb)
+	sb.WriteString(")")
+}
+
+func (a Array) SQL() string { return buildSQL(a) }
+func (a Array) addSQL(sb *strings.Builder) {
+	sb.WriteString("[")
+	addExprList(sb, []Expr(a), ", ")
+	sb.WriteString("]")
+}
+
+func (id ID) SQL() string { return buildSQL(id) }
+func (id ID) addSQL(sb *strings.Builder) {
 	// https://cloud.google.com/spanner/docs/lexical#identifiers
 
 	// TODO: If there are non-letters/numbers/underscores then this also needs quoting.
 
 	if IsKeyword(string(id)) {
 		// TODO: Escaping may be needed here.
-		return "`" + string(id) + "`"
+		sb.WriteString("`")
+		sb.WriteString(string(id))
+		sb.WriteString("`")
+		return
 	}
 
-	return string(id)
+	sb.WriteString(string(id))
 }
 
-func (p Param) SQL() string { return "@" + string(p) }
+func (p Param) SQL() string { return buildSQL(p) }
+func (p Param) addSQL(sb *strings.Builder) {
+	sb.WriteString("@")
+	sb.WriteString(string(p))
+}
 
-func (b BoolLiteral) SQL() string {
+func (b BoolLiteral) SQL() string { return buildSQL(b) }
+func (b BoolLiteral) addSQL(sb *strings.Builder) {
 	if b {
-		return "TRUE"
+		sb.WriteString("TRUE")
+	} else {
+		sb.WriteString("FALSE")
 	}
-	return "FALSE"
 }
 
-func (n NullLiteral) SQL() string { return "NULL" }
-func (StarExpr) SQL() string      { return "*" }
+func (NullLiteral) SQL() string                { return buildSQL(NullLiteral(0)) }
+func (NullLiteral) addSQL(sb *strings.Builder) { sb.WriteString("NULL") }
 
-func (il IntegerLiteral) SQL() string { return strconv.Itoa(int(il)) }
-func (fl FloatLiteral) SQL() string   { return strconv.FormatFloat(float64(fl), 'g', -1, 64) }
+func (StarExpr) SQL() string                { return buildSQL(StarExpr(0)) }
+func (StarExpr) addSQL(sb *strings.Builder) { sb.WriteString("*") }
+
+func (il IntegerLiteral) SQL() string                { return buildSQL(il) }
+func (il IntegerLiteral) addSQL(sb *strings.Builder) { fmt.Fprintf(sb, "%d", il) }
+
+func (fl FloatLiteral) SQL() string                { return buildSQL(fl) }
+func (fl FloatLiteral) addSQL(sb *strings.Builder) { fmt.Fprintf(sb, "%g", fl) }
 
 // TODO: provide correct string quote method and use it.
 
-func (sl StringLiteral) SQL() string { return strconv.Quote(string(sl)) }
-func (bl BytesLiteral) SQL() string  { return "B" + strconv.Quote(string(bl)) }
+func (sl StringLiteral) SQL() string                { return buildSQL(sl) }
+func (sl StringLiteral) addSQL(sb *strings.Builder) { fmt.Fprintf(sb, "%q", sl) }
+
+func (bl BytesLiteral) SQL() string                { return buildSQL(bl) }
+func (bl BytesLiteral) addSQL(sb *strings.Builder) { fmt.Fprintf(sb, "B%q", bl) }
+
+func (dl DateLiteral) SQL() string { return buildSQL(dl) }
+func (dl DateLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "DATE '%04d-%02d-%02d'", dl.Year, dl.Month, dl.Day)
+}
+
+func (tl TimestampLiteral) SQL() string { return buildSQL(tl) }
+func (tl TimestampLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000 -07:00"))
+}

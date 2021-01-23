@@ -148,6 +148,10 @@ func (s *StatementResult) ToPartialResultSets(resumeToken []byte) (result []*spa
 				break
 			}
 		}
+	} else {
+		result = append(result, &spannerpb.PartialResultSet{
+			Metadata: s.ResultSet.Metadata,
+		})
 	}
 	return result, nil
 }

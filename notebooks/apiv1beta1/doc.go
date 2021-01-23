@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,12 +17,8 @@
 // Package notebooks is an auto-generated package for the
 // Notebooks API.
 //
-// AI Platform Notebooks API (beta) is used to manage notebook resources in
-// Google Cloud. AI Platform Notebooks API is in a pre-release state and
-// might change or have limited support. For more information, see the <a
-// href="/products#product-launch-stages">product launch stages</a>.
-//
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+// AI Platform Notebooks API is used to manage notebook resources in Google
+// Cloud.
 //
 // Use of Context
 //
@@ -53,7 +49,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200918"
+const versionClient = "20210121"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 	"google.golang.org/grpc"
@@ -47,9 +48,11 @@ type TenantCallOptions struct {
 
 func defaultTenantClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -105,6 +108,9 @@ type TenantClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	tenantClient talentpb.TenantServiceClient
 
@@ -129,13 +135,19 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &TenantClient{
-		connPool:    connPool,
-		CallOptions: defaultTenantCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultTenantCallOptions(),
 
 		tenantClient: talentpb.NewTenantServiceClient(connPool),
 	}
@@ -168,6 +180,11 @@ func (c *TenantClient) setGoogleClientInfo(keyval ...string) {
 
 // CreateTenant creates a new tenant entity.
 func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateTenant[0:len(c.CallOptions.CreateTenant):len(c.CallOptions.CreateTenant)], opts...)
@@ -185,6 +202,11 @@ func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTen
 
 // GetTenant retrieves specified tenant.
 func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetTenant[0:len(c.CallOptions.GetTenant):len(c.CallOptions.GetTenant)], opts...)
@@ -202,6 +224,11 @@ func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantReq
 
 // UpdateTenant updates specified tenant.
 func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tenant.name", url.QueryEscape(req.GetTenant().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateTenant[0:len(c.CallOptions.UpdateTenant):len(c.CallOptions.UpdateTenant)], opts...)
@@ -219,6 +246,11 @@ func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTen
 
 // DeleteTenant deletes specified tenant.
 func (c *TenantClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTenantRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteTenant[0:len(c.CallOptions.DeleteTenant):len(c.CallOptions.DeleteTenant)], opts...)
@@ -255,7 +287,7 @@ func (c *TenantClient) ListTenants(ctx context.Context, req *talentpb.ListTenant
 		}
 
 		it.Response = resp
-		return resp.Tenants, resp.NextPageToken, nil
+		return resp.GetTenants(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -266,8 +298,8 @@ func (c *TenantClient) ListTenants(ctx context.Context, req *talentpb.ListTenant
 		return nextPageToken, nil
 	}
 	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.PageSize)
-	it.pageInfo.Token = req.PageToken
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
 	return it
 }
 

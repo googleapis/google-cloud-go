@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
@@ -42,20 +43,24 @@ var newAgentsClientHook clientHook
 
 // AgentsCallOptions contains the retry settings for each method of AgentsClient.
 type AgentsCallOptions struct {
-	ListAgents   []gax.CallOption
-	GetAgent     []gax.CallOption
-	CreateAgent  []gax.CallOption
-	UpdateAgent  []gax.CallOption
-	DeleteAgent  []gax.CallOption
-	ExportAgent  []gax.CallOption
-	RestoreAgent []gax.CallOption
+	ListAgents               []gax.CallOption
+	GetAgent                 []gax.CallOption
+	CreateAgent              []gax.CallOption
+	UpdateAgent              []gax.CallOption
+	DeleteAgent              []gax.CallOption
+	ExportAgent              []gax.CallOption
+	RestoreAgent             []gax.CallOption
+	ValidateAgent            []gax.CallOption
+	GetAgentValidationResult []gax.CallOption
 }
 
 func defaultAgentsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://dialogflow.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -130,6 +135,28 @@ func defaultAgentsCallOptions() *AgentsCallOptions {
 			}),
 		},
 		RestoreAgent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ValidateAgent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetAgentValidationResult: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -360,7 +387,7 @@ func (c *AgentsClient) DeleteAgent(ctx context.Context, req *cxpb.DeleteAgentReq
 	return err
 }
 
-// ExportAgent exports the specified agent to a ZIP file.
+// ExportAgent exports the specified agent to a binary file.
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -384,10 +411,10 @@ func (c *AgentsClient) ExportAgent(ctx context.Context, req *cxpb.ExportAgentReq
 	}, nil
 }
 
-// RestoreAgent restores the specified agent from a ZIP file.
+// RestoreAgent restores the specified agent from a binary file.
 //
-// Note that all existing intents, intent routes, entity types, pages and
-// webhooks in the agent will be deleted.
+// Replaces the current agent with a new one. Note that all existing resources
+// in agent (e.g. intents, entity types, flows) will be removed.
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -409,6 +436,53 @@ func (c *AgentsClient) RestoreAgent(ctx context.Context, req *cxpb.RestoreAgentR
 	return &RestoreAgentOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
+}
+
+// ValidateAgent validates the specified agent and creates or updates validation results.
+// The agent in draft version is validated. Please call this API after the
+// training is completed to get the complete validation results.
+func (c *AgentsClient) ValidateAgent(ctx context.Context, req *cxpb.ValidateAgentRequest, opts ...gax.CallOption) (*cxpb.AgentValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ValidateAgent[0:len(c.CallOptions.ValidateAgent):len(c.CallOptions.ValidateAgent)], opts...)
+	var resp *cxpb.AgentValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.ValidateAgent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetAgentValidationResult gets the latest agent validation result. Agent validation is performed
+// when ValidateAgent is called.
+func (c *AgentsClient) GetAgentValidationResult(ctx context.Context, req *cxpb.GetAgentValidationResultRequest, opts ...gax.CallOption) (*cxpb.AgentValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetAgentValidationResult[0:len(c.CallOptions.GetAgentValidationResult):len(c.CallOptions.GetAgentValidationResult)], opts...)
+	var resp *cxpb.AgentValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.agentsClient.GetAgentValidationResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // ExportAgentOperation manages a long-running operation from ExportAgent.

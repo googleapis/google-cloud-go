@@ -21,6 +21,9 @@ import (
 	"math"
 	"reflect"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 func TestParseQuery(t *testing.T) {
@@ -95,9 +98,7 @@ func TestParseQuery(t *testing.T) {
 			},
 		},
 		// https://github.com/googleapis/google-cloud-go/issues/1973
-		// except that "l.user_id" is replaced with "l_user_id" since we don't support
-		// the dot operator yet.
-		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l_user_id=@userID`,
+		{`SELECT COUNT(*) AS count FROM Lists AS l WHERE l.user_id=@userID`,
 			Query{
 				Select: Select{
 					List: []Expr{
@@ -106,10 +107,104 @@ func TestParseQuery(t *testing.T) {
 					From: []SelectFrom{SelectFromTable{Table: "Lists", Alias: "l"}},
 					Where: ComparisonOp{
 						Op:  Eq,
-						LHS: ID("l_user_id"),
+						LHS: PathExp{"l", "user_id"},
 						RHS: Param("userID"),
 					},
 					ListAliases: []ID{"count"},
+				},
+			},
+		},
+		{`SELECT * FROM A INNER JOIN B ON A.w = B.y`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS:  SelectFromTable{Table: "A"},
+						RHS:  SelectFromTable{Table: "B"},
+						On: ComparisonOp{
+							Op:  Eq,
+							LHS: PathExp{"A", "w"},
+							RHS: PathExp{"B", "y"},
+						},
+					}},
+				},
+			},
+		},
+		{`SELECT * FROM A INNER JOIN B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+					}},
+				},
+			},
+		},
+		{`SELECT Roster . LastName, TeamMascot.Mascot FROM Roster JOIN TeamMascot ON Roster.SchoolID = TeamMascot.SchoolID`,
+			Query{
+				Select: Select{
+					List: []Expr{
+						PathExp{"Roster", "LastName"},
+						PathExp{"TeamMascot", "Mascot"},
+					},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS:  SelectFromTable{Table: "Roster"},
+						RHS:  SelectFromTable{Table: "TeamMascot"},
+						On: ComparisonOp{
+							Op:  Eq,
+							LHS: PathExp{"Roster", "SchoolID"},
+							RHS: PathExp{"TeamMascot", "SchoolID"},
+						},
+					}},
+				},
+			},
+		},
+		// Joins with hints.
+		{`SELECT * FROM A HASH JOIN B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+						Hints: map[string]string{"JOIN_METHOD": "HASH_JOIN"},
+					}},
+				},
+			},
+		},
+		{`SELECT * FROM A JOIN @{ JOIN_METHOD=HASH_JOIN } B USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type:  InnerJoin,
+						LHS:   SelectFromTable{Table: "A"},
+						RHS:   SelectFromTable{Table: "B"},
+						Using: []ID{"x"},
+						Hints: map[string]string{"JOIN_METHOD": "HASH_JOIN"},
+					}},
+				},
+			},
+		},
+		{`SELECT * FROM UNNEST ([1, 2, 3]) AS data`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromUnnest{
+						Expr: Array{
+							IntegerLiteral(1),
+							IntegerLiteral(2),
+							IntegerLiteral(3),
+						},
+						Alias: ID("data"),
+					}},
 				},
 			},
 		},
@@ -148,7 +243,10 @@ func TestParseExpr(t *testing.T) {
 		{`4e2`, FloatLiteral(4e2)},
 		{`X + Y * Z`, ArithOp{LHS: ID("X"), Op: Add, RHS: ArithOp{LHS: ID("Y"), Op: Mul, RHS: ID("Z")}}},
 		{`X + Y + Z`, ArithOp{LHS: ArithOp{LHS: ID("X"), Op: Add, RHS: ID("Y")}, Op: Add, RHS: ID("Z")}},
-		{`X * -Y`, ArithOp{LHS: ID("X"), Op: Mul, RHS: ArithOp{Op: Neg, RHS: ID("Y")}}},
+		{`+X * -Y`, ArithOp{LHS: ArithOp{Op: Plus, RHS: ID("X")}, Op: Mul, RHS: ArithOp{Op: Neg, RHS: ID("Y")}}},
+		// Don't require space around +/- operators.
+		{`ID+100`, ArithOp{LHS: ID("ID"), Op: Add, RHS: IntegerLiteral(100)}},
+		{`ID-100`, ArithOp{LHS: ID("ID"), Op: Sub, RHS: IntegerLiteral(100)}},
 		{`ID&0x3fff`, ArithOp{LHS: ID("ID"), Op: BitAnd, RHS: IntegerLiteral(0x3fff)}},
 		{`SHA1("Hello" || " " || "World")`, Func{Name: "SHA1", Args: []Expr{ArithOp{LHS: ArithOp{LHS: StringLiteral("Hello"), Op: Concat, RHS: StringLiteral(" ")}, Op: Concat, RHS: StringLiteral("World")}}}},
 		{`Count > 0`, ComparisonOp{LHS: ID("Count"), Op: Gt, RHS: IntegerLiteral(0)}},
@@ -207,6 +305,15 @@ func TestParseExpr(t *testing.T) {
 		{`RB"""\\//\\//"""`, BytesLiteral("\\\\//\\\\//")},
 		{"RB'''\\\\//\n\\\\//'''", BytesLiteral("\\\\//\n\\\\//")},
 
+		// Date and timestamp literals:
+		{`DATE '2014-09-27'`, DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27})},
+
+		// Array literals:
+		// https://cloud.google.com/spanner/docs/lexical#array_literals
+		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+		{`['x', 'y', 'xy']`, Array{StringLiteral("x"), StringLiteral("y"), StringLiteral("xy")}},
+		{`ARRAY[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},
 		{`A OR B AND C`, LogicalOp{LHS: ID("A"), Op: Or, RHS: LogicalOp{LHS: ID("B"), Op: And, RHS: ID("C")}}},
@@ -245,8 +352,8 @@ func TestParseExpr(t *testing.T) {
 		if !reflect.DeepEqual(got, test.want) {
 			t.Errorf("[%s]: incorrect parse\n got <%T> %#v\nwant <%T> %#v", test.in, got, got, test.want, test.want)
 		}
-		if p.s != "" {
-			t.Errorf("[%s]: Unparsed [%s]", test.in, p.s)
+		if rem := p.Rem(); rem != "" {
+			t.Errorf("[%s]: Unparsed [%s]", test.in, rem)
 		}
 	}
 }
@@ -274,6 +381,8 @@ func TestParseDDL(t *testing.T) {
 			FOREIGN KEY (System, RepoPath) REFERENCES Stranger (Sys, RPath), -- unnamed foreign key
 			Author STRING(MAX) NOT NULL,
 			CONSTRAINT BOOL,  -- not a constraint
+			CONSTRAINT Con4 CHECK (System != ""),
+			CHECK (RepoPath != ""),
 		) PRIMARY KEY(System, RepoPath, Author),
 		  INTERLEAVE IN PARENT FooBar ON DELETE CASCADE;
 
@@ -296,6 +405,12 @@ func TestParseDDL(t *testing.T) {
 			BCol BOOL,
 			Names ARRAY<STRING(MAX)>,
 		) PRIMARY KEY (Dummy);
+
+		-- Table with generated column.
+		CREATE TABLE GenCol (
+			Name STRING(MAX) NOT NULL,
+			NameLen INT64 AS (CHAR_LENGTH(Name)) STORED,
+		) PRIMARY KEY (Name);
 
 		-- Trailing comment at end of file.
 		`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -333,7 +448,7 @@ func TestParseDDL(t *testing.T) {
 				Constraints: []TableConstraint{
 					{
 						Name: "Con1",
-						ForeignKey: ForeignKey{
+						Constraint: ForeignKey{
 							Columns:    []ID{"System"},
 							RefTable:   "FooBar",
 							RefColumns: []ID{"System"},
@@ -342,13 +457,28 @@ func TestParseDDL(t *testing.T) {
 						Position: line(13),
 					},
 					{
-						ForeignKey: ForeignKey{
+						Constraint: ForeignKey{
 							Columns:    []ID{"System", "RepoPath"},
 							RefTable:   "Stranger",
 							RefColumns: []ID{"Sys", "RPath"},
 							Position:   line(15),
 						},
 						Position: line(15),
+					},
+					{
+						Name: "Con4",
+						Constraint: Check{
+							Expr:     ComparisonOp{LHS: ID("System"), Op: Ne, RHS: StringLiteral("")},
+							Position: line(18),
+						},
+						Position: line(18),
+					},
+					{
+						Constraint: Check{
+							Expr:     ComparisonOp{LHS: ID("RepoPath"), Op: Ne, RHS: StringLiteral("")},
+							Position: line(19),
+						},
+						Position: line(19),
 					},
 				},
 				PrimaryKey: []KeyPart{
@@ -364,37 +494,37 @@ func TestParseDDL(t *testing.T) {
 			},
 			&AlterTable{
 				Name:       "FooBar",
-				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}, Position: line(21)}},
-				Position:   line(21),
+				Alteration: AddColumn{Def: ColumnDef{Name: "TZ", Type: Type{Base: Bytes, Len: 20}, Position: line(23)}},
+				Position:   line(23),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: DropColumn{Name: "TZ"},
-				Position:   line(22),
+				Position:   line(24),
 			},
 			&AlterTable{
 				Name: "FooBar",
 				Alteration: AddConstraint{Constraint: TableConstraint{
 					Name: "Con2",
-					ForeignKey: ForeignKey{
+					Constraint: ForeignKey{
 						Columns:    []ID{"RepoPath"},
 						RefTable:   "Repos",
 						RefColumns: []ID{"RPath"},
-						Position:   line(23),
+						Position:   line(25),
 					},
-					Position: line(23),
+					Position: line(25),
 				}},
-				Position: line(23),
+				Position: line(25),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: DropConstraint{Name: "Con3"},
-				Position:   line(24),
+				Position:   line(26),
 			},
 			&AlterTable{
 				Name:       "FooBar",
 				Alteration: SetOnDelete{Action: NoActionOnDelete},
-				Position:   line(25),
+				Position:   line(27),
 			},
 			&AlterTable{
 				Name: "FooBar",
@@ -405,20 +535,33 @@ func TestParseDDL(t *testing.T) {
 						NotNull: true,
 					},
 				},
-				Position: line(26),
+				Position: line(28),
 			},
-			&DropIndex{Name: "MyFirstIndex", Position: line(28)},
-			&DropTable{Name: "FooBar", Position: line(29)},
+			&DropIndex{Name: "MyFirstIndex", Position: line(30)},
+			&DropTable{Name: "FooBar", Position: line(31)},
 			&CreateTable{
 				Name: "NonScalars",
 				Columns: []ColumnDef{
-					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(34)},
-					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(35)},
-					{Name: "BCol", Type: Type{Base: Bool}, Position: line(37)},
-					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(38)},
+					{Name: "Dummy", Type: Type{Base: Int64}, NotNull: true, Position: line(36)},
+					{Name: "Ids", Type: Type{Array: true, Base: Int64}, Position: line(37)},
+					{Name: "BCol", Type: Type{Base: Bool}, Position: line(39)},
+					{Name: "Names", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(40)},
 				},
 				PrimaryKey: []KeyPart{{Column: "Dummy"}},
-				Position:   line(33),
+				Position:   line(35),
+			},
+			&CreateTable{
+				Name: "GenCol",
+				Columns: []ColumnDef{
+					{Name: "Name", Type: Type{Base: String, Len: MaxLen}, NotNull: true, Position: line(45)},
+					{
+						Name: "NameLen", Type: Type{Base: Int64},
+						Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Name")}},
+						Position:  line(46),
+					},
+				},
+				PrimaryKey: []KeyPart{{Column: "Name"}},
+				Position:   line(44),
 			},
 		}, Comments: []*Comment{
 			{Marker: "#", Start: line(2), End: line(2),
@@ -431,15 +574,17 @@ func TestParseDDL(t *testing.T) {
 				Text: []string{"unnamed foreign key"}},
 			{Marker: "--", Start: line(17), End: line(17),
 				Text: []string{"not a constraint"}},
-			{Marker: "--", Isolated: true, Start: line(31), End: line(32),
+			{Marker: "--", Isolated: true, Start: line(33), End: line(34),
 				Text: []string{"This table has some commentary", "that spans multiple lines."}},
 			// These comments shouldn't get combined:
-			{Marker: "--", Start: line(34), End: line(34), Text: []string{"dummy comment"}},
-			{Marker: "--", Start: line(35), End: line(35), Text: []string{"comment on ids"}},
-			{Marker: "--", Isolated: true, Start: line(36), End: line(36), Text: []string{"leading multi comment immediately after inline comment"}},
+			{Marker: "--", Start: line(36), End: line(36), Text: []string{"dummy comment"}},
+			{Marker: "--", Start: line(37), End: line(37), Text: []string{"comment on ids"}},
+			{Marker: "--", Isolated: true, Start: line(38), End: line(38), Text: []string{"leading multi comment immediately after inline comment"}},
+
+			{Marker: "--", Isolated: true, Start: line(43), End: line(43), Text: []string{"Table with generated column."}},
 
 			// Comment after everything else.
-			{Marker: "--", Isolated: true, Start: line(41), End: line(41), Text: []string{"Trailing comment at end of file."}},
+			{Marker: "--", Isolated: true, Start: line(49), End: line(49), Text: []string{"Trailing comment at end of file."}},
 		}}},
 		// No trailing comma:
 		{`ALTER TABLE T ADD COLUMN C2 INT64`, &DDL{Filename: "filename", List: []DDLStmt{
@@ -536,12 +681,16 @@ func tableByName(t *testing.T, ddl *DDL, name ID) *CreateTable {
 
 func TestParseFailures(t *testing.T) {
 	expr := func(p *parser) error {
-		_, err := p.parseExpr()
-		return err
+		if _, pe := p.parseExpr(); pe != nil {
+			return pe
+		}
+		return nil
 	}
 	query := func(p *parser) error {
-		_, err := p.parseQuery()
-		return err
+		if _, pe := p.parseQuery(); pe != nil {
+			return pe
+		}
+		return nil
 	}
 
 	tests := []struct {

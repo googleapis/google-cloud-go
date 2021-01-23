@@ -64,6 +64,7 @@ type Client struct {
 // its value to connect to a locally-running datastore emulator.
 // DetectProjectID can be passed as the projectID argument to instruct
 // NewClient to detect the project ID from the credentials.
+// Call (*Client).Close() when done with the client.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	var o []option.ClientOption
 	// Environment variables for gcd emulator:
@@ -322,7 +323,8 @@ func checkMultiArg(v reflect.Value) (m multiArgType, elemType reflect.Type) {
 	return multiArgTypeInvalid, nil
 }
 
-// Close closes the Client.
+// Close closes the Client. Call Close to clean up resources when done with the
+// Client.
 func (c *Client) Close() error {
 	return c.connPool.Close()
 }
@@ -376,7 +378,7 @@ func (c *Client) get(ctx context.Context, keys []*Key, dst interface{}, opts *pb
 	v := reflect.ValueOf(dst)
 	multiArgType, _ := checkMultiArg(v)
 
-	// Sanity checks
+	// Confidence checks
 	if multiArgType == multiArgTypeInvalid {
 		return errors.New("datastore: dst has invalid type")
 	}

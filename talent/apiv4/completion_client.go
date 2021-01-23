@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import (
 
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 	"google.golang.org/grpc"
@@ -41,9 +42,11 @@ type CompletionCallOptions struct {
 
 func defaultCompletionClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://jobs.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -73,6 +76,9 @@ type CompletionClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
 	// The gRPC API client.
 	completionClient talentpb.CompletionClient
 
@@ -97,13 +103,19 @@ func NewCompletionClient(ctx context.Context, opts ...option.ClientOption) (*Com
 		clientOpts = append(clientOpts, hookOpts...)
 	}
 
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
 	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
 	if err != nil {
 		return nil, err
 	}
 	c := &CompletionClient{
-		connPool:    connPool,
-		CallOptions: defaultCompletionCallOptions(),
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		CallOptions:      defaultCompletionCallOptions(),
 
 		completionClient: talentpb.NewCompletionClient(connPool),
 	}
@@ -137,6 +149,11 @@ func (c *CompletionClient) setGoogleClientInfo(keyval ...string) {
 // CompleteQuery completes the specified prefix with keyword suggestions.
 // Intended for use by a job search auto-complete search box.
 func (c *CompletionClient) CompleteQuery(ctx context.Context, req *talentpb.CompleteQueryRequest, opts ...gax.CallOption) (*talentpb.CompleteQueryResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tenant", url.QueryEscape(req.GetTenant())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CompleteQuery[0:len(c.CallOptions.CompleteQuery):len(c.CallOptions.CompleteQuery)], opts...)

@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/version"
@@ -101,10 +102,17 @@ func (c *Client) Close() error {
 	pubErr := c.pubc.Close()
 	subErr := c.subc.Close()
 	if pubErr != nil {
-		return fmt.Errorf("pubsub subscriber closing error: %v", pubErr)
+		return fmt.Errorf("pubsub publisher closing error: %v", pubErr)
 	}
 	if subErr != nil {
-		return fmt.Errorf("pubsub publisher closing error: %v", subErr)
+		// Suppress client connection closing errors. This will only happen
+		// when using the client in conjunction with the Pub/Sub emulator
+		// or fake (pstest). Closing both clients separately will never
+		// return this error against the live Pub/Sub service.
+		if strings.Contains(subErr.Error(), "the client connection is closing") {
+			return nil
+		}
+		return fmt.Errorf("pubsub subscriber closing error: %v", subErr)
 	}
 	return nil
 }

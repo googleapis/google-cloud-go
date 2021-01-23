@@ -489,6 +489,12 @@ type ReceiveSettings struct {
 	// for unprocessed messages.
 	MaxOutstandingBytes int
 
+	// UseLegacyFlowControl disables enforcing flow control settings at the Cloud
+	// PubSub server and the less accurate method of only enforcing flow control
+	// at the client side is used.
+	// The default is false.
+	UseLegacyFlowControl bool
+
 	// NumGoroutines is the number of goroutines that each datastructure along
 	// the Receive path will spawn. Adjusting this value adjusts concurrency
 	// along the receive path.
@@ -804,6 +810,11 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// If MaxExtension is negative, disable automatic extension.
 		maxExt = 0
 	}
+	maxExtPeriod := s.ReceiveSettings.MaxExtensionPeriod
+	if maxExtPeriod < 0 {
+		maxExtPeriod = 0
+	}
+
 	var numGoroutines int
 	switch {
 	case s.ReceiveSettings.Synchronous:
@@ -816,10 +827,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	// TODO(jba): add tests that verify that ReceiveSettings are correctly processed.
 	po := &pullOptions{
 		maxExtension:           maxExt,
+		maxExtensionPeriod:     maxExtPeriod,
 		maxPrefetch:            trunc32(int64(maxCount)),
 		synchronous:            s.ReceiveSettings.Synchronous,
 		maxOutstandingMessages: maxCount,
 		maxOutstandingBytes:    maxBytes,
+		useLegacyFlowControl:   s.ReceiveSettings.UseLegacyFlowControl,
 	}
 	fc := newFlowController(maxCount, maxBytes)
 
@@ -846,7 +859,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 		// The iterator does not use the context passed to Receive. If it did,
 		// canceling that context would immediately stop the iterator without
 		// waiting for unacked messages.
-		iter := newMessageIterator(s.c.subc, s.name, &s.ReceiveSettings.MaxExtension, po)
+		iter := newMessageIterator(s.c.subc, s.name, po)
 
 		// We cannot use errgroup from Receive here. Receive might already be
 		// calling group.Wait, and group.Wait cannot be called concurrently with
@@ -903,9 +916,10 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						// Return nil if the context is done, not err.
 						return nil
 					}
-					old := msg.doneFunc
+					ackh, _ := msgAckHandler(msg)
+					old := ackh.doneFunc
 					msgLen := len(msg.Data)
-					msg.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
+					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
 						defer fc.release(msgLen)
 						old(ackID, ack, receiveTime)
 					}
@@ -943,11 +957,13 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 }
 
 type pullOptions struct {
-	maxExtension time.Duration
-	maxPrefetch  int32
+	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in tota
+	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
+	maxPrefetch        int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more
 	// than maxPrefetch messages.
 	synchronous            bool
 	maxOutstandingMessages int
 	maxOutstandingBytes    int
+	useLegacyFlowControl   bool
 }
