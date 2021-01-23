@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -265,8 +265,6 @@ func (c *AnalyticsAdminClient) setGoogleClientInfo(keyval ...string) {
 }
 
 // GetAccount lookup for a single Account.
-// Throws “Target not found” if no such account found, or if caller does not
-// have permissions to access it.
 func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -444,9 +442,6 @@ func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *ad
 }
 
 // GetProperty lookup for a single “GA4” Property.
-//
-// Throws “Target not found” if no such property found, if property is not
-// of the type “GA4”, or if caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -850,9 +845,6 @@ func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *ad
 }
 
 // GetWebDataStream lookup for a single WebDataStream
-//
-// Throws “Target not found” if no such web data stream found, or if the
-// caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -981,9 +973,6 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 }
 
 // GetIosAppDataStream lookup for a single IosAppDataStream
-//
-// Throws “Target not found” if no such iOS app data stream found, or if the
-// caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1112,9 +1101,6 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 }
 
 // GetAndroidAppDataStream lookup for a single AndroidAppDataStream
-//
-// Throws “Target not found” if no such android app data stream found, or if
-// the caller does not have permissions to access it.
 func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1356,25 +1342,44 @@ func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *admi
 
 // ListFirebaseLinks lists FirebaseLinks on a property.
 // Properties can have at most one FirebaseLink.
-func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) (*adminpb.ListFirebaseLinksResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
+func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) *FirebaseLinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ListFirebaseLinks[0:len(c.CallOptions.ListFirebaseLinks):len(c.CallOptions.ListFirebaseLinks)], opts...)
-	var resp *adminpb.ListFirebaseLinksResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.analyticsAdminClient.ListFirebaseLinks(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
+	it := &FirebaseLinkIterator{}
+	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.FirebaseLink, string, error) {
+		var resp *adminpb.ListFirebaseLinksResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListFirebaseLinks(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetFirebaseLinks(), resp.GetNextPageToken(), nil
 	}
-	return resp, nil
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
 }
 
 // GetGlobalSiteTag returns the Site Tag for the specified web stream.
@@ -1709,6 +1714,53 @@ func (it *AuditUserLinkIterator) bufLen() int {
 }
 
 func (it *AuditUserLinkIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// FirebaseLinkIterator manages a stream of *adminpb.FirebaseLink.
+type FirebaseLinkIterator struct {
+	items    []*adminpb.FirebaseLink
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.FirebaseLink, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *FirebaseLinkIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *FirebaseLinkIterator) Next() (*adminpb.FirebaseLink, error) {
+	var item *adminpb.FirebaseLink
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *FirebaseLinkIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *FirebaseLinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

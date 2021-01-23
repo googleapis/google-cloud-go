@@ -21,6 +21,9 @@ import (
 	"math"
 	"reflect"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 func TestParseQuery(t *testing.T) {
@@ -301,6 +304,9 @@ func TestParseExpr(t *testing.T) {
 		{`BR'\\'`, BytesLiteral("\\\\")},
 		{`RB"""\\//\\//"""`, BytesLiteral("\\\\//\\\\//")},
 		{"RB'''\\\\//\n\\\\//'''", BytesLiteral("\\\\//\n\\\\//")},
+
+		// Date and timestamp literals:
+		{`DATE '2014-09-27'`, DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27})},
 
 		// Array literals:
 		// https://cloud.google.com/spanner/docs/lexical#array_literals

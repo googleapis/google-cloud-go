@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -880,6 +880,7 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 
 func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+	// import "google.golang.org/api/iterator"
 
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
@@ -890,12 +891,18 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 	req := &adminpb.ListFirebaseLinksRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.ListFirebaseLinks(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
+	it := c.ListFirebaseLinks(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
 	}
-	// TODO: Use resp.
-	_ = resp
 }
 
 func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
