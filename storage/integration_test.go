@@ -2080,7 +2080,6 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	// - (1b) must NOT have that permission on (3a).
 	// - (1a) must NOT have that permission on (3b).
 
-	t.Skip("https://github.com/googleapis/google-cloud-go/issues/1753")
 	const wantErrorCode = 400
 
 	ctx := context.Background()
@@ -2212,6 +2211,10 @@ func TestIntegration_RequesterPays(t *testing.T) {
 	})
 
 	// ACL operations.
+	// Create another object for these to avoid object rate limits.
+	call("write object", func(b *BucketHandle) error {
+		return writeObject(ctx, b.Object("bar"), "text/plain", []byte("hello"))
+	})
 	entity := ACLEntity("domain-google.com")
 	call("bucket acl set", func(b *BucketHandle) error {
 		return b.ACL().Set(ctx, entity, RoleReader)
@@ -2244,14 +2247,14 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		return err
 	})
 	call("object acl set", func(b *BucketHandle) error {
-		return b.Object("foo").ACL().Set(ctx, entity, RoleReader)
+		return b.Object("bar").ACL().Set(ctx, entity, RoleReader)
 	})
 	call("object acl list", func(b *BucketHandle) error {
-		_, err := b.Object("foo").ACL().List(ctx)
+		_, err := b.Object("bar").ACL().List(ctx)
 		return err
 	})
 	call("object acl delete", func(b *BucketHandle) error {
-		err := b.Object("foo").ACL().Delete(ctx, entity)
+		err := b.Object("bar").ACL().Delete(ctx, entity)
 		if errCode(err) == 404 {
 			return nil
 		}
@@ -2275,7 +2278,8 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		h.mustWrite(b1.Object("foo").NewWriter(ctx), []byte("hello")) // note: b1, not b.
 		return b.Object("foo").Delete(ctx)
 	})
-	b1.Object("foo").Delete(ctx) // Make sure object is deleted.
+	b1.Object("foo").Delete(ctx) // Clean up created objects.
+	b1.Object("bar").Delete(ctx)
 	for _, obj := range []string{"copy", "compose"} {
 		if err := b1.UserProject(projID).Object(obj).Delete(ctx); err != nil {
 			t.Fatalf("could not delete %q: %v", obj, err)
