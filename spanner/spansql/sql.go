@@ -331,7 +331,7 @@ func (sfj SelectFromJoin) SQL() string {
 	// TODO: hints go here
 	str += sfj.RHS.SQL()
 	if sfj.On != nil {
-		str += " " + sfj.On.SQL()
+		str += " ON " + sfj.On.SQL()
 	} else if len(sfj.Using) > 0 {
 		str += " USING (" + idList(sfj.Using, ", ") + ")"
 	}
