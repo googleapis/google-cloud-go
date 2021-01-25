@@ -916,6 +916,22 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/02/19
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/datalabeling/v1beta1",
+		pkg:                   "datalabeling",
+		importPath:            "cloud.google.com/go/datalabeling/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/datalabeling/v1beta1/datalabeling_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/datalabeling/v1beta1/datalabeling_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/dataqna/v1alpha",
+		pkg:                   "dataqna",
+		importPath:            "cloud.google.com/go/dataqna/apiv1alpha",
+		gRPCServiceConfigPath: "google/cloud/dataqna/v1alpha/dataqna_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/dataqna/v1alpha/dataqna_v1alpha.yaml",
+		releaseLevel:          "alpha",
+	},
 
 	// Non-Cloud APIs
 	{
