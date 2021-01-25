@@ -2194,26 +2194,28 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		}
 	}
 	// Object operations.
+	obj1 := uidSpace.New()
 	call("write object", func(b *BucketHandle) error {
-		return writeObject(ctx, b.Object("foo"), "text/plain", []byte("hello"))
+		return writeObject(ctx, b.Object(obj1), "text/plain", []byte("hello"))
 	})
 	call("read object", func(b *BucketHandle) error {
-		_, err := readObject(ctx, b.Object("foo"))
+		_, err := readObject(ctx, b.Object(obj1))
 		return err
 	})
 	call("object attrs", func(b *BucketHandle) error {
-		_, err := b.Object("foo").Attrs(ctx)
+		_, err := b.Object(obj1).Attrs(ctx)
 		return err
 	})
 	call("update object", func(b *BucketHandle) error {
-		_, err := b.Object("foo").Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
+		_, err := b.Object(obj1).Update(ctx, ObjectAttrsToUpdate{ContentLanguage: "en"})
 		return err
 	})
 
 	// ACL operations.
 	// Create another object for these to avoid object rate limits.
+	obj2 := uidSpace.New()
 	call("write object", func(b *BucketHandle) error {
-		return writeObject(ctx, b.Object("bar"), "text/plain", []byte("hello"))
+		return writeObject(ctx, b.Object(obj2), "text/plain", []byte("hello"))
 	})
 	entity := ACLEntity("domain-google.com")
 	call("bucket acl set", func(b *BucketHandle) error {
@@ -2247,14 +2249,14 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		return err
 	})
 	call("object acl set", func(b *BucketHandle) error {
-		return b.Object("bar").ACL().Set(ctx, entity, RoleReader)
+		return b.Object(obj2).ACL().Set(ctx, entity, RoleReader)
 	})
 	call("object acl list", func(b *BucketHandle) error {
-		_, err := b.Object("bar").ACL().List(ctx)
+		_, err := b.Object(obj2).ACL().List(ctx)
 		return err
 	})
 	call("object acl delete", func(b *BucketHandle) error {
-		err := b.Object("bar").ACL().Delete(ctx, entity)
+		err := b.Object(obj2).ACL().Delete(ctx, entity)
 		if errCode(err) == 404 {
 			return nil
 		}
@@ -2263,11 +2265,11 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 	// Copy and compose.
 	call("copy", func(b *BucketHandle) error {
-		_, err := b.Object("copy").CopierFrom(b.Object("foo")).Run(ctx)
+		_, err := b.Object("copy").CopierFrom(b.Object(obj1)).Run(ctx)
 		return err
 	})
 	call("compose", func(b *BucketHandle) error {
-		_, err := b.Object("compose").ComposerFrom(b.Object("foo"), b.Object("copy")).Run(ctx)
+		_, err := b.Object("compose").ComposerFrom(b.Object(obj1), b.Object("copy")).Run(ctx)
 		return err
 	})
 	call("delete object", func(b *BucketHandle) error {
@@ -2275,11 +2277,11 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		// The storage service may perform validation in any order (perhaps in parallel),
 		// so if we delete an object that doesn't exist and for which we lack permission,
 		// we could see either of those two errors. (See Google-internal bug 78341001.)
-		h.mustWrite(b1.Object("foo").NewWriter(ctx), []byte("hello")) // note: b1, not b.
-		return b.Object("foo").Delete(ctx)
+		h.mustWrite(b1.Object(obj1).NewWriter(ctx), []byte("hello")) // note: b1, not b.
+		return b.Object(obj1).Delete(ctx)
 	})
-	b1.Object("foo").Delete(ctx) // Clean up created objects.
-	b1.Object("bar").Delete(ctx)
+	b1.Object(obj1).Delete(ctx) // Clean up created objects.
+	b1.Object(obj2).Delete(ctx)
 	for _, obj := range []string{"copy", "compose"} {
 		if err := b1.UserProject(projID).Object(obj).Delete(ctx); err != nil {
 			t.Fatalf("could not delete %q: %v", obj, err)
