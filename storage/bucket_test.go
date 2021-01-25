@@ -289,7 +289,6 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	if msg := testutil.Diff(got, want); msg != "" {
 		t.Errorf(msg)
 	}
-
 }
 
 func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {

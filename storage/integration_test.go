@@ -655,7 +655,6 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
 		t.Errorf("updating UBLA: got %v, want %v", attrs.PublicAccessPrevention.string(), PublicAccessPreventionUnspecified.string())
 	}
-
 }
 
 func TestIntegration_ConditionalDelete(t *testing.T) {

@@ -244,6 +244,11 @@ type BucketAttrs struct {
 	// for more information.
 	UniformBucketLevelAccess UniformBucketLevelAccess
 
+	// PublicAccessPrevention is the setting for the bucket's
+	// PublicAccessPrevention policy, which can be used to prevent public access
+	// of data in the bucket. See
+	// https://cloud.google.com/storage/docs/public-access-prevention for more
+	// information.
 	PublicAccessPrevention PublicAccessPrevention
 
 	// DefaultObjectACL is the list of access controls to
@@ -355,11 +360,23 @@ type UniformBucketLevelAccess struct {
 	LockedTime time.Time
 }
 
+// PublicAccessPrevention configures the Public Access Prevention feature, which
+// can be used to disallow public access to any data in a bucket. See
+// https://cloud.google.com/storage/docs/public-access-prevention for more
+// information.
 type PublicAccessPrevention int
 
 const (
+	// PublicAccessPreventionDefault is a zero value, used only if this field is
+	// not set in a call to GCS.
 	PublicAccessPreventionDefault PublicAccessPrevention = iota
+
+	// PublicAccessPreventionUnspecified corresponds to a value of "unspecified"
+	// and is the default for buckets.
 	PublicAccessPreventionUnspecified
+
+	// PublicAccessPreventionEnforced corresponds to a value of "enforced". This
+	// enforces Public Access Prevention on the bucket.
 	PublicAccessPreventionEnforced
 
 	publicAccessPreventionDefault     string = ""
@@ -691,6 +708,11 @@ type BucketAttrsToUpdate struct {
 	// for more information.
 	UniformBucketLevelAccess *UniformBucketLevelAccess
 
+	// PublicAccessPrevention is the setting for the bucket's
+	// PublicAccessPrevention policy, which can be used to prevent public access
+	// of data in the bucket. See
+	// https://cloud.google.com/storage/docs/public-access-prevention for more
+	// information.
 	PublicAccessPrevention PublicAccessPrevention
 
 	// StorageClass is the default storage class of the bucket. This defines
