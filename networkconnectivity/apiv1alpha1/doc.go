@@ -30,7 +30,7 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit pkg.go.dev/cloud.google.com/go.
-package networkconnectivity // import "cloud.google.com/go/networkconnectivity/v1alpha1"
+package networkconnectivity // import "cloud.google.com/go/networkconnectivity/apiv1alpha1"
 
 import (
 	"context"
@@ -49,7 +49,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210114"
+const versionClient = "20210125"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

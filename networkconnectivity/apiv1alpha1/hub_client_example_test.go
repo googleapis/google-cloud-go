@@ -19,7 +19,7 @@ package networkconnectivity_test
 import (
 	"context"
 
-	networkconnectivity "cloud.google.com/go/networkconnectivity/v1alpha1"
+	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1alpha1"
 	"google.golang.org/api/iterator"
 	networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
 )
