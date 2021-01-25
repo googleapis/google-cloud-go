@@ -543,6 +543,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/monitoring/dashboard/apiv1",
     "release_level": "ga"
   },
+  "cloud.google.com/go/networkconnectivity/apiv1alpha1": {
+    "distribution_name": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+    "description": "Network Connectivity API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/networkconnectivity/apiv1alpha1",
+    "release_level": "alpha"
+  },
   "cloud.google.com/go/notebooks/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/notebooks/apiv1beta1",
     "description": "Notebooks API",
