@@ -87,6 +87,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/memcache/v1",
+		pkg:                   "memcache",
+		importPath:            "cloud.google.com/go/memcache/apiv1",
+		gRPCServiceConfigPath: "google/cloud/memcache/v1/memcache_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/memcache/v1/memcache_v1.yaml",
+		// GA after 2021/02/20
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/memcache/v1beta2",
 		pkg:                   "memcache",
 		importPath:            "cloud.google.com/go/memcache/apiv1beta2",
@@ -771,6 +780,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
+		pkg:                   "networkconnectivity",
+		importPath:            "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+		gRPCServiceConfigPath: "google/cloud/networkconnectivity/v1alpha1/networkconnectivity_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/networkconnectivity/v1alpha1/networkconnectivity_v1alpha1.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/notebooks/v1beta1",
 		pkg:                   "notebooks",
 		importPath:            "cloud.google.com/go/notebooks/apiv1beta1",
@@ -905,6 +922,31 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:           "cloud.google.com/go/resourcemanager/apiv2",
 		apiServiceConfigPath: "google/cloud/resourcemanager/v2/cloudresourcemanager_v2.yaml",
 		// GA after 2021/02/19
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/datalabeling/v1beta1",
+		pkg:                   "datalabeling",
+		importPath:            "cloud.google.com/go/datalabeling/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/datalabeling/v1beta1/datalabeling_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/datalabeling/v1beta1/datalabeling_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/dataqna/v1alpha",
+		pkg:                   "dataqna",
+		importPath:            "cloud.google.com/go/dataqna/apiv1alpha",
+		gRPCServiceConfigPath: "google/cloud/dataqna/v1alpha/dataqna_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/dataqna/v1alpha/dataqna_v1alpha.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/api/servicemanagement/v1",
+		pkg:                   "servicemanagement",
+		importPath:            "cloud.google.com/go/servicemanagement/apiv1",
+		gRPCServiceConfigPath: "google/api/servicemanagement/v1/servicemanagement_grpc_service_config.json",
+		apiServiceConfigPath:  "google/api/servicemanagement/v1/servicemanagement_gapic.yaml",
+		// GA after 2021/02/26
 		releaseLevel: "beta",
 	},
 
