@@ -1,5 +1,12 @@
 # Changes
 
+### [1.7.1](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.7.0...v1.7.1) (2021-01-25)
+
+
+### Bug Fixes
+
+* **bigtable:** replace unsafe exec in cbt ([#3591](https://www.github.com/googleapis/google-cloud-go/issues/3591)) ([7c1b0c2](https://www.github.com/googleapis/google-cloud-go/commit/7c1b0c2deb737e696a72bd44bc610223d62b7d0e))
+
 ## [1.7.0](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.6.0...v1.7.0) (2021-01-19)
 
 

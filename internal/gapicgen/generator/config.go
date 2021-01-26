@@ -940,6 +940,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/dataqna/v1alpha/dataqna_v1alpha.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/api/servicemanagement/v1",
+		pkg:                   "servicemanagement",
+		importPath:            "cloud.google.com/go/servicemanagement/apiv1",
+		gRPCServiceConfigPath: "google/api/servicemanagement/v1/servicemanagement_grpc_service_config.json",
+		apiServiceConfigPath:  "google/api/servicemanagement/v1/servicemanagement_gapic.yaml",
+		// GA after 2021/02/26
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
