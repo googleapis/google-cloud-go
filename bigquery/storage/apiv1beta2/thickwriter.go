@@ -56,7 +56,7 @@ func NewThickWriter(ctx context.Context, client *BigQueryWriteClient, streamName
 	writer.stopFunc = cancel
 	appendClient, err := client.AppendRows(appendCtx)
 	if err != nil {
-		return nil, fmt.Errorf("error starting stream client: %w", err)
+		return nil, fmt.Errorf("error starting stream client: %v", err)
 	}
 	writer.appendClient = appendClient
 	go writer.processStream(ctx)
