@@ -2194,7 +2194,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 		}
 	}
 	// Object operations.
-	obj1 := uidSpace.New()
+	obj1 := "acl-go-test" + uidSpace.New()
 	call("write object", func(b *BucketHandle) error {
 		return writeObject(ctx, b.Object(obj1), "text/plain", []byte("hello"))
 	})
@@ -2213,7 +2213,7 @@ func TestIntegration_RequesterPays(t *testing.T) {
 
 	// ACL operations.
 	// Create another object for these to avoid object rate limits.
-	obj2 := uidSpace.New()
+	obj2 := "acl-go-test" + uidSpace.New()
 	call("write object", func(b *BucketHandle) error {
 		return writeObject(ctx, b.Object(obj2), "text/plain", []byte("hello"))
 	})
