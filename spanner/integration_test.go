@@ -1082,6 +1082,9 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Failed to execute transaction: %v", err)
 	}
+	if resp.CommitStats == nil {
+		t.Fatal("Missing commit stats in commit response")
+	}
 	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
 		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
 	}

@@ -868,7 +868,7 @@ func TestClient_ReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
 	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()
 	ctx := context.Background()
-	tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{CommitOptions{ReturnCommitStats:true}})
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{CommitOptions{ReturnCommitStats: true}})
 	if err != nil {
 		t.Fatalf("Unexpected error when creating transaction: %v", err)
 	}
