@@ -828,7 +828,6 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	}
 }
 
-<<<<<<< HEAD
 func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
 	_, client, teardown := setupMockedTestServer(t)
 	defer teardown()

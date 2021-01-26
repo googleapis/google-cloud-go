@@ -1,7 +1,7 @@
 # Default owner for all directories not owned by others
 *                   @googleapis/yoshi-go-admins
 
-/bigtable/          @crwilcox @tritone @googleapis/yoshi-go-admins
+/bigtable/          @crwilcox @tritone @kolea2 @googleapis/yoshi-go-admins
 /bigquery/          @googleapis/api-bigquery @googleapis/yoshi-go-admins
 /datastore/         @crwilcox @tritone @googleapis/yoshi-go-admins
 /firestore/         @crwilcox @tritone @googleapis/yoshi-go-admins
