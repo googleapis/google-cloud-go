@@ -161,9 +161,12 @@ func toHTTPRequest(p *logtypepb.HttpRequest) (*logging.HTTPRequest, error) {
 		Status:                         int(p.Status),
 		ResponseSize:                   p.ResponseSize,
 		Latency:                        dur,
+		LocalIP:                        p.ServerIp,
 		RemoteIP:                       p.RemoteIp,
 		CacheHit:                       p.CacheHit,
 		CacheValidatedWithOriginServer: p.CacheValidatedWithOriginServer,
+		CacheFillBytes:                 p.CacheFillBytes,
+		CacheLookup:                    p.CacheLookup,
 	}, nil
 }
 
