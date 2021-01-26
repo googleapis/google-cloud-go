@@ -140,8 +140,8 @@ else
 fi
 
 if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
-  chmod +x $KOKORO_GFILE_DIR/linux_amd64/buildcop
-  $KOKORO_GFILE_DIR/linux_amd64/buildcop -logs_dir=$GOCLOUD_HOME \
+  chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
+  $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
     -repo=googleapis/google-cloud-go \
     -commit_hash=$KOKORO_GITHUB_COMMIT_URL_google_cloud_go
 fi
