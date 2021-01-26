@@ -384,7 +384,7 @@ const (
 	publicAccessPreventionEnforced           = "enforced"
 )
 
-func (p PublicAccessPrevention) string() string {
+func (p PublicAccessPrevention) String() string {
 	switch p {
 	case PublicAccessPreventionUnspecified:
 		return publicAccessPreventionUnspecified
@@ -629,7 +629,7 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 			}
 		}
 		if b.PublicAccessPrevention != PublicAccessPreventionDefault {
-			bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.string()
+			bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
 		}
 	}
 	return &raw.Bucket{
@@ -829,7 +829,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 		if rb.IamConfiguration == nil {
 			rb.IamConfiguration = &raw.BucketIamConfiguration{}
 		}
-		rb.IamConfiguration.PublicAccessPrevention = ua.PublicAccessPrevention.string()
+		rb.IamConfiguration.PublicAccessPrevention = ua.PublicAccessPrevention.String()
 	}
 	if ua.Encryption != nil {
 		if ua.Encryption.DefaultKMSKeyName == "" {

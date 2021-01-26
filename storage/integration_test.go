@@ -621,7 +621,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
 	}
 	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
-		t.Errorf("updating PublicAccessPrevention: got %v, want %v", attrs.PublicAccessPrevention.string(), PublicAccessPreventionUnspecified.string())
+		t.Errorf("updating PublicAccessPrevention: got %v, want %v", attrs.PublicAccessPrevention.String(), PublicAccessPreventionUnspecified.String())
 	}
 	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
 		t.Error("updating PublicAccessPrevention changed UBLA setting")
@@ -653,7 +653,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Error("updating UBLA: got UBLA not enabled, want enabled")
 	}
 	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
-		t.Errorf("updating UBLA: got %v, want %v", attrs.PublicAccessPrevention.string(), PublicAccessPreventionUnspecified.string())
+		t.Errorf("updating UBLA: got %v, want %v", attrs.PublicAccessPrevention.String(), PublicAccessPreventionUnspecified.String())
 	}
 }
 
