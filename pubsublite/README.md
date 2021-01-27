@@ -1,4 +1,4 @@
-## Cloud Pub/Sub Lite [![GoDoc](https://godoc.org/cloud.google.com/go/pubsublite?status.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
+## Cloud Pub/Sub Lite [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/pubsublite.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 
 - [About Cloud Pub/Sub Lite](https://cloud.google.com/pubsub/lite)
 - [Client library documentation](https://cloud.google.com/pubsub/lite/docs/reference/libraries)
