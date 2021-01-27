@@ -67,17 +67,17 @@ and zones where Pub/Sub Lite is available.
 
 Publishing
 
-The pubsublite/ps subpackage contains clients for publishing and receiving
-messages, which have similar interfaces to their Topic and Subscription
-counterparts in the Cloud Pub/Sub library:
+The pubsublite/pscompat subpackage contains clients for publishing and receiving
+messages, which have similar interfaces to their pubsub.Topic and
+pubsub.Subscription counterparts in the Cloud Pub/Sub library:
 https://pkg.go.dev/cloud.google.com/go/pubsub.
 
 Pub/Sub Lite uses gRPC streams extensively for high throughput. For more
-differences, see https://pkg.go.dev/cloud.google.com/go/pubsublite/ps.
+differences, see https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat.
 
 To publish messages to a topic, first create a PublisherClient:
 
-  publisher, err := ps.NewPublisherClient(ctx, ps.DefaultPublishSettings, topicPath)
+  publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topicPath)
   if err != nil {
     // TODO: Handle error.
   }
@@ -136,7 +136,7 @@ Receiving
 
 To receive messages for a subscription, first create a SubscriberClient:
 
-  subscriber, err := ps.NewSubscriberClient(ctx, ps.DefaultReceiveSettings, subscriptionPath)
+  subscriber, err := pscompat.NewSubscriberClient(ctx, pscompat.DefaultReceiveSettings, subscriptionPath)
 
 Messages are then consumed from a subscription via callback.
 

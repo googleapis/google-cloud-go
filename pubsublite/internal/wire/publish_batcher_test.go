@@ -253,7 +253,9 @@ func TestPublishBatcherBundlerBatchingDelay(t *testing.T) {
 	if err := batcher.AddMessage(msg1, nil); err != nil {
 		t.Errorf("AddMessage(%v) got err: %v", msg1, err)
 	}
-	time.Sleep(settings.DelayThreshold * 2)
+	// Wait much longer than DelayThreshold to prevent test flakiness, as the
+	// Bundler may place the messages in the same batch.
+	time.Sleep(settings.DelayThreshold * 5)
 	if err := batcher.AddMessage(msg2, nil); err != nil {
 		t.Errorf("AddMessage(%v) got err: %v", msg2, err)
 	}

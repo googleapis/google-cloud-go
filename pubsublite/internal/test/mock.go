@@ -66,23 +66,13 @@ func NewServer() (*Server, error) {
 	return &Server{LiteServer: liteServer, gRPCServer: srv}, nil
 }
 
-// NewServerWithConn creates a new mock Pub/Sub Lite server along with client
-// options to connect to it.
-func NewServerWithConn() (*Server, []option.ClientOption) {
-	testServer, err := NewServer()
+// ClientConn creates a client connection to the gRPC test server.
+func (s *Server) ClientConn() option.ClientOption {
+	conn, err := grpc.Dial(s.gRPCServer.Addr, grpc.WithInsecure())
 	if err != nil {
 		log.Fatal(err)
 	}
-	conn, err := grpc.Dial(testServer.Addr(), grpc.WithInsecure())
-	if err != nil {
-		log.Fatal(err)
-	}
-	return testServer, []option.ClientOption{option.WithGRPCConn(conn)}
-}
-
-// Addr returns the address that the server is listening on.
-func (s *Server) Addr() string {
-	return s.gRPCServer.Addr
+	return option.WithGRPCConn(conn)
 }
 
 // Close shuts down the server and releases all resources.
