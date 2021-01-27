@@ -90,6 +90,8 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqClient *bigquery.Clie
 	}, nil
 }
 
+// queryRowCount is used to issue a COUNT query against the specified table to validate the number of rows visible to
+// the BQ query engine.
 func queryRowCount(ctx context.Context, client *bigquery.Client, tbl *bigquery.Table) (int64, error) {
 
 	// Verify data is present in the table with a count query.
@@ -111,7 +113,7 @@ func queryRowCount(ctx context.Context, client *bigquery.Client, tbl *bigquery.T
 	return 0, fmt.Errorf("got unexpected value %v", rowdata[0])
 }
 
-func TestSimpleMessageWithDefaultStream(t *testing.T) {
+func TestBareMetalStreaming(t *testing.T) {
 	ctx := context.Background()
 	writeClient, bqClient := getClients(ctx, t)
 	defer writeClient.Close()
@@ -223,6 +225,10 @@ func TestSimpleMessageWithDefaultStream(t *testing.T) {
 	}()
 
 	wg.Wait()
+
+	if reqCount != respCount {
+		t.Errorf("mismatched requests/responses: got %d requests, %d responses", reqCount, respCount)
+	}
 
 	gotRows, err := queryRowCount(ctx, bqClient, testTable)
 	if err != nil {

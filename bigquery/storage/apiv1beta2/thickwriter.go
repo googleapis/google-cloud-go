@@ -82,7 +82,7 @@ func (tw *ThickWriter) processStream(ctx context.Context) {
 		}
 		if err != nil {
 			// observed errors here
-			// open question: should these be associated to the next AR, the writer, or both?
+			// open question: should these be associated to the next AppendResult, the writer, or both?
 
 			// when you don't send schema:
 			// code = InvalidArgument desc = Invalid proto schema: BqMessage.proto: : Missing name. Entity: projects/shollyman-demo-test/datasets/storage_test_dataset_20210122_70895612072539_0002/tables/testtable_20210122_70895612106658_0002/_default
