@@ -1306,6 +1306,31 @@ func encodeUint32(u uint32) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
+// Projection is enumerated type for Query.Projection.
+type Projection int
+
+const (
+	// ProjectionDefault returns all fields of objects.
+	ProjectionDefault Projection = iota
+
+	// ProjectionFull returns all fields of objects.
+	ProjectionFull
+
+	// ProjectionNoACL returns all fields of objects except for Owner and ACL.
+	ProjectionNoACL
+)
+
+func (p Projection) String() string {
+	switch p {
+	case ProjectionFull:
+		return "full"
+	case ProjectionNoACL:
+		return "noAcl"
+	default:
+		return ""
+	}
+}
+
 // Query represents a query to filter objects from a bucket.
 type Query struct {
 	// Delimiter returns results in a directory-like fashion.
@@ -1341,6 +1366,11 @@ type Query struct {
 	// lexicographically before endOffset. If startOffset is also set, the objects
 	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
 	EndOffset string
+
+	// Projection defines the set of properties to return. It will default to ProjectionFull,
+	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
+	// which may improve performance when listing many objects.
+	Projection Projection
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field
