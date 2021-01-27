@@ -136,7 +136,7 @@ Receiving
 
 To receive messages for a subscription, first create a SubscriberClient:
 
-  subscriber, err := pscompat.NewSubscriberClient(ctx, ubscriptionPath)
+  subscriber, err := pscompat.NewSubscriberClient(ctx, subscriptionPath)
 
 Messages are then consumed from a subscription via callback.
 
