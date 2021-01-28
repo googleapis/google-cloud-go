@@ -31,7 +31,6 @@ import (
 	ltest "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 )
 
 var sinkIDs = uid.NewSpace("GO-CLIENT-TEST-SINK", nil)
@@ -52,9 +51,9 @@ func initSinks(ctx context.Context) func() {
 	if integrationTest {
 		// Create a unique bucket as a sink destination, and give the cloud logging account
 		// owner right.
-		ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
+		// ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
 		var err error
-		storageClient, err = storage.NewClient(ctx, option.WithTokenSource(ts))
+		storageClient, err = storage.NewClient(ctx)
 		if err != nil {
 			log.Fatalf("new storage client: %v", err)
 		}
@@ -123,14 +122,15 @@ loop:
 // addBucketCreator adds the bucket IAM member to permission role. Required for all new log sink service accounts.
 func addBucketCreator(bucketName string, identity string) error {
 	ctx := context.Background()
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
 
-	client, err := storage.NewClient(ctx, option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
+	client, err := storage.NewClient(ctx)
 	if err != nil {
 		return fmt.Errorf("storage.NewClient: %v", err)
 	}
 	defer client.Close()
+
+	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+	defer cancel()
 
 	bucket := client.Bucket(bucketName)
 	policy, err := bucket.IAM().Policy(ctx)
