@@ -367,6 +367,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/dlp/apiv2",
     "release_level": "ga"
   },
+  "cloud.google.com/go/documentai/apiv1beta3": {
+    "distribution_name": "cloud.google.com/go/documentai/apiv1beta3",
+    "description": "Cloud Document AI API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/documentai/apiv1beta3",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/errorreporting": {
     "distribution_name": "cloud.google.com/go/errorreporting",
     "description": "Cloud Error Reporting API",
