@@ -234,9 +234,18 @@ type SubscriberClient struct {
 }
 
 // NewSubscriberClient creates a new Pub/Sub Lite client to receive messages for
-// a given subscription. A valid subscription path has the format:
+// a given subscription, using DefaultReceiveSettings. A valid subscription path
+// has the format:
 // "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
-func NewSubscriberClient(ctx context.Context, settings ReceiveSettings, subscription string, opts ...option.ClientOption) (*SubscriberClient, error) {
+func NewSubscriberClient(ctx context.Context, subscription string, opts ...option.ClientOption) (*SubscriberClient, error) {
+	return NewSubscriberClientWithSettings(ctx, subscription, DefaultReceiveSettings, opts...)
+}
+
+// NewSubscriberClientWithSettings creates a new Pub/Sub Lite client to receive
+// messages for a given subscription, using the specified ReceiveSettings. A
+// valid subscription path has the format:
+// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+func NewSubscriberClientWithSettings(ctx context.Context, subscription string, settings ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
 	subscriptionPath, err := wire.ParseSubscriptionPath(subscription)
 	if err != nil {
 		return nil, err

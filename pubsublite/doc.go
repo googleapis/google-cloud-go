@@ -77,7 +77,7 @@ differences, see https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat.
 
 To publish messages to a topic, first create a PublisherClient:
 
-  publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topicPath)
+  publisher, err := pscompat.NewPublisherClient(ctx, topicPath)
   if err != nil {
     // TODO: Handle error.
   }
@@ -136,7 +136,7 @@ Receiving
 
 To receive messages for a subscription, first create a SubscriberClient:
 
-  subscriber, err := pscompat.NewSubscriberClient(ctx, pscompat.DefaultReceiveSettings, subscriptionPath)
+  subscriber, err := pscompat.NewSubscriberClient(ctx, subscriptionPath)
 
 Messages are then consumed from a subscription via callback.
 
