@@ -957,6 +957,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/02/26
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/domains/v1beta1",
+		pkg:                   "domains",
+		importPath:            "cloud.google.com/go/domains/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/domains/v1beta1/domains_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/domains/v1beta1/domains_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
