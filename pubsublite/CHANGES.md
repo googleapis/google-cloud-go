@@ -7,7 +7,7 @@
 
 * **pubsublite:** add separate publisher and subscriber client constructors with settings ([#3528](https://www.github.com/googleapis/google-cloud-go/issues/3528)) ([98637e0](https://www.github.com/googleapis/google-cloud-go/commit/98637e089776292232bb7c039844680627ddade1))
 * **pubsublite:** rename package ps to pscompat ([#3569](https://www.github.com/googleapis/google-cloud-go/issues/3569)) ([9d8fd2b](https://www.github.com/googleapis/google-cloud-go/commit/9d8fd2b5e6999657bcf324878732da801b805591))
-* **pubsublite:** rename TopicPartitions to TopicPartitionCount ([#3565](https://www.github.com/googleapis/google-cloud-go/issues/3565)) ([86a4de7](https://www.github.com/googleapis/google-cloud-go/commit/86a4de757bc2eed97577aba7fd51b5f5540e097e))
+* **pubsublite:** rename AdminClient TopicPartitions to TopicPartitionCount ([#3565](https://www.github.com/googleapis/google-cloud-go/issues/3565)) ([86a4de7](https://www.github.com/googleapis/google-cloud-go/commit/86a4de757bc2eed97577aba7fd51b5f5540e097e))
 * **pubsublite:** use strings for resource paths ([#3559](https://www.github.com/googleapis/google-cloud-go/issues/3559)) ([c18ed25](https://www.github.com/googleapis/google-cloud-go/commit/c18ed25900ba41e0b6b98a89cec8615df6a1146c))
 
 ### Bug Fixes
