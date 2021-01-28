@@ -14,6 +14,13 @@
 
 // +build go1.15
 
+// TODO:
+//   pkgsite.PrintType doesn't linkify.
+//   IDs for const/var groups have every name, not just the one to link to.
+//   Preserve IDs when sanitizing then use the right ID for linking.
+//   Link to different domains by pattern (e.g. for cloud.google.com/go).
+//   Make sure dot imports work (those identifiers aren't in the current package).
+
 package main
 
 import (
@@ -148,7 +155,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 	// Once the files are grouped by package, process each package
 	// independently.
 	for _, pi := range pkgInfos {
-
+		link := newLinker(pi.pkg.Imports, pi.importRenames)
 		pkgItem := &item{
 			UID:      pi.doc.ImportPath,
 			Name:     pi.doc.ImportPath,
@@ -255,7 +262,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:     "function",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.fset),
 				})
 			}
@@ -270,7 +277,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:     "method",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.fset),
 				})
 			}
@@ -286,7 +293,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "function",
 				Summary:  fn.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+				Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
 				Examples: processExamples(fn.Examples, pi.fset),
 			})
 		}
@@ -298,6 +305,66 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 		module:     module,
 		extraFiles: extraFiles,
 	}, nil
+}
+
+type linker struct {
+	// imports is a map from local package name to import path.
+	// Behavior is undefined when a single import has different names in
+	// different files.
+	imports map[string]string
+}
+
+func newLinker(rawImports map[string]*packages.Package, importSyntax map[string]string) *linker {
+	imports := map[string]string{}
+	for path, pkg := range rawImports {
+		name := pkg.Name
+		if rename := importSyntax[path]; rename != "" {
+			name = rename
+		}
+		imports[name] = path
+	}
+	return &linker{imports: imports}
+}
+
+func (l *linker) linkify(s string) string {
+	prefix := ""
+	if strings.HasPrefix(s, "...") {
+		s = s[3:]
+		prefix = "..."
+	}
+	if s[0] == '*' {
+		s = s[1:]
+		prefix += "*"
+	}
+
+	// If s does not have a dot, it's in this package.
+	if !strings.Contains(s, ".") {
+		// If s is not exported, it's probably a builtin.
+		if !token.IsExported(s) {
+			if builtins[s] {
+				return fmt.Sprintf(`%s<a href="https://pkg.go.dev/builtin#%s">%s</a>`, prefix, strings.ToLower(s), s)
+			}
+			return fmt.Sprintf("%s%s", prefix, s)
+		}
+		return fmt.Sprintf(`%s<a href="#%s">%s</a>`, prefix, strings.ToLower(s), s)
+	}
+	// Otherwise, it's in another package.
+	split := strings.Split(s, ".")
+	if len(split) != 2 {
+		// Don't know how to link this.
+		return fmt.Sprintf("%s%s", prefix, s)
+	}
+
+	pkg := split[0]
+	pkgPath, ok := l.imports[pkg]
+	if !ok {
+		// Don't know how to link this.
+		return fmt.Sprintf("%s%s", prefix, s)
+	}
+	name := split[1]
+	pkgLink := fmt.Sprintf("http://pkg.go.dev/%s", pkgPath)
+	link := fmt.Sprintf("%s#%s", pkgLink, name)
+	return fmt.Sprintf("%s<a href=%q>%s</a>.<a href=%q>%s</a>", prefix, pkgLink, pkg, link, name)
 }
 
 // processExamples converts the examples to []example.
@@ -339,9 +406,16 @@ func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents
 	toc := tableOfContents{}
 
 	modTOC := &tocItem{
-		UID:  mod, // Assume the module root has a package.
+		UID:  mod,
 		Name: mod,
 	}
+
+	// Assume the module root has a package.
+	modTOC.addItem(&tocItem{
+		UID:  mod,
+		Name: mod,
+	})
+
 	for _, ef := range extraFiles {
 		modTOC.addItem(&tocItem{
 			Href: ef.dstRelativePath,
@@ -393,11 +467,13 @@ type pkgInfo struct {
 	pkg  *packages.Package
 	doc  *doc.Package
 	fset *token.FileSet
+	// importRenames is a map from package path to local name or "".
+	importRenames map[string]string
 }
 
 func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
+		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule | packages.NeedImports,
 		Tests: true,
 		Dir:   workingDir,
 	}
@@ -487,12 +563,64 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 			continue
 		}
 
+		imports := map[string]string{}
+		for _, f := range parsedFiles {
+			for _, i := range f.Imports {
+				name := ""
+				// i.Name is nil for imports that aren't renamed.
+				if i.Name != nil {
+					name = i.Name.Name
+				}
+				iPath := strings.Trim(i.Path.Value, `"`)
+				imports[iPath] = name
+			}
+		}
+
 		result = append(result, pkgInfo{
-			pkg:  idToPkg[pkgPath],
-			doc:  docPkg,
-			fset: fset,
+			pkg:           idToPkg[pkgPath],
+			doc:           docPkg,
+			fset:          fset,
+			importRenames: imports,
 		})
 	}
 
 	return result, nil
+}
+
+var builtins = map[string]bool{
+	"append":     true,
+	"cap":        true,
+	"close":      true,
+	"complex":    true,
+	"copy":       true,
+	"delete":     true,
+	"imag":       true,
+	"len":        true,
+	"make":       true,
+	"new":        true,
+	"panic":      true,
+	"print":      true,
+	"println":    true,
+	"real":       true,
+	"recover":    true,
+	"bool":       true,
+	"byte":       true,
+	"complex128": true,
+	"complex64":  true,
+	"error":      true,
+	"float32":    true,
+	"float64":    true,
+	"int":        true,
+	"int16":      true,
+	"int32":      true,
+	"int64":      true,
+	"int8":       true,
+	"rune":       true,
+	"string":     true,
+	"uint":       true,
+	"uint16":     true,
+	"uint32":     true,
+	"uint64":     true,
+	"uint8":      true,
+	"uintptr":    true,
 }
