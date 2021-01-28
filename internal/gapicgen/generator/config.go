@@ -941,6 +941,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "alpha",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/documentai/v1beta3",
+		pkg:                   "documentai",
+		importPath:            "cloud.google.com/go/documentai/apiv1beta3",
+		gRPCServiceConfigPath: "google/cloud/documentai/v1beta3/documentai_v1beta3_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/documentai/v1beta3/documentai_v1beta3.yaml",
+		releaseLevel:          "beta",
+	},
+	{
 		inputDirectoryPath:    "google/api/servicemanagement/v1",
 		pkg:                   "servicemanagement",
 		importPath:            "cloud.google.com/go/servicemanagement/apiv1",
