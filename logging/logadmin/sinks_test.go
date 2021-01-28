@@ -15,6 +15,7 @@
 // TODO(jba): document in CONTRIBUTING.md that service account must be given "Logs Configuration Writer" IAM role for sink tests to pass.
 // TODO(jba): [cont] (1) From top left menu, go to IAM & Admin. (2) In Roles dropdown for acct, select Logging > Logs Configuration Writer. (3) Save.
 // TODO(jba): Also, cloud-logs@google.com must have Owner permission on the GCS bucket named for the test project.
+// Note: log buckets are only created during integration tests. All buckets must allow logsink writerIdentity creator permissions.
 
 package logadmin
 
@@ -31,6 +32,7 @@ import (
 	ltest "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 )
 
 var sinkIDs = uid.NewSpace("GO-CLIENT-TEST-SINK", nil)
@@ -51,9 +53,9 @@ func initSinks(ctx context.Context) func() {
 	if integrationTest {
 		// Create a unique bucket as a sink destination, and give the cloud logging account
 		// owner right.
-		// ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
+		ts := testutil.TokenSource(ctx, storage.ScopeFullControl)
 		var err error
-		storageClient, err = storage.NewClient(ctx)
+		storageClient, err = storage.NewClient(ctx, option.WithTokenSource(ts))
 		if err != nil {
 			log.Fatalf("new storage client: %v", err)
 		}
@@ -121,29 +123,31 @@ loop:
 
 // addBucketCreator adds the bucket IAM member to permission role. Required for all new log sink service accounts.
 func addBucketCreator(bucketName string, identity string) error {
-	ctx := context.Background()
+	if integrationTest {
+		ctx := context.Background()
+		client, err := storage.NewClient(ctx, option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
+		if err != nil {
+			return fmt.Errorf("storage.NewClient: %v", err)
+		}
+		defer client.Close()
 
-	client, err := storage.NewClient(ctx)
-	if err != nil {
-		return fmt.Errorf("storage.NewClient: %v", err)
+		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+		defer cancel()
+
+		bucket := client.Bucket(bucketName)
+		policy, err := bucket.IAM().Policy(ctx)
+		if err != nil {
+			return fmt.Errorf("Bucket(%q).IAM().Policy: %v", bucketName, err)
+		}
+
+		var role iam.RoleName = "roles/storage.objectCreator"
+
+		policy.Add(identity, role)
+		if err := bucket.IAM().SetPolicy(ctx, policy); err != nil {
+			return fmt.Errorf("Bucket(%q).IAM().SetPolicy: %v", bucketName, err)
+		}
 	}
-	defer client.Close()
 
-	ctx, cancel := context.WithTimeout(ctx, time.Second*10)
-	defer cancel()
-
-	bucket := client.Bucket(bucketName)
-	policy, err := bucket.IAM().Policy(ctx)
-	if err != nil {
-		return fmt.Errorf("Bucket(%q).IAM().Policy: %v", bucketName, err)
-	}
-
-	var role iam.RoleName = "roles/storage.objectCreator"
-
-	policy.Add(identity, role)
-	if err := bucket.IAM().SetPolicy(ctx, policy); err != nil {
-		return fmt.Errorf("Bucket(%q).IAM().SetPolicy: %v", bucketName, err)
-	}
 	return nil
 }
 
