@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"math/rand"
+	"runtime"
 	"sync"
 	"testing"
 	"time"
@@ -113,7 +115,7 @@ func queryRowCount(ctx context.Context, client *bigquery.Client, tbl *bigquery.T
 	return 0, fmt.Errorf("got unexpected value %v", rowdata[0])
 }
 
-func TestBareMetalStreaming(t *testing.T) {
+func TestIntegration_BareMetalStreaming(t *testing.T) {
 	ctx := context.Background()
 	writeClient, bqClient := getClients(ctx, t)
 	defer writeClient.Close()
@@ -241,7 +243,7 @@ func TestBareMetalStreaming(t *testing.T) {
 
 }
 
-func TestThickWriter(t *testing.T) {
+func TestIntegration_ThickWriter(t *testing.T) {
 	setupCtx := context.Background()
 	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
 
@@ -289,7 +291,7 @@ func TestThickWriter(t *testing.T) {
 	var results []*AppendResult
 	for k, rowSet := range testData {
 		totalRows = totalRows + int64(len(rowSet))
-		res, err := tw.AppendRows(rowSet)
+		res, err := tw.AppendRows(ctx, rowSet)
 		if err != nil {
 			t.Errorf("error on append %d: %v", k, err)
 			break
@@ -316,4 +318,128 @@ func TestThickWriter(t *testing.T) {
 	}
 	log.Printf("got %d rows", gotRows)
 
+}
+
+// A "kick the tires" test that should
+func TestIntegration_ThickWriter_Scale(t *testing.T) {
+	setupCtx := context.Background()
+	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
+
+	writeClient, bqClient := getClients(setupCtx, t)
+	defer writeClient.Close()
+	defer bqClient.Close()
+
+	dataset, cleanupFunc, err := setupTestDataset(setupCtx, t, bqClient)
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanupFunc()
+
+	testTable := dataset.Table(tableIDs.New())
+
+	schema := bigquery.Schema{
+		{Name: "name", Type: bigquery.StringFieldType},
+		{Name: "value", Type: bigquery.IntegerFieldType},
+	}
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: schema}); err != nil {
+		t.Fatalf("couldn't create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+	writeStream := fmt.Sprintf("projects/%s/datasets/%s/tables/%s/_default", testTable.ProjectID, testTable.DatasetID, testTable.TableID)
+
+	tw, err := NewThickWriter(ctx, writeClient, writeStream)
+	if err != nil {
+		t.Fatalf("failed to create writer: %v", err)
+	}
+	tw.RegisterProto(&testdata.SimpleMessage{})
+
+	// Note: 50k causes EOF error around insert ~33k, probably queue size?
+	insertsToGenerate := []int{10, 100, 1000, 5000, 10000, 50000}
+	var lastResult *AppendResult
+	var expectedRows int64
+
+	watchDogCtx, watchDogCancel := context.WithCancel(ctx)
+	// watchdog so we can see progress.
+	go func() {
+		for {
+			select {
+			case <-watchDogCtx.Done():
+				break
+			case <-time.After(500 * time.Millisecond):
+				log.Printf("remaining: %d", tw.fc.count())
+			}
+		}
+	}()
+	startInserts := time.Now()
+	for k, insertCount := range insertsToGenerate {
+		startGroup := time.Now()
+		// for each batch, insert fake data, and then validate via query.
+		var results []*AppendResult
+		for i := 0; i < insertCount; i++ {
+			rowCount := (i % 10) + 1
+			rowData := make([]*testdata.SimpleMessage, rowCount)
+			for r := 0; r < rowCount; r++ {
+				rowData[r] = &testdata.SimpleMessage{
+					Name:  "foo",
+					Value: rand.Int63(),
+				}
+			}
+			expectedRows = expectedRows + int64(rowCount)
+			// don't retain the appendresult; we'll only check the final count via query.
+			result, err := tw.AppendRows(ctx, rowData)
+			if err != nil {
+				t.Errorf("got insert error on insert group %d, insert %d: %v", k, i, err)
+				break
+			}
+			results = append(results, result)
+			lastResult = result
+		}
+		// checking results roughly halves throughput, turn off for now.
+		/*
+			for _, result := range results {
+				_, err := result.GetResult(ctx)
+				if err != nil {
+					t.Errorf("got err: %v", err)
+				}
+			}
+		*/
+
+		// commenting out per-group query validation; severe throughput hit for these small scales.
+		/*
+			gotRows, err := queryRowCount(ctx, bqClient, testTable)
+			if err != nil {
+				t.Errorf("failed to get row count: %v", err)
+			}
+
+			if gotRows != expectedRows {
+				t.Errorf("query result mismatch at end of group %d, got %v want %v", k, gotRows, expectedRows)
+			}
+		*/
+		log.Printf("results: %d", len(results))
+		log.Printf("insert group %d done (%d inserts, %d rows so far).  Duration %v for group, %v for all inserts", k, insertCount, expectedRows, time.Now().Sub(startGroup), time.Now().Sub(startInserts))
+		logMemUsage()
+		results = nil
+	}
+	// done with inserts, cancel watchdog
+	watchDogCancel()
+
+	// wait until the last append signals
+	_, err = lastResult.GetResult(ctx)
+	if err != nil {
+		t.Errorf("got err: %v", err)
+	}
+
+	gotRows, err := queryRowCount(ctx, bqClient, testTable)
+	if err != nil {
+		t.Errorf("failed to get row count: %v", err)
+	}
+	if gotRows != expectedRows {
+		t.Errorf("query result mismatch: got %v want %v", gotRows, expectedRows)
+	}
+
+}
+
+func logMemUsage() {
+	var m runtime.MemStats
+	runtime.ReadMemStats(&m)
+	log.Printf("Alloc = %v MiB\tTotalAlloc = %v MiB\tSys = %v MiB\tNumGC = %v", m.Alloc/1e6, m.TotalAlloc/1e6, m.Sys/1e6, m.NumGC)
 }

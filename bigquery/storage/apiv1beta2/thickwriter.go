@@ -33,10 +33,13 @@ type ThickWriter struct {
 	writerID               string
 	writeClient            *BigQueryWriteClient
 	mu                     sync.Mutex
-	sentSchema             bool
+	sentStart              bool
 	streamName             string
 	appendClient           storagepb.BigQueryWrite_AppendRowsClient
 	protoMessageDescriptor *descriptorpb.DescriptorProto
+	fc                     *flowController
+	respCount              int64
+	reqCount               int64
 
 	stopFunc func()
 
@@ -46,11 +49,13 @@ type ThickWriter struct {
 	pending []*AppendResult
 }
 
+// NewThickWriter creates a new thick writer.
 func NewThickWriter(ctx context.Context, client *BigQueryWriteClient, streamName string) (*ThickWriter, error) {
 	writer := &ThickWriter{
 		writerID:    fmt.Sprintf("test thick writer %s", time.Now().Format(time.RFC1123Z)),
 		writeClient: client,
 		streamName:  streamName,
+		fc:          newFlowController(1000, 100*1e6), // 5000 message, 100 MB
 	}
 	appendCtx, cancel := context.WithCancel(ctx)
 	writer.stopFunc = cancel
@@ -64,7 +69,6 @@ func NewThickWriter(ctx context.Context, client *BigQueryWriteClient, streamName
 }
 
 func (tw *ThickWriter) processStream(ctx context.Context) {
-
 	for {
 		// kill processing if context is done.
 		select {
@@ -73,9 +77,12 @@ func (tw *ThickWriter) processStream(ctx context.Context) {
 		default:
 		}
 
+		//log.Printf("pending %d", len(tw.pending))
 		// potential badness: not guarded by mutex, but it blocks
 		resp, err := tw.appendClient.Recv()
+		tw.respCount = tw.respCount + 1
 		if err == io.EOF {
+			log.Printf("processor got EOF")
 			// we're at end of stream.  break the loop, or do we fix appendClient and keep going?
 			// TODO: how do we signal stopped?
 			break
@@ -97,11 +104,21 @@ func (tw *ThickWriter) processStream(ctx context.Context) {
 		// take the lock while we process an element from the queue
 		tw.mu.Lock()
 
+		if !tw.sentStart {
+			tw.sentStart = true
+		}
+
 		// get pending AR from queue.
 		nextAR := tw.pending[0]
+		if nextAR == nil {
+			log.Printf("WTF")
+		}
 		tw.pending = tw.pending[1:]
-
+		// immediately release; we're going to process.
+		// signal this write complete, release resources.
+		tw.fc.release(nextAR.reqSize)
 		if status := resp.GetError(); status != nil {
+			log.Printf("got err in resp (reqCount %d respCount %d): %#v", tw.reqCount, tw.respCount, resp.GetError())
 			// TODO: add retry logic here.
 			// need a custom status error?
 			nextAR.err = fmt.Errorf("%d: %s", status.GetCode(), status.GetMessage())
@@ -115,7 +132,6 @@ func (tw *ThickWriter) processStream(ctx context.Context) {
 
 		// clear the request (may never need this, once we resolve the retry strategy)
 		nextAR.req = nil
-		// signal this write complete
 		close(nextAR.ready)
 		// done for now, leave the lock
 		tw.mu.Unlock()
@@ -123,10 +139,11 @@ func (tw *ThickWriter) processStream(ctx context.Context) {
 }
 
 type AppendResult struct {
-	req    *storagepb.AppendRowsRequest
-	ready  chan struct{}
-	err    error
-	offset int64
+	req     *storagepb.AppendRowsRequest
+	reqSize int
+	ready   chan struct{}
+	err     error
+	offset  int64
 }
 
 func (ar *AppendResult) Ready() <-chan struct{} { return ar.ready }
@@ -170,7 +187,7 @@ func (tw *ThickWriter) RegisterProto(in proto.Message) error {
 
 // AppendRows expects a slice of proto.Messages, which it serialized and then appends.
 // It returns an AppendResult, which can be used to check that the write completed.
-func (tw *ThickWriter) AppendRows(protoSlice interface{}) (*AppendResult, error) {
+func (tw *ThickWriter) AppendRows(ctx context.Context, protoSlice interface{}) (*AppendResult, error) {
 
 	// this is all because Go doesn't allow a slice of an interface type, and that's
 	// how proto.Message works.
@@ -191,47 +208,55 @@ func (tw *ThickWriter) AppendRows(protoSlice interface{}) (*AppendResult, error)
 		}
 		serialized[i] = m
 	}
-	return tw.appendRows(serialized)
+	return tw.appendRows(ctx, serialized)
 }
 
 // appendRows appends serialized proto messages to the stream.
-func (tw *ThickWriter) appendRows(rowData [][]byte) (*AppendResult, error) {
+func (tw *ThickWriter) appendRows(ctx context.Context, rowData [][]byte) (*AppendResult, error) {
 	if rowData == nil {
 		return nil, fmt.Errorf("no rows in append")
 	}
 
-	tw.mu.Lock()
-	defer tw.mu.Unlock()
-	if tw.protoMessageDescriptor == nil {
-		return nil, fmt.Errorf("no proto schema registered")
-	}
-
-	var protoSchema *storagepb.ProtoSchema
-	if !tw.sentSchema {
-		protoSchema = &storagepb.ProtoSchema{
-			ProtoDescriptor: tw.protoMessageDescriptor,
-		}
-	}
 	req := &storagepb.AppendRowsRequest{
-		WriteStream: tw.streamName,
-		TraceId:     tw.writerID,
+		TraceId: tw.writerID,
 		Rows: &storagepb.AppendRowsRequest_ProtoRows{
 			ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
 				Rows: &storagepb.ProtoRows{
 					SerializedRows: rowData,
 				},
-				WriterSchema: protoSchema,
 			},
 		},
+	}
+	reqSize := proto.Size(req)
+	// don't do this inside the lock, or you will be very sad.
+	if err := tw.fc.acquire(ctx, reqSize); err != nil {
+		return nil, fmt.Errorf("flow controller issue: %v", err)
+	}
+	tw.mu.Lock()
+	if tw.protoMessageDescriptor == nil {
+		return nil, fmt.Errorf("no proto schema registered")
+	}
+	if !tw.sentStart {
+		// only need to send proto descriptor and stream ID for first request of stream
+		req.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
+			ProtoDescriptor: tw.protoMessageDescriptor,
+		}
+		req.WriteStream = tw.streamName
 	}
 	if err := tw.appendClient.Send(req); err != nil {
 		// are these errors retriable, or only transport problems?
 		// Do we close the writer?
+
+		// release immediately
+		tw.fc.release(reqSize)
 		return nil, err
 	}
 	ar := NewAppendResult()
 	ar.req = req
+	ar.reqSize = reqSize
 	tw.pending = append(tw.pending, ar)
+	tw.reqCount = tw.reqCount + 1
+	tw.mu.Unlock()
 	return ar, nil
 }
 

@@ -10,6 +10,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
+	golang.org/x/sync v0.0.0-20201020160332-67f06af15bc9
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	google.golang.org/api v0.36.0
