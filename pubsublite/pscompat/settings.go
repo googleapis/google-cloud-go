@@ -63,8 +63,8 @@ type PublishSettings struct {
 	// DefaultPublishSettings.ByteThreshold. Otherwise must be > 0.
 	ByteThreshold int
 
-	// The maximum time that the client will attempt to establish a publish stream
-	// connection to the server. If Timeout is 0, it will be treated as
+	// The maximum time that the client will attempt to open a publish stream
+	// to the server. If Timeout is 0, it will be treated as
 	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
 	//
 	// The timeout is exceeded, the publisher will terminate with the last error
@@ -170,8 +170,8 @@ type ReceiveSettings struct {
 	// the associated topic.
 	MaxOutstandingBytes int
 
-	// The maximum time that the client will attempt to establish a subscribe
-	// stream connection to the server. If Timeout is 0, it will be treated as
+	// The maximum time that the client will attempt to open a subscribe stream
+	// to the server. If Timeout is 0, it will be treated as
 	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
 	//
 	// The timeout is exceeded, the SubscriberClient will terminate with the last
