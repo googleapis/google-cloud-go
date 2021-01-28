@@ -123,7 +123,7 @@ loop:
 // addBucketCreator adds the bucket IAM member to permission role. Required for all new log sink service accounts.
 func addBucketCreator(bucketName string, identity string) error {
 	ctx := context.Background()
-	client, err := storage.NewClient(ctx)
+	client, err := storage.NewClient(ctx, option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
 	if err != nil {
 		return fmt.Errorf("storage.NewClient: %v", err)
 	}
