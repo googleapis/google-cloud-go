@@ -469,6 +469,10 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	// Handle removed partitions.
 	for partition, subscriber := range as.subscribers {
 		if !partitions.Contains(partition) {
+			// Ignore unacked messages from this point on to avoid conflicting with
+			// the commits of the new subscriber that will be assigned this partition.
+			subscriber.Terminate()
+
 			as.unsafeRemoveService(subscriber)
 			// Safe to delete map entry during range loop:
 			// https://golang.org/ref/spec#For_statements
