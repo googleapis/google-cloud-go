@@ -8,7 +8,7 @@
 /pubsub/            @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /pubsublite/        @googleapis/api-pubsub @googleapis/yoshi-go-admins
 /spanner/           @skuruppu @googleapis/yoshi-go-admins
-/storage/           @tritone @googleapis/yoshi-go-admins
+/storage/           @googleapis/storage-dpe @googleapis/yoshi-go-admins
 /errorreporting/    @googleapis/api-logging @googleapis/yoshi-go-admins
 /logging/           @googleapis/api-logging @googleapis/yoshi-go-admins
 /profiler/          @googleapis/api-profiler @googleapis/yoshi-go-admins
