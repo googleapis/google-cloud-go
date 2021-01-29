@@ -440,4 +440,7 @@ func (u union) keySetProto() (*sppb.KeySet, error) {
 	return upb, nil
 }
 
-var DistinctKeys = KeySetFromKeys
+// Proto converts a spanner.Key into a proto3.ListValue.
+func (key Key) Proto() (*proto3.ListValue, error) {
+	return key.proto()
+}
