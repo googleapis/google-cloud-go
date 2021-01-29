@@ -15,15 +15,18 @@
 // TODO(jba): document in CONTRIBUTING.md that service account must be given "Logs Configuration Writer" IAM role for sink tests to pass.
 // TODO(jba): [cont] (1) From top left menu, go to IAM & Admin. (2) In Roles dropdown for acct, select Logging > Logs Configuration Writer. (3) Save.
 // TODO(jba): Also, cloud-logs@google.com must have Owner permission on the GCS bucket named for the test project.
+// Note: log buckets are only created during integration tests. All buckets must allow logsink writerIdentity creator permissions.
 
 package logadmin
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	ltest "cloud.google.com/go/logging/internal/testing"
@@ -37,13 +40,14 @@ var sinkIDs = uid.NewSpace("GO-CLIENT-TEST-SINK", nil)
 const testFilter = ""
 
 var testSinkDestination string
+var testBucket string
 
 // Called just before TestMain calls m.Run.
 // Returns a cleanup function to be called after the tests finish.
 func initSinks(ctx context.Context) func() {
 	// Create a unique GCS bucket so concurrent tests don't interfere with each other.
 	bucketIDs := uid.NewSpace(testProjectID+"-log-sink", nil)
-	testBucket := bucketIDs.New()
+	testBucket = bucketIDs.New()
 	testSinkDestination = "storage.googleapis.com/" + testBucket
 	var storageClient *storage.Client
 	if integrationTest {
@@ -58,6 +62,11 @@ func initSinks(ctx context.Context) func() {
 		bucket := storageClient.Bucket(testBucket)
 		if err := bucket.Create(ctx, testProjectID, nil); err != nil {
 			log.Fatalf("creating storage bucket %q: %v", testBucket, err)
+		}
+		// Grant destination permissions to sink's writer identity.
+		err = addBucketCreator(testBucket, ltest.SharedServiceAccount)
+		if err != nil {
+			log.Fatal(err)
 		}
 		log.Printf("successfully created bucket %s", testBucket)
 		if err := bucket.ACL().Set(ctx, "group-cloud-logs@google.com", storage.RoleOwner); err != nil {
@@ -112,6 +121,36 @@ loop:
 	return names
 }
 
+// addBucketCreator adds the bucket IAM member to permission role. Required for all new log sink service accounts.
+func addBucketCreator(bucketName string, identity string) error {
+	if integrationTest {
+		ctx := context.Background()
+		client, err := storage.NewClient(ctx, option.WithTokenSource(testutil.TokenSource(ctx, storage.ScopeFullControl)))
+		if err != nil {
+			return fmt.Errorf("storage.NewClient: %v", err)
+		}
+		defer client.Close()
+
+		ctx, cancel := context.WithTimeout(ctx, time.Second*10)
+		defer cancel()
+
+		bucket := client.Bucket(bucketName)
+		policy, err := bucket.IAM().Policy(ctx)
+		if err != nil {
+			return fmt.Errorf("Bucket(%q).IAM().Policy: %v", bucketName, err)
+		}
+
+		var role iam.RoleName = "roles/storage.objectCreator"
+
+		policy.Add(identity, role)
+		if err := bucket.IAM().SetPolicy(ctx, policy); err != nil {
+			return fmt.Errorf("Bucket(%q).IAM().SetPolicy: %v", bucketName, err)
+		}
+	}
+
+	return nil
+}
+
 func TestCreateSink(t *testing.T) {
 	ctx := context.Background()
 	sink := &Sink{
@@ -124,6 +163,7 @@ func TestCreateSink(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
 	sink.WriterIdentity = ltest.SharedServiceAccount
 	if want := sink; !testutil.Equal(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
@@ -139,6 +179,11 @@ func TestCreateSink(t *testing.T) {
 	// UniqueWriterIdentity
 	sink.ID = sinkIDs.New()
 	got, err = client.CreateSinkOpt(ctx, sink, SinkOptions{UniqueWriterIdentity: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Grant destination permissions to sink's writer identity.
+	err = addBucketCreator(testBucket, got.WriterIdentity)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -230,6 +275,11 @@ func TestUpdateSinkOpt(t *testing.T) {
 	// Update writer identity.
 	got, err = client.UpdateSinkOpt(ctx, &Sink{ID: id, Filter: "foo"},
 		SinkOptions{UniqueWriterIdentity: true})
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Grant destination permissions to sink's new writer identity.
+	err = addBucketCreator(testBucket, got.WriterIdentity)
 	if err != nil {
 		t.Fatal(err)
 	}
