@@ -795,7 +795,8 @@ type DocumentSnapshotIterator struct {
 // the current state of the document. If the document has been deleted, Next
 // returns a DocumentSnapshot whose Exists method returns false.
 //
-// Next never returns iterator.Done unless it is called after Stop.
+// Next is not expected to return iterator.Done unless it is called after Stop.
+// Rarely, networking issues may also cause iterator.Done to be returned.
 func (it *DocumentSnapshotIterator) Next() (*DocumentSnapshot, error) {
 	btree, _, readTime, err := it.ws.nextSnapshot()
 	if err != nil {
