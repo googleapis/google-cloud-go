@@ -3157,3 +3157,8 @@ func trimDoubleQuotes(payload []byte) ([]byte, error) {
 	// Remove the double quotes at the beginning and the end.
 	return payload[1 : len(payload)-1], nil
 }
+
+// EncodeValue encodes a Go native type into a proto3.Value.
+func EncodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
+	return encodeValue(v)
+}
