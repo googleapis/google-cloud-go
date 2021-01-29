@@ -154,3 +154,31 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 	// Call cancel from callback, or another goroutine.
 	cancel()
 }
+
+// This example shows how to manually assign which topic partitions a
+// SubscriberClient should connect to. If not specified, the SubscriberClient
+// will use Pub/Sub Lite's partition assignment service to automatically
+// determine which partitions it should connect to.
+func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	settings := pscompat.DefaultReceiveSettings
+	// NOTE: The corresponding topic must have 2 or more partitions.
+	settings.Partitions = []int{0, 1}
+	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		// TODO: Handle message.
+		// NOTE: May be called concurrently; synchronize access to shared memory.
+		m.Ack()
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from callback, or another goroutine.
+	cancel()
+}
