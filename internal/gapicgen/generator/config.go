@@ -780,6 +780,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/networkconnectivity/v1alpha1",
+		pkg:                   "networkconnectivity",
+		importPath:            "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+		gRPCServiceConfigPath: "google/cloud/networkconnectivity/v1alpha1/networkconnectivity_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/networkconnectivity/v1alpha1/networkconnectivity_v1alpha1.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/notebooks/v1beta1",
 		pkg:                   "notebooks",
 		importPath:            "cloud.google.com/go/notebooks/apiv1beta1",
@@ -931,6 +939,39 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/dataqna/v1alpha/dataqna_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/dataqna/v1alpha/dataqna_v1alpha.yaml",
 		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/documentai/v1beta3",
+		pkg:                   "documentai",
+		importPath:            "cloud.google.com/go/documentai/apiv1beta3",
+		gRPCServiceConfigPath: "google/cloud/documentai/v1beta3/documentai_v1beta3_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/documentai/v1beta3/documentai_v1beta3.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/api/servicemanagement/v1",
+		pkg:                   "servicemanagement",
+		importPath:            "cloud.google.com/go/servicemanagement/apiv1",
+		gRPCServiceConfigPath: "google/api/servicemanagement/v1/servicemanagement_grpc_service_config.json",
+		apiServiceConfigPath:  "google/api/servicemanagement/v1/servicemanagement_gapic.yaml",
+		// GA after 2021/02/26
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/domains/v1beta1",
+		pkg:                   "domains",
+		importPath:            "cloud.google.com/go/domains/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/domains/v1beta1/domains_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/domains/v1beta1/domains_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/mediatranslation/v1beta1",
+		pkg:                   "mediatranslation",
+		importPath:            "cloud.google.com/go/mediatranslation/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/mediatranslation/v1beta1/mediatranslation_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/mediatranslation/v1beta1/mediatranslation_v1beta1.yaml",
+		releaseLevel:          "beta",
 	},
 
 	// Non-Cloud APIs

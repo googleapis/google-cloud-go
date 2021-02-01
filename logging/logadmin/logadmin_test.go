@@ -80,9 +80,6 @@ func TestMain(m *testing.M) {
 			return c
 		}
 	} else {
-		// TODO(enocom): Delete this once we can get these tests to reliably pass.
-		return
-
 		integrationTest = true
 		ts := testutil.TokenSource(ctx, logging.AdminScope)
 		if ts == nil {
@@ -139,9 +136,12 @@ func TestFromLogEntry(t *testing.T) {
 			Latency:                        &durpb.Duration{Seconds: 100},
 			UserAgent:                      "user-agent",
 			RemoteIp:                       "127.0.0.1",
+			ServerIp:                       "127.0.0.1",
 			Referer:                        "referer",
+			CacheLookup:                    true,
 			CacheHit:                       true,
 			CacheValidatedWithOriginServer: true,
+			CacheFillBytes:                 2048,
 		},
 		Labels: map[string]string{
 			"a": "1",
@@ -183,9 +183,12 @@ func TestFromLogEntry(t *testing.T) {
 			Status:                         200,
 			ResponseSize:                   25,
 			Latency:                        100 * time.Second,
+			LocalIP:                        "127.0.0.1",
 			RemoteIP:                       "127.0.0.1",
+			CacheLookup:                    true,
 			CacheHit:                       true,
 			CacheValidatedWithOriginServer: true,
+			CacheFillBytes:                 2048,
 		},
 		SourceLocation: &logpb.LogEntrySourceLocation{
 			File:     "some_file.go",
