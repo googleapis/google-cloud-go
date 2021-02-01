@@ -965,6 +965,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/domains/v1beta1/domains_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/mediatranslation/v1beta1",
+		pkg:                   "mediatranslation",
+		importPath:            "cloud.google.com/go/mediatranslation/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/mediatranslation/v1beta1/mediatranslation_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/mediatranslation/v1beta1/mediatranslation_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
