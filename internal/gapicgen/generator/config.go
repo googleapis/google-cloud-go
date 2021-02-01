@@ -973,6 +973,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/mediatranslation/v1beta1/mediatranslation_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:   "google/api/servicecontrol/v1",
+		pkg:                  "servicecontrol",
+		importPath:           "cloud.google.com/go/servicecontrol/apiv1",
+		apiServiceConfigPath: "google/api/servicecontrol/v1/servicecontrol_gapic.yaml",
+		// GA after 2021/03/01
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
