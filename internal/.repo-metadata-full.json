@@ -527,6 +527,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/managedidentities/apiv1",
     "release_level": "ga"
   },
+  "cloud.google.com/go/mediatranslation/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/mediatranslation/apiv1beta1",
+    "description": "Media Translation API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/mediatranslation/apiv1beta1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/memcache/apiv1": {
     "distribution_name": "cloud.google.com/go/memcache/apiv1",
     "description": "Cloud Memorystore for Memcached API",
@@ -813,6 +821,14 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/securitycenter/settings/apiv1beta1",
+    "release_level": "beta"
+  },
+  "cloud.google.com/go/servicecontrol/apiv1": {
+    "distribution_name": "cloud.google.com/go/servicecontrol/apiv1",
+    "description": "",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/servicecontrol/apiv1",
     "release_level": "beta"
   },
   "cloud.google.com/go/servicedirectory/apiv1": {
