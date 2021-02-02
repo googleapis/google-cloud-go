@@ -41,6 +41,9 @@ type KeyExtractorFunc func(*pubsub.Message) []byte
 // terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) error
 
+// LogFunc is a function to log informational messages.
+type LogFunc func(v ...interface{})
+
 // PublishSettings configure the PublisherClient. Batching settings
 // (DelayThreshold, CountThreshold, ByteThreshold, BufferedByteLimit) apply per
 // partition.
@@ -95,6 +98,11 @@ type PublishSettings struct {
 	// Optional custom function that transforms a pubsub.Message to a
 	// PubSubMessage API proto.
 	MessageTransformer PublishMessageTransformerFunc
+
+	// Optional function to log informational messages that may be useful for
+	// debugging. For example, this can be set to log.Println. If not set,
+	// messages will not be logged.
+	OnLog LogFunc
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -191,6 +199,11 @@ type ReceiveSettings struct {
 	// Optional custom function that transforms a SequencedMessage API proto to a
 	// pubsub.Message.
 	MessageTransformer ReceiveMessageTransformerFunc
+
+	// Optional function to log informational messages that may be useful for
+	// debugging. For example, this can be set to log.Println. If not set,
+	// messages will not be logged.
+	OnLog LogFunc
 }
 
 // DefaultReceiveSettings holds the default values for ReceiveSettings.
