@@ -72,6 +72,9 @@ type CloudChannelCallOptions struct {
 	ListOffers                      []gax.CallOption
 	ListPurchasableSkus             []gax.CallOption
 	ListPurchasableOffers           []gax.CallOption
+	RegisterSubscriber              []gax.CallOption
+	UnregisterSubscriber            []gax.CallOption
+	ListSubscribers                 []gax.CallOption
 }
 
 func defaultCloudChannelClientOptions() []option.ClientOption {
@@ -298,6 +301,39 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 			}),
 		},
 		ListPurchasableOffers: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RegisterSubscriber: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UnregisterSubscriber: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListSubscribers: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -1780,6 +1816,159 @@ func (c *CloudChannelClient) ListPurchasableOffers(ctx context.Context, req *cha
 	return it
 }
 
+// RegisterSubscriber registers a service account with subscriber privileges on the Cloud Pub/Sub
+// topic created for this Channel Services account. Once you create a
+// subscriber, you will get the events as per SubscriberEvent
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the reseller account making the request and the
+//   reseller account being provided are different, or if the impersonated user
+//   is not a super admin.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request.
+//
+//   INTERNAL: Any non-user error related to a technical issue in the
+//   backend. In this case, contact Cloud Channel support.
+//
+//   UNKNOWN: Any non-user error related to a technical issue in
+//   the backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// Topic name with service email address registered if successful,
+// otherwise error is returned.
+func (c *CloudChannelClient) RegisterSubscriber(ctx context.Context, req *channelpb.RegisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.RegisterSubscriberResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.RegisterSubscriber[0:len(c.CallOptions.RegisterSubscriber):len(c.CallOptions.RegisterSubscriber)], opts...)
+	var resp *channelpb.RegisterSubscriberResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.RegisterSubscriber(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UnregisterSubscriber unregisters a service account with subscriber privileges on the Cloud
+// Pub/Sub topic created for this Channel Services account. If there are no
+// more service account left with sunbscriber privileges, the topic will be
+// deleted. You can check this by calling ListSubscribers api.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the reseller account making the request and the
+//   reseller account being provided are different, or if the impersonated user
+//   is not a super admin.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request.
+//
+//   NOT_FOUND: If the topic resource doesn’t exist.
+//
+//   INTERNAL: Any non-user error related to a technical issue in the
+//   backend. In this case, contact Cloud Channel support.
+//
+//   UNKNOWN: Any non-user error related to a technical issue in
+//   the backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// Topic name from which service email address has been unregistered if
+// successful, otherwise error is returned. If the service email was already
+// not associated with the topic, the success response will be returned.
+func (c *CloudChannelClient) UnregisterSubscriber(ctx context.Context, req *channelpb.UnregisterSubscriberRequest, opts ...gax.CallOption) (*channelpb.UnregisterSubscriberResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UnregisterSubscriber[0:len(c.CallOptions.UnregisterSubscriber):len(c.CallOptions.UnregisterSubscriber)], opts...)
+	var resp *channelpb.UnregisterSubscriberResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.UnregisterSubscriber(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListSubscribers lists service accounts with subscriber privileges on the Cloud Pub/Sub
+// topic created for this Channel Services account.
+//
+// Possible Error Codes:
+//
+//   PERMISSION_DENIED: If the reseller account making the request and the
+//   reseller account being provided are different, or if the account is not
+//   a super admin.
+//
+//   INVALID_ARGUMENT: Missing or invalid required parameters in the
+//   request.
+//
+//   NOT_FOUND: If the topic resource doesn’t exist.
+//
+//   INTERNAL: Any non-user error related to a technical issue in the
+//   backend. In this case, contact Cloud Channel support.
+//
+//   UNKNOWN: Any non-user error related to a technical issue in
+//   the backend. In this case, contact Cloud Channel support.
+//
+// Return Value:
+// List of service email addresses if successful, otherwise error is
+// returned.
+func (c *CloudChannelClient) ListSubscribers(ctx context.Context, req *channelpb.ListSubscribersRequest, opts ...gax.CallOption) *StringIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ListSubscribers[0:len(c.CallOptions.ListSubscribers):len(c.CallOptions.ListSubscribers)], opts...)
+	it := &StringIterator{}
+	req = proto.Clone(req).(*channelpb.ListSubscribersRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
+		var resp *channelpb.ListSubscribersResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.cloudChannelClient.ListSubscribers(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetServiceAccounts(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
 // ActivateEntitlementOperation manages a long-running operation from ActivateEntitlement.
 type ActivateEntitlementOperation struct {
 	lro *longrunning.Operation
@@ -2888,6 +3077,53 @@ func (it *SkuIterator) bufLen() int {
 }
 
 func (it *SkuIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// StringIterator manages a stream of string.
+type StringIterator struct {
+	items    []string
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []string, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *StringIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *StringIterator) Next() (string, error) {
+	var item string
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *StringIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *StringIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
