@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
+	"cloud.google.com/go/pubsublite/publish"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -204,6 +205,20 @@ func waitForPublishResults(t *testing.T, pubResults []*pubsub.PublishResult) {
 	}
 	t.Logf("Published %d messages", len(pubResults))
 	cancel()
+}
+
+func parsePublishMetadata(ctx context.Context, t *testing.T, result *pubsub.PublishResult) *publish.Metadata {
+	id, err := result.Get(ctx)
+	if err != nil {
+		t.Fatalf("Failed to publish message: %v", err)
+		return nil
+	}
+	metadata, err := publish.ParseMetadata(id)
+	if err != nil {
+		t.Fatalf("Failed to parse publish metadata: %v", err)
+		return nil
+	}
+	return metadata
 }
 
 const maxPrintMsgLen = 70
@@ -515,6 +530,40 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 
 		// Receive messages.
 		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath, checkOrdering(false))
+	})
+
+	// NOTE: This should be the last test case.
+	// Verifies that increasing the number of topic partitions is handled
+	// correctly by publishers.
+	t.Run("IncreasePartitions", func(t *testing.T) {
+		// Create the publisher client with the initial single partition.
+		const pollPeriod = 5 * time.Second
+		pubSettings := DefaultPublishSettings
+		pubSettings.configPollPeriod = pollPeriod // Poll updates more frequently
+		publisher := publisherClient(ctx, t, pubSettings, topicPath)
+		defer publisher.Stop()
+
+		// Update the number of partitions.
+		update := pubsublite.TopicConfigToUpdate{
+			Name:           topicPath.String(),
+			PartitionCount: 2,
+		}
+		if _, err := admin.UpdateTopic(ctx, update); err != nil {
+			t.Errorf("Failed to increase partitions: %v", err)
+		}
+
+		// Wait for the publisher client to receive the updated partition count.
+		time.Sleep(3 * pollPeriod)
+
+		// Publish 2 messages, which should be routed to different partitions
+		// (round robin).
+		result1 := publisher.Publish(ctx, &pubsub.Message{Data: []byte("increase-partitions-1")})
+		result2 := publisher.Publish(ctx, &pubsub.Message{Data: []byte("increase-partitions-2")})
+		metadata1 := parsePublishMetadata(ctx, t, result1)
+		metadata2 := parsePublishMetadata(ctx, t, result2)
+		if metadata1.Partition == metadata2.Partition {
+			t.Errorf("Messages were published to the same partition = %d. Expected different partitions", metadata1.Partition)
+		}
 	})
 }
 
