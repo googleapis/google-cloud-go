@@ -42,6 +42,7 @@ const commitCursorPeriod = 50 * time.Millisecond
 type committer struct {
 	// Immutable after creation.
 	cursorClient *vkit.CursorClient
+	subscription subscriptionPartition
 	initialReq   *pb.StreamingCommitCursorRequest
 	metadata     pubsubMetadata
 
@@ -59,6 +60,7 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 
 	c := &committer{
 		cursorClient: cursor,
+		subscription: subscription,
 		initialReq: &pb.StreamingCommitCursorRequest{
 			Request: &pb.StreamingCommitCursorRequest_Initial{
 				Initial: &pb.InitialCommitCursorRequest{
@@ -201,7 +203,7 @@ func (c *committer) unsafeCommitOffsetToStream() {
 }
 
 func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !c.unsafeUpdateStatus(targetStatus, err) {
+	if !c.unsafeUpdateStatus(targetStatus, wrapError("committer", c.subscription.String(), err)) {
 		return
 	}
 
