@@ -341,7 +341,7 @@ func (l *linker) linkify(s string) string {
 	if !strings.Contains(s, ".") {
 		// If s is not exported, it's probably a builtin.
 		if !token.IsExported(s) {
-			if builtins[s] {
+			if doc.IsPredeclared(s) {
 				return fmt.Sprintf(`%s<a href="https://pkg.go.dev/builtin#%s">%s</a>`, prefix, strings.ToLower(s), s)
 			}
 			return fmt.Sprintf("%s%s", prefix, s)
@@ -585,42 +585,4 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	}
 
 	return result, nil
-}
-
-var builtins = map[string]bool{
-	"append":     true,
-	"cap":        true,
-	"close":      true,
-	"complex":    true,
-	"copy":       true,
-	"delete":     true,
-	"imag":       true,
-	"len":        true,
-	"make":       true,
-	"new":        true,
-	"panic":      true,
-	"print":      true,
-	"println":    true,
-	"real":       true,
-	"recover":    true,
-	"bool":       true,
-	"byte":       true,
-	"complex128": true,
-	"complex64":  true,
-	"error":      true,
-	"float32":    true,
-	"float64":    true,
-	"int":        true,
-	"int16":      true,
-	"int32":      true,
-	"int64":      true,
-	"int8":       true,
-	"rune":       true,
-	"string":     true,
-	"uint":       true,
-	"uint16":     true,
-	"uint32":     true,
-	"uint64":     true,
-	"uint8":      true,
-	"uintptr":    true,
 }
