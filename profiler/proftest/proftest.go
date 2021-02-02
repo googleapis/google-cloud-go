@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -504,17 +503,6 @@ func (tr *GCETestRunner) PollAndLogSerialPort(ctx context.Context, inst *Instanc
 			}
 		}
 	}
-}
-
-// PollForAndReturnSerialOutput is deprecated, use PollAndLogSerialPort.
-func (tr *GCETestRunner) PollForAndReturnSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) (string, error) {
-	return tr.PollAndLogSerialPort(ctx, inst, finishString, errorString, log.Printf)
-}
-
-// PollForSerialOutput is deprecated, use PollAndLogSerialPort.
-func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) error {
-	_, err := tr.PollAndLogSerialPort(ctx, inst, finishString, errorString, log.Printf)
-	return err
 }
 
 // QueryProfiles retrieves profiles of a specific type, from a specific time
