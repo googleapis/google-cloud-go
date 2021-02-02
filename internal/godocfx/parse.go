@@ -342,11 +342,11 @@ func (l *linker) linkify(s string) string {
 		// If s is not exported, it's probably a builtin.
 		if !token.IsExported(s) {
 			if doc.IsPredeclared(s) {
-				return fmt.Sprintf(`%s<a href="https://pkg.go.dev/builtin#%s">%s</a>`, prefix, strings.ToLower(s), s)
+				return href(toURL("builtin", s), s)
 			}
 			return fmt.Sprintf("%s%s", prefix, s)
 		}
-		return fmt.Sprintf(`%s<a href="#%s">%s</a>`, prefix, strings.ToLower(s), s)
+		return fmt.Sprintf("%s%s", prefix, href(toURL("", s), s))
 	}
 	// Otherwise, it's in another package.
 	split := strings.Split(s, ".")
@@ -362,9 +362,24 @@ func (l *linker) linkify(s string) string {
 		return fmt.Sprintf("%s%s", prefix, s)
 	}
 	name := split[1]
-	pkgLink := fmt.Sprintf("http://pkg.go.dev/%s", pkgPath)
-	link := fmt.Sprintf("%s#%s", pkgLink, name)
-	return fmt.Sprintf("%s<a href=%q>%s</a>.<a href=%q>%s</a>", prefix, pkgLink, pkg, link, name)
+	return fmt.Sprintf("%s%s.%s", prefix, href(toURL(pkgPath, ""), pkg), href(toURL(pkgPath, name), name))
+}
+
+// TODO: link to the right baseURL, with the right module name and version
+// pattern.
+func toURL(pkg, name string) string {
+	if pkg == "" {
+		return fmt.Sprintf("#%s", strings.ToLower(name))
+	}
+	baseURL := "https://pkg.go.dev"
+	if name == "" {
+		return fmt.Sprintf("%s/%s", baseURL, pkg)
+	}
+	return fmt.Sprintf("%s/%s#%s", baseURL, pkg, name)
+}
+
+func href(url, text string) string {
+	return fmt.Sprintf(`<a href="%s">%s</a>`, url, text)
 }
 
 // processExamples converts the examples to []example.
