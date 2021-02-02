@@ -183,6 +183,14 @@ func generateAnchorLinks(decl ast.Decl, toURL func(string, string) string) map[*
 			ignore[node.Name] = true // E.g., "func NoLink() int"
 		case *ast.TypeSpec:
 			ignore[node.Name] = true // E.g., "type NoLink int"
+			switch t := node.Type.(type) {
+			case *ast.StructType:
+				for _, f := range t.Fields.List {
+					for _, fName := range f.Names {
+						ignore[fName] = true
+					}
+				}
+			}
 		case *ast.ValueSpec:
 			for _, n := range node.Names {
 				ignore[n] = true // E.g., "var NoLink1, NoLink2 int"

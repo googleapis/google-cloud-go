@@ -437,11 +437,10 @@ items:
   langs:
   - go
   syntax:
-    content: "type ACLRule struct {\n\t<a href=\"#entity\">Entity</a>      <a href=\"#aclentity\">ACLEntity</a>\n\t<a
-      href=\"#entityid\">EntityID</a>    <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t<a
-      href=\"#role\">Role</a>        <a href=\"#aclrole\">ACLRole</a>\n\t<a href=\"#domain\">Domain</a>
-      \     <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t<a href=\"#email\">Email</a>
-      \      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t<a href=\"#projectteam\">ProjectTeam</a>
+    content: "type ACLRule struct {\n\tEntity      <a href=\"#aclentity\">ACLEntity</a>\n\tEntityID
+      \   <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tRole        <a
+      href=\"#aclrole\">ACLRole</a>\n\tDomain      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tEmail
+      \      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tProjectTeam
       *<a href=\"#projectteam\">ProjectTeam</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrs
   name: BucketAttrs
@@ -455,70 +454,63 @@ items:
   - go
   syntax:
     content: "type BucketAttrs struct {\n\t// Name is the name of the bucket.\n\t//
-      This field is read-only.\n\t<a href=\"#name\">Name</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      ACL is the list of access control rules on the bucket.\n\t<a href=\"#acl\">ACL</a>
-      []<a href=\"#aclrule\">ACLRule</a>\n\n\t// BucketPolicyOnly is an alias for
-      UniformBucketLevelAccess. Use of\n\t// UniformBucketLevelAccess is recommended
-      above the use of this field.\n\t// Setting BucketPolicyOnly.Enabled OR UniformBucketLevelAccess.Enabled
-      to\n\t// true, will enable UniformBucketLevelAccess.\n\t<a href=\"#bucketpolicyonly\">BucketPolicyOnly</a>
+      This field is read-only.\n\tName <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      ACL is the list of access control rules on the bucket.\n\tACL []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of\n\t// UniformBucketLevelAccess
+      is recommended above the use of this field.\n\t// Setting BucketPolicyOnly.Enabled
+      OR UniformBucketLevelAccess.Enabled to\n\t// true, will enable UniformBucketLevelAccess.\n\tBucketPolicyOnly
       <a href=\"#bucketpolicyonly\">BucketPolicyOnly</a>\n\n\t// UniformBucketLevelAccess
       configures access checks to use only bucket-level IAM\n\t// policies and ignore
       any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
-      for more information.\n\t<a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>
-      <a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>\n\n\t// DefaultObjectACL
-      is the list of access controls to\n\t// apply to new objects when no object
-      ACL is provided.\n\t<a href=\"#defaultobjectacl\">DefaultObjectACL</a> []<a
-      href=\"#aclrule\">ACLRule</a>\n\n\t// DefaultEventBasedHold is the default value
-      for event-based hold on\n\t// newly created objects in this bucket. It defaults
-      to false.\n\t<a href=\"#defaulteventbasedhold\">DefaultEventBasedHold</a> <a
-      href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// If not empty, applies
+      for more information.\n\tUniformBucketLevelAccess <a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>\n\n\t//
+      DefaultObjectACL is the list of access controls to\n\t// apply to new objects
+      when no object ACL is provided.\n\tDefaultObjectACL []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      DefaultEventBasedHold is the default value for event-based hold on\n\t// newly
+      created objects in this bucket. It defaults to false.\n\tDefaultEventBasedHold
+      <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// If not empty, applies
       a predefined set of access controls. It should be set\n\t// only when creating
       a bucket.\n\t// It is always empty for BucketAttrs returned from the service.\n\t//
       See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert\n\t// for
-      valid values.\n\t<a href=\"#predefinedacl\">PredefinedACL</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      valid values.\n\tPredefinedACL <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       If not empty, applies a predefined set of default object access controls.\n\t//
       It should be set only when creating a bucket.\n\t// It is always empty for BucketAttrs
       returned from the service.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/insert\n\t//
-      for valid values.\n\t<a href=\"#predefineddefaultobjectacl\">PredefinedDefaultObjectACL</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Location is
-      the location of the bucket. It defaults to \"US\".\n\t<a href=\"#location\">Location</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// MetaGeneration
-      is the metadata generation of the bucket.\n\t// This field is read-only.\n\t<a
-      href=\"#metageneration\">MetaGeneration</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
-      StorageClass is the default storage class of the bucket. This defines\n\t//
-      how objects in the bucket are stored and determines the SLA\n\t// and the cost
-      of storage. Typical values are \"STANDARD\", \"NEARLINE\",\n\t// \"COLDLINE\"
-      and \"ARCHIVE\". Defaults to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
-      for all\n\t// valid values.\n\t<a href=\"#storageclass\">StorageClass</a> <a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Created is the
-      creation time of the bucket.\n\t// This field is read-only.\n\t<a href=\"#created\">Created</a>
+      for valid values.\n\tPredefinedDefaultObjectACL <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Location is the location of the bucket. It defaults to \"US\".\n\tLocation <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// MetaGeneration
+      is the metadata generation of the bucket.\n\t// This field is read-only.\n\tMetaGeneration
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// StorageClass
+      is the default storage class of the bucket. This defines\n\t// how objects in
+      the bucket are stored and determines the SLA\n\t// and the cost of storage.
+      Typical values are \"STANDARD\", \"NEARLINE\",\n\t// \"COLDLINE\" and \"ARCHIVE\".
+      Defaults to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
+      for all\n\t// valid values.\n\tStorageClass <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Created is the creation time of the bucket.\n\t// This field is read-only.\n\tCreated
       <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      VersioningEnabled reports whether this bucket has versioning enabled.\n\t<a
-      href=\"#versioningenabled\">VersioningEnabled</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
-      Labels are the bucket's labels.\n\t<a href=\"#labels\">Labels</a> map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
+      VersioningEnabled reports whether this bucket has versioning enabled.\n\tVersioningEnabled
+      <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// Labels are the
+      bucket's labels.\n\tLabels map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
       href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// RequesterPays
       reports whether the bucket is a Requester Pays bucket.\n\t// Clients performing
       operations on Requester Pays buckets must provide\n\t// a user project (see
-      BucketHandle.UserProject), which will be billed\n\t// for the operations.\n\t<a
-      href=\"#requesterpays\">RequesterPays</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
-      Lifecycle is the lifecycle configuration for objects in the bucket.\n\t<a href=\"#lifecycle\">Lifecycle</a>
-      <a href=\"#lifecycle\">Lifecycle</a>\n\n\t// Retention policy enforces a minimum
-      retention time for all objects\n\t// contained in the bucket. A RetentionPolicy
-      of nil implies the bucket\n\t// has no minimum data retention.\n\t//\n\t// This
-      feature is in private alpha release. It is not currently available to\n\t//
-      most customers. It might be changed in backwards-incompatible ways and is not\n\t//
-      subject to any SLA or deprecation policy.\n\t<a href=\"#retentionpolicy\">RetentionPolicy</a>
+      BucketHandle.UserProject), which will be billed\n\t// for the operations.\n\tRequesterPays
+      <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// Lifecycle is the
+      lifecycle configuration for objects in the bucket.\n\tLifecycle <a href=\"#lifecycle\">Lifecycle</a>\n\n\t//
+      Retention policy enforces a minimum retention time for all objects\n\t// contained
+      in the bucket. A RetentionPolicy of nil implies the bucket\n\t// has no minimum
+      data retention.\n\t//\n\t// This feature is in private alpha release. It is
+      not currently available to\n\t// most customers. It might be changed in backwards-incompatible
+      ways and is not\n\t// subject to any SLA or deprecation policy.\n\tRetentionPolicy
       *<a href=\"#retentionpolicy\">RetentionPolicy</a>\n\n\t// The bucket's Cross-Origin
-      Resource Sharing (CORS) configuration.\n\t<a href=\"#cors\">CORS</a> []<a href=\"#cors\">CORS</a>\n\n\t//
-      The encryption configuration used by default for newly inserted objects.\n\t<a
-      href=\"#encryption\">Encryption</a> *<a href=\"#bucketencryption\">BucketEncryption</a>\n\n\t//
-      The logging configuration.\n\t<a href=\"#logging\">Logging</a> *<a href=\"#bucketlogging\">BucketLogging</a>\n\n\t//
-      The website configuration.\n\t<a href=\"#website\">Website</a> *<a href=\"#bucketwebsite\">BucketWebsite</a>\n\n\t//
-      Etag is the HTTP/1.1 Entity tag for the bucket.\n\t// This field is read-only.\n\t<a
-      href=\"#etag\">Etag</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Resource Sharing (CORS) configuration.\n\tCORS []<a href=\"#cors\">CORS</a>\n\n\t//
+      The encryption configuration used by default for newly inserted objects.\n\tEncryption
+      *<a href=\"#bucketencryption\">BucketEncryption</a>\n\n\t// The logging configuration.\n\tLogging
+      *<a href=\"#bucketlogging\">BucketLogging</a>\n\n\t// The website configuration.\n\tWebsite
+      *<a href=\"#bucketwebsite\">BucketWebsite</a>\n\n\t// Etag is the HTTP/1.1 Entity
+      tag for the bucket.\n\t// This field is read-only.\n\tEtag <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       LocationType describes how data is stored and replicated.\n\t// Typical values
-      are \"multi-region\", \"region\" and \"dual-region\".\n\t// This field is read-only.\n\t<a
-      href=\"#locationtype\">LocationType</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      are \"multi-region\", \"region\" and \"dual-region\".\n\t// This field is read-only.\n\tLocationType
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate
   name: BucketAttrsToUpdate
   id: BucketAttrsToUpdate
@@ -530,46 +522,40 @@ items:
   - go
   syntax:
     content: "type BucketAttrsToUpdate struct {\n\t// If set, updates whether the
-      bucket uses versioning.\n\t<a href=\"#versioningenabled\">VersioningEnabled</a>
-      <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      bucket uses versioning.\n\tVersioningEnabled <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
       href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\n\t//
-      If set, updates whether the bucket is a Requester Pays bucket.\n\t<a href=\"#requesterpays\">RequesterPays</a>
+      If set, updates whether the bucket is a Requester Pays bucket.\n\tRequesterPays
       <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
       href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\n\t//
       DefaultEventBasedHold is the default value for event-based hold on\n\t// newly
-      created objects in this bucket.\n\t<a href=\"#defaulteventbasedhold\">DefaultEventBasedHold</a>
-      <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      created objects in this bucket.\n\tDefaultEventBasedHold <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
       href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\n\t//
       BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of\n\t// UniformBucketLevelAccess
       is recommended above the use of this field.\n\t// Setting BucketPolicyOnly.Enabled
       OR UniformBucketLevelAccess.Enabled to\n\t// true, will enable UniformBucketLevelAccess.
       If both BucketPolicyOnly and\n\t// UniformBucketLevelAccess are set, the value
-      of UniformBucketLevelAccess\n\t// will take precedence.\n\t<a href=\"#bucketpolicyonly\">BucketPolicyOnly</a>
+      of UniformBucketLevelAccess\n\t// will take precedence.\n\tBucketPolicyOnly
       *<a href=\"#bucketpolicyonly\">BucketPolicyOnly</a>\n\n\t// UniformBucketLevelAccess
       configures access checks to use only bucket-level IAM\n\t// policies and ignore
       any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
-      for more information.\n\t<a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>
-      *<a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>\n\n\t//
+      for more information.\n\tUniformBucketLevelAccess *<a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>\n\n\t//
       If set, updates the retention policy of the bucket. Using\n\t// RetentionPolicy.RetentionPeriod
       = 0 will delete the existing policy.\n\t//\n\t// This feature is in private
       alpha release. It is not currently available to\n\t// most customers. It might
       be changed in backwards-incompatible ways and is not\n\t// subject to any SLA
-      or deprecation policy.\n\t<a href=\"#retentionpolicy\">RetentionPolicy</a> *<a
-      href=\"#retentionpolicy\">RetentionPolicy</a>\n\n\t// If set, replaces the CORS
-      configuration with a new configuration.\n\t// An empty (rather than nil) slice
-      causes all CORS policies to be removed.\n\t<a href=\"#cors\">CORS</a> []<a href=\"#cors\">CORS</a>\n\n\t//
-      If set, replaces the encryption configuration of the bucket. Using\n\t// BucketEncryption.DefaultKMSKeyName
-      = \"\" will delete the existing\n\t// configuration.\n\t<a href=\"#encryption\">Encryption</a>
-      *<a href=\"#bucketencryption\">BucketEncryption</a>\n\n\t// If set, replaces
-      the lifecycle configuration of the bucket.\n\t<a href=\"#lifecycle\">Lifecycle</a>
-      *<a href=\"#lifecycle\">Lifecycle</a>\n\n\t// If set, replaces the logging configuration
-      of the bucket.\n\t<a href=\"#logging\">Logging</a> *<a href=\"#bucketlogging\">BucketLogging</a>\n\n\t//
-      If set, replaces the website configuration of the bucket.\n\t<a href=\"#website\">Website</a>
-      *<a href=\"#bucketwebsite\">BucketWebsite</a>\n\n\t// If not empty, applies
-      a predefined set of access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\t<a
-      href=\"#predefinedacl\">PredefinedACL</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      If not empty, applies a predefined set of default object access controls.\n\t//
-      See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\t<a href=\"#predefineddefaultobjectacl\">PredefinedDefaultObjectACL</a>
+      or deprecation policy.\n\tRetentionPolicy *<a href=\"#retentionpolicy\">RetentionPolicy</a>\n\n\t//
+      If set, replaces the CORS configuration with a new configuration.\n\t// An empty
+      (rather than nil) slice causes all CORS policies to be removed.\n\tCORS []<a
+      href=\"#cors\">CORS</a>\n\n\t// If set, replaces the encryption configuration
+      of the bucket. Using\n\t// BucketEncryption.DefaultKMSKeyName = \"\" will delete
+      the existing\n\t// configuration.\n\tEncryption *<a href=\"#bucketencryption\">BucketEncryption</a>\n\n\t//
+      If set, replaces the lifecycle configuration of the bucket.\n\tLifecycle *<a
+      href=\"#lifecycle\">Lifecycle</a>\n\n\t// If set, replaces the logging configuration
+      of the bucket.\n\tLogging *<a href=\"#bucketlogging\">BucketLogging</a>\n\n\t//
+      If set, replaces the website configuration of the bucket.\n\tWebsite *<a href=\"#bucketwebsite\">BucketWebsite</a>\n\n\t//
+      If not empty, applies a predefined set of access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedACL
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// If not empty,
+      applies a predefined set of default object access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedDefaultObjectACL
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// contains filtered
       or unexported fields\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate.DeleteLabel
@@ -614,11 +600,11 @@ items:
   syntax:
     content: "type BucketConditions struct {\n\t// MetagenerationMatch specifies that
       the bucket must have the given\n\t// metageneration for the operation to occur.\n\t//
-      If MetagenerationMatch is zero, it has no effect.\n\t<a href=\"#metagenerationmatch\">MetagenerationMatch</a>
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// MetagenerationNotMatch
+      If MetagenerationMatch is zero, it has no effect.\n\tMetagenerationMatch <a
+      href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// MetagenerationNotMatch
       specifies that the bucket must not have the given\n\t// metageneration for the
-      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\t<a
-      href=\"#metagenerationnotmatch\">MetagenerationNotMatch</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\tMetagenerationNotMatch
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.BucketEncryption
   name: BucketEncryption
   id: BucketEncryption
@@ -632,8 +618,8 @@ items:
     content: "type BucketEncryption struct {\n\t// A Cloud KMS key name, in the form\n\t//
       projects/P/locations/L/keyRings/R/cryptoKeys/K, that will be used to encrypt\n\t//
       objects inserted into this bucket, if no encryption method is specified.\n\t//
-      The key's location must be the same as the bucket's.\n\t<a href=\"#defaultkmskeyname\">DefaultKMSKeyName</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      The key's location must be the same as the bucket's.\n\tDefaultKMSKeyName <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.BucketHandle
   name: BucketHandle
   id: BucketHandle
@@ -967,7 +953,7 @@ items:
   - go
   syntax:
     content: "type BucketIterator struct {\n\t// Prefix restricts the iterator to
-      buckets whose names begin with it.\n\t<a href=\"#prefix\">Prefix</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      buckets whose names begin with it.\n\tPrefix <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.BucketIterator.Next
   name: |
@@ -1020,9 +1006,8 @@ items:
   - go
   syntax:
     content: "type BucketLogging struct {\n\t// The destination bucket where the current
-      bucket's logs\n\t// should be placed.\n\t<a href=\"#logbucket\">LogBucket</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// A prefix for
-      log object names.\n\t<a href=\"#logobjectprefix\">LogObjectPrefix</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      bucket's logs\n\t// should be placed.\n\tLogBucket <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      A prefix for log object names.\n\tLogObjectPrefix <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.BucketPolicyOnly
   name: BucketPolicyOnly
   id: BucketPolicyOnly
@@ -1036,10 +1021,9 @@ items:
   syntax:
     content: "type BucketPolicyOnly struct {\n\t// Enabled specifies whether access
       checks use only bucket-level IAM\n\t// policies. Enabled may be disabled until
-      the locked time.\n\t<a href=\"#enabled\">Enabled</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
-      LockedTime specifies the deadline for changing Enabled from true to\n\t// false.\n\t<a
-      href=\"#lockedtime\">LockedTime</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
-      href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
+      the locked time.\n\tEnabled <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
+      LockedTime specifies the deadline for changing Enabled from true to\n\t// false.\n\tLockedTime
+      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
 - uid: cloud.google.com/go/storage.BucketWebsite
   name: BucketWebsite
   id: BucketWebsite
@@ -1055,12 +1039,11 @@ items:
     content: "type BucketWebsite struct {\n\t// If the requested object path is missing,
       the service will ensure the path has\n\t// a trailing '/', append this suffix,
       and attempt to retrieve the resulting\n\t// object. This allows the creation
-      of index.html objects to represent directory\n\t// pages.\n\t<a href=\"#mainpagesuffix\">MainPageSuffix</a>
+      of index.html objects to represent directory\n\t// pages.\n\tMainPageSuffix
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// If the requested
       object path is missing, and any mainPageSuffix object is\n\t// missing, if applicable,
       the service will return the named object from this\n\t// bucket as the content
-      for a 404 Not Found result.\n\t<a href=\"#notfoundpage\">NotFoundPage</a> <a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      for a 404 Not Found result.\n\tNotFoundPage <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.CORS
   name: CORS
   id: CORS
@@ -1072,17 +1055,17 @@ items:
   - go
   syntax:
     content: "type CORS struct {\n\t// MaxAge is the value to return in the Access-Control-Max-Age\n\t//
-      header used in preflight responses.\n\t<a href=\"#maxage\">MaxAge</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      header used in preflight responses.\n\tMaxAge <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Duration\">Duration</a>\n\n\t// Methods is the
       list of HTTP methods on which to include CORS response\n\t// headers, (GET,
       OPTIONS, POST, etc) Note: \"*\" is permitted in the list\n\t// of methods, and
-      means \"any method\".\n\t<a href=\"#methods\">Methods</a> []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      means \"any method\".\n\tMethods []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Origins is the list of Origins eligible to receive CORS response\n\t// headers.
-      Note: \"*\" is permitted in the list of origins, and means\n\t// \"any Origin\".\n\t<a
-      href=\"#origins\">Origins</a> []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      ResponseHeaders is the list of HTTP headers other than the simple\n\t// response
-      headers to give permission for the user-agent to share\n\t// across domains.\n\t<a
-      href=\"#responseheaders\">ResponseHeaders</a> []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      Note: \"*\" is permitted in the list of origins, and means\n\t// \"any Origin\".\n\tOrigins
+      []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ResponseHeaders
+      is the list of HTTP headers other than the simple\n\t// response headers to
+      give permission for the user-agent to share\n\t// across domains.\n\tResponseHeaders
+      []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.Client
   name: Client
   id: Client
@@ -1299,7 +1282,7 @@ items:
       a CRC32C field. It should be set\n\t// to true in addition to setting the Composer's
       CRC32C field, because zero\n\t// is a valid CRC and normally a zero would not
       be transmitted.\n\t// If a CRC32C is sent, and the data in the destination object
-      does not match\n\t// the checksum, the compose will be rejected.\n\t<a href=\"#sendcrc32c\">SendCRC32C</a>
+      does not match\n\t// the checksum, the compose will be rejected.\n\tSendCRC32C
       <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t// contains filtered
       or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Composer.Run
@@ -1346,20 +1329,19 @@ items:
     content: "type Conditions struct {\n\n\t// GenerationMatch specifies that the
       object must have the given generation\n\t// for the operation to occur.\n\t//
       If GenerationMatch is zero, it has no effect.\n\t// Use DoesNotExist to specify
-      that the object does not exist in the bucket.\n\t<a href=\"#generationmatch\">GenerationMatch</a>
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// GenerationNotMatch
-      specifies that the object must not have the given\n\t// generation for the operation
-      to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\t<a href=\"#generationnotmatch\">GenerationNotMatch</a>
+      that the object does not exist in the bucket.\n\tGenerationMatch <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      GenerationNotMatch specifies that the object must not have the given\n\t// generation
+      for the operation to occur.\n\t// If GenerationNotMatch is zero, it has no effect.\n\tGenerationNotMatch
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// DoesNotExist
       specifies that the object must not exist in the bucket for\n\t// the operation
-      to occur.\n\t// If DoesNotExist is false, it has no effect.\n\t<a href=\"#doesnotexist\">DoesNotExist</a>
+      to occur.\n\t// If DoesNotExist is false, it has no effect.\n\tDoesNotExist
       <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// MetagenerationMatch
       specifies that the object must have the given\n\t// metageneration for the operation
-      to occur.\n\t// If MetagenerationMatch is zero, it has no effect.\n\t<a href=\"#metagenerationmatch\">MetagenerationMatch</a>
+      to occur.\n\t// If MetagenerationMatch is zero, it has no effect.\n\tMetagenerationMatch
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// MetagenerationNotMatch
       specifies that the object must not have the given\n\t// metageneration for the
-      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\t<a
-      href=\"#metagenerationnotmatch\">MetagenerationNotMatch</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      operation to occur.\n\t// If MetagenerationNotMatch is zero, it has no effect.\n\tMetagenerationNotMatch
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.Copier
   name: Copier
   id: Copier
@@ -1376,7 +1358,7 @@ items:
       href=\"#objectattrs\">ObjectAttrs</a>\n\n\t// RewriteToken can be set before
       calling Run to resume a copy\n\t// operation. After Run returns a non-nil error,
       RewriteToken will\n\t// have been updated to contain the value needed to resume
-      the copy.\n\t<a href=\"#rewritetoken\">RewriteToken</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      the copy.\n\tRewriteToken <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       ProgressFunc can be used to monitor the progress of a multi-RPC copy\n\t// operation.
       If ProgressFunc is not nil and copying requires multiple\n\t// calls to the
       underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/objects/rewrite),
@@ -1385,16 +1367,15 @@ items:
       ProgressFunc is intended to make upload progress available to the\n\t// application.
       For example, the implementation of ProgressFunc may update\n\t// a progress
       bar in the application's UI, or log the result of\n\t// float64(copiedBytes)/float64(totalBytes).\n\t//\n\t//
-      ProgressFunc should return quickly without blocking.\n\t<a href=\"#progressfunc\">ProgressFunc</a>
-      func(<a href=\"#copiedbytes\">copiedBytes</a>, <a href=\"#totalbytes\">totalBytes</a>
+      ProgressFunc should return quickly without blocking.\n\tProgressFunc func(<a
+      href=\"#copiedbytes\">copiedBytes</a>, <a href=\"#totalbytes\">totalBytes</a>
       <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>)\n\n\t// The Cloud
       KMS key, in the form projects/P/locations/L/keyRings/R/cryptoKeys/K,\n\t// that
       will be used to encrypt the object. Overrides the object's KMSKeyName, if\n\t//
       any.\n\t//\n\t// Providing both a DestinationKMSKeyName and a customer-supplied
       encryption key\n\t// (via ObjectHandle.Key) on the destination object will result
-      in an error when\n\t// Run is called.\n\t<a href=\"#destinationkmskeyname\">DestinationKMSKeyName</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// contains filtered
-      or unexported fields\n}"
+      in an error when\n\t// Run is called.\n\tDestinationKMSKeyName <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Copier.Run
   name: |
     func (*Copier) Run
@@ -1442,22 +1423,21 @@ items:
   langs:
   - go
   syntax:
-    content: "type HMACKey struct {\n\t// The HMAC's secret key.\n\t<a href=\"#secret\">Secret</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// AccessID is
-      the ID of the HMAC key.\n\t<a href=\"#accessid\">AccessID</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      Etag is the HTTP/1.1 Entity tag.\n\t<a href=\"#etag\">Etag</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      ID is the ID of the HMAC key, including the ProjectID and AccessID.\n\t<a href=\"#id\">ID</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ProjectID is
-      the ID of the project that owns the\n\t// service account to which the key authenticates.\n\t<a
-      href=\"#projectid\">ProjectID</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      ServiceAccountEmail is the email address\n\t// of the key's associated service
-      account.\n\t<a href=\"#serviceaccountemail\">ServiceAccountEmail</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      CreatedTime is the creation time of the HMAC key.\n\t<a href=\"#createdtime\">CreatedTime</a>
-      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      UpdatedTime is the last modification time of the HMAC key metadata.\n\t<a href=\"#updatedtime\">UpdatedTime</a>
-      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      State is the state of the HMAC key.\n\t// It can be one of StateActive, StateInactive
-      or StateDeleted.\n\t<a href=\"#state\">State</a> <a href=\"#hmacstate\">HMACState</a>\n}"
+    content: "type HMACKey struct {\n\t// The HMAC's secret key.\n\tSecret <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      AccessID is the ID of the HMAC key.\n\tAccessID <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Etag is the HTTP/1.1 Entity tag.\n\tEtag <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      ID is the ID of the HMAC key, including the ProjectID and AccessID.\n\tID <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ProjectID is the
+      ID of the project that owns the\n\t// service account to which the key authenticates.\n\tProjectID
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ServiceAccountEmail
+      is the email address\n\t// of the key's associated service account.\n\tServiceAccountEmail
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// CreatedTime
+      is the creation time of the HMAC key.\n\tCreatedTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// UpdatedTime is the last
+      modification time of the HMAC key metadata.\n\tUpdatedTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// State is the state of
+      the HMAC key.\n\t// It can be one of StateActive, StateInactive or StateDeleted.\n\tState
+      <a href=\"#hmacstate\">HMACState</a>\n}"
 - uid: cloud.google.com/go/storage.HMACKeyAttrsToUpdate
   name: HMACKeyAttrsToUpdate
   id: HMACKeyAttrsToUpdate
@@ -1471,9 +1451,8 @@ items:
   - go
   syntax:
     content: "type HMACKeyAttrsToUpdate struct {\n\t// State is required and must
-      be either StateActive or StateInactive.\n\t<a href=\"#state\">State</a> <a href=\"#hmacstate\">HMACState</a>\n\n\t//
-      Etag is an optional field and it is the HTTP/1.1 Entity tag.\n\t<a href=\"#etag\">Etag</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      be either StateActive or StateInactive.\n\tState <a href=\"#hmacstate\">HMACState</a>\n\n\t//
+      Etag is an optional field and it is the HTTP/1.1 Entity tag.\n\tEtag <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.HMACKeyHandle
   name: HMACKeyHandle
   id: HMACKeyHandle
@@ -1719,7 +1698,7 @@ items:
   langs:
   - go
   syntax:
-    content: "type Lifecycle struct {\n\t<a href=\"#rules\">Rules</a> []<a href=\"#lifecyclerule\">LifecycleRule</a>\n}"
+    content: "type Lifecycle struct {\n\tRules []<a href=\"#lifecyclerule\">LifecycleRule</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleAction
   name: LifecycleAction
   id: LifecycleAction
@@ -1733,10 +1712,9 @@ items:
     content: "type LifecycleAction struct {\n\t// Type is the type of action to take
       on matching objects.\n\t//\n\t// Acceptable values are \"Delete\" to delete
       matching objects and\n\t// \"SetStorageClass\" to set the storage class defined
-      in StorageClass on\n\t// matching objects.\n\t<a href=\"#type\">Type</a> <a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// StorageClass is
-      the storage class to set on matching objects if the Action\n\t// is \"SetStorageClass\".\n\t<a
-      href=\"#storageclass\">StorageClass</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      in StorageClass on\n\t// matching objects.\n\tType <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      StorageClass is the storage class to set on matching objects if the Action\n\t//
+      is \"SetStorageClass\".\n\tStorageClass <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleCondition
   name: LifecycleCondition
   id: LifecycleCondition
@@ -1751,36 +1729,33 @@ items:
   - go
   syntax:
     content: "type LifecycleCondition struct {\n\t// AgeInDays is the age of the object
-      in days.\n\t<a href=\"#ageindays\">AgeInDays</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      in days.\n\tAgeInDays <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
       CreatedBefore is the time the object was created.\n\t//\n\t// This condition
       is satisfied when an object is created before midnight of\n\t// the specified
-      date in UTC.\n\t<a href=\"#createdbefore\">CreatedBefore</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      date in UTC.\n\tCreatedBefore <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// CustomTimeBefore is the
       CustomTime metadata field of the object. This\n\t// condition is satisfied when
       an object's CustomTime timestamp is before\n\t// midnight of the specified date
       in UTC.\n\t//\n\t// This condition can only be satisfied if CustomTime has been
-      set.\n\t<a href=\"#customtimebefore\">CustomTimeBefore</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
-      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// DaysSinceCustomTime is
-      the days elapsed since the CustomTime date of the\n\t// object. This condition
-      can only be satisfied if CustomTime has been set.\n\t<a href=\"#dayssincecustomtime\">DaysSinceCustomTime</a>
+      set.\n\tCustomTimeBefore <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
+      DaysSinceCustomTime is the days elapsed since the CustomTime date of the\n\t//
+      object. This condition can only be satisfied if CustomTime has been set.\n\tDaysSinceCustomTime
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// DaysSinceNoncurrentTime
       is the days elapsed since the noncurrent timestamp\n\t// of the object. This
-      condition is relevant only for versioned objects.\n\t<a href=\"#dayssincenoncurrenttime\">DaysSinceNoncurrentTime</a>
+      condition is relevant only for versioned objects.\n\tDaysSinceNoncurrentTime
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Liveness specifies
-      the object's liveness. Relevant only for versioned objects\n\t<a href=\"#liveness\">Liveness</a>
-      <a href=\"#liveness\">Liveness</a>\n\n\t// MatchesStorageClasses is the condition
-      matching the object's storage\n\t// class.\n\t//\n\t// Values include \"STANDARD\",
-      \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\t<a href=\"#matchesstorageclasses\">MatchesStorageClasses</a>
+      the object's liveness. Relevant only for versioned objects\n\tLiveness <a href=\"#liveness\">Liveness</a>\n\n\t//
+      MatchesStorageClasses is the condition matching the object's storage\n\t// class.\n\t//\n\t//
+      Values include \"STANDARD\", \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\tMatchesStorageClasses
       []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// NoncurrentTimeBefore
       is the noncurrent timestamp of the object. This\n\t// condition is satisfied
       when an object's noncurrent timestamp is before\n\t// midnight of the specified
-      date in UTC.\n\t//\n\t// This condition is relevant only for versioned objects.\n\t<a
-      href=\"#noncurrenttimebefore\">NoncurrentTimeBefore</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
-      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// NumNewerVersions is the
-      condition matching objects with a number of newer versions.\n\t//\n\t// If the
-      value is N, this condition is satisfied when there are at least N\n\t// versions
-      (including the live version) newer than this version of the\n\t// object.\n\t<a
-      href=\"#numnewerversions\">NumNewerVersions</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      date in UTC.\n\t//\n\t// This condition is relevant only for versioned objects.\n\tNoncurrentTimeBefore
+      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
+      NumNewerVersions is the condition matching objects with a number of newer versions.\n\t//\n\t//
+      If the value is N, this condition is satisfied when there are at least N\n\t//
+      versions (including the live version) newer than this version of the\n\t// object.\n\tNumNewerVersions
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleRule
   name: LifecycleRule
   id: LifecycleRule
@@ -1795,10 +1770,9 @@ items:
   - go
   syntax:
     content: "type LifecycleRule struct {\n\t// Action is the action to take when
-      all of the associated conditions are\n\t// met.\n\t<a href=\"#action\">Action</a>
-      <a href=\"#lifecycleaction\">LifecycleAction</a>\n\n\t// Condition is the set
-      of conditions that must be met for the associated\n\t// action to be taken.\n\t<a
-      href=\"#condition\">Condition</a> <a href=\"#lifecyclecondition\">LifecycleCondition</a>\n}"
+      all of the associated conditions are\n\t// met.\n\tAction <a href=\"#lifecycleaction\">LifecycleAction</a>\n\n\t//
+      Condition is the set of conditions that must be met for the associated\n\t//
+      action to be taken.\n\tCondition <a href=\"#lifecyclecondition\">LifecycleCondition</a>\n}"
 - uid: cloud.google.com/go/storage.Liveness
   name: Liveness
   id: Liveness
@@ -1833,23 +1807,20 @@ items:
   langs:
   - go
   syntax:
-    content: "type Notification struct {\n\t//The ID of the notification.\n\t<a href=\"#id\">ID</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// The ID of the
-      topic to which this subscription publishes.\n\t<a href=\"#topicid\">TopicID</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// The ID of the
-      project to which the topic belongs.\n\t<a href=\"#topicprojectid\">TopicProjectID</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Only send notifications
-      about listed event types. If empty, send notifications\n\t// for all event types.\n\t//
-      See https://cloud.google.com/storage/docs/pubsub-notifications#events.\n\t<a
-      href=\"#eventtypes\">EventTypes</a> []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      If present, only apply this notification configuration to object names that\n\t//
-      begin with this prefix.\n\t<a href=\"#objectnameprefix\">ObjectNamePrefix</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// An optional
-      list of additional attributes to attach to each Cloud PubSub\n\t// message published
-      for this notification subscription.\n\t<a href=\"#customattributes\">CustomAttributes</a>
-      map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      The contents of the message payload.\n\t// See https://cloud.google.com/storage/docs/pubsub-notifications#payload.\n\t<a
-      href=\"#payloadformat\">PayloadFormat</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+    content: "type Notification struct {\n\t//The ID of the notification.\n\tID <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// The ID of the
+      topic to which this subscription publishes.\n\tTopicID <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      The ID of the project to which the topic belongs.\n\tTopicProjectID <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Only send notifications about listed event types. If empty, send notifications\n\t//
+      for all event types.\n\t// See https://cloud.google.com/storage/docs/pubsub-notifications#events.\n\tEventTypes
+      []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// If present,
+      only apply this notification configuration to object names that\n\t// begin
+      with this prefix.\n\tObjectNamePrefix <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      An optional list of additional attributes to attach to each Cloud PubSub\n\t//
+      message published for this notification subscription.\n\tCustomAttributes map[<a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      The contents of the message payload.\n\t// See https://cloud.google.com/storage/docs/pubsub-notifications#payload.\n\tPayloadFormat
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.ObjectAttrs
   name: ObjectAttrs
   id: ObjectAttrs
@@ -1861,99 +1832,91 @@ items:
   - go
   syntax:
     content: "type ObjectAttrs struct {\n\t// Bucket is the name of the bucket containing
-      this GCS object.\n\t// This field is read-only.\n\t<a href=\"#bucket\">Bucket</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Name is the
-      name of the object within the bucket.\n\t// This field is read-only.\n\t<a href=\"#name\">Name</a>
+      this GCS object.\n\t// This field is read-only.\n\tBucket <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Name is the name of the object within the bucket.\n\t// This field is read-only.\n\tName
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ContentType
-      is the MIME type of the object's content.\n\t<a href=\"#contenttype\">ContentType</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ContentLanguage
-      is the content language of the object's content.\n\t<a href=\"#contentlanguage\">ContentLanguage</a>
+      is the MIME type of the object's content.\n\tContentType <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      ContentLanguage is the content language of the object's content.\n\tContentLanguage
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// CacheControl
       is the Cache-Control header to be sent in the response\n\t// headers when serving
-      the object data.\n\t<a href=\"#cachecontrol\">CacheControl</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      the object data.\n\tCacheControl <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       EventBasedHold specifies whether an object is under event-based hold. New\n\t//
       objects created in a bucket whose DefaultEventBasedHold is set will\n\t// default
-      to that value.\n\t<a href=\"#eventbasedhold\">EventBasedHold</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      to that value.\n\tEventBasedHold <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       TemporaryHold specifies whether an object is under temporary hold. While\n\t//
       this flag is set to true, the object is protected against deletion and\n\t//
-      overwrites.\n\t<a href=\"#temporaryhold\">TemporaryHold</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      overwrites.\n\tTemporaryHold <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       RetentionExpirationTime is a server-determined value that specifies the\n\t//
       earliest time that the object's retention period expires.\n\t// This is a read-only
-      field.\n\t<a href=\"#retentionexpirationtime\">RetentionExpirationTime</a> <a
-      href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      ACL is the list of access control rules for the object.\n\t<a href=\"#acl\">ACL</a>
-      []<a href=\"#aclrule\">ACLRule</a>\n\n\t// If not empty, applies a predefined
-      set of access controls. It should be set\n\t// only when writing, copying or
-      composing an object. When copying or composing,\n\t// it acts as the destinationPredefinedAcl
-      parameter.\n\t// PredefinedACL is always empty for ObjectAttrs returned from
-      the service.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/objects/insert\n\t//
-      for valid values.\n\t<a href=\"#predefinedacl\">PredefinedACL</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      field.\n\tRetentionExpirationTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// ACL is the list of access
+      control rules for the object.\n\tACL []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      If not empty, applies a predefined set of access controls. It should be set\n\t//
+      only when writing, copying or composing an object. When copying or composing,\n\t//
+      it acts as the destinationPredefinedAcl parameter.\n\t// PredefinedACL is always
+      empty for ObjectAttrs returned from the service.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/objects/insert\n\t//
+      for valid values.\n\tPredefinedACL <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Owner is the owner of the object. This field is read-only.\n\t//\n\t// If non-zero,
-      it is in the form of \"user-<userId>\".\n\t<a href=\"#owner\">Owner</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      Size is the length of the object's content. This field is read-only.\n\t<a href=\"#size\">Size</a>
+      it is in the form of \"user-<userId>\".\n\tOwner <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Size is the length of the object's content. This field is read-only.\n\tSize
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// ContentEncoding
-      is the encoding of the object's content.\n\t<a href=\"#contentencoding\">ContentEncoding</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ContentDisposition
-      is the optional Content-Disposition header of the object\n\t// sent in the response
-      headers.\n\t<a href=\"#contentdisposition\">ContentDisposition</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      is the encoding of the object's content.\n\tContentEncoding <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      ContentDisposition is the optional Content-Disposition header of the object\n\t//
+      sent in the response headers.\n\tContentDisposition <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       MD5 is the MD5 hash of the object's content. This field is read-only,\n\t//
       except when used from a Writer. If set on a Writer, the uploaded\n\t// data
-      is rejected if its MD5 hash does not match this field.\n\t<a href=\"#md5\">MD5</a>
-      []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t// CRC32C is the
-      CRC32 checksum of the object's content using the Castagnoli93\n\t// polynomial.
-      This field is read-only, except when used from a Writer or\n\t// Composer. In
-      those cases, if the SendCRC32C field in the Writer or Composer\n\t// is set
-      to is true, the uploaded data is rejected if its CRC32C hash does\n\t// not
-      match this field.\n\t<a href=\"#crc32c\">CRC32C</a> <a href=\"https://pkg.go.dev/builtin#uint32\">uint32</a>\n\n\t//
-      MediaLink is an URL to the object's content. This field is read-only.\n\t<a
-      href=\"#medialink\">MediaLink</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      Metadata represents user-provided metadata, in key/value pairs.\n\t// It can
-      be nil if no metadata is provided.\n\t<a href=\"#metadata\">Metadata</a> map[<a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      Generation is the generation number of the object's content.\n\t// This field
-      is read-only.\n\t<a href=\"#generation\">Generation</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
-      Metageneration is the version of the metadata for this\n\t// object at this
-      generation. This field is used for preconditions\n\t// and for detecting changes
-      in metadata. A metageneration number\n\t// is only meaningful in the context
-      of a particular generation\n\t// of a particular object. This field is read-only.\n\t<a
-      href=\"#metageneration\">Metageneration</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
-      StorageClass is the storage class of the object. This defines\n\t// how objects
-      are stored and determines the SLA and the cost of storage.\n\t// Typical values
-      are \"STANDARD\", \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\t// Defaults
-      to \"STANDARD\".\n\t// See https://cloud.google.com/storage/docs/storage-classes
-      for all\n\t// valid values.\n\t<a href=\"#storageclass\">StorageClass</a> <a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Created is the
-      time the object was created. This field is read-only.\n\t<a href=\"#created\">Created</a>
+      is rejected if its MD5 hash does not match this field.\n\tMD5 []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t//
+      CRC32C is the CRC32 checksum of the object's content using the Castagnoli93\n\t//
+      polynomial. This field is read-only, except when used from a Writer or\n\t//
+      Composer. In those cases, if the SendCRC32C field in the Writer or Composer\n\t//
+      is set to is true, the uploaded data is rejected if its CRC32C hash does\n\t//
+      not match this field.\n\tCRC32C <a href=\"https://pkg.go.dev/builtin#uint32\">uint32</a>\n\n\t//
+      MediaLink is an URL to the object's content. This field is read-only.\n\tMediaLink
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Metadata represents
+      user-provided metadata, in key/value pairs.\n\t// It can be nil if no metadata
+      is provided.\n\tMetadata map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Generation is
+      the generation number of the object's content.\n\t// This field is read-only.\n\tGeneration
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Metageneration
+      is the version of the metadata for this\n\t// object at this generation. This
+      field is used for preconditions\n\t// and for detecting changes in metadata.
+      A metageneration number\n\t// is only meaningful in the context of a particular
+      generation\n\t// of a particular object. This field is read-only.\n\tMetageneration
+      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// StorageClass
+      is the storage class of the object. This defines\n\t// how objects are stored
+      and determines the SLA and the cost of storage.\n\t// Typical values are \"STANDARD\",
+      \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\t// Defaults to \"STANDARD\".\n\t//
+      See https://cloud.google.com/storage/docs/storage-classes for all\n\t// valid
+      values.\n\tStorageClass <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Created is the time the object was created. This field is read-only.\n\tCreated
       <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
       Deleted is the time the object was deleted.\n\t// If not deleted, it is the
-      zero value. This field is read-only.\n\t<a href=\"#deleted\">Deleted</a> <a
-      href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      Updated is the creation or modification time of the object.\n\t// For buckets
-      with versioning enabled, changing an object's\n\t// metadata does not change
-      this property. This field is read-only.\n\t<a href=\"#updated\">Updated</a>
-      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
+      zero value. This field is read-only.\n\tDeleted <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// Updated is the creation
+      or modification time of the object.\n\t// For buckets with versioning enabled,
+      changing an object's\n\t// metadata does not change this property. This field
+      is read-only.\n\tUpdated <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
       CustomerKeySHA256 is the base64-encoded SHA-256 hash of the\n\t// customer-supplied
       encryption key for the object. It is empty if there is\n\t// no customer-supplied
       encryption key.\n\t// See // https://cloud.google.com/storage/docs/encryption
-      for more about\n\t// encryption in Google Cloud Storage.\n\t<a href=\"#customerkeysha256\">CustomerKeySHA256</a>
+      for more about\n\t// encryption in Google Cloud Storage.\n\tCustomerKeySHA256
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Cloud KMS key
       name, in the form\n\t// projects/P/locations/L/keyRings/R/cryptoKeys/K, used
       to encrypt this object,\n\t// if the object is encrypted by such a key.\n\t//\n\t//
       Providing both a KMSKeyName and a customer-supplied encryption key (via\n\t//
-      ObjectHandle.Key) will result in an error when writing an object.\n\t<a href=\"#kmskeyname\">KMSKeyName</a>
+      ObjectHandle.Key) will result in an error when writing an object.\n\tKMSKeyName
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Prefix is set
       only for ObjectAttrs which represent synthetic \"directory\n\t// entries\" when
       iterating over buckets using Query.Delimiter. See\n\t// ObjectIterator.Next.
-      When set, no other fields in ObjectAttrs will be\n\t// populated.\n\t<a href=\"#prefix\">Prefix</a>
+      When set, no other fields in ObjectAttrs will be\n\t// populated.\n\tPrefix
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Etag is the
-      HTTP/1.1 Entity tag for the object.\n\t// This field is read-only.\n\t<a href=\"#etag\">Etag</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// A user-specified
+      HTTP/1.1 Entity tag for the object.\n\t// This field is read-only.\n\tEtag <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// A user-specified
       timestamp which can be applied to an object. This is\n\t// typically set in
       order to use the CustomTimeBefore and DaysSinceCustomTime\n\t// LifecycleConditions
       to manage object lifecycles.\n\t//\n\t// CustomTime cannot be removed once set
       on an object. It can be updated to a\n\t// later value but not to an earlier
-      one.\n\t<a href=\"#customtime\">CustomTime</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
-      href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
+      one.\n\tCustomTime <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
 - uid: cloud.google.com/go/storage.ObjectAttrsToUpdate
   name: ObjectAttrsToUpdate
   id: ObjectAttrsToUpdate
@@ -1974,28 +1937,26 @@ items:
   langs:
   - go
   syntax:
-    content: "type ObjectAttrsToUpdate struct {\n\t<a href=\"#eventbasedhold\">EventBasedHold</a>
-      \    <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\t<a
-      href=\"#temporaryhold\">TemporaryHold</a>      <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\t<a
-      href=\"#contenttype\">ContentType</a>        <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\t<a
-      href=\"#contentlanguage\">ContentLanguage</a>    <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\t<a
-      href=\"#contentencoding\">ContentEncoding</a>    <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\t<a
-      href=\"#contentdisposition\">ContentDisposition</a> <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\t<a
-      href=\"#cachecontrol\">CacheControl</a>       <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
-      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\t<a
-      href=\"#customtime\">CustomTime</a>         <a href=\"https://pkg.go.dev/time\">time</a>.<a
-      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\t<a href=\"#metadata\">Metadata</a>
+    content: "type ObjectAttrsToUpdate struct {\n\tEventBasedHold     <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\tTemporaryHold
+      \     <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#Bool\">Bool</a>\n\tContentType
+      \       <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\tContentLanguage
+      \   <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\tContentEncoding
+      \   <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\tContentDisposition
+      <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\tCacheControl
+      \      <a href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional\">optional</a>.<a
+      href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\tCustomTime
+      \        <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\tMetadata
       \          map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>
-      // set to map[string]string{} to delete\n\t<a href=\"#acl\">ACL</a>                []<a
-      href=\"#aclrule\">ACLRule</a>\n\n\t// If not empty, applies a predefined set
-      of access controls. ACL must be nil.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.\n\t<a
-      href=\"#predefinedacl\">PredefinedACL</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      // set to map[string]string{} to delete\n\tACL                []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      If not empty, applies a predefined set of access controls. ACL must be nil.\n\t//
+      See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.\n\tPredefinedACL
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.ObjectHandle
   name: ObjectHandle
   id: ObjectHandle
@@ -2442,27 +2403,24 @@ items:
   - go
   syntax:
     content: "type PolicyV4Fields struct {\n\t// ACL specifies the access control
-      permissions for the object.\n\t// Optional.\n\t<a href=\"#acl\">ACL</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
-      CacheControl specifies the caching directives for the object.\n\t// Optional.\n\t<a
-      href=\"#cachecontrol\">CacheControl</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
-      ContentType specifies the media type of the object.\n\t// Optional.\n\t<a href=\"#contenttype\">ContentType</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// ContentDisposition
-      specifies how the file will be served back to requesters.\n\t// Optional.\n\t<a
-      href=\"#contentdisposition\">ContentDisposition</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      permissions for the object.\n\t// Optional.\n\tACL <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      CacheControl specifies the caching directives for the object.\n\t// Optional.\n\tCacheControl
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// ContentType specifies
+      the media type of the object.\n\t// Optional.\n\tContentType <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      ContentDisposition specifies how the file will be served back to requesters.\n\t//
+      Optional.\n\tContentDisposition <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       ContentEncoding specifies the decompressive transcoding that the object.\n\t//
       This field is complementary to ContentType in that the file could be\n\t// compressed
-      but ContentType specifies the file's original media type.\n\t// Optional.\n\t<a
-      href=\"#contentencoding\">ContentEncoding</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
-      Metadata specifies custom metadata for the object.\n\t// If any key doesn't
-      begin with \"x-goog-meta-\", an error will be returned.\n\t// Optional.\n\t<a
-      href=\"#metadata\">Metadata</a> map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
+      but ContentType specifies the file's original media type.\n\t// Optional.\n\tContentEncoding
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// Metadata specifies
+      custom metadata for the object.\n\t// If any key doesn't begin with \"x-goog-meta-\",
+      an error will be returned.\n\t// Optional.\n\tMetadata map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
       href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t// StatusCodeOnSuccess
       when set, specifies the status code that Cloud Storage\n\t// will serve back
-      on successful upload of the object.\n\t// Optional.\n\t<a href=\"#statuscodeonsuccess\">StatusCodeOnSuccess</a>
-      <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\t// RedirectToURLOnSuccess
+      on successful upload of the object.\n\t// Optional.\n\tStatusCodeOnSuccess <a
+      href=\"https://pkg.go.dev/builtin#int\">int</a>\n\t// RedirectToURLOnSuccess
       when set, specifies the URL that Cloud Storage\n\t// will serve back on successful
-      upload of the object.\n\t// Optional.\n\t<a href=\"#redirecttourlonsuccess\">RedirectToURLOnSuccess</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      upload of the object.\n\t// Optional.\n\tRedirectToURLOnSuccess <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.PostPolicyV4
   name: PostPolicyV4
   id: PostPolicyV4
@@ -2474,10 +2432,10 @@ items:
   - go
   syntax:
     content: "type PostPolicyV4 struct {\n\t// URL is the generated URL that the file
-      upload will be made to.\n\t<a href=\"#url\">URL</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      upload will be made to.\n\tURL <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       Fields specifies the generated key-values that the file uploader\n\t// must
-      include in their multipart upload form.\n\t<a href=\"#fields\">Fields</a> map[<a
-      href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
+      include in their multipart upload form.\n\tFields map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.PostPolicyV4.GenerateSignedPostPolicyV4
   name: |
     func GenerateSignedPostPolicyV4
@@ -2574,7 +2532,7 @@ items:
     content: "type PostPolicyV4Options struct {\n\t// GoogleAccessID represents the
       authorizer of the signed URL generation.\n\t// It is typically the Google service
       account client email address from\n\t// the Google Developers Console in the
-      form of \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\t<a href=\"#googleaccessid\">GoogleAccessID</a>
+      form of \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\tGoogleAccessID
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// PrivateKey
       is the Google service account private key. It is obtainable\n\t// from the Google
       Developers Console.\n\t// At https://console.developers.google.com/project/<your-project-id>/apiui/credential,\n\t//
@@ -2584,7 +2542,7 @@ items:
       to convert it into a PEM file.\n\t//\n\t//    $ openssl pkcs12 -in key.p12 -passin
       pass:notasecret -out key.pem -nodes\n\t//\n\t// Provide the contents of the
       PEM file as a byte slice.\n\t// Exactly one of PrivateKey or SignBytes must
-      be non-nil.\n\t<a href=\"#privatekey\">PrivateKey</a> []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t//
+      be non-nil.\n\tPrivateKey []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t//
       SignBytes is a function for implementing custom signing. For example, if\n\t//
       your application is running on Google App Engine, you can use\n\t// appengine's
       internal signing function:\n\t//     ctx := appengine.NewContext(request)\n\t//
@@ -2592,27 +2550,25 @@ items:
       \"object\", &SignedURLOptions{\n\t//     \tGoogleAccessID: acc,\n\t//     \tSignBytes:
       func(b []byte) ([]byte, error) {\n\t//     \t\t_, signedBytes, err := appengine.SignBytes(ctx,
       b)\n\t//     \t\treturn signedBytes, err\n\t//     \t},\n\t//     \t// etc.\n\t//
-      \    })\n\t//\n\t// Exactly one of PrivateKey or SignBytes must be non-nil.\n\t<a
-      href=\"#signbytes\">SignBytes</a> func(<a href=\"#hashbytes\">hashBytes</a>
-      []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>) (<a href=\"#signature\">signature</a>
-      []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>, <a href=\"#err\">err</a>
-      <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t// Expires is the
-      expiration time on the signed URL.\n\t// It must be a time in the future.\n\t//
-      Required.\n\t<a href=\"#expires\">Expires</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      \    })\n\t//\n\t// Exactly one of PrivateKey or SignBytes must be non-nil.\n\tSignBytes
+      func(<a href=\"#hashbytes\">hashBytes</a> []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>)
+      (<a href=\"#signature\">signature</a> []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>,
+      <a href=\"#err\">err</a> <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
+      Expires is the expiration time on the signed URL.\n\t// It must be a time in
+      the future.\n\t// Required.\n\tExpires <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// Style provides options
       for the type of URL to use. Options are\n\t// PathStyle (default), BucketBoundHostname,
       and VirtualHostedStyle. See\n\t// https://cloud.google.com/storage/docs/request-endpoints
-      for details.\n\t// Optional.\n\t<a href=\"#style\">Style</a> <a href=\"#urlstyle\">URLStyle</a>\n\n\t//
+      for details.\n\t// Optional.\n\tStyle <a href=\"#urlstyle\">URLStyle</a>\n\n\t//
       Insecure when set indicates that the generated URL's scheme\n\t// will use \"http\"
-      instead of \"https\" (default).\n\t// Optional.\n\t<a href=\"#insecure\">Insecure</a>
-      <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// Fields specifies
-      the attributes of a PostPolicyV4 request.\n\t// When Fields is non-nil, its
-      attributes must match those that will\n\t// passed into field Conditions.\n\t//
-      Optional.\n\t<a href=\"#fields\">Fields</a> *<a href=\"#policyv4fields\">PolicyV4Fields</a>\n\n\t//
+      instead of \"https\" (default).\n\t// Optional.\n\tInsecure <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      Fields specifies the attributes of a PostPolicyV4 request.\n\t// When Fields
+      is non-nil, its attributes must match those that will\n\t// passed into field
+      Conditions.\n\t// Optional.\n\tFields *<a href=\"#policyv4fields\">PolicyV4Fields</a>\n\n\t//
       The conditions that the uploaded file will be expected to conform to.\n\t//
       When used, the failure of an upload to satisfy a condition will result in\n\t//
-      a 4XX status code, back with the message describing the problem.\n\t// Optional.\n\t<a
-      href=\"#conditions\">Conditions</a> []<a href=\"#postpolicyv4condition\">PostPolicyV4Condition</a>\n}"
+      a 4XX status code, back with the message describing the problem.\n\t// Optional.\n\tConditions
+      []<a href=\"#postpolicyv4condition\">PostPolicyV4Condition</a>\n}"
 - uid: cloud.google.com/go/storage.ProjectTeam
   name: ProjectTeam
   id: ProjectTeam
@@ -2623,8 +2579,7 @@ items:
   langs:
   - go
   syntax:
-    content: "type ProjectTeam struct {\n\t<a href=\"#projectnumber\">ProjectNumber</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t<a href=\"#team\">Team</a>
+    content: "type ProjectTeam struct {\n\tProjectNumber <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tTeam
       \         <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.Query
   name: Query
@@ -2640,20 +2595,19 @@ items:
       fashion.\n\t// Results will contain only objects whose names, aside from the\n\t//
       prefix, do not contain delimiter. Objects whose names,\n\t// aside from the
       prefix, contain delimiter will have their name,\n\t// truncated after the delimiter,
-      returned in prefixes.\n\t// Duplicate prefixes are omitted.\n\t// Optional.\n\t<a
-      href=\"#delimiter\">Delimiter</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      Prefix is the prefix filter to query objects\n\t// whose names begin with this
-      prefix.\n\t// Optional.\n\t<a href=\"#prefix\">Prefix</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      returned in prefixes.\n\t// Duplicate prefixes are omitted.\n\t// Optional.\n\tDelimiter
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Prefix is the
+      prefix filter to query objects\n\t// whose names begin with this prefix.\n\t//
+      Optional.\n\tPrefix <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Versions indicates whether multiple versions of the same\n\t// object will be
-      included in the results.\n\t<a href=\"#versions\">Versions</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      included in the results.\n\tVersions <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       StartOffset is used to filter results to objects whose names are\n\t// lexicographically
       equal to or after startOffset. If endOffset is also set,\n\t// the objects listed
-      will have names between startOffset (inclusive) and\n\t// endOffset (exclusive).\n\t<a
-      href=\"#startoffset\">StartOffset</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      EndOffset is used to filter results to objects whose names are\n\t// lexicographically
-      before endOffset. If startOffset is also set, the objects\n\t// listed will
-      have names between startOffset (inclusive) and endOffset (exclusive).\n\t<a
-      href=\"#endoffset\">EndOffset</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
+      will have names between startOffset (inclusive) and\n\t// endOffset (exclusive).\n\tStartOffset
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// EndOffset is
+      used to filter results to objects whose names are\n\t// lexicographically before
+      endOffset. If startOffset is also set, the objects\n\t// listed will have names
+      between startOffset (inclusive) and endOffset (exclusive).\n\tEndOffset <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Query.SetAttrSelection
   name: |
@@ -2689,7 +2643,7 @@ items:
   langs:
   - go
   syntax:
-    content: "type Reader struct {\n\t<a href=\"#attrs\">Attrs</a> <a href=\"#readerobjectattrs\">ReaderObjectAttrs</a>\n\t//
+    content: "type Reader struct {\n\tAttrs <a href=\"#readerobjectattrs\">ReaderObjectAttrs</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Reader.CacheControl
   name: |
@@ -2814,25 +2768,22 @@ items:
   - go
   syntax:
     content: "type ReaderObjectAttrs struct {\n\t// Size is the length of the object's
-      content.\n\t<a href=\"#size\">Size</a> <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      content.\n\tSize <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
       StartOffset is the byte offset within the object\n\t// from which reading begins.\n\t//
-      This value is only non-zero for range requests.\n\t<a href=\"#startoffset\">StartOffset</a>
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// ContentType is
-      the MIME type of the object's content.\n\t<a href=\"#contenttype\">ContentType</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// ContentEncoding
-      is the encoding of the object's content.\n\t<a href=\"#contentencoding\">ContentEncoding</a>
+      This value is only non-zero for range requests.\n\tStartOffset <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t//
+      ContentType is the MIME type of the object's content.\n\tContentType <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      ContentEncoding is the encoding of the object's content.\n\tContentEncoding
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// CacheControl
       specifies whether and for how long browser and Internet\n\t// caches are allowed
-      to cache your objects.\n\t<a href=\"#cachecontrol\">CacheControl</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      LastModified is the time that the object was last modified.\n\t<a href=\"#lastmodified\">LastModified</a>
+      to cache your objects.\n\tCacheControl <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      LastModified is the time that the object was last modified.\n\tLastModified
       <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      Generation is the generation number of the object's content.\n\t<a href=\"#generation\">Generation</a>
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Metageneration
-      is the version of the metadata for this object at\n\t// this generation. This
-      field is used for preconditions and for\n\t// detecting changes in metadata.
-      A metageneration number is only\n\t// meaningful in the context of a particular
-      generation of a\n\t// particular object.\n\t<a href=\"#metageneration\">Metageneration</a>
-      <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
+      Generation is the generation number of the object's content.\n\tGeneration <a
+      href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Metageneration is
+      the version of the metadata for this object at\n\t// this generation. This field
+      is used for preconditions and for\n\t// detecting changes in metadata. A metageneration
+      number is only\n\t// meaningful in the context of a particular generation of
+      a\n\t// particular object.\n\tMetageneration <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n}"
 - uid: cloud.google.com/go/storage.RetentionPolicy
   name: RetentionPolicy
   id: RetentionPolicy
@@ -2858,14 +2809,13 @@ items:
       that objects need to be\n\t// retained. Retention duration must be greater than
       zero and less than\n\t// 100 years. Note that enforcement of retention periods
       less than a day\n\t// is not guaranteed. Such periods should only be used for
-      testing\n\t// purposes.\n\t<a href=\"#retentionperiod\">RetentionPeriod</a>
-      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Duration\">Duration</a>\n\n\t//
-      EffectiveTime is the time from which the policy was enforced and\n\t// effective.
-      This field is read-only.\n\t<a href=\"#effectivetime\">EffectiveTime</a> <a
-      href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      IsLocked describes whether the bucket is locked. Once locked, an\n\t// object
-      retention policy cannot be modified.\n\t// This field is read-only.\n\t<a href=\"#islocked\">IsLocked</a>
-      <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n}"
+      testing\n\t// purposes.\n\tRetentionPeriod <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Duration\">Duration</a>\n\n\t// EffectiveTime
+      is the time from which the policy was enforced and\n\t// effective. This field
+      is read-only.\n\tEffectiveTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// IsLocked describes whether
+      the bucket is locked. Once locked, an\n\t// object retention policy cannot be
+      modified.\n\t// This field is read-only.\n\tIsLocked <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n}"
 - uid: cloud.google.com/go/storage.SignedURLOptions
   name: SignedURLOptions
   id: SignedURLOptions
@@ -2879,9 +2829,9 @@ items:
     content: "type SignedURLOptions struct {\n\t// GoogleAccessID represents the authorizer
       of the signed URL generation.\n\t// It is typically the Google service account
       client email address from\n\t// the Google Developers Console in the form of
-      \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\t<a href=\"#googleaccessid\">GoogleAccessID</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// PrivateKey
-      is the Google service account private key. It is obtainable\n\t// from the Google
+      \"xxx@developer.gserviceaccount.com\".\n\t// Required.\n\tGoogleAccessID <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// PrivateKey is
+      the Google service account private key. It is obtainable\n\t// from the Google
       Developers Console.\n\t// At https://console.developers.google.com/project/<your-project-id>/apiui/credential,\n\t//
       create a service account client ID or reuse one of your existing service account\n\t//
       credentials. Click on the \"Generate new P12 key\" to generate and download\n\t//
@@ -2889,7 +2839,7 @@ items:
       to convert it into a PEM file.\n\t//\n\t//    $ openssl pkcs12 -in key.p12 -passin
       pass:notasecret -out key.pem -nodes\n\t//\n\t// Provide the contents of the
       PEM file as a byte slice.\n\t// Exactly one of PrivateKey or SignBytes must
-      be non-nil.\n\t<a href=\"#privatekey\">PrivateKey</a> []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t//
+      be non-nil.\n\tPrivateKey []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>\n\n\t//
       SignBytes is a function for implementing custom signing. For example, if\n\t//
       your application is running on Google App Engine, you can use\n\t// appengine's
       internal signing function:\n\t//     ctx := appengine.NewContext(request)\n\t//
@@ -2897,39 +2847,36 @@ items:
       \"object\", &SignedURLOptions{\n\t//     \tGoogleAccessID: acc,\n\t//     \tSignBytes:
       func(b []byte) ([]byte, error) {\n\t//     \t\t_, signedBytes, err := appengine.SignBytes(ctx,
       b)\n\t//     \t\treturn signedBytes, err\n\t//     \t},\n\t//     \t// etc.\n\t//
-      \    })\n\t//\n\t// Exactly one of PrivateKey or SignBytes must be non-nil.\n\t<a
-      href=\"#signbytes\">SignBytes</a> func([]<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>)
-      ([]<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>, <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
-      Method is the HTTP method to be used with the signed URL.\n\t// Signed URLs
-      can be used with GET, HEAD, PUT, and DELETE requests.\n\t// Required.\n\t<a
-      href=\"#method\">Method</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      \    })\n\t//\n\t// Exactly one of PrivateKey or SignBytes must be non-nil.\n\tSignBytes
+      func([]<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>) ([]<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>,
+      <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t// Method is the
+      HTTP method to be used with the signed URL.\n\t// Signed URLs can be used with
+      GET, HEAD, PUT, and DELETE requests.\n\t// Required.\n\tMethod <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Expires is the expiration time on the signed URL. It must be\n\t// a datetime
       in the future. For SigningSchemeV4, the expiration may be no\n\t// more than
-      seven days in the future.\n\t// Required.\n\t<a href=\"#expires\">Expires</a>
-      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t//
-      ContentType is the content type header the client must provide\n\t// to use
-      the generated signed URL.\n\t// Optional.\n\t<a href=\"#contenttype\">ContentType</a>
-      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// Headers is
-      a list of extension headers the client must provide\n\t// in order to use the
-      generated signed URL. Each must be a string of the\n\t// form \"key:values\",
-      with multiple values separated by a semicolon.\n\t// Optional.\n\t<a href=\"#headers\">Headers</a>
-      []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// QueryParameters
+      seven days in the future.\n\t// Required.\n\tExpires <a href=\"https://pkg.go.dev/time\">time</a>.<a
+      href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// ContentType is the content
+      type header the client must provide\n\t// to use the generated signed URL.\n\t//
+      Optional.\n\tContentType <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      Headers is a list of extension headers the client must provide\n\t// in order
+      to use the generated signed URL. Each must be a string of the\n\t// form \"key:values\",
+      with multiple values separated by a semicolon.\n\t// Optional.\n\tHeaders []<a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// QueryParameters
       is a map of additional query parameters. When\n\t// SigningScheme is V4, this
       is used in computing the signature, and the\n\t// client must use the same query
-      parameters when using the generated signed\n\t// URL.\n\t// Optional.\n\t<a
-      href=\"#queryparameters\">QueryParameters</a> <a href=\"https://pkg.go.dev/net/url\">url</a>.<a
-      href=\"https://pkg.go.dev/net/url#Values\">Values</a>\n\n\t// MD5 is the base64
-      encoded MD5 checksum of the file.\n\t// If provided, the client should provide
-      the exact value on the request\n\t// header in order to use the signed URL.\n\t//
-      Optional.\n\t<a href=\"#md5\">MD5</a> <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      parameters when using the generated signed\n\t// URL.\n\t// Optional.\n\tQueryParameters
+      <a href=\"https://pkg.go.dev/net/url\">url</a>.<a href=\"https://pkg.go.dev/net/url#Values\">Values</a>\n\n\t//
+      MD5 is the base64 encoded MD5 checksum of the file.\n\t// If provided, the client
+      should provide the exact value on the request\n\t// header in order to use the
+      signed URL.\n\t// Optional.\n\tMD5 <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       Style provides options for the type of URL to use. Options are\n\t// PathStyle
       (default), BucketBoundHostname, and VirtualHostedStyle. See\n\t// https://cloud.google.com/storage/docs/request-endpoints
-      for details.\n\t// Only supported for V4 signing.\n\t// Optional.\n\t<a href=\"#style\">Style</a>
-      <a href=\"#urlstyle\">URLStyle</a>\n\n\t// Insecure determines whether the signed
+      for details.\n\t// Only supported for V4 signing.\n\t// Optional.\n\tStyle <a
+      href=\"#urlstyle\">URLStyle</a>\n\n\t// Insecure determines whether the signed
       URL should use HTTPS (default) or\n\t// HTTP.\n\t// Only supported for V4 signing.\n\t//
-      Optional.\n\t<a href=\"#insecure\">Insecure</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
-      Scheme determines the version of URL signing to use. Default is\n\t// SigningSchemeV2.\n\t<a
-      href=\"#scheme\">Scheme</a> <a href=\"#signingscheme\">SigningScheme</a>\n}"
+      Optional.\n\tInsecure <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      Scheme determines the version of URL signing to use. Default is\n\t// SigningSchemeV2.\n\tScheme
+      <a href=\"#signingscheme\">SigningScheme</a>\n}"
 - uid: cloud.google.com/go/storage.SigningScheme
   name: SigningScheme
   id: SigningScheme
@@ -3026,10 +2973,9 @@ items:
   syntax:
     content: "type UniformBucketLevelAccess struct {\n\t// Enabled specifies whether
       access checks use only bucket-level IAM\n\t// policies. Enabled may be disabled
-      until the locked time.\n\t<a href=\"#enabled\">Enabled</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
-      LockedTime specifies the deadline for changing Enabled from true to\n\t// false.\n\t<a
-      href=\"#lockedtime\">LockedTime</a> <a href=\"https://pkg.go.dev/time\">time</a>.<a
-      href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
+      until the locked time.\n\tEnabled <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
+      LockedTime specifies the deadline for changing Enabled from true to\n\t// false.\n\tLockedTime
+      <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n}"
 - uid: cloud.google.com/go/storage.Writer
   name: Writer
   id: Writer
@@ -3047,7 +2993,7 @@ items:
       to true in addition to setting the Writer's CRC32C field, because zero\n\t//
       is a valid CRC and normally a zero would not be transmitted.\n\t// If a CRC32C
       is sent, and the data written does not match the checksum,\n\t// the write will
-      be rejected.\n\t<a href=\"#sendcrc32c\">SendCRC32C</a> <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      be rejected.\n\tSendCRC32C <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       ChunkSize controls the maximum number of bytes of the object that the\n\t//
       Writer will attempt to send to the server in a single request. Objects\n\t//
       smaller than the size will be sent in a single request, while larger\n\t// objects
@@ -3062,14 +3008,13 @@ items:
       further reduce memory used during uploads, but will also prevent the writer\n\t//
       from retrying in case of a transient error from the server, since a buffer\n\t//
       is required in order to retry the failed request.\n\t//\n\t// ChunkSize must
-      be set before the first Write call.\n\t<a href=\"#chunksize\">ChunkSize</a>
-      <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t// ProgressFunc can
-      be used to monitor the progress of a large write.\n\t// operation. If ProgressFunc
-      is not nil and writing requires multiple\n\t// calls to the underlying service
-      (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),\n\t//
+      be set before the first Write call.\n\tChunkSize <a href=\"https://pkg.go.dev/builtin#int\">int</a>\n\n\t//
+      ProgressFunc can be used to monitor the progress of a large write.\n\t// operation.
+      If ProgressFunc is not nil and writing requires multiple\n\t// calls to the
+      underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/how-tos/resumable-upload),\n\t//
       then ProgressFunc will be invoked after each call with the number of bytes of\n\t//
       content copied so far.\n\t//\n\t// ProgressFunc should return quickly without
-      blocking.\n\t<a href=\"#progressfunc\">ProgressFunc</a> func(<a href=\"https://pkg.go.dev/builtin#int64\">int64</a>)\n\t//
+      blocking.\n\tProgressFunc func(<a href=\"https://pkg.go.dev/builtin#int64\">int64</a>)\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Writer.Attrs
   name: |
