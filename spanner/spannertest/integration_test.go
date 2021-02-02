@@ -152,6 +152,9 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	it.Stop()
 
 	// Try to execute the equivalent of a session pool ping.
+	// This used to cause a panic as ExecuteSql did not expect any requests
+	// that would execute a query without a transaction selector.
+	// https://github.com/googleapis/google-cloud-go/issues/3639
 	s, err := generatedClient.CreateSession(ctx, &spannerpb.CreateSessionRequest{Database: dbName()})
 	if err != nil {
 		t.Fatalf("Creating session: %v", err)
@@ -160,6 +163,9 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 		Session: s.Name,
 		Sql:     "SELECT 1",
 	})
+	if err != nil {
+		t.Fatalf("Executing ping: %v", err)
+	}
 	if len(rs.Rows) != 1 {
 		t.Fatalf("Ping gave %v rows, want 1", len(rs.Rows))
 	}

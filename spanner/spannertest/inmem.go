@@ -490,9 +490,7 @@ func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlReques
 	// TODO: Expand this to support more things.
 
 	// If it is a single-use transaction we assume it is a query.
-	if req.Transaction == nil ||
-		req.Transaction.GetSelector() == nil ||
-		(req.Transaction.GetSingleUse() != nil && req.Transaction.GetSingleUse().GetReadOnly() != nil) {
+	if req.Transaction.GetSelector() == nil || req.Transaction.GetSingleUse().GetReadOnly() != nil {
 		ri, err := s.executeQuery(req)
 		if err != nil {
 			return nil, err
@@ -608,7 +606,7 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 }
 
 func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
-	rsm, err := s.buildResultSetMetaData(ri)
+	rsm, err := s.buildResultSetMetadata(ri)
 	if err != nil {
 		return nil, err
 	}
@@ -637,7 +635,7 @@ func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
 }
 
 func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
-	rsm, err := s.buildResultSetMetaData(ri)
+	rsm, err := s.buildResultSetMetadata(ri)
 	if err != nil {
 		return err
 	}
@@ -674,7 +672,7 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 	return nil
 }
 
-func (s *server) buildResultSetMetaData(ri rowIter) (*spannerpb.ResultSetMetadata, error) {
+func (s *server) buildResultSetMetadata(ri rowIter) (*spannerpb.ResultSetMetadata, error) {
 	// Build the result set metadata.
 	rsm := &spannerpb.ResultSetMetadata{
 		RowType: &spannerpb.StructType{},
