@@ -583,6 +583,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/notebooks/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/orgpolicy/apiv2": {
+    "distribution_name": "cloud.google.com/go/orgpolicy/apiv2",
+    "description": "Organization Policy API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/orgpolicy/apiv2",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/osconfig/agentendpoint/apiv1": {
     "distribution_name": "cloud.google.com/go/osconfig/agentendpoint/apiv1",
     "description": "OS Config API",
