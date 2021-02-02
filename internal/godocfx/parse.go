@@ -15,7 +15,6 @@
 // +build go1.15
 
 // TODO:
-//   pkgsite.PrintType doesn't linkify.
 //   IDs for const/var groups have every name, not just the one to link to.
 //   Preserve IDs when sanitizing then use the right ID for linking.
 //   Link to different domains by pattern (e.g. for cloud.google.com/go).
@@ -182,7 +181,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL)},
 			})
 		}
 		for _, v := range pi.doc.Vars {
@@ -198,7 +197,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL)},
 			})
 		}
 		for _, t := range pi.doc.Types {
@@ -212,7 +211,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl)},
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, toURL)},
 				Examples: processExamples(t.Examples, pi.fset),
 			}
 			// Note: items are added as page.Children, rather than
@@ -231,7 +230,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL)},
 				})
 			}
 			for _, v := range t.Vars {
@@ -247,7 +246,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL)},
 				})
 			}
 
