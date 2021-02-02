@@ -1367,12 +1367,11 @@ items:
       ProgressFunc is intended to make upload progress available to the\n\t// application.
       For example, the implementation of ProgressFunc may update\n\t// a progress
       bar in the application's UI, or log the result of\n\t// float64(copiedBytes)/float64(totalBytes).\n\t//\n\t//
-      ProgressFunc should return quickly without blocking.\n\tProgressFunc func(<a
-      href=\"#copiedbytes\">copiedBytes</a>, <a href=\"#totalbytes\">totalBytes</a>
-      <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>)\n\n\t// The Cloud
-      KMS key, in the form projects/P/locations/L/keyRings/R/cryptoKeys/K,\n\t// that
-      will be used to encrypt the object. Overrides the object's KMSKeyName, if\n\t//
-      any.\n\t//\n\t// Providing both a DestinationKMSKeyName and a customer-supplied
+      ProgressFunc should return quickly without blocking.\n\tProgressFunc func(copiedBytes,
+      totalBytes <a href=\"https://pkg.go.dev/builtin#uint64\">uint64</a>)\n\n\t//
+      The Cloud KMS key, in the form projects/P/locations/L/keyRings/R/cryptoKeys/K,\n\t//
+      that will be used to encrypt the object. Overrides the object's KMSKeyName,
+      if\n\t// any.\n\t//\n\t// Providing both a DestinationKMSKeyName and a customer-supplied
       encryption key\n\t// (via ObjectHandle.Key) on the destination object will result
       in an error when\n\t// Run is called.\n\tDestinationKMSKeyName <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\t//
       contains filtered or unexported fields\n}"
@@ -2551,9 +2550,8 @@ items:
       func(b []byte) ([]byte, error) {\n\t//     \t\t_, signedBytes, err := appengine.SignBytes(ctx,
       b)\n\t//     \t\treturn signedBytes, err\n\t//     \t},\n\t//     \t// etc.\n\t//
       \    })\n\t//\n\t// Exactly one of PrivateKey or SignBytes must be non-nil.\n\tSignBytes
-      func(<a href=\"#hashbytes\">hashBytes</a> []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>)
-      (<a href=\"#signature\">signature</a> []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>,
-      <a href=\"#err\">err</a> <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
+      func(hashBytes []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>) (signature
+      []<a href=\"https://pkg.go.dev/builtin#byte\">byte</a>, err <a href=\"https://pkg.go.dev/builtin#error\">error</a>)\n\n\t//
       Expires is the expiration time on the signed URL.\n\t// It must be a time in
       the future.\n\t// Required.\n\tExpires <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// Style provides options
