@@ -41,7 +41,8 @@ type KeyExtractorFunc func(*pubsub.Message) []byte
 // terminate.
 type PublishMessageTransformerFunc func(*pubsub.Message, *pb.PubSubMessage) error
 
-// LogFunc is a function to log informational messages.
+// LogFunc is a function to log informational messages. It may be called
+// concurrently from multiple goroutines and is expected to return quickly.
 type LogFunc func(v ...interface{})
 
 // PublishSettings configure the PublisherClient. Batching settings
