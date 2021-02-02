@@ -981,6 +981,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/03/01
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/orgpolicy/v2",
+		pkg:                   "orgpolicy",
+		importPath:            "cloud.google.com/go/orgpolicy/apiv2",
+		gRPCServiceConfigPath: "google/cloud/orgpolicy/v2/orgpolicy_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/orgpolicy/v2/orgpolicy_v2.yaml",
+		// GA after 2021/03/02
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
