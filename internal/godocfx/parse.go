@@ -155,6 +155,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 	// independently.
 	for _, pi := range pkgInfos {
 		link := newLinker(pi.pkg.Imports, pi.importRenames)
+		topLevelDecls := pkgsite.TopLevelDecls(pi.doc)
 		pkgItem := &item{
 			UID:      pi.doc.ImportPath,
 			Name:     pi.doc.ImportPath,
@@ -181,7 +182,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL, topLevelDecls)},
 			})
 		}
 		for _, v := range pi.doc.Vars {
@@ -197,7 +198,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL, topLevelDecls)},
 			})
 		}
 		for _, t := range pi.doc.Types {
@@ -211,7 +212,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, toURL)},
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, toURL, topLevelDecls)},
 				Examples: processExamples(t.Examples, pi.fset),
 			}
 			// Note: items are added as page.Children, rather than
@@ -230,7 +231,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL, topLevelDecls)},
 				})
 			}
 			for _, v := range t.Vars {
@@ -246,7 +247,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL, topLevelDecls)},
 				})
 			}
 
@@ -336,7 +337,6 @@ func (l *linker) linkify(s string) string {
 		prefix += "*"
 	}
 
-	// If s does not have a dot, it's in this package.
 	if !strings.Contains(s, ".") {
 		// If s is not exported, it's probably a builtin.
 		if !token.IsExported(s) {
