@@ -35,6 +35,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/third_party/pkgsite"
@@ -585,7 +586,10 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 				if i.Name != nil {
 					name = i.Name.Name
 				}
-				iPath := strings.Trim(i.Path.Value, `"`)
+				iPath, err := strconv.Unquote(i.Path.Value)
+				if err != nil {
+					return nil, fmt.Errorf("strconv.Unquote: %v", err)
+				}
 				imports[iPath] = name
 			}
 		}
