@@ -127,6 +127,7 @@ func newTestSubscriberInstance(ctx context.Context, settings ReceiveSettings, re
 }
 
 func TestSubscriberInstanceTransformMessage(t *testing.T) {
+	const partition = 3
 	ctx := context.Background()
 	input := &pb.SequencedMessage{
 		Message: &pb.PubSubMessage{
@@ -156,7 +157,7 @@ func TestSubscriberInstanceTransformMessage(t *testing.T) {
 				Data:        []byte("data"),
 				OrderingKey: "key",
 				Attributes:  map[string]string{"attr": "value"},
-				ID:          "123",
+				ID:          "3:123",
 				PublishTime: time.Unix(1577836800, 900800700),
 			},
 		},
@@ -173,6 +174,7 @@ func TestSubscriberInstanceTransformMessage(t *testing.T) {
 			want: &pubsub.Message{
 				Data:        []byte("key"),
 				OrderingKey: "data",
+				ID:          "3:123",
 			},
 		},
 	} {
@@ -181,7 +183,7 @@ func TestSubscriberInstanceTransformMessage(t *testing.T) {
 			tc.mutateSettings(&settings)
 
 			ack := &mockAckConsumer{}
-			msg := &wire.ReceivedMessage{Msg: input, Ack: ack}
+			msg := &wire.ReceivedMessage{Msg: input, Ack: ack, Partition: partition}
 
 			cctx, stopSubscriber := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
 			messageReceiver := func(ctx context.Context, got *pubsub.Message) {
@@ -212,41 +214,63 @@ func TestSubscriberInstanceTransformMessage(t *testing.T) {
 }
 
 func TestSubscriberInstanceTransformMessageError(t *testing.T) {
-	wantErr := errors.New("message could not be converted")
+	transformErr := errors.New("message could not be converted")
 
-	settings := DefaultReceiveSettings
-	settings.MessageTransformer = func(_ *pb.SequencedMessage, _ *pubsub.Message) error {
-		return wantErr
-	}
-
-	ctx := context.Background()
-	ack := &mockAckConsumer{}
-	msg := &wire.ReceivedMessage{
-		Ack: ack,
-		Msg: &pb.SequencedMessage{
-			Message: &pb.PubSubMessage{Data: []byte("data")},
+	for _, tc := range []struct {
+		desc        string
+		transformer ReceiveMessageTransformerFunc
+		wantErr     error
+	}{
+		{
+			desc: "returns error",
+			transformer: func(_ *pb.SequencedMessage, _ *pubsub.Message) error {
+				return transformErr
+			},
+			wantErr: transformErr,
 		},
-	}
+		{
+			desc: "sets message id",
+			transformer: func(_ *pb.SequencedMessage, out *pubsub.Message) error {
+				out.ID = "should_not_be_set"
+				return nil
+			},
+			wantErr: errMessageIDSet,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			settings := DefaultReceiveSettings
+			settings.MessageTransformer = tc.transformer
 
-	cctx, _ := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
-	messageReceiver := func(ctx context.Context, got *pubsub.Message) {
-		t.Errorf("Received unexpected message: %v", got)
-		got.Nack()
-	}
-	subInstance := newTestSubscriberInstance(cctx, settings, messageReceiver)
-	subInstance.wireSub.(*mockWireSubscriber).DeliverMessages(msg)
+			ctx := context.Background()
+			ack := &mockAckConsumer{}
+			msg := &wire.ReceivedMessage{
+				Ack: ack,
+				Msg: &pb.SequencedMessage{
+					Message: &pb.PubSubMessage{Data: []byte("data")},
+				},
+			}
 
-	if gotErr := subInstance.Wait(cctx); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("subscriberInstance.Wait() got err: (%v), want: (%v)", gotErr, wantErr)
-	}
-	if got, want := ack.AckCount, 0; got != want {
-		t.Errorf("mockAckConsumer.AckCount: got %d, want %d", got, want)
-	}
-	if got, want := subInstance.recvCtx.Err(), context.Canceled; !test.ErrorEqual(got, want) {
-		t.Errorf("subscriberInstance.recvCtx.Err(): got (%v), want (%v)", got, want)
-	}
-	if got, want := subInstance.wireSub.(*mockWireSubscriber).Terminated, true; got != want {
-		t.Errorf("mockWireSubscriber.Terminated: got %v, want %v", got, want)
+			cctx, _ := context.WithTimeout(ctx, defaultSubscriberTestTimeout)
+			messageReceiver := func(ctx context.Context, got *pubsub.Message) {
+				t.Errorf("Received unexpected message: %v", got)
+				got.Nack()
+			}
+			subInstance := newTestSubscriberInstance(cctx, settings, messageReceiver)
+			subInstance.wireSub.(*mockWireSubscriber).DeliverMessages(msg)
+
+			if gotErr := subInstance.Wait(cctx); !test.ErrorEqual(gotErr, tc.wantErr) {
+				t.Errorf("subscriberInstance.Wait() got err: (%v), want: (%v)", gotErr, tc.wantErr)
+			}
+			if got, want := ack.AckCount, 0; got != want {
+				t.Errorf("mockAckConsumer.AckCount: got %d, want %d", got, want)
+			}
+			if got, want := subInstance.recvCtx.Err(), context.Canceled; !test.ErrorEqual(got, want) {
+				t.Errorf("subscriberInstance.recvCtx.Err(): got (%v), want (%v)", got, want)
+			}
+			if got, want := subInstance.wireSub.(*mockWireSubscriber).Terminated, true; got != want {
+				t.Errorf("mockWireSubscriber.Terminated: got %v, want %v", got, want)
+			}
+		})
 	}
 }
 
