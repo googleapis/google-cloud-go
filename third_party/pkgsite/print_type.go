@@ -36,8 +36,8 @@ import (
 //   4. Use scanner.Scanner to find every identifier (in the same order as step
 //      2). If there is a link for the identifier, insert it. Otherwise, print
 //      the plain doc.
-func PrintType(fset *token.FileSet, decl ast.Decl, toURL func(string, string) string) string {
-	anchorLinksMap := generateAnchorLinks(decl, toURL)
+func PrintType(fset *token.FileSet, decl ast.Decl, toURL func(string, string) string, topLevelDecls map[interface{}]bool) string {
+	anchorLinksMap := generateAnchorLinks(decl, toURL, topLevelDecls)
 	// Convert the map (keyed by *ast.Ident) to a slice of URLs (or no URL).
 	//
 	// This relies on the ast.Inspect and scanner.Scanner both
@@ -149,7 +149,7 @@ func stringBasicLitSize(s string) string {
 
 // generateAnchorLinks returns a mapping of *ast.Ident objects to the URL
 // that the identifier should link to.
-func generateAnchorLinks(decl ast.Decl, toURL func(string, string) string) map[*ast.Ident]string {
+func generateAnchorLinks(decl ast.Decl, toURL func(string, string) string, topLevelDecls map[interface{}]bool) map[*ast.Ident]string {
 	m := map[*ast.Ident]string{}
 	ignore := map[ast.Node]bool{}
 	ast.Inspect(decl, func(node ast.Node) bool {
@@ -175,8 +175,7 @@ func generateAnchorLinks(decl ast.Decl, toURL func(string, string) string) map[*
 		case *ast.Ident:
 			if node.Obj == nil && doc.IsPredeclared(node.Name) {
 				m[node] = toURL("builtin", node.Name)
-			} else if node.Obj != nil && node.Obj.Kind != ast.Var {
-				// TODO:  && topLevelDecls[node.Obj.Decl]
+			} else if node.Obj != nil && topLevelDecls[node.Obj.Decl] {
 				m[node] = toURL("", node.Name)
 			}
 		case *ast.FuncDecl:
@@ -195,4 +194,46 @@ func generateAnchorLinks(decl ast.Decl, toURL func(string, string) string) map[*
 		return true
 	})
 	return m
+}
+
+// TopLevelDecls returns the top level declarations in the package.
+func TopLevelDecls(pkg *doc.Package) map[interface{}]bool {
+	topLevelDecls := map[interface{}]bool{}
+	forEachPackageDecl(pkg, func(decl ast.Decl) {
+		topLevelDecls[decl] = true
+		if gd, _ := decl.(*ast.GenDecl); gd != nil {
+			for _, sp := range gd.Specs {
+				topLevelDecls[sp] = true
+			}
+		}
+	})
+	return topLevelDecls
+}
+
+// forEachPackageDecl iterates though every top-level declaration in a package.
+func forEachPackageDecl(pkg *doc.Package, fnc func(decl ast.Decl)) {
+	for _, c := range pkg.Consts {
+		fnc(c.Decl)
+	}
+	for _, v := range pkg.Vars {
+		fnc(v.Decl)
+	}
+	for _, f := range pkg.Funcs {
+		fnc(f.Decl)
+	}
+	for _, t := range pkg.Types {
+		fnc(t.Decl)
+		for _, c := range t.Consts {
+			fnc(c.Decl)
+		}
+		for _, v := range t.Vars {
+			fnc(v.Decl)
+		}
+		for _, f := range t.Funcs {
+			fnc(f.Decl)
+		}
+		for _, m := range t.Methods {
+			fnc(m.Decl)
+		}
+	}
 }
