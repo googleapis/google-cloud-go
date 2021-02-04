@@ -510,6 +510,62 @@ func testReadWriteStmtBasedTransaction(t *testing.T, executionTimes map[string]S
 	return rowCount, attempts, err
 }
 
+func TestReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+
+	f := func(tx *ReadWriteStmtBasedTransaction) (int64, error) {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return 0, err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return 0, err
+			}
+			rowCount++
+		}
+		return rowCount, nil
+	}
+
+	var resp CommitResponse
+	for {
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+			ctx,
+			client,
+			TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}},
+		)
+		_, err = f(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			break
+		} else if err == nil {
+			resp, err = tx.CommitWithReturnResp(ctx)
+			break
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
 func TestBatchDML_StatementBased_WithMultipleDML(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
