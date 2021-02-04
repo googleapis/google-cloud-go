@@ -104,9 +104,6 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 			return fmt.Errorf("%s: %s", errInvalidMessage.Error(), err)
 		}
 	}
-	if from.GetCursor() != nil {
-		to.ID = fmt.Sprintf("%d", from.GetCursor().GetOffset())
-	}
 	if len(msg.GetKey()) > 0 {
 		to.OrderingKey = string(msg.GetKey())
 	}

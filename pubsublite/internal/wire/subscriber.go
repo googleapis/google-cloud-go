@@ -37,8 +37,9 @@ var (
 // ReceivedMessage stores a received Pub/Sub message and AckConsumer for
 // acknowledging the message.
 type ReceivedMessage struct {
-	Msg *pb.SequencedMessage
-	Ack AckConsumer
+	Msg       *pb.SequencedMessage
+	Ack       AckConsumer
+	Partition int
 }
 
 // MessageReceiverFunc receives a Pub/Sub message from a topic partition.
@@ -277,7 +278,7 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 
 	for _, msg := range response.Messages {
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
-		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack})
+		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack, Partition: s.subscription.Partition})
 	}
 	return nil
 }
