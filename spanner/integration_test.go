@@ -1186,6 +1186,7 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 
 func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T) {
 	t.Parallel()
+	skipEmulatorTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
