@@ -149,7 +149,15 @@ type topicPartition struct {
 	Partition int
 }
 
+func (tp topicPartition) String() string {
+	return fmt.Sprintf("%s/partitions/%d", tp.Path, tp.Partition)
+}
+
 type subscriptionPartition struct {
 	Path      string
 	Partition int
+}
+
+func (sp subscriptionPartition) String() string {
+	return fmt.Sprintf("%s/partitions/%d", sp.Path, sp.Partition)
 }

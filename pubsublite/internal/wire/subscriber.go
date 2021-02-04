@@ -325,7 +325,7 @@ func (s *subscribeStream) unsafeSendFlowControl(req *pb.FlowControlRequest) {
 }
 
 func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !s.unsafeUpdateStatus(targetStatus, err) {
+	if !s.unsafeUpdateStatus(targetStatus, wrapError("subscriber", s.subscription.String(), err)) {
 		return
 	}
 
