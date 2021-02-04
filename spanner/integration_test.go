@@ -1024,6 +1024,7 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 // Test ReadWriteTransactionWithOptions.
 func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 	t.Parallel()
+	skipEmulatorTest(t)
 
 	// Give a longer deadline because of transaction backoffs.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1092,6 +1093,7 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 
 func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	t.Parallel()
+	skipEmulatorTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
