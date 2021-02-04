@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/big"
 	"os"
 	"strings"
 	"testing"
@@ -825,6 +826,81 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 			}
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
 		})
+	}
+}
+
+func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return err
+			}
+			rowCount++
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		return nil
+	}, TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, TransactionOptions{CommitOptions{ReturnCommitStats: true}})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating transaction: %v", err)
+	}
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Unexpected error when fetching query results: %v", err)
+		}
+		var singerID, albumID int64
+		var albumTitle string
+		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+			t.Fatalf("Unexpected error when getting query data: %v", err)
+		}
+		rowCount++
+	}
+	resp, err := tx.CommitWithReturnResp(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error when committing transaction: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Errorf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
 	}
 }
 
@@ -2265,5 +2341,29 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	s := te.Spans[len(te.Spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
+	}
+}
+
+func TestClient_Single_Read_WithNumericKey(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{*big.NewRat(1, 1)}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 	}
 }

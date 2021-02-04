@@ -68,10 +68,17 @@ type PublisherClient struct {
 	err error
 }
 
-// NewPublisherClient creates a new Pub/Sub Lite client to publish messages to a
-// given topic. A valid topic path has the format:
-// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
-func NewPublisherClient(ctx context.Context, settings PublishSettings, topic string, opts ...option.ClientOption) (*PublisherClient, error) {
+// NewPublisherClient creates a new Pub/Sub Lite client to publish messages to
+// a given topic, using DefaultPublishSettings. A valid topic path has the
+// format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+func NewPublisherClient(ctx context.Context, topic string, opts ...option.ClientOption) (*PublisherClient, error) {
+	return NewPublisherClientWithSettings(ctx, topic, DefaultPublishSettings, opts...)
+}
+
+// NewPublisherClientWithSettings creates a new Pub/Sub Lite client to publish
+// messages to a given topic, using the specified PublishSettings. A valid topic
+// path has the format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+func NewPublisherClientWithSettings(ctx context.Context, topic string, settings PublishSettings, opts ...option.ClientOption) (*PublisherClient, error) {
 	topicPath, err := wire.ParseTopicPath(topic)
 	if err != nil {
 		return nil, err

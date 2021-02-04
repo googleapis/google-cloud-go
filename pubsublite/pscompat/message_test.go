@@ -66,7 +66,6 @@ func TestMessageTransforms(t *testing.T) {
 				},
 			},
 			wantMsg: &pubsub.Message{
-				ID:          "10",
 				PublishTime: time.Unix(1577836800, 900800700),
 				Data:        []byte("foo"),
 				OrderingKey: "bar",

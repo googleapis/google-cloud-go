@@ -446,8 +446,11 @@ func (s *watchStream) stop() {
 		return
 	}
 	if err != nil {
+		// if an error occurs while closing the stream
 		s.err = err
+		return
 	}
+	// if we close successfully,
 	s.err = io.EOF // normal shutdown
 }
 
