@@ -146,8 +146,10 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 type NackHandler func(*pubsub.Message) error
 
 // ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage API
-// proto to a pubsub.Message. If this returns an error, the SubscriberClient
-// will consider this a fatal error and terminate.
+// proto to a pubsub.Message. The implementation must not set pubsub.Message.ID.
+//
+// If this returns an error, the SubscriberClient will consider this a fatal
+// error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
 // ReceiveSettings configure the SubscriberClient. Flow control settings
