@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-// Package publish contains utilities related to publishing messages.
-package publish
+// Package types contains shared types for pubsublite.
+package types
 
 import (
 	"fmt"
@@ -20,9 +20,9 @@ import (
 	"strings"
 )
 
-// Metadata holds the result of publishing a message to the Pub/Sub Lite
+// MessageMetadata holds properties of a message published to the Pub/Sub Lite
 // service.
-type Metadata struct {
+type MessageMetadata struct {
 	// The topic partition the message was published to.
 	Partition int
 
@@ -30,23 +30,23 @@ type Metadata struct {
 	Offset int64
 }
 
-func (m *Metadata) String() string {
+func (m *MessageMetadata) String() string {
 	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
 }
 
-// ParseMetadata creates Metadata from the ID string of a pubsub.PublishResult
-// returned by pscompat.PublisherClient or pubsub.Message.ID received from
-// pscompat.SubscriberClient.
-func ParseMetadata(id string) (*Metadata, error) {
+// ParseMessageMetadata creates MessageMetadata from the ID string of a
+// pubsub.PublishResult returned by pscompat.PublisherClient, or
+// pubsub.Message.ID received from pscompat.SubscriberClient.
+func ParseMessageMetadata(id string) (*MessageMetadata, error) {
 	parts := strings.Split(id, ":")
 	if len(parts) != 2 {
-		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", id)
+		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
 
 	partition, pErr := strconv.ParseInt(parts[0], 10, 64)
 	offset, oErr := strconv.ParseInt(parts[1], 10, 64)
 	if pErr != nil || oErr != nil {
-		return nil, fmt.Errorf("pubsublite: invalid encoded publish metadata %q", id)
+		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
-	return &Metadata{Partition: int(partition), Offset: offset}, nil
+	return &MessageMetadata{Partition: int(partition), Offset: offset}, nil
 }

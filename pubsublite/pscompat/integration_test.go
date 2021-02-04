@@ -28,7 +28,7 @@ import (
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/publish"
+	"cloud.google.com/go/pubsublite/types"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -207,7 +207,7 @@ func waitForPublishResults(t *testing.T, pubResults []*pubsub.PublishResult) {
 		if err != nil {
 			t.Errorf("Publish(%d) got err: %v", i, err)
 		}
-		if _, err := publish.ParseMetadata(id); err != nil {
+		if _, err := types.ParseMessageMetadata(id); err != nil {
 			t.Error(err)
 		}
 	}
@@ -242,7 +242,7 @@ func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings Rece
 		}
 
 		// Check message ordering.
-		metadata, err := publish.ParseMetadata(msg.ID)
+		metadata, err := types.ParseMessageMetadata(msg.ID)
 		if err != nil {
 			t.Error(err)
 		} else {

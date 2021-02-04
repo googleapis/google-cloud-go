@@ -11,7 +11,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-package publish_test
+package types_test
 
 import (
 	"context"
@@ -19,10 +19,10 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/pscompat"
-	"cloud.google.com/go/pubsublite/publish"
+	"cloud.google.com/go/pubsublite/types"
 )
 
-func ExampleParseMetadata_publisher() {
+func ExampleParseMessageMetadata_publisher() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	publisher, err := pscompat.NewPublisherClient(ctx, topic)
@@ -36,14 +36,14 @@ func ExampleParseMetadata_publisher() {
 	if err != nil {
 		// TODO: Handle error.
 	}
-	metadata, err := publish.ParseMetadata(id)
+	metadata, err := types.ParseMessageMetadata(id)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	fmt.Printf("Published message to partition %d with offset %d\n", metadata.Partition, metadata.Offset)
 }
 
-func ExampleParseMetadata_subscriber() {
+func ExampleParseMessageMetadata_subscriber() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
 	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
@@ -53,7 +53,7 @@ func ExampleParseMetadata_subscriber() {
 	err = subscriber.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
 		// TODO: Handle message.
 		m.Ack()
-		metadata, err := publish.ParseMetadata(m.ID)
+		metadata, err := types.ParseMessageMetadata(m.ID)
 		if err != nil {
 			// TODO: Handle error.
 		}
