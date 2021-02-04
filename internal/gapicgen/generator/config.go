@@ -957,6 +957,39 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/02/26
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/domains/v1beta1",
+		pkg:                   "domains",
+		importPath:            "cloud.google.com/go/domains/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/domains/v1beta1/domains_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/domains/v1beta1/domains_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/mediatranslation/v1beta1",
+		pkg:                   "mediatranslation",
+		importPath:            "cloud.google.com/go/mediatranslation/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/mediatranslation/v1beta1/mediatranslation_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/mediatranslation/v1beta1/mediatranslation_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:   "google/api/servicecontrol/v1",
+		pkg:                  "servicecontrol",
+		importPath:           "cloud.google.com/go/servicecontrol/apiv1",
+		apiServiceConfigPath: "google/api/servicecontrol/v1/servicecontrol_gapic.yaml",
+		// GA after 2021/03/01
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/orgpolicy/v2",
+		pkg:                   "orgpolicy",
+		importPath:            "cloud.google.com/go/orgpolicy/apiv2",
+		gRPCServiceConfigPath: "google/cloud/orgpolicy/v2/orgpolicy_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/orgpolicy/v2/orgpolicy_v2.yaml",
+		// GA after 2021/03/02
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{

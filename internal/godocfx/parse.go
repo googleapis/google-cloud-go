@@ -15,7 +15,6 @@
 // +build go1.15
 
 // TODO:
-//   pkgsite.PrintType doesn't linkify.
 //   IDs for const/var groups have every name, not just the one to link to.
 //   Preserve IDs when sanitizing then use the right ID for linking.
 //   Link to different domains by pattern (e.g. for cloud.google.com/go).
@@ -36,6 +35,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/third_party/pkgsite"
@@ -156,6 +156,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 	// independently.
 	for _, pi := range pkgInfos {
 		link := newLinker(pi.pkg.Imports, pi.importRenames)
+		topLevelDecls := pkgsite.TopLevelDecls(pi.doc)
 		pkgItem := &item{
 			UID:      pi.doc.ImportPath,
 			Name:     pi.doc.ImportPath,
@@ -182,7 +183,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL, topLevelDecls)},
 			})
 		}
 		for _, v := range pi.doc.Vars {
@@ -198,7 +199,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL, topLevelDecls)},
 			})
 		}
 		for _, t := range pi.doc.Types {
@@ -212,7 +213,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl)},
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, toURL, topLevelDecls)},
 				Examples: processExamples(t.Examples, pi.fset),
 			}
 			// Note: items are added as page.Children, rather than
@@ -231,7 +232,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL, topLevelDecls)},
 				})
 			}
 			for _, v := range t.Vars {
@@ -247,7 +248,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL, topLevelDecls)},
 				})
 			}
 
@@ -337,16 +338,15 @@ func (l *linker) linkify(s string) string {
 		prefix += "*"
 	}
 
-	// If s does not have a dot, it's in this package.
 	if !strings.Contains(s, ".") {
 		// If s is not exported, it's probably a builtin.
 		if !token.IsExported(s) {
-			if builtins[s] {
-				return fmt.Sprintf(`%s<a href="https://pkg.go.dev/builtin#%s">%s</a>`, prefix, strings.ToLower(s), s)
+			if doc.IsPredeclared(s) {
+				return href(toURL("builtin", s), s)
 			}
 			return fmt.Sprintf("%s%s", prefix, s)
 		}
-		return fmt.Sprintf(`%s<a href="#%s">%s</a>`, prefix, strings.ToLower(s), s)
+		return fmt.Sprintf("%s%s", prefix, href(toURL("", s), s))
 	}
 	// Otherwise, it's in another package.
 	split := strings.Split(s, ".")
@@ -362,9 +362,24 @@ func (l *linker) linkify(s string) string {
 		return fmt.Sprintf("%s%s", prefix, s)
 	}
 	name := split[1]
-	pkgLink := fmt.Sprintf("http://pkg.go.dev/%s", pkgPath)
-	link := fmt.Sprintf("%s#%s", pkgLink, name)
-	return fmt.Sprintf("%s<a href=%q>%s</a>.<a href=%q>%s</a>", prefix, pkgLink, pkg, link, name)
+	return fmt.Sprintf("%s%s.%s", prefix, href(toURL(pkgPath, ""), pkg), href(toURL(pkgPath, name), name))
+}
+
+// TODO: link to the right baseURL, with the right module name and version
+// pattern.
+func toURL(pkg, name string) string {
+	if pkg == "" {
+		return fmt.Sprintf("#%s", strings.ToLower(name))
+	}
+	baseURL := "https://pkg.go.dev"
+	if name == "" {
+		return fmt.Sprintf("%s/%s", baseURL, pkg)
+	}
+	return fmt.Sprintf("%s/%s#%s", baseURL, pkg, name)
+}
+
+func href(url, text string) string {
+	return fmt.Sprintf(`<a href="%s">%s</a>`, url, text)
 }
 
 // processExamples converts the examples to []example.
@@ -571,7 +586,10 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 				if i.Name != nil {
 					name = i.Name.Name
 				}
-				iPath := strings.Trim(i.Path.Value, `"`)
+				iPath, err := strconv.Unquote(i.Path.Value)
+				if err != nil {
+					return nil, fmt.Errorf("strconv.Unquote: %v", err)
+				}
 				imports[iPath] = name
 			}
 		}
@@ -585,42 +603,4 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	}
 
 	return result, nil
-}
-
-var builtins = map[string]bool{
-	"append":     true,
-	"cap":        true,
-	"close":      true,
-	"complex":    true,
-	"copy":       true,
-	"delete":     true,
-	"imag":       true,
-	"len":        true,
-	"make":       true,
-	"new":        true,
-	"panic":      true,
-	"print":      true,
-	"println":    true,
-	"real":       true,
-	"recover":    true,
-	"bool":       true,
-	"byte":       true,
-	"complex128": true,
-	"complex64":  true,
-	"error":      true,
-	"float32":    true,
-	"float64":    true,
-	"int":        true,
-	"int16":      true,
-	"int32":      true,
-	"int64":      true,
-	"int8":       true,
-	"rune":       true,
-	"string":     true,
-	"uint":       true,
-	"uint16":     true,
-	"uint32":     true,
-	"uint64":     true,
-	"uint8":      true,
-	"uintptr":    true,
 }
