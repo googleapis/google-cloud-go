@@ -16,7 +16,7 @@ require (
 	golang.org/x/tools v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.38.0
-	google.golang.org/genproto v0.0.0-20210201184850-646a494a81ea
+	google.golang.org/genproto v0.0.0-20210203152818-3206188e46ba
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 )
