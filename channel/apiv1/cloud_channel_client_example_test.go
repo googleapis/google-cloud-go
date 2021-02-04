@@ -750,3 +750,70 @@ func ExampleCloudChannelClient_ListPurchasableOffers() {
 		_ = resp
 	}
 }
+
+func ExampleCloudChannelClient_RegisterSubscriber() {
+	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
+
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &channelpb.RegisterSubscriberRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.RegisterSubscriber(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_UnregisterSubscriber() {
+	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
+
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &channelpb.UnregisterSubscriberRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UnregisterSubscriber(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListSubscribers() {
+	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &channelpb.ListSubscribersRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListSubscribers(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}

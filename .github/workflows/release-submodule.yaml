@@ -72,6 +72,7 @@ jobs:
            token: ${{ secrets.FORKING_TOKEN }}
            fork: true
            release-type: go
+           bump-minor-pre-major: true
            package-name: ${{ matrix.package }}
            monorepo-tags: true
            command: release-pr

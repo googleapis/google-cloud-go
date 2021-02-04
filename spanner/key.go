@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"fmt"
+	"math/big"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -84,7 +85,7 @@ func keyPartValue(part interface{}) (pb *proto3.Value, err error) {
 		pb, _, err = encodeValue(int64(v))
 	case float32:
 		pb, _, err = encodeValue(float64(v))
-	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate:
+	case int64, float64, NullInt64, NullFloat64, bool, NullBool, []byte, string, NullString, time.Time, civil.Date, NullTime, NullDate, big.Rat, NullNumeric:
 		pb, _, err = encodeValue(v)
 	case Encoder:
 		part, err = v.EncodeSpanner()
@@ -150,7 +151,7 @@ func (key Key) elemString(b *bytes.Buffer, part interface{}) {
 		} else {
 			fmt.Fprint(b, nullString)
 		}
-	case NullInt64, NullFloat64, NullBool:
+	case NullInt64, NullFloat64, NullBool, NullNumeric:
 		// The above types implement fmt.Stringer.
 		fmt.Fprintf(b, "%s", v)
 	case NullString, NullDate, NullTime:
@@ -164,6 +165,8 @@ func (key Key) elemString(b *bytes.Buffer, part interface{}) {
 		fmt.Fprintf(b, "%q", v)
 	case time.Time:
 		fmt.Fprintf(b, "%q", v.Format(time.RFC3339Nano))
+	case big.Rat:
+		fmt.Fprintf(b, "%v", NumericString(&v))
 	case Encoder:
 		var err error
 		part, err = v.EncodeSpanner()
