@@ -36,6 +36,7 @@ type Config struct {
 	ProtoDir          string
 	GapicToGenerate   string
 	OnlyGenerateGapic bool
+	LocalMode         bool
 }
 
 // Generate generates genproto and gapics.
@@ -51,13 +52,16 @@ func Generate(ctx context.Context, conf *Config) ([]*ChangeInfo, error) {
 		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
 	}
 
-	changes, err := gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
-	if err != nil {
-		return nil, fmt.Errorf("error gathering commit info")
-	}
-
-	if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
-		return nil, err
+	var changes []*ChangeInfo
+	if !conf.LocalMode {
+		var err error
+		changes, err = gatherChanges(conf.GoogleapisDir, conf.GenprotoDir)
+		if err != nil {
+			return nil, fmt.Errorf("error gathering commit info")
+		}
+		if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
+			return nil, err
+		}
 	}
 
 	return changes, nil
