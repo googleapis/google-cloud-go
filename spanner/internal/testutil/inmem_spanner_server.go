@@ -984,7 +984,13 @@ func (s *inMemSpannerServer) Commit(ctx context.Context, req *spannerpb.CommitRe
 		return nil, gstatus.Error(codes.InvalidArgument, "Missing transaction in commit request")
 	}
 	s.removeTransaction(tx)
-	return &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}, nil
+	resp := &spannerpb.CommitResponse{CommitTimestamp: getCurrentTimestamp()}
+	if req.ReturnCommitStats {
+		resp.CommitStats = &spannerpb.CommitResponse_CommitStats{
+			MutationCount: int64(1),
+		}
+	}
+	return resp, nil
 }
 
 func (s *inMemSpannerServer) Rollback(ctx context.Context, req *spannerpb.RollbackRequest) (*emptypb.Empty, error) {

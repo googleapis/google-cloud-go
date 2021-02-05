@@ -300,13 +300,13 @@ func abortedBackoffDuration(md grpcmd.MD) (time.Duration, error) {
 
 type retryer struct {
 	backoff gax.Backoff
-	md      grpcmd.MD
+	md      *grpcmd.MD
 }
 
 func (r *retryer) Retry(err error) (time.Duration, bool) {
 	st, _ := status.FromError(err)
 	if st != nil && st.Code() == codes.Aborted {
-		dur, err := abortedBackoffDuration(r.md)
+		dur, err := abortedBackoffDuration(*r.md)
 		if err == nil {
 			return dur, true
 		}
@@ -328,7 +328,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	}
 
 	var p *pb.Profile
-	md := grpcmd.New(map[string]string{})
+	md := grpcmd.New(nil)
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
@@ -350,7 +350,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 	}))
 
