@@ -235,7 +235,7 @@ git push origin $BRANCH_NAME
 	// Can't assign the submitter of the PR as a reviewer.
 	var reviewers []string
 	for _, r := range githubReviewers {
-		if r != *githubUsername {
+		if r != gc.Username {
 			reviewers = append(reviewers, r)
 		}
 	}
