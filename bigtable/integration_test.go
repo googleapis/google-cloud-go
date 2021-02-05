@@ -2378,9 +2378,9 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)
 		if err != nil {
-			return true, err
+			return false, err
 		}
-		return false, nil
+		return true, nil
 	})
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)

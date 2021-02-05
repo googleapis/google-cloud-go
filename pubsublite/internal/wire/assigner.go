@@ -63,6 +63,7 @@ type partitionAssignmentReceiver func(partitionSet) error
 type assigner struct {
 	// Immutable after creation.
 	assignmentClient  *vkit.PartitionAssignmentClient
+	subscription      string
 	initialReq        *pb.PartitionAssignmentRequest
 	receiveAssignment partitionAssignmentReceiver
 	metadata          pubsubMetadata
@@ -81,6 +82,7 @@ func newAssigner(ctx context.Context, assignmentClient *vkit.PartitionAssignment
 
 	a := &assigner{
 		assignmentClient: assignmentClient,
+		subscription:     subscriptionPath,
 		initialReq: &pb.PartitionAssignmentRequest{
 			Request: &pb.PartitionAssignmentRequest_Initial{
 				Initial: &pb.InitialPartitionAssignmentRequest{
@@ -164,7 +166,7 @@ func (a *assigner) handleAssignment(assignment *pb.PartitionAssignment) error {
 }
 
 func (a *assigner) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !a.unsafeUpdateStatus(targetStatus, err) {
+	if !a.unsafeUpdateStatus(targetStatus, wrapError("assigner", a.subscription, err)) {
 		return
 	}
 	// No data to send. Immediately terminate the stream.
