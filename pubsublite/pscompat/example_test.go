@@ -36,7 +36,7 @@ func ExamplePublisherClient_Publish() {
 		Data: []byte("hello world"),
 	})
 	results = append(results, r)
-	// Do other work ...
+	// Publish more messages ...
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
@@ -68,7 +68,7 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 		Data: []byte("hello world"),
 	})
 	results = append(results, r)
-	// Do other work ...
+	// Publish more messages ...
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
@@ -92,13 +92,15 @@ func ExamplePublisherClient_Error() {
 		Data: []byte("hello world"),
 	})
 	results = append(results, r)
-	// Do other work ...
+	// Publish more messages ...
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
 			if err == pscompat.ErrPublisherStopped {
+				// Prints the fatal error that caused the publisher to terminate.
 				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
+				break
 			}
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
@@ -151,7 +153,8 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 		// TODO: Handle error.
 	}
 
-	// Call cancel from callback, or another goroutine.
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
 	cancel()
 }
 
@@ -179,6 +182,7 @@ func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
 		// TODO: Handle error.
 	}
 
-	// Call cancel from callback, or another goroutine.
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
 	cancel()
 }

@@ -29,14 +29,14 @@ https://cloud.google.com/pubsub/docs/choosing-pubsub-or-lite.
 More information about Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/lite.
 
-See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
-connection pooling and similar aspects of this package.
-
 Note: This library is in ALPHA. Backwards-incompatible changes may be made
 before stable v1.0.0 is released.
 
 
-Creating Topics
+Introduction
+
+See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
+connection pooling and similar aspects of this package.
 
 The following imports are required for code snippets below:
 
@@ -45,6 +45,14 @@ The following imports are required for code snippets below:
     "cloud.google.com/go/pubsublite"
     "cloud.google.com/go/pubsublite/pscompat"
   )
+
+More complete examples can be found at
+https://pkg.go.dev/cloud.google.com/go/pubsublite#pkg-examples
+and
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#pkg-examples.
+
+
+Creating Topics
 
 Messages are published to topics. Pub/Sub Lite topics may be created like so:
 
@@ -108,8 +116,9 @@ service:
     // TODO: Handle error.
   }
 
-Once you've finishing publishing, call Stop to flush all messages to the service
-and close gRPC streams:
+Once you've finishing publishing all messages, call Stop to flush all messages
+to the service and close gRPC streams. The PublisherClient can no longer be used
+after it has been stopped or has terminated due to a permanent service error.
 
   publisher.Stop()
 
