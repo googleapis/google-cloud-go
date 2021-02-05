@@ -64,7 +64,7 @@ docker run -t --rm --privileged \
    genbot
 ```
 
-## Generating code(local mode)
+## Generating code (local mode)
 
 Sometimes you may want to just generate gapic sources to test out
 new changes, test the generation of a new library, test new generator tweaks,
