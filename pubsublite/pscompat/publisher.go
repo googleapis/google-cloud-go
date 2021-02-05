@@ -19,7 +19,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/types"
+	"cloud.google.com/go/pubsublite/message"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
@@ -122,7 +122,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 		return result
 	}
 
-	p.wirePub.Publish(msgpb, func(metadata *types.MessageMetadata, err error) {
+	p.wirePub.Publish(msgpb, func(metadata *message.Metadata, err error) {
 		err = translateError(err)
 		if metadata != nil {
 			ipubsub.SetPublishResult(result, metadata.String(), err)

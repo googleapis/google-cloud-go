@@ -21,7 +21,7 @@ import (
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/types"
+	"cloud.google.com/go/pubsublite/message"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/support/bundler"
 
@@ -44,7 +44,7 @@ func (mp *mockWirePublisher) Publish(msg *pb.PubSubMessage, onResult wire.Publis
 		onResult(nil, err)
 		return
 	}
-	result := resp.(*types.MessageMetadata)
+	result := resp.(*message.Metadata)
 	onResult(result, nil)
 }
 
@@ -68,7 +68,7 @@ func TestPublisherClientTransformMessage(t *testing.T) {
 		OrderingKey: "ordering_key",
 		Attributes:  map[string]string{"attr": "value"},
 	}
-	fakeResponse := &types.MessageMetadata{
+	fakeResponse := &message.Metadata{
 		Partition: 2,
 		Offset:    42,
 	}

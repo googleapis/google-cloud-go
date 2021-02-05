@@ -11,8 +11,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 
-// Package types contains shared types for pubsublite.
-package types
+// Package message contains utilities related to messages.
+package message
 
 import (
 	"fmt"
@@ -20,9 +20,8 @@ import (
 	"strings"
 )
 
-// MessageMetadata holds properties of a message published to the Pub/Sub Lite
-// service.
-type MessageMetadata struct {
+// Metadata holds properties of a message published to the Pub/Sub Lite service.
+type Metadata struct {
 	// The topic partition the message was published to.
 	Partition int
 
@@ -30,14 +29,14 @@ type MessageMetadata struct {
 	Offset int64
 }
 
-func (m *MessageMetadata) String() string {
+func (m *Metadata) String() string {
 	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
 }
 
-// ParseMessageMetadata creates MessageMetadata from the ID string of a
-// pubsub.PublishResult returned by pscompat.PublisherClient, or
-// pubsub.Message.ID received from pscompat.SubscriberClient.
-func ParseMessageMetadata(id string) (*MessageMetadata, error) {
+// ParseMetadata creates Metadata from the ID string of a pubsub.PublishResult
+// returned by pscompat.PublisherClient or pubsub.Message.ID received from
+// pscompat.SubscriberClient.
+func ParseMetadata(id string) (*Metadata, error) {
 	parts := strings.Split(id, ":")
 	if len(parts) != 2 {
 		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
@@ -48,5 +47,5 @@ func ParseMessageMetadata(id string) (*MessageMetadata, error) {
 	if pErr != nil || oErr != nil {
 		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
 	}
-	return &MessageMetadata{Partition: int(partition), Offset: offset}, nil
+	return &Metadata{Partition: int(partition), Offset: offset}, nil
 }
