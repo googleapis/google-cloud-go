@@ -1080,6 +1080,7 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 }
 
 func TestIntegration_InsertErrors(t *testing.T) {
+	t.Skip("Skipping as limits are inconsistent: https://github.com/googleapis/google-cloud-go/issues/3612")
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}

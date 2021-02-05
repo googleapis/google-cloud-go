@@ -236,7 +236,7 @@ func (pp *singlePartitionPublisher) onResponse(response interface{}) {
 //
 // Expected to be called with singlePartitionPublisher.mu held.
 func (pp *singlePartitionPublisher) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !pp.unsafeUpdateStatus(targetStatus, err) {
+	if !pp.unsafeUpdateStatus(targetStatus, wrapError("publisher", pp.topic.String(), err)) {
 		return
 	}
 

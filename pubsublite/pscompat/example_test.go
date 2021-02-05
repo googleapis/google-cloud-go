@@ -16,6 +16,7 @@ package pscompat_test
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/pscompat"
@@ -24,8 +25,39 @@ import (
 func ExamplePublisherClient_Publish() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	// NOTE: DefaultPublishSettings and empty PublishSettings{} are equivalent.
-	publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topic)
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var results []*pubsub.PublishResult
+	r := publisher.Publish(ctx, &pubsub.Message{
+		Data: []byte("hello world"),
+	})
+	results = append(results, r)
+	// Do other work ...
+	for _, r := range results {
+		id, err := r.Get(ctx)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+}
+
+// This example illustrates how to set batching settings for publishing. Note
+// that batching settings apply per partition. If BufferedByteLimit is being
+// used to bound memory usage, keep in mind the number of partitions in the
+// topic.
+func ExamplePublisherClient_Publish_batchingSettings() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	settings := pscompat.DefaultPublishSettings
+	settings.DelayThreshold = 50 * time.Millisecond
+	settings.CountThreshold = 200
+	settings.BufferedByteLimit = 5e8
+	publisher, err := pscompat.NewPublisherClientWithSettings(ctx, topic, settings)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -49,7 +81,7 @@ func ExamplePublisherClient_Publish() {
 func ExamplePublisherClient_Error() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topic)
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -76,8 +108,7 @@ func ExamplePublisherClient_Error() {
 func ExampleSubscriberClient_Receive() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
-	// NOTE: DefaultReceiveSettings and empty ReceiveSettings{} are equivalent.
-	subscriber, err := pscompat.NewSubscriberClient(ctx, pscompat.DefaultReceiveSettings, subscription)
+	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -106,7 +137,7 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 	settings := pscompat.DefaultReceiveSettings
 	settings.MaxOutstandingMessages = 5
 	settings.MaxOutstandingBytes = 10e6
-	subscriber, err := pscompat.NewSubscriberClient(ctx, settings, subscription)
+	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
 	if err != nil {
 		// TODO: Handle error.
 	}

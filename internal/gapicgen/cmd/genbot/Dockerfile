@@ -41,6 +41,11 @@ RUN mkdir /root/.ssh && echo -e "Host github.com\n\tStrictHostKeyChecking no\n" 
 
 RUN echo -e '#!/bin/bash\n\
     set -ex\n\
+    if [[ ${GENBOT_LOCAL_MODE} = "true" ]]; then\n\
+    cd internal/gapicgen\n\
+    go run cloud.google.com/go/internal/gapicgen/cmd/genbot\n\
+    exit 0\n\
+    fi\n\
     go mod download \n\
     go run cloud.google.com/go/internal/gapicgen/cmd/genbot \
     ' >> /run.sh
