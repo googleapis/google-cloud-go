@@ -27,7 +27,7 @@ To publish messages to a topic:
 const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
 publisher, err := pscompat.NewPublisherClient(ctx, topic)
 if err != nil {
-    log.Fatal(err)
+	log.Fatal(err)
 }
 
 // Publish "hello world".
