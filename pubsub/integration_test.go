@@ -46,8 +46,9 @@ import (
 )
 
 var (
-	topicIDs = uid.NewSpace("topic", nil)
-	subIDs   = uid.NewSpace("sub", nil)
+	topicIDs  = uid.NewSpace("topic", nil)
+	subIDs    = uid.NewSpace("sub", nil)
+	schemaIDs = uid.NewSpace("schema", nil)
 )
 
 // messageData is used to hold the contents of a message so that it can be compared against the contents
@@ -94,6 +95,26 @@ func integrationTestClient(ctx context.Context, t *testing.T, opts ...option.Cli
 		t.Fatalf("Creating client error: %v", err)
 	}
 	return client
+}
+
+func integrationTestSchemaClient(ctx context.Context, t *testing.T, opts ...option.ClientOption) *SchemaClient {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+	projID := testutil.ProjID()
+	if projID == "" {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	ts := testutil.TokenSource(ctx, ScopePubSub, ScopeCloudPlatform)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
+	}
+	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
+	sc, err := NewSchemaClient(ctx, projID, opts...)
+	if err != nil {
+		t.Fatalf("Creating client error: %v", err)
+	}
+	return sc
 }
 
 func TestIntegration_All(t *testing.T) {
@@ -1724,4 +1745,32 @@ func TestIntegration_DetachSubscription(t *testing.T) {
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("SubscriptionConfig for detached sub; got: - want: +\n%s", diff)
 	}
+}
+
+func TestIntegration_SchemaAdmin(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer c.Close()
+
+	schemaID := schemaIDs.New()
+	schemaPath := fmt.Sprintf("projects/%q/schemas/%q", testutil.ProjID(), schemaID)
+	sc := &SchemaConfig{
+		Type:       SchemaAvro,
+		Definition: "{hello: world}",
+	}
+	got, err := c.CreateSchema(ctx, schemaID, sc)
+	if err != nil {
+		t.Fatalf("CreateSchema error: %v", err)
+	}
+	want := &SchemaConfig{
+		Name:       schemaPath,
+		Type:       SchemaAvro,
+		Definition: "{hello: world}",
+	}
+	if diff := testutil.Diff(got, want); diff != "" {
+		t.Fatalf("\ngot: - want: +\n%s", diff)
+	}
+
+	defer c.DeleteSchema(ctx, schemaPath)
 }

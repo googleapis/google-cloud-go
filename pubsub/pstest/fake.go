@@ -24,6 +24,7 @@ package pstest
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"path"
@@ -36,6 +37,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"github.com/golang/protobuf/ptypes"
 	durpb "github.com/golang/protobuf/ptypes/duration"
+	"github.com/golang/protobuf/ptypes/empty"
 	emptypb "github.com/golang/protobuf/ptypes/empty"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc/codes"
@@ -98,6 +100,7 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
+	schemas        map[string]*pb.Schema
 }
 
 // NewServer creates a new fake server running in the current process.
@@ -119,10 +122,12 @@ func NewServer(opts ...ServerReactorOption) *Server {
 			msgsByID:       map[string]*Message{},
 			timeNowFunc:    timeNow,
 			reactorOptions: reactorOptions,
+			schemas:        map[string]*pb.Schema{},
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
 	pb.RegisterSubscriberServer(srv.Gsrv, &s.GServer)
+	pb.RegisterSchemaServiceServer(srv.Gsrv, &s.GServer)
 	srv.Start()
 	return s
 }
@@ -1189,4 +1194,90 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 		FuncName: funcName,
 		Reactor:  &errorInjectionReactor{code: code, msg: msg},
 	}
+}
+
+func (s *GServer) CreateSchema(_ context.Context, req *pb.CreateSchemaRequest) (*pb.Schema, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "CreateSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	name := fmt.Sprintf("%s/schemas/%s", req.Parent, req.SchemaId)
+	sc := &pb.Schema{
+		Name:       name,
+		Type:       req.Schema.Type,
+		Definition: req.Schema.Definition,
+	}
+	s.schemas[name] = sc
+
+	return sc, nil
+}
+
+func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Schema, error) {
+
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "GetSchema", &pb.Schema{}); handled || err != nil {
+		return ret.(*pb.Schema), err
+	}
+
+	sc, ok := s.schemas[req.Name]
+	if !ok {
+		return nil, errors.New("schema not found")
+	}
+	return sc, nil
+}
+
+func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*pb.ListSchemasResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ListSchemas", &pb.ListSchemasResponse{}); handled || err != nil {
+		return ret.(*pb.ListSchemasResponse), err
+	}
+	ss := make([]*pb.Schema, 0)
+	for _, sc := range s.schemas {
+		ss = append(ss, sc)
+	}
+	return &pb.ListSchemasResponse{
+		Schemas: ss,
+	}, nil
+}
+
+func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*empty.Empty, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "DeleteSchema", &empty.Empty{}); handled || err != nil {
+		return ret.(*empty.Empty), err
+	}
+
+	// deleting a non-existent entry is a no-op
+	delete(s.schemas, req.Name)
+	return &empty.Empty{}, nil
+}
+
+func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaRequest) (*pb.ValidateSchemaResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateSchema", &pb.ValidateSchemaResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateSchemaResponse), err
+	}
+
+	return &pb.ValidateSchemaResponse{}, nil
+}
+
+func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequest) (*pb.ValidateMessageResponse, error) {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+
+	if handled, ret, err := s.runReactor(req, "ValidateMessage", &pb.ValidateMessageResponse{}); handled || err != nil {
+		return ret.(*pb.ValidateMessageResponse), err
+	}
+
+	return &pb.ValidateMessageResponse{}, nil
 }

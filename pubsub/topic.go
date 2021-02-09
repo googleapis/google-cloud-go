@@ -70,6 +70,9 @@ type Topic struct {
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
+
+	// Schema configures a schema for this topic
+	Schema SchemaSettings
 }
 
 // PublishSettings control the bundling of published messages.
