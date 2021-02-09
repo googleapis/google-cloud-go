@@ -95,8 +95,8 @@ func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
 // A Query can have multiple filters.
 // The path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-// The op argument must be one of "==", "<", "<=", ">", ">=", "array-contains",
-// "array-contains-any" or "in".
+// The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) Where(path, op string, value interface{}) Query {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
@@ -109,8 +109,8 @@ func (q Query) Where(path, op string, value interface{}) Query {
 
 // WherePath returns a new Query that filters the set of results.
 // A Query can have multiple filters.
-// The op argument must be one of "==", "<", "<=", ">", ">=", "array-contains",
-// "array-contains-any" or "in".
+// The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
 	q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
 	return q

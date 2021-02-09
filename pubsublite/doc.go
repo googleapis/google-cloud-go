@@ -29,17 +29,34 @@ https://cloud.google.com/pubsub/docs/choosing-pubsub-or-lite.
 More information about Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/lite.
 
+Note: This library is in ALPHA. Backwards-incompatible changes may be made
+before stable v1.0.0 is released.
+
+
+Introduction
+
 See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
 
-Note: This library is in ALPHA. Backwards-incompatible changes may be made
-before stable v1.0.0 is released.
+The following imports are required for code snippets below:
+
+  import (
+    "cloud.google.com/go/pubsub"
+    "cloud.google.com/go/pubsublite"
+    "cloud.google.com/go/pubsublite/pscompat"
+  )
+
+More complete examples can be found at
+https://pkg.go.dev/cloud.google.com/go/pubsublite#pkg-examples
+and
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#pkg-examples.
 
 
 Creating Topics
 
 Messages are published to topics. Pub/Sub Lite topics may be created like so:
 
+  ctx := context.Background()
   const topicPath = "projects/my-project/locations/us-central1-c/topics/my-topic"
   topicConfig := pubsublite.TopicConfig{
     Name:                       topicPath,
@@ -53,16 +70,15 @@ Messages are published to topics. Pub/Sub Lite topics may be created like so:
   if err != nil {
     // TODO: Handle error.
   }
-  topic, err = adminClient.CreateTopic(ctx, topicConfig)
-  if err != nil {
+  if _, err = adminClient.CreateTopic(ctx, topicConfig); err != nil {
     // TODO: Handle error.
   }
 
 See https://cloud.google.com/pubsub/lite/docs/topics for more information about
 how Pub/Sub Lite topics are configured.
 
-See https://cloud.google.com/pubsub/lite/docs/locations for the list of regions
-and zones where Pub/Sub Lite is available.
+See https://cloud.google.com/pubsub/lite/docs/locations for the list of zones
+where Pub/Sub Lite is available.
 
 
 Publishing
@@ -100,8 +116,9 @@ service:
     // TODO: Handle error.
   }
 
-Once you've finishing publishing, call Stop to flush all messages to the service
-and close gRPC streams:
+Once you've finishing publishing all messages, call Stop to flush all messages
+to the service and close gRPC streams. The PublisherClient can no longer be used
+after it has been stopped or has terminated due to a permanent service error.
 
   publisher.Stop()
 
@@ -123,8 +140,7 @@ Pub/Sub Lite subscriptions may be created like so:
     Topic:               topicPath,
     DeliveryRequirement: pubsublite.DeliverImmediately,
   }
-  subscription, err = adminClient.CreateSubscription(ctx, subscriptionConfig)
-  if err != nil {
+  if _, err = adminClient.CreateSubscription(ctx, subscriptionConfig); err != nil {
     // TODO: Handle error.
   }
 
@@ -138,7 +154,9 @@ To receive messages for a subscription, first create a SubscriberClient:
 
   subscriber, err := pscompat.NewSubscriberClient(ctx, subscriptionPath)
 
-Messages are then consumed from a subscription via callback.
+Messages are then consumed from a subscription via callback. The callback may be
+invoked concurrently by multiple goroutines (one per partition that the
+subscriber client is connected to).
 
   cctx, cancel := context.WithCancel(ctx)
   err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
@@ -149,9 +167,8 @@ Messages are then consumed from a subscription via callback.
     // TODO: Handle error.
   }
 
-The callback may be invoked concurrently by multiple goroutines (one per
-partition that the subscriber client is connected to). To terminate a call to
-Receive, cancel its context:
+Receive blocks until either the context is canceled or a fatal service error
+occurs. To terminate a call to Receive, cancel its context:
 
   cancel()
 
