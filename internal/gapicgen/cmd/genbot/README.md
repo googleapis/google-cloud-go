@@ -93,7 +93,7 @@ docker run --rm \
    -e ONLY_GAPICS=true \
    -e GOCLOUD_DIR=/gapicgen \
    -e GAPIC_TO_GENERATE=cloud.google.com/go/foo/apiv1 \
-   genbot \
+   genbot
 ```
 
 Note you can optionally mount in your Go module cache if you have Go installed.
