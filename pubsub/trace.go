@@ -85,11 +85,11 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	StreamResponseCount = stats.Int64(statsPrefix+"stream_response_count", "Number of gRPC StreamingPull response messages received", stats.UnitDimensionless)
 
-	// Outstanding messages is a measure of the number of outstanding messages held by the client before they are processed.
+	// OutstandingMessages is a measure of the number of outstanding messages held by the client before they are processed.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	OutstandingMessages = stats.Int64(statsPrefix+"outstanding_messages", "Number of outstanding Pub/Sub messages", stats.UnitDimensionless)
 
-	// Outstanding messages is a measure of the number of bytes all outstanding messages held by the client take up.
+	// OutstandingBytes is a measure of the number of bytes all outstanding messages held by the client take up.
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	OutstandingBytes = stats.Int64(statsPrefix+"outstanding_bytes", "Number of outstanding bytes", stats.UnitDimensionless)
 )
@@ -143,7 +143,7 @@ var (
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	OutstandingMessagesView *view.View
 
-	// OutstandingMessagesView is the last value of OutstandingBytes
+	// OutstandingBytesView is the last value of OutstandingBytes
 	// It is EXPERIMENTAL and subject to change or removal without notice.
 	OutstandingBytesView *view.View
 )
@@ -161,7 +161,7 @@ func init() {
 	StreamRequestCountView = createCountView(StreamRequestCount, keySubscription)
 	StreamResponseCountView = createCountView(StreamResponseCount, keySubscription)
 	OutstandingMessagesView = createLastValueView(OutstandingMessages, keySubscription)
-	OutstandingBytesView = createLastValueView(OutstandingMessages, keySubscription)
+	OutstandingBytesView = createLastValueView(OutstandingBytes, keySubscription)
 
 	DefaultPublishViews = []*view.View{
 		PublishedMessagesView,
