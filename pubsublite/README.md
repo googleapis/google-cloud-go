@@ -24,10 +24,10 @@ To publish messages to a topic:
 ```go
 // Create a PublisherClient for topic1 in zone us-central1-b.
 // See https://cloud.google.com/pubsub/lite/docs/locations for available zones.
-const topic = "projects/project-id/locations/us-central1-b/topics/topic1",
-publisher, err := pscompat.NewPublisherClient(ctx, pscompat.DefaultPublishSettings, topic)
+const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
+publisher, err := pscompat.NewPublisherClient(ctx, topic)
 if err != nil {
-    log.Fatal(err)
+	log.Fatal(err)
 }
 
 // Publish "hello world".
@@ -49,7 +49,7 @@ To receive messages for a subscription:
 ```go
 // Create a SubscriberClient for subscription1 in zone us-central1-b.
 const subscription = "projects/project-id/locations/us-central1-b/subscriptions/subscription1"
-subscriber, err := pscompat.NewSubscriberClient(ctx, pscompat.DefaultReceiveSettings, subscription)
+subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
 if err != nil {
 	log.Fatal(err)
 }

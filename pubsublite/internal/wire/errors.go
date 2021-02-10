@@ -16,6 +16,8 @@ package wire
 import (
 	"errors"
 	"fmt"
+
+	"golang.org/x/xerrors"
 )
 
 // Errors exported from this package.
@@ -41,3 +43,10 @@ var (
 	// stopping.
 	ErrServiceStopped = errors.New("pubsublite: service has stopped or is stopping")
 )
+
+func wrapError(context, resource string, err error) error {
+	if err != nil {
+		return xerrors.Errorf("%s(%s): %w", context, resource, err)
+	}
+	return err
+}

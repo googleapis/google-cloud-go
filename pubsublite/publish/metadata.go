@@ -34,18 +34,9 @@ func (m *Metadata) String() string {
 	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
 }
 
-// ParseMetadata converts the ID string of a pubsub.PublishResult to Metadata.
-//
-// Example:
-//   result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
-//   id, err := result.Get(ctx)
-//   if err != nil {
-//     // TODO: Handle error.
-//   }
-//   metadata, err := publish.ParseMetadata(id)
-//   if err != nil {
-//     // TODO: Handle error.
-//   }
+// ParseMetadata creates Metadata from the ID string of a pubsub.PublishResult
+// returned by pscompat.PublisherClient or pubsub.Message.ID received from
+// pscompat.SubscriberClient.
 func ParseMetadata(id string) (*Metadata, error) {
 	parts := strings.Split(id, ":")
 	if len(parts) != 2 {

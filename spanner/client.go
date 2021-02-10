@@ -44,6 +44,14 @@ const (
 	numChannels = 4
 )
 
+const (
+	// Scope is the scope for Cloud Spanner Data API.
+	Scope = "https://www.googleapis.com/auth/spanner.data"
+
+	// AdminScope is the scope for Cloud Spanner Admin APIs.
+	AdminScope = "https://www.googleapis.com/auth/spanner.admin"
+)
+
 var (
 	validDBPattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
 )
@@ -459,6 +467,8 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
+		t.txOpts = options
+
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
 			"Starting transaction attempt")
 		if err = t.begin(ctx); err != nil {

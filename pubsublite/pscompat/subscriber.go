@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
+	"cloud.google.com/go/pubsublite/publish"
 	"google.golang.org/api/option"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
@@ -28,6 +29,7 @@ import (
 var (
 	errNackCalled       = errors.New("pubsublite: subscriber client does not support nack. See NackHandler for how to customize nack handling")
 	errDuplicateReceive = errors.New("pubsublite: receive is already in progress for this subscriber client")
+	errMessageIDSet     = errors.New("pubsublite: pubsub.Message.ID must not be set")
 )
 
 // handleNack is the default NackHandler implementation.
@@ -127,6 +129,18 @@ func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, s
 	return subInstance, nil
 }
 
+func (si *subscriberInstance) transformMessage(in *wire.ReceivedMessage, out *pubsub.Message) error {
+	if err := si.settings.MessageTransformer(in.Msg, out); err != nil {
+		return err
+	}
+	if len(out.ID) > 0 {
+		return errMessageIDSet
+	}
+	metadata := &publish.Metadata{Partition: in.Partition, Offset: in.Msg.GetCursor().GetOffset()}
+	out.ID = metadata.String()
+	return nil
+}
+
 func (si *subscriberInstance) onMessage(msg *wire.ReceivedMessage) {
 	pslAckh := &pslAckHandler{
 		ackh:        msg.Ack,
@@ -135,7 +149,7 @@ func (si *subscriberInstance) onMessage(msg *wire.ReceivedMessage) {
 	}
 	psMsg := ipubsub.NewMessage(pslAckh)
 	pslAckh.msg = psMsg
-	if err := si.settings.MessageTransformer(msg.Msg, psMsg); err != nil {
+	if err := si.transformMessage(msg, psMsg); err != nil {
 		si.Terminate(err)
 		return
 	}
@@ -234,9 +248,18 @@ type SubscriberClient struct {
 }
 
 // NewSubscriberClient creates a new Pub/Sub Lite client to receive messages for
-// a given subscription. A valid subscription path has the format:
+// a given subscription, using DefaultReceiveSettings. A valid subscription path
+// has the format:
 // "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
-func NewSubscriberClient(ctx context.Context, settings ReceiveSettings, subscription string, opts ...option.ClientOption) (*SubscriberClient, error) {
+func NewSubscriberClient(ctx context.Context, subscription string, opts ...option.ClientOption) (*SubscriberClient, error) {
+	return NewSubscriberClientWithSettings(ctx, subscription, DefaultReceiveSettings, opts...)
+}
+
+// NewSubscriberClientWithSettings creates a new Pub/Sub Lite client to receive
+// messages for a given subscription, using the specified ReceiveSettings. A
+// valid subscription path has the format:
+// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+func NewSubscriberClientWithSettings(ctx context.Context, subscription string, settings ReceiveSettings, opts ...option.ClientOption) (*SubscriberClient, error) {
 	subscriptionPath, err := wire.ParseSubscriptionPath(subscription)
 	if err != nil {
 		return nil, err

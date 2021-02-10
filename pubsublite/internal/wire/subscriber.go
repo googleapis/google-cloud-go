@@ -37,8 +37,9 @@ var (
 // ReceivedMessage stores a received Pub/Sub message and AckConsumer for
 // acknowledging the message.
 type ReceivedMessage struct {
-	Msg *pb.SequencedMessage
-	Ack AckConsumer
+	Msg       *pb.SequencedMessage
+	Ack       AckConsumer
+	Partition int
 }
 
 // MessageReceiverFunc receives a Pub/Sub message from a topic partition.
@@ -277,7 +278,7 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 
 	for _, msg := range response.Messages {
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
-		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack})
+		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack, Partition: s.subscription.Partition})
 	}
 	return nil
 }
@@ -324,7 +325,7 @@ func (s *subscribeStream) unsafeSendFlowControl(req *pb.FlowControlRequest) {
 }
 
 func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !s.unsafeUpdateStatus(targetStatus, err) {
+	if !s.unsafeUpdateStatus(targetStatus, wrapError("subscriber", s.subscription.String(), err)) {
 		return
 	}
 
@@ -469,6 +470,10 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	// Handle removed partitions.
 	for partition, subscriber := range as.subscribers {
 		if !partitions.Contains(partition) {
+			// Ignore unacked messages from this point on to avoid conflicting with
+			// the commits of the new subscriber that will be assigned this partition.
+			subscriber.Terminate()
+
 			as.unsafeRemoveService(subscriber)
 			// Safe to delete map entry during range loop:
 			// https://golang.org/ref/spec#For_statements
