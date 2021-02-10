@@ -37,8 +37,9 @@ var (
 	ErrOversizedMessage = bundler.ErrOversizedItem
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
-	// published because the publisher client has stopped. PublisherClient.Error()
-	// returns the error that caused the publisher client to terminate (if any).
+	// published because the publisher client has stopped or is in the process of
+	// stopping. PublisherClient.Error() returns the error that caused the
+	// publisher client to terminate (if any).
 	ErrPublisherStopped = wire.ErrServiceStopped
 )
 
@@ -135,7 +136,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 
 // Stop sends all remaining published messages and closes publish streams.
 // Returns once all outstanding messages have been sent or have failed to be
-// sent.
+// sent. Stop should be called when the client is no longer required.
 func (p *PublisherClient) Stop() {
 	p.wirePub.Stop()
 	p.wirePub.WaitStopped()

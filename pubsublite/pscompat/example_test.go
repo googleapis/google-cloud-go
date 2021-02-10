@@ -41,6 +41,8 @@ func ExamplePublisherClient_Publish() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
+			// NOTE: Once the first publish error occurs, the publisher client will
+			// terminate and subsequent publish results will also have an error.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -73,6 +75,8 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
+			// NOTE: Once the first publish error occurs, the publisher client will
+			// terminate and subsequent publish results will also have an error.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -97,11 +101,12 @@ func ExamplePublisherClient_Error() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
-			if err == pscompat.ErrPublisherStopped {
-				// Prints the fatal error that caused the publisher to terminate.
-				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
-				break
-			}
+			// NOTE: Once the first publish error occurs, the publisher client will
+			// terminate and subsequent publish results will also have an error.
+
+			// Prints the fatal error that caused the publisher to terminate.
+			fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
+			break
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
