@@ -129,8 +129,8 @@ func (br *testPublishBatchReceiver) ValidateBatches(want []*publishBatch) {
 		}
 	}
 
-	if !testutil.Equal(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})) {
-		br.t.Errorf("Batches got: %v\nwant: %v", got, want)
+	if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
+		br.t.Errorf("Batches got: -, want: +\n%s", diff)
 	}
 }
 
@@ -143,6 +143,15 @@ func makeMsgHolder(msg *pb.PubSubMessage, receiver ...*testPublishResultReceiver
 		h.onResult = receiver[0].set
 	}
 	return h
+}
+
+func makePublishBatch(msgs ...*messageHolder) *publishBatch {
+	batch := new(publishBatch)
+	for _, msg := range msgs {
+		batch.msgHolders = append(batch.msgHolders, msg)
+		batch.totalSize += msg.size
+	}
+	return batch
 }
 
 func TestPublishBatcherAddMessage(t *testing.T) {
@@ -200,22 +209,16 @@ func TestPublishBatcherBundlerCountThreshold(t *testing.T) {
 	// Batch 1
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
-	wantBatch1 := &publishBatch{
-		[]*messageHolder{makeMsgHolder(msg1), makeMsgHolder(msg2)},
-	}
+	wantBatch1 := makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2))
 
 	// Batch 2
 	msg3 := &pb.PubSubMessage{Data: []byte{'3'}}
 	msg4 := &pb.PubSubMessage{Data: []byte{'4'}}
-	wantBatch2 := &publishBatch{
-		[]*messageHolder{makeMsgHolder(msg3), makeMsgHolder(msg4)},
-	}
+	wantBatch2 := makePublishBatch(makeMsgHolder(msg3), makeMsgHolder(msg4))
 
 	// Batch 3
 	msg5 := &pb.PubSubMessage{Data: []byte{'5'}}
-	wantBatch3 := &publishBatch{
-		[]*messageHolder{makeMsgHolder(msg5)},
-	}
+	wantBatch3 := makePublishBatch(makeMsgHolder(msg5))
 
 	receiver := newTestPublishBatchReceiver(t)
 	batcher := newPublishMessageBatcher(&settings, 0, receiver.onNewBatch)
@@ -237,15 +240,11 @@ func TestPublishBatcherBundlerBatchingDelay(t *testing.T) {
 
 	// Batch 1
 	msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
-	wantBatch1 := &publishBatch{
-		[]*messageHolder{makeMsgHolder(msg1)},
-	}
+	wantBatch1 := makePublishBatch(makeMsgHolder(msg1))
 
 	// Batch 2
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
-	wantBatch2 := &publishBatch{
-		[]*messageHolder{makeMsgHolder(msg2)},
-	}
+	wantBatch2 := makePublishBatch(makeMsgHolder(msg2))
 
 	receiver := newTestPublishBatchReceiver(t)
 	batcher := newPublishMessageBatcher(&settings, 0, receiver.onNewBatch)
@@ -272,12 +271,7 @@ func TestPublishBatcherBundlerOnPermanentError(t *testing.T) {
 	msg2 := &pb.PubSubMessage{Data: []byte{'2'}}
 	pubResult1 := newTestPublishResultReceiver(t, msg1)
 	pubResult2 := newTestPublishResultReceiver(t, msg2)
-	batcher.AddBatch(&publishBatch{
-		[]*messageHolder{
-			makeMsgHolder(msg1, pubResult1),
-			makeMsgHolder(msg2, pubResult2),
-		},
-	})
+	batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1, pubResult1), makeMsgHolder(msg2, pubResult2)))
 
 	wantErr := status.Error(codes.FailedPrecondition, "failed")
 	batcher.OnPermanentError(wantErr)
@@ -307,17 +301,8 @@ func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 		pubResult2 := newTestPublishResultReceiver(t, msg2)
 		pubResult3 := newTestPublishResultReceiver(t, msg3)
 
-		batcher.AddBatch(&publishBatch{
-			[]*messageHolder{
-				makeMsgHolder(msg1, pubResult1),
-				makeMsgHolder(msg2, pubResult2),
-			},
-		})
-		batcher.AddBatch(&publishBatch{
-			[]*messageHolder{
-				makeMsgHolder(msg3, pubResult3),
-			},
-		})
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1, pubResult1), makeMsgHolder(msg2, pubResult2)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3, pubResult3)))
 		if err := batcher.OnPublishResponse(70); err != nil {
 			t.Errorf("OnPublishResponse() got err: %v", err)
 		}
@@ -333,14 +318,122 @@ func TestPublishBatcherBundlerOnPublishResponse(t *testing.T) {
 	t.Run("inconsistent offset", func(t *testing.T) {
 		msg := &pb.PubSubMessage{Data: []byte{'4'}}
 		pubResult := newTestPublishResultReceiver(t, msg)
-		batcher.AddBatch(&publishBatch{
-			[]*messageHolder{
-				makeMsgHolder(msg, pubResult),
-			},
-		})
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg, pubResult)))
 
 		if gotErr, wantMsg := batcher.OnPublishResponse(80), "inconsistent start offset = 80"; !test.ErrorHasMsg(gotErr, wantMsg) {
 			t.Errorf("OnPublishResponse() got err: %v, want err msg: %q", gotErr, wantMsg)
+		}
+	})
+}
+
+func TestPublishBatcherRebatching(t *testing.T) {
+	const partition = 2
+	receiver := newTestPublishBatchReceiver(t)
+
+	t.Run("single batch", func(t *testing.T) {
+		msg1 := &pb.PubSubMessage{Data: []byte{'1'}}
+
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
+
+		got := batcher.InFlightBatches()
+		want := []*publishBatch{
+			makePublishBatch(makeMsgHolder(msg1)),
+		}
+		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
+			t.Errorf("Batches got: -, want: +\n%s", diff)
+		}
+	})
+
+	t.Run("rebatch", func(t *testing.T) {
+		msg1 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{1}, 100)}
+		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, 200)}
+		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, 300)}
+
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+
+		got := batcher.InFlightBatches()
+		want := []*publishBatch{
+			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3)),
+		}
+		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
+			t.Errorf("Batches got: -, want: +\n%s", diff)
+		}
+	})
+
+	t.Run("no rebatch", func(t *testing.T) {
+		msg1 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{1}, MaxPublishRequestBytes-10)}
+		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, MaxPublishRequestBytes/2)}
+		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, MaxPublishRequestBytes/2)}
+
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+
+		got := batcher.InFlightBatches()
+		want := []*publishBatch{
+			makePublishBatch(makeMsgHolder(msg1)),
+			makePublishBatch(makeMsgHolder(msg2)),
+			makePublishBatch(makeMsgHolder(msg3)),
+		}
+		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
+			t.Errorf("Batches got: -, want: +\n%s", diff)
+		}
+	})
+
+	t.Run("mixed", func(t *testing.T) {
+		msg1 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{1}, MaxPublishRequestBytes/2)}
+		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, 200)}
+		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, 300)}
+		msg4 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{4}, MaxPublishRequestBytes/2)}
+		msg5 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{5}, 500)}
+
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg4)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg5)))
+
+		got := batcher.InFlightBatches()
+		want := []*publishBatch{
+			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3)),
+			makePublishBatch(makeMsgHolder(msg4), makeMsgHolder(msg5)),
+		}
+		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
+			t.Errorf("Batches got: -, want: +\n%s", diff)
+		}
+	})
+
+	t.Run("max count", func(t *testing.T) {
+		var msgs []*pb.PubSubMessage
+		var batch1 []*messageHolder
+		var batch2 []*messageHolder
+		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
+		for i := 0; i <= MaxPublishRequestCount; i++ {
+			msg := &pb.PubSubMessage{Data: []byte{'0'}}
+			msgs = append(msgs, msg)
+
+			msgHolder := makeMsgHolder(msg)
+			if i < MaxPublishRequestCount {
+				batch1 = append(batch1, msgHolder)
+			} else {
+				batch2 = append(batch2, msgHolder)
+			}
+			batcher.AddBatch(makePublishBatch(msgHolder))
+		}
+
+		got := batcher.InFlightBatches()
+		want := []*publishBatch{
+			makePublishBatch(batch1...),
+			makePublishBatch(batch2...),
+		}
+		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
+			t.Errorf("Batches got: -, want: +\n%s", diff)
 		}
 	})
 }

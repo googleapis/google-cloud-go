@@ -196,8 +196,7 @@ func TestSinglePartitionPublisherResendMessages(t *testing.T) {
 	// The publisher should resend all in-flight batches to the second stream.
 	stream2 := test.NewRPCVerifier(t)
 	stream2.Push(initPubReq(topic), initPubResp(), nil)
-	stream2.Push(msgPubReq(msg1), msgPubResp(0), nil)
-	stream2.Push(msgPubReq(msg2), msgPubResp(1), nil)
+	stream2.Push(msgPubReq(msg1, msg2), msgPubResp(0), nil)
 	stream2.Push(msgPubReq(msg3), msgPubResp(2), nil)
 	verifiers.AddPublishStream(topic.Path, topic.Partition, stream2)
 
