@@ -27,6 +27,7 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func buildSQL(x interface{ addSQL(*strings.Builder) }) string {
@@ -330,7 +331,7 @@ func (sfj SelectFromJoin) SQL() string {
 	// TODO: hints go here
 	str += sfj.RHS.SQL()
 	if sfj.On != nil {
-		str += " " + sfj.On.SQL()
+		str += " ON " + sfj.On.SQL()
 	} else if len(sfj.Using) > 0 {
 		str += " USING (" + idList(sfj.Using, ", ") + ")"
 	}
@@ -585,3 +586,13 @@ func (sl StringLiteral) addSQL(sb *strings.Builder) { fmt.Fprintf(sb, "%q", sl) 
 
 func (bl BytesLiteral) SQL() string                { return buildSQL(bl) }
 func (bl BytesLiteral) addSQL(sb *strings.Builder) { fmt.Fprintf(sb, "B%q", bl) }
+
+func (dl DateLiteral) SQL() string { return buildSQL(dl) }
+func (dl DateLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "DATE '%04d-%02d-%02d'", dl.Year, dl.Month, dl.Day)
+}
+
+func (tl TimestampLiteral) SQL() string { return buildSQL(tl) }
+func (tl TimestampLiteral) addSQL(sb *strings.Builder) {
+	fmt.Fprintf(sb, "TIMESTAMP '%s'", time.Time(tl).Format("2006-01-02 15:04:05.000000 -07:00"))
+}

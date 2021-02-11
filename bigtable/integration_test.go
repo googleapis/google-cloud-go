@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os/exec"
 	"reflect"
 	"sort"
 	"strings"
@@ -38,6 +39,10 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	v1 "google.golang.org/genproto/googleapis/iam/v1"
+	longrunning "google.golang.org/genproto/googleapis/longrunning"
+	grpc "google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
@@ -73,6 +78,10 @@ func populatePresidentsGraph(table *Table) error {
 var instanceToCreate string
 var instanceToCreateZone string
 var instanceToCreateZone2 string
+var blackholeDpv6Cmd string
+var blackholeDpv4Cmd string
+var allowDpv6Cmd string
+var allowDpv4Cmd string
 
 func init() {
 	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
@@ -82,6 +91,11 @@ func init() {
 		"The zone in which to create the new test instance.")
 	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
 		"The zone in which to create a second cluster in the test instance.")
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -1799,6 +1813,119 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 	}
 }
 
+// instanceAdminClientMock is used to test FailedLocations field processing.
+type instanceAdminClientMock struct {
+	Clusters             []*btapb.Cluster
+	UnavailableLocations []string
+}
+
+func (iacm *instanceAdminClientMock) ListClusters(ctx context.Context, req *btapb.ListClustersRequest, opts ...grpc.CallOption) (*btapb.ListClustersResponse, error) {
+	res := btapb.ListClustersResponse{
+		Clusters:        iacm.Clusters,
+		FailedLocations: iacm.UnavailableLocations,
+	}
+	return &res, nil
+}
+
+func (iacm *instanceAdminClientMock) CreateInstance(ctx context.Context, in *btapb.CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) GetInstance(ctx context.Context, in *btapb.GetInstanceRequest, opts ...grpc.CallOption) (*btapb.Instance, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) ListInstances(ctx context.Context, in *btapb.ListInstancesRequest, opts ...grpc.CallOption) (*btapb.ListInstancesResponse, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) UpdateInstance(ctx context.Context, in *btapb.Instance, opts ...grpc.CallOption) (*btapb.Instance, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) PartialUpdateInstance(ctx context.Context, in *btapb.PartialUpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) DeleteInstance(ctx context.Context, in *btapb.DeleteInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) CreateCluster(ctx context.Context, in *btapb.CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) GetCluster(ctx context.Context, in *btapb.GetClusterRequest, opts ...grpc.CallOption) (*btapb.Cluster, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) UpdateCluster(ctx context.Context, in *btapb.Cluster, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) DeleteCluster(ctx context.Context, in *btapb.DeleteClusterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) CreateAppProfile(ctx context.Context, in *btapb.CreateAppProfileRequest, opts ...grpc.CallOption) (*btapb.AppProfile, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) GetAppProfile(ctx context.Context, in *btapb.GetAppProfileRequest, opts ...grpc.CallOption) (*btapb.AppProfile, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) ListAppProfiles(ctx context.Context, in *btapb.ListAppProfilesRequest, opts ...grpc.CallOption) (*btapb.ListAppProfilesResponse, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) UpdateAppProfile(ctx context.Context, in *btapb.UpdateAppProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) DeleteAppProfile(ctx context.Context, in *btapb.DeleteAppProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+	return nil, nil
+}
+func (iacm *instanceAdminClientMock) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
+	return nil, nil
+}
+
+func TestIntegration_InstanceAdminClient_Clusters_WithFailedLocations(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support snapshots")
+	}
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	cluster1 := btapb.Cluster{Name: "cluster1"}
+	failedLoc := "euro1"
+
+	iAdminClient.iClient = &instanceAdminClientMock{
+		Clusters:             []*btapb.Cluster{&cluster1},
+		UnavailableLocations: []string{failedLoc},
+	}
+
+	cis, err := iAdminClient.Clusters(context.Background(), "instance-id")
+	convertedErr, ok := err.(ErrPartiallyUnavailable)
+	if !ok {
+		t.Fatalf("want error ErrPartiallyUnavailable, got other")
+	}
+	if got, want := len(convertedErr.Locations), 1; got != want {
+		t.Fatalf("want %v failed locations, got %v", want, got)
+	}
+	if got, want := convertedErr.Locations[0], failedLoc; got != want {
+		t.Fatalf("want failed location %v, got %v", want, got)
+	}
+	if got, want := len(cis), 1; got != want {
+		t.Fatalf("want %v failed locations, got %v", want, got)
+	}
+	if got, want := cis[0].Name, cluster1.Name; got != want {
+		t.Fatalf("want cluster %v, got %v", want, got)
+	}
+}
+
 func TestIntegration_Granularity(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2208,6 +2335,81 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 }
 
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().AttemptDirectPath {
+		t.Skip()
+	}
+
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	dpEnabled := examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeDirectPath(testEnv, t)
+	dpDisabled := examineTraffic(ctx, testEnv, table, true)
+	if !dpDisabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	allowDirectPath(testEnv, t)
+	dpEnabled = examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+// examineTraffic returns whether RPCs use DirectPath (blackholeDP = false) or CFE (blackholeDP = true).
+func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, blackholeDP bool) bool {
+	numCount := 0
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+
+	start := time.Now()
+	for time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = table.ReadRow(ctx, "jadams")
+			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != blackholeDP {
+				numCount++
+				if numCount >= minCompleteRPC {
+					return true
+				}
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+	return false
+}
+
 func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -2293,9 +2495,9 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)
 		if err != nil {
-			return true, err
+			return false, err
 		}
-		return false, nil
+		return true, nil
 	})
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)
@@ -2324,4 +2526,28 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 	}
 	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
 	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+func blackholeDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
+}
+
+func allowDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
 }

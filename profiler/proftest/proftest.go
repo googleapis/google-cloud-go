@@ -24,7 +24,6 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -466,13 +465,19 @@ func parseBackoffDuration(line string) (time.Duration, error) {
 	return backoff, nil
 }
 
-// PollForAndReturnSerialOutput polls serial port 2 of the GCE instance specified by
-// inst and returns when the finishString appears in the serial output
-// of the instance, or when the context times out.
-func (tr *GCETestRunner) PollForAndReturnSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) (string, error) {
+// PollAndLogSerialPort polls serial port 2 of the given GCE instance and
+// returns when the finishString appears in the serial output of the instance,
+// or when the context times out. It logs the serial output of the instance
+// using the specified log function and returns the serial output in the first
+// return value.
+func (tr *GCETestRunner) PollAndLogSerialPort(ctx context.Context, inst *InstanceConfig, finishString, errorString string, logf func(string, ...interface{})) (string, error) {
 	var output string
 	defer func() {
-		log.Printf("Serial port output for %s:\n%s", inst.Name, output)
+		// Avoid escaping and double newlines in the rendered output (b/175999077).
+		// TODO: Use strings.ReplaceAll once support for Go 1.11 is dropped.
+		output = strings.Replace(output, "\r\n", "\n", -1)
+		output = strings.Replace(output, "\033", "\\033", -1)
+		logf("Serial port output for %s:\n%s", inst.Name, output)
 	}()
 
 	for {
@@ -483,11 +488,11 @@ func (tr *GCETestRunner) PollForAndReturnSerialOutput(ctx context.Context, inst 
 			resp, err := tr.ComputeService.Instances.GetSerialPortOutput(inst.ProjectID, inst.Zone, inst.Name).Port(2).Context(ctx).Do()
 			if err != nil {
 				// Transient failure.
-				log.Printf("Transient error getting serial port output from instance %s (will retry): %v", inst.Name, err)
+				logf("Transient error getting serial port output from instance %s (will retry): %v", inst.Name, err)
 				continue
 			}
 			if resp.Contents == "" {
-				log.Printf("Ignoring empty serial port output from instance %s (will retry)", inst.Name)
+				logf("Ignoring empty serial port output from instance %s (will retry)", inst.Name)
 				continue
 			}
 			if output = resp.Contents; strings.Contains(output, finishString) {
@@ -498,14 +503,6 @@ func (tr *GCETestRunner) PollForAndReturnSerialOutput(ctx context.Context, inst 
 			}
 		}
 	}
-}
-
-// PollForSerialOutput polls serial port 2 of the GCE instance specified by
-// inst and returns when the finishString appears in the serial output
-// of the instance, or when the context times out.
-func (tr *GCETestRunner) PollForSerialOutput(ctx context.Context, inst *InstanceConfig, finishString, errorString string) error {
-	_, err := tr.PollForAndReturnSerialOutput(ctx, inst, finishString, errorString)
-	return err
 }
 
 // QueryProfiles retrieves profiles of a specific type, from a specific time

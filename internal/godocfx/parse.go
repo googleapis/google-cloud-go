@@ -14,6 +14,12 @@
 
 // +build go1.15
 
+// TODO:
+//   IDs for const/var groups have every name, not just the one to link to.
+//   Preserve IDs when sanitizing then use the right ID for linking.
+//   Link to different domains by pattern (e.g. for cloud.google.com/go).
+//   Make sure dot imports work (those identifiers aren't in the current package).
+
 package main
 
 import (
@@ -29,6 +35,7 @@ import (
 	"os"
 	"path/filepath"
 	"sort"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/third_party/pkgsite"
@@ -83,6 +90,7 @@ type item struct {
 	Syntax   syntax    `yaml:"syntax,omitempty"`
 	Examples []example `yaml:"codeexamples,omitempty"`
 	Children []child   `yaml:"children,omitempty"`
+	AltLink  string    `yaml:"alt_link,omitempty"`
 }
 
 func (p *page) addItem(i *item) {
@@ -147,7 +155,8 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 	// Once the files are grouped by package, process each package
 	// independently.
 	for _, pi := range pkgInfos {
-
+		link := newLinker(pi.pkg.Imports, pi.importRenames)
+		topLevelDecls := pkgsite.TopLevelDecls(pi.doc)
 		pkgItem := &item{
 			UID:      pi.doc.ImportPath,
 			Name:     pi.doc.ImportPath,
@@ -156,6 +165,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 			Langs:    onlyGo,
 			Type:     "package",
 			Examples: processExamples(pi.doc.Examples, pi.fset),
+			AltLink:  "https://pkg.go.dev/" + pi.doc.ImportPath,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
 		pages[pi.doc.ImportPath] = pkgPage
@@ -173,7 +183,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL, topLevelDecls)},
 			})
 		}
 		for _, v := range pi.doc.Vars {
@@ -189,7 +199,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL, topLevelDecls)},
 			})
 		}
 		for _, t := range pi.doc.Types {
@@ -203,7 +213,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl)},
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, toURL, topLevelDecls)},
 				Examples: processExamples(t.Examples, pi.fset),
 			}
 			// Note: items are added as page.Children, rather than
@@ -222,7 +232,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL, topLevelDecls)},
 				})
 			}
 			for _, v := range t.Vars {
@@ -238,7 +248,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL, topLevelDecls)},
 				})
 			}
 
@@ -253,7 +263,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:     "function",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.fset),
 				})
 			}
@@ -268,7 +278,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:     "method",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
 					Examples: processExamples(fn.Examples, pi.fset),
 				})
 			}
@@ -284,7 +294,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "function",
 				Summary:  fn.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl)},
+				Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
 				Examples: processExamples(fn.Examples, pi.fset),
 			})
 		}
@@ -296,6 +306,80 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 		module:     module,
 		extraFiles: extraFiles,
 	}, nil
+}
+
+type linker struct {
+	// imports is a map from local package name to import path.
+	// Behavior is undefined when a single import has different names in
+	// different files.
+	imports map[string]string
+}
+
+func newLinker(rawImports map[string]*packages.Package, importSyntax map[string]string) *linker {
+	imports := map[string]string{}
+	for path, pkg := range rawImports {
+		name := pkg.Name
+		if rename := importSyntax[path]; rename != "" {
+			name = rename
+		}
+		imports[name] = path
+	}
+	return &linker{imports: imports}
+}
+
+func (l *linker) linkify(s string) string {
+	prefix := ""
+	if strings.HasPrefix(s, "...") {
+		s = s[3:]
+		prefix = "..."
+	}
+	if s[0] == '*' {
+		s = s[1:]
+		prefix += "*"
+	}
+
+	if !strings.Contains(s, ".") {
+		// If s is not exported, it's probably a builtin.
+		if !token.IsExported(s) {
+			if doc.IsPredeclared(s) {
+				return href(toURL("builtin", s), s)
+			}
+			return fmt.Sprintf("%s%s", prefix, s)
+		}
+		return fmt.Sprintf("%s%s", prefix, href(toURL("", s), s))
+	}
+	// Otherwise, it's in another package.
+	split := strings.Split(s, ".")
+	if len(split) != 2 {
+		// Don't know how to link this.
+		return fmt.Sprintf("%s%s", prefix, s)
+	}
+
+	pkg := split[0]
+	pkgPath, ok := l.imports[pkg]
+	if !ok {
+		// Don't know how to link this.
+		return fmt.Sprintf("%s%s", prefix, s)
+	}
+	name := split[1]
+	return fmt.Sprintf("%s%s.%s", prefix, href(toURL(pkgPath, ""), pkg), href(toURL(pkgPath, name), name))
+}
+
+// TODO: link to the right baseURL, with the right module name and version
+// pattern.
+func toURL(pkg, name string) string {
+	if pkg == "" {
+		return fmt.Sprintf("#%s", strings.ToLower(name))
+	}
+	baseURL := "https://pkg.go.dev"
+	if name == "" {
+		return fmt.Sprintf("%s/%s", baseURL, pkg)
+	}
+	return fmt.Sprintf("%s/%s#%s", baseURL, pkg, name)
+}
+
+func href(url, text string) string {
+	return fmt.Sprintf(`<a href="%s">%s</a>`, url, text)
 }
 
 // processExamples converts the examples to []example.
@@ -337,9 +421,16 @@ func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents
 	toc := tableOfContents{}
 
 	modTOC := &tocItem{
-		UID:  mod, // Assume the module root has a package.
+		UID:  mod,
 		Name: mod,
 	}
+
+	// Assume the module root has a package.
+	modTOC.addItem(&tocItem{
+		UID:  mod,
+		Name: mod,
+	})
+
 	for _, ef := range extraFiles {
 		modTOC.addItem(&tocItem{
 			Href: ef.dstRelativePath,
@@ -391,11 +482,13 @@ type pkgInfo struct {
 	pkg  *packages.Package
 	doc  *doc.Package
 	fset *token.FileSet
+	// importRenames is a map from package path to local name or "".
+	importRenames map[string]string
 }
 
 func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule,
+		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule | packages.NeedImports,
 		Tests: true,
 		Dir:   workingDir,
 	}
@@ -485,10 +578,27 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 			continue
 		}
 
+		imports := map[string]string{}
+		for _, f := range parsedFiles {
+			for _, i := range f.Imports {
+				name := ""
+				// i.Name is nil for imports that aren't renamed.
+				if i.Name != nil {
+					name = i.Name.Name
+				}
+				iPath, err := strconv.Unquote(i.Path.Value)
+				if err != nil {
+					return nil, fmt.Errorf("strconv.Unquote: %v", err)
+				}
+				imports[iPath] = name
+			}
+		}
+
 		result = append(result, pkgInfo{
-			pkg:  idToPkg[pkgPath],
-			doc:  docPkg,
-			fset: fset,
+			pkg:           idToPkg[pkgPath],
+			doc:           docPkg,
+			fset:          fset,
+			importRenames: imports,
 		})
 	}
 

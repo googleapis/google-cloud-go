@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -303,7 +303,7 @@ func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest,
 // GetQueue gets a queue.
 func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -336,7 +336,7 @@ func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opt
 // this method.
 func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -372,7 +372,7 @@ func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueReques
 // this method.
 func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -406,7 +406,7 @@ func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueReques
 // this method.
 func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -429,7 +429,7 @@ func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueReques
 // might be dispatched before the purge takes effect. A purge is irreversible.
 func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -457,7 +457,7 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 // state is PAUSED.
 func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -491,7 +491,7 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 // Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
 func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -521,7 +521,7 @@ func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueReques
 //   cloudtasks.queues.getIamPolicy
 func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -553,7 +553,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 //   cloudtasks.queues.setIamPolicy
 func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -581,7 +581,7 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 // may “fail open” without warning.
 func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -652,7 +652,7 @@ func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, o
 // GetTask gets a task.
 func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -678,7 +678,7 @@ func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts 
 //   The maximum task size is 100KB.
 func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -704,7 +704,7 @@ func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest,
 // failed.
 func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -745,7 +745,7 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 // task that has already succeeded or permanently failed.
 func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 20000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}

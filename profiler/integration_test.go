@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build linux
+
 package profiler
 
 import (
@@ -337,9 +339,9 @@ func TestAgentIntegration(t *testing.T) {
 
 			timeoutCtx, cancel := context.WithTimeout(ctx, tc.timeout)
 			defer cancel()
-			output, err := gceTr.PollForAndReturnSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString)
+			output, err := gceTr.PollAndLogSerialPort(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString, t.Logf)
 			if err != nil {
-				t.Fatalf("PollForSerialOutput() got error: %v", err)
+				t.Fatalf("PollAndLogSerialPort() got error: %v", err)
 			}
 
 			if tc.backoffTest {

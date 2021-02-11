@@ -42,7 +42,9 @@ const commitCursorPeriod = 50 * time.Millisecond
 type committer struct {
 	// Immutable after creation.
 	cursorClient *vkit.CursorClient
+	subscription subscriptionPartition
 	initialReq   *pb.StreamingCommitCursorRequest
+	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mutex.
 	stream        *retryableStream
@@ -58,6 +60,7 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 
 	c := &committer{
 		cursorClient: cursor,
+		subscription: subscription,
 		initialReq: &pb.StreamingCommitCursorRequest{
 			Request: &pb.StreamingCommitCursorRequest_Initial{
 				Initial: &pb.InitialCommitCursorRequest{
@@ -66,10 +69,12 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 				},
 			},
 		},
+		metadata:      newPubsubMetadata(),
 		acks:          acks,
 		cursorTracker: newCommitCursorTracker(acks),
 	}
 	c.stream = newRetryableStream(ctx, c, settings.Timeout, reflect.TypeOf(pb.StreamingCommitCursorResponse{}))
+	c.metadata.AddClientInfo(settings.Framework)
 
 	backgroundTask := c.commitOffsetToStream
 	if disableTasks {
@@ -98,8 +103,18 @@ func (c *committer) Stop() {
 	c.unsafeInitiateShutdown(serviceTerminating, nil)
 }
 
+// Terminate will discard outstanding acks and send the final commit offset to
+// the server.
+func (c *committer) Terminate() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.acks.Release()
+	c.unsafeInitiateShutdown(serviceTerminating, nil)
+}
+
 func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return c.cursorClient.StreamingCommitCursor(ctx)
+	return c.cursorClient.StreamingCommitCursor(c.metadata.AddToContext(ctx))
 }
 
 func (c *committer) initialRequest() (interface{}, initialResponseRequired) {
@@ -188,7 +203,7 @@ func (c *committer) unsafeCommitOffsetToStream() {
 }
 
 func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !c.unsafeUpdateStatus(targetStatus, err) {
+	if !c.unsafeUpdateStatus(targetStatus, wrapError("committer", c.subscription.String(), err)) {
 		return
 	}
 
@@ -201,18 +216,18 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 
 	// Otherwise discard outstanding acks and immediately terminate the stream.
 	c.acks.Release()
-	c.unsafeTerminate()
+	c.unsafeOnTerminated()
 }
 
 func (c *committer) unsafeCheckDone() {
 	// The commit stream can be closed once the final commit offset has been
 	// confirmed and there are no outstanding acks.
 	if c.status == serviceTerminating && c.cursorTracker.UpToDate() && c.acks.Empty() {
-		c.unsafeTerminate()
+		c.unsafeOnTerminated()
 	}
 }
 
-func (c *committer) unsafeTerminate() {
+func (c *committer) unsafeOnTerminated() {
 	c.pollCommits.Stop()
 	c.stream.Stop()
 }

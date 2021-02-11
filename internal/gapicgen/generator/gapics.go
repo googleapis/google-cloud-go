@@ -172,9 +172,12 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
-		"--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("gapic-service-config=%s", conf.apiServiceConfigPath),
 		"--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel)}
+
+	if conf.gRPCServiceConfigPath != "" {
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath))
+	}
 	args = append(args, protoFiles...)
 	c := command("protoc", args...)
 	c.Dir = g.googleapisDir
