@@ -121,7 +121,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 		return result
 	}
 
-	p.wirePub.Publish(msgpb, func(metadata *MessageMetadata, err error) {
+	p.wirePub.Publish(msgpb, func(metadata *wire.MessageMetadata, err error) {
 		err = translateError(err)
 		if metadata != nil {
 			ipubsub.SetPublishResult(result, metadata.String(), err)

@@ -43,7 +43,7 @@ func (mp *mockWirePublisher) Publish(msg *pb.PubSubMessage, onResult wire.Publis
 		onResult(nil, err)
 		return
 	}
-	result := resp.(*MessageMetadata)
+	result := resp.(*wire.MessageMetadata)
 	onResult(result, nil)
 }
 
@@ -67,7 +67,7 @@ func TestPublisherClientTransformMessage(t *testing.T) {
 		OrderingKey: "ordering_key",
 		Attributes:  map[string]string{"attr": "value"},
 	}
-	fakeResponse := &MessageMetadata{
+	fakeResponse := &wire.MessageMetadata{
 		Partition: 2,
 		Offset:    42,
 	}

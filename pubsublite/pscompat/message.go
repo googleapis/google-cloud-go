@@ -21,7 +21,6 @@ import (
 	"strings"
 
 	"cloud.google.com/go/pubsub"
-	"cloud.google.com/go/pubsublite/internal/wire"
 	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/protobuf/proto"
 
@@ -132,9 +131,19 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 	return nil
 }
 
-// MessageMetadata holds the partition and offset of a message published to the
-// Pub/Sub Lite service.
-type MessageMetadata = wire.MessageMetadata
+// MessageMetadata holds properties of a message published to the Pub/Sub Lite
+// service.
+type MessageMetadata struct {
+	// The topic partition the message was published to.
+	Partition int
+
+	// The offset the message was assigned.
+	Offset int64
+}
+
+func (m *MessageMetadata) String() string {
+	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
+}
 
 // ParseMessageMetadata creates MessageMetadata from the ID string of a
 // pubsub.PublishResult returned by PublisherClient or pubsub.Message.ID

@@ -164,6 +164,9 @@ func (sp subscriptionPartition) String() string {
 
 // MessageMetadata holds properties of a message published to the Pub/Sub Lite
 // service.
+//
+// NOTE: This is duplicated in the pscompat package in order to generate nicer
+// docs and should be kept consistent.
 type MessageMetadata struct {
 	// The topic partition the message was published to.
 	Partition int
