@@ -703,6 +703,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/recaptchaenterprise/apiv1beta1",
     "release_level": "beta"
   },
+  "cloud.google.com/go/recommendationengine/apiv1beta1": {
+    "distribution_name": "cloud.google.com/go/recommendationengine/apiv1beta1",
+    "description": "Recommendations AI",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/recommendationengine/apiv1beta1",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/recommender/apiv1": {
     "distribution_name": "cloud.google.com/go/recommender/apiv1",
     "description": "Recommender API",

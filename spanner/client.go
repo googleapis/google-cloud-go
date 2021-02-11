@@ -44,6 +44,14 @@ const (
 	numChannels = 4
 )
 
+const (
+	// Scope is the scope for Cloud Spanner Data API.
+	Scope = "https://www.googleapis.com/auth/spanner.data"
+
+	// AdminScope is the scope for Cloud Spanner Admin APIs.
+	AdminScope = "https://www.googleapis.com/auth/spanner.admin"
+)
+
 var (
 	validDBPattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)/databases/(?P<database>[^/]+)$")
 )

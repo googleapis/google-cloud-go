@@ -36,7 +36,7 @@ func ExamplePublisherClient_Publish() {
 		Data: []byte("hello world"),
 	})
 	results = append(results, r)
-	// Do other work ...
+	// Publish more messages ...
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
@@ -68,7 +68,7 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 		Data: []byte("hello world"),
 	})
 	results = append(results, r)
-	// Do other work ...
+	// Publish more messages ...
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
@@ -92,13 +92,15 @@ func ExamplePublisherClient_Error() {
 		Data: []byte("hello world"),
 	})
 	results = append(results, r)
-	// Do other work ...
+	// Publish more messages ...
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
 			if err == pscompat.ErrPublisherStopped {
+				// Prints the fatal error that caused the publisher to terminate.
 				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
+				break
 			}
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
@@ -151,6 +153,36 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 		// TODO: Handle error.
 	}
 
-	// Call cancel from callback, or another goroutine.
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
+	cancel()
+}
+
+// This example shows how to manually assign which topic partitions a
+// SubscriberClient should connect to. If not specified, the SubscriberClient
+// will use Pub/Sub Lite's partition assignment service to automatically
+// determine which partitions it should connect to.
+func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	settings := pscompat.DefaultReceiveSettings
+	// NOTE: The corresponding topic must have 2 or more partitions.
+	settings.Partitions = []int{0, 1}
+	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	cctx, cancel := context.WithCancel(ctx)
+	err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+		// TODO: Handle message.
+		// NOTE: May be called concurrently; synchronize access to shared memory.
+		m.Ack()
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
 	cancel()
 }
