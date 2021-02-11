@@ -17,6 +17,8 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"strconv"
+	"strings"
 
 	"cloud.google.com/go/pubsub"
 	"github.com/golang/protobuf/ptypes"
@@ -127,4 +129,35 @@ func transformReceivedMessage(from *pb.SequencedMessage, to *pubsub.Message) err
 		to.Attributes[key] = string(values.Values[0])
 	}
 	return nil
+}
+
+// MessageMetadata holds properties of a message published to the Pub/Sub Lite
+// service.
+type MessageMetadata struct {
+	// The topic partition the message was published to.
+	Partition int
+
+	// The offset the message was assigned.
+	Offset int64
+}
+
+func (m *MessageMetadata) String() string {
+	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
+}
+
+// ParseMessageMetadata creates MessageMetadata from the ID string of a
+// pubsub.PublishResult returned by PublisherClient or pubsub.Message.ID
+// received from SubscriberClient.
+func ParseMessageMetadata(id string) (*MessageMetadata, error) {
+	parts := strings.Split(id, ":")
+	if len(parts) != 2 {
+		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
+	}
+
+	partition, pErr := strconv.ParseInt(parts[0], 10, 64)
+	offset, oErr := strconv.ParseInt(parts[1], 10, 64)
+	if pErr != nil || oErr != nil {
+		return nil, fmt.Errorf("pubsublite: invalid encoded message metadata %q", id)
+	}
+	return &MessageMetadata{Partition: int(partition), Offset: offset}, nil
 }
