@@ -20,7 +20,6 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/publish"
 	"google.golang.org/api/option"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
@@ -136,7 +135,7 @@ func (si *subscriberInstance) transformMessage(in *wire.ReceivedMessage, out *pu
 	if len(out.ID) > 0 {
 		return errMessageIDSet
 	}
-	metadata := &publish.Metadata{Partition: in.Partition, Offset: in.Msg.GetCursor().GetOffset()}
+	metadata := &MessageMetadata{Partition: in.Partition, Offset: in.Msg.GetCursor().GetOffset()}
 	out.ID = metadata.String()
 	return nil
 }

@@ -13,7 +13,8 @@ require (
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c
 	golang.org/x/tools v0.1.0 // indirect
 	google.golang.org/api v0.39.0
-	google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea
+	google.golang.org/genproto v0.0.0-20210211154401-3a9a48ddfd6c
 	google.golang.org/grpc v1.35.0
+	google.golang.org/protobuf v1.25.0
 	rsc.io/binaryregexp v0.2.0
 )
