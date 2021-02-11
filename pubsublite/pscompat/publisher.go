@@ -106,7 +106,10 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 // sent according to the client's PublishSettings. Publish never blocks.
 //
 // Publish returns a non-nil PublishResult which will be ready when the
-// message has been sent (or has failed to be sent) to the server.
+// message has been sent (or has failed to be sent) to the server. Once the
+// first publish error occurs, the publisher will terminate and subsequent
+// PublishResults will also have an error. A new publisher must be created to
+// republish failed messages.
 //
 // Once Stop() has been called or the publisher has failed permanently due to an
 // error, future calls to Publish will immediately return a PublishResult with
