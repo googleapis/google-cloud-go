@@ -998,6 +998,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/recommendationengine/v1beta1/recommendationengine_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/gkehub/v1beta1",
+		pkg:                   "gkehub",
+		importPath:            "cloud.google.com/go/gkehub/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/gkehub/v1beta1/membership_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gkehub/v1beta1/gkehub_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
