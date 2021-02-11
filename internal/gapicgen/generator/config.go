@@ -990,6 +990,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/03/02
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/recommendationengine/v1beta1",
+		pkg:                   "recommendationengine",
+		importPath:            "cloud.google.com/go/recommendationengine/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/recommendationengine/v1beta1/recommendationengine_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/recommendationengine/v1beta1/recommendationengine_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
