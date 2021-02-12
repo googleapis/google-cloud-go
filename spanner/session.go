@@ -755,12 +755,12 @@ func (p *sessionPool) close(ctx context.Context) {
 	wg := sync.WaitGroup{}
 	for _, s := range allSessions {
 		wg.Add(1)
-		go deleteSession(s, ctx, &wg)
+		go deleteSession(ctx, s, &wg)
 	}
 	wg.Wait()
 }
 
-func deleteSession(s *session, ctx context.Context, wg *sync.WaitGroup) {
+func deleteSession(ctx context.Context, s *session, wg *sync.WaitGroup) {
 	defer wg.Done()
 	s.destroyWithContext(ctx, false)
 }
