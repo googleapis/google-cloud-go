@@ -7,7 +7,7 @@ require (
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
 	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
 	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
-	google.golang.org/api v0.39.0
-	google.golang.org/genproto v0.0.0-20210211221406-4ccc9a5e4183
+	google.golang.org/api v0.40.0
+	google.golang.org/genproto v0.0.0-20210212180131-e7f2df4ecc2d
 	google.golang.org/grpc v1.34.0
 )
