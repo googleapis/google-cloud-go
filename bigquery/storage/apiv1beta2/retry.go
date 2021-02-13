@@ -14,6 +14,8 @@
 package storage
 
 import (
+	"fmt"
+
 	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 )
 
@@ -50,4 +52,11 @@ func canRetryStatus(s *statuspb.Status) bool {
 		return true
 	}
 	return false
+}
+
+func statusAsError(s *statuspb.Status) error {
+	if s == nil {
+		return nil
+	}
+	return fmt.Errorf("%d: %s", s.GetCode(), s.GetMessage())
 }
