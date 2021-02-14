@@ -2430,6 +2430,10 @@ func (p *parser) parseComparisonOp() (Expr, *parseError) {
 		return nil, err
 	}
 
+	if p.sniff("IN") || p.sniff("NOT", "IN") {
+		return expr, nil
+	}
+
 	for {
 		tok := p.next()
 		if tok.err != nil {

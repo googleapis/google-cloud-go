@@ -909,6 +909,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{"Sam"},
 			},
 		},
+		{
+			`SELECT x FROM UNNEST([0, 2, 4, 4, 5]) AS x WHERE x NOT IN UNNEST([0,4])`,
+			nil,
+			[][]interface{}{
+				{int64(2)},
+				{int64(5)},
+			},
+		},
 		// From https://cloud.google.com/spanner/docs/query-syntax#group-by-clause_1:
 		{
 			// TODO: Ordering matters? Our implementation sorts by the GROUP BY key,
