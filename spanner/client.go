@@ -234,7 +234,9 @@ func getQueryOptions(opts QueryOptions) QueryOptions {
 // Close closes the client.
 func (c *Client) Close() {
 	if c.idleSessions != nil {
-		c.idleSessions.close()
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		c.idleSessions.close(ctx)
 	}
 	c.sc.close()
 }
