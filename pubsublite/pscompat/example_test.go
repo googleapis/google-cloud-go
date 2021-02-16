@@ -41,6 +41,8 @@ func ExamplePublisherClient_Publish() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
+			// NOTE: The publisher will terminate upon first error. Create a new
+			// publisher to republish failed messages.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -73,6 +75,8 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 		id, err := r.Get(ctx)
 		if err != nil {
 			// TODO: Handle error.
+			// NOTE: The publisher will terminate upon first error. Create a new
+			// publisher to republish failed messages.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -96,12 +100,12 @@ func ExamplePublisherClient_Error() {
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
+			// Prints the fatal error that caused the publisher to terminate.
+			fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
+
 			// TODO: Handle error.
-			if err == pscompat.ErrPublisherStopped {
-				// Prints the fatal error that caused the publisher to terminate.
-				fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
-				break
-			}
+			// NOTE: The publisher will terminate upon first error. Create a new
+			// publisher to republish failed messages.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -185,4 +189,46 @@ func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
 	// Call cancel from the receiver callback or another goroutine to stop
 	// receiving.
 	cancel()
+}
+
+func ExampleParseMessageMetadata_publisher() {
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	publisher, err := pscompat.NewPublisherClient(ctx, topic)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("payload")})
+	id, err := result.Get(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	metadata, err := pscompat.ParseMessageMetadata(id)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Printf("Published message to partition %d with offset %d\n", metadata.Partition, metadata.Offset)
+}
+
+func ExampleParseMessageMetadata_subscriber() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	subscriber, err := pscompat.NewSubscriberClient(ctx, subscription)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	err = subscriber.Receive(ctx, func(ctx context.Context, m *pubsub.Message) {
+		// TODO: Handle message.
+		m.Ack()
+		metadata, err := pscompat.ParseMessageMetadata(m.ID)
+		if err != nil {
+			// TODO: Handle error.
+		}
+		fmt.Printf("Received message from partition %d with offset %d\n", metadata.Partition, metadata.Offset)
+	})
+	if err != nil {
+		// TODO: Handle error.
+	}
 }
