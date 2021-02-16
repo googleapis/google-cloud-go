@@ -164,8 +164,7 @@ type ExperimentsClient struct {
 
 // NewExperimentsClient creates a new experiments client.
 //
-// Service for managing
-// Experiments.
+// Service for managing Experiments.
 func NewExperimentsClient(ctx context.Context, opts ...option.ClientOption) (*ExperimentsClient, error) {
 	clientOpts := defaultExperimentsClientOptions()
 
@@ -220,8 +219,7 @@ func (c *ExperimentsClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListExperiments returns the list of all experiments in the specified
-// Environment.
+// ListExperiments returns the list of all experiments in the specified Environment.
 func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListExperimentsRequest, opts ...gax.CallOption) *ExperimentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -262,8 +260,7 @@ func (c *ExperimentsClient) ListExperiments(ctx context.Context, req *cxpb.ListE
 	return it
 }
 
-// GetExperiment retrieves the specified
-// Experiment.
+// GetExperiment retrieves the specified Experiment.
 func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -285,9 +282,7 @@ func (c *ExperimentsClient) GetExperiment(ctx context.Context, req *cxpb.GetExpe
 	return resp, nil
 }
 
-// CreateExperiment creates an Experiment in
-// the specified
-// Environment.
+// CreateExperiment creates an Experiment in the specified Environment.
 func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.CreateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -309,8 +304,7 @@ func (c *ExperimentsClient) CreateExperiment(ctx context.Context, req *cxpb.Crea
 	return resp, nil
 }
 
-// UpdateExperiment updates the specified
-// Experiment.
+// UpdateExperiment updates the specified Experiment.
 func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.UpdateExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -332,8 +326,7 @@ func (c *ExperimentsClient) UpdateExperiment(ctx context.Context, req *cxpb.Upda
 	return resp, nil
 }
 
-// DeleteExperiment deletes the specified
-// Experiment.
+// DeleteExperiment deletes the specified Experiment.
 func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.DeleteExperimentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -351,9 +344,8 @@ func (c *ExperimentsClient) DeleteExperiment(ctx context.Context, req *cxpb.Dele
 	return err
 }
 
-// StartExperiment starts the specified
-// Experiment. This rpc only
-// changes the state of experiment from PENDING to RUNNING.
+// StartExperiment starts the specified Experiment. This rpc only changes the state of
+// experiment from PENDING to RUNNING.
 func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.StartExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -375,9 +367,8 @@ func (c *ExperimentsClient) StartExperiment(ctx context.Context, req *cxpb.Start
 	return resp, nil
 }
 
-// StopExperiment stops the specified
-// Experiment. This rpc only
-// changes the state of experiment from RUNNING to DONE.
+// StopExperiment stops the specified Experiment. This rpc only changes the state of
+// experiment from RUNNING to DONE.
 func (c *ExperimentsClient) StopExperiment(ctx context.Context, req *cxpb.StopExperimentRequest, opts ...gax.CallOption) (*cxpb.Experiment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)

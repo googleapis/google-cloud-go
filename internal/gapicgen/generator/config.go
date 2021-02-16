@@ -896,8 +896,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                  "appengine",
 		importPath:           "cloud.google.com/go/appengine/apiv1",
 		apiServiceConfigPath: "google/appengine/v1/appengine.yaml",
-		// GA after 2021/02/13
-		releaseLevel: "beta",
+		releaseLevel:         "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/binaryauthorization/v1beta1",
@@ -913,8 +912,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/channel/apiv1",
 		gRPCServiceConfigPath: "google/cloud/channel/v1/cloudchannel_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/channel/v1/cloudchannel_v1.yaml",
-		// GA after 2021/02/08
-		releaseLevel: "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:   "google/cloud/resourcemanager/v2",
@@ -996,6 +994,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/recommendationengine/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/recommendationengine/v1beta1/recommendationengine_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/recommendationengine/v1beta1/recommendationengine_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/gkehub/v1beta1",
+		pkg:                   "gkehub",
+		importPath:            "cloud.google.com/go/gkehub/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/gkehub/v1beta1/membership_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gkehub/v1beta1/gkehub_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
 

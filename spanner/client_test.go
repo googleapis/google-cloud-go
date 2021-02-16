@@ -2367,3 +2367,36 @@ func TestClient_Single_Read_WithNumericKey(t *testing.T) {
 		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
 	}
 }
+
+func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
+	t.Parallel()
+
+	minOpened := uint64(5)
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MinOpened: minOpened,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+	server.TestSpanner.Freeze()
+	defer server.TestSpanner.Unfreeze()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	sp.close(ctx)
+
+	if w, g := context.DeadlineExceeded, ctx.Err(); w != g {
+		t.Fatalf("context error mismatch\nWant: %v\nGot: %v", w, g)
+	}
+}
