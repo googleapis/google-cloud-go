@@ -344,26 +344,27 @@ func TestPublishBatcherRebatching(t *testing.T) {
 		}
 	})
 
-	t.Run("rebatch", func(t *testing.T) {
+	t.Run("merge into single batch", func(t *testing.T) {
 		msg1 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{1}, 100)}
 		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, 200)}
 		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, 300)}
+		msg4 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{4}, 400)}
 
 		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
 		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg1)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2)))
-		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg3)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg2), makeMsgHolder(msg3)))
+		batcher.AddBatch(makePublishBatch(makeMsgHolder(msg4)))
 
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
-			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3)),
+			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3), makeMsgHolder(msg4)),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)
 		}
 	})
 
-	t.Run("no rebatch", func(t *testing.T) {
+	t.Run("no rebatching", func(t *testing.T) {
 		msg1 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{1}, MaxPublishRequestBytes-10)}
 		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, MaxPublishRequestBytes/2)}
 		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, MaxPublishRequestBytes/2)}
@@ -384,11 +385,13 @@ func TestPublishBatcherRebatching(t *testing.T) {
 		}
 	})
 
-	t.Run("mixed", func(t *testing.T) {
+	t.Run("mixed rebatching", func(t *testing.T) {
+		// Should be merged into a single batch.
 		msg1 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{1}, MaxPublishRequestBytes/2)}
 		msg2 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{2}, 200)}
 		msg3 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{3}, 300)}
-		msg4 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{4}, MaxPublishRequestBytes/2)}
+		// Not merged due to byte limit.
+		msg4 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{4}, MaxPublishRequestBytes-500)}
 		msg5 := &pb.PubSubMessage{Data: bytes.Repeat([]byte{5}, 500)}
 
 		batcher := newPublishMessageBatcher(&DefaultPublishSettings, partition, receiver.onNewBatch)
@@ -401,7 +404,8 @@ func TestPublishBatcherRebatching(t *testing.T) {
 		got := batcher.InFlightBatches()
 		want := []*publishBatch{
 			makePublishBatch(makeMsgHolder(msg1), makeMsgHolder(msg2), makeMsgHolder(msg3)),
-			makePublishBatch(makeMsgHolder(msg4), makeMsgHolder(msg5)),
+			makePublishBatch(makeMsgHolder(msg4)),
+			makePublishBatch(makeMsgHolder(msg5)),
 		}
 		if diff := testutil.Diff(got, want, cmp.AllowUnexported(publishBatch{}, messageHolder{})); diff != "" {
 			t.Errorf("Batches got: -, want: +\n%s", diff)
