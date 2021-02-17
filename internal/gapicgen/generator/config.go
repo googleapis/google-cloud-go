@@ -42,6 +42,10 @@ type microgenConfig struct {
 	// useful if a client needs to be deprecated, but retained in the repo
 	// metadata.
 	stopGeneration bool
+
+	// disableMetadata is used to toggle generation of the gapic_metadata.json
+	// file for the client library.
+	disableMetadata bool
 }
 
 var microgenGapicConfigs = []*microgenConfig{
