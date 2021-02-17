@@ -18,7 +18,6 @@ import (
 	"errors"
 	"fmt"
 
-	"cloud.google.com/go/pubsublite/publish"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/support/bundler"
 	"google.golang.org/protobuf/proto"
@@ -29,7 +28,7 @@ import (
 var errPublishQueueEmpty = errors.New("pubsublite: received publish response from server with no batches in flight")
 
 // PublishResultFunc receives the result of a publish.
-type PublishResultFunc func(*publish.Metadata, error)
+type PublishResultFunc func(*MessageMetadata, error)
 
 // messageHolder stores a message to be published, with associated metadata.
 type messageHolder struct {
@@ -147,8 +146,8 @@ func (b *publishMessageBatcher) OnPublishResponse(firstOffset int64) error {
 	batch, _ := frontElem.Value.(*publishBatch)
 	for i, msgHolder := range batch.msgHolders {
 		// Messages are ordered, so the offset of each message is firstOffset + i.
-		pm := &publish.Metadata{Partition: b.partition, Offset: firstOffset + int64(i)}
-		msgHolder.onResult(pm, nil)
+		mm := &MessageMetadata{Partition: b.partition, Offset: firstOffset + int64(i)}
+		msgHolder.onResult(mm, nil)
 		b.availableBufferBytes += msgHolder.size
 	}
 

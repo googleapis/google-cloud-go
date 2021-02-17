@@ -10,11 +10,11 @@ require (
 	go.opencensus.io v0.22.5
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/sys v0.0.0-20210217105451-b926d437f341 // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	google.golang.org/api v0.39.0
-	google.golang.org/genproto v0.0.0-20210207032614-bba0dbe2a9ea
+	google.golang.org/api v0.40.0
+	google.golang.org/genproto v0.0.0-20210217203555-6b1387fcb8a8
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 )
