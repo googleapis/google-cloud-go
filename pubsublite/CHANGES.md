@@ -2,6 +2,7 @@
 
 ## [0.7.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.6.0...v0.7.0) (2021-02-18)
 
+The status of this library is now **BETA**.
 
 ### Features
 
