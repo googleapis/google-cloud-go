@@ -61,10 +61,10 @@ func ExampleAdminClient_UpdateTopic() {
 
 	updateConfig := pubsublite.TopicConfigToUpdate{
 		Name:                       "projects/my-project/locations/zone/topics/my-topic",
+		PartitionCount:             3, // Only increases currently supported.
 		PublishCapacityMiBPerSec:   8,
 		SubscribeCapacityMiBPerSec: 16,
-		// Garbage collect messages older than 24 hours.
-		RetentionDuration: 24 * time.Hour,
+		RetentionDuration:          24 * time.Hour, // Garbage collect messages older than 24 hours.
 	}
 	_, err = admin.UpdateTopic(ctx, updateConfig)
 	if err != nil {
