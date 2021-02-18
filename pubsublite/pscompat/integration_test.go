@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/publish"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -215,15 +214,15 @@ func waitForPublishResults(t *testing.T, pubResults []*pubsub.PublishResult) {
 	cancel()
 }
 
-func parsePublishMetadata(ctx context.Context, t *testing.T, result *pubsub.PublishResult) *publish.Metadata {
+func parseMessageMetadata(ctx context.Context, t *testing.T, result *pubsub.PublishResult) *MessageMetadata {
 	id, err := result.Get(ctx)
 	if err != nil {
 		t.Fatalf("Failed to publish message: %v", err)
 		return nil
 	}
-	metadata, err := publish.ParseMetadata(id)
+	metadata, err := ParseMessageMetadata(id)
 	if err != nil {
-		t.Fatalf("Failed to parse publish metadata: %v", err)
+		t.Fatalf("Failed to parse message metadata: %v", err)
 		return nil
 	}
 	return metadata
@@ -567,8 +566,8 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		// (round robin).
 		result1 := publisher.Publish(ctx, &pubsub.Message{Data: []byte("increase-partitions-1")})
 		result2 := publisher.Publish(ctx, &pubsub.Message{Data: []byte("increase-partitions-2")})
-		metadata1 := parsePublishMetadata(ctx, t, result1)
-		metadata2 := parsePublishMetadata(ctx, t, result2)
+		metadata1 := parseMessageMetadata(ctx, t, result1)
+		metadata2 := parseMessageMetadata(ctx, t, result2)
 		if metadata1.Partition == metadata2.Partition {
 			t.Errorf("Messages were published to the same partition = %d. Expected different partitions", metadata1.Partition)
 		}
