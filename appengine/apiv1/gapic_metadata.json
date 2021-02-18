@@ -1,0 +1,251 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.appengine.v1",
+  "libraryPackage": "cloud.google.com/go/appengine/apiv1",
+  "services": {
+    "Applications": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Applications",
+          "rpcs": {
+            "CreateApplication": {
+              "methods": [
+                "CreateApplication"
+              ]
+            },
+            "GetApplication": {
+              "methods": [
+                "GetApplication"
+              ]
+            },
+            "RepairApplication": {
+              "methods": [
+                "RepairApplication"
+              ]
+            },
+            "UpdateApplication": {
+              "methods": [
+                "UpdateApplication"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AuthorizedCertificates": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AuthorizedCertificates",
+          "rpcs": {
+            "CreateAuthorizedCertificate": {
+              "methods": [
+                "CreateAuthorizedCertificate"
+              ]
+            },
+            "DeleteAuthorizedCertificate": {
+              "methods": [
+                "DeleteAuthorizedCertificate"
+              ]
+            },
+            "GetAuthorizedCertificate": {
+              "methods": [
+                "GetAuthorizedCertificate"
+              ]
+            },
+            "ListAuthorizedCertificates": {
+              "methods": [
+                "ListAuthorizedCertificates"
+              ]
+            },
+            "UpdateAuthorizedCertificate": {
+              "methods": [
+                "UpdateAuthorizedCertificate"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "AuthorizedDomains": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AuthorizedDomains",
+          "rpcs": {
+            "ListAuthorizedDomains": {
+              "methods": [
+                "ListAuthorizedDomains"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DomainMappings": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DomainMappings",
+          "rpcs": {
+            "CreateDomainMapping": {
+              "methods": [
+                "CreateDomainMapping"
+              ]
+            },
+            "DeleteDomainMapping": {
+              "methods": [
+                "DeleteDomainMapping"
+              ]
+            },
+            "GetDomainMapping": {
+              "methods": [
+                "GetDomainMapping"
+              ]
+            },
+            "ListDomainMappings": {
+              "methods": [
+                "ListDomainMappings"
+              ]
+            },
+            "UpdateDomainMapping": {
+              "methods": [
+                "UpdateDomainMapping"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Firewall": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Firewall",
+          "rpcs": {
+            "BatchUpdateIngressRules": {
+              "methods": [
+                "BatchUpdateIngressRules"
+              ]
+            },
+            "CreateIngressRule": {
+              "methods": [
+                "CreateIngressRule"
+              ]
+            },
+            "DeleteIngressRule": {
+              "methods": [
+                "DeleteIngressRule"
+              ]
+            },
+            "GetIngressRule": {
+              "methods": [
+                "GetIngressRule"
+              ]
+            },
+            "ListIngressRules": {
+              "methods": [
+                "ListIngressRules"
+              ]
+            },
+            "UpdateIngressRule": {
+              "methods": [
+                "UpdateIngressRule"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Instances": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Instances",
+          "rpcs": {
+            "DebugInstance": {
+              "methods": [
+                "DebugInstance"
+              ]
+            },
+            "DeleteInstance": {
+              "methods": [
+                "DeleteInstance"
+              ]
+            },
+            "GetInstance": {
+              "methods": [
+                "GetInstance"
+              ]
+            },
+            "ListInstances": {
+              "methods": [
+                "ListInstances"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Services": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Services",
+          "rpcs": {
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Versions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Versions",
+          "rpcs": {
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

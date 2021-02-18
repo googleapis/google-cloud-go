@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.orgpolicy.v2",
+  "libraryPackage": "cloud.google.com/go/orgpolicy/apiv2",
+  "services": {
+    "OrgPolicy": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreatePolicy": {
+              "methods": [
+                "CreatePolicy"
+              ]
+            },
+            "DeletePolicy": {
+              "methods": [
+                "DeletePolicy"
+              ]
+            },
+            "GetEffectivePolicy": {
+              "methods": [
+                "GetEffectivePolicy"
+              ]
+            },
+            "GetPolicy": {
+              "methods": [
+                "GetPolicy"
+              ]
+            },
+            "ListConstraints": {
+              "methods": [
+                "ListConstraints"
+              ]
+            },
+            "ListPolicies": {
+              "methods": [
+                "ListPolicies"
+              ]
+            },
+            "UpdatePolicy": {
+              "methods": [
+                "UpdatePolicy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
