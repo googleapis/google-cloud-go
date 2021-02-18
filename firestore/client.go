@@ -199,7 +199,10 @@ func (c *Client) GetAll(ctx context.Context, docRefs []*DocumentRef) (_ []*Docum
 	return c.getAll(ctx, docRefs, nil)
 }
 
-func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte) ([]*DocumentSnapshot, error) {
+func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte) (_ []*DocumentSnapshot, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.BatchGetDocuments")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	var docNames []string
 	docIndices := map[string][]int{} // doc name to positions in docRefs
 	for i, dr := range docRefs {
@@ -267,6 +270,9 @@ func (c *Client) getAll(ctx context.Context, docRefs []*DocumentRef, tid []byte)
 
 // Collections returns an iterator over the top-level collections.
 func (c *Client) Collections(ctx context.Context) *CollectionIterator {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.ListCollectionIds")
+	defer func() { trace.EndSpan(ctx, nil) }()
+
 	it := &CollectionIterator{
 		client: c,
 		it: c.c.ListCollectionIds(
@@ -286,7 +292,10 @@ func (c *Client) Batch() *WriteBatch {
 }
 
 // commit calls the Commit RPC outside of a transaction.
-func (c *Client) commit(ctx context.Context, ws []*pb.Write) ([]*WriteResult, error) {
+func (c *Client) commit(ctx context.Context, ws []*pb.Write) (_ []*WriteResult, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/firestore.Client.commit")
+	defer func() { trace.EndSpan(ctx, err) }()
+
 	req := &pb.CommitRequest{
 		Database: c.path(),
 		Writes:   ws,

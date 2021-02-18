@@ -28,6 +28,7 @@ import (
 var (
 	errNackCalled       = errors.New("pubsublite: subscriber client does not support nack. See NackHandler for how to customize nack handling")
 	errDuplicateReceive = errors.New("pubsublite: receive is already in progress for this subscriber client")
+	errMessageIDSet     = errors.New("pubsublite: pubsub.Message.ID must not be set")
 )
 
 // handleNack is the default NackHandler implementation.
@@ -127,6 +128,18 @@ func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, s
 	return subInstance, nil
 }
 
+func (si *subscriberInstance) transformMessage(in *wire.ReceivedMessage, out *pubsub.Message) error {
+	if err := si.settings.MessageTransformer(in.Msg, out); err != nil {
+		return err
+	}
+	if len(out.ID) > 0 {
+		return errMessageIDSet
+	}
+	metadata := &MessageMetadata{Partition: in.Partition, Offset: in.Msg.GetCursor().GetOffset()}
+	out.ID = metadata.String()
+	return nil
+}
+
 func (si *subscriberInstance) onMessage(msg *wire.ReceivedMessage) {
 	pslAckh := &pslAckHandler{
 		ackh:        msg.Ack,
@@ -135,7 +148,7 @@ func (si *subscriberInstance) onMessage(msg *wire.ReceivedMessage) {
 	}
 	psMsg := ipubsub.NewMessage(pslAckh)
 	pslAckh.msg = psMsg
-	if err := si.settings.MessageTransformer(msg.Msg, psMsg); err != nil {
+	if err := si.transformMessage(msg, psMsg); err != nil {
 		si.Terminate(err)
 		return
 	}

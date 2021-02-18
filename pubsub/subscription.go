@@ -920,7 +920,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					old := ackh.doneFunc
 					msgLen := len(msg.Data)
 					ackh.doneFunc = func(ackID string, ack bool, receiveTime time.Time) {
-						defer fc.release(msgLen)
+						defer fc.release(ctx, msgLen)
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
@@ -957,7 +957,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 }
 
 type pullOptions struct {
-	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in tota
+	maxExtension       time.Duration // the maximum time to extend a message's ack deadline in total
 	maxExtensionPeriod time.Duration // the maximum time to extend a message's ack deadline per modack rpc
 	maxPrefetch        int32
 	// If true, use unary Pull instead of StreamingPull, and never pull more

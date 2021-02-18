@@ -53,16 +53,16 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/googleapis", googleapisDir)
+		return gitDeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/go-genproto", genprotoDir)
+		return gitDeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
+		return gitDeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/protocolbuffers/protobuf", protoDir)
+		return gitDeepClone("https://github.com/protocolbuffers/protobuf", protoDir)
 	})
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
@@ -140,7 +140,7 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 }
 
 // gitClone clones a repository in the given directory.
-func gitClone(repo, dir string) error {
+func gitDeepClone(repo, dir string) error {
 	log.Printf("cloning %s\n", repo)
 
 	_, err := git.PlainClone(dir, false, &git.CloneOptions{

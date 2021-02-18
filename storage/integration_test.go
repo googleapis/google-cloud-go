@@ -2558,12 +2558,14 @@ func TestIntegration_CancelWrite(t *testing.T) {
 	cancel()
 	// The next Write should return context.Canceled.
 	_, err = w.Write(buf)
-	if err != context.Canceled {
+	// TODO: Once we drop support for Go versions < 1.13, use errors.Is() to
+	// check for context cancellation instead.
+	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 	// The Close should too.
 	err = w.Close()
-	if err != context.Canceled {
+	if err != context.Canceled && !strings.Contains(err.Error(), "context canceled") {
 		t.Fatalf("got %v, wanted context.Canceled", err)
 	}
 }

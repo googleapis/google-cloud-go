@@ -22,8 +22,14 @@ import (
 	"google.golang.org/api/iterator"
 )
 
+// This example demonstrates how to create a new topic.
+// See https://cloud.google.com/pubsub/lite/docs/topics for more information
+// about how Pub/Sub Lite topics are configured.
+// See https://cloud.google.com/pubsub/lite/docs/locations for the list of zones
+// where Pub/Sub Lite is available.
 func ExampleAdminClient_CreateTopic() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the topic.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -47,6 +53,7 @@ func ExampleAdminClient_CreateTopic() {
 
 func ExampleAdminClient_UpdateTopic() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the topic.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -67,6 +74,7 @@ func ExampleAdminClient_UpdateTopic() {
 
 func ExampleAdminClient_DeleteTopic() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the topic.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -80,6 +88,7 @@ func ExampleAdminClient_DeleteTopic() {
 
 func ExampleAdminClient_Topics() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone below.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -101,6 +110,7 @@ func ExampleAdminClient_Topics() {
 
 func ExampleAdminClient_TopicSubscriptions() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the topic.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -121,8 +131,12 @@ func ExampleAdminClient_TopicSubscriptions() {
 	}
 }
 
+// This example demonstrates how to create a new subscription for a topic.
+// See https://cloud.google.com/pubsub/lite/docs/subscriptions for more
+// information about how subscriptions are configured.
 func ExampleAdminClient_CreateSubscription() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the topic and subscription.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -143,6 +157,7 @@ func ExampleAdminClient_CreateSubscription() {
 
 func ExampleAdminClient_UpdateSubscription() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the subscription.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -162,6 +177,7 @@ func ExampleAdminClient_UpdateSubscription() {
 
 func ExampleAdminClient_DeleteSubscription() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the subscription.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.
@@ -175,6 +191,7 @@ func ExampleAdminClient_DeleteSubscription() {
 
 func ExampleAdminClient_Subscriptions() {
 	ctx := context.Background()
+	// NOTE: region must correspond to the zone below.
 	admin, err := pubsublite.NewAdminClient(ctx, "region")
 	if err != nil {
 		// TODO: Handle error.

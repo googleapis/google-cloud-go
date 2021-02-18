@@ -199,13 +199,10 @@ func TestAssignerHandlePartitionFailure(t *testing.T) {
 	wantErr := errors.New("subscriber shutting down")
 	asn.SetReceiveError(wantErr)
 
-	if gotErr := asn.StartError(); gotErr != nil {
-		t.Errorf("Start() got err: (%v)", gotErr)
+	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 	if got, want := asn.NextPartitions(), []int{1, 2}; !testutil.Equal(got, want) {
 		t.Errorf("Partition assignments: got %v, want %v", got, want)
-	}
-	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 }

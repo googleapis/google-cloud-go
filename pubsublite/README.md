@@ -5,7 +5,7 @@
 - [API documentation](https://cloud.google.com/pubsub/lite/docs/apis)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 
-*This library is in ALPHA. Backwards-incompatible changes may be made before
+*This library is in BETA. Backwards-incompatible changes may be made before
  stable v1.0.0 is released.*
 
 ### Example Usage
@@ -27,7 +27,7 @@ To publish messages to a topic:
 const topic = "projects/project-id/locations/us-central1-b/topics/topic1"
 publisher, err := pscompat.NewPublisherClient(ctx, topic)
 if err != nil {
-    log.Fatal(err)
+	log.Fatal(err)
 }
 
 // Publish "hello world".

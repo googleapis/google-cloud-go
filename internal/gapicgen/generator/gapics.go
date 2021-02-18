@@ -178,6 +178,9 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	if conf.gRPCServiceConfigPath != "" {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath))
 	}
+	if !conf.disableMetadata {
+		args = append(args, "--go_gapic_opt", "metadata")
+	}
 	args = append(args, protoFiles...)
 	c := command("protoc", args...)
 	c.Dir = g.googleapisDir
