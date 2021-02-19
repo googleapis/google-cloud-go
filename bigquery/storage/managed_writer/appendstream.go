@@ -18,9 +18,8 @@ import (
 	"fmt"
 	"io"
 	"log"
-	"sync"
 
-	storage "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
@@ -32,25 +31,25 @@ type appendStream struct {
 	traceID       string
 	offset        int64
 	ctx           context.Context
-	client        *BigQueryWriteClient
+	client        *storage.BigQueryWriteClient
 	fc            *flowController
 	recvProcessor func(ctx context.Context)
 	cancelR       func()
 
 	streamName string
 	schema     *storagepb.ProtoSchema
-	arc        storage.BigQueryWrite_AppendRowsClient
+	arc        storagepb.BigQueryWrite_AppendRowsClient
 
 	sentSchema bool
 	pending    chan *pendingWrite
 
 	curOffset int64
 
-	// guards methods.
-	mu sync.Mutex
+	// terminal error
+	err error
 }
 
-func newAppendStream(ctx context.Context, client *BigQueryWriteClient, fc *flowController, streamName string, schema *storagepb.ProtoSchema) (*appendStream, error) {
+func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, fc *flowController, streamName string, schema *storagepb.ProtoSchema) (*appendStream, error) {
 	as := &appendStream{
 		ctx:        ctx,
 		fc:         fc,

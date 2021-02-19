@@ -19,6 +19,7 @@ import (
 	"log"
 
 	"cloud.google.com/go/bigquery"
+	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 )
 
@@ -64,7 +65,7 @@ func defaultSettings() *WriteSettings {
 }
 
 // NewManagedWriter instantiates a new managed writer.
-func NewManagedWriter(ctx context.Context, client *BigQueryWriteClient, table *bigquery.Table, opts ...WriterOption) (*ManagedWriter, error) {
+func NewManagedWriter(ctx context.Context, client *storage.BigQueryWriteClient, table *bigquery.Table, opts ...WriterOption) (*ManagedWriter, error) {
 	mw := &ManagedWriter{
 		settings: defaultSettings(),
 	}

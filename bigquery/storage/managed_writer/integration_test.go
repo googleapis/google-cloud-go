@@ -31,6 +31,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/protobuf/proto"
 
+	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	"cloud.google.com/go/bigquery/storage/apiv1beta2/testdata"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 )
@@ -51,7 +52,7 @@ func withGRPCHeadersAssertion(t *testing.T, opts ...option.ClientOption) []optio
 }
 
 // Testing necessitates access to multiple clients/services.
-func getClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) (*BigQueryWriteClient, *bigquery.Client) {
+func getClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) (*storage.BigQueryWriteClient, *bigquery.Client) {
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
@@ -66,7 +67,7 @@ func getClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) 
 
 	// Construct a write client.
 	opts = append(withGRPCHeadersAssertion(t, option.WithTokenSource(ts)), opts...)
-	writeClient, err := NewBigQueryWriteClient(ctx)
+	writeClient, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		t.Fatalf("Creating BigQueryWriteClient error: %v", err)
 	}
