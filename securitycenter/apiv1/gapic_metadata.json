@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.securitycenter.v1",
+  "libraryPackage": "cloud.google.com/go/securitycenter/apiv1",
+  "services": {
+    "SecurityCenter": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFinding": {
+              "methods": [
+                "CreateFinding"
+              ]
+            },
+            "CreateNotificationConfig": {
+              "methods": [
+                "CreateNotificationConfig"
+              ]
+            },
+            "CreateSource": {
+              "methods": [
+                "CreateSource"
+              ]
+            },
+            "DeleteNotificationConfig": {
+              "methods": [
+                "DeleteNotificationConfig"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetNotificationConfig": {
+              "methods": [
+                "GetNotificationConfig"
+              ]
+            },
+            "GetOrganizationSettings": {
+              "methods": [
+                "GetOrganizationSettings"
+              ]
+            },
+            "GetSource": {
+              "methods": [
+                "GetSource"
+              ]
+            },
+            "GroupAssets": {
+              "methods": [
+                "GroupAssets"
+              ]
+            },
+            "GroupFindings": {
+              "methods": [
+                "GroupFindings"
+              ]
+            },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
+            "ListFindings": {
+              "methods": [
+                "ListFindings"
+              ]
+            },
+            "ListNotificationConfigs": {
+              "methods": [
+                "ListNotificationConfigs"
+              ]
+            },
+            "ListSources": {
+              "methods": [
+                "ListSources"
+              ]
+            },
+            "RunAssetDiscovery": {
+              "methods": [
+                "RunAssetDiscovery"
+              ]
+            },
+            "SetFindingState": {
+              "methods": [
+                "SetFindingState"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateFinding": {
+              "methods": [
+                "UpdateFinding"
+              ]
+            },
+            "UpdateNotificationConfig": {
+              "methods": [
+                "UpdateNotificationConfig"
+              ]
+            },
+            "UpdateOrganizationSettings": {
+              "methods": [
+                "UpdateOrganizationSettings"
+              ]
+            },
+            "UpdateSecurityMarks": {
+              "methods": [
+                "UpdateSecurityMarks"
+              ]
+            },
+            "UpdateSource": {
+              "methods": [
+                "UpdateSource"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,272 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.dialogflow.v2",
+  "libraryPackage": "cloud.google.com/go/dialogflow/apiv2",
+  "services": {
+    "Agents": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Agents",
+          "rpcs": {
+            "DeleteAgent": {
+              "methods": [
+                "DeleteAgent"
+              ]
+            },
+            "ExportAgent": {
+              "methods": [
+                "ExportAgent"
+              ]
+            },
+            "GetAgent": {
+              "methods": [
+                "GetAgent"
+              ]
+            },
+            "GetValidationResult": {
+              "methods": [
+                "GetValidationResult"
+              ]
+            },
+            "ImportAgent": {
+              "methods": [
+                "ImportAgent"
+              ]
+            },
+            "RestoreAgent": {
+              "methods": [
+                "RestoreAgent"
+              ]
+            },
+            "SearchAgents": {
+              "methods": [
+                "SearchAgents"
+              ]
+            },
+            "SetAgent": {
+              "methods": [
+                "SetAgent"
+              ]
+            },
+            "TrainAgent": {
+              "methods": [
+                "TrainAgent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Contexts": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Contexts",
+          "rpcs": {
+            "CreateContext": {
+              "methods": [
+                "CreateContext"
+              ]
+            },
+            "DeleteAllContexts": {
+              "methods": [
+                "DeleteAllContexts"
+              ]
+            },
+            "DeleteContext": {
+              "methods": [
+                "DeleteContext"
+              ]
+            },
+            "GetContext": {
+              "methods": [
+                "GetContext"
+              ]
+            },
+            "ListContexts": {
+              "methods": [
+                "ListContexts"
+              ]
+            },
+            "UpdateContext": {
+              "methods": [
+                "UpdateContext"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "EntityTypes": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EntityTypes",
+          "rpcs": {
+            "BatchCreateEntities": {
+              "methods": [
+                "BatchCreateEntities"
+              ]
+            },
+            "BatchDeleteEntities": {
+              "methods": [
+                "BatchDeleteEntities"
+              ]
+            },
+            "BatchDeleteEntityTypes": {
+              "methods": [
+                "BatchDeleteEntityTypes"
+              ]
+            },
+            "BatchUpdateEntities": {
+              "methods": [
+                "BatchUpdateEntities"
+              ]
+            },
+            "BatchUpdateEntityTypes": {
+              "methods": [
+                "BatchUpdateEntityTypes"
+              ]
+            },
+            "CreateEntityType": {
+              "methods": [
+                "CreateEntityType"
+              ]
+            },
+            "DeleteEntityType": {
+              "methods": [
+                "DeleteEntityType"
+              ]
+            },
+            "GetEntityType": {
+              "methods": [
+                "GetEntityType"
+              ]
+            },
+            "ListEntityTypes": {
+              "methods": [
+                "ListEntityTypes"
+              ]
+            },
+            "UpdateEntityType": {
+              "methods": [
+                "UpdateEntityType"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Environments": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Environments",
+          "rpcs": {
+            "ListEnvironments": {
+              "methods": [
+                "ListEnvironments"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Intents": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Intents",
+          "rpcs": {
+            "BatchDeleteIntents": {
+              "methods": [
+                "BatchDeleteIntents"
+              ]
+            },
+            "BatchUpdateIntents": {
+              "methods": [
+                "BatchUpdateIntents"
+              ]
+            },
+            "CreateIntent": {
+              "methods": [
+                "CreateIntent"
+              ]
+            },
+            "DeleteIntent": {
+              "methods": [
+                "DeleteIntent"
+              ]
+            },
+            "GetIntent": {
+              "methods": [
+                "GetIntent"
+              ]
+            },
+            "ListIntents": {
+              "methods": [
+                "ListIntents"
+              ]
+            },
+            "UpdateIntent": {
+              "methods": [
+                "UpdateIntent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SessionEntityTypes": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SessionEntityTypes",
+          "rpcs": {
+            "CreateSessionEntityType": {
+              "methods": [
+                "CreateSessionEntityType"
+              ]
+            },
+            "DeleteSessionEntityType": {
+              "methods": [
+                "DeleteSessionEntityType"
+              ]
+            },
+            "GetSessionEntityType": {
+              "methods": [
+                "GetSessionEntityType"
+              ]
+            },
+            "ListSessionEntityTypes": {
+              "methods": [
+                "ListSessionEntityTypes"
+              ]
+            },
+            "UpdateSessionEntityType": {
+              "methods": [
+                "UpdateSessionEntityType"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Sessions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Sessions",
+          "rpcs": {
+            "DetectIntent": {
+              "methods": [
+                "DetectIntent"
+              ]
+            },
+            "StreamingDetectIntent": {
+              "methods": [
+                "StreamingDetectIntent"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

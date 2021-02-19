@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.area120.tables.v1alpha1",
+  "libraryPackage": "cloud.google.com/go/area120/tables/apiv1alpha1",
+  "services": {
+    "TablesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateRows": {
+              "methods": [
+                "BatchCreateRows"
+              ]
+            },
+            "BatchUpdateRows": {
+              "methods": [
+                "BatchUpdateRows"
+              ]
+            },
+            "CreateRow": {
+              "methods": [
+                "CreateRow"
+              ]
+            },
+            "DeleteRow": {
+              "methods": [
+                "DeleteRow"
+              ]
+            },
+            "GetRow": {
+              "methods": [
+                "GetRow"
+              ]
+            },
+            "GetTable": {
+              "methods": [
+                "GetTable"
+              ]
+            },
+            "ListRows": {
+              "methods": [
+                "ListRows"
+              ]
+            },
+            "ListTables": {
+              "methods": [
+                "ListTables"
+              ]
+            },
+            "UpdateRow": {
+              "methods": [
+                "UpdateRow"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
