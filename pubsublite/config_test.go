@@ -112,6 +112,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 			desc: "all fields set",
 			config: &TopicConfigToUpdate{
 				Name:                       "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				PartitionCount:             2,
 				PublishCapacityMiBPerSec:   4,
 				SubscribeCapacityMiBPerSec: 12,
 				PerPartitionBytes:          500000,
@@ -121,6 +122,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 				Topic: &pb.Topic{
 					Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 					PartitionConfig: &pb.Topic_PartitionConfig{
+						Count: 2,
 						Dimension: &pb.Topic_PartitionConfig_Capacity_{
 							Capacity: &pb.Topic_PartitionConfig_Capacity{
 								PublishMibPerSec:   4,
@@ -135,6 +137,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 				},
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
+						"partition_config.count",
 						"partition_config.capacity.publish_mib_per_sec",
 						"partition_config.capacity.subscribe_mib_per_sec",
 						"retention_config.per_partition_bytes",
@@ -187,7 +190,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
-				t.Errorf("TopicConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
+				t.Errorf("TopicConfigToUpdate(%v).toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
 			}
 		})
 	}

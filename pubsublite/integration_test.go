@@ -141,7 +141,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	// Topic admin operations.
 	newTopicConfig := &TopicConfig{
 		Name:                       topicPath,
-		PartitionCount:             2,
+		PartitionCount:             1,
 		PublishCapacityMiBPerSec:   4,
 		SubscribeCapacityMiBPerSec: 4,
 		PerPartitionBytes:          30 * gibi,
@@ -189,6 +189,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 
 	topicUpdate1 := TopicConfigToUpdate{
 		Name:                       topicPath,
+		PartitionCount:             2,
 		PublishCapacityMiBPerSec:   6,
 		SubscribeCapacityMiBPerSec: 8,
 	}
