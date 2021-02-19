@@ -1,0 +1,58 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.recommender.v1",
+  "libraryPackage": "cloud.google.com/go/recommender/apiv1",
+  "services": {
+    "Recommender": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "GetInsight": {
+              "methods": [
+                "GetInsight"
+              ]
+            },
+            "GetRecommendation": {
+              "methods": [
+                "GetRecommendation"
+              ]
+            },
+            "ListInsights": {
+              "methods": [
+                "ListInsights"
+              ]
+            },
+            "ListRecommendations": {
+              "methods": [
+                "ListRecommendations"
+              ]
+            },
+            "MarkInsightAccepted": {
+              "methods": [
+                "MarkInsightAccepted"
+              ]
+            },
+            "MarkRecommendationClaimed": {
+              "methods": [
+                "MarkRecommendationClaimed"
+              ]
+            },
+            "MarkRecommendationFailed": {
+              "methods": [
+                "MarkRecommendationFailed"
+              ]
+            },
+            "MarkRecommendationSucceeded": {
+              "methods": [
+                "MarkRecommendationSucceeded"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

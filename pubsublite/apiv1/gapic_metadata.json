@@ -1,0 +1,163 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.pubsublite.v1",
+  "libraryPackage": "cloud.google.com/go/pubsublite/apiv1",
+  "services": {
+    "AdminService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Admin",
+          "rpcs": {
+            "CreateSubscription": {
+              "methods": [
+                "CreateSubscription"
+              ]
+            },
+            "CreateTopic": {
+              "methods": [
+                "CreateTopic"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "DeleteTopic": {
+              "methods": [
+                "DeleteTopic"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "GetTopic": {
+              "methods": [
+                "GetTopic"
+              ]
+            },
+            "GetTopicPartitions": {
+              "methods": [
+                "GetTopicPartitions"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "ListTopicSubscriptions": {
+              "methods": [
+                "ListTopicSubscriptions"
+              ]
+            },
+            "ListTopics": {
+              "methods": [
+                "ListTopics"
+              ]
+            },
+            "UpdateSubscription": {
+              "methods": [
+                "UpdateSubscription"
+              ]
+            },
+            "UpdateTopic": {
+              "methods": [
+                "UpdateTopic"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "CursorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Cursor",
+          "rpcs": {
+            "CommitCursor": {
+              "methods": [
+                "CommitCursor"
+              ]
+            },
+            "ListPartitionCursors": {
+              "methods": [
+                "ListPartitionCursors"
+              ]
+            },
+            "StreamingCommitCursor": {
+              "methods": [
+                "StreamingCommitCursor"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PartitionAssignmentService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PartitionAssignment",
+          "rpcs": {
+            "AssignPartitions": {
+              "methods": [
+                "AssignPartitions"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PublisherService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Publisher",
+          "rpcs": {
+            "Publish": {
+              "methods": [
+                "Publish"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SubscriberService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Subscriber",
+          "rpcs": {
+            "Subscribe": {
+              "methods": [
+                "Subscribe"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "TopicStatsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TopicStats",
+          "rpcs": {
+            "ComputeHeadCursor": {
+              "methods": [
+                "ComputeHeadCursor"
+              ]
+            },
+            "ComputeMessageStats": {
+              "methods": [
+                "ComputeMessageStats"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.websecurityscanner.v1",
+  "libraryPackage": "cloud.google.com/go/websecurityscanner/apiv1",
+  "services": {
+    "WebSecurityScanner": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateScanConfig": {
+              "methods": [
+                "CreateScanConfig"
+              ]
+            },
+            "DeleteScanConfig": {
+              "methods": [
+                "DeleteScanConfig"
+              ]
+            },
+            "GetFinding": {
+              "methods": [
+                "GetFinding"
+              ]
+            },
+            "GetScanConfig": {
+              "methods": [
+                "GetScanConfig"
+              ]
+            },
+            "GetScanRun": {
+              "methods": [
+                "GetScanRun"
+              ]
+            },
+            "ListCrawledUrls": {
+              "methods": [
+                "ListCrawledUrls"
+              ]
+            },
+            "ListFindingTypeStats": {
+              "methods": [
+                "ListFindingTypeStats"
+              ]
+            },
+            "ListFindings": {
+              "methods": [
+                "ListFindings"
+              ]
+            },
+            "ListScanConfigs": {
+              "methods": [
+                "ListScanConfigs"
+              ]
+            },
+            "ListScanRuns": {
+              "methods": [
+                "ListScanRuns"
+              ]
+            },
+            "StartScanRun": {
+              "methods": [
+                "StartScanRun"
+              ]
+            },
+            "StopScanRun": {
+              "methods": [
+                "StopScanRun"
+              ]
+            },
+            "UpdateScanConfig": {
+              "methods": [
+                "UpdateScanConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
