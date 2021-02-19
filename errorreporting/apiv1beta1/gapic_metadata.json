@@ -8,7 +8,7 @@
     "ErrorGroupService": {
       "clients": {
         "grpc": {
-          "libraryClient": "ErrorGroup",
+          "libraryClient": "ErrorGroupClient",
           "rpcs": {
             "GetGroup": {
               "methods": [
@@ -27,7 +27,7 @@
     "ErrorStatsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "ErrorStats",
+          "libraryClient": "ErrorStatsClient",
           "rpcs": {
             "DeleteEvents": {
               "methods": [
@@ -51,7 +51,7 @@
     "ReportErrorsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "ReportErrors",
+          "libraryClient": "ReportErrorsClient",
           "rpcs": {
             "ReportErrorEvent": {
               "methods": [

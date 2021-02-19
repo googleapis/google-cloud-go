@@ -8,7 +8,7 @@
     "ClusterManager": {
       "clients": {
         "grpc": {
-          "libraryClient": "ClusterManager",
+          "libraryClient": "ClusterManagerClient",
           "rpcs": {
             "CancelOperation": {
               "methods": [

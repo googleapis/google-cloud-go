@@ -8,7 +8,7 @@
     "ImageAnnotator": {
       "clients": {
         "grpc": {
-          "libraryClient": "ImageAnnotator",
+          "libraryClient": "ImageAnnotatorClient",
           "rpcs": {
             "AsyncBatchAnnotateFiles": {
               "methods": [
@@ -37,7 +37,7 @@
     "ProductSearch": {
       "clients": {
         "grpc": {
-          "libraryClient": "ProductSearch",
+          "libraryClient": "ProductSearchClient",
           "rpcs": {
             "AddProductToProductSet": {
               "methods": [

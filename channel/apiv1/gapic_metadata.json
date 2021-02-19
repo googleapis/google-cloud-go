@@ -8,7 +8,7 @@
     "CloudChannelService": {
       "clients": {
         "grpc": {
-          "libraryClient": "CloudChannel",
+          "libraryClient": "CloudChannelClient",
           "rpcs": {
             "ActivateEntitlement": {
               "methods": [

@@ -8,7 +8,7 @@
     "SecurityCenterSettingsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "SecurityCenterSettings",
+          "libraryClient": "SecurityCenterSettingsClient",
           "rpcs": {
             "BatchCalculateEffectiveSettings": {
               "methods": [

@@ -8,7 +8,7 @@
     "AlertPolicyService": {
       "clients": {
         "grpc": {
-          "libraryClient": "AlertPolicy",
+          "libraryClient": "AlertPolicyClient",
           "rpcs": {
             "CreateAlertPolicy": {
               "methods": [
@@ -42,7 +42,7 @@
     "GroupService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Group",
+          "libraryClient": "GroupClient",
           "rpcs": {
             "CreateGroup": {
               "methods": [
@@ -81,7 +81,7 @@
     "MetricService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Metric",
+          "libraryClient": "MetricClient",
           "rpcs": {
             "CreateMetricDescriptor": {
               "methods": [
@@ -130,7 +130,7 @@
     "NotificationChannelService": {
       "clients": {
         "grpc": {
-          "libraryClient": "NotificationChannel",
+          "libraryClient": "NotificationChannelClient",
           "rpcs": {
             "CreateNotificationChannel": {
               "methods": [
@@ -189,7 +189,7 @@
     "ServiceMonitoringService": {
       "clients": {
         "grpc": {
-          "libraryClient": "ServiceMonitoring",
+          "libraryClient": "ServiceMonitoringClient",
           "rpcs": {
             "CreateService": {
               "methods": [
@@ -248,7 +248,7 @@
     "UptimeCheckService": {
       "clients": {
         "grpc": {
-          "libraryClient": "UptimeCheck",
+          "libraryClient": "UptimeCheckClient",
           "rpcs": {
             "CreateUptimeCheckConfig": {
               "methods": [

@@ -8,7 +8,7 @@
     "AlphaAnalyticsData": {
       "clients": {
         "grpc": {
-          "libraryClient": "AlphaAnalyticsData",
+          "libraryClient": "AlphaAnalyticsDataClient",
           "rpcs": {
             "BatchRunPivotReports": {
               "methods": [

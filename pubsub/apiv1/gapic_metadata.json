@@ -8,7 +8,7 @@
     "Publisher": {
       "clients": {
         "grpc": {
-          "libraryClient": "Publisher",
+          "libraryClient": "PublisherClient",
           "rpcs": {
             "CreateTopic": {
               "methods": [
@@ -62,7 +62,7 @@
     "SchemaService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Schema",
+          "libraryClient": "SchemaClient",
           "rpcs": {
             "CreateSchema": {
               "methods": [
@@ -101,7 +101,7 @@
     "Subscriber": {
       "clients": {
         "grpc": {
-          "libraryClient": "Subscriber",
+          "libraryClient": "SubscriberClient",
           "rpcs": {
             "Acknowledge": {
               "methods": [

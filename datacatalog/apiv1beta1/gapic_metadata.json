@@ -152,7 +152,7 @@
     "PolicyTagManager": {
       "clients": {
         "grpc": {
-          "libraryClient": "PolicyTagManager",
+          "libraryClient": "PolicyTagManagerClient",
           "rpcs": {
             "CreatePolicyTag": {
               "methods": [
@@ -226,7 +226,7 @@
     "PolicyTagManagerSerialization": {
       "clients": {
         "grpc": {
-          "libraryClient": "PolicyTagManagerSerialization",
+          "libraryClient": "PolicyTagManagerSerializationClient",
           "rpcs": {
             "ExportTaxonomies": {
               "methods": [

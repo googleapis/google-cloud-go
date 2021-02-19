@@ -8,7 +8,7 @@
     "BinauthzManagementServiceV1Beta1": {
       "clients": {
         "grpc": {
-          "libraryClient": "BinauthzManagementServiceV1Beta1",
+          "libraryClient": "BinauthzManagementServiceV1Beta1Client",
           "rpcs": {
             "CreateAttestor": {
               "methods": [

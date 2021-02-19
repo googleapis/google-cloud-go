@@ -8,7 +8,7 @@
     "CatalogService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Catalog",
+          "libraryClient": "CatalogClient",
           "rpcs": {
             "ListCatalogs": {
               "methods": [
@@ -27,7 +27,7 @@
     "PredictionService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Prediction",
+          "libraryClient": "PredictionClient",
           "rpcs": {
             "Predict": {
               "methods": [
@@ -41,7 +41,7 @@
     "ProductService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Product",
+          "libraryClient": "ProductClient",
           "rpcs": {
             "CreateProduct": {
               "methods": [
@@ -75,7 +75,7 @@
     "UserEventService": {
       "clients": {
         "grpc": {
-          "libraryClient": "UserEvent",
+          "libraryClient": "UserEventClient",
           "rpcs": {
             "CollectUserEvent": {
               "methods": [

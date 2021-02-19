@@ -8,7 +8,7 @@
     "QuotaController": {
       "clients": {
         "grpc": {
-          "libraryClient": "QuotaController",
+          "libraryClient": "QuotaControllerClient",
           "rpcs": {
             "AllocateQuota": {
               "methods": [
@@ -22,7 +22,7 @@
     "ServiceController": {
       "clients": {
         "grpc": {
-          "libraryClient": "ServiceController",
+          "libraryClient": "ServiceControllerClient",
           "rpcs": {
             "Check": {
               "methods": [

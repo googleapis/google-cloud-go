@@ -8,7 +8,7 @@
     "WebRiskServiceV1Beta1": {
       "clients": {
         "grpc": {
-          "libraryClient": "WebRiskServiceV1Beta1",
+          "libraryClient": "WebRiskServiceV1Beta1Client",
           "rpcs": {
             "ComputeThreatListDiff": {
               "methods": [

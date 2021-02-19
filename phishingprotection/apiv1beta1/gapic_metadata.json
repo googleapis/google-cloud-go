@@ -8,7 +8,7 @@
     "PhishingProtectionServiceV1Beta1": {
       "clients": {
         "grpc": {
-          "libraryClient": "PhishingProtectionServiceV1Beta1",
+          "libraryClient": "PhishingProtectionServiceV1Beta1Client",
           "rpcs": {
             "ReportPhishing": {
               "methods": [

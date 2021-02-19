@@ -8,7 +8,7 @@
     "SpeechTranslationService": {
       "clients": {
         "grpc": {
-          "libraryClient": "SpeechTranslation",
+          "libraryClient": "SpeechTranslationClient",
           "rpcs": {
             "StreamingTranslateSpeech": {
               "methods": [

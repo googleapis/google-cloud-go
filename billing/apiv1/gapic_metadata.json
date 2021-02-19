@@ -8,7 +8,7 @@
     "CloudBilling": {
       "clients": {
         "grpc": {
-          "libraryClient": "CloudBilling",
+          "libraryClient": "CloudBillingClient",
           "rpcs": {
             "CreateBillingAccount": {
               "methods": [
@@ -67,7 +67,7 @@
     "CloudCatalog": {
       "clients": {
         "grpc": {
-          "libraryClient": "CloudCatalog",
+          "libraryClient": "CloudCatalogClient",
           "rpcs": {
             "ListServices": {
               "methods": [

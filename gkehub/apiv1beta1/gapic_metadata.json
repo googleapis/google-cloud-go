@@ -8,7 +8,7 @@
     "GkeHubMembershipService": {
       "clients": {
         "grpc": {
-          "libraryClient": "GkeHubMembership",
+          "libraryClient": "GkeHubMembershipClient",
           "rpcs": {
             "CreateMembership": {
               "methods": [

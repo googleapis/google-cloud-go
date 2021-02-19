@@ -8,7 +8,7 @@
     "TranslationService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Translation",
+          "libraryClient": "TranslationClient",
           "rpcs": {
             "BatchTranslateText": {
               "methods": [
