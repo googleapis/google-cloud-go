@@ -8,7 +8,7 @@
     "GrafeasV1Beta1": {
       "clients": {
         "grpc": {
-          "libraryClient": "GrafeasV1Beta1",
+          "libraryClient": "GrafeasV1Beta1Client",
           "rpcs": {
             "BatchCreateNotes": {
               "methods": [

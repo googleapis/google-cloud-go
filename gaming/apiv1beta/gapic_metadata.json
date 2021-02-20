@@ -8,7 +8,7 @@
     "GameServerClustersService": {
       "clients": {
         "grpc": {
-          "libraryClient": "GameServerClusters",
+          "libraryClient": "GameServerClustersClient",
           "rpcs": {
             "CreateGameServerCluster": {
               "methods": [
@@ -57,7 +57,7 @@
     "GameServerConfigsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "GameServerConfigs",
+          "libraryClient": "GameServerConfigsClient",
           "rpcs": {
             "CreateGameServerConfig": {
               "methods": [
@@ -86,7 +86,7 @@
     "GameServerDeploymentsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "GameServerDeployments",
+          "libraryClient": "GameServerDeploymentsClient",
           "rpcs": {
             "CreateGameServerDeployment": {
               "methods": [
@@ -140,7 +140,7 @@
     "RealmsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Realms",
+          "libraryClient": "RealmsClient",
           "rpcs": {
             "CreateRealm": {
               "methods": [

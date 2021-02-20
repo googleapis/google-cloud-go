@@ -8,7 +8,7 @@
     "Applications": {
       "clients": {
         "grpc": {
-          "libraryClient": "Applications",
+          "libraryClient": "ApplicationsClient",
           "rpcs": {
             "CreateApplication": {
               "methods": [
@@ -37,7 +37,7 @@
     "AuthorizedCertificates": {
       "clients": {
         "grpc": {
-          "libraryClient": "AuthorizedCertificates",
+          "libraryClient": "AuthorizedCertificatesClient",
           "rpcs": {
             "CreateAuthorizedCertificate": {
               "methods": [
@@ -71,7 +71,7 @@
     "AuthorizedDomains": {
       "clients": {
         "grpc": {
-          "libraryClient": "AuthorizedDomains",
+          "libraryClient": "AuthorizedDomainsClient",
           "rpcs": {
             "ListAuthorizedDomains": {
               "methods": [
@@ -85,7 +85,7 @@
     "DomainMappings": {
       "clients": {
         "grpc": {
-          "libraryClient": "DomainMappings",
+          "libraryClient": "DomainMappingsClient",
           "rpcs": {
             "CreateDomainMapping": {
               "methods": [
@@ -119,7 +119,7 @@
     "Firewall": {
       "clients": {
         "grpc": {
-          "libraryClient": "Firewall",
+          "libraryClient": "FirewallClient",
           "rpcs": {
             "BatchUpdateIngressRules": {
               "methods": [
@@ -158,7 +158,7 @@
     "Instances": {
       "clients": {
         "grpc": {
-          "libraryClient": "Instances",
+          "libraryClient": "InstancesClient",
           "rpcs": {
             "DebugInstance": {
               "methods": [
@@ -187,7 +187,7 @@
     "Services": {
       "clients": {
         "grpc": {
-          "libraryClient": "Services",
+          "libraryClient": "ServicesClient",
           "rpcs": {
             "DeleteService": {
               "methods": [
@@ -216,7 +216,7 @@
     "Versions": {
       "clients": {
         "grpc": {
-          "libraryClient": "Versions",
+          "libraryClient": "VersionsClient",
           "rpcs": {
             "CreateVersion": {
               "methods": [

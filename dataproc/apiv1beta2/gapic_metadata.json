@@ -8,7 +8,7 @@
     "AutoscalingPolicyService": {
       "clients": {
         "grpc": {
-          "libraryClient": "AutoscalingPolicy",
+          "libraryClient": "AutoscalingPolicyClient",
           "rpcs": {
             "CreateAutoscalingPolicy": {
               "methods": [
@@ -42,7 +42,7 @@
     "ClusterController": {
       "clients": {
         "grpc": {
-          "libraryClient": "ClusterController",
+          "libraryClient": "ClusterControllerClient",
           "rpcs": {
             "CreateCluster": {
               "methods": [
@@ -81,7 +81,7 @@
     "JobController": {
       "clients": {
         "grpc": {
-          "libraryClient": "JobController",
+          "libraryClient": "JobControllerClient",
           "rpcs": {
             "CancelJob": {
               "methods": [
@@ -125,7 +125,7 @@
     "WorkflowTemplateService": {
       "clients": {
         "grpc": {
-          "libraryClient": "WorkflowTemplate",
+          "libraryClient": "WorkflowTemplateClient",
           "rpcs": {
             "CreateWorkflowTemplate": {
               "methods": [

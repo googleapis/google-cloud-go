@@ -8,7 +8,7 @@
     "HubService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Hub",
+          "libraryClient": "HubClient",
           "rpcs": {
             "CreateHub": {
               "methods": [

@@ -8,7 +8,7 @@
     "BigQueryStorage": {
       "clients": {
         "grpc": {
-          "libraryClient": "BigQueryStorage",
+          "libraryClient": "BigQueryStorageClient",
           "rpcs": {
             "BatchCreateReadSessionStreams": {
               "methods": [

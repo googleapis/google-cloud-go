@@ -8,7 +8,7 @@
     "CompanyService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Company",
+          "libraryClient": "CompanyClient",
           "rpcs": {
             "CreateCompany": {
               "methods": [
@@ -42,7 +42,7 @@
     "Completion": {
       "clients": {
         "grpc": {
-          "libraryClient": "Completion",
+          "libraryClient": "CompletionClient",
           "rpcs": {
             "CompleteQuery": {
               "methods": [
@@ -56,7 +56,7 @@
     "EventService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Event",
+          "libraryClient": "EventClient",
           "rpcs": {
             "CreateClientEvent": {
               "methods": [
@@ -70,7 +70,7 @@
     "JobService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Job",
+          "libraryClient": "JobClient",
           "rpcs": {
             "BatchCreateJobs": {
               "methods": [
@@ -129,7 +129,7 @@
     "TenantService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Tenant",
+          "libraryClient": "TenantClient",
           "rpcs": {
             "CreateTenant": {
               "methods": [

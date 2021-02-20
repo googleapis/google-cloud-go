@@ -8,7 +8,7 @@
     "DashboardsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Dashboards",
+          "libraryClient": "DashboardsClient",
           "rpcs": {
             "CreateDashboard": {
               "methods": [

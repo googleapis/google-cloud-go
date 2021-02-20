@@ -8,7 +8,7 @@
     "LookupService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Lookup",
+          "libraryClient": "LookupClient",
           "rpcs": {
             "ResolveService": {
               "methods": [
@@ -22,7 +22,7 @@
     "RegistrationService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Registration",
+          "libraryClient": "RegistrationClient",
           "rpcs": {
             "CreateEndpoint": {
               "methods": [

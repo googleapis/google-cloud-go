@@ -15,6 +15,11 @@
                 "BatchCreateRows"
               ]
             },
+            "BatchDeleteRows": {
+              "methods": [
+                "BatchDeleteRows"
+              ]
+            },
             "BatchUpdateRows": {
               "methods": [
                 "BatchUpdateRows"
@@ -40,6 +45,11 @@
                 "GetTable"
               ]
             },
+            "GetWorkspace": {
+              "methods": [
+                "GetWorkspace"
+              ]
+            },
             "ListRows": {
               "methods": [
                 "ListRows"
@@ -48,6 +58,11 @@
             "ListTables": {
               "methods": [
                 "ListTables"
+              ]
+            },
+            "ListWorkspaces": {
+              "methods": [
+                "ListWorkspaces"
               ]
             },
             "UpdateRow": {

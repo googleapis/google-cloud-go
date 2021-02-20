@@ -8,7 +8,7 @@
     "DatastoreAdmin": {
       "clients": {
         "grpc": {
-          "libraryClient": "DatastoreAdmin",
+          "libraryClient": "DatastoreAdminClient",
           "rpcs": {
             "ExportEntities": {
               "methods": [

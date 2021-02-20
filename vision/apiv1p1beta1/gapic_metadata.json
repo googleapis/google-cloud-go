@@ -8,7 +8,7 @@
     "ImageAnnotator": {
       "clients": {
         "grpc": {
-          "libraryClient": "ImageAnnotator",
+          "libraryClient": "ImageAnnotatorClient",
           "rpcs": {
             "BatchAnnotateImages": {
               "methods": [

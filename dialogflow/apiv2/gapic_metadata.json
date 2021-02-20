@@ -8,7 +8,7 @@
     "Agents": {
       "clients": {
         "grpc": {
-          "libraryClient": "Agents",
+          "libraryClient": "AgentsClient",
           "rpcs": {
             "DeleteAgent": {
               "methods": [
@@ -62,7 +62,7 @@
     "Contexts": {
       "clients": {
         "grpc": {
-          "libraryClient": "Contexts",
+          "libraryClient": "ContextsClient",
           "rpcs": {
             "CreateContext": {
               "methods": [
@@ -101,7 +101,7 @@
     "EntityTypes": {
       "clients": {
         "grpc": {
-          "libraryClient": "EntityTypes",
+          "libraryClient": "EntityTypesClient",
           "rpcs": {
             "BatchCreateEntities": {
               "methods": [
@@ -160,7 +160,7 @@
     "Environments": {
       "clients": {
         "grpc": {
-          "libraryClient": "Environments",
+          "libraryClient": "EnvironmentsClient",
           "rpcs": {
             "ListEnvironments": {
               "methods": [
@@ -174,7 +174,7 @@
     "Intents": {
       "clients": {
         "grpc": {
-          "libraryClient": "Intents",
+          "libraryClient": "IntentsClient",
           "rpcs": {
             "BatchDeleteIntents": {
               "methods": [
@@ -218,7 +218,7 @@
     "SessionEntityTypes": {
       "clients": {
         "grpc": {
-          "libraryClient": "SessionEntityTypes",
+          "libraryClient": "SessionEntityTypesClient",
           "rpcs": {
             "CreateSessionEntityType": {
               "methods": [
@@ -252,7 +252,7 @@
     "Sessions": {
       "clients": {
         "grpc": {
-          "libraryClient": "Sessions",
+          "libraryClient": "SessionsClient",
           "rpcs": {
             "DetectIntent": {
               "methods": [

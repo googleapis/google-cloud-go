@@ -8,7 +8,7 @@
     "AutoSuggestionService": {
       "clients": {
         "grpc": {
-          "libraryClient": "AutoSuggestion",
+          "libraryClient": "AutoSuggestionClient",
           "rpcs": {
             "SuggestQueries": {
               "methods": [
@@ -22,7 +22,7 @@
     "QuestionService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Question",
+          "libraryClient": "QuestionClient",
           "rpcs": {
             "CreateQuestion": {
               "methods": [

@@ -8,7 +8,7 @@
     "CloudScheduler": {
       "clients": {
         "grpc": {
-          "libraryClient": "CloudScheduler",
+          "libraryClient": "CloudSchedulerClient",
           "rpcs": {
             "CreateJob": {
               "methods": [
