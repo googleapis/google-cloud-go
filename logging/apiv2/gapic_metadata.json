@@ -8,7 +8,7 @@
     "ConfigServiceV2": {
       "clients": {
         "grpc": {
-          "libraryClient": "Config",
+          "libraryClient": "ConfigClient",
           "rpcs": {
             "CreateBucket": {
               "methods": [
@@ -171,7 +171,7 @@
     "MetricsServiceV2": {
       "clients": {
         "grpc": {
-          "libraryClient": "Metrics",
+          "libraryClient": "MetricsClient",
           "rpcs": {
             "CreateLogMetric": {
               "methods": [

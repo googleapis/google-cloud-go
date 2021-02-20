@@ -8,7 +8,7 @@
     "DatabaseAdmin": {
       "clients": {
         "grpc": {
-          "libraryClient": "DatabaseAdmin",
+          "libraryClient": "DatabaseAdminClient",
           "rpcs": {
             "CreateBackup": {
               "methods": [

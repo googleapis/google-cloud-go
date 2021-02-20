@@ -8,7 +8,7 @@
     "DeviceManager": {
       "clients": {
         "grpc": {
-          "libraryClient": "DeviceManager",
+          "libraryClient": "DeviceManagerClient",
           "rpcs": {
             "BindDeviceToGateway": {
               "methods": [

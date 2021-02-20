@@ -8,7 +8,7 @@
     "Folders": {
       "clients": {
         "grpc": {
-          "libraryClient": "Folders",
+          "libraryClient": "FoldersClient",
           "rpcs": {
             "CreateFolder": {
               "methods": [

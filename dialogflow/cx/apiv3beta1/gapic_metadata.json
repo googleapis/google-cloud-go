@@ -8,7 +8,7 @@
     "Agents": {
       "clients": {
         "grpc": {
-          "libraryClient": "Agents",
+          "libraryClient": "AgentsClient",
           "rpcs": {
             "CreateAgent": {
               "methods": [
@@ -62,7 +62,7 @@
     "EntityTypes": {
       "clients": {
         "grpc": {
-          "libraryClient": "EntityTypes",
+          "libraryClient": "EntityTypesClient",
           "rpcs": {
             "CreateEntityType": {
               "methods": [
@@ -96,7 +96,7 @@
     "Environments": {
       "clients": {
         "grpc": {
-          "libraryClient": "Environments",
+          "libraryClient": "EnvironmentsClient",
           "rpcs": {
             "CreateEnvironment": {
               "methods": [
@@ -135,7 +135,7 @@
     "Experiments": {
       "clients": {
         "grpc": {
-          "libraryClient": "Experiments",
+          "libraryClient": "ExperimentsClient",
           "rpcs": {
             "CreateExperiment": {
               "methods": [
@@ -179,7 +179,7 @@
     "Flows": {
       "clients": {
         "grpc": {
-          "libraryClient": "Flows",
+          "libraryClient": "FlowsClient",
           "rpcs": {
             "CreateFlow": {
               "methods": [
@@ -228,7 +228,7 @@
     "Intents": {
       "clients": {
         "grpc": {
-          "libraryClient": "Intents",
+          "libraryClient": "IntentsClient",
           "rpcs": {
             "CreateIntent": {
               "methods": [
@@ -262,7 +262,7 @@
     "Pages": {
       "clients": {
         "grpc": {
-          "libraryClient": "Pages",
+          "libraryClient": "PagesClient",
           "rpcs": {
             "CreatePage": {
               "methods": [
@@ -296,7 +296,7 @@
     "SecuritySettingsService": {
       "clients": {
         "grpc": {
-          "libraryClient": "SecuritySettings",
+          "libraryClient": "SecuritySettingsClient",
           "rpcs": {
             "CreateSecuritySettings": {
               "methods": [
@@ -330,7 +330,7 @@
     "SessionEntityTypes": {
       "clients": {
         "grpc": {
-          "libraryClient": "SessionEntityTypes",
+          "libraryClient": "SessionEntityTypesClient",
           "rpcs": {
             "CreateSessionEntityType": {
               "methods": [
@@ -364,7 +364,7 @@
     "Sessions": {
       "clients": {
         "grpc": {
-          "libraryClient": "Sessions",
+          "libraryClient": "SessionsClient",
           "rpcs": {
             "DetectIntent": {
               "methods": [
@@ -393,7 +393,7 @@
     "TestCases": {
       "clients": {
         "grpc": {
-          "libraryClient": "TestCases",
+          "libraryClient": "TestCasesClient",
           "rpcs": {
             "BatchDeleteTestCases": {
               "methods": [
@@ -457,7 +457,7 @@
     "TransitionRouteGroups": {
       "clients": {
         "grpc": {
-          "libraryClient": "TransitionRouteGroups",
+          "libraryClient": "TransitionRouteGroupsClient",
           "rpcs": {
             "CreateTransitionRouteGroup": {
               "methods": [
@@ -491,7 +491,7 @@
     "Versions": {
       "clients": {
         "grpc": {
-          "libraryClient": "Versions",
+          "libraryClient": "VersionsClient",
           "rpcs": {
             "CreateVersion": {
               "methods": [
@@ -530,7 +530,7 @@
     "Webhooks": {
       "clients": {
         "grpc": {
-          "libraryClient": "Webhooks",
+          "libraryClient": "WebhooksClient",
           "rpcs": {
             "CreateWebhook": {
               "methods": [

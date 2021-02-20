@@ -8,7 +8,7 @@
     "DocumentProcessorService": {
       "clients": {
         "grpc": {
-          "libraryClient": "DocumentProcessor",
+          "libraryClient": "DocumentProcessorClient",
           "rpcs": {
             "BatchProcessDocuments": {
               "methods": [

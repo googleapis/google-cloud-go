@@ -8,7 +8,7 @@
     "AnalyticsAdminService": {
       "clients": {
         "grpc": {
-          "libraryClient": "AnalyticsAdmin",
+          "libraryClient": "AnalyticsAdminClient",
           "rpcs": {
             "AuditUserLinks": {
               "methods": [

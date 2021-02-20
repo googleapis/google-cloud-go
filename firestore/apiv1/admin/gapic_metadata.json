@@ -8,7 +8,7 @@
     "FirestoreAdmin": {
       "clients": {
         "grpc": {
-          "libraryClient": "FirestoreAdmin",
+          "libraryClient": "FirestoreAdminClient",
           "rpcs": {
             "CreateIndex": {
               "methods": [

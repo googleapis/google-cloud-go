@@ -137,7 +137,7 @@
     "PredictionService": {
       "clients": {
         "grpc": {
-          "libraryClient": "Prediction",
+          "libraryClient": "PredictionClient",
           "rpcs": {
             "BatchPredict": {
               "methods": [

@@ -8,7 +8,7 @@
     "InstanceAdmin": {
       "clients": {
         "grpc": {
-          "libraryClient": "InstanceAdmin",
+          "libraryClient": "InstanceAdminClient",
           "rpcs": {
             "CreateInstance": {
               "methods": [

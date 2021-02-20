@@ -8,7 +8,7 @@
     "KeyManagementService": {
       "clients": {
         "grpc": {
-          "libraryClient": "KeyManagement",
+          "libraryClient": "KeyManagementClient",
           "rpcs": {
             "AsymmetricDecrypt": {
               "methods": [

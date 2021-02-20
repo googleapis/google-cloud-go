@@ -8,7 +8,7 @@
     "IamChecker": {
       "clients": {
         "grpc": {
-          "libraryClient": "IamChecker",
+          "libraryClient": "IamCheckerClient",
           "rpcs": {
             "TroubleshootIamPolicy": {
               "methods": [
