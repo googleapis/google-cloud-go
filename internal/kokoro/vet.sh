@@ -19,9 +19,7 @@ set -e
 # Display commands being run
 set -x
 
-# Only run the linter on go1.15, because:
-# - It only has to run once per CI (so we just have to pick 1 version).
-if [[ $(go version) != *"go1.15"* ]]; then
+if [[ $(go version) != *"go1.16"* ]]; then
   exit 0
 fi
 
