@@ -1,0 +1,23 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.vision.v1p1beta1",
+  "libraryPackage": "cloud.google.com/go/vision/apiv1p1beta1",
+  "services": {
+    "ImageAnnotator": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ImageAnnotatorClient",
+          "rpcs": {
+            "BatchAnnotateImages": {
+              "methods": [
+                "BatchAnnotateImages"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

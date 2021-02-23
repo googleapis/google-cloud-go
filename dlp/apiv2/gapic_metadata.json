@@ -1,0 +1,188 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.privacy.dlp.v2",
+  "libraryPackage": "cloud.google.com/go/dlp/apiv2",
+  "services": {
+    "DlpService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ActivateJobTrigger": {
+              "methods": [
+                "ActivateJobTrigger"
+              ]
+            },
+            "CancelDlpJob": {
+              "methods": [
+                "CancelDlpJob"
+              ]
+            },
+            "CreateDeidentifyTemplate": {
+              "methods": [
+                "CreateDeidentifyTemplate"
+              ]
+            },
+            "CreateDlpJob": {
+              "methods": [
+                "CreateDlpJob"
+              ]
+            },
+            "CreateInspectTemplate": {
+              "methods": [
+                "CreateInspectTemplate"
+              ]
+            },
+            "CreateJobTrigger": {
+              "methods": [
+                "CreateJobTrigger"
+              ]
+            },
+            "CreateStoredInfoType": {
+              "methods": [
+                "CreateStoredInfoType"
+              ]
+            },
+            "DeidentifyContent": {
+              "methods": [
+                "DeidentifyContent"
+              ]
+            },
+            "DeleteDeidentifyTemplate": {
+              "methods": [
+                "DeleteDeidentifyTemplate"
+              ]
+            },
+            "DeleteDlpJob": {
+              "methods": [
+                "DeleteDlpJob"
+              ]
+            },
+            "DeleteInspectTemplate": {
+              "methods": [
+                "DeleteInspectTemplate"
+              ]
+            },
+            "DeleteJobTrigger": {
+              "methods": [
+                "DeleteJobTrigger"
+              ]
+            },
+            "DeleteStoredInfoType": {
+              "methods": [
+                "DeleteStoredInfoType"
+              ]
+            },
+            "FinishDlpJob": {
+              "methods": [
+                "FinishDlpJob"
+              ]
+            },
+            "GetDeidentifyTemplate": {
+              "methods": [
+                "GetDeidentifyTemplate"
+              ]
+            },
+            "GetDlpJob": {
+              "methods": [
+                "GetDlpJob"
+              ]
+            },
+            "GetInspectTemplate": {
+              "methods": [
+                "GetInspectTemplate"
+              ]
+            },
+            "GetJobTrigger": {
+              "methods": [
+                "GetJobTrigger"
+              ]
+            },
+            "GetStoredInfoType": {
+              "methods": [
+                "GetStoredInfoType"
+              ]
+            },
+            "HybridInspectDlpJob": {
+              "methods": [
+                "HybridInspectDlpJob"
+              ]
+            },
+            "HybridInspectJobTrigger": {
+              "methods": [
+                "HybridInspectJobTrigger"
+              ]
+            },
+            "InspectContent": {
+              "methods": [
+                "InspectContent"
+              ]
+            },
+            "ListDeidentifyTemplates": {
+              "methods": [
+                "ListDeidentifyTemplates"
+              ]
+            },
+            "ListDlpJobs": {
+              "methods": [
+                "ListDlpJobs"
+              ]
+            },
+            "ListInfoTypes": {
+              "methods": [
+                "ListInfoTypes"
+              ]
+            },
+            "ListInspectTemplates": {
+              "methods": [
+                "ListInspectTemplates"
+              ]
+            },
+            "ListJobTriggers": {
+              "methods": [
+                "ListJobTriggers"
+              ]
+            },
+            "ListStoredInfoTypes": {
+              "methods": [
+                "ListStoredInfoTypes"
+              ]
+            },
+            "RedactImage": {
+              "methods": [
+                "RedactImage"
+              ]
+            },
+            "ReidentifyContent": {
+              "methods": [
+                "ReidentifyContent"
+              ]
+            },
+            "UpdateDeidentifyTemplate": {
+              "methods": [
+                "UpdateDeidentifyTemplate"
+              ]
+            },
+            "UpdateInspectTemplate": {
+              "methods": [
+                "UpdateInspectTemplate"
+              ]
+            },
+            "UpdateJobTrigger": {
+              "methods": [
+                "UpdateJobTrigger"
+              ]
+            },
+            "UpdateStoredInfoType": {
+              "methods": [
+                "UpdateStoredInfoType"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

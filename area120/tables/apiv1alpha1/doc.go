@@ -44,7 +44,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210211"
+const versionClient = "20210223"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -75,6 +75,7 @@ func DefaultAuthScopes() []string {
 		"https://www.googleapis.com/auth/drive.readonly",
 		"https://www.googleapis.com/auth/spreadsheets",
 		"https://www.googleapis.com/auth/spreadsheets.readonly",
+		"https://www.googleapis.com/auth/tables",
 	}
 }
 

@@ -371,8 +371,8 @@ func (c *DatabaseAdminClient) ListDatabases(ctx context.Context, req *databasepb
 // have a name of the format <database_name>/operations/<operation_id> and
 // can be used to track preparation of the database. The
 // metadata field type is
-// CreateDatabaseMetadata. The
-// response field type is
+// CreateDatabaseMetadata.
+// The response field type is
 // Database, if successful.
 func (c *DatabaseAdminClient) CreateDatabase(ctx context.Context, req *databasepb.CreateDatabaseRequest, opts ...gax.CallOption) (*CreateDatabaseOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
@@ -425,7 +425,8 @@ func (c *DatabaseAdminClient) GetDatabase(ctx context.Context, req *databasepb.G
 // the format <database_name>/operations/<operation_id> and can be used to
 // track execution of the schema change(s). The
 // metadata field type is
-// UpdateDatabaseDdlMetadata.  The operation has no response.
+// UpdateDatabaseDdlMetadata.
+// The operation has no response.
 func (c *DatabaseAdminClient) UpdateDatabaseDdl(ctx context.Context, req *databasepb.UpdateDatabaseDdlRequest, opts ...gax.CallOption) (*UpdateDatabaseDdlOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
@@ -587,12 +588,12 @@ func (c *DatabaseAdminClient) TestIamPermissions(ctx context.Context, req *iampb
 // projects/<project>/instances/<instance>/backups/<backup>/operations/<operation_id>
 // and can be used to track creation of the backup. The
 // metadata field type is
-// CreateBackupMetadata. The
-// response field type is
-// Backup, if successful. Cancelling the returned operation will stop the
-// creation and delete the backup.
-// There can be only one pending backup creation per database. Backup creation
-// of different databases can run concurrently.
+// CreateBackupMetadata.
+// The response field type is
+// Backup, if successful.
+// Cancelling the returned operation will stop the creation and delete the
+// backup. There can be only one pending backup creation per database. Backup
+// creation of different databases can run concurrently.
 func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.CreateBackupRequest, opts ...gax.CallOption) (*CreateBackupOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
@@ -616,7 +617,8 @@ func (c *DatabaseAdminClient) CreateBackup(ctx context.Context, req *databasepb.
 	}, nil
 }
 
-// GetBackup gets metadata on a pending or completed Backup.
+// GetBackup gets metadata on a pending or completed
+// Backup.
 func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.GetBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
@@ -638,7 +640,8 @@ func (c *DatabaseAdminClient) GetBackup(ctx context.Context, req *databasepb.Get
 	return resp, nil
 }
 
-// UpdateBackup updates a pending or completed Backup.
+// UpdateBackup updates a pending or completed
+// Backup.
 func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.UpdateBackupRequest, opts ...gax.CallOption) (*databasepb.Backup, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
@@ -660,7 +663,8 @@ func (c *DatabaseAdminClient) UpdateBackup(ctx context.Context, req *databasepb.
 	return resp, nil
 }
 
-// DeleteBackup deletes a pending or completed Backup.
+// DeleteBackup deletes a pending or completed
+// Backup.
 func (c *DatabaseAdminClient) DeleteBackup(ctx context.Context, req *databasepb.DeleteBackupRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 3600000*time.Millisecond)
