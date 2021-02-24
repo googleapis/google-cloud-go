@@ -1,5 +1,12 @@
 # Changes
 
+## [1.8.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.7.1...v1.8.0) (2021-02-24)
+
+
+### Features
+
+* **bigtable:** support partial results in InstanceAdminClient.Clusters() ([#2932](https://www.github.com/googleapis/google-cloud-go/issues/2932)) ([28decb5](https://www.github.com/googleapis/google-cloud-go/commit/28decb55c366c5ec67e04800aa06179943b765f6))
+
 ### [1.7.1](https://www.github.com/googleapis/google-cloud-go/compare/bigtable/v1.7.0...v1.7.1) (2021-01-25)
 
 
