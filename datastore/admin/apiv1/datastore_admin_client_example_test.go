@@ -82,6 +82,56 @@ func ExampleDatastoreAdminClient_ImportEntities() {
 	}
 }
 
+func ExampleDatastoreAdminClient_CreateIndex() {
+	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
+
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.CreateIndexRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.CreateIndex(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDatastoreAdminClient_DeleteIndex() {
+	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
+
+	ctx := context.Background()
+	c, err := admin.NewDatastoreAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.DeleteIndexRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DeleteIndex(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleDatastoreAdminClient_GetIndex() {
 	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
 
