@@ -1,5 +1,9 @@
 # Changes
 
+## v1.3.0
+
+- Updates to various dependencies.
+
 ## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.1.2...v1.2.0) (2021-01-25)
 
 
