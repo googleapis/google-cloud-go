@@ -329,8 +329,8 @@ items:
   langs:
   - go
   syntax:
-    content: "const (\n\tAllUsers              <a href=\"#aclentity\">ACLEntity</a>
-      = \"allUsers\"\n\tAllAuthenticatedUsers <a href=\"#aclentity\">ACLEntity</a>
+    content: "const (\n\tAllUsers              <a href=\"#cloud_google_com_go_storage_ACLEntity\">ACLEntity</a>
+      = \"allUsers\"\n\tAllAuthenticatedUsers <a href=\"#cloud_google_com_go_storage_ACLEntity\">ACLEntity</a>
       = \"allAuthenticatedUsers\"\n)"
 - uid: cloud.google.com/go/storage.ACLHandle
   name: ACLHandle
@@ -354,9 +354,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (a *<a href="#aclhandle">ACLHandle</a>) Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, entity <a href="#aclentity">ACLEntity</a>)
-      (err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (a *<a href="#cloud_google_com_go_storage_ACLHandle">ACLHandle</a>)
+      Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      entity <a href="#cloud_google_com_go_storage_ACLEntity">ACLEntity</a>) (err
+      <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -374,9 +375,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (a *<a href="#aclhandle">ACLHandle</a>) List(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (rules []<a href="#aclrule">ACLRule</a>,
-      err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (a *<a href="#cloud_google_com_go_storage_ACLHandle">ACLHandle</a>)
+      List(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (rules []<a href="#cloud_google_com_go_storage_ACLRule">ACLRule</a>, err <a
+      href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -394,9 +396,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (a *<a href="#aclhandle">ACLHandle</a>) Set(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, entity <a href="#aclentity">ACLEntity</a>,
-      role <a href="#aclrole">ACLRole</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (a *<a href="#cloud_google_com_go_storage_ACLHandle">ACLHandle</a>)
+      Set(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      entity <a href="#cloud_google_com_go_storage_ACLEntity">ACLEntity</a>, role
+      <a href="#cloud_google_com_go_storage_ACLRole">ACLRole</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -423,8 +426,9 @@ items:
   langs:
   - go
   syntax:
-    content: "const (\n\tRoleOwner  <a href=\"#aclrole\">ACLRole</a> = \"OWNER\"\n\tRoleReader
-      <a href=\"#aclrole\">ACLRole</a> = \"READER\"\n\tRoleWriter <a href=\"#aclrole\">ACLRole</a>
+    content: "const (\n\tRoleOwner  <a href=\"#cloud_google_com_go_storage_ACLRole\">ACLRole</a>
+      = \"OWNER\"\n\tRoleReader <a href=\"#cloud_google_com_go_storage_ACLRole\">ACLRole</a>
+      = \"READER\"\n\tRoleWriter <a href=\"#cloud_google_com_go_storage_ACLRole\">ACLRole</a>
       = \"WRITER\"\n)"
 - uid: cloud.google.com/go/storage.ACLRule
   name: ACLRule
@@ -437,11 +441,11 @@ items:
   langs:
   - go
   syntax:
-    content: "type ACLRule struct {\n\tEntity      <a href=\"#aclentity\">ACLEntity</a>\n\tEntityID
+    content: "type ACLRule struct {\n\tEntity      <a href=\"#cloud_google_com_go_storage_ACLEntity\">ACLEntity</a>\n\tEntityID
       \   <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tRole        <a
-      href=\"#aclrole\">ACLRole</a>\n\tDomain      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tEmail
-      \      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tProjectTeam
-      *<a href=\"#projectteam\">ProjectTeam</a>\n}"
+      href=\"#cloud_google_com_go_storage_ACLRole\">ACLRole</a>\n\tDomain      <a
+      href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tEmail       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\tProjectTeam
+      *<a href=\"#cloud_google_com_go_storage_ProjectTeam\">ProjectTeam</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrs
   name: BucketAttrs
   id: BucketAttrs
@@ -455,16 +459,16 @@ items:
   syntax:
     content: "type BucketAttrs struct {\n\t// Name is the name of the bucket.\n\t//
       This field is read-only.\n\tName <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      ACL is the list of access control rules on the bucket.\n\tACL []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      ACL is the list of access control rules on the bucket.\n\tACL []<a href=\"#cloud_google_com_go_storage_ACLRule\">ACLRule</a>\n\n\t//
       BucketPolicyOnly is an alias for UniformBucketLevelAccess. Use of\n\t// UniformBucketLevelAccess
       is recommended above the use of this field.\n\t// Setting BucketPolicyOnly.Enabled
       OR UniformBucketLevelAccess.Enabled to\n\t// true, will enable UniformBucketLevelAccess.\n\tBucketPolicyOnly
-      <a href=\"#bucketpolicyonly\">BucketPolicyOnly</a>\n\n\t// UniformBucketLevelAccess
-      configures access checks to use only bucket-level IAM\n\t// policies and ignore
-      any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
-      for more information.\n\tUniformBucketLevelAccess <a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>\n\n\t//
+      <a href=\"#cloud_google_com_go_storage_BucketPolicyOnly\">BucketPolicyOnly</a>\n\n\t//
+      UniformBucketLevelAccess configures access checks to use only bucket-level IAM\n\t//
+      policies and ignore any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
+      for more information.\n\tUniformBucketLevelAccess <a href=\"#cloud_google_com_go_storage_UniformBucketLevelAccess\">UniformBucketLevelAccess</a>\n\n\t//
       DefaultObjectACL is the list of access controls to\n\t// apply to new objects
-      when no object ACL is provided.\n\tDefaultObjectACL []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      when no object ACL is provided.\n\tDefaultObjectACL []<a href=\"#cloud_google_com_go_storage_ACLRule\">ACLRule</a>\n\n\t//
       DefaultEventBasedHold is the default value for event-based hold on\n\t// newly
       created objects in this bucket. It defaults to false.\n\tDefaultEventBasedHold
       <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// If not empty, applies
@@ -495,21 +499,22 @@ items:
       operations on Requester Pays buckets must provide\n\t// a user project (see
       BucketHandle.UserProject), which will be billed\n\t// for the operations.\n\tRequesterPays
       <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t// Lifecycle is the
-      lifecycle configuration for objects in the bucket.\n\tLifecycle <a href=\"#lifecycle\">Lifecycle</a>\n\n\t//
+      lifecycle configuration for objects in the bucket.\n\tLifecycle <a href=\"#cloud_google_com_go_storage_Lifecycle\">Lifecycle</a>\n\n\t//
       Retention policy enforces a minimum retention time for all objects\n\t// contained
       in the bucket. A RetentionPolicy of nil implies the bucket\n\t// has no minimum
       data retention.\n\t//\n\t// This feature is in private alpha release. It is
       not currently available to\n\t// most customers. It might be changed in backwards-incompatible
       ways and is not\n\t// subject to any SLA or deprecation policy.\n\tRetentionPolicy
-      *<a href=\"#retentionpolicy\">RetentionPolicy</a>\n\n\t// The bucket's Cross-Origin
-      Resource Sharing (CORS) configuration.\n\tCORS []<a href=\"#cors\">CORS</a>\n\n\t//
-      The encryption configuration used by default for newly inserted objects.\n\tEncryption
-      *<a href=\"#bucketencryption\">BucketEncryption</a>\n\n\t// The logging configuration.\n\tLogging
-      *<a href=\"#bucketlogging\">BucketLogging</a>\n\n\t// The website configuration.\n\tWebsite
-      *<a href=\"#bucketwebsite\">BucketWebsite</a>\n\n\t// Etag is the HTTP/1.1 Entity
-      tag for the bucket.\n\t// This field is read-only.\n\tEtag <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
-      LocationType describes how data is stored and replicated.\n\t// Typical values
-      are \"multi-region\", \"region\" and \"dual-region\".\n\t// This field is read-only.\n\tLocationType
+      *<a href=\"#cloud_google_com_go_storage_RetentionPolicy\">RetentionPolicy</a>\n\n\t//
+      The bucket's Cross-Origin Resource Sharing (CORS) configuration.\n\tCORS []<a
+      href=\"#cloud_google_com_go_storage_CORS\">CORS</a>\n\n\t// The encryption configuration
+      used by default for newly inserted objects.\n\tEncryption *<a href=\"#cloud_google_com_go_storage_BucketEncryption\">BucketEncryption</a>\n\n\t//
+      The logging configuration.\n\tLogging *<a href=\"#cloud_google_com_go_storage_BucketLogging\">BucketLogging</a>\n\n\t//
+      The website configuration.\n\tWebsite *<a href=\"#cloud_google_com_go_storage_BucketWebsite\">BucketWebsite</a>\n\n\t//
+      Etag is the HTTP/1.1 Entity tag for the bucket.\n\t// This field is read-only.\n\tEtag
+      <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// LocationType
+      describes how data is stored and replicated.\n\t// Typical values are \"multi-region\",
+      \"region\" and \"dual-region\".\n\t// This field is read-only.\n\tLocationType
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate
   name: BucketAttrsToUpdate
@@ -535,24 +540,24 @@ items:
       OR UniformBucketLevelAccess.Enabled to\n\t// true, will enable UniformBucketLevelAccess.
       If both BucketPolicyOnly and\n\t// UniformBucketLevelAccess are set, the value
       of UniformBucketLevelAccess\n\t// will take precedence.\n\tBucketPolicyOnly
-      *<a href=\"#bucketpolicyonly\">BucketPolicyOnly</a>\n\n\t// UniformBucketLevelAccess
-      configures access checks to use only bucket-level IAM\n\t// policies and ignore
-      any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
-      for more information.\n\tUniformBucketLevelAccess *<a href=\"#uniformbucketlevelaccess\">UniformBucketLevelAccess</a>\n\n\t//
+      *<a href=\"#cloud_google_com_go_storage_BucketPolicyOnly\">BucketPolicyOnly</a>\n\n\t//
+      UniformBucketLevelAccess configures access checks to use only bucket-level IAM\n\t//
+      policies and ignore any ACL rules for the bucket.\n\t// See https://cloud.google.com/storage/docs/uniform-bucket-level-access\n\t//
+      for more information.\n\tUniformBucketLevelAccess *<a href=\"#cloud_google_com_go_storage_UniformBucketLevelAccess\">UniformBucketLevelAccess</a>\n\n\t//
       If set, updates the retention policy of the bucket. Using\n\t// RetentionPolicy.RetentionPeriod
       = 0 will delete the existing policy.\n\t//\n\t// This feature is in private
       alpha release. It is not currently available to\n\t// most customers. It might
       be changed in backwards-incompatible ways and is not\n\t// subject to any SLA
-      or deprecation policy.\n\tRetentionPolicy *<a href=\"#retentionpolicy\">RetentionPolicy</a>\n\n\t//
+      or deprecation policy.\n\tRetentionPolicy *<a href=\"#cloud_google_com_go_storage_RetentionPolicy\">RetentionPolicy</a>\n\n\t//
       If set, replaces the CORS configuration with a new configuration.\n\t// An empty
       (rather than nil) slice causes all CORS policies to be removed.\n\tCORS []<a
-      href=\"#cors\">CORS</a>\n\n\t// If set, replaces the encryption configuration
-      of the bucket. Using\n\t// BucketEncryption.DefaultKMSKeyName = \"\" will delete
-      the existing\n\t// configuration.\n\tEncryption *<a href=\"#bucketencryption\">BucketEncryption</a>\n\n\t//
+      href=\"#cloud_google_com_go_storage_CORS\">CORS</a>\n\n\t// If set, replaces
+      the encryption configuration of the bucket. Using\n\t// BucketEncryption.DefaultKMSKeyName
+      = \"\" will delete the existing\n\t// configuration.\n\tEncryption *<a href=\"#cloud_google_com_go_storage_BucketEncryption\">BucketEncryption</a>\n\n\t//
       If set, replaces the lifecycle configuration of the bucket.\n\tLifecycle *<a
-      href=\"#lifecycle\">Lifecycle</a>\n\n\t// If set, replaces the logging configuration
-      of the bucket.\n\tLogging *<a href=\"#bucketlogging\">BucketLogging</a>\n\n\t//
-      If set, replaces the website configuration of the bucket.\n\tWebsite *<a href=\"#bucketwebsite\">BucketWebsite</a>\n\n\t//
+      href=\"#cloud_google_com_go_storage_Lifecycle\">Lifecycle</a>\n\n\t// If set,
+      replaces the logging configuration of the bucket.\n\tLogging *<a href=\"#cloud_google_com_go_storage_BucketLogging\">BucketLogging</a>\n\n\t//
+      If set, replaces the website configuration of the bucket.\n\tWebsite *<a href=\"#cloud_google_com_go_storage_BucketWebsite\">BucketWebsite</a>\n\n\t//
       If not empty, applies a predefined set of access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedACL
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// If not empty,
       applies a predefined set of default object access controls.\n\t// See https://cloud.google.com/storage/docs/json_api/v1/buckets/patch.\n\tPredefinedDefaultObjectACL
@@ -570,8 +575,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (ua *<a href="#bucketattrstoupdate">BucketAttrsToUpdate</a>) DeleteLabel(name
-      <a href="https://pkg.go.dev/builtin#string">string</a>)
+    content: func (ua *<a href="#cloud_google_com_go_storage_BucketAttrsToUpdate">BucketAttrsToUpdate</a>)
+      DeleteLabel(name <a href="https://pkg.go.dev/builtin#string">string</a>)
 - uid: cloud.google.com/go/storage.BucketAttrsToUpdate.SetLabel
   name: |
     func (*BucketAttrsToUpdate) SetLabel
@@ -584,8 +589,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (ua *<a href="#bucketattrstoupdate">BucketAttrsToUpdate</a>) SetLabel(name,
-      value <a href="https://pkg.go.dev/builtin#string">string</a>)
+    content: func (ua *<a href="#cloud_google_com_go_storage_BucketAttrsToUpdate">BucketAttrsToUpdate</a>)
+      SetLabel(name, value <a href="https://pkg.go.dev/builtin#string">string</a>)
 - uid: cloud.google.com/go/storage.BucketConditions
   name: BucketConditions
   id: BucketConditions
@@ -653,7 +658,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) ACL() *<a href="#aclhandle">ACLHandle</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      ACL() *<a href="#cloud_google_com_go_storage_ACLHandle">ACLHandle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.AddNotification
   name: |
     func (*BucketHandle) AddNotification
@@ -667,10 +673,11 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) AddNotification(ctx
-      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
-      n *<a href="#notification">Notification</a>) (ret *<a href="#notification">Notification</a>,
-      err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      AddNotification(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      n *<a href="#cloud_google_com_go_storage_Notification">Notification</a>) (ret
+      *<a href="#cloud_google_com_go_storage_Notification">Notification</a>, err <a
+      href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -689,8 +696,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Attrs(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (attrs *<a href="#bucketattrs">BucketAttrs</a>,
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Attrs(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (attrs *<a href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
@@ -709,9 +717,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Create(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, projectID <a href="https://pkg.go.dev/builtin#string">string</a>,
-      attrs *<a href="#bucketattrs">BucketAttrs</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Create(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      projectID <a href="https://pkg.go.dev/builtin#string">string</a>, attrs *<a
+      href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -730,8 +739,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) DefaultObjectACL()
-      *<a href="#aclhandle">ACLHandle</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      DefaultObjectACL() *<a href="#cloud_google_com_go_storage_ACLHandle">ACLHandle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.Delete
   name: |
     func (*BucketHandle) Delete
@@ -743,8 +752,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -761,8 +771,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) DeleteNotification(ctx
-      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      DeleteNotification(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
       id <a href="https://pkg.go.dev/builtin#string">string</a>) (err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
@@ -782,8 +792,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) IAM() *<a href="https://pkg.go.dev/cloud.google.com/go/iam">iam</a>.<a
-      href="https://pkg.go.dev/cloud.google.com/go/iam#Handle">Handle</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      IAM() *<a href="https://pkg.go.dev/cloud.google.com/go/iam">iam</a>.<a href="https://pkg.go.dev/cloud.google.com/go/iam#Handle">Handle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.If
   name: |
     func (*BucketHandle) If
@@ -799,8 +809,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) If(conds <a href="#bucketconditions">BucketConditions</a>)
-      *<a href="#buckethandle">BucketHandle</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      If(conds <a href="#cloud_google_com_go_storage_BucketConditions">BucketConditions</a>)
+      *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.LockRetentionPolicy
   name: |
     func (*BucketHandle) LockRetentionPolicy
@@ -820,9 +831,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) LockRetentionPolicy(ctx
-      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
-      <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      LockRetentionPolicy(ctx <a href="https://pkg.go.dev/context">context</a>.<a
+      href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -844,9 +855,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Notifications(ctx
-      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
-      (n map[<a href="https://pkg.go.dev/builtin#string">string</a>]*<a href="#notification">Notification</a>,
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Notifications(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (n map[<a href="https://pkg.go.dev/builtin#string">string</a>]*<a href="#cloud_google_com_go_storage_Notification">Notification</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
@@ -870,8 +881,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Object(name <a href="https://pkg.go.dev/builtin#string">string</a>)
-      *<a href="#objecthandle">ObjectHandle</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Object(name <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.Objects
   name: |
     func (*BucketHandle) Objects
@@ -886,9 +897,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Objects(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, q *<a href="#query">Query</a>)
-      *<a href="#objectiterator">ObjectIterator</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Objects(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      q *<a href="#cloud_google_com_go_storage_Query">Query</a>) *<a href="#cloud_google_com_go_storage_ObjectIterator">ObjectIterator</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -905,9 +916,11 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) Update(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, uattrs <a href="#bucketattrstoupdate">BucketAttrsToUpdate</a>)
-      (attrs *<a href="#bucketattrs">BucketAttrs</a>, err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      Update(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      uattrs <a href="#cloud_google_com_go_storage_BucketAttrsToUpdate">BucketAttrsToUpdate</a>)
+      (attrs *<a href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>,
+      err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -938,8 +951,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (b *<a href="#buckethandle">BucketHandle</a>) UserProject(projectID
-      <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#buckethandle">BucketHandle</a>
+    content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
+      UserProject(projectID <a href="https://pkg.go.dev/builtin#string">string</a>)
+      *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>
 - uid: cloud.google.com/go/storage.BucketIterator
   name: BucketIterator
   id: BucketIterator
@@ -970,7 +984,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (it *<a href="#bucketiterator">BucketIterator</a>) Next() (*<a href="#bucketattrs">BucketAttrs</a>,
+    content: func (it *<a href="#cloud_google_com_go_storage_BucketIterator">BucketIterator</a>)
+      Next() (*<a href="#cloud_google_com_go_storage_BucketAttrs">BucketAttrs</a>,
       <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
@@ -991,8 +1006,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (it *<a href="#bucketiterator">BucketIterator</a>) PageInfo() *<a
-      href="https://pkg.go.dev/google.golang.org/api/iterator">iterator</a>.<a href="https://pkg.go.dev/google.golang.org/api/iterator#PageInfo">PageInfo</a>
+    content: func (it *<a href="#cloud_google_com_go_storage_BucketIterator">BucketIterator</a>)
+      PageInfo() *<a href="https://pkg.go.dev/google.golang.org/api/iterator">iterator</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/iterator#PageInfo">PageInfo</a>
 - uid: cloud.google.com/go/storage.BucketLogging
   name: BucketLogging
   id: BucketLogging
@@ -1099,7 +1115,7 @@ items:
     content: func NewClient(ctx <a href="https://pkg.go.dev/context">context</a>.<a
       href="https://pkg.go.dev/context#Context">Context</a>, opts ...<a href="https://pkg.go.dev/google.golang.org/api/option">option</a>.<a
       href="https://pkg.go.dev/google.golang.org/api/option#ClientOption">ClientOption</a>)
-      (*<a href="#client">Client</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+      (*<a href="#cloud_google_com_go_storage_Client">Client</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\t// Use Google Application Default
@@ -1131,8 +1147,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) Bucket(name <a href="https://pkg.go.dev/builtin#string">string</a>)
-      *<a href="#buckethandle">BucketHandle</a>
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) Bucket(name
+      <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>
 - uid: cloud.google.com/go/storage.Client.Buckets
   name: |
     func (*Client) Buckets
@@ -1149,9 +1165,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) Buckets(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, projectID <a href="https://pkg.go.dev/builtin#string">string</a>)
-      *<a href="#bucketiterator">BucketIterator</a>
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) Buckets(ctx
+      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      projectID <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#cloud_google_com_go_storage_BucketIterator">BucketIterator</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -1170,7 +1186,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) Close() <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) Close()
+      <a href="https://pkg.go.dev/builtin#error">error</a>
 - uid: cloud.google.com/go/storage.Client.CreateHMACKey
   name: |
     func (*Client) CreateHMACKey
@@ -1184,10 +1201,11 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) CreateHMACKey(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, projectID, serviceAccountEmail
-      <a href="https://pkg.go.dev/builtin#string">string</a>, opts ...<a href="#hmackeyoption">HMACKeyOption</a>)
-      (*<a href="#hmackey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) CreateHMACKey(ctx
+      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      projectID, serviceAccountEmail <a href="https://pkg.go.dev/builtin#string">string</a>,
+      opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
+      (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -1207,8 +1225,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) HMACKeyHandle(projectID, accessID
-      <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#hmackeyhandle">HMACKeyHandle</a>
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) HMACKeyHandle(projectID,
+      accessID <a href="https://pkg.go.dev/builtin#string">string</a>) *<a href="#cloud_google_com_go_storage_HMACKeyHandle">HMACKeyHandle</a>
 - uid: cloud.google.com/go/storage.Client.ListHMACKeys
   name: |
     func (*Client) ListHMACKeys
@@ -1224,9 +1242,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) ListHMACKeys(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, projectID <a href="https://pkg.go.dev/builtin#string">string</a>,
-      opts ...<a href="#hmackeyoption">HMACKeyOption</a>) *<a href="#hmackeysiterator">HMACKeysIterator</a>
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) ListHMACKeys(ctx
+      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      projectID <a href="https://pkg.go.dev/builtin#string">string</a>, opts ...<a
+      href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>) *<a href="#cloud_google_com_go_storage_HMACKeysIterator">HMACKeysIterator</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -1260,9 +1279,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#client">Client</a>) ServiceAccount(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, projectID <a href="https://pkg.go.dev/builtin#string">string</a>)
-      (<a href="https://pkg.go.dev/builtin#string">string</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (c *<a href="#cloud_google_com_go_storage_Client">Client</a>) ServiceAccount(ctx
+      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      projectID <a href="https://pkg.go.dev/builtin#string">string</a>) (<a href="https://pkg.go.dev/builtin#string">string</a>,
+      <a href="https://pkg.go.dev/builtin#error">error</a>)
 - uid: cloud.google.com/go/storage.Composer
   name: Composer
   id: Composer
@@ -1278,13 +1298,13 @@ items:
     content: "type Composer struct {\n\t// ObjectAttrs are optional attributes to
       set on the destination object.\n\t// Any attributes must be initialized before
       any calls on the Composer. Nil\n\t// or zero-valued attributes are ignored.\n\t<a
-      href=\"#objectattrs\">ObjectAttrs</a>\n\n\t// SendCRC specifies whether to transmit
-      a CRC32C field. It should be set\n\t// to true in addition to setting the Composer's
-      CRC32C field, because zero\n\t// is a valid CRC and normally a zero would not
-      be transmitted.\n\t// If a CRC32C is sent, and the data in the destination object
-      does not match\n\t// the checksum, the compose will be rejected.\n\tSendCRC32C
-      <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t// contains filtered
-      or unexported fields\n}"
+      href=\"#cloud_google_com_go_storage_ObjectAttrs\">ObjectAttrs</a>\n\n\t// SendCRC
+      specifies whether to transmit a CRC32C field. It should be set\n\t// to true
+      in addition to setting the Composer's CRC32C field, because zero\n\t// is a
+      valid CRC and normally a zero would not be transmitted.\n\t// If a CRC32C is
+      sent, and the data in the destination object does not match\n\t// the checksum,
+      the compose will be rejected.\n\tSendCRC32C <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\t//
+      contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Composer.Run
   name: |
     func (*Composer) Run
@@ -1296,8 +1316,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#composer">Composer</a>) Run(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (attrs *<a href="#objectattrs">ObjectAttrs</a>,
+    content: func (c *<a href="#cloud_google_com_go_storage_Composer">Composer</a>)
+      Run(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (attrs *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
@@ -1355,10 +1376,10 @@ items:
     content: "type Copier struct {\n\t// ObjectAttrs are optional attributes to set
       on the destination object.\n\t// Any attributes must be initialized before any
       calls on the Copier. Nil\n\t// or zero-valued attributes are ignored.\n\t<a
-      href=\"#objectattrs\">ObjectAttrs</a>\n\n\t// RewriteToken can be set before
-      calling Run to resume a copy\n\t// operation. After Run returns a non-nil error,
-      RewriteToken will\n\t// have been updated to contain the value needed to resume
-      the copy.\n\tRewriteToken <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
+      href=\"#cloud_google_com_go_storage_ObjectAttrs\">ObjectAttrs</a>\n\n\t// RewriteToken
+      can be set before calling Run to resume a copy\n\t// operation. After Run returns
+      a non-nil error, RewriteToken will\n\t// have been updated to contain the value
+      needed to resume the copy.\n\tRewriteToken <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t//
       ProgressFunc can be used to monitor the progress of a multi-RPC copy\n\t// operation.
       If ProgressFunc is not nil and copying requires multiple\n\t// calls to the
       underlying service (see\n\t// https://cloud.google.com/storage/docs/json_api/v1/objects/rewrite),
@@ -1386,8 +1407,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (c *<a href="#copier">Copier</a>) Run(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (attrs *<a href="#objectattrs">ObjectAttrs</a>,
+    content: func (c *<a href="#cloud_google_com_go_storage_Copier">Copier</a>) Run(ctx
+      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (attrs *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
@@ -1436,7 +1458,7 @@ items:
       modification time of the HMAC key metadata.\n\tUpdatedTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// State is the state of
       the HMAC key.\n\t// It can be one of StateActive, StateInactive or StateDeleted.\n\tState
-      <a href=\"#hmacstate\">HMACState</a>\n}"
+      <a href=\"#cloud_google_com_go_storage_HMACState\">HMACState</a>\n}"
 - uid: cloud.google.com/go/storage.HMACKeyAttrsToUpdate
   name: HMACKeyAttrsToUpdate
   id: HMACKeyAttrsToUpdate
@@ -1450,7 +1472,7 @@ items:
   - go
   syntax:
     content: "type HMACKeyAttrsToUpdate struct {\n\t// State is required and must
-      be either StateActive or StateInactive.\n\tState <a href=\"#hmacstate\">HMACState</a>\n\n\t//
+      be either StateActive or StateInactive.\n\tState <a href=\"#cloud_google_com_go_storage_HMACState\">HMACState</a>\n\n\t//
       Etag is an optional field and it is the HTTP/1.1 Entity tag.\n\tEtag <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
 - uid: cloud.google.com/go/storage.HMACKeyHandle
   name: HMACKeyHandle
@@ -1480,9 +1502,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (hkh *<a href="#hmackeyhandle">HMACKeyHandle</a>) Delete(ctx <a
-      href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
-      opts ...<a href="#hmackeyoption">HMACKeyOption</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (hkh *<a href="#cloud_google_com_go_storage_HMACKeyHandle">HMACKeyHandle</a>)
+      Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
+      <a href="https://pkg.go.dev/builtin#error">error</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -1507,9 +1530,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (hkh *<a href="#hmackeyhandle">HMACKeyHandle</a>) Get(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, opts ...<a href="#hmackeyoption">HMACKeyOption</a>)
-      (*<a href="#hmackey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (hkh *<a href="#cloud_google_com_go_storage_HMACKeyHandle">HMACKeyHandle</a>)
+      Get(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
+      (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -1529,10 +1553,11 @@ items:
   langs:
   - go
   syntax:
-    content: func (h *<a href="#hmackeyhandle">HMACKeyHandle</a>) Update(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, au <a href="#hmackeyattrstoupdate">HMACKeyAttrsToUpdate</a>,
-      opts ...<a href="#hmackeyoption">HMACKeyOption</a>) (*<a href="#hmackey">HMACKey</a>,
-      <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (h *<a href="#cloud_google_com_go_storage_HMACKeyHandle">HMACKeyHandle</a>)
+      Update(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      au <a href="#cloud_google_com_go_storage_HMACKeyAttrsToUpdate">HMACKeyAttrsToUpdate</a>,
+      opts ...<a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>)
+      (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -1572,7 +1597,7 @@ items:
   - go
   syntax:
     content: func ForHMACKeyServiceAccountEmail(serviceAccountEmail <a href="https://pkg.go.dev/builtin#string">string</a>)
-      <a href="#hmackeyoption">HMACKeyOption</a>
+      <a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>
 - uid: cloud.google.com/go/storage.HMACKeyOption.ShowDeletedHMACKeys
   name: |
     func ShowDeletedHMACKeys
@@ -1586,7 +1611,7 @@ items:
   langs:
   - go
   syntax:
-    content: func ShowDeletedHMACKeys() <a href="#hmackeyoption">HMACKeyOption</a>
+    content: func ShowDeletedHMACKeys() <a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>
 - uid: cloud.google.com/go/storage.HMACKeyOption.UserProjectForHMACKeys
   name: |
     func UserProjectForHMACKeys
@@ -1604,7 +1629,7 @@ items:
   - go
   syntax:
     content: func UserProjectForHMACKeys(userProjectID <a href="https://pkg.go.dev/builtin#string">string</a>)
-      <a href="#hmackeyoption">HMACKeyOption</a>
+      <a href="#cloud_google_com_go_storage_HMACKeyOption">HMACKeyOption</a>
 - uid: cloud.google.com/go/storage.HMACKeysIterator
   name: HMACKeysIterator
   id: HMACKeysIterator
@@ -1638,8 +1663,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (it *<a href="#hmackeysiterator">HMACKeysIterator</a>) Next() (*<a
-      href="#hmackey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (it *<a href="#cloud_google_com_go_storage_HMACKeysIterator">HMACKeysIterator</a>)
+      Next() (*<a href="#cloud_google_com_go_storage_HMACKey">HMACKey</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
 - uid: cloud.google.com/go/storage.HMACKeysIterator.PageInfo
   name: |
     func (*HMACKeysIterator) PageInfo
@@ -1655,8 +1680,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (it *<a href="#hmackeysiterator">HMACKeysIterator</a>) PageInfo()
-      *<a href="https://pkg.go.dev/google.golang.org/api/iterator">iterator</a>.<a
+    content: func (it *<a href="#cloud_google_com_go_storage_HMACKeysIterator">HMACKeysIterator</a>)
+      PageInfo() *<a href="https://pkg.go.dev/google.golang.org/api/iterator">iterator</a>.<a
       href="https://pkg.go.dev/google.golang.org/api/iterator#PageInfo">PageInfo</a>
 - uid: cloud.google.com/go/storage.HMACState
   name: HMACState
@@ -1680,13 +1705,13 @@ items:
   - go
   syntax:
     content: "const (\n\t// Active is the status for an active key that can be used
-      to sign\n\t// requests.\n\tActive <a href=\"#hmacstate\">HMACState</a> = \"ACTIVE\"\n\n\t//
-      Inactive is the status for an inactive key thus requests signed by\n\t// this
-      key will be denied.\n\tInactive <a href=\"#hmacstate\">HMACState</a> = \"INACTIVE\"\n\n\t//
-      Deleted is the status for a key that is deleted.\n\t// Once in this state the
-      key cannot key cannot be recovered\n\t// and does not count towards key limits.
-      Deleted keys will be cleaned\n\t// up later.\n\tDeleted <a href=\"#hmacstate\">HMACState</a>
-      = \"DELETED\"\n)"
+      to sign\n\t// requests.\n\tActive <a href=\"#cloud_google_com_go_storage_HMACState\">HMACState</a>
+      = \"ACTIVE\"\n\n\t// Inactive is the status for an inactive key thus requests
+      signed by\n\t// this key will be denied.\n\tInactive <a href=\"#cloud_google_com_go_storage_HMACState\">HMACState</a>
+      = \"INACTIVE\"\n\n\t// Deleted is the status for a key that is deleted.\n\t//
+      Once in this state the key cannot key cannot be recovered\n\t// and does not
+      count towards key limits. Deleted keys will be cleaned\n\t// up later.\n\tDeleted
+      <a href=\"#cloud_google_com_go_storage_HMACState\">HMACState</a> = \"DELETED\"\n)"
 - uid: cloud.google.com/go/storage.Lifecycle
   name: Lifecycle
   id: Lifecycle
@@ -1697,7 +1722,7 @@ items:
   langs:
   - go
   syntax:
-    content: "type Lifecycle struct {\n\tRules []<a href=\"#lifecyclerule\">LifecycleRule</a>\n}"
+    content: "type Lifecycle struct {\n\tRules []<a href=\"#cloud_google_com_go_storage_LifecycleRule\">LifecycleRule</a>\n}"
 - uid: cloud.google.com/go/storage.LifecycleAction
   name: LifecycleAction
   id: LifecycleAction
@@ -1743,7 +1768,7 @@ items:
       is the days elapsed since the noncurrent timestamp\n\t// of the object. This
       condition is relevant only for versioned objects.\n\tDaysSinceNoncurrentTime
       <a href=\"https://pkg.go.dev/builtin#int64\">int64</a>\n\n\t// Liveness specifies
-      the object's liveness. Relevant only for versioned objects\n\tLiveness <a href=\"#liveness\">Liveness</a>\n\n\t//
+      the object's liveness. Relevant only for versioned objects\n\tLiveness <a href=\"#cloud_google_com_go_storage_Liveness\">Liveness</a>\n\n\t//
       MatchesStorageClasses is the condition matching the object's storage\n\t// class.\n\t//\n\t//
       Values include \"STANDARD\", \"NEARLINE\", \"COLDLINE\" and \"ARCHIVE\".\n\tMatchesStorageClasses
       []<a href=\"https://pkg.go.dev/builtin#string\">string</a>\n\n\t// NoncurrentTimeBefore
@@ -1769,9 +1794,9 @@ items:
   - go
   syntax:
     content: "type LifecycleRule struct {\n\t// Action is the action to take when
-      all of the associated conditions are\n\t// met.\n\tAction <a href=\"#lifecycleaction\">LifecycleAction</a>\n\n\t//
+      all of the associated conditions are\n\t// met.\n\tAction <a href=\"#cloud_google_com_go_storage_LifecycleAction\">LifecycleAction</a>\n\n\t//
       Condition is the set of conditions that must be met for the associated\n\t//
-      action to be taken.\n\tCondition <a href=\"#lifecyclecondition\">LifecycleCondition</a>\n}"
+      action to be taken.\n\tCondition <a href=\"#cloud_google_com_go_storage_LifecycleCondition\">LifecycleCondition</a>\n}"
 - uid: cloud.google.com/go/storage.Liveness
   name: Liveness
   id: Liveness
@@ -1792,7 +1817,7 @@ items:
   - go
   syntax:
     content: "const (\n\t// LiveAndArchived includes both live and archived objects.\n\tLiveAndArchived
-      <a href=\"#liveness\">Liveness</a> = <a href=\"https://pkg.go.dev/builtin#iota\">iota</a>\n\t//
+      <a href=\"#cloud_google_com_go_storage_Liveness\">Liveness</a> = <a href=\"https://pkg.go.dev/builtin#iota\">iota</a>\n\t//
       Live specifies that the object is still live.\n\tLive\n\t// Archived specifies
       that the object is archived.\n\tArchived\n)"
 - uid: cloud.google.com/go/storage.Notification
@@ -1849,7 +1874,7 @@ items:
       earliest time that the object's retention period expires.\n\t// This is a read-only
       field.\n\tRetentionExpirationTime <a href=\"https://pkg.go.dev/time\">time</a>.<a
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// ACL is the list of access
-      control rules for the object.\n\tACL []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      control rules for the object.\n\tACL []<a href=\"#cloud_google_com_go_storage_ACLRule\">ACLRule</a>\n\n\t//
       If not empty, applies a predefined set of access controls. It should be set\n\t//
       only when writing, copying or composing an object. When copying or composing,\n\t//
       it acts as the destinationPredefinedAcl parameter.\n\t// PredefinedACL is always
@@ -1952,7 +1977,7 @@ items:
       href=\"https://pkg.go.dev/cloud.google.com/go/internal/optional#String\">String</a>\n\tCustomTime
       \        <a href=\"https://pkg.go.dev/time\">time</a>.<a href=\"https://pkg.go.dev/time#Time\">Time</a>\n\tMetadata
       \          map[<a href=\"https://pkg.go.dev/builtin#string\">string</a>]<a href=\"https://pkg.go.dev/builtin#string\">string</a>
-      // set to map[string]string{} to delete\n\tACL                []<a href=\"#aclrule\">ACLRule</a>\n\n\t//
+      // set to map[string]string{} to delete\n\tACL                []<a href=\"#cloud_google_com_go_storage_ACLRule\">ACLRule</a>\n\n\t//
       If not empty, applies a predefined set of access controls. ACL must be nil.\n\t//
       See https://cloud.google.com/storage/docs/json_api/v1/objects/patch.\n\tPredefinedACL
       <a href=\"https://pkg.go.dev/builtin#string\">string</a>\n}"
@@ -1989,7 +2014,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) ACL() *<a href="#aclhandle">ACLHandle</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      ACL() *<a href="#cloud_google_com_go_storage_ACLHandle">ACLHandle</a>
 - uid: cloud.google.com/go/storage.ObjectHandle.Attrs
   name: |
     func (*ObjectHandle) Attrs
@@ -2002,8 +2028,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) Attrs(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (attrs *<a href="#objectattrs">ObjectAttrs</a>,
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      Attrs(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (attrs *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
@@ -2030,7 +2057,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) BucketName() <a href="https://pkg.go.dev/builtin#string">string</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      BucketName() <a href="https://pkg.go.dev/builtin#string">string</a>
 - uid: cloud.google.com/go/storage.ObjectHandle.ComposerFrom
   name: |
     func (*ObjectHandle) ComposerFrom
@@ -2048,8 +2076,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (dst *<a href="#objecthandle">ObjectHandle</a>) ComposerFrom(srcs
-      ...*<a href="#objecthandle">ObjectHandle</a>) *<a href="#composer">Composer</a>
+    content: func (dst *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      ComposerFrom(srcs ...*<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      *<a href="#cloud_google_com_go_storage_Composer">Composer</a>
 - uid: cloud.google.com/go/storage.ObjectHandle.CopierFrom
   name: |
     func (*ObjectHandle) CopierFrom
@@ -2066,8 +2095,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (dst *<a href="#objecthandle">ObjectHandle</a>) CopierFrom(src *<a
-      href="#objecthandle">ObjectHandle</a>) *<a href="#copier">Copier</a>
+    content: func (dst *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      CopierFrom(src *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      *<a href="#cloud_google_com_go_storage_Copier">Copier</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
       key1, key2 []byte\n\nfunc main() {\n\t// To rotate the encryption key on an
@@ -2088,8 +2118,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      Delete(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      <a href="https://pkg.go.dev/builtin#error">error</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -2118,8 +2149,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) Generation(gen <a
-      href="https://pkg.go.dev/builtin#int64">int64</a>) *<a href="#objecthandle">ObjectHandle</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      Generation(gen <a href="https://pkg.go.dev/builtin#int64">int64</a>) *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"io\"\n\t\"os\"\n)\n\nvar
       gen int64\n\nfunc main() {\n\t// Read an object's contents from generation gen,
@@ -2143,8 +2174,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) If(conds <a href="#conditions">Conditions</a>)
-      *<a href="#objecthandle">ObjectHandle</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      If(conds <a href="#cloud_google_com_go_storage_Conditions">Conditions</a>) *<a
+      href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"google.golang.org/api/googleapi\"\n\t\"io\"\n\t\"net/http\"\n\t\"os\"\n)\n\nvar
       gen int64\n\nfunc main() {\n\t// Read from an object only if the current generation
@@ -2172,8 +2204,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) Key(encryptionKey
-      []<a href="https://pkg.go.dev/builtin#byte">byte</a>) *<a href="#objecthandle">ObjectHandle</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      Key(encryptionKey []<a href="https://pkg.go.dev/builtin#byte">byte</a>) *<a
+      href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nvar
       secretKey []byte\n\nfunc main() {\n\tctx := context.Background()\n\tclient,
@@ -2202,10 +2235,10 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) NewRangeReader(ctx
-      <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      NewRangeReader(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
       offset, length <a href="https://pkg.go.dev/builtin#int64">int64</a>) (r *<a
-      href="#reader">Reader</a>, err <a href="https://pkg.go.dev/builtin#error">error</a>)
+      href="#cloud_google_com_go_storage_Reader">Reader</a>, err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -2245,9 +2278,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) NewReader(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) (*<a href="#reader">Reader</a>,
-      <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      NewReader(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      (*<a href="#cloud_google_com_go_storage_Reader">Reader</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"io/ioutil\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -2280,8 +2313,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) NewWriter(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>) *<a href="#writer">Writer</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      NewWriter(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>)
+      *<a href="#cloud_google_com_go_storage_Writer">Writer</a>
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -2298,7 +2332,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) ObjectName() <a href="https://pkg.go.dev/builtin#string">string</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      ObjectName() <a href="https://pkg.go.dev/builtin#string">string</a>
 - uid: cloud.google.com/go/storage.ObjectHandle.ReadCompressed
   name: |
     func (*ObjectHandle) ReadCompressed
@@ -2310,8 +2345,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) ReadCompressed(compressed
-      <a href="https://pkg.go.dev/builtin#bool">bool</a>) *<a href="#objecthandle">ObjectHandle</a>
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      ReadCompressed(compressed <a href="https://pkg.go.dev/builtin#bool">bool</a>)
+      *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>
 - uid: cloud.google.com/go/storage.ObjectHandle.Update
   name: |
     func (*ObjectHandle) Update
@@ -2325,9 +2361,11 @@ items:
   langs:
   - go
   syntax:
-    content: func (o *<a href="#objecthandle">ObjectHandle</a>) Update(ctx <a href="https://pkg.go.dev/context">context</a>.<a
-      href="https://pkg.go.dev/context#Context">Context</a>, uattrs <a href="#objectattrstoupdate">ObjectAttrsToUpdate</a>)
-      (oa *<a href="#objectattrs">ObjectAttrs</a>, err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (o *<a href="#cloud_google_com_go_storage_ObjectHandle">ObjectHandle</a>)
+      Update(ctx <a href="https://pkg.go.dev/context">context</a>.<a href="https://pkg.go.dev/context#Context">Context</a>,
+      uattrs <a href="#cloud_google_com_go_storage_ObjectAttrsToUpdate">ObjectAttrsToUpdate</a>)
+      (oa *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>, err
+      <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -2368,7 +2406,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (it *<a href="#objectiterator">ObjectIterator</a>) Next() (*<a href="#objectattrs">ObjectAttrs</a>,
+    content: func (it *<a href="#cloud_google_com_go_storage_ObjectIterator">ObjectIterator</a>)
+      Next() (*<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>,
       <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n\t\"google.golang.org/api/iterator\"\n)\n\nfunc
@@ -2389,8 +2428,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (it *<a href="#objectiterator">ObjectIterator</a>) PageInfo() *<a
-      href="https://pkg.go.dev/google.golang.org/api/iterator">iterator</a>.<a href="https://pkg.go.dev/google.golang.org/api/iterator#PageInfo">PageInfo</a>
+    content: func (it *<a href="#cloud_google_com_go_storage_ObjectIterator">ObjectIterator</a>)
+      PageInfo() *<a href="https://pkg.go.dev/google.golang.org/api/iterator">iterator</a>.<a
+      href="https://pkg.go.dev/google.golang.org/api/iterator#PageInfo">PageInfo</a>
 - uid: cloud.google.com/go/storage.PolicyV4Fields
   name: PolicyV4Fields
   id: PolicyV4Fields
@@ -2448,8 +2488,8 @@ items:
   - go
   syntax:
     content: func GenerateSignedPostPolicyV4(bucket, object <a href="https://pkg.go.dev/builtin#string">string</a>,
-      opts *<a href="#postpolicyv4options">PostPolicyV4Options</a>) (*<a href="#postpolicyv4">PostPolicyV4</a>,
-      <a href="https://pkg.go.dev/builtin#error">error</a>)
+      opts *<a href="#cloud_google_com_go_storage_PostPolicyV4Options">PostPolicyV4Options</a>)
+      (*<a href="#cloud_google_com_go_storage_PostPolicyV4">PostPolicyV4</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"bytes\"\n\t\"cloud.google.com/go/storage\"\n\t\"io\"\n\t\"mime/multipart\"\n\t\"net/http\"\n\t\"time\"\n)\n\nfunc
       main() {\n\tpv4, err := storage.GenerateSignedPostPolicyV4(\"my-bucket\", \"my-object.txt\",
@@ -2501,7 +2541,7 @@ items:
   - go
   syntax:
     content: func ConditionContentLengthRange(start, end <a href="https://pkg.go.dev/builtin#uint64">uint64</a>)
-      <a href="#postpolicyv4condition">PostPolicyV4Condition</a>
+      <a href="#cloud_google_com_go_storage_PostPolicyV4Condition">PostPolicyV4Condition</a>
 - uid: cloud.google.com/go/storage.PostPolicyV4Condition.ConditionStartsWith
   name: |
     func ConditionStartsWith
@@ -2515,7 +2555,7 @@ items:
   - go
   syntax:
     content: func ConditionStartsWith(key, value <a href="https://pkg.go.dev/builtin#string">string</a>)
-      <a href="#postpolicyv4condition">PostPolicyV4Condition</a>
+      <a href="#cloud_google_com_go_storage_PostPolicyV4Condition">PostPolicyV4Condition</a>
 - uid: cloud.google.com/go/storage.PostPolicyV4Options
   name: PostPolicyV4Options
   id: PostPolicyV4Options
@@ -2557,16 +2597,16 @@ items:
       href=\"https://pkg.go.dev/time#Time\">Time</a>\n\n\t// Style provides options
       for the type of URL to use. Options are\n\t// PathStyle (default), BucketBoundHostname,
       and VirtualHostedStyle. See\n\t// https://cloud.google.com/storage/docs/request-endpoints
-      for details.\n\t// Optional.\n\tStyle <a href=\"#urlstyle\">URLStyle</a>\n\n\t//
+      for details.\n\t// Optional.\n\tStyle <a href=\"#cloud_google_com_go_storage_URLStyle\">URLStyle</a>\n\n\t//
       Insecure when set indicates that the generated URL's scheme\n\t// will use \"http\"
       instead of \"https\" (default).\n\t// Optional.\n\tInsecure <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       Fields specifies the attributes of a PostPolicyV4 request.\n\t// When Fields
       is non-nil, its attributes must match those that will\n\t// passed into field
-      Conditions.\n\t// Optional.\n\tFields *<a href=\"#policyv4fields\">PolicyV4Fields</a>\n\n\t//
+      Conditions.\n\t// Optional.\n\tFields *<a href=\"#cloud_google_com_go_storage_PolicyV4Fields\">PolicyV4Fields</a>\n\n\t//
       The conditions that the uploaded file will be expected to conform to.\n\t//
       When used, the failure of an upload to satisfy a condition will result in\n\t//
       a 4XX status code, back with the message describing the problem.\n\t// Optional.\n\tConditions
-      []<a href=\"#postpolicyv4condition\">PostPolicyV4Condition</a>\n}"
+      []<a href=\"#cloud_google_com_go_storage_PostPolicyV4Condition\">PostPolicyV4Condition</a>\n}"
 - uid: cloud.google.com/go/storage.ProjectTeam
   name: ProjectTeam
   id: ProjectTeam
@@ -2624,8 +2664,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (q *<a href="#query">Query</a>) SetAttrSelection(attrs []<a href="https://pkg.go.dev/builtin#string">string</a>)
-      <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (q *<a href="#cloud_google_com_go_storage_Query">Query</a>) SetAttrSelection(attrs
+      []<a href="https://pkg.go.dev/builtin#string">string</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
 - uid: cloud.google.com/go/storage.Reader
   name: Reader
   id: Reader
@@ -2641,7 +2681,7 @@ items:
   langs:
   - go
   syntax:
-    content: "type Reader struct {\n\tAttrs <a href=\"#readerobjectattrs\">ReaderObjectAttrs</a>\n\t//
+    content: "type Reader struct {\n\tAttrs <a href=\"#cloud_google_com_go_storage_ReaderObjectAttrs\">ReaderObjectAttrs</a>\n\t//
       contains filtered or unexported fields\n}"
 - uid: cloud.google.com/go/storage.Reader.CacheControl
   name: |
@@ -2656,7 +2696,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) CacheControl() <a href="https://pkg.go.dev/builtin#string">string</a>
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) CacheControl()
+      <a href="https://pkg.go.dev/builtin#string">string</a>
 - uid: cloud.google.com/go/storage.Reader.Close
   name: |
     func (*Reader) Close
@@ -2668,7 +2709,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) Close() <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) Close()
+      <a href="https://pkg.go.dev/builtin#error">error</a>
 - uid: cloud.google.com/go/storage.Reader.ContentEncoding
   name: |
     func (*Reader) ContentEncoding
@@ -2682,7 +2724,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) ContentEncoding() <a href="https://pkg.go.dev/builtin#string">string</a>
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) ContentEncoding()
+      <a href="https://pkg.go.dev/builtin#string">string</a>
 - uid: cloud.google.com/go/storage.Reader.ContentType
   name: |
     func (*Reader) ContentType
@@ -2696,7 +2739,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) ContentType() <a href="https://pkg.go.dev/builtin#string">string</a>
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) ContentType()
+      <a href="https://pkg.go.dev/builtin#string">string</a>
 - uid: cloud.google.com/go/storage.Reader.LastModified
   name: |
     func (*Reader) LastModified
@@ -2710,8 +2754,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) LastModified() (<a href="https://pkg.go.dev/time">time</a>.<a
-      href="https://pkg.go.dev/time#Time">Time</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) LastModified()
+      (<a href="https://pkg.go.dev/time">time</a>.<a href="https://pkg.go.dev/time#Time">Time</a>,
+      <a href="https://pkg.go.dev/builtin#error">error</a>)
 - uid: cloud.google.com/go/storage.Reader.Read
   name: |
     func (*Reader) Read
@@ -2721,8 +2766,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) Read(p []<a href="https://pkg.go.dev/builtin#byte">byte</a>)
-      (<a href="https://pkg.go.dev/builtin#int">int</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) Read(p
+      []<a href="https://pkg.go.dev/builtin#byte">byte</a>) (<a href="https://pkg.go.dev/builtin#int">int</a>,
+      <a href="https://pkg.go.dev/builtin#error">error</a>)
 - uid: cloud.google.com/go/storage.Reader.Remain
   name: |
     func (*Reader) Remain
@@ -2734,7 +2780,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) Remain() <a href="https://pkg.go.dev/builtin#int64">int64</a>
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) Remain()
+      <a href="https://pkg.go.dev/builtin#int64">int64</a>
 - uid: cloud.google.com/go/storage.Reader.Size
   name: |
     func (*Reader) Size
@@ -2750,7 +2797,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (r *<a href="#reader">Reader</a>) Size() <a href="https://pkg.go.dev/builtin#int64">int64</a>
+    content: func (r *<a href="#cloud_google_com_go_storage_Reader">Reader</a>) Size()
+      <a href="https://pkg.go.dev/builtin#int64">int64</a>
 - uid: cloud.google.com/go/storage.ReaderObjectAttrs
   name: ReaderObjectAttrs
   id: ReaderObjectAttrs
@@ -2870,11 +2918,11 @@ items:
       Style provides options for the type of URL to use. Options are\n\t// PathStyle
       (default), BucketBoundHostname, and VirtualHostedStyle. See\n\t// https://cloud.google.com/storage/docs/request-endpoints
       for details.\n\t// Only supported for V4 signing.\n\t// Optional.\n\tStyle <a
-      href=\"#urlstyle\">URLStyle</a>\n\n\t// Insecure determines whether the signed
-      URL should use HTTPS (default) or\n\t// HTTP.\n\t// Only supported for V4 signing.\n\t//
-      Optional.\n\tInsecure <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
+      href=\"#cloud_google_com_go_storage_URLStyle\">URLStyle</a>\n\n\t// Insecure
+      determines whether the signed URL should use HTTPS (default) or\n\t// HTTP.\n\t//
+      Only supported for V4 signing.\n\t// Optional.\n\tInsecure <a href=\"https://pkg.go.dev/builtin#bool\">bool</a>\n\n\t//
       Scheme determines the version of URL signing to use. Default is\n\t// SigningSchemeV2.\n\tScheme
-      <a href=\"#signingscheme\">SigningScheme</a>\n}"
+      <a href=\"#cloud_google_com_go_storage_SigningScheme\">SigningScheme</a>\n}"
 - uid: cloud.google.com/go/storage.SigningScheme
   name: SigningScheme
   id: SigningScheme
@@ -2895,7 +2943,7 @@ items:
   - go
   syntax:
     content: "const (\n\t// SigningSchemeDefault is presently V2 and will change to
-      V4 in the future.\n\tSigningSchemeDefault <a href=\"#signingscheme\">SigningScheme</a>
+      V4 in the future.\n\tSigningSchemeDefault <a href=\"#cloud_google_com_go_storage_SigningScheme\">SigningScheme</a>
       = <a href=\"https://pkg.go.dev/builtin#iota\">iota</a>\n\n\t// SigningSchemeV2
       uses the V2 scheme to sign URLs.\n\tSigningSchemeV2\n\n\t// SigningSchemeV4
       uses the V4 scheme to sign URLs.\n\tSigningSchemeV4\n)"
@@ -2931,7 +2979,7 @@ items:
   - go
   syntax:
     content: func BucketBoundHostname(hostname <a href="https://pkg.go.dev/builtin#string">string</a>)
-      <a href="#urlstyle">URLStyle</a>
+      <a href="#cloud_google_com_go_storage_URLStyle">URLStyle</a>
 - uid: cloud.google.com/go/storage.URLStyle.PathStyle
   name: |
     func PathStyle
@@ -2944,7 +2992,7 @@ items:
   langs:
   - go
   syntax:
-    content: func PathStyle() <a href="#urlstyle">URLStyle</a>
+    content: func PathStyle() <a href="#cloud_google_com_go_storage_URLStyle">URLStyle</a>
 - uid: cloud.google.com/go/storage.URLStyle.VirtualHostedStyle
   name: |
     func VirtualHostedStyle
@@ -2957,7 +3005,7 @@ items:
   langs:
   - go
   syntax:
-    content: func VirtualHostedStyle() <a href="#urlstyle">URLStyle</a>
+    content: func VirtualHostedStyle() <a href="#cloud_google_com_go_storage_URLStyle">URLStyle</a>
 - uid: cloud.google.com/go/storage.UniformBucketLevelAccess
   name: UniformBucketLevelAccess
   id: UniformBucketLevelAccess
@@ -2986,7 +3034,7 @@ items:
   syntax:
     content: "type Writer struct {\n\t// ObjectAttrs are optional attributes to set
       on the object. Any attributes\n\t// must be initialized before the first Write
-      call. Nil or zero-valued\n\t// attributes are ignored.\n\t<a href=\"#objectattrs\">ObjectAttrs</a>\n\n\t//
+      call. Nil or zero-valued\n\t// attributes are ignored.\n\t<a href=\"#cloud_google_com_go_storage_ObjectAttrs\">ObjectAttrs</a>\n\n\t//
       SendCRC specifies whether to transmit a CRC32C field. It should be set\n\t//
       to true in addition to setting the Writer's CRC32C field, because zero\n\t//
       is a valid CRC and normally a zero would not be transmitted.\n\t// If a CRC32C
@@ -3026,7 +3074,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (w *<a href="#writer">Writer</a>) Attrs() *<a href="#objectattrs">ObjectAttrs</a>
+    content: func (w *<a href="#cloud_google_com_go_storage_Writer">Writer</a>) Attrs()
+      *<a href="#cloud_google_com_go_storage_ObjectAttrs">ObjectAttrs</a>
 - uid: cloud.google.com/go/storage.Writer.Close
   name: |
     func (*Writer) Close
@@ -3040,7 +3089,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (w *<a href="#writer">Writer</a>) Close() <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (w *<a href="#cloud_google_com_go_storage_Writer">Writer</a>) Close()
+      <a href="https://pkg.go.dev/builtin#error">error</a>
 - uid: cloud.google.com/go/storage.Writer.CloseWithError
   name: |
     func (*Writer) CloseWithError
@@ -3055,8 +3105,8 @@ items:
   langs:
   - go
   syntax:
-    content: func (w *<a href="#writer">Writer</a>) CloseWithError(err <a href="https://pkg.go.dev/builtin#error">error</a>)
-      <a href="https://pkg.go.dev/builtin#error">error</a>
+    content: func (w *<a href="#cloud_google_com_go_storage_Writer">Writer</a>) CloseWithError(err
+      <a href="https://pkg.go.dev/builtin#error">error</a>) <a href="https://pkg.go.dev/builtin#error">error</a>
 - uid: cloud.google.com/go/storage.Writer.Write
   name: |
     func (*Writer) Write
@@ -3076,8 +3126,9 @@ items:
   langs:
   - go
   syntax:
-    content: func (w *<a href="#writer">Writer</a>) Write(p []<a href="https://pkg.go.dev/builtin#byte">byte</a>)
-      (n <a href="https://pkg.go.dev/builtin#int">int</a>, err <a href="https://pkg.go.dev/builtin#error">error</a>)
+    content: func (w *<a href="#cloud_google_com_go_storage_Writer">Writer</a>) Write(p
+      []<a href="https://pkg.go.dev/builtin#byte">byte</a>) (n <a href="https://pkg.go.dev/builtin#int">int</a>,
+      err <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc
       main() {\n\tctx := context.Background()\n\tclient, err := storage.NewClient(ctx)\n\tif
@@ -3125,8 +3176,8 @@ items:
   - go
   syntax:
     content: func SignedURL(bucket, name <a href="https://pkg.go.dev/builtin#string">string</a>,
-      opts *<a href="#signedurloptions">SignedURLOptions</a>) (<a href="https://pkg.go.dev/builtin#string">string</a>,
-      <a href="https://pkg.go.dev/builtin#error">error</a>)
+      opts *<a href="#cloud_google_com_go_storage_SignedURLOptions">SignedURLOptions</a>)
+      (<a href="https://pkg.go.dev/builtin#string">string</a>, <a href="https://pkg.go.dev/builtin#error">error</a>)
   codeexamples:
   - content: "package main\n\nimport (\n\t\"cloud.google.com/go/storage\"\n\t\"fmt\"\n\t\"io/ioutil\"\n\t\"time\"\n)\n\nfunc
       main() {\n\tpkey, err := ioutil.ReadFile(\"my-private-key.pem\")\n\tif err !=
