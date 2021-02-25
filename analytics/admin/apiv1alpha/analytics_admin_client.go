@@ -1034,7 +1034,15 @@ func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *
 	return resp, nil
 }
 
-// CreateIosAppDataStream creates an iOS app data stream with the specified location and attributes.
+// CreateIosAppDataStream creates an iOS app stream with the specified location and attributes.
+//
+// Note that an iOS app stream must be linked to a Firebase app to receive
+// traffic.
+//
+// To create a working app stream, make sure your property is linked to a
+// Firebase project. Then, use the Firebase API to create a Firebase app,
+// which will also create an appropriate data stream in Analytics (may take up
+// to 24 hours).
 func (c *AnalyticsAdminClient) CreateIosAppDataStream(ctx context.Context, req *adminpb.CreateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -1162,7 +1170,15 @@ func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, r
 	return resp, nil
 }
 
-// CreateAndroidAppDataStream creates an android app stream with the specified location and attributes.
+// CreateAndroidAppDataStream creates an Android app stream with the specified location and attributes.
+//
+// Note that an Android app stream must be linked to a Firebase app to receive
+// traffic.
+//
+// To create a working app stream, make sure your property is linked to a
+// Firebase project. Then, use the Firebase API to create a Firebase app,
+// which will also create an appropriate data stream in Analytics (may take up
+// to 24 hours).
 func (c *AnalyticsAdminClient) CreateAndroidAppDataStream(ctx context.Context, req *adminpb.CreateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
