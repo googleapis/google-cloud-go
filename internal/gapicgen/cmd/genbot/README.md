@@ -109,7 +109,7 @@ This will speed up the build a bit:
 
 ```shell
 cd /path/to/internal/gapicgen
-go get -u github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
+go get -d github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
 ```
 
 (it's just based on the go.mod entry)
