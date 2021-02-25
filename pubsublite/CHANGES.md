@@ -1,5 +1,20 @@
 # Changes
 
+## [0.7.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.6.0...v0.7.0) (2021-02-18)
+
+The status of this library is now **BETA**.
+
+### Features
+
+* **pubsublite:** allow increasing the number of topic partitions ([#3647](https://www.github.com/googleapis/google-cloud-go/issues/3647)) ([1f85fdc](https://www.github.com/googleapis/google-cloud-go/commit/1f85fdca9f4317fab0f18b8bd9fcc8c65ab690e9))
+
+
+### Bug Fixes
+
+* **pubsublite:** change pubsub.Message.ID to an encoded publish.Metadata ([#3662](https://www.github.com/googleapis/google-cloud-go/issues/3662)) ([6b2807f](https://www.github.com/googleapis/google-cloud-go/commit/6b2807f1e13dc38eb79833f8d2766f27d4003434))
+* **pubsublite:** rebatch messages upon new publish stream ([#3694](https://www.github.com/googleapis/google-cloud-go/issues/3694)) ([0da3578](https://www.github.com/googleapis/google-cloud-go/commit/0da3578c8f007f71291cdc93d43f98acbe1dbb37))
+* **pubsublite:** rename publish.Metadata to pscompat.MessageMetadata ([#3672](https://www.github.com/googleapis/google-cloud-go/issues/3672)) ([6a8d4c5](https://www.github.com/googleapis/google-cloud-go/commit/6a8d4c515eb957d05e280e02e8cea9a89bdcbb1e))
+
 ## [0.6.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.5.0...v0.6.0) (2021-01-28)
 
 

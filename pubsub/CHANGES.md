@@ -1,5 +1,12 @@
 # Changes
 
+## [1.10.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.9.1...v1.10.0) (2021-02-10)
+
+
+### Features
+
+* **pubsub:** add opencensus metrics for outstanding messages/bytes ([#3690](https://www.github.com/googleapis/google-cloud-go/issues/3690)) ([4039b82](https://www.github.com/googleapis/google-cloud-go/commit/4039b82e95b3a8ba2322d1f4fe9e2c21b087a907))
+
 ### [1.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.9.0...v1.9.1) (2020-12-10)
 
 

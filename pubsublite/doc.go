@@ -13,7 +13,7 @@
 
 /*
 Package pubsublite provides an easy way to publish and receive messages using
-Google Pub/Sub Lite.
+the Pub/Sub Lite service.
 
 Google Pub/Sub services are designed to provide reliable, many-to-many,
 asynchronous messaging between applications. Publisher applications can send
@@ -29,8 +29,8 @@ https://cloud.google.com/pubsub/docs/choosing-pubsub-or-lite.
 More information about Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/lite.
 
-Note: This library is in ALPHA. Backwards-incompatible changes may be made
-before stable v1.0.0 is released.
+Note: This library is in BETA. Backwards-incompatible changes may be made before
+stable v1.0.0 is released.
 
 
 Introduction

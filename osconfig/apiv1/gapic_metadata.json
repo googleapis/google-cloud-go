@@ -1,0 +1,63 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.osconfig.v1",
+  "libraryPackage": "cloud.google.com/go/osconfig/apiv1",
+  "services": {
+    "OsConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelPatchJob": {
+              "methods": [
+                "CancelPatchJob"
+              ]
+            },
+            "CreatePatchDeployment": {
+              "methods": [
+                "CreatePatchDeployment"
+              ]
+            },
+            "DeletePatchDeployment": {
+              "methods": [
+                "DeletePatchDeployment"
+              ]
+            },
+            "ExecutePatchJob": {
+              "methods": [
+                "ExecutePatchJob"
+              ]
+            },
+            "GetPatchDeployment": {
+              "methods": [
+                "GetPatchDeployment"
+              ]
+            },
+            "GetPatchJob": {
+              "methods": [
+                "GetPatchJob"
+              ]
+            },
+            "ListPatchDeployments": {
+              "methods": [
+                "ListPatchDeployments"
+              ]
+            },
+            "ListPatchJobInstanceDetails": {
+              "methods": [
+                "ListPatchJobInstanceDetails"
+              ]
+            },
+            "ListPatchJobs": {
+              "methods": [
+                "ListPatchJobs"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

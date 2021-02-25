@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/pubsublite"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/publish"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/option"
@@ -207,12 +206,26 @@ func waitForPublishResults(t *testing.T, pubResults []*pubsub.PublishResult) {
 		if err != nil {
 			t.Errorf("Publish(%d) got err: %v", i, err)
 		}
-		if _, err := publish.ParseMetadata(id); err != nil {
+		if _, err := ParseMessageMetadata(id); err != nil {
 			t.Error(err)
 		}
 	}
 	t.Logf("Published %d messages", len(pubResults))
 	cancel()
+}
+
+func parseMessageMetadata(ctx context.Context, t *testing.T, result *pubsub.PublishResult) *MessageMetadata {
+	id, err := result.Get(ctx)
+	if err != nil {
+		t.Fatalf("Failed to publish message: %v", err)
+		return nil
+	}
+	metadata, err := ParseMessageMetadata(id)
+	if err != nil {
+		t.Fatalf("Failed to parse message metadata: %v", err)
+		return nil
+	}
+	return metadata
 }
 
 const maxPrintMsgLen = 70
@@ -242,7 +255,7 @@ func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings Rece
 		}
 
 		// Check message ordering.
-		metadata, err := publish.ParseMetadata(msg.ID)
+		metadata, err := ParseMessageMetadata(msg.ID)
 		if err != nil {
 			t.Error(err)
 		} else {
@@ -524,6 +537,40 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		msgTracker := test.NewMsgTracker()
 		msgTracker.Add(msgs...)
 		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+	})
+
+	// NOTE: This should be the last test case.
+	// Verifies that increasing the number of topic partitions is handled
+	// correctly by publishers.
+	t.Run("IncreasePartitions", func(t *testing.T) {
+		// Create the publisher client with the initial single partition.
+		const pollPeriod = 5 * time.Second
+		pubSettings := DefaultPublishSettings
+		pubSettings.configPollPeriod = pollPeriod // Poll updates more frequently
+		publisher := publisherClient(ctx, t, pubSettings, topicPath)
+		defer publisher.Stop()
+
+		// Update the number of partitions.
+		update := pubsublite.TopicConfigToUpdate{
+			Name:           topicPath.String(),
+			PartitionCount: 2,
+		}
+		if _, err := admin.UpdateTopic(ctx, update); err != nil {
+			t.Errorf("Failed to increase partitions: %v", err)
+		}
+
+		// Wait for the publisher client to receive the updated partition count.
+		time.Sleep(3 * pollPeriod)
+
+		// Publish 2 messages, which should be routed to different partitions
+		// (round robin).
+		result1 := publisher.Publish(ctx, &pubsub.Message{Data: []byte("increase-partitions-1")})
+		result2 := publisher.Publish(ctx, &pubsub.Message{Data: []byte("increase-partitions-2")})
+		metadata1 := parseMessageMetadata(ctx, t, result1)
+		metadata2 := parseMessageMetadata(ctx, t, result2)
+		if metadata1.Partition == metadata2.Partition {
+			t.Errorf("Messages were published to the same partition = %d. Expected different partitions", metadata1.Partition)
+		}
 	})
 }
 

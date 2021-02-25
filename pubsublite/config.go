@@ -46,8 +46,8 @@ type TopicConfig struct {
 	//   about valid topic IDs.
 	Name string
 
-	// The number of partitions in the topic. Must be at least 1. Cannot be
-	// changed after creation.
+	// The number of partitions in the topic. Must be at least 1. Can be increased
+	// after creation, but not decreased.
 	PartitionCount int
 
 	// Publish throughput capacity per partition in MiB/s.
@@ -120,6 +120,10 @@ type TopicConfigToUpdate struct {
 	// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID". Required.
 	Name string
 
+	// If non-zero, will update the number of partitions in the topic. The number
+	// of partitions can only be increased, not decreased.
+	PartitionCount int
+
 	// If non-zero, will update the publish throughput capacity per partition.
 	PublishCapacityMiBPerSec int
 
@@ -139,6 +143,7 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 	updatedTopic := &pb.Topic{
 		Name: tc.Name,
 		PartitionConfig: &pb.Topic_PartitionConfig{
+			Count: int64(tc.PartitionCount),
 			Dimension: &pb.Topic_PartitionConfig_Capacity_{
 				Capacity: &pb.Topic_PartitionConfig_Capacity{
 					PublishMibPerSec:   int32(tc.PublishCapacityMiBPerSec),
@@ -152,6 +157,9 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 	}
 
 	var fields []string
+	if tc.PartitionCount > 0 {
+		fields = append(fields, "partition_config.count")
+	}
 	if tc.PublishCapacityMiBPerSec > 0 {
 		fields = append(fields, "partition_config.capacity.publish_mib_per_sec")
 	}

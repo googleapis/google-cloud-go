@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.servicemanagement.v1",
+  "libraryPackage": "cloud.google.com/go/servicemanagement/apiv1",
+  "services": {
+    "ServiceManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ServiceManagerClient",
+          "rpcs": {
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "CreateServiceConfig": {
+              "methods": [
+                "CreateServiceConfig"
+              ]
+            },
+            "CreateServiceRollout": {
+              "methods": [
+                "CreateServiceRollout"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "DisableService": {
+              "methods": [
+                "DisableService"
+              ]
+            },
+            "EnableService": {
+              "methods": [
+                "EnableService"
+              ]
+            },
+            "GenerateConfigReport": {
+              "methods": [
+                "GenerateConfigReport"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "GetServiceConfig": {
+              "methods": [
+                "GetServiceConfig"
+              ]
+            },
+            "GetServiceRollout": {
+              "methods": [
+                "GetServiceRollout"
+              ]
+            },
+            "ListServiceConfigs": {
+              "methods": [
+                "ListServiceConfigs"
+              ]
+            },
+            "ListServiceRollouts": {
+              "methods": [
+                "ListServiceRollouts"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "SubmitConfigSource": {
+              "methods": [
+                "SubmitConfigSource"
+              ]
+            },
+            "UndeleteService": {
+              "methods": [
+                "UndeleteService"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

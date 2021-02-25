@@ -1,11 +1,11 @@
-## Cloud Pub/Sub Lite [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/pubsublite.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
+## Pub/Sub Lite [![Go Reference](https://pkg.go.dev/badge/cloud.google.com/go/pubsublite.svg)](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 
-- [About Cloud Pub/Sub Lite](https://cloud.google.com/pubsub/lite)
+- [About Pub/Sub Lite](https://cloud.google.com/pubsub/lite)
 - [Client library documentation](https://cloud.google.com/pubsub/lite/docs/reference/libraries)
 - [API documentation](https://cloud.google.com/pubsub/lite/docs/apis)
 - [Go client documentation](https://pkg.go.dev/cloud.google.com/go/pubsublite)
 
-*This library is in ALPHA. Backwards-incompatible changes may be made before
+*This library is in BETA. Backwards-incompatible changes may be made before
  stable v1.0.0 is released.*
 
 ### Example Usage
