@@ -17,6 +17,7 @@ import (
 	"context"
 	"fmt"
 	"log"
+	"strings"
 
 	"cloud.google.com/go/bigquery"
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
@@ -52,6 +53,10 @@ type WriteSettings struct {
 	// pack individual row writes into requests, or use
 	// the request batching of the Append
 	ManagedRowBatching bool
+
+	// TracePrefix sets a suitable prefix for the trace ID set on
+	// append requests.  Useful for diagnostic purposes.
+	TracePrefix string
 }
 
 func defaultSettings() *WriteSettings {
@@ -61,6 +66,7 @@ func defaultSettings() *WriteSettings {
 		MaxInflightBytes:    0,
 		Serializer:          nil,
 		ManagedRowBatching:  true,
+		TracePrefix:         "defaultManagedWriter",
 	}
 }
 
@@ -91,7 +97,7 @@ func NewManagedWriter(ctx context.Context, client *storage.BigQueryWriteClient, 
 	}
 	// ready an appendStream
 	fc := newFlowController(mw.settings.MaxInflightRequests, mw.settings.MaxInflightBytes)
-	appendStream, err := newAppendStream(ctx, client, fc, streamName, constructProtoSchema(mw.settings.Serializer))
+	appendStream, err := newAppendStream(ctx, client, fc, streamName, constructProtoSchema(mw.settings.Serializer), mw.settings.TracePrefix)
 	if err != nil {
 		return nil, fmt.Errorf("error constructing append stream: %v", err)
 	}
@@ -189,12 +195,33 @@ func (mw *ManagedWriter) Finalize() (int64, error) {
 	return mw.as.finalize()
 }
 
-// Commit commits data from a writer managing a Pending stream.  A writer must be finalized before
-// committing.
+// Commit signals that one or more Pending streams should be committed.  Streams must first be
+// finalized before they may be committed.  If you supply other stream IDs to the commit,  they
+// must all be valid streams of the same table this writer is appending data into.
 //
-// Impl:
-func (mw *ManagedWriter) Commit() error {
-	return fmt.Errorf("unimplemented")
+// we should probably wrap the response, but what the hey
+func (mw *ManagedWriter) Commit(ctx context.Context, otherStreams []string) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+
+	req := &storagepb.BatchCommitWriteStreamsRequest{
+		Parent:       tableParentFromStreamName(mw.streamName),
+		WriteStreams: []string{mw.streamName},
+	}
+	if otherStreams != nil {
+		req.WriteStreams = append(req.WriteStreams, otherStreams...)
+	}
+	return mw.as.client.BatchCommitWriteStreams(ctx, req)
+}
+
+func tableParentFromStreamName(streamName string) string {
+	// Example streamName
+	// projects/{project}/datasets/{dataset}/tables/{table}/blah
+
+	parts := strings.SplitN(streamName, "/", 7)
+	if len(parts) < 7 {
+		// invalid; just pass back the input
+		return streamName
+	}
+	return strings.Join(parts[:6], "/")
 }
 
 // TODO: this is our chance to clear resources from the running writer.

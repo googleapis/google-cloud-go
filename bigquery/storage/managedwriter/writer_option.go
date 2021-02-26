@@ -51,7 +51,14 @@ func WithManagedRowBatching(b bool) WriterOption {
 	}
 }
 
+func WithTracePrefix(prefix string) WriterOption {
+	return func(mw *ManagedWriter) {
+		mw.settings.TracePrefix = prefix
+	}
+}
+
 // To Consider:
+// WithClientOptions(opts ...option.ClientOption)
 // WithSchemaChangeNotification(f func(offset int64,schema *storagepb.TableSchema)))
 
 // StreamType governs how appending data to tables works, and

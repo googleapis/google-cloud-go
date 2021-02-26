@@ -14,49 +14,43 @@
 package managedwriter
 
 import (
-	"fmt"
+	"time"
 
-	statuspb "google.golang.org/genproto/googleapis/rpc/status"
+	"github.com/googleapis/gax-go"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
-func canRetryStatus(s *statuspb.Status) bool {
-	// BQ documents using the enums, but they're based on:
-	// https://grpc.github.io/grpc/core/md_doc_statuscodes.html
-
-	// Of the status codes it calls out specifically, INVALID_ARGUMENT(3)
-	// is not retriable by the library; it indicates malformed data.
-
-	switch s.GetCode() {
-	case 6:
-		// ALREADY_EXISTS: happens when offset is specified, it means the entire
-		// request is already appended, it is safe to ignore this error.
-		return true
-	case 11:
-		// OUT_OF_RANGE
-		// Occurs when the specified offset is beyond the end of the stream.
-		// TODO: probably indicates we need to adjust offset?
-		return true
-	case 8:
-		// RESOURCE_EXHAUSTED
-		// request rejected due to throttling. Only happens when
-	//   append without offset.
-	case 10:
-		// ABORTED
-		// request processing is aborted because of prior failures, request
-		//   can be retried if previous failure is fixed.
-		// TODO: determine what's fixable at the library level?
-		return true
-	case 13:
-		// INTERNAL
-		// Backend errors that don't get classified further.
-		return true
-	}
-	return false
+type Retryer struct {
+	bo gax.Backoff
 }
 
-func statusAsError(s *statuspb.Status) error {
-	if s == nil {
-		return nil
+// Retry governs whether an error is considered retriable, and an appropriate backoff.
+//
+// ALREADY_EXISTS: happens when offset is specified, it means the entire
+// request is already appended, it is safe to ignore this error.
+//
+// OUT_OF_RANGE: Occurs when specified offset is beyond the end of the
+// stream.  Expected when we have a transient failure and a subsequent
+// append gets processed with the old offset.
+//
+// RESOURCE_EXHAUSTED: normal throttling.
+//
+// ABORTED: failed due to prior failures.
+//
+// INTERNAL: backend errors that aren't classified further.
+//
+func (r *Retryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	s, ok := status.FromError(err)
+	if !ok {
+		// things which aren't gRPC status
+		return r.bo.Pause(), true
 	}
-	return fmt.Errorf("%d: %s", s.GetCode(), s.GetMessage())
+	switch s.Code() {
+	case codes.AlreadyExists,
+		codes.Internal, codes.ResourceExhausted, codes.Aborted, codes.OutOfRange:
+		return r.bo.Pause(), true
+	default:
+		return 0, false
+	}
 }

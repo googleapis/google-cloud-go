@@ -9,8 +9,8 @@ require (
 	github.com/google/go-cmp v0.5.4
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/mod v0.4.1 // indirect
-	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99 // indirect
+	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
 	golang.org/x/sys v0.0.0-20210223095934-7937bea0104d // indirect
 	golang.org/x/tools v0.1.0 // indirect
 	google.golang.org/api v0.40.0

@@ -70,7 +70,13 @@ an AppendResult, which corresponds 1:1 with each row.  Writers can use this
 to track the write status of each row, and verify whether individual rows have
 succeeded or failed.
 
+Ordering Guarantees
 
+Generally, database systems treat row ordering as a nondeterministic property without
+the presence of a ordering constraint, and BigQuery is no different in that regard.
+While appending may use offset tracking to monitor successful appends, the stream
+based nature of the append and acknowledgement flow means that reordering of row
+batches may occur.
 
 */
 package managedwriter

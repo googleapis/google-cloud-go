@@ -18,6 +18,8 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"sync"
+	"time"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
@@ -36,20 +38,25 @@ type appendStream struct {
 	recvProcessor func(ctx context.Context)
 	cancelR       func()
 
-	streamName string
-	schema     *storagepb.ProtoSchema
-	arc        storagepb.BigQueryWrite_AppendRowsClient
+	schema *storagepb.ProtoSchema
+	arc    storagepb.BigQueryWrite_AppendRowsClient
 
+	// things we need for reopen
+	streamName string
 	sentSchema bool
 	pending    chan *pendingWrite
 
 	curOffset int64
 
-	// terminal error
-	err error
+	statsMu sync.Mutex
+
+	// terminalErr contains the terminal error that triggered stream close.
+	// In the case of a normal user close, it will hold io.EOF
+	terminalErr       error
+	terminalErrorRows int64
 }
 
-func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, fc *flowController, streamName string, schema *storagepb.ProtoSchema) (*appendStream, error) {
+func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, fc *flowController, streamName string, schema *storagepb.ProtoSchema, tracePrefix string) (*appendStream, error) {
 	as := &appendStream{
 		ctx:        ctx,
 		fc:         fc,
@@ -57,6 +64,7 @@ func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, f
 		streamName: streamName,
 		schema:     schema,
 		pending:    make(chan *pendingWrite, fc.maxInsertCount+1),
+		traceID:    fmt.Sprintf("%s-%d", tracePrefix, time.Now().UnixNano()),
 	}
 	arc, err := client.AppendRows(ctx)
 	if err != nil {
@@ -68,7 +76,26 @@ func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, f
 	return as, nil
 }
 
+// Close signals user-level close of the stream.  If the stream already has a terminal error state, it is returned.
+func (as *appendStream) userClose() error {
+	as.statsMu.Lock()
+	defer as.statsMu.Unlock()
+	if as.terminalErr != nil {
+		return as.terminalErr
+	}
+	err := as.arc.CloseSend()
+	if err != nil {
+		log.Printf("CloseSend returned err: %v", err)
+	}
+	// mark stream done.
+	as.terminalErr = io.EOF
+	return nil
+}
+
 func (as *appendStream) append(pw *pendingWrite) error {
+
+	// TODO need a lock here on whether it's safe to append.
+
 	pw.request.TraceId = as.traceID
 	if !as.sentSchema {
 		pw.request.WriteStream = as.streamName
@@ -87,6 +114,12 @@ func (as *appendStream) append(pw *pendingWrite) error {
 	}
 	as.pending <- pw
 	return nil
+}
+
+func (as *appendStream) isClosed() bool {
+	as.statsMu.Lock()
+	defer as.statsMu.Unlock()
+	return as.terminalErr == nil
 }
 
 func (as *appendStream) flush(offset int64) (int64, error) {
@@ -119,17 +152,22 @@ func (as *appendStream) finalize() (int64, error) {
 	return resp.GetRowCount(), nil
 }
 
+// defaultRecvProcessor is responsible for processing the response stream from the service.
 func defaultRecvProcessor(ctx context.Context, as *appendStream, pending chan *pendingWrite) {
 	for {
 		// kill processing if context is done.
 		select {
 		case <-ctx.Done():
 			return
-		case nextWrite := <-pending:
+		case nextWrite, ok := <-pending:
+			if !ok {
+				// Channel is closed.  We do all reconnection logic elsewhere, so here we simply return.
+				return
+			}
 			resp, err := as.arc.Recv()
 			if err == io.EOF {
-				// we hit EOF.  need to figure out retry strategy.
-				// We may need to drain all writes, and resubmit?
+				// do we need to signal reconnect elsewhere?
+				// how do we start a new receiver and stream?
 			}
 			if err != nil {
 				// handle stream-level error.

@@ -84,11 +84,23 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
+			desc:    "WithTracePrefix",
+			options: []WriterOption{WithTracePrefix("foo")},
+			want: func() *ManagedWriter {
+				mw := &ManagedWriter{
+					settings: defaultSettings(),
+				}
+				mw.settings.TracePrefix = "foo"
+				return mw
+			}(),
+		},
+		{
 			desc: "multiple",
 			options: []WriterOption{
 				WithRowSerializer(&testSerializer{}),
 				WithType(PendingStream),
 				WithMaxInflightBytes(5),
+				WithTracePrefix("pre"),
 			},
 			want: func() *ManagedWriter {
 				mw := &ManagedWriter{
@@ -97,6 +109,7 @@ func TestWriterOptions(t *testing.T) {
 				mw.settings.Serializer = &testSerializer{}
 				mw.settings.MaxInflightBytes = 5
 				mw.settings.StreamType = PendingStream
+				mw.settings.TracePrefix = "pre"
 				return mw
 			}(),
 		},
