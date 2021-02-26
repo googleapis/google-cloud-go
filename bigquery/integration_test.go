@@ -1080,7 +1080,10 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 }
 
 func TestIntegration_InsertErrors(t *testing.T) {
-	t.Skip("Skipping as limits are inconsistent: https://github.com/googleapis/google-cloud-go/issues/3612")
+	// This test serves to verify streaming behavior in the face of oversized data.
+	// BigQuery will reject insertAll payloads that exceed a defined limit (10MB).
+	// Additionally, if a payload vastly exceeds this limit, the request is rejected
+	// by the intermediate architecture.
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -1091,45 +1094,31 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	ins := table.Inserter()
 	var saverRows []*ValuesSaver
 
-	// badSaver represents an excessively sized (>5Mb) row message for insertion.
+	// badSaver represents an excessively sized (>10MB) row message for insertion.
 	badSaver := &ValuesSaver{
 		Schema:   schema,
 		InsertID: NoDedupeID,
-		Row:      []Value{strings.Repeat("X", 5242881), []Value{int64(1)}, []Value{true}},
+		Row:      []Value{strings.Repeat("X", 10485760), []Value{int64(1)}, []Value{true}},
 	}
 
-	// Case 1: A single oversized row.
 	saverRows = append(saverRows, badSaver)
 	err := ins.Put(ctx, saverRows)
 	if err == nil {
 		t.Errorf("Wanted row size error, got successful insert.")
 	}
-	if _, ok := err.(PutMultiError); !ok {
-		t.Errorf("Wanted PutMultiError, but wasn't: %v", err)
-	}
-	got := putError(err)
-	want := "Maximum allowed row size exceeded"
-	if !strings.Contains(got, want) {
-		t.Errorf("Error didn't contain expected substring (%s): %s", want, got)
-	}
-	// Case 2: The overall request size > 10MB)
-	// 2x 5MB rows
-	saverRows = append(saverRows, badSaver)
-	err = ins.Put(ctx, saverRows)
-	if err == nil {
-		t.Errorf("Wanted structured size error, got successful insert.")
-	}
 	e, ok := err.(*googleapi.Error)
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	want = "Request payload size exceeds the limit"
+	want := "Request payload size exceeds the limit"
 	if !strings.Contains(e.Message, want) {
 		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
 	}
-	// Case 3: Very Large Request
-	// Request so large it gets rejected by an intermediate (4x 5MB rows)
-	saverRows = append(saverRows, saverRows...)
+	// Case 2: Very Large Request
+	// Request so large it gets rejected by intermediate infra (3x 10MB rows)
+	saverRows = append(saverRows, badSaver)
+	saverRows = append(saverRows, badSaver)
+
 	err = ins.Put(ctx, saverRows)
 	if err == nil {
 		t.Errorf("Wanted error, got successful insert.")
