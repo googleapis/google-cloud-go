@@ -162,7 +162,7 @@ func (v *RPCVerifier) Pop(gotRequest interface{}) (interface{}, error) {
 	v.numCalls++
 	elem := v.rpcs.Front()
 	if elem == nil {
-		v.t.Errorf("call(%d): unexpected request:\n%v", v.numCalls, gotRequest)
+		v.t.Errorf("call(%d): unexpected request:\n[%T] %v", v.numCalls, gotRequest, gotRequest)
 		return nil, status.Error(codes.FailedPrecondition, "mockserver: got unexpected request")
 	}
 
@@ -170,7 +170,7 @@ func (v *RPCVerifier) Pop(gotRequest interface{}) (interface{}, error) {
 	v.rpcs.Remove(elem)
 
 	if !testutil.Equal(gotRequest, rpc.wantRequest) {
-		v.t.Errorf("call(%d): got request: %v\nwant request: %v", v.numCalls, gotRequest, rpc.wantRequest)
+		v.t.Errorf("call(%d): got request: [%T] %v\nwant request: [%T] %v", v.numCalls, gotRequest, gotRequest, rpc.wantRequest, rpc.wantRequest)
 	}
 	if err := rpc.wait(); err != nil {
 		return nil, err
@@ -213,9 +213,9 @@ func (v *RPCVerifier) Flush() {
 		v.numCalls++
 		rpc, _ := elem.Value.(*rpcMetadata)
 		if rpc.wantRequest != nil {
-			v.t.Errorf("call(%d): did not receive expected request:\n%v", v.numCalls, rpc.wantRequest)
+			v.t.Errorf("call(%d): did not receive expected request:\n[%T] %v", v.numCalls, rpc.wantRequest, rpc.wantRequest)
 		} else {
-			v.t.Errorf("call(%d): unsent response:\n%v, err = (%v)", v.numCalls, rpc.retResponse, rpc.retErr)
+			v.t.Errorf("call(%d): unsent response:\n[%T] %v, err = (%v)", v.numCalls, rpc.retResponse, rpc.retResponse, rpc.retErr)
 		}
 	}
 	v.rpcs.Init()
