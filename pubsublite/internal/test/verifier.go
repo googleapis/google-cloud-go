@@ -16,6 +16,7 @@ package test
 import (
 	"container/list"
 	"fmt"
+	"reflect"
 	"sync"
 	"testing"
 	"time"
@@ -162,7 +163,7 @@ func (v *RPCVerifier) Pop(gotRequest interface{}) (interface{}, error) {
 	v.numCalls++
 	elem := v.rpcs.Front()
 	if elem == nil {
-		v.t.Errorf("call(%d): unexpected request:\n%v", v.numCalls, gotRequest)
+		v.t.Errorf("call(%d): unexpected request:\n[%v] %v", v.numCalls, reflect.TypeOf(gotRequest), gotRequest)
 		return nil, status.Error(codes.FailedPrecondition, "mockserver: got unexpected request")
 	}
 
@@ -170,7 +171,7 @@ func (v *RPCVerifier) Pop(gotRequest interface{}) (interface{}, error) {
 	v.rpcs.Remove(elem)
 
 	if !testutil.Equal(gotRequest, rpc.wantRequest) {
-		v.t.Errorf("call(%d): got request: %v\nwant request: %v", v.numCalls, gotRequest, rpc.wantRequest)
+		v.t.Errorf("call(%d): got request: [%v] %v\nwant request: [%v] %v", v.numCalls, reflect.TypeOf(gotRequest), gotRequest, reflect.TypeOf(rpc.wantRequest), rpc.wantRequest)
 	}
 	if err := rpc.wait(); err != nil {
 		return nil, err
@@ -213,9 +214,9 @@ func (v *RPCVerifier) Flush() {
 		v.numCalls++
 		rpc, _ := elem.Value.(*rpcMetadata)
 		if rpc.wantRequest != nil {
-			v.t.Errorf("call(%d): did not receive expected request:\n%v", v.numCalls, rpc.wantRequest)
+			v.t.Errorf("call(%d): did not receive expected request:\n[%v] %v", v.numCalls, reflect.TypeOf(rpc.wantRequest), rpc.wantRequest)
 		} else {
-			v.t.Errorf("call(%d): unsent response:\n%v, err = (%v)", v.numCalls, rpc.retResponse, rpc.retErr)
+			v.t.Errorf("call(%d): unsent response:\n[%v] %v, err = (%v)", v.numCalls, reflect.TypeOf(rpc.retResponse), rpc.retResponse, rpc.retErr)
 		}
 	}
 	v.rpcs.Init()
