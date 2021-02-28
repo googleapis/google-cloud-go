@@ -19,6 +19,8 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
 	"strings"
 	"sync"
@@ -1753,24 +1755,48 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 	c := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
 	defer c.Close()
 
+	content, err := ioutil.ReadFile("testdata/us-states.avsc")
+	if err != nil {
+		t.Fatal(err)
+	}
+	avroSchema := string(content)
 	schemaID := schemaIDs.New()
-	schemaPath := fmt.Sprintf("projects/%q/schemas/%q", testutil.ProjID(), schemaID)
+	schemaPath := fmt.Sprintf("projects/%s/schemas/%s", testutil.ProjID(), schemaID)
 	sc := &SchemaConfig{
 		Type:       SchemaAvro,
-		Definition: "{hello: world}",
+		Definition: avroSchema,
 	}
 	got, err := c.CreateSchema(ctx, schemaID, sc)
 	if err != nil {
 		t.Fatalf("CreateSchema error: %v", err)
 	}
+	defer c.DeleteSchema(ctx, schemaPath)
+
 	want := &SchemaConfig{
 		Name:       schemaPath,
 		Type:       SchemaAvro,
-		Definition: "{hello: world}",
+		Definition: avroSchema,
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
+}
 
-	defer c.DeleteSchema(ctx, schemaPath)
+func TestIntegration_SchemaList(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t, option.WithEndpoint("staging-pubsub.sandbox.googleapis.com:443"))
+	defer c.Close()
+
+	got := c.Schemas(ctx, SchemaViewFull)
+	for {
+		s, err := got.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("got error listing schemas: %v", err)
+		}
+		log.Printf("got schema: %v\n", s)
+	}
 }

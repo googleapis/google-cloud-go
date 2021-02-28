@@ -24,15 +24,30 @@ import (
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
+// SchemaClient is a Pub/Sub schema client scoped to a single project.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users. It is subject to change
+// or removal without notice.
 type SchemaClient struct {
 	sc        *vkit.SchemaClient
 	projectID string
 }
 
+// Close closes the schema client and frees up resources.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users. It is subject to change
+// or removal without notice.
 func (s *SchemaClient) Close() error {
 	return s.sc.Close()
 }
 
+// NewSchemaClient creates a new Pub/Sub Schema client.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users. It is subject to change
+// or removal without notice.
 func NewSchemaClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*SchemaClient, error) {
 	sc, err := vkit.NewSchemaClient(ctx, opts...)
 	if err != nil {
@@ -42,6 +57,10 @@ func NewSchemaClient(ctx context.Context, projectID string, opts ...option.Clien
 }
 
 // SchemaConfig is a reference to a PubSub schema.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users. This field is subject to change or removal
+// without notice.
 type SchemaConfig struct {
 	Name string
 
@@ -54,11 +73,16 @@ type SchemaConfig struct {
 	Definition string
 }
 
+// SchemaType is the possible shcema definition types.
+//
+// It is EXPERIMENTAL and a part of a closed alpha that may not be
+// accessible to all users. This field is subject to change or removal
+// without notice.
 type SchemaType pb.Schema_Type
 
 const (
 	// Default value. This value is unused.
-	// SchemaTypeUnspecified SchemaType = 0
+	SchemaTypeUnspecified SchemaType = 0
 	// A Protocol Buffer schema definition.
 	SchemaProtocolBuffer SchemaType = 1
 	// An Avro schema definition.
@@ -82,10 +106,43 @@ type SchemaSettings struct {
 	Encoding SchemaEncoding
 }
 
+func schemaSettingsToProto(schema *SchemaSettings) *pb.SchemaSettings {
+	if schema == nil {
+		return nil
+	}
+	return &pb.SchemaSettings{
+		Schema:   schema.Schema,
+		Encoding: pb.Encoding(schema.Encoding),
+	}
+}
+
+func protoToSchemaSettings(pbs *pb.SchemaSettings) *SchemaSettings {
+	if pbs == nil {
+		return &SchemaSettings{}
+	}
+	return &SchemaSettings{
+		Schema:   pbs.Schema,
+		Encoding: SchemaEncoding(pbs.Encoding),
+	}
+}
+
+// SchemaEncoding is the encoding expected for messages.
+
 type SchemaEncoding pb.Encoding
+
+const (
+	// Unspecified
+	EncodingUnspecified SchemaEncoding = 0
+	// JSON encoding
+	EncodingJSON SchemaEncoding = 1
+	// Binary encoding, as defined by the schema type. For some schema types,
+	// binary encoding may not be available.
+	EncodingBinary SchemaEncoding = 2
+)
 
 func (s *SchemaConfig) toProto() *pb.Schema {
 	pbs := &pb.Schema{
+		Name:       s.Name,
 		Type:       pb.Schema_Type(s.Type),
 		Definition: s.Definition,
 	}
@@ -100,11 +157,14 @@ func protoToSchemaConfig(pbs *pb.Schema) *SchemaConfig {
 	}
 }
 
+// CreateSchema creates a new schema with the given schemaID
+// and config. Schemas cannot be updated after creation.
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s *SchemaConfig) (*SchemaConfig, error) {
-	pbs := s.toProto()
 	req := &pb.CreateSchemaRequest{
 		Parent:   fmt.Sprintf("projects/%s", c.projectID),
-		Schema:   pbs,
+		Schema:   s.toProto(),
 		SchemaId: schemaID,
 	}
 	pbs, err := c.sc.CreateSchema(ctx, req)
@@ -116,6 +176,8 @@ func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s *Sch
 
 // Schema retrieves the configuration of a topic. A valid schema path has the
 // format: "projects/PROJECT_ID/schemas/SCHEMA_ID".
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 func (c *SchemaClient) Schema(ctx context.Context, schema string, view SchemaView) (*SchemaConfig, error) {
 	req := &pb.GetSchemaRequest{
 		Name: schema,
@@ -129,15 +191,20 @@ func (c *SchemaClient) Schema(ctx context.Context, schema string, view SchemaVie
 }
 
 // Schemas returns an iterator which returns all of the schemas for the client's project.
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 func (c *SchemaClient) Schemas(ctx context.Context, view SchemaView) *SchemaIterator {
 	return &SchemaIterator{
 		it: c.sc.ListSchemas(ctx, &pb.ListSchemasRequest{
-			Parent: c.projectID,
+			Parent: fmt.Sprintf("projects/%s", c.projectID),
 			View:   pb.SchemaView(view),
 		}),
 	}
 }
 
+// SchemaIterator is a struct used to iterate over schemas.
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 type SchemaIterator struct {
 	it  *vkit.SchemaIterator
 	err error
@@ -163,8 +230,13 @@ func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaPath string) erro
 
 // ValidateSchemaResult is the response for the ValidateSchema method.
 // Reserved for future use.
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 type ValidateSchemaResult struct{}
 
+// ValidateSchema validates an existing schema given a path or SchemaConfig.
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 func (s *SchemaClient) ValidateSchema(ctx context.Context, schema *SchemaConfig) (*ValidateSchemaResult, error) {
 	req := &pb.ValidateSchemaRequest{
 		Parent: fmt.Sprintf("projects/%s", s.projectID),
@@ -179,11 +251,18 @@ func (s *SchemaClient) ValidateSchema(ctx context.Context, schema *SchemaConfig)
 
 // ValidateMessageResult is the response for the ValidateMessage method.
 // Reserved for future use.
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
 type ValidateMessageResult struct{}
 
+// ValidateMessage validates a message against an schema specified by
+// a schema path or a schema config.
 func (s *SchemaClient) ValidateMessage(ctx context.Context, msg []byte, encoding SchemaEncoding) (*ValidateMessageResult, error) {
 	req := &pb.ValidateMessageRequest{
-		Parent:   fmt.Sprintf("projects/%s", s.projectID),
+		Parent: fmt.Sprintf("projects/%s", s.projectID),
+		SchemaSpec: &pb.ValidateMessageRequest_Name{
+			Name: "some-schema",
+		},
 		Message:  msg,
 		Encoding: pb.Encoding(encoding),
 	}

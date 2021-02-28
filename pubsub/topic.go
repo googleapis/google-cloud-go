@@ -70,9 +70,6 @@ type Topic struct {
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
-
-	// Schema configures a schema for this topic
-	Schema SchemaSettings
 }
 
 // PublishSettings control the bundling of published messages.
@@ -151,6 +148,7 @@ func (c *Client) CreateTopicWithConfig(ctx context.Context, topicID string, tc *
 		Labels:               tc.Labels,
 		MessageStoragePolicy: messageStoragePolicyToProto(&tc.MessageStoragePolicy),
 		KmsKeyName:           tc.KMSKeyName,
+		SchemaSettings:       schemaSettingsToProto(tc.SchemaSettings),
 	})
 	if err != nil {
 		return nil, err
@@ -198,6 +196,14 @@ type TopicConfig struct {
 	// published to this topic, in the format
 	// "projects/P/locations/L/keyRings/R/cryptoKeys/K".
 	KMSKeyName string
+
+	// Schema defines the schema settings upon topic creation. This cannot
+	// be modified after a topic has been created.
+	//
+	// It is EXPERIMENTAL and a part of a closed alpha that may not be
+	// accessible to all users. It is subject to change
+	// or removal without notice.
+	SchemaSettings *SchemaSettings
 }
 
 // TopicConfigToUpdate describes how to update a topic.
@@ -224,6 +230,7 @@ func protoToTopicConfig(pbt *pb.Topic) TopicConfig {
 		Labels:               pbt.Labels,
 		MessageStoragePolicy: protoToMessageStoragePolicy(pbt.MessageStoragePolicy),
 		KMSKeyName:           pbt.KmsKeyName,
+		SchemaSettings:       protoToSchemaSettings(pbt.SchemaSettings),
 	}
 }
 
