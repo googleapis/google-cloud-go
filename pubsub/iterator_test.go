@@ -412,10 +412,7 @@ func TestIterator_SynchronousPullCancel(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := 1 * time.Second
-	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{
-		maxExtensionPeriod: want,
-	})
+	iter := newMessageIterator(client.subc, fullyQualifiedTopicName, &pullOptions{})
 
 	// Cancelling the iterator and pulling should not result in any errors.
 	iter.cancel()
