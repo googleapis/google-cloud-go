@@ -31,6 +31,8 @@ type flowController struct {
 	// small releases.
 	// Atomic.
 	countRemaining int64
+	// Number of outstanding bytes remaining. Atomic.
+	bytesRemaining int64
 }
 
 // newFlowController creates a new flowController that ensures no more than
@@ -72,7 +74,11 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 			return err
 		}
 	}
-	atomic.AddInt64(&f.countRemaining, 1)
+	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
+	recordStat(ctx, OutstandingMessages, outstandingMessages)
+	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
+	recordStat(ctx, OutstandingBytes, outstandingBytes)
+
 	return nil
 }
 
@@ -81,7 +87,7 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 //
 // tryAcquire allows large messages to proceed by treating a size greater than
 // maxSize as if it were equal to maxSize.
-func (f *flowController) tryAcquire(size int) bool {
+func (f *flowController) tryAcquire(ctx context.Context, size int) bool {
 	if f.semCount != nil {
 		if !f.semCount.TryAcquire(1) {
 			return false
@@ -95,13 +101,21 @@ func (f *flowController) tryAcquire(size int) bool {
 			return false
 		}
 	}
-	atomic.AddInt64(&f.countRemaining, 1)
+	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
+	recordStat(ctx, OutstandingMessages, outstandingMessages)
+	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
+	recordStat(ctx, OutstandingBytes, outstandingBytes)
+
 	return true
 }
 
 // release notes that one message of size bytes is no longer outstanding.
-func (f *flowController) release(size int) {
-	atomic.AddInt64(&f.countRemaining, -1)
+func (f *flowController) release(ctx context.Context, size int) {
+	outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
+	recordStat(ctx, OutstandingMessages, outstandingMessages)
+	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
+	recordStat(ctx, OutstandingBytes, outstandingBytes)
+
 	if f.semCount != nil {
 		f.semCount.Release(1)
 	}

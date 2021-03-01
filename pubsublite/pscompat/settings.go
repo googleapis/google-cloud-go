@@ -95,6 +95,10 @@ type PublishSettings struct {
 	// Optional custom function that transforms a pubsub.Message to a
 	// PubSubMessage API proto.
 	MessageTransformer PublishMessageTransformerFunc
+
+	// The polling interval to watch for topic partition count updates.
+	// Currently internal only and overridden in tests.
+	configPollPeriod time.Duration
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -132,6 +136,9 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
 	}
+	if s.configPollPeriod != 0 {
+		wireSettings.ConfigPollPeriod = s.configPollPeriod
+	}
 	return wireSettings
 }
 
@@ -146,8 +153,10 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 type NackHandler func(*pubsub.Message) error
 
 // ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage API
-// proto to a pubsub.Message. If this returns an error, the SubscriberClient
-// will consider this a fatal error and terminate.
+// proto to a pubsub.Message. The implementation must not set pubsub.Message.ID.
+//
+// If this returns an error, the SubscriberClient will consider this a fatal
+// error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
 // ReceiveSettings configure the SubscriberClient. Flow control settings

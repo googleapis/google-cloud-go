@@ -15,9 +15,9 @@
 Package pscompat contains clients for publishing and subscribing using the
 Pub/Sub Lite service.
 
-The clients in this package are designed to compatible with the Cloud Pub/Sub
-library: https://pkg.go.dev/cloud.google.com/go/pubsub. If interfaces are
-defined by the client, PublisherClient and SubscriberClient can be used as
+This package is designed to compatible with the Cloud Pub/Sub library:
+https://pkg.go.dev/cloud.google.com/go/pubsub. If interfaces are defined by the
+client application, PublisherClient and SubscriberClient can be used as
 substitutions for pubsub.Topic.Publish() and pubsub.Subscription.Receive(),
 respectively, from the pubsub package.
 

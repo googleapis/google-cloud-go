@@ -19,7 +19,6 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"cloud.google.com/go/pubsublite/publish"
 	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
 	"google.golang.org/api/support/bundler"
@@ -37,8 +36,9 @@ var (
 	ErrOversizedMessage = bundler.ErrOversizedItem
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
-	// published because the publisher client has stopped. PublisherClient.Error()
-	// returns the error that caused the publisher client to terminate (if any).
+	// published because the publisher client has stopped or is in the process of
+	// stopping. PublisherClient.Error() returns the error that caused the
+	// publisher client to terminate (if any).
 	ErrPublisherStopped = wire.ErrServiceStopped
 )
 
@@ -106,7 +106,10 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 // sent according to the client's PublishSettings. Publish never blocks.
 //
 // Publish returns a non-nil PublishResult which will be ready when the
-// message has been sent (or has failed to be sent) to the server.
+// message has been sent (or has failed to be sent) to the server. Once the
+// first publish error occurs, the publisher will terminate and subsequent
+// PublishResults will also have an error. A new publisher must be created to
+// republish failed messages.
 //
 // Once Stop() has been called or the publisher has failed permanently due to an
 // error, future calls to Publish will immediately return a PublishResult with
@@ -122,10 +125,10 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 		return result
 	}
 
-	p.wirePub.Publish(msgpb, func(pm *publish.Metadata, err error) {
+	p.wirePub.Publish(msgpb, func(metadata *wire.MessageMetadata, err error) {
 		err = translateError(err)
-		if pm != nil {
-			ipubsub.SetPublishResult(result, pm.String(), err)
+		if metadata != nil {
+			ipubsub.SetPublishResult(result, metadata.String(), err)
 		} else {
 			ipubsub.SetPublishResult(result, "", err)
 		}
@@ -135,7 +138,7 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 
 // Stop sends all remaining published messages and closes publish streams.
 // Returns once all outstanding messages have been sent or have failed to be
-// sent.
+// sent. Stop should be called when the client is no longer required.
 func (p *PublisherClient) Stop() {
 	p.wirePub.Stop()
 	p.wirePub.WaitStopped()

@@ -82,7 +82,7 @@ func defaultErrorGroupCallOptions() *ErrorGroupCallOptions {
 	}
 }
 
-// ErrorGroupClient is a client for interacting with Cloud Error Reporting API.
+// ErrorGroupClient is a client for interacting with Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ErrorGroupClient struct {

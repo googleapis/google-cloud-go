@@ -1,5 +1,8 @@
 # Changes
 
+## v1.16.0
+
+- Updates to various dependencies.
 
 ## [1.15.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.14.0...v1.15.0) (2021-01-14)
 

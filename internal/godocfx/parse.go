@@ -34,7 +34,9 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
+	"strconv"
 	"strings"
 
 	"cloud.google.com/go/third_party/pkgsite"
@@ -154,7 +156,8 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 	// Once the files are grouped by package, process each package
 	// independently.
 	for _, pi := range pkgInfos {
-		link := newLinker(pi.pkg.Imports, pi.importRenames)
+		link := newLinker(pi)
+		topLevelDecls := pkgsite.TopLevelDecls(pi.doc)
 		pkgItem := &item{
 			UID:      pi.doc.ImportPath,
 			Name:     pi.doc.ImportPath,
@@ -181,7 +184,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, link.toURL, topLevelDecls)},
 			})
 		}
 		for _, v := range pi.doc.Vars {
@@ -197,7 +200,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, link.toURL, topLevelDecls)},
 			})
 		}
 		for _, t := range pi.doc.Types {
@@ -211,7 +214,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, toURL)},
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, link.toURL, topLevelDecls)},
 				Examples: processExamples(t.Examples, pi.fset),
 			}
 			// Note: items are added as page.Children, rather than
@@ -230,7 +233,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, toURL)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, link.toURL, topLevelDecls)},
 				})
 			}
 			for _, v := range t.Vars {
@@ -246,7 +249,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string) (*result
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, toURL)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, link.toURL, topLevelDecls)},
 				})
 			}
 
@@ -311,18 +314,84 @@ type linker struct {
 	// Behavior is undefined when a single import has different names in
 	// different files.
 	imports map[string]string
+
+	// idToAnchor is a map from an ID to the anchor URL for that ID.
+	idToAnchor map[string]string
 }
 
-func newLinker(rawImports map[string]*packages.Package, importSyntax map[string]string) *linker {
+func newLinker(pi pkgInfo) *linker {
 	imports := map[string]string{}
-	for path, pkg := range rawImports {
+	for path, pkg := range pi.pkg.Imports {
 		name := pkg.Name
-		if rename := importSyntax[path]; rename != "" {
+		if rename := pi.importRenames[path]; rename != "" {
 			name = rename
 		}
 		imports[name] = path
 	}
-	return &linker{imports: imports}
+
+	idToAnchor := buildIDToAnchor(pi)
+
+	return &linker{imports: imports, idToAnchor: idToAnchor}
+}
+
+// nonWordRegex is based on
+// https://github.com/googleapis/doc-templates/blob/70eba5908e7b9aef5525d0f1f24194ae750f267e/third_party/docfx/templates/devsite/common.js#L27-L30.
+var nonWordRegex = regexp.MustCompile("\\W")
+
+func buildIDToAnchor(pi pkgInfo) map[string]string {
+	idToAnchor := map[string]string{}
+	idToAnchor[pi.doc.ImportPath] = pi.doc.ImportPath
+
+	for _, c := range pi.doc.Consts {
+		commaID := strings.Join(c.Names, ",")
+		uid := pi.doc.ImportPath + "." + commaID
+		for _, name := range c.Names {
+			idToAnchor[name] = uid
+		}
+	}
+	for _, v := range pi.doc.Vars {
+		commaID := strings.Join(v.Names, ",")
+		uid := pi.doc.ImportPath + "." + commaID
+		for _, name := range v.Names {
+			idToAnchor[name] = uid
+		}
+	}
+	for _, f := range pi.doc.Funcs {
+		uid := pi.doc.ImportPath + "." + f.Name
+		idToAnchor[f.Name] = uid
+	}
+	for _, t := range pi.doc.Types {
+		uid := pi.doc.ImportPath + "." + t.Name
+		idToAnchor[t.Name] = uid
+		for _, c := range t.Consts {
+			commaID := strings.Join(c.Names, ",")
+			uid := pi.doc.ImportPath + "." + commaID
+			for _, name := range c.Names {
+				idToAnchor[name] = uid
+			}
+		}
+		for _, v := range t.Vars {
+			commaID := strings.Join(v.Names, ",")
+			uid := pi.doc.ImportPath + "." + commaID
+			for _, name := range v.Names {
+				idToAnchor[name] = uid
+			}
+		}
+		for _, f := range t.Funcs {
+			uid := pi.doc.ImportPath + "." + t.Name + "." + f.Name
+			idToAnchor[f.Name] = uid
+		}
+		for _, m := range t.Methods {
+			uid := pi.doc.ImportPath + "." + t.Name + "." + m.Name
+			idToAnchor[m.Name] = uid
+		}
+	}
+
+	for id, anchor := range idToAnchor {
+		idToAnchor[id] = nonWordRegex.ReplaceAllString(anchor, "_")
+	}
+
+	return idToAnchor
 }
 
 func (l *linker) linkify(s string) string {
@@ -336,16 +405,15 @@ func (l *linker) linkify(s string) string {
 		prefix += "*"
 	}
 
-	// If s does not have a dot, it's in this package.
 	if !strings.Contains(s, ".") {
 		// If s is not exported, it's probably a builtin.
 		if !token.IsExported(s) {
 			if doc.IsPredeclared(s) {
-				return href(toURL("builtin", s), s)
+				return href(l.toURL("builtin", s), s)
 			}
 			return fmt.Sprintf("%s%s", prefix, s)
 		}
-		return fmt.Sprintf("%s%s", prefix, href(toURL("", s), s))
+		return fmt.Sprintf("%s%s", prefix, href(l.toURL("", s), s))
 	}
 	// Otherwise, it's in another package.
 	split := strings.Split(s, ".")
@@ -361,14 +429,17 @@ func (l *linker) linkify(s string) string {
 		return fmt.Sprintf("%s%s", prefix, s)
 	}
 	name := split[1]
-	return fmt.Sprintf("%s%s.%s", prefix, href(toURL(pkgPath, ""), pkg), href(toURL(pkgPath, name), name))
+	return fmt.Sprintf("%s%s.%s", prefix, href(l.toURL(pkgPath, ""), pkg), href(l.toURL(pkgPath, name), name))
 }
 
 // TODO: link to the right baseURL, with the right module name and version
 // pattern.
-func toURL(pkg, name string) string {
+func (l *linker) toURL(pkg, name string) string {
 	if pkg == "" {
-		return fmt.Sprintf("#%s", strings.ToLower(name))
+		if anchor := l.idToAnchor[name]; anchor != "" {
+			name = anchor
+		}
+		return fmt.Sprintf("#%s", name)
 	}
 	baseURL := "https://pkg.go.dev"
 	if name == "" {
@@ -585,7 +656,10 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 				if i.Name != nil {
 					name = i.Name.Name
 				}
-				iPath := strings.Trim(i.Path.Value, `"`)
+				iPath, err := strconv.Unquote(i.Path.Value)
+				if err != nil {
+					return nil, fmt.Errorf("strconv.Unquote: %v", err)
+				}
 				imports[iPath] = name
 			}
 		}

@@ -15,11 +15,11 @@ require (
 	golang.org/x/lint v0.0.0-20201208152925-83fdc39ff7b5
 	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/net v0.0.0-20210119194325-5f4716e94777
-	golang.org/x/oauth2 v0.0.0-20210113205817-d3ed898aa8a3
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99
+	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	golang.org/x/text v0.3.5
 	golang.org/x/tools v0.1.0
-	google.golang.org/api v0.38.0
-	google.golang.org/genproto v0.0.0-20210202153253-cf70463f6119
+	google.golang.org/api v0.40.0
+	google.golang.org/genproto v0.0.0-20210226172003-ab064af71705
 	google.golang.org/grpc v1.35.0
 )

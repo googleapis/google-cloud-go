@@ -149,7 +149,32 @@ type topicPartition struct {
 	Partition int
 }
 
+func (tp topicPartition) String() string {
+	return fmt.Sprintf("%s/partitions/%d", tp.Path, tp.Partition)
+}
+
 type subscriptionPartition struct {
 	Path      string
 	Partition int
+}
+
+func (sp subscriptionPartition) String() string {
+	return fmt.Sprintf("%s/partitions/%d", sp.Path, sp.Partition)
+}
+
+// MessageMetadata holds properties of a message published to the Pub/Sub Lite
+// service.
+//
+// NOTE: This is duplicated in the pscompat package in order to generate nicer
+// docs and should be kept consistent.
+type MessageMetadata struct {
+	// The topic partition the message was published to.
+	Partition int
+
+	// The offset the message was assigned.
+	Offset int64
+}
+
+func (m *MessageMetadata) String() string {
+	return fmt.Sprintf("%d:%d", m.Partition, m.Offset)
 }

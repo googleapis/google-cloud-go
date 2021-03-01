@@ -8,11 +8,11 @@ require (
 	github.com/google/go-cmp v0.5.4
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/mod v0.4.1 // indirect
-	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
-	golang.org/x/sys v0.0.0-20210124154548-22da62e12c0c // indirect
+	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99 // indirect
+	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	golang.org/x/tools v0.1.0 // indirect
-	google.golang.org/api v0.38.0
-	google.golang.org/genproto v0.0.0-20210202153253-cf70463f6119
+	google.golang.org/api v0.40.0
+	google.golang.org/genproto v0.0.0-20210226172003-ab064af71705
 	google.golang.org/grpc v1.35.0
 	google.golang.org/protobuf v1.25.0
 )

@@ -305,7 +305,7 @@ func TestRetry(t *testing.T) {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 
 		pause, shouldRetry := r.Retry(status.Error(codes.Aborted, ""))
@@ -325,15 +325,14 @@ func TestRetry(t *testing.T) {
 		}
 	}
 
-	md := grpcmd.New(map[string]string{})
-
+	md := grpcmd.New(nil)
 	r := &retryer{
 		backoff: gax.Backoff{
 			Initial:    initialBackoff,
 			Max:        maxBackoff,
 			Multiplier: backoffMultiplier,
 		},
-		md: md,
+		md: &md,
 	}
 	for i := 0; i < 100; i++ {
 		pause, shouldRetry := r.Retry(errors.New(""))

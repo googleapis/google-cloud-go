@@ -1,0 +1,57 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.dataqna.v1alpha",
+  "libraryPackage": "cloud.google.com/go/dataqna/apiv1alpha",
+  "services": {
+    "AutoSuggestionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AutoSuggestionClient",
+          "rpcs": {
+            "SuggestQueries": {
+              "methods": [
+                "SuggestQueries"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "QuestionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "QuestionClient",
+          "rpcs": {
+            "CreateQuestion": {
+              "methods": [
+                "CreateQuestion"
+              ]
+            },
+            "ExecuteQuestion": {
+              "methods": [
+                "ExecuteQuestion"
+              ]
+            },
+            "GetQuestion": {
+              "methods": [
+                "GetQuestion"
+              ]
+            },
+            "GetUserFeedback": {
+              "methods": [
+                "GetUserFeedback"
+              ]
+            },
+            "UpdateUserFeedback": {
+              "methods": [
+                "UpdateUserFeedback"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
