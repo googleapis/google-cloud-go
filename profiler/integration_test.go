@@ -76,7 +76,11 @@ retry curl -sL -o /tmp/bin/gimme https://raw.githubusercontent.com/travis-ci/gim
 chmod +x /tmp/bin/gimme
 export PATH=$PATH:/tmp/bin
 
-retry eval "$(gimme {{.GoVersion}})"
+gimme_retrier() {
+  eval "$(gimme {{.GoVersion}})"
+  which go # To retry on non-zero code if go not installed.
+}
+retry gimme_retrier
 
 # Set $GOPATH
 export GOPATH="$HOME/go"
