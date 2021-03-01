@@ -12,8 +12,8 @@ require (
 	github.com/shurcooL/graphql v0.0.0-20181231061246-d48a9a75455f // indirect
 	github.com/stretchr/testify v1.5.1 // indirect
 	golang.org/x/net v0.0.0-20201224014010-6772e930b67b // indirect
-	golang.org/x/oauth2 v0.0.0-20210218202405-ba52d332ba99
-	golang.org/x/sync v0.0.0-20201207232520-09787c993a3a
+	golang.org/x/oauth2 v0.0.0-20210220000619-9bb904979d93
+	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20210225134936-a50acf3fe073 // indirect
 	golang.org/x/text v0.3.4 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
