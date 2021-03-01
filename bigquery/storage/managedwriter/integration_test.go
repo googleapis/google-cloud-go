@@ -325,6 +325,113 @@ func TestIntegration_ManagedWriter_Default(t *testing.T) {
 
 }
 
+func TestIntegration_ManagedWriter_Pending(t *testing.T) {
+	setupCtx := context.Background()
+	ctx, _ := context.WithTimeout(context.Background(), 15*time.Second)
+
+	writeClient, bqClient := getClients(setupCtx, t)
+	defer writeClient.Close()
+	defer bqClient.Close()
+
+	dataset, cleanupFunc, err := setupTestDataset(setupCtx, t, bqClient)
+	if err != nil {
+		t.Fatalf("failed to init test dataset: %v", err)
+	}
+	defer cleanupFunc()
+
+	testTable := dataset.Table(tableIDs.New())
+
+	schema := bigquery.Schema{
+		{Name: "name", Type: bigquery.StringFieldType},
+		{Name: "value", Type: bigquery.IntegerFieldType},
+	}
+	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: schema}); err != nil {
+		t.Fatalf("couldn't create test table %s: %v", testTable.FullyQualifiedName(), err)
+	}
+
+	testData := []*testdata.SimpleMessage{
+		{Name: "one", Value: 1},
+		{Name: "two", Value: 2},
+		{Name: "three", Value: 3},
+		{Name: "four", Value: 1},
+		{Name: "five", Value: 2},
+	}
+
+	// Construct a simple serializer
+	_, descriptor := descriptor.ForMessage(&testdata.SimpleMessage{})
+	rs := &simpleRowSerializer{
+		DescFn:    staticDescFn(descriptor),
+		ConvertFn: marshalConvert,
+	}
+
+	mw, err := NewManagedWriter(ctx, writeClient, testTable,
+		WithRowSerializer(rs),
+		WithType(PendingStream),
+	)
+	if err != nil {
+		t.Fatalf("failed to create managed writer: %v", err)
+	}
+
+	var totalRows int64
+
+	var results []*AppendResult
+	for k, d := range testData {
+		log.Printf("appending element %d", k)
+		totalRows = totalRows + 1
+		ar, err := mw.AppendRows(d)
+		if err != nil {
+			t.Errorf("error on append %d: %v", totalRows, err)
+			break
+		}
+		results = append(results, ar...)
+	}
+
+	for k, result := range results {
+		fmt.Printf("checking result %d ", k)
+		_, err := result.GetResult(ctx)
+		if err != nil {
+			t.Errorf("got err: %v", err)
+		}
+		fmt.Printf("...done\n")
+	}
+
+	finalizeCount, err := mw.Finalize(ctx)
+	if err != nil {
+		t.Fatalf("finalize errored: %v", err)
+	}
+	if finalizeCount != totalRows {
+		t.Errorf("wanted %d total rows, finalized %d rows", totalRows, finalizeCount)
+	}
+
+	gotRows, err := queryRowCount(ctx, bqClient, testTable)
+	if err != nil {
+		t.Errorf("failed to get row count: %v", err)
+	}
+
+	if gotRows != 0 {
+		t.Errorf("haven't commited, expected no rows got %d", gotRows)
+	}
+
+	resp, err := mw.Commit(ctx)
+	if err != nil {
+		t.Fatalf("failed commit: %v", err)
+	}
+
+	log.Printf("commit: %v", resp.GetCommitTime())
+
+	gotRows, err = queryRowCount(ctx, bqClient, testTable)
+	if err != nil {
+		t.Errorf("failed post-commit row count: %v", err)
+	}
+
+	if gotRows != totalRows {
+		t.Errorf("mismatch after commit: wanted %d got %d", totalRows, gotRows)
+	}
+
+	log.Printf("got %d rows", gotRows)
+
+}
+
 func logMemUsage() {
 	var m runtime.MemStats
 	runtime.ReadMemStats(&m)

@@ -23,6 +23,7 @@ import (
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -42,29 +43,36 @@ type appendStream struct {
 	arc    storagepb.BigQueryWrite_AppendRowsClient
 
 	// things we need for reopen
-	streamName string
-	sentSchema bool
-	pending    chan *pendingWrite
+	streamName  string
+	trackOffset bool // false for default
+	sentSchema  bool
+	pending     chan *pendingWrite
 
 	curOffset int64
 
-	statsMu sync.Mutex
-
-	// terminalErr contains the terminal error that triggered stream close.
-	// In the case of a normal user close, it will hold io.EOF
-	terminalErr       error
-	terminalErrorRows int64
+	progressMu sync.Mutex
+	progress   *streamProgress
 }
 
-func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, fc *flowController, streamName string, schema *storagepb.ProtoSchema, tracePrefix string) (*appendStream, error) {
+type streamProgress struct {
+	curOffset     int64
+	numErrors     int64
+	terminalErr   error
+	flushOffset   int64
+	finalizeCount int64
+}
+
+func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, fc *flowController, streamName string, trackOffset bool, schema *storagepb.ProtoSchema, tracePrefix string) (*appendStream, error) {
 	as := &appendStream{
-		ctx:        ctx,
-		fc:         fc,
-		client:     client,
-		streamName: streamName,
-		schema:     schema,
-		pending:    make(chan *pendingWrite, fc.maxInsertCount+1),
-		traceID:    fmt.Sprintf("%s-%d", tracePrefix, time.Now().UnixNano()),
+		ctx:         ctx,
+		fc:          fc,
+		client:      client,
+		streamName:  streamName,
+		trackOffset: trackOffset,
+		schema:      schema,
+		pending:     make(chan *pendingWrite, fc.maxInsertCount+1),
+		traceID:     fmt.Sprintf("%s-%d", tracePrefix, time.Now().UnixNano()),
+		progress:    &streamProgress{},
 	}
 	arc, err := client.AppendRows(ctx)
 	if err != nil {
@@ -78,17 +86,17 @@ func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, f
 
 // Close signals user-level close of the stream.  If the stream already has a terminal error state, it is returned.
 func (as *appendStream) userClose() error {
-	as.statsMu.Lock()
-	defer as.statsMu.Unlock()
-	if as.terminalErr != nil {
-		return as.terminalErr
+	as.progressMu.Lock()
+	defer as.progressMu.Unlock()
+	if as.progress.terminalErr != nil {
+		return as.progress.terminalErr
 	}
 	err := as.arc.CloseSend()
 	if err != nil {
 		log.Printf("CloseSend returned err: %v", err)
 	}
 	// mark stream done.
-	as.terminalErr = io.EOF
+	as.progress.terminalErr = io.EOF
 	return nil
 }
 
@@ -105,21 +113,29 @@ func (as *appendStream) append(pw *pendingWrite) error {
 	if err := as.fc.acquire(as.ctx, reqSize); err != nil {
 		return fmt.Errorf("flow controller issue: %v", err)
 	}
+	// done prepping
+	as.progressMu.Lock()
+	prevOffset := as.progress.curOffset
+	if as.trackOffset {
+		pw.request.Offset = &wrapperspb.Int64Value{Value: as.progress.curOffset}
+		as.progress.curOffset = as.progress.curOffset + int64(len(pw.request.GetProtoRows().GetRows().GetSerializedRows()))
+	}
+	// Holding the lock for send to ensure we're correctly ordered.
 	if err := as.arc.Send(pw.request); err != nil {
-		// give back to the user?
-		// or should we finalize the pending write?
+
 		log.Printf("failed Send(): %#v\nerr: %v", pw.request, err)
 		as.fc.release(reqSize)
+		// early fail, rewind offset progress otherwise we'll make no forward progress.
+		if as.trackOffset {
+			as.progress.curOffset = prevOffset
+		}
+		as.progressMu.Unlock()
 		return err
 	}
+	as.fc.release(reqSize)
 	as.pending <- pw
+	as.progressMu.Unlock()
 	return nil
-}
-
-func (as *appendStream) isClosed() bool {
-	as.statsMu.Lock()
-	defer as.statsMu.Unlock()
-	return as.terminalErr == nil
 }
 
 func (as *appendStream) flush(offset int64) (int64, error) {
@@ -133,10 +149,14 @@ func (as *appendStream) flush(offset int64) (int64, error) {
 	if err != nil {
 		return 0, err
 	}
+	as.progressMu.Lock()
+	as.progress.flushOffset = resp.GetOffset()
+	as.progressMu.Unlock()
 	return resp.GetOffset(), nil
 }
 
-func (as *appendStream) finalize() (int64, error) {
+// shouldn't be on appendStream? unary rpc
+func (as *appendStream) finalize(ctx context.Context) (int64, error) {
 	// do we block appends? do we allow finalization with writes in flight?
 	count := as.fc.count()
 	if count > 0 {
@@ -145,10 +165,12 @@ func (as *appendStream) finalize() (int64, error) {
 	req := &storagepb.FinalizeWriteStreamRequest{
 		Name: as.streamName,
 	}
-	resp, err := as.client.FinalizeWriteStream(as.ctx, req)
+	resp, err := as.client.FinalizeWriteStream(ctx, req)
 	if err != nil {
 		return -1, err
 	}
+	as.progressMu.Lock()
+	as.progress.finalizeCount = resp.GetRowCount()
 	return resp.GetRowCount(), nil
 }
 
@@ -176,14 +198,13 @@ func defaultRecvProcessor(ctx context.Context, as *appendStream, pending chan *p
 				continue
 			}
 			if status := resp.GetError(); status != nil {
-				// this is a paired error.
-				nextWrite.markDone(-1, statusAsError(status))
+				nextWrite.markDone(-1, grpcstatus.ErrorProto(status))
 				continue
 			}
 			success := resp.GetAppendResult()
 			off := success.GetOffset()
 			if off != nil {
-				expected := nextWrite.request.GetOffset().GetValue() + int64(len(nextWrite.request.GetProtoRows().GetRows().GetSerializedRows()))
+				expected := nextWrite.request.GetOffset().GetValue() + int64(len(nextWrite.request.GetProtoRows().GetRows().GetSerializedRows())) - 1
 				if off.GetValue() != expected {
 					log.Printf("mismatched offsets.  got %d, expected %d", off.GetValue(), expected)
 				}

@@ -27,7 +27,6 @@ import (
 // ManagedWriter exposes the contract with no impl.
 type ManagedWriter struct {
 	settings   *WriteSettings
-	streamName string
 	streamType StreamType
 	as         *appendStream
 }
@@ -97,7 +96,7 @@ func NewManagedWriter(ctx context.Context, client *storage.BigQueryWriteClient, 
 	}
 	// ready an appendStream
 	fc := newFlowController(mw.settings.MaxInflightRequests, mw.settings.MaxInflightBytes)
-	appendStream, err := newAppendStream(ctx, client, fc, streamName, constructProtoSchema(mw.settings.Serializer), mw.settings.TracePrefix)
+	appendStream, err := newAppendStream(ctx, client, fc, streamName, mw.settings.StreamType != DefaultStream, constructProtoSchema(mw.settings.Serializer), mw.settings.TracePrefix)
 	if err != nil {
 		return nil, fmt.Errorf("error constructing append stream: %v", err)
 	}
@@ -191,8 +190,8 @@ func (mw *ManagedWriter) FlushRows(toOffset int64) (int64, error) {
 // Should this be exposed to users, or is this for the writer to own as part its shutdown?
 // e.g. finalize everything but default
 //
-func (mw *ManagedWriter) Finalize() (int64, error) {
-	return mw.as.finalize()
+func (mw *ManagedWriter) Finalize(ctx context.Context) (int64, error) {
+	return mw.as.finalize(ctx)
 }
 
 // Commit signals that one or more Pending streams should be committed.  Streams must first be
@@ -200,15 +199,17 @@ func (mw *ManagedWriter) Finalize() (int64, error) {
 // must all be valid streams of the same table this writer is appending data into.
 //
 // we should probably wrap the response, but what the hey
-func (mw *ManagedWriter) Commit(ctx context.Context, otherStreams []string) (*storagepb.BatchCommitWriteStreamsResponse, error) {
+func (mw *ManagedWriter) Commit(ctx context.Context, otherStreams ...string) (*storagepb.BatchCommitWriteStreamsResponse, error) {
 
 	req := &storagepb.BatchCommitWriteStreamsRequest{
-		Parent:       tableParentFromStreamName(mw.streamName),
-		WriteStreams: []string{mw.streamName},
+		Parent:       tableParentFromStreamName(mw.as.streamName),
+		WriteStreams: []string{mw.as.streamName},
 	}
-	if otherStreams != nil {
-		req.WriteStreams = append(req.WriteStreams, otherStreams...)
+	log.Printf("commit: %+v", req)
+	for _, other := range otherStreams {
+		req.WriteStreams = append(req.WriteStreams, other)
 	}
+	log.Printf("commit: %+v", req)
 	return mw.as.client.BatchCommitWriteStreams(ctx, req)
 }
 
