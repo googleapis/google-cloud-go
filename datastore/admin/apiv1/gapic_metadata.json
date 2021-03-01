@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "DatastoreAdminClient",
           "rpcs": {
+            "CreateIndex": {
+              "methods": [
+                "CreateIndex"
+              ]
+            },
+            "DeleteIndex": {
+              "methods": [
+                "DeleteIndex"
+              ]
+            },
             "ExportEntities": {
               "methods": [
                 "ExportEntities"
