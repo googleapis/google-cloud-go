@@ -25,6 +25,7 @@ if git log -1 | grep BREAKING_CHANGE_ACCEPTABLE; then
   exit 0
 fi
 
+go mod download golang.org/x/exp
 go install golang.org/x/exp/cmd/apidiff
 
 # We compare against master@HEAD. This is unfortunate in some cases: if you're
