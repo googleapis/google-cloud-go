@@ -568,8 +568,9 @@ func (c *CloudChannelClient) GetCustomer(ctx context.Context, req *channelpb.Get
 // Return Value:
 // List of CloudIdentityCustomerAccount resources for the domain.
 // List may be empty.
+//
 // Note: in the v1alpha1 version of the API, a NOT_FOUND error is returned if
-// no CloudIdentityCustomerAccount resource match the domain.
+// no CloudIdentityCustomerAccount resources match the domain.
 func (c *CloudChannelClient) CheckCloudIdentityAccountsExist(ctx context.Context, req *channelpb.CheckCloudIdentityAccountsExistRequest, opts ...gax.CallOption) (*channelpb.CheckCloudIdentityAccountsExistResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
