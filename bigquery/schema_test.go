@@ -1047,7 +1047,8 @@ func TestSchemaFromJSON(t *testing.T) {
 	{"name":"aliased_integer","type":"INT64","mode":"REQUIRED","description":"Aliased required integer"},
 	{"name":"aliased_boolean","type":"BOOL","mode":"NULLABLE","description":"Aliased nullable boolean"},
 	{"name":"aliased_float","type":"FLOAT64","mode":"REQUIRED","description":"Aliased required float"},
-	{"name":"aliased_record","type":"STRUCT","mode":"NULLABLE","description":"Aliased nullable record"}
+	{"name":"aliased_record","type":"STRUCT","mode":"NULLABLE","description":"Aliased nullable record"},
+	{"name":"aliased_bignumeric","type":"BIGDECIMAL","mode":"NULLABLE","description":"Aliased nullable bignumeric"}
 ]`),
 			expectedSchema: Schema{
 				fieldSchema("Flat nullable string", "flat_string", "STRING", false, false, nil),
@@ -1066,6 +1067,7 @@ func TestSchemaFromJSON(t *testing.T) {
 				fieldSchema("Aliased nullable boolean", "aliased_boolean", "BOOLEAN", false, false, nil),
 				fieldSchema("Aliased required float", "aliased_float", "FLOAT", false, true, nil),
 				fieldSchema("Aliased nullable record", "aliased_record", "RECORD", false, false, nil),
+				fieldSchema("Aliased nullable bignumeric", "aliased_bignumeric", "BIGNUMERIC", false, false, nil),
 			},
 		},
 		{
