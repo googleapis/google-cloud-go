@@ -1048,7 +1048,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "tables",
 		importPath:            "cloud.google.com/go/area120/tables/apiv1alpha1",
 		gRPCServiceConfigPath: "google/area120/tables/v1alpha1/tables_grpc_service_config.json",
-		apiServiceConfigPath:  "google/area120/tables/v1alpha1/language_gapic.yaml",
+		apiServiceConfigPath:  "google/area120/tables/v1alpha1/area120tables_v1alpha1.yaml",
 		releaseLevel:          "alpha",
 	},
 }
