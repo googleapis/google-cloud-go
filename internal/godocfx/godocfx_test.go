@@ -168,3 +168,33 @@ func TestGoldens(t *testing.T) {
 		}
 	}
 }
+
+func TestHasPrefix(t *testing.T) {
+	tests := []struct {
+		s        string
+		prefixes []string
+		want     bool
+	}{
+		{
+			s:        "abc",
+			prefixes: []string{"1", "a"},
+			want:     true,
+		},
+		{
+			s:        "abc",
+			prefixes: []string{"1"},
+			want:     false,
+		},
+		{
+			s:        "abc",
+			prefixes: []string{"1", "2"},
+			want:     false,
+		},
+	}
+
+	for _, test := range tests {
+		if got := hasPrefix(test.s, test.prefixes); got != test.want {
+			t.Errorf("hasPrefix(%q, %q) got %v, want %v", test.s, test.prefixes, got, test.want)
+		}
+	}
+}
