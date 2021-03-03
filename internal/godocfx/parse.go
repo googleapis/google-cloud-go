@@ -461,7 +461,10 @@ func (l *linker) toURL(pkg, name string) string {
 		return fmt.Sprintf("#%s", name)
 	}
 	if mod, ok := l.sameDomainModules[pkg]; ok {
-		pkgRemainder := pkg[len(mod.Path)+1:] // +1 to skip slash.
+		pkgRemainder := ""
+		if pkg != mod.Path {
+			pkgRemainder = pkg[len(mod.Path)+1:] // +1 to skip slash.
+		}
 		// Note: we always link to latest. One day, we'll link to mod.Version.
 		baseURL := fmt.Sprintf("/go/docs/reference/%v/latest/%v", mod.Path, pkgRemainder)
 		if anchor := l.idToAnchor[pkg][name]; anchor != "" {
