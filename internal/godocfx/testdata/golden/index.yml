@@ -793,7 +793,8 @@ items:
   - go
   syntax:
     content: func (b *<a href="#cloud_google_com_go_storage_BucketHandle">BucketHandle</a>)
-      IAM() *<a href="https://pkg.go.dev/cloud.google.com/go/iam">iam</a>.<a href="https://pkg.go.dev/cloud.google.com/go/iam#Handle">Handle</a>
+      IAM() *<a href="/go/docs/reference/cloud.google.com/go/latest/iam">iam</a>.<a
+      href="/go/docs/reference/cloud.google.com/go/latest/iam#cloud_google_com_go_iam_Handle">Handle</a>
 - uid: cloud.google.com/go/storage.BucketHandle.If
   name: |
     func (*BucketHandle) If

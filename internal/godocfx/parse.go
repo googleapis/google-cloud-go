@@ -315,74 +315,93 @@ type linker struct {
 	// different files.
 	imports map[string]string
 
-	// idToAnchor is a map from an ID to the anchor URL for that ID.
-	idToAnchor map[string]string
+	// idToAnchor is a map from package path to a map from ID to the anchor for
+	// that ID.
+	idToAnchor map[string]map[string]string
+
+	// sameDomainModules is a map from package path to module for every imported
+	// package that should cross link on the same domain.
+	sameDomainModules map[string]*packages.Module
 }
 
 func newLinker(pi pkgInfo) *linker {
+	sameDomainPrefixes := []string{"cloud.google.com/go"}
+
 	imports := map[string]string{}
+	sameDomainModules := map[string]*packages.Module{}
+	idToAnchor := map[string]map[string]string{}
+
 	for path, pkg := range pi.pkg.Imports {
 		name := pkg.Name
 		if rename := pi.importRenames[path]; rename != "" {
 			name = rename
 		}
 		imports[name] = path
+
+		// TODO: Consider documenting internal packages so we don't have to link
+		// out.
+		if pkg.Module != nil && hasPrefix(pkg.PkgPath, sameDomainPrefixes) && !strings.Contains(pkg.PkgPath, "internal") {
+			sameDomainModules[path] = pkg.Module
+
+			docPkg, _ := doc.NewFromFiles(pkg.Fset, pkg.Syntax, path)
+			idToAnchor[path] = buildIDToAnchor(docPkg)
+		}
 	}
 
-	idToAnchor := buildIDToAnchor(pi)
+	idToAnchor[""] = buildIDToAnchor(pi.doc)
 
-	return &linker{imports: imports, idToAnchor: idToAnchor}
+	return &linker{imports: imports, idToAnchor: idToAnchor, sameDomainModules: sameDomainModules}
 }
 
 // nonWordRegex is based on
 // https://github.com/googleapis/doc-templates/blob/70eba5908e7b9aef5525d0f1f24194ae750f267e/third_party/docfx/templates/devsite/common.js#L27-L30.
 var nonWordRegex = regexp.MustCompile("\\W")
 
-func buildIDToAnchor(pi pkgInfo) map[string]string {
+func buildIDToAnchor(pkg *doc.Package) map[string]string {
 	idToAnchor := map[string]string{}
-	idToAnchor[pi.doc.ImportPath] = pi.doc.ImportPath
+	idToAnchor[pkg.ImportPath] = pkg.ImportPath
 
-	for _, c := range pi.doc.Consts {
+	for _, c := range pkg.Consts {
 		commaID := strings.Join(c.Names, ",")
-		uid := pi.doc.ImportPath + "." + commaID
+		uid := pkg.ImportPath + "." + commaID
 		for _, name := range c.Names {
 			idToAnchor[name] = uid
 		}
 	}
-	for _, v := range pi.doc.Vars {
+	for _, v := range pkg.Vars {
 		commaID := strings.Join(v.Names, ",")
-		uid := pi.doc.ImportPath + "." + commaID
+		uid := pkg.ImportPath + "." + commaID
 		for _, name := range v.Names {
 			idToAnchor[name] = uid
 		}
 	}
-	for _, f := range pi.doc.Funcs {
-		uid := pi.doc.ImportPath + "." + f.Name
+	for _, f := range pkg.Funcs {
+		uid := pkg.ImportPath + "." + f.Name
 		idToAnchor[f.Name] = uid
 	}
-	for _, t := range pi.doc.Types {
-		uid := pi.doc.ImportPath + "." + t.Name
+	for _, t := range pkg.Types {
+		uid := pkg.ImportPath + "." + t.Name
 		idToAnchor[t.Name] = uid
 		for _, c := range t.Consts {
 			commaID := strings.Join(c.Names, ",")
-			uid := pi.doc.ImportPath + "." + commaID
+			uid := pkg.ImportPath + "." + commaID
 			for _, name := range c.Names {
 				idToAnchor[name] = uid
 			}
 		}
 		for _, v := range t.Vars {
 			commaID := strings.Join(v.Names, ",")
-			uid := pi.doc.ImportPath + "." + commaID
+			uid := pkg.ImportPath + "." + commaID
 			for _, name := range v.Names {
 				idToAnchor[name] = uid
 			}
 		}
 		for _, f := range t.Funcs {
-			uid := pi.doc.ImportPath + "." + t.Name + "." + f.Name
+			uid := pkg.ImportPath + "." + t.Name + "." + f.Name
 			idToAnchor[f.Name] = uid
 		}
 		for _, m := range t.Methods {
-			uid := pi.doc.ImportPath + "." + t.Name + "." + m.Name
+			uid := pkg.ImportPath + "." + t.Name + "." + m.Name
 			idToAnchor[m.Name] = uid
 		}
 	}
@@ -436,10 +455,19 @@ func (l *linker) linkify(s string) string {
 // pattern.
 func (l *linker) toURL(pkg, name string) string {
 	if pkg == "" {
-		if anchor := l.idToAnchor[name]; anchor != "" {
+		if anchor := l.idToAnchor[""][name]; anchor != "" {
 			name = anchor
 		}
 		return fmt.Sprintf("#%s", name)
+	}
+	if mod, ok := l.sameDomainModules[pkg]; ok {
+		pkgRemainder := pkg[len(mod.Path)+1:] // +1 to skip slash.
+		// Note: we always link to latest. One day, we'll link to mod.Version.
+		baseURL := fmt.Sprintf("/go/docs/reference/%v/latest/%v", mod.Path, pkgRemainder)
+		if anchor := l.idToAnchor[pkg][name]; anchor != "" {
+			return fmt.Sprintf("%s#%s", baseURL, anchor)
+		}
+		return baseURL
 	}
 	baseURL := "https://pkg.go.dev"
 	if name == "" {
@@ -558,7 +586,7 @@ type pkgInfo struct {
 
 func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule | packages.NeedImports,
+		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule | packages.NeedImports | packages.NeedDeps,
 		Tests: true,
 		Dir:   workingDir,
 	}
@@ -594,7 +622,7 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 		}
 		if strings.Contains(id, "_test") {
 			id = id[0:strings.Index(id, "_test [")]
-		} else {
+		} else if pkg.Module != nil {
 			idToPkg[pkg.PkgPath] = pkg
 			pkgNames = append(pkgNames, pkg.PkgPath)
 			// The test package doesn't have Module set.
@@ -673,4 +701,13 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	}
 
 	return result, nil
+}
+
+func hasPrefix(s string, prefixes []string) bool {
+	for _, prefix := range prefixes {
+		if strings.HasPrefix(s, prefix) {
+			return true
+		}
+	}
+	return false
 }
