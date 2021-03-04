@@ -247,6 +247,8 @@ func (it *messageIterator) pullMessages(maxToPull int32) ([]*pb.ReceivedMessage,
 	switch {
 	case err == context.Canceled:
 		return nil, nil
+	case status.Code(err) == codes.Canceled:
+		return nil, nil
 	case err != nil:
 		return nil, err
 	default:
