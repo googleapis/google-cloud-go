@@ -1,0 +1,68 @@
+# This workflow creates release PRs and tags the top level release for
+# the top level repository:
+on:
+  push:
+    branches:
+      - master
+name: release-please
+jobs:
+  release-please-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - id: release-pr # Open the release PR from a fork.
+        uses: GoogleCloudPlatform/release-please-action@v2
+        with:
+          # token: ${{ secrets.FORKING_TOKEN }}
+          token: ${{ secrets.FORKING_TOKEN }}
+          release-type: go
+          bump-minor-pre-major: true
+          fork: true
+          package-name: google-cloud-go
+          command: release-pr
+      - uses: actions/github-script@v3
+        id: label # Add the magic "autorelease: pending" label.
+        if: ${{ steps.release-pr.outputs.pr }}
+        with:
+            github-token: ${{secrets.GITHUB_TOKEN}}
+            script: |
+              const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+              await github.issues.addLabels({
+                owner,
+                repo,
+                issue_number: ${{steps.release-pr.outputs.pr}},
+                labels: ['autorelease: pending']
+              });
+              console.log(`Tagged ${{steps.release-pr.outputs.pr}}`)
+  release-please-release: # Actually tag the release.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: GoogleCloudPlatform/release-please-action@v2
+        id: tag-release
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          release-type: go
+          package-name: google-cloud-go
+          command: github-release
+          changelog-path: CHANGES.md
+      # Add the "autorelease: published" and remove tagged, this allows
+      # monitoring to be enabled that detects failed releases:
+      - uses: actions/github-script@v3
+        id: untag-release
+        if: ${{steps.tag-release.outputs.pr}}
+        with:
+          github-token: ${{secrets.GITHUB_TOKEN}}
+          script: |
+            const [owner, repo] = process.env.GITHUB_REPOSITORY.split('/');
+            await github.issues.addLabels({
+              owner,
+              repo,
+              issue_number: ${{steps.tag-release.outputs.pr}},
+              labels: ['autorelease: published']
+            });
+            github.issues.removeLabel({
+              owner,
+              repo,
+              issue_number: ${{steps.tag-release.outputs.pr}},
+              name: 'autorelease: tagged',
+            });
+            console.log(`Tagged ${{steps.tag-release.outputs.pr}}`)

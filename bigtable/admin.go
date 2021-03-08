@@ -115,6 +115,10 @@ func (ac *AdminClient) instancePrefix() string {
 	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
 }
 
+func (ac *AdminClient) backupPath(cluster, backup string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
+}
+
 // Tables returns a list of the tables in the instance.
 func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -597,10 +601,15 @@ func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) err
 	}
 }
 
-// TableIAM creates an IAM client specific to a given Instance and Table within the configured project.
+// TableIAM creates an IAM Handle specific to a given Instance and Table within the configured project.
 func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient,
 		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
+}
+
+// BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
+func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
+	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, backup))
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
@@ -1010,7 +1019,10 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, nil)
 }
 
-// Clusters lists the clusters in an instance.
+// Clusters lists the clusters in an instance. If any location
+// (cluster) is unavailable due to some transient conditions, Clusters
+// returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
 func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string) ([]*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
@@ -1023,7 +1035,6 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	if err != nil {
 		return nil, err
 	}
-	// TODO(garyelliott): Deal with failed_locations.
 	var cis []*ClusterInfo
 	for _, c := range res.Clusters {
 		nameParts := strings.Split(c.Name, "/")
@@ -1035,6 +1046,11 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			State:       c.State.String(),
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
 		})
+	}
+	if len(res.FailedLocations) > 0 {
+		// Return partial results and an error in
+		// case of some locations are unavailable.
+		return cis, ErrPartiallyUnavailable{res.FailedLocations}
 	}
 	return cis, nil
 }
@@ -1443,7 +1459,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
-	backupPath := prefix + "/clusters/" + cluster + "/backups/" + backup
+	backupPath := ac.backupPath(cluster, backup)
 
 	req := &btapb.RestoreTableRequest{
 		Parent:  prefix,
@@ -1603,9 +1619,7 @@ type BackupInfo struct {
 // BackupInfo gets backup metadata.
 func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	clusterPath := prefix + "/clusters/" + cluster
-	backupPath := clusterPath + "/backups/" + backup
+	backupPath := ac.backupPath(cluster, backup)
 
 	req := &btapb.GetBackupRequest{
 		Name: backupPath,
@@ -1627,9 +1641,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 // DeleteBackup deletes a backup in a cluster.
 func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	clusterPath := prefix + "/clusters/" + cluster
-	backupPath := clusterPath + "/backups/" + backup
+	backupPath := ac.backupPath(cluster, backup)
 
 	req := &btapb.DeleteBackupRequest{
 		Name: backupPath,
@@ -1641,9 +1653,7 @@ func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string)
 // UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
 func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := ac.instancePrefix()
-	clusterPath := prefix + "/clusters/" + cluster
-	backupPath := clusterPath + "/backups/" + backup
+	backupPath := ac.backupPath(cluster, backup)
 
 	expireTimestamp, err := ptypes.TimestampProto(expireTime)
 	if err != nil {

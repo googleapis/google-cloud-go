@@ -1,0 +1,258 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.analytics.admin.v1alpha",
+  "libraryPackage": "cloud.google.com/go/analytics/admin/apiv1alpha",
+  "services": {
+    "AnalyticsAdminService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "AnalyticsAdminClient",
+          "rpcs": {
+            "AuditUserLinks": {
+              "methods": [
+                "AuditUserLinks"
+              ]
+            },
+            "BatchCreateUserLinks": {
+              "methods": [
+                "BatchCreateUserLinks"
+              ]
+            },
+            "BatchDeleteUserLinks": {
+              "methods": [
+                "BatchDeleteUserLinks"
+              ]
+            },
+            "BatchGetUserLinks": {
+              "methods": [
+                "BatchGetUserLinks"
+              ]
+            },
+            "BatchUpdateUserLinks": {
+              "methods": [
+                "BatchUpdateUserLinks"
+              ]
+            },
+            "CreateAndroidAppDataStream": {
+              "methods": [
+                "CreateAndroidAppDataStream"
+              ]
+            },
+            "CreateFirebaseLink": {
+              "methods": [
+                "CreateFirebaseLink"
+              ]
+            },
+            "CreateGoogleAdsLink": {
+              "methods": [
+                "CreateGoogleAdsLink"
+              ]
+            },
+            "CreateIosAppDataStream": {
+              "methods": [
+                "CreateIosAppDataStream"
+              ]
+            },
+            "CreateProperty": {
+              "methods": [
+                "CreateProperty"
+              ]
+            },
+            "CreateUserLink": {
+              "methods": [
+                "CreateUserLink"
+              ]
+            },
+            "CreateWebDataStream": {
+              "methods": [
+                "CreateWebDataStream"
+              ]
+            },
+            "DeleteAccount": {
+              "methods": [
+                "DeleteAccount"
+              ]
+            },
+            "DeleteAndroidAppDataStream": {
+              "methods": [
+                "DeleteAndroidAppDataStream"
+              ]
+            },
+            "DeleteFirebaseLink": {
+              "methods": [
+                "DeleteFirebaseLink"
+              ]
+            },
+            "DeleteGoogleAdsLink": {
+              "methods": [
+                "DeleteGoogleAdsLink"
+              ]
+            },
+            "DeleteIosAppDataStream": {
+              "methods": [
+                "DeleteIosAppDataStream"
+              ]
+            },
+            "DeleteProperty": {
+              "methods": [
+                "DeleteProperty"
+              ]
+            },
+            "DeleteUserLink": {
+              "methods": [
+                "DeleteUserLink"
+              ]
+            },
+            "DeleteWebDataStream": {
+              "methods": [
+                "DeleteWebDataStream"
+              ]
+            },
+            "GetAccount": {
+              "methods": [
+                "GetAccount"
+              ]
+            },
+            "GetAndroidAppDataStream": {
+              "methods": [
+                "GetAndroidAppDataStream"
+              ]
+            },
+            "GetDataSharingSettings": {
+              "methods": [
+                "GetDataSharingSettings"
+              ]
+            },
+            "GetEnhancedMeasurementSettings": {
+              "methods": [
+                "GetEnhancedMeasurementSettings"
+              ]
+            },
+            "GetGlobalSiteTag": {
+              "methods": [
+                "GetGlobalSiteTag"
+              ]
+            },
+            "GetIosAppDataStream": {
+              "methods": [
+                "GetIosAppDataStream"
+              ]
+            },
+            "GetProperty": {
+              "methods": [
+                "GetProperty"
+              ]
+            },
+            "GetUserLink": {
+              "methods": [
+                "GetUserLink"
+              ]
+            },
+            "GetWebDataStream": {
+              "methods": [
+                "GetWebDataStream"
+              ]
+            },
+            "ListAccountSummaries": {
+              "methods": [
+                "ListAccountSummaries"
+              ]
+            },
+            "ListAccounts": {
+              "methods": [
+                "ListAccounts"
+              ]
+            },
+            "ListAndroidAppDataStreams": {
+              "methods": [
+                "ListAndroidAppDataStreams"
+              ]
+            },
+            "ListFirebaseLinks": {
+              "methods": [
+                "ListFirebaseLinks"
+              ]
+            },
+            "ListGoogleAdsLinks": {
+              "methods": [
+                "ListGoogleAdsLinks"
+              ]
+            },
+            "ListIosAppDataStreams": {
+              "methods": [
+                "ListIosAppDataStreams"
+              ]
+            },
+            "ListProperties": {
+              "methods": [
+                "ListProperties"
+              ]
+            },
+            "ListUserLinks": {
+              "methods": [
+                "ListUserLinks"
+              ]
+            },
+            "ListWebDataStreams": {
+              "methods": [
+                "ListWebDataStreams"
+              ]
+            },
+            "ProvisionAccountTicket": {
+              "methods": [
+                "ProvisionAccountTicket"
+              ]
+            },
+            "UpdateAccount": {
+              "methods": [
+                "UpdateAccount"
+              ]
+            },
+            "UpdateAndroidAppDataStream": {
+              "methods": [
+                "UpdateAndroidAppDataStream"
+              ]
+            },
+            "UpdateEnhancedMeasurementSettings": {
+              "methods": [
+                "UpdateEnhancedMeasurementSettings"
+              ]
+            },
+            "UpdateFirebaseLink": {
+              "methods": [
+                "UpdateFirebaseLink"
+              ]
+            },
+            "UpdateGoogleAdsLink": {
+              "methods": [
+                "UpdateGoogleAdsLink"
+              ]
+            },
+            "UpdateIosAppDataStream": {
+              "methods": [
+                "UpdateIosAppDataStream"
+              ]
+            },
+            "UpdateProperty": {
+              "methods": [
+                "UpdateProperty"
+              ]
+            },
+            "UpdateUserLink": {
+              "methods": [
+                "UpdateUserLink"
+              ]
+            },
+            "UpdateWebDataStream": {
+              "methods": [
+                "UpdateWebDataStream"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

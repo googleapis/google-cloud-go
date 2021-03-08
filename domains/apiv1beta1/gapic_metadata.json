@@ -1,0 +1,83 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.domains.v1beta1",
+  "libraryPackage": "cloud.google.com/go/domains/apiv1beta1",
+  "services": {
+    "Domains": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ConfigureContactSettings": {
+              "methods": [
+                "ConfigureContactSettings"
+              ]
+            },
+            "ConfigureDnsSettings": {
+              "methods": [
+                "ConfigureDnsSettings"
+              ]
+            },
+            "ConfigureManagementSettings": {
+              "methods": [
+                "ConfigureManagementSettings"
+              ]
+            },
+            "DeleteRegistration": {
+              "methods": [
+                "DeleteRegistration"
+              ]
+            },
+            "ExportRegistration": {
+              "methods": [
+                "ExportRegistration"
+              ]
+            },
+            "GetRegistration": {
+              "methods": [
+                "GetRegistration"
+              ]
+            },
+            "ListRegistrations": {
+              "methods": [
+                "ListRegistrations"
+              ]
+            },
+            "RegisterDomain": {
+              "methods": [
+                "RegisterDomain"
+              ]
+            },
+            "ResetAuthorizationCode": {
+              "methods": [
+                "ResetAuthorizationCode"
+              ]
+            },
+            "RetrieveAuthorizationCode": {
+              "methods": [
+                "RetrieveAuthorizationCode"
+              ]
+            },
+            "RetrieveRegisterParameters": {
+              "methods": [
+                "RetrieveRegisterParameters"
+              ]
+            },
+            "SearchDomains": {
+              "methods": [
+                "SearchDomains"
+              ]
+            },
+            "UpdateRegistration": {
+              "methods": [
+                "UpdateRegistration"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

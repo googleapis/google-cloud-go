@@ -19,6 +19,9 @@ package spansql
 import (
 	"reflect"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 func boolAddr(b bool) *bool {
@@ -53,6 +56,11 @@ func TestSQL(t *testing.T) {
 		return e, nil
 	}
 
+	latz, err := time.LoadLocation("America/Los_Angeles")
+	if err != nil {
+		t.Fatalf("Loading Los Angeles time zone info: %v", err)
+	}
+
 	line := func(n int) Position { return Position{Line: n} }
 	tests := []struct {
 		data    interface{ SQL() string }
@@ -75,6 +83,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Cj", Type: Type{Array: true, Base: Int64}, Position: line(11)},
 					{Name: "Ck", Type: Type{Array: true, Base: String, Len: MaxLen}, Position: line(12)},
 					{Name: "Cl", Type: Type{Base: Timestamp}, Options: ColumnOptions{AllowCommitTimestamp: boolAddr(false)}, Position: line(13)},
+					{Name: "Cm", Type: Type{Base: Int64}, Generated: Func{Name: "CHAR_LENGTH", Args: []Expr{ID("Ce")}}, Position: line(14)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -95,6 +104,7 @@ func TestSQL(t *testing.T) {
   Cj ARRAY<INT64>,
   Ck ARRAY<STRING(MAX)>,
   Cl TIMESTAMP OPTIONS (allow_commit_timestamp = null),
+  Cm INT64 AS (CHAR_LENGTH(Ce)) STORED,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
@@ -296,6 +306,39 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			"SELECT `Desc`",
+			reparseQuery,
+		},
+		{
+			DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27}),
+			`DATE '2014-09-27'`,
+			reparseExpr,
+		},
+		{
+			TimestampLiteral(time.Date(2014, time.September, 27, 12, 34, 56, 123456e3, latz)),
+			`TIMESTAMP '2014-09-27 12:34:56.123456 -07:00'`,
+			reparseExpr,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{
+						ID("A"), ID("B"),
+					},
+					From: []SelectFrom{
+						SelectFromJoin{
+							Type: InnerJoin,
+							LHS:  SelectFromTable{Table: "Table1"},
+							RHS:  SelectFromTable{Table: "Table2"},
+							On: ComparisonOp{
+								LHS: PathExp{"Table1", "A"},
+								Op:  Eq,
+								RHS: PathExp{"Table2", "A"},
+							},
+						},
+					},
+				},
+			},
+			"SELECT A, B FROM Table1 INNER JOIN Table2 ON Table1.A = Table2.A",
 			reparseQuery,
 		},
 	}

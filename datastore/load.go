@@ -369,7 +369,7 @@ func setVal(v reflect.Value, p Property) (s string) {
 			if ok {
 				s := micros / 1e6
 				ns := micros % 1e6
-				v.Set(reflect.ValueOf(time.Unix(s, ns)))
+				v.Set(reflect.ValueOf(time.Unix(s, ns).In(time.UTC)))
 				break
 			}
 			x, ok := pValue.(time.Time)
@@ -384,13 +384,13 @@ func setVal(v reflect.Value, p Property) (s string) {
 			}
 			v.Set(reflect.ValueOf(x))
 		case typeOfCivilDate:
-			date := civil.DateOf(pValue.(time.Time))
+			date := civil.DateOf(pValue.(time.Time).In(time.UTC))
 			v.Set(reflect.ValueOf(date))
 		case typeOfCivilDateTime:
-			dateTime := civil.DateTimeOf(pValue.(time.Time))
+			dateTime := civil.DateTimeOf(pValue.(time.Time).In(time.UTC))
 			v.Set(reflect.ValueOf(dateTime))
 		case typeOfCivilTime:
-			timeVal := civil.TimeOf(pValue.(time.Time))
+			timeVal := civil.TimeOf(pValue.(time.Time).In(time.UTC))
 			v.Set(reflect.ValueOf(timeVal))
 		default:
 			ent, ok := pValue.(*Entity)
@@ -536,7 +536,7 @@ func propToValue(v *pb.Value) (interface{}, error) {
 	case *pb.Value_DoubleValue:
 		return v.DoubleValue, nil
 	case *pb.Value_TimestampValue:
-		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos)), nil
+		return time.Unix(v.TimestampValue.Seconds, int64(v.TimestampValue.Nanos)).In(time.UTC), nil
 	case *pb.Value_KeyValue:
 		return protoToKey(v.KeyValue)
 	case *pb.Value_StringValue:

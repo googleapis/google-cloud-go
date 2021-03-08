@@ -1,0 +1,68 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.networkconnectivity.v1alpha1",
+  "libraryPackage": "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+  "services": {
+    "HubService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "HubClient",
+          "rpcs": {
+            "CreateHub": {
+              "methods": [
+                "CreateHub"
+              ]
+            },
+            "CreateSpoke": {
+              "methods": [
+                "CreateSpoke"
+              ]
+            },
+            "DeleteHub": {
+              "methods": [
+                "DeleteHub"
+              ]
+            },
+            "DeleteSpoke": {
+              "methods": [
+                "DeleteSpoke"
+              ]
+            },
+            "GetHub": {
+              "methods": [
+                "GetHub"
+              ]
+            },
+            "GetSpoke": {
+              "methods": [
+                "GetSpoke"
+              ]
+            },
+            "ListHubs": {
+              "methods": [
+                "ListHubs"
+              ]
+            },
+            "ListSpokes": {
+              "methods": [
+                "ListSpokes"
+              ]
+            },
+            "UpdateHub": {
+              "methods": [
+                "UpdateHub"
+              ]
+            },
+            "UpdateSpoke": {
+              "methods": [
+                "UpdateSpoke"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
