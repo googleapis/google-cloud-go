@@ -20,10 +20,12 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
@@ -37,103 +39,141 @@ import (
 	htransport "google.golang.org/api/transport/http"
 )
 
+type retryFunc func(ctx context.Context, c *Client) error
+
+type retryCase struct {
+	// Instruction header to send to the emulator.
+	instruction string
+	// Functions that will wrap the library method to call.
+	methods []retryFunc
+	// If true, the call should succeed after a retry.
+	expectSuccess bool
+}
+
 func TestRetryConformance(t *testing.T) {
-	// Create test cases.
-	cases := []struct{
-		instruction string   // add later
-		method func(ctx context.Context, c *Client) error
-		expectSuccess bool
-	}{
-		{
-			instruction: "return-503-after-256K",
-			method: func(ctx context.Context, c *Client) error {
 
+	if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
+		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
+	}
 
-				_, err := c.Bucket("cjcotter-devrel-test").Object("file.txt").Attrs(ctx)
+	bucketName := "cjcotter-devrel-test"
+	objName := "file.txt"
+
+	// List of methods to retry. This is pretty much impossible to encode in a
+	// schema because they vary a lot across libraries.
+	// I'd want to flesh this out with two lists of functions:
+	// 1. A list of idempotent calls (should give expectSuccess = True for
+	//    retryable errors, false for other errors).
+	// 2. A list of non-idempotent calls (should give expectSuccess = False for
+	//    everything).
+	funcs := []retryFunc{
+		func(ctx context.Context, c *Client) error {
+			_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
+			return err
+		},
+		func(ctx context.Context, c *Client) error {
+			r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
+			if err != nil {
 				return err
-			},
+			}
+			_, err = io.Copy(ioutil.Discard, r)
+			return err
+		},
+	}
+	// Create test cases.
+	// TODO: add unmarshaling from conf test JSON
+	cases := []retryCase{
+		{
+			instruction:   "return-503-after-256K",
+			methods:       funcs,
 			expectSuccess: true,
 		},
 		{
-			instruction: "reset-connection",
-			method: func(ctx context.Context, c *Client) error {
-				_, err := c.Bucket("cjcotter-devrel-test").Object("file.txt").Attrs(ctx)
-				return err
-			},
+			instruction:   "reset-connection",
+			methods:       funcs,
 			expectSuccess: false,
 		},
 	}
 
 	ctx := context.Background()
 
-	// Create custom client that sends instruction
-	base := http.DefaultTransport
-	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
-		option.WithUserAgent("custom-user-agent"))
+	// Create non-wrapped client to use for setup steps.
+	client, err := NewClient(ctx)
 	if err != nil {
-		// Handle error.
+		t.Fatalf("storage.NewClient: %v", err)
 	}
-	c := http.Client{Transport:trans}
-
-	// Add RoundTripper to the created HTTP client.
-	instr := "reset-connection"
-	wrappedTrans := &withInstruction{rt: c.Transport, instr: instr}
-	c.Transport = *wrappedTrans
-
-	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint("http://localhost:9000/storage/v1/"))
-	if err != nil {
-		// Handle error.
-	}
-
-	// Setup bucket and object
-	bktName := "cjcotter-devrel-test"
-	if err := client.Bucket(bktName).Create(ctx,"myproj", &BucketAttrs{}); err != nil {
-		t.Errorf("Error creating bucket: %v", err)
-	}
-
-	w := client.Bucket(bktName).Object("file.txt").NewWriter(ctx)
-	if _, err := w.Write([]byte("abcdef")); err != nil {
-		t.Errorf("Error writing object to emulator: %v", err)
-	}
-	if err := w.Close(); err != nil {
-		t.Errorf("Error writing object to emulator in Close: %v", err)
-	}
-
-
 
 	for _, c := range cases {
-		// Transport manipulation is not thread safe.
-		retries = 2
-		wrappedTrans.instr = c.instruction
-		err := c.method(ctx, client)
-		if err == nil && !c.expectSuccess {
-			t.Errorf("case: want failure, got success")
-		}
-		if err != nil && c.expectSuccess {
-			t.Errorf("case: want success, got %v", err)
+		for i, m := range c.methods {
+			testName := fmt.Sprintf("%v - %v", c.instruction, i)
+			t.Run(testName, func(t *testing.T) {
+				// Setup bucket and object
+				if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
+					t.Errorf("Error creating bucket: %v", err)
+				}
+
+				w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
+				if _, err := w.Write([]byte("abcdef")); err != nil {
+					t.Errorf("Error writing object to emulator: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Errorf("Error writing object to emulator in Close: %v", err)
+				}
+
+				wrapped, err := wrappedClient(c)
+				if err != nil {
+					t.Errorf("error creating wrapped client: %v", err)
+				}
+				err = m(ctx, wrapped)
+				if c.expectSuccess && err != nil {
+					t.Errorf("want success, got %v", err)
+				}
+				if !c.expectSuccess && err == nil {
+					t.Errorf("want failure, got success")
+				}
+			})
 		}
 	}
 }
-
-var retries int
 
 type withInstruction struct {
-	rt http.RoundTripper
-	instr string
+	rt      http.RoundTripper
+	instr   string
+	retries int
 }
 
-func (wi withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
-	if retries > 0 {
+func (wi *withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
+	if wi.retries > 0 {
 		r.Header.Set("x-goog-testbench-instructions", wi.instr)
-		retries -= 1
+		wi.retries -= 1
 	}
-	log.Printf("Request: %+v\nRetries: %v\n\n", r, retries)
+	log.Printf("Request: %+v\nRetries: %v\n\n", r, wi.retries)
 	resp, err := wi.rt.RoundTrip(r)
 	//if err != nil{
 	//	log.Printf("Error: %+v", err)
 	//}
 	return resp, err
+}
+
+// Create custom client that sends instruction
+func wrappedClient(r retryCase) (*Client, error) {
+	ctx := context.Background()
+	base := http.DefaultTransport
+	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
+		option.WithUserAgent("custom-user-agent"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create http client: %v", err)
+	}
+	c := http.Client{Transport: trans}
+
+	// Add RoundTripper to the created HTTP client.
+	instr := r.instruction
+	wrappedTrans := &withInstruction{rt: c.Transport, instr: instr, retries: 2}
+	c.Transport = wrappedTrans
+
+	// Supply this client to storage.NewClient
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint("http://localhost:9000/storage/v1/"))
+	return client, err
 }
 
 func TestPostPolicyV4Conformance(t *testing.T) {
