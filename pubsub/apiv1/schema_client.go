@@ -90,6 +90,7 @@ type SchemaClient struct {
 
 // NewSchemaClient creates a new schema service client.
 //
+// Service for doing schema-related operations.
 func NewSchemaClient(ctx context.Context, opts ...option.ClientOption) (*SchemaClient, error) {
 	clientOpts := defaultSchemaClientOptions()
 
