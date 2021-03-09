@@ -1,5 +1,12 @@
 # Changes
 
+### [1.15.1](https://www.github.com/googleapis/google-cloud-go/compare/v1.15.0...v1.15.1) (2021-03-09)
+
+
+### Bug Fixes
+
+* **spanner/spansql:** fix parsing of NOT IN operator ([#3724](https://www.github.com/googleapis/google-cloud-go/issues/3724)) ([7636478](https://www.github.com/googleapis/google-cloud-go/commit/76364784d82073b80929ae60fd42da34c8050820))
+
 ## [1.15.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.14.1...v1.15.0) (2021-02-24)
 
 
