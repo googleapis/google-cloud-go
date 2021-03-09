@@ -1255,11 +1255,16 @@ func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (
 		return ret.(*empty.Empty), err
 	}
 
-	// deleting a non-existent entry is a no-op
+	schema := s.schemas[req.Name]
+	if schema == nil {
+		return nil, status.Errorf(codes.NotFound, "schema %q", req.Name)
+	}
+
 	delete(s.schemas, req.Name)
 	return &empty.Empty{}, nil
 }
 
+// ValidateSchema mocks the ValidateSchema call but only checks that the schema definition is not empty.
 func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaRequest) (*pb.ValidateSchemaResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1268,6 +1273,9 @@ func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaReques
 		return ret.(*pb.ValidateSchemaResponse), err
 	}
 
+	if req.Schema.Definition == "" {
+		return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+	}
 	return &pb.ValidateSchemaResponse{}, nil
 }
 
@@ -1277,6 +1285,14 @@ func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequ
 
 	if handled, ret, err := s.runReactor(req, "ValidateMessage", &pb.ValidateMessageResponse{}); handled || err != nil {
 		return ret.(*pb.ValidateMessageResponse), err
+	}
+
+	spec := req.GetSchemaSpec()
+	if _, ok := spec.(*pb.ValidateMessageRequest_Name); ok {
+		fmt.Printf("request is name: %v", req)
+	}
+	if _, ok := spec.(*pb.ValidateMessageRequest_Schema); ok {
+		fmt.Printf("request is schema: %v", req)
 	}
 
 	return &pb.ValidateMessageResponse{}, nil
