@@ -309,7 +309,7 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
 	}
 
-	if gotConfig, err := admin.CreateSubscriptionAtOffset(ctx, subscriptionConfig, Beginning); err != nil {
+	if gotConfig, err := admin.CreateSubscriptionWithOptions(ctx, subscriptionConfig, CreateSubscriptionOpts{StartingOffset: Beginning}); err != nil {
 		t.Errorf("CreateSubscription() got err: %v", err)
 	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
 		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)

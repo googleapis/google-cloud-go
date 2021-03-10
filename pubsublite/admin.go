@@ -147,28 +147,37 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 	}
 }
 
-// StartingOffset is the offset at which a newly created subscription will start
-// receiving messages.
-type StartingOffset int
+// OffsetLocation refers to the location of an offset in reference to the
+// message backlog.
+type OffsetLocation int
 
 const (
-	// End represents the current HEAD offset.
-	End StartingOffset = iota
+	// UnspecifiedOffsetLocation represents an OffsetLocation that has not
+	// been set.
+	UnspecifiedOffsetLocation OffsetLocation = iota
+
+	// End refers to the offset past all currently published messages. End
+	// skips the entire message backlog.
+	End
 
 	// Beginning represents the offset of the oldest retained message.
 	Beginning
 )
 
+type CreateSubscriptionOpts struct {
+	StartingOffset OffsetLocation
+}
+
 // CreateSubscription creates a new subscription from the given config. If the
 // subscription already exists an error will be returned.
 func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
-	return ac.CreateSubscriptionAtOffset(ctx, config, End)
+	return ac.CreateSubscriptionWithOptions(ctx, config, CreateSubscriptionOpts{StartingOffset: End})
 }
 
 // CreateSubscriptionAtOffset creates a new subscription from the given config
 // at the provided starting offset. If the subscription already exists an error
 // will be returned.
-func (ac *AdminClient) CreateSubscriptionAtOffset(ctx context.Context, config SubscriptionConfig, startingOffset StartingOffset) (*SubscriptionConfig, error) {
+func (ac *AdminClient) CreateSubscriptionWithOptions(ctx context.Context, config SubscriptionConfig, opts CreateSubscriptionOpts) (*SubscriptionConfig, error) {
 	subsPath, err := wire.ParseSubscriptionPath(config.Name)
 	if err != nil {
 		return nil, err
@@ -180,7 +189,7 @@ func (ac *AdminClient) CreateSubscriptionAtOffset(ctx context.Context, config Su
 		Parent:         subsPath.Location().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: subsPath.SubscriptionID,
-		SkipBacklog:    startingOffset == End,
+		SkipBacklog:    opts.StartingOffset != Beginning,
 	}
 	subspb, err := ac.admin.CreateSubscription(ctx, req)
 	if err != nil {
