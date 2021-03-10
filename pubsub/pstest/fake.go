@@ -34,12 +34,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/ptypes"
-	durpb "github.com/golang/protobuf/ptypes/duration"
-	emptypb "github.com/golang/protobuf/ptypes/empty"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	durpb "google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/emptypb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ReactorOptions is a map that Server uses to look up reactors.
@@ -455,11 +455,11 @@ const (
 	maxMessageRetentionDuration = 168 * time.Hour
 )
 
-var defaultMessageRetentionDuration = ptypes.DurationProto(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
 
 func checkMRD(pmrd *durpb.Duration) error {
-	mrd, err := ptypes.Duration(pmrd)
-	if err != nil || mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
+	mrd := pmrd.AsDuration()
+	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
 	}
 	return nil
@@ -619,10 +619,7 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 		s.nextID++
 		pm.MessageId = id
 		pubTime := s.timeNowFunc()
-		tsPubTime, err := ptypes.TimestampProto(pubTime)
-		if err != nil {
-			return nil, status.Errorf(codes.Internal, err.Error())
-		}
+		tsPubTime := timestamppb.New(pubTime)
 		pm.PublishTime = tsPubTime
 		m := &Message{
 			ID:          id,
@@ -833,11 +830,7 @@ func (s *GServer) Seek(ctx context.Context, req *pb.SeekRequest) (*pb.SeekRespon
 	case nil:
 		return nil, status.Errorf(codes.InvalidArgument, "missing Seek target type")
 	case *pb.SeekRequest_Time:
-		var err error
-		target, err = ptypes.Timestamp(v.Time)
-		if err != nil {
-			return nil, status.Errorf(codes.InvalidArgument, "bad Time target: %v", err)
-		}
+		target = v.Time.AsTime()
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unhandled Seek target type %T", v)
 	}
@@ -985,10 +978,7 @@ func (s *subscription) maintainMessages(now time.Time) {
 		if m.outstanding() && now.After(m.ackDeadline) {
 			m.makeAvailable()
 		}
-		pubTime, err := ptypes.Timestamp(m.proto.Message.PublishTime)
-		if err != nil {
-			panic(err)
-		}
+		pubTime := m.proto.Message.PublishTime.AsTime()
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
 			delete(s.msgs, id)
