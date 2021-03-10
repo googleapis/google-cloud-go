@@ -174,8 +174,8 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 	return ac.CreateSubscriptionWithOptions(ctx, config, CreateSubscriptionOpts{StartingOffset: End})
 }
 
-// CreateSubscriptionAtOffset creates a new subscription from the given config
-// at the provided starting offset. If the subscription already exists an error
+// CreateSubscriptionWithOptions creates a new subscription from the given
+// config with the provided options. If the subscription already exists an error
 // will be returned.
 func (ac *AdminClient) CreateSubscriptionWithOptions(ctx context.Context, config SubscriptionConfig, opts CreateSubscriptionOpts) (*SubscriptionConfig, error) {
 	subsPath, err := wire.ParseSubscriptionPath(config.Name)
