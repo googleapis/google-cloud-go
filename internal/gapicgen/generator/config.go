@@ -1025,6 +1025,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/metastore/v1alpha/metastore_v1alpha.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/metastore/v1beta",
+		pkg:                   "metastore",
+		importPath:            "cloud.google.com/go/metastore/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/metastore/v1beta/metastore_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/metastore/v1beta/metastore_v1beta.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
