@@ -151,11 +151,11 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 type StartingOffset int
 
 const (
-        // End represents the current HEAD offset.
-        End StartingOffset = iota
+      // End represents the current HEAD offset.
+      End StartingOffset = iota
 
-        // Beginning represents the offset of the oldest retained message.
-        Beginning
+      // Beginning represents the offset of the oldest retained message.
+      Beginning
 )
 
 // CreateSubscription creates a new subscription from the given config. If the
