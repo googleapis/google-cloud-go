@@ -45,6 +45,7 @@ for dir in $MANUALS $STABLE_GAPICS; do
   cd - > /dev/null
 
   apidiff -incompatible /tmp/pkg.master $pkg > diff.txt
+  rm /tmp/pkg.master
   if [ -s diff.txt ]; then
     echo "Detected incompatible API changes between master@HEAD and current state:"
     cat diff.txt
