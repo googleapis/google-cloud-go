@@ -147,7 +147,8 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 	}
 }
 
-// The offset at which a newly created subscription will start receiving messages.
+// StartingOffset is the offset at which a newly created subscription will start
+// receiving messages.
 type StartingOffset int
 
 const (
@@ -164,9 +165,9 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 	return ac.CreateSubscriptionAtOffset(ctx, config, End)
 }
 
-// CreateSubscription creates a new subscription from the given config at the
-// provided starting offset. If the subscription already exists an error will be
-// returned.
+// CreateSubscriptionAtOffset creates a new subscription from the given config
+// at the provided starting offset. If the subscription already exists an error
+// will be returned.
 func (ac *AdminClient) CreateSubscriptionAtOffset(ctx context.Context, config SubscriptionConfig, startingOffset StartingOffset) (*SubscriptionConfig, error) {
 	subsPath, err := wire.ParseSubscriptionPath(config.Name)
 	if err != nil {
