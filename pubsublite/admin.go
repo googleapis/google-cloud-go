@@ -151,41 +151,41 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 type StartingOffset int
 
 const (
-      // End represents the current HEAD offset.
-      End StartingOffset = iota
+	// End represents the current HEAD offset.
+	End StartingOffset = iota
 
-      // Beginning represents the offset of the oldest retained message.
-      Beginning
+	// Beginning represents the offset of the oldest retained message.
+	Beginning
 )
 
 // CreateSubscription creates a new subscription from the given config. If the
 // subscription already exists an error will be returned.
 func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
-      return ac.CreateSubscriptionAtOffset(ctx, config, End)
+	return ac.CreateSubscriptionAtOffset(ctx, config, End)
 }
 
 // CreateSubscription creates a new subscription from the given config at the
 // provided starting offset. If the subscription already exists an error will be
 // returned.
 func (ac *AdminClient) CreateSubscriptionAtOffset(ctx context.Context, config SubscriptionConfig, startingOffset StartingOffset) (*SubscriptionConfig, error) {
-      subsPath, err := wire.ParseSubscriptionPath(config.Name)
-      if err != nil {
-	      return nil, err
-      }
-      if _, err := wire.ParseTopicPath(config.Topic); err != nil {
-	      return nil, err
-      }
-      req := &pb.CreateSubscriptionRequest{
-	      Parent:         subsPath.Location().String(),
-	      Subscription:   config.toProto(),
-	      SubscriptionId: subsPath.SubscriptionID,
-	      SkipBacklog:    startingOffset == End,
-      }
-      subspb, err := ac.admin.CreateSubscription(ctx, req)
-      if err != nil {
-	      return nil, err
-      }
-      return protoToSubscriptionConfig(subspb), nil
+	subsPath, err := wire.ParseSubscriptionPath(config.Name)
+	if err != nil {
+		return nil, err
+	}
+	if _, err := wire.ParseTopicPath(config.Topic); err != nil {
+		return nil, err
+	}
+	req := &pb.CreateSubscriptionRequest{
+		Parent:         subsPath.Location().String(),
+		Subscription:   config.toProto(),
+		SubscriptionId: subsPath.SubscriptionID,
+		SkipBacklog:    startingOffset == End,
+	}
+	subspb, err := ac.admin.CreateSubscription(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return protoToSubscriptionConfig(subspb), nil
 }
 
 // UpdateSubscription updates an existing subscription from the given config and

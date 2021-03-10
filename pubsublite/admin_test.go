@@ -275,14 +275,14 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 		Parent:         "projects/my-proj/locations/us-central1-a",
 		SubscriptionId: "my-subscription",
 		Subscription:   subscriptionConfig.toProto(),
-		SkipBacklog: true,
+		SkipBacklog:    true,
 	}
 	wantCreateAtBacklogReq := &pb.CreateSubscriptionRequest{
-                Parent:         "projects/my-proj/locations/us-central1-a",
-                SubscriptionId: "my-subscription",
-                Subscription:   subscriptionConfig.toProto(),
-                SkipBacklog: false,
-        }
+		Parent:         "projects/my-proj/locations/us-central1-a",
+		SubscriptionId: "my-subscription",
+		Subscription:   subscriptionConfig.toProto(),
+		SkipBacklog:    false,
+	}
 	wantUpdateReq := updateConfig.toUpdateRequest()
 	wantGetReq := &pb.GetSubscriptionRequest{
 		Name: "projects/my-proj/locations/us-central1-a/subscriptions/my-subscription",
@@ -310,10 +310,10 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 	}
 
 	if gotConfig, err := admin.CreateSubscriptionAtOffset(ctx, subscriptionConfig, Beginning); err != nil {
-                t.Errorf("CreateSubscription() got err: %v", err)
-        } else if !testutil.Equal(gotConfig, &subscriptionConfig) {
-                t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
-        }
+		t.Errorf("CreateSubscription() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
+		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
+	}
 
 	if gotConfig, err := admin.UpdateSubscription(ctx, updateConfig); err != nil {
 		t.Errorf("UpdateSubscription() got err: %v", err)
