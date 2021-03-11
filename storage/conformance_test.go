@@ -50,49 +50,91 @@ type retryCase struct {
 	expectSuccess bool
 }
 
+var objName = "file.txt"
+
+// List of methods to retry. This is pretty much impossible to encode in a
+// schema because they vary a lot across libraries.
+// I'd want to flesh this out with two lists of functions:
+// 1. A list of idempotent calls (should give expectSuccess = True for
+//    retryable errors, false for other errors).
+// 2. A list of non-idempotent calls (should give expectSuccess = False for
+//    everything).
+var idempotentOps = []retryFunc{
+	// storage.objects.get
+	func(ctx context.Context, c *Client) error {
+		_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
+		return err
+	},
+	// GET object (XML API)
+	func(ctx context.Context, c *Client) error {
+		r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
+		if err != nil {
+			return err
+		}
+		_, err = io.Copy(ioutil.Discard, r)
+		return err
+	},
+	// storage.objects.update (preconditions)
+	func(ctx context.Context, c *Client) error {
+		uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
+		conds := Conditions{MetagenerationMatch: 10}
+		_, err := c.Bucket(bucketName).Object(objName).If(conds).Update(ctx, uattrs)
+		return err
+	},
+	// storage.buckets.update (preconditions)
+	func(ctx context.Context, c *Client) error {
+		uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
+		conds := BucketConditions{MetagenerationMatch: 10}
+		_, err := c.Bucket(bucketName).If(conds).Update(ctx, uattrs)
+		return err
+	},
+}
+
+var nonIdempotentOps = []retryFunc{
+	// storage.objects.update (no preconditions)
+	func(ctx context.Context, c *Client) error {
+		uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
+		_, err := c.Bucket(bucketName).Object(objName).Update(ctx, uattrs)
+		return err
+	},
+	// storage.buckets.update (no preconditions)
+	func(ctx context.Context, c *Client) error {
+		uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
+		_, err := c.Bucket(bucketName).Update(ctx, uattrs)
+		return err
+	},
+}
+
+
+// Create test cases.
+// TODO: add unmarshaling from conf test JSON
+var cases = []retryCase{
+	{
+		instruction:   "return-400",
+		methods:       idempotentOps,
+		expectSuccess: false,
+	},
+	{
+		instruction:   "return-400",
+		methods:       nonIdempotentOps,
+		expectSuccess: false,
+	},
+	{
+		instruction:   "reset-connection",
+		methods:       idempotentOps,
+		expectSuccess: true,
+	},
+	{
+		instruction:   "reset-connection",
+		methods:       nonIdempotentOps,
+		expectSuccess: true,
+	},
+}
+
 func TestRetryConformance(t *testing.T) {
 
 	if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
-	}
-
-	bucketName := "cjcotter-devrel-test"
-	objName := "file.txt"
-
-	// List of methods to retry. This is pretty much impossible to encode in a
-	// schema because they vary a lot across libraries.
-	// I'd want to flesh this out with two lists of functions:
-	// 1. A list of idempotent calls (should give expectSuccess = True for
-	//    retryable errors, false for other errors).
-	// 2. A list of non-idempotent calls (should give expectSuccess = False for
-	//    everything).
-	funcs := []retryFunc{
-		func(ctx context.Context, c *Client) error {
-			_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
-			return err
-		},
-		func(ctx context.Context, c *Client) error {
-			r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
-			if err != nil {
-				return err
-			}
-			_, err = io.Copy(ioutil.Discard, r)
-			return err
-		},
-	}
-	// Create test cases.
-	// TODO: add unmarshaling from conf test JSON
-	cases := []retryCase{
-		{
-			instruction:   "return-503-after-256K",
-			methods:       funcs,
-			expectSuccess: true,
-		},
-		{
-			instruction:   "reset-connection",
-			methods:       funcs,
-			expectSuccess: false,
-		},
 	}
 
 	ctx := context.Background()
@@ -120,6 +162,7 @@ func TestRetryConformance(t *testing.T) {
 					t.Errorf("Error writing object to emulator in Close: %v", err)
 				}
 
+				// Create wrapped client which will send emulator instructions.
 				wrapped, err := wrappedClient(c)
 				if err != nil {
 					t.Errorf("error creating wrapped client: %v", err)
