@@ -1,5 +1,19 @@
 # Changes
 
+### [1.10.1](https://www.github.com/googleapis/google-cloud-go/compare/v1.10.0...v1.10.1) (2021-03-04)
+
+
+### Bug Fixes
+
+* **pubsub:** hide context.Cancelled error in sync pull ([#3752](https://www.github.com/googleapis/google-cloud-go/issues/3752)) ([f88bdc8](https://www.github.com/googleapis/google-cloud-go/commit/f88bdc85072e5ad511a907d98207ebf7d22e9df7))
+
+## [1.10.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.9.1...v1.10.0) (2021-02-10)
+
+
+### Features
+
+* **pubsub:** add opencensus metrics for outstanding messages/bytes ([#3690](https://www.github.com/googleapis/google-cloud-go/issues/3690)) ([4039b82](https://www.github.com/googleapis/google-cloud-go/commit/4039b82e95b3a8ba2322d1f4fe9e2c21b087a907))
+
 ### [1.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.9.0...v1.9.1) (2020-12-10)
 
 

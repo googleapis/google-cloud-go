@@ -1,0 +1,183 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.channel.v1",
+  "libraryPackage": "cloud.google.com/go/channel/apiv1",
+  "services": {
+    "CloudChannelService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudChannelClient",
+          "rpcs": {
+            "ActivateEntitlement": {
+              "methods": [
+                "ActivateEntitlement"
+              ]
+            },
+            "CancelEntitlement": {
+              "methods": [
+                "CancelEntitlement"
+              ]
+            },
+            "ChangeOffer": {
+              "methods": [
+                "ChangeOffer"
+              ]
+            },
+            "ChangeParameters": {
+              "methods": [
+                "ChangeParameters"
+              ]
+            },
+            "ChangeRenewalSettings": {
+              "methods": [
+                "ChangeRenewalSettings"
+              ]
+            },
+            "CheckCloudIdentityAccountsExist": {
+              "methods": [
+                "CheckCloudIdentityAccountsExist"
+              ]
+            },
+            "CreateChannelPartnerLink": {
+              "methods": [
+                "CreateChannelPartnerLink"
+              ]
+            },
+            "CreateCustomer": {
+              "methods": [
+                "CreateCustomer"
+              ]
+            },
+            "CreateEntitlement": {
+              "methods": [
+                "CreateEntitlement"
+              ]
+            },
+            "DeleteCustomer": {
+              "methods": [
+                "DeleteCustomer"
+              ]
+            },
+            "GetChannelPartnerLink": {
+              "methods": [
+                "GetChannelPartnerLink"
+              ]
+            },
+            "GetCustomer": {
+              "methods": [
+                "GetCustomer"
+              ]
+            },
+            "GetEntitlement": {
+              "methods": [
+                "GetEntitlement"
+              ]
+            },
+            "ListChannelPartnerLinks": {
+              "methods": [
+                "ListChannelPartnerLinks"
+              ]
+            },
+            "ListCustomers": {
+              "methods": [
+                "ListCustomers"
+              ]
+            },
+            "ListEntitlements": {
+              "methods": [
+                "ListEntitlements"
+              ]
+            },
+            "ListOffers": {
+              "methods": [
+                "ListOffers"
+              ]
+            },
+            "ListProducts": {
+              "methods": [
+                "ListProducts"
+              ]
+            },
+            "ListPurchasableOffers": {
+              "methods": [
+                "ListPurchasableOffers"
+              ]
+            },
+            "ListPurchasableSkus": {
+              "methods": [
+                "ListPurchasableSkus"
+              ]
+            },
+            "ListSkus": {
+              "methods": [
+                "ListSkus"
+              ]
+            },
+            "ListSubscribers": {
+              "methods": [
+                "ListSubscribers"
+              ]
+            },
+            "ListTransferableOffers": {
+              "methods": [
+                "ListTransferableOffers"
+              ]
+            },
+            "ListTransferableSkus": {
+              "methods": [
+                "ListTransferableSkus"
+              ]
+            },
+            "ProvisionCloudIdentity": {
+              "methods": [
+                "ProvisionCloudIdentity"
+              ]
+            },
+            "RegisterSubscriber": {
+              "methods": [
+                "RegisterSubscriber"
+              ]
+            },
+            "StartPaidService": {
+              "methods": [
+                "StartPaidService"
+              ]
+            },
+            "SuspendEntitlement": {
+              "methods": [
+                "SuspendEntitlement"
+              ]
+            },
+            "TransferEntitlements": {
+              "methods": [
+                "TransferEntitlements"
+              ]
+            },
+            "TransferEntitlementsToGoogle": {
+              "methods": [
+                "TransferEntitlementsToGoogle"
+              ]
+            },
+            "UnregisterSubscriber": {
+              "methods": [
+                "UnregisterSubscriber"
+              ]
+            },
+            "UpdateChannelPartnerLink": {
+              "methods": [
+                "UpdateChannelPartnerLink"
+              ]
+            },
+            "UpdateCustomer": {
+              "methods": [
+                "UpdateCustomer"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

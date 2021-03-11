@@ -36,7 +36,7 @@ import (
 
 const (
 	gocloudBranchName  = "regen_gocloud"
-	gocloudCommitTitle = "feat(all): auto-regenerate gapics"
+	gocloudCommitTitle = "chore(all): auto-regenerate gapics"
 	gocloudCommitBody  = `
 This is an auto-generated regeneration of the gapic clients by
 cloud.google.com/go/internal/gapicgen. Once the corresponding genproto PR is
@@ -51,7 +51,7 @@ If you have been assigned to review this PR, please:
 `
 
 	genprotoBranchName  = "regen_genproto"
-	genprotoCommitTitle = "feat(all): auto-regenerate .pb.go files"
+	genprotoCommitTitle = "chore(all): auto-regenerate .pb.go files"
 	genprotoCommitBody  = `
 This is an auto-generated regeneration of the .pb.go files by
 cloud.google.com/go/internal/gapicgen. Once this PR is submitted, genbot will
@@ -235,7 +235,7 @@ git push origin $BRANCH_NAME
 	// Can't assign the submitter of the PR as a reviewer.
 	var reviewers []string
 	for _, r := range githubReviewers {
-		if r != *githubUsername {
+		if r != gc.Username {
 			reviewers = append(reviewers, r)
 		}
 	}

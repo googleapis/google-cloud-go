@@ -1,0 +1,110 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.retail.v2",
+  "libraryPackage": "cloud.google.com/go/retail/apiv2",
+  "services": {
+    "CatalogService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CatalogClient",
+          "rpcs": {
+            "ListCatalogs": {
+              "methods": [
+                "ListCatalogs"
+              ]
+            },
+            "UpdateCatalog": {
+              "methods": [
+                "UpdateCatalog"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PredictionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "Predict": {
+              "methods": [
+                "Predict"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "ProductService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProductClient",
+          "rpcs": {
+            "CreateProduct": {
+              "methods": [
+                "CreateProduct"
+              ]
+            },
+            "DeleteProduct": {
+              "methods": [
+                "DeleteProduct"
+              ]
+            },
+            "GetProduct": {
+              "methods": [
+                "GetProduct"
+              ]
+            },
+            "ImportProducts": {
+              "methods": [
+                "ImportProducts"
+              ]
+            },
+            "UpdateProduct": {
+              "methods": [
+                "UpdateProduct"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserEventService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserEventClient",
+          "rpcs": {
+            "CollectUserEvent": {
+              "methods": [
+                "CollectUserEvent"
+              ]
+            },
+            "ImportUserEvents": {
+              "methods": [
+                "ImportUserEvents"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
+            "RejoinUserEvents": {
+              "methods": [
+                "RejoinUserEvents"
+              ]
+            },
+            "WriteUserEvent": {
+              "methods": [
+                "WriteUserEvent"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.gkehub.v1beta1",
+  "libraryPackage": "cloud.google.com/go/gkehub/apiv1beta1",
+  "services": {
+    "GkeHubMembershipService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GkeHubMembershipClient",
+          "rpcs": {
+            "CreateMembership": {
+              "methods": [
+                "CreateMembership"
+              ]
+            },
+            "DeleteMembership": {
+              "methods": [
+                "DeleteMembership"
+              ]
+            },
+            "GenerateConnectManifest": {
+              "methods": [
+                "GenerateConnectManifest"
+              ]
+            },
+            "GenerateExclusivityManifest": {
+              "methods": [
+                "GenerateExclusivityManifest"
+              ]
+            },
+            "GetMembership": {
+              "methods": [
+                "GetMembership"
+              ]
+            },
+            "ListMemberships": {
+              "methods": [
+                "ListMemberships"
+              ]
+            },
+            "UpdateMembership": {
+              "methods": [
+                "UpdateMembership"
+              ]
+            },
+            "ValidateExclusivity": {
+              "methods": [
+                "ValidateExclusivity"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
