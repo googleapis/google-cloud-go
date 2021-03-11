@@ -147,7 +147,7 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 	}
 }
 
-// OffsetLocation refers to the location of an offset in reference to the
+// OffsetLocation refers to the location of an offset with respect to the
 // message backlog.
 type OffsetLocation int
 
