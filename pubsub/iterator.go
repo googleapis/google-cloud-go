@@ -23,12 +23,12 @@ import (
 
 	vkit "cloud.google.com/go/pubsub/apiv1"
 	"cloud.google.com/go/pubsub/internal/distribution"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
 )
 
 // Between message receipt and ack (that is, the time spent processing a message) we want to extend the message
@@ -536,7 +536,7 @@ func (it *messageIterator) pingStream() {
 func calcFieldSizeString(fields ...string) int {
 	overhead := 0
 	for _, field := range fields {
-		overhead += 1 + len(field) + proto.SizeVarint(uint64(len(field)))
+		overhead += 1 + len(field) + protowire.SizeVarint(uint64(len(field)))
 	}
 	return overhead
 }
@@ -546,7 +546,7 @@ func calcFieldSizeString(fields ...string) int {
 func calcFieldSizeInt(fields ...int) int {
 	overhead := 0
 	for _, field := range fields {
-		overhead += 1 + proto.SizeVarint(uint64(field))
+		overhead += 1 + protowire.SizeVarint(uint64(field))
 	}
 	return overhead
 }
