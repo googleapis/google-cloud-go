@@ -39,18 +39,44 @@ import (
 	htransport "google.golang.org/api/transport/http"
 )
 
-type retryFunc func(ctx context.Context, c *Client) error
+type retryFunc func(ctx context.Context, c *Client, r retryCase) error
 
 type retryCase struct {
+	description string
 	// Instruction header to send to the emulator.
-	instruction string
+	instructions []string
 	// Functions that will wrap the library method to call.
-	methods []retryFunc
+	// storage.objects.patch
+	methods []string
+	// Preconditions
+	// storage.objects.patch requires this value
+	preconditionsProvided bool
+	// Number of times to send instructions
+	forcedRetries int
 	// If true, the call should succeed after a retry.
 	expectSuccess bool
 }
 
+func storageGet(ctx context.Context, c *Client, r retryCase) error {
+	o := c.Bucket(bucketName).Object(objName)
+	if r.preconditionsProvided {
+		// How do make requests without messing with forced retries?
+		//
+		_, err := o.If(c.Conditions{GenerationMatch: 0}).Attrs(ctx)
+		return err
+	} else {
+		_, err := o.Object(objName).Attrs(ctx)
+		return err
+	}
+}
+var funcMap map[string]retryFunc
+
+
+
 func TestRetryConformance(t *testing.T) {
+	funcMap = map[string]retryFunc{
+		"storage.objects.get": storageGet,
+	}
 
 	if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
@@ -59,39 +85,30 @@ func TestRetryConformance(t *testing.T) {
 	bucketName := "cjcotter-devrel-test"
 	objName := "file.txt"
 
-	// List of methods to retry. This is pretty much impossible to encode in a
-	// schema because they vary a lot across libraries.
-	// I'd want to flesh this out with two lists of functions:
-	// 1. A list of idempotent calls (should give expectSuccess = True for
-	//    retryable errors, false for other errors).
-	// 2. A list of non-idempotent calls (should give expectSuccess = False for
-	//    everything).
-	funcs := []retryFunc{
-		func(ctx context.Context, c *Client) error {
-			_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
-			return err
-		},
-		func(ctx context.Context, c *Client) error {
-			r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
-			if err != nil {
-				return err
-			}
-			_, err = io.Copy(ioutil.Discard, r)
-			return err
-		},
-	}
-	// Create test cases.
-	// TODO: add unmarshaling from conf test JSON
-	cases := []retryCase{
+	rCases := []retryCase{
 		{
-			instruction:   "return-503-after-256K",
-			methods:       funcs,
-			expectSuccess: true,
+			description:           "Retry Idempotent operations",
+			instructions:          []string{"return-503", "return-504"},
+			methods:               []string{"storage.objects.get"},
+			forcedRetries:         4,
+			preconditionsProvided: false,
+			expectSuccess:         true,
 		},
 		{
-			instruction:   "reset-connection",
-			methods:       funcs,
-			expectSuccess: false,
+			description:           "Retry Non-Idempotent operations",
+			instructions:          []string{"return-503", "return-504"},
+			methods:               []string{"storage.objects.patch"},
+			forcedRetries:         4,
+			preconditionsProvided: true,
+			expectSuccess:         true,
+		},
+		{
+			description:           "Retry Non-Idempotent operations",
+			instructions:          []string{"return-503", "return-504"},
+			methods:               []string{"storage.objects.patch"},
+			forcedRetries:         1,
+			preconditionsProvided: false,
+			expectSuccess:         false,
 		},
 	}
 
@@ -103,35 +120,37 @@ func TestRetryConformance(t *testing.T) {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
 
-	for _, c := range cases {
-		for i, m := range c.methods {
-			testName := fmt.Sprintf("%v - %v", c.instruction, i)
-			t.Run(testName, func(t *testing.T) {
-				// Setup bucket and object
-				if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
-					t.Errorf("Error creating bucket: %v", err)
-				}
+	for _, rc := range rCases {
+		for _, i := range rc.instructions {
+			for _, m := range rc.methods {
+				testName := fmt.Sprintf("[%v] %v", rc.description, i)
+				t.Run(testName, func(t *testing.T) {
+					// Setup bucket and object
+					if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
+						t.Errorf("Error creating bucket: %v", err)
+					}
 
-				w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
-				if _, err := w.Write([]byte("abcdef")); err != nil {
-					t.Errorf("Error writing object to emulator: %v", err)
-				}
-				if err := w.Close(); err != nil {
-					t.Errorf("Error writing object to emulator in Close: %v", err)
-				}
+					w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
+					if _, err := w.Write([]byte("abcdef")); err != nil {
+						t.Errorf("Error writing object to emulator: %v", err)
+					}
+					if err := w.Close(); err != nil {
+						t.Errorf("Error writing object to emulator in Close: %v", err)
+					}
 
-				wrapped, err := wrappedClient(c)
-				if err != nil {
-					t.Errorf("error creating wrapped client: %v", err)
-				}
-				err = m(ctx, wrapped)
-				if c.expectSuccess && err != nil {
-					t.Errorf("want success, got %v", err)
-				}
-				if !c.expectSuccess && err == nil {
-					t.Errorf("want failure, got success")
-				}
-			})
+					wrapped, err := wrappedClient(i, rc.forcedRetries)
+					if err != nil {
+						t.Errorf("error creating wrapped client: %v", err)
+					}
+					err = funcMap[m](ctx, wrapped, rc)
+					if rc.expectSuccess && err != nil {
+						t.Errorf("want success, got %v", err)
+					}
+					if !rc.expectSuccess && err == nil {
+						t.Errorf("want failure, got success")
+					}
+				})
+			}
 		}
 	}
 }
@@ -156,7 +175,7 @@ func (wi *withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 // Create custom client that sends instruction
-func wrappedClient(r retryCase) (*Client, error) {
+func wrappedClient(i string, maxRetries int) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
 	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
@@ -167,8 +186,7 @@ func wrappedClient(r retryCase) (*Client, error) {
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client.
-	instr := r.instruction
-	wrappedTrans := &withInstruction{rt: c.Transport, instr: instr, retries: 2}
+	wrappedTrans := &withInstruction{rt: c.Transport, instr: i, retries: maxRetries}
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
