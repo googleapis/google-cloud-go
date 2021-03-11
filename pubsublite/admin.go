@@ -164,7 +164,8 @@ const (
 	Beginning
 )
 
-// The options to use when creating a subscription.
+// CreateSubscriptionOpts specify the options to use when creating a
+// subscription.
 type CreateSubscriptionOpts struct {
 	// StartingOffset is the offset at which a newly created subscription
 	// will start receiving messages.
