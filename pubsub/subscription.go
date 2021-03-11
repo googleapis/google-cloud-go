@@ -26,14 +26,13 @@ import (
 	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/pubsub/internal/scheduler"
-	"github.com/golang/protobuf/ptypes"
-	durpb "github.com/golang/protobuf/ptypes/duration"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/sync/errgroup"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	durpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
 // Subscription is a reference to a PubSub subscription.
@@ -262,7 +261,7 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 	}
 	var retentionDuration *durpb.Duration
 	if cfg.RetentionDuration != 0 {
-		retentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
+		retentionDuration = durpb.New(cfg.RetentionDuration)
 	}
 	var pbDeadLetter *pb.DeadLetterPolicy
 	if cfg.DeadLetterPolicy != nil {
@@ -291,19 +290,12 @@ func (cfg *SubscriptionConfig) toProto(name string) *pb.Subscription {
 
 func protoToSubscriptionConfig(pbSub *pb.Subscription, c *Client) (SubscriptionConfig, error) {
 	rd := time.Hour * 24 * 7
-	var err error
 	if pbSub.MessageRetentionDuration != nil {
-		rd, err = ptypes.Duration(pbSub.MessageRetentionDuration)
-		if err != nil {
-			return SubscriptionConfig{}, err
-		}
+		rd = pbSub.MessageRetentionDuration.AsDuration()
 	}
 	var expirationPolicy time.Duration
 	if ttl := pbSub.ExpirationPolicy.GetTtl(); ttl != nil {
-		expirationPolicy, err = ptypes.Duration(ttl)
-		if err != nil {
-			return SubscriptionConfig{}, err
-		}
+		expirationPolicy = ttl.AsDuration()
 	}
 	dlp := protoToDLP(pbSub.DeadLetterPolicy)
 	rp := protoToRetryPolicy(pbSub.RetryPolicy)
@@ -415,10 +407,10 @@ func (rp *RetryPolicy) toProto() *pb.RetryPolicy {
 
 	var minDurPB, maxDurPB *durpb.Duration
 	if minDur > 0 {
-		minDurPB = ptypes.DurationProto(minDur)
+		minDurPB = durpb.New(minDur)
 	}
 	if maxDur > 0 {
-		maxDurPB = ptypes.DurationProto(maxDur)
+		maxDurPB = durpb.New(maxDur)
 	}
 
 	return &pb.RetryPolicy{
@@ -432,18 +424,11 @@ func protoToRetryPolicy(rp *pb.RetryPolicy) *RetryPolicy {
 		return nil
 	}
 	var minBackoff, maxBackoff time.Duration
-	var err error
 	if rp.MinimumBackoff != nil {
-		minBackoff, err = ptypes.Duration(rp.MinimumBackoff)
-		if err != nil {
-			return nil
-		}
+		minBackoff = rp.MinimumBackoff.AsDuration()
 	}
 	if rp.MaximumBackoff != nil {
-		maxBackoff, err = ptypes.Duration(rp.MaximumBackoff)
-		if err != nil {
-			return nil
-		}
+		maxBackoff = rp.MaximumBackoff.AsDuration()
 	}
 
 	retryPolicy := &RetryPolicy{
@@ -646,7 +631,7 @@ func (s *Subscription) updateRequest(cfg *SubscriptionConfigToUpdate) *pb.Update
 		paths = append(paths, "retain_acked_messages")
 	}
 	if cfg.RetentionDuration != 0 {
-		psub.MessageRetentionDuration = ptypes.DurationProto(cfg.RetentionDuration)
+		psub.MessageRetentionDuration = durpb.New(cfg.RetentionDuration)
 		paths = append(paths, "message_retention_duration")
 	}
 	if cfg.ExpirationPolicy != nil {
@@ -703,7 +688,7 @@ func expirationPolicyToProto(expirationPolicy optional.Duration) *pb.ExpirationP
 	//    https://godoc.org/google.golang.org/genproto/googleapis/pubsub/v1#ExpirationPolicy.Ttl
 	// if ExpirationPolicy.Ttl is set to nil, the expirationPolicy is toggled to NEVER expire.
 	if dur != 0 {
-		ttl = ptypes.DurationProto(dur)
+		ttl = durpb.New(dur)
 	}
 	return &pb.ExpirationPolicy{
 		Ttl: ttl,
