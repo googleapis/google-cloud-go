@@ -1236,17 +1236,17 @@ func (s *GServer) ListSchemas(_ context.Context, req *pb.ListSchemasRequest) (*p
 	}, nil
 }
 
-func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*empty.Empty, error) {
+func (s *GServer) DeleteSchema(_ context.Context, req *pb.DeleteSchemaRequest) (*emptypb.Empty, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
-	if handled, ret, err := s.runReactor(req, "DeleteSchema", &empty.Empty{}); handled || err != nil {
-		return ret.(*empty.Empty), err
+	if handled, ret, err := s.runReactor(req, "DeleteSchema", &emptypb.Empty{}); handled || err != nil {
+		return ret.(*emptypb.Empty), err
 	}
 
 	// deleting a non-existent entry is a no-op
 	delete(s.schemas, req.Name)
-	return &empty.Empty{}, nil
+	return &emptypb.Empty{}, nil
 }
 
 func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaRequest) (*pb.ValidateSchemaResponse, error) {
