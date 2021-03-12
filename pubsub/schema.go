@@ -161,7 +161,7 @@ func protoToSchemaConfig(pbs *pb.Schema) *SchemaConfig {
 // and config. Schemas cannot be updated after creation.
 //
 // It is EXPERIMENTAL and subject to change or removal without notice.
-func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s *SchemaConfig) (*SchemaConfig, error) {
+func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s SchemaConfig) (*SchemaConfig, error) {
 	req := &pb.CreateSchemaRequest{
 		Parent:   fmt.Sprintf("projects/%s", c.projectID),
 		Schema:   s.toProto(),
@@ -234,10 +234,10 @@ func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaPath string) erro
 // It is EXPERIMENTAL and subject to change or removal without notice.
 type ValidateSchemaResult struct{}
 
-// ValidateSchema validates an existing schema given a path or SchemaConfig.
+// ValidateSchema validates a schema.
 //
 // It is EXPERIMENTAL and subject to change or removal without notice.
-func (s *SchemaClient) ValidateSchema(ctx context.Context, schema *SchemaConfig) (*ValidateSchemaResult, error) {
+func (s *SchemaClient) ValidateSchema(ctx context.Context, schema SchemaConfig) (*ValidateSchemaResult, error) {
 	req := &pb.ValidateSchemaRequest{
 		Parent: fmt.Sprintf("projects/%s", s.projectID),
 		Schema: schema.toProto(),
@@ -255,13 +255,31 @@ func (s *SchemaClient) ValidateSchema(ctx context.Context, schema *SchemaConfig)
 // It is EXPERIMENTAL and subject to change or removal without notice.
 type ValidateMessageResult struct{}
 
-// ValidateMessage validates a message against an schema specified by
-// a schema path or a schema config.
-func (s *SchemaClient) ValidateMessage(ctx context.Context, msg []byte, encoding SchemaEncoding) (*ValidateMessageResult, error) {
+// ValidateMessage validates a message against an schema specified
+// by a schema config.
+func (s *SchemaClient) ValidateMessageWithConfig(ctx context.Context, msg []byte, encoding SchemaEncoding, config SchemaConfig) (*ValidateMessageResult, error) {
+	req := &pb.ValidateMessageRequest{
+		Parent: fmt.Sprintf("projects/%s", s.projectID),
+		SchemaSpec: &pb.ValidateMessageRequest_Schema{
+			Schema: config.toProto(),
+		},
+		Message:  msg,
+		Encoding: pb.Encoding(encoding),
+	}
+	_, err := s.sc.ValidateMessage(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return &ValidateMessageResult{}, nil
+}
+
+// ValidateMessage validates a message against an schema specified
+// by a schema path pointing to an existing schema.
+func (s *SchemaClient) ValidateMessageWithPath(ctx context.Context, msg []byte, encoding SchemaEncoding, schemaPath string) (*ValidateMessageResult, error) {
 	req := &pb.ValidateMessageRequest{
 		Parent: fmt.Sprintf("projects/%s", s.projectID),
 		SchemaSpec: &pb.ValidateMessageRequest_Name{
-			Name: "some-schema",
+			Name: schemaPath,
 		},
 		Message:  msg,
 		Encoding: pb.Encoding(encoding),

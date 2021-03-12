@@ -15,7 +15,6 @@ package pubsub
 
 import (
 	"context"
-	"errors"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -23,6 +22,8 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	"cloud.google.com/go/pubsub/pstest"
 )
@@ -43,7 +44,7 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 
 	// Inputs
 	const schemaPath = "projects/my-proj/schemas/my-schema"
-	schemaConfig := &SchemaConfig{
+	schemaConfig := SchemaConfig{
 		Name:       schemaPath,
 		Type:       SchemaAvro,
 		Definition: "some-definition",
@@ -67,6 +68,10 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	if err := admin.DeleteSchema(ctx, schemaPath); err != nil {
 		t.Errorf("DeleteSchema() got err: %v", err)
 	}
+
+	if err := admin.DeleteSchema(ctx, "fake-schema"); err == nil {
+		t.Error("DeleteSchema() got nil, expected NotFound err")
+	}
 }
 
 func TestSchemaListSchemas(t *testing.T) {
@@ -75,12 +80,12 @@ func TestSchemaListSchemas(t *testing.T) {
 	defer admin.Close()
 
 	// Inputs
-	schemaConfig1 := &SchemaConfig{
+	schemaConfig1 := SchemaConfig{
 		Name:       "projects/my-proj/schemas/schema-1",
 		Type:       SchemaAvro,
 		Definition: "some schema definition",
 	}
-	schemaConfig2 := &SchemaConfig{
+	schemaConfig2 := SchemaConfig{
 		Name:       "projects/my-proj/schemas/schema-2",
 		Type:       SchemaProtocolBuffer,
 		Definition: "some other schema definition",
@@ -103,7 +108,7 @@ func TestSchemaListSchemas(t *testing.T) {
 		}
 	}
 
-	wantSchemaConfigs := []*SchemaConfig{schemaConfig1, schemaConfig2}
+	wantSchemaConfigs := []SchemaConfig{schemaConfig1, schemaConfig2}
 	if diff := testutil.Diff(gotSchemaConfigs, wantSchemaConfigs); diff != "" {
 		t.Errorf("Schemas() want: -, got: %s", diff)
 	}
@@ -114,35 +119,49 @@ func TestSchemaValidateSchema(t *testing.T) {
 	admin, _ := newSchemaFake(t)
 	defer admin.Close()
 
-	// Inputs
-	testCases := []struct {
-		schema  *SchemaConfig
+	for _, tc := range []struct {
+		desc    string
+		schema  SchemaConfig
 		wantErr error
 	}{
 		{
-			schema: &SchemaConfig{
+			desc: "valid avro schema",
+			schema: SchemaConfig{
 				Name:       "schema-1",
 				Type:       SchemaAvro,
-				Definition: "bad definition",
-			},
-			wantErr: errors.New("blah"),
-		},
-		{
-			schema: &SchemaConfig{
-				Name:       "schema-2",
-				Type:       SchemaAvro,
-				Definition: "good definition",
+				Definition: "{name:some-avro-schema}",
 			},
 			wantErr: nil,
 		},
+		{
+			desc: "valid proto schema",
+			schema: SchemaConfig{
+				Name:       "schema-1",
+				Type:       SchemaProtocolBuffer,
+				Definition: "some proto buf schema definition",
+			},
+			wantErr: nil,
+		},
+		{
+			desc: "empty invalid schema",
+			schema: SchemaConfig{
+				Name:       "schema-3",
+				Type:       SchemaProtocolBuffer,
+				Definition: "",
+			},
+			wantErr: status.Error(codes.InvalidArgument, "schema definition cannot be empty"),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			_, gotErr := admin.ValidateSchema(ctx, tc.schema)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
+			}
+		})
 	}
-	for _, tc := range testCases {
-		admin.ValidateSchema(ctx, tc.schema)
-	}
-
 }
 
-func mustCreateSchema(t *testing.T, c *SchemaClient, id string, sc *SchemaConfig) *SchemaConfig {
+func mustCreateSchema(t *testing.T, c *SchemaClient, id string, sc SchemaConfig) *SchemaConfig {
 	schema, err := c.CreateSchema(context.Background(), id, sc)
 	if err != nil {
 		t.Fatal(err)
