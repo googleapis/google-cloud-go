@@ -9,7 +9,6 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/googleapis/gax-go/v2 v2.0.5
 	go.opencensus.io v0.23.0
-	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210313182246-cd4f82c27b84
 	google.golang.org/api v0.41.0
 	google.golang.org/genproto v0.0.0-20210315142602-88120395e650
