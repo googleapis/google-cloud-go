@@ -10,8 +10,8 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/oauth2 v0.0.0-20210313182246-cd4f82c27b84
 	golang.org/x/sys v0.0.0-20210314195730-07df6a141424
-	google.golang.org/api v0.41.0
-	google.golang.org/genproto v0.0.0-20210315142602-88120395e650
+	google.golang.org/api v0.42.0
+	google.golang.org/genproto v0.0.0-20210315173758-2651cd453018
 	google.golang.org/grpc v1.36.0
 	google.golang.org/protobuf v1.25.0
 	rsc.io/binaryregexp v0.2.0
