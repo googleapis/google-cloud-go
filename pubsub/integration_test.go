@@ -1785,9 +1785,8 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			}
 			got, err := c.CreateSchema(ctx, schemaID, sc)
 			if err != nil {
-				t.Fatalf("CreateSchema error: %v", err)
+				t.Fatalf("SchemaClient.CreateSchema error: %v", err)
 			}
-			defer c.DeleteSchema(ctx, schemaPath)
 
 			want := &SchemaConfig{
 				Name:       schemaPath,
@@ -1796,6 +1795,138 @@ func TestIntegration_SchemaAdmin(t *testing.T) {
 			}
 			if diff := testutil.Diff(got, want); diff != "" {
 				t.Fatalf("\ngot: - want: +\n%s", diff)
+			}
+
+			got, err = c.Schema(ctx, schemaPath, SchemaViewFull)
+			if err != nil {
+				t.Fatalf("SchemaClient.Schema error: %v", err)
+			}
+			if diff := testutil.Diff(got, want); diff != "" {
+				t.Fatalf("\ngot: - want: +\n%s", diff)
+			}
+
+			err = c.DeleteSchema(ctx, schemaPath)
+			if err != nil {
+				t.Fatalf("SchemaClient.DeleteSchema error: %v", err)
+			}
+		})
+	}
+}
+
+func TestIntegration_ValidateSchema(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc       string
+		schemaType SchemaType
+		path       string
+		wantErr    error
+	}{
+		{
+			desc:       "avro schema",
+			schemaType: SchemaAvro,
+			path:       "testdata/schema/us-states.avsc",
+			wantErr:    nil,
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/us-states.proto",
+			wantErr:    nil,
+		},
+		{
+			desc:       "protocol buffer schema",
+			schemaType: SchemaProtocolBuffer,
+			path:       "testdata/schema/invalid.avsc",
+			wantErr:    status.Errorf(codes.InvalidArgument, "Request contains an invalid argument."),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			def := string(content)
+			cfg := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: def,
+			}
+			_, gotErr := c.ValidateSchema(ctx, cfg)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestIntegration_ValidateMessage(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	c := integrationTestSchemaClient(ctx, t)
+	defer c.Close()
+
+	for _, tc := range []struct {
+		desc        string
+		schemaType  SchemaType
+		schemaPath  string
+		encoding    SchemaEncoding
+		messagePath string
+		wantErr     error
+	}{
+		{
+			desc:        "avro json encoding",
+			schemaType:  SchemaAvro,
+			schemaPath:  "testdata/schema/us-states.avsc",
+			encoding:    EncodingJSON,
+			messagePath: "testdata/schema/alaska.json",
+			wantErr:     nil,
+		},
+		{
+			desc:        "avro binary encoding",
+			schemaType:  SchemaAvro,
+			schemaPath:  "testdata/schema/us-states.avsc",
+			encoding:    EncodingBinary,
+			messagePath: "testdata/schema/alaska.avro",
+			wantErr:     nil,
+		},
+		{
+			desc:        "proto json encoding",
+			schemaType:  SchemaProtocolBuffer,
+			schemaPath:  "testdata/schema/us-states.proto",
+			encoding:    EncodingJSON,
+			messagePath: "testdata/schema/alaska.json",
+			wantErr:     nil,
+		},
+		{
+			desc:        "protocol buffer schema",
+			schemaType:  SchemaProtocolBuffer,
+			schemaPath:  "testdata/schema/invalid.avsc",
+			encoding:    EncodingBinary,
+			messagePath: "testdata/schema/invalid.avsc",
+			wantErr:     status.Errorf(codes.InvalidArgument, "Request contains an invalid argument."),
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			content, err := ioutil.ReadFile(tc.schemaPath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			def := string(content)
+			cfg := SchemaConfig{
+				Type:       tc.schemaType,
+				Definition: def,
+			}
+
+			msg, err := ioutil.ReadFile(tc.messagePath)
+			if err != nil {
+				t.Fatal(err)
+			}
+			_, gotErr := c.ValidateMessageWithConfig(ctx, msg, tc.encoding, cfg)
+			if status.Code(gotErr) != status.Code(tc.wantErr) {
+				t.Fatalf("got err: %v\nwant err: %v", gotErr, tc.wantErr)
 			}
 		})
 	}
