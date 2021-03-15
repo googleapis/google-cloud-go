@@ -221,7 +221,7 @@ var emphasizeTests = []struct {
 func TestEmphasize(t *testing.T) {
 	for i, tt := range emphasizeTests {
 		var buf bytes.Buffer
-		emphasize(&buf, tt.in, nil, true)
+		emphasize(&buf, tt.in, nil, true, false)
 		out := buf.String()
 		if out != tt.out {
 			t.Errorf("#%d: mismatch\nhave: %v\nwant: %v", i, out, tt.out)
@@ -238,7 +238,7 @@ func TestCommentEscape(t *testing.T) {
 	}
 	for i, tt := range commentTests {
 		var buf strings.Builder
-		commentEscape(&buf, tt.in, true)
+		commentEscape(&buf, tt.in, true, false)
 		out := buf.String()
 		if out != tt.out {
 			t.Errorf("#%d: mismatch\nhave: %q\nwant: %q", i, out, tt.out)
