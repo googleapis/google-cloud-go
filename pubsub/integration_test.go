@@ -32,7 +32,6 @@ import (
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
@@ -43,6 +42,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -292,7 +293,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 	})
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Now().Sub(now) >= time.Minute {
+			if time.Since(now) >= time.Minute {
 				t.Fatal("pullN took too long")
 			}
 		} else {
@@ -390,8 +391,8 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	length := MaxPublishRequestBytes - calcFieldSizeString(topic.String())
 	// Next, account for the overhead from encoding an individual PubsubMessage,
 	// and the inner PubsubMessage.Data field.
-	pbMsgOverhead := 1 + proto.SizeVarint(uint64(length))
-	dataOverhead := 1 + proto.SizeVarint(uint64(length-pbMsgOverhead))
+	pbMsgOverhead := 1 + protowire.SizeVarint(uint64(length))
+	dataOverhead := 1 + protowire.SizeVarint(uint64(length-pbMsgOverhead))
 	maxLengthSingleMessage := length - pbMsgOverhead - dataOverhead
 
 	publishReq := &pb.PublishRequest{
