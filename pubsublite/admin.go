@@ -29,6 +29,19 @@ var (
 	errNoSubscriptionFieldsUpdated = errors.New("pubsublite: no fields updated for subscription")
 )
 
+// OffsetLocation refers to the location of an offset with respect to the
+// message backlog.
+type OffsetLocation int
+
+const (
+	// End refers to the offset past all currently published messages. End
+	// skips the entire message backlog.
+	End OffsetLocation = iota + 1
+
+	// Beginning represents the offset of the oldest retained message.
+	Beginning
+)
+
 // AdminClient provides admin operations for Pub/Sub Lite resources within a
 // Google Cloud region. The zone component of resource paths must be within this
 // region. See https://cloud.google.com/pubsub/lite/docs/locations for the list
@@ -147,41 +160,36 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 	}
 }
 
-// OffsetLocation refers to the location of an offset with respect to the
-// message backlog.
-type OffsetLocation int
+// CreateSubscriptionOption is an option for AdminClient.CreateSubscription.
+type CreateSubscriptionOption interface {
+	createSubscriptionOption()
+}
 
-const (
-	// UnspecifiedOffsetLocation represents an OffsetLocation that has not
-	// been set.
-	UnspecifiedOffsetLocation OffsetLocation = iota
+type startingOffset struct {
+	offsetLocation OffsetLocation
+}
 
-	// End refers to the offset past all currently published messages. End
-	// skips the entire message backlog.
-	End
+func (so startingOffset) createSubscriptionOption() {}
 
-	// Beginning represents the offset of the oldest retained message.
-	Beginning
-)
-
-// CreateSubscriptionOpts specify the options to use when creating a
-// subscription.
-type CreateSubscriptionOpts struct {
-	// StartingOffset is the offset at which a newly created subscription
-	// will start receiving messages.
-	StartingOffset OffsetLocation
+// StartingOffset specifies the offset at which a newly created subscription
+// will start receiving messages.
+func StartingOffset(location OffsetLocation) CreateSubscriptionOption {
+	return startingOffset{location}
 }
 
 // CreateSubscription creates a new subscription from the given config. If the
 // subscription already exists an error will be returned.
-func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig) (*SubscriptionConfig, error) {
-	return ac.CreateSubscriptionWithOptions(ctx, config, CreateSubscriptionOpts{StartingOffset: End})
-}
+//
+// By default, a new subscription will only receive messages published after
+// the subscription was created. Use StartingOffset to override.
+func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig, opts ...CreateSubscriptionOption) (*SubscriptionConfig, error) {
+	skipBacklog := true
+	for _, opt := range opts {
+		if _, ok := opt.(startingOffset); ok {
+			skipBacklog = opt.(startingOffset).offsetLocation != Beginning
+		}
+	}
 
-// CreateSubscriptionWithOptions creates a new subscription from the given
-// config with the provided options. If the subscription already exists an error
-// will be returned.
-func (ac *AdminClient) CreateSubscriptionWithOptions(ctx context.Context, config SubscriptionConfig, opts CreateSubscriptionOpts) (*SubscriptionConfig, error) {
 	subsPath, err := wire.ParseSubscriptionPath(config.Name)
 	if err != nil {
 		return nil, err
@@ -193,7 +201,7 @@ func (ac *AdminClient) CreateSubscriptionWithOptions(ctx context.Context, config
 		Parent:         subsPath.Location().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: subsPath.SubscriptionID,
-		SkipBacklog:    opts.StartingOffset != Beginning,
+		SkipBacklog:    skipBacklog,
 	}
 	subspb, err := ac.admin.CreateSubscription(ctx, req)
 	if err != nil {

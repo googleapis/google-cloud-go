@@ -293,6 +293,7 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(wantCreateReq, subscriptionConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantCreateReq, subscriptionConfig.toProto(), nil)
 	verifiers.GlobalVerifier.Push(wantCreateAtBacklogReq, subscriptionConfig.toProto(), nil)
 	verifiers.GlobalVerifier.Push(wantUpdateReq, subscriptionConfig.toProto(), nil)
 	verifiers.GlobalVerifier.Push(wantGetReq, subscriptionConfig.toProto(), nil)
@@ -309,7 +310,13 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
 	}
 
-	if gotConfig, err := admin.CreateSubscriptionWithOptions(ctx, subscriptionConfig, CreateSubscriptionOpts{StartingOffset: Beginning}); err != nil {
+	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig, StartingOffset(End)); err != nil {
+		t.Errorf("CreateSubscription() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
+		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
+	}
+
+	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig, StartingOffset(Beginning)); err != nil {
 		t.Errorf("CreateSubscription() got err: %v", err)
 	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
 		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
