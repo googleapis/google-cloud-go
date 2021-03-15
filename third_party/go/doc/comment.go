@@ -30,20 +30,28 @@ var (
 
 // Escape comment text for HTML. If nice is set,
 // also turn `` into &ldquo; and '' into &rdquo;.
-func commentEscape(w io.Writer, text string, nice bool) {
+func commentEscape(w io.Writer, text string, nice, md bool) {
 	if nice {
 		// In the first pass, we convert `` and '' into their unicode equivalents.
 		// This prevents them from being escaped in HTMLEscape.
 		text = convertQuotes(text)
 		var buf bytes.Buffer
-		template.HTMLEscape(&buf, []byte(text))
+		if md {
+			buf.WriteString(text)
+		} else {
+			template.HTMLEscape(&buf, []byte(text))
+		}
 		// Now we convert the unicode quotes to their HTML escaped entities to maintain old behavior.
 		// We need to use a temp buffer to read the string back and do the conversion,
 		// otherwise HTMLEscape will escape & to &amp;
 		htmlQuoteReplacer.WriteString(w, buf.String())
 		return
 	}
-	template.HTMLEscape(w, []byte(text))
+	if md {
+		w.Write([]byte(text))
+	} else {
+		template.HTMLEscape(w, []byte(text))
+	}
 }
 
 func convertQuotes(text string) string {
@@ -87,6 +95,17 @@ var (
 	html_endh   = []byte("</h3>\n")
 )
 
+var (
+	md_i      = []byte("_")
+	md_endi   = []byte("_")
+	md_p      = []byte("\n")
+	md_endp   = []byte("\n")
+	md_pre    = []byte("```\n")
+	md_endpre = []byte("```\n")
+	md_h      = []byte(`### `)
+	md_endh   = []byte("\n")
+)
+
 // Emphasize and escape a line of text for HTML. URLs are converted into links;
 // if the URL also appears in the words map, the link is taken from the map (if
 // the corresponding map value is the empty string, the URL is not converted
@@ -95,7 +114,7 @@ var (
 // and the word is converted into a link. If nice is set, the remaining text's
 // appearance is improved where it makes sense (e.g., `` is turned into &ldquo;
 // and '' into &rdquo;).
-func emphasize(w io.Writer, line string, words map[string]string, nice bool) {
+func emphasize(w io.Writer, line string, words map[string]string, nice, md bool) {
 	for {
 		m := matchRx.FindStringSubmatchIndex(line)
 		if m == nil {
@@ -104,7 +123,7 @@ func emphasize(w io.Writer, line string, words map[string]string, nice bool) {
 		// m >= 6 (two parenthesized sub-regexps in matchRx, 1st one is urlRx)
 
 		// write text before match
-		commentEscape(w, line[0:m[0]], nice)
+		commentEscape(w, line[0:m[0]], nice, md)
 
 		// adjust match for URLs
 		match := line[m[0]:m[1]]
@@ -146,25 +165,36 @@ func emphasize(w io.Writer, line string, words map[string]string, nice bool) {
 
 		// write match
 		if len(url) > 0 {
-			w.Write(html_a)
-			template.HTMLEscape(w, []byte(url))
-			w.Write(html_aq)
+			// Don't linkify md content. MD processor will handle.
+			if !md {
+				w.Write(html_a)
+				template.HTMLEscape(w, []byte(url))
+				w.Write(html_aq)
+			}
 		}
 		if italics {
-			w.Write(html_i)
+			if md {
+				w.Write(md_i)
+			} else {
+				w.Write(html_i)
+			}
 		}
-		commentEscape(w, match, nice)
+		commentEscape(w, match, nice, md)
 		if italics {
-			w.Write(html_endi)
+			if md {
+				w.Write(md_endi)
+			} else {
+				w.Write(html_endi)
+			}
 		}
-		if len(url) > 0 {
+		if len(url) > 0 && !md {
 			w.Write(html_enda)
 		}
 
 		// advance
 		line = line[m[1]:]
 	}
-	commentEscape(w, line, nice)
+	commentEscape(w, line, nice, md)
 }
 
 func indentLen(s string) int {
@@ -312,7 +342,7 @@ func ToHTML(w io.Writer, text string, words map[string]string) {
 		case opPara:
 			w.Write(html_p)
 			for _, line := range b.lines {
-				emphasize(w, line, words, true)
+				emphasize(w, line, words, true, false)
 			}
 			w.Write(html_endp)
 		case opHead:
@@ -324,7 +354,7 @@ func ToHTML(w io.Writer, text string, words map[string]string) {
 					w.Write([]byte(id))
 					w.Write(html_hq)
 				}
-				commentEscape(w, line, true)
+				commentEscape(w, line, true, false)
 			}
 			if id == "" {
 				w.Write(html_hq)
@@ -333,9 +363,35 @@ func ToHTML(w io.Writer, text string, words map[string]string) {
 		case opPre:
 			w.Write(html_pre)
 			for _, line := range b.lines {
-				emphasize(w, line, nil, false)
+				emphasize(w, line, nil, false, false)
 			}
 			w.Write(html_endpre)
+		}
+	}
+}
+
+// ToMarkdown is like ToHTML, but Markdown. See http://golang.org/issues/34875.
+func ToMarkdown(w io.Writer, text string, words map[string]string) {
+	for _, b := range blocks(text) {
+		switch b.op {
+		case opPara:
+			w.Write(md_p)
+			for _, line := range b.lines {
+				emphasize(w, line, words, true, true)
+			}
+			w.Write(md_endp)
+		case opHead:
+			w.Write(md_h)
+			for _, line := range b.lines {
+				commentEscape(w, line, true, true)
+			}
+			w.Write(md_endh)
+		case opPre:
+			w.Write(md_pre)
+			for _, line := range b.lines {
+				emphasize(w, line, nil, false, true)
+			}
+			w.Write(md_endpre)
 		}
 	}
 }
