@@ -1122,7 +1122,7 @@ func TestIntegration_CreateTopic_MessageStoragePolicy(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := tc
-	if diff := testutil.Diff(got, want); diff != "" {
+	if diff := testutil.Diff(got.MessageStoragePolicy, want.MessageStoragePolicy); diff != "" {
 		t.Fatalf("\ngot: - want: +\n%s", diff)
 	}
 }

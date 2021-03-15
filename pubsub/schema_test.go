@@ -55,14 +55,16 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 
 	if gotConfig, err := admin.CreateSchema(ctx, "my-schema", schemaConfig); err != nil {
 		t.Errorf("CreateSchema() got err: %v", err)
-	} else if diff := cmp.Diff(gotConfig, schemaConfig); diff != "" {
+	} else if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
 		t.Errorf("CreateSchema() -want, +got: %v", diff)
 	}
 
-	if gotConfig, err := admin.Schema(ctx, schemaPath, SchemaViewFull); err != nil {
+	gotConfig, err := admin.Schema(ctx, schemaPath, SchemaViewFull)
+	if err != nil {
 		t.Errorf("Schema() got err: %v", err)
-	} else if !testutil.Equal(gotConfig, schemaConfig) {
-		t.Errorf("Schema() got: %v\nwant: %v", gotConfig, schemaConfig)
+	}
+	if diff := testutil.Diff(*gotConfig, schemaConfig); diff != "" {
+		t.Errorf("Schema() -got, +want:\n%v", diff)
 	}
 
 	if err := admin.DeleteSchema(ctx, schemaPath); err != nil {
@@ -94,7 +96,7 @@ func TestSchemaListSchemas(t *testing.T) {
 	mustCreateSchema(t, admin, "schema-1", schemaConfig1)
 	mustCreateSchema(t, admin, "schema-2", schemaConfig2)
 
-	var gotSchemaConfigs []*SchemaConfig
+	var gotSchemaConfigs []SchemaConfig
 	it := admin.Schemas(ctx, SchemaViewFull)
 	for {
 		schema, err := it.Next()
@@ -104,7 +106,7 @@ func TestSchemaListSchemas(t *testing.T) {
 		if err != nil {
 			t.Errorf("SchemaIterator.Next() got err: %v", err)
 		} else {
-			gotSchemaConfigs = append(gotSchemaConfigs, schema)
+			gotSchemaConfigs = append(gotSchemaConfigs, *schema)
 		}
 	}
 
