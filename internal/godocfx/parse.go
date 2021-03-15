@@ -26,7 +26,6 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/doc"
 	"go/format"
 	"go/parser"
 	"go/printer"
@@ -39,7 +38,10 @@ import (
 	"strconv"
 	"strings"
 
+	"cloud.google.com/go/third_party/go/doc"
 	"cloud.google.com/go/third_party/pkgsite"
+	"github.com/yuin/goldmark"
+	"github.com/yuin/goldmark/renderer/html"
 	"golang.org/x/tools/go/packages"
 )
 
@@ -575,8 +577,17 @@ func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents
 
 func toHTML(s string) string {
 	buf := &bytes.Buffer{}
-	doc.ToHTML(buf, s, nil)
-	return buf.String()
+	// First, convert to Markdown.
+	doc.ToMarkdown(buf, s, nil)
+
+	// Then, handle Markdown stuff, like lists and links.
+	md := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()))
+	mdBuf := &bytes.Buffer{}
+	if err := md.Convert(buf.Bytes(), mdBuf); err != nil {
+		panic(err)
+	}
+
+	return mdBuf.String()
 }
 
 type pkgInfo struct {
