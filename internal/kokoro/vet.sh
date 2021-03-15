@@ -78,7 +78,8 @@ golint ./... 2>&1 | (
     grep -v "a blank import should be only in a main or test package" |
     grep -v "method ExecuteSql should be ExecuteSQL" |
     grep -vE "spanner/spansql/(sql|types).go:.*should have comment" |
-    grep -vE "\.pb\.go:"
+    grep -vE "\.pb\.go:" |
+    grep -v "third_party/go/doc"
 ) |
   tee /dev/stderr | (! read)
 
