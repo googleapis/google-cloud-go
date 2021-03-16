@@ -38,6 +38,7 @@ import (
 	"strconv"
 	"strings"
 
+	goldmarkcodeblock "cloud.google.com/go/internal/godocfx/goldmark-codeblock"
 	"cloud.google.com/go/third_party/go/doc"
 	"cloud.google.com/go/third_party/pkgsite"
 	"github.com/yuin/goldmark"
@@ -581,7 +582,7 @@ func toHTML(s string) string {
 	doc.ToMarkdown(buf, s, nil)
 
 	// Then, handle Markdown stuff, like lists and links.
-	md := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()))
+	md := goldmark.New(goldmark.WithRendererOptions(html.WithUnsafe()), goldmark.WithExtensions(goldmarkcodeblock.CodeBlock))
 	mdBuf := &bytes.Buffer{}
 	if err := md.Convert(buf.Bytes(), mdBuf); err != nil {
 		panic(err)
