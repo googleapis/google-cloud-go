@@ -25,29 +25,17 @@ import (
 )
 
 // SchemaClient is a Pub/Sub schema client scoped to a single project.
-//
-// It is EXPERIMENTAL and a part of a closed alpha that may not be
-// accessible to all users. It is subject to change
-// or removal without notice.
 type SchemaClient struct {
 	sc        *vkit.SchemaClient
 	projectID string
 }
 
 // Close closes the schema client and frees up resources.
-//
-// It is EXPERIMENTAL and a part of a closed alpha that may not be
-// accessible to all users. It is subject to change
-// or removal without notice.
 func (s *SchemaClient) Close() error {
 	return s.sc.Close()
 }
 
 // NewSchemaClient creates a new Pub/Sub Schema client.
-//
-// It is EXPERIMENTAL and a part of a closed alpha that may not be
-// accessible to all users. It is subject to change
-// or removal without notice.
 func NewSchemaClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*SchemaClient, error) {
 	sc, err := vkit.NewSchemaClient(ctx, opts...)
 	if err != nil {
@@ -57,10 +45,6 @@ func NewSchemaClient(ctx context.Context, projectID string, opts ...option.Clien
 }
 
 // SchemaConfig is a reference to a PubSub schema.
-//
-// It is EXPERIMENTAL and a part of a closed alpha that may not be
-// accessible to all users. This field is subject to change or removal
-// without notice.
 type SchemaConfig struct {
 	Name string
 
@@ -74,33 +58,32 @@ type SchemaConfig struct {
 }
 
 // SchemaType is the possible shcema definition types.
-//
-// It is EXPERIMENTAL and a part of a closed alpha that may not be
-// accessible to all users. This field is subject to change or removal
-// without notice.
 type SchemaType pb.Schema_Type
 
 const (
-	// Default value. This value is unused.
+	// SchemaTypeUnspecified is the unused default value.
 	SchemaTypeUnspecified SchemaType = 0
-	// A Protocol Buffer schema definition.
+	// SchemaProtocolBuffer is a protobuf schema definition.
 	SchemaProtocolBuffer SchemaType = 1
-	// An Avro schema definition.
+	// SchemaAvro is an Avro schema definition.
 	SchemaAvro SchemaType = 2
 )
 
+// SchemaView is a view of Schema object fields to be returned
+// by GetSchema and ListSchemas.
 type SchemaView pb.SchemaView
 
 const (
-	// The default / unset value.
-	// The API will default to the BASIC view.
+	// SchemaViewUnspecified is the default/unset value.
 	SchemaViewUnspecified SchemaView = 0
-	// Include the name and type of the schema, but not the definition.
+	// SchemaVeiwBasic includes the name and type of the schema, but not the definition.
 	SchemaViewBasic SchemaView = 1
-	// Include all Schema object fields.
+	// SchemaViewFull includes all Schema object fields.
 	SchemaViewFull SchemaView = 2
 )
 
+// SchemaSettings are settings for validating messages
+// published against a schema.
 type SchemaSettings struct {
 	Schema   string
 	Encoding SchemaEncoding
@@ -127,16 +110,15 @@ func protoToSchemaSettings(pbs *pb.SchemaSettings) *SchemaSettings {
 }
 
 // SchemaEncoding is the encoding expected for messages.
-
 type SchemaEncoding pb.Encoding
 
 const (
-	// Unspecified
+	// EncodingUnspecified is the default unused value.
 	EncodingUnspecified SchemaEncoding = 0
-	// JSON encoding
+	// EncodingJSON is the JSON encoding type for a message.
 	EncodingJSON SchemaEncoding = 1
-	// Binary encoding, as defined by the schema type. For some schema types,
-	// binary encoding may not be available.
+	// EncodingBinary is the binary encoding type for a message.
+	// For some schema types, binary encoding may not be available.
 	EncodingBinary SchemaEncoding = 2
 )
 
@@ -159,8 +141,6 @@ func protoToSchemaConfig(pbs *pb.Schema) *SchemaConfig {
 
 // CreateSchema creates a new schema with the given schemaID
 // and config. Schemas cannot be updated after creation.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
 func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s SchemaConfig) (*SchemaConfig, error) {
 	req := &pb.CreateSchemaRequest{
 		Parent:   fmt.Sprintf("projects/%s", c.projectID),
@@ -176,11 +156,9 @@ func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s Sche
 
 // Schema retrieves the configuration of a topic. A valid schema path has the
 // format: "projects/PROJECT_ID/schemas/SCHEMA_ID".
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
-func (c *SchemaClient) Schema(ctx context.Context, schema string, view SchemaView) (*SchemaConfig, error) {
+func (c *SchemaClient) Schema(ctx context.Context, schemaPath string, view SchemaView) (*SchemaConfig, error) {
 	req := &pb.GetSchemaRequest{
-		Name: schema,
+		Name: schemaPath,
 		View: pb.SchemaView(view),
 	}
 	s, err := c.sc.GetSchema(ctx, req)
@@ -191,8 +169,6 @@ func (c *SchemaClient) Schema(ctx context.Context, schema string, view SchemaVie
 }
 
 // Schemas returns an iterator which returns all of the schemas for the client's project.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
 func (c *SchemaClient) Schemas(ctx context.Context, view SchemaView) *SchemaIterator {
 	return &SchemaIterator{
 		it: c.sc.ListSchemas(ctx, &pb.ListSchemasRequest{
@@ -203,8 +179,6 @@ func (c *SchemaClient) Schemas(ctx context.Context, view SchemaView) *SchemaIter
 }
 
 // SchemaIterator is a struct used to iterate over schemas.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
 type SchemaIterator struct {
 	it  *vkit.SchemaIterator
 	err error
@@ -222,6 +196,7 @@ func (s *SchemaIterator) Next() (*SchemaConfig, error) {
 	return protoToSchemaConfig(pbs), nil
 }
 
+// DeleteSchema deletes an existing schema.
 func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaPath string) error {
 	return s.sc.DeleteSchema(ctx, &pb.DeleteSchemaRequest{
 		Name: schemaPath,
@@ -230,13 +205,9 @@ func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaPath string) erro
 
 // ValidateSchemaResult is the response for the ValidateSchema method.
 // Reserved for future use.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
 type ValidateSchemaResult struct{}
 
-// ValidateSchema validates a schema.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
+// ValidateSchema validates a schema config and returns an error if invalid.
 func (s *SchemaClient) ValidateSchema(ctx context.Context, schema SchemaConfig) (*ValidateSchemaResult, error) {
 	req := &pb.ValidateSchemaRequest{
 		Parent: fmt.Sprintf("projects/%s", s.projectID),
@@ -251,11 +222,9 @@ func (s *SchemaClient) ValidateSchema(ctx context.Context, schema SchemaConfig) 
 
 // ValidateMessageResult is the response for the ValidateMessage method.
 // Reserved for future use.
-//
-// It is EXPERIMENTAL and subject to change or removal without notice.
 type ValidateMessageResult struct{}
 
-// ValidateMessage validates a message against an schema specified
+// ValidateMessageWithConfig validates a message against an schema specified
 // by a schema config.
 func (s *SchemaClient) ValidateMessageWithConfig(ctx context.Context, msg []byte, encoding SchemaEncoding, config SchemaConfig) (*ValidateMessageResult, error) {
 	req := &pb.ValidateMessageRequest{
@@ -273,7 +242,7 @@ func (s *SchemaClient) ValidateMessageWithConfig(ctx context.Context, msg []byte
 	return &ValidateMessageResult{}, nil
 }
 
-// ValidateMessage validates a message against an schema specified
+// ValidateMessageWithPath validates a message against an schema specified
 // by a schema path pointing to an existing schema.
 func (s *SchemaClient) ValidateMessageWithPath(ctx context.Context, msg []byte, encoding SchemaEncoding, schemaPath string) (*ValidateMessageResult, error) {
 	req := &pb.ValidateMessageRequest{
