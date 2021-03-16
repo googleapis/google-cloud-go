@@ -49,7 +49,10 @@ func (r *codeBlockHTMLRenderer) renderCodeBlock(w util.BufWriter, source []byte,
 			r.Writer.RawWrite(w, line.Value(source))
 		}
 	} else {
-		_, _ = w.WriteString("</code></pre>")
+		_, err := w.WriteString("</code></pre>")
+		if err != nil {
+			return ast.WalkContinue, err
+		}
 	}
 	return ast.WalkContinue, nil
 }
