@@ -24,7 +24,6 @@ package pstest
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"io"
 	"path"
@@ -1215,7 +1214,7 @@ func (s *GServer) GetSchema(_ context.Context, req *pb.GetSchemaRequest) (*pb.Sc
 
 	sc, ok := s.schemas[req.Name]
 	if !ok {
-		return nil, errors.New("schema not found")
+		return nil, status.Errorf(codes.NotFound, "schema(%q) not found", req.Name)
 	}
 	return sc, nil
 }
@@ -1268,6 +1267,8 @@ func (s *GServer) ValidateSchema(_ context.Context, req *pb.ValidateSchemaReques
 	return &pb.ValidateSchemaResponse{}, nil
 }
 
+// ValidateMessage mocks the ValidateMessage call but only checks that the schema definition to validate the
+// message against is not empty.
 func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequest) (*pb.ValidateMessageResponse, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
@@ -1277,11 +1278,19 @@ func (s *GServer) ValidateMessage(_ context.Context, req *pb.ValidateMessageRequ
 	}
 
 	spec := req.GetSchemaSpec()
-	if _, ok := spec.(*pb.ValidateMessageRequest_Name); ok {
-		fmt.Printf("request is name: %v", req)
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Name); ok {
+		sc, ok := s.schemas[valReq.Name]
+		if !ok {
+			return nil, status.Errorf(codes.NotFound, "schema(%q) not found", valReq.Name)
+		}
+		if sc.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
 	}
-	if _, ok := spec.(*pb.ValidateMessageRequest_Schema); ok {
-		fmt.Printf("request is schema: %v", req)
+	if valReq, ok := spec.(*pb.ValidateMessageRequest_Schema); ok {
+		if valReq.Schema.Definition == "" {
+			return nil, status.Error(codes.InvalidArgument, "schema definition cannot be empty")
+		}
 	}
 
 	return &pb.ValidateMessageResponse{}, nil
