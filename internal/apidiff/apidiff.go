@@ -77,7 +77,18 @@ func main() {
 		log.Fatalln(err)
 	}
 
-	diffs, diffingErrs, err := diffModules(root, m)
+	temp, err := ioutil.TempDir("/tmp", "google-cloud-go-*")
+	if err != nil {
+		log.Fatalln(err)
+	}
+	defer os.RemoveAll(temp)
+
+	_, err = exec("git", "clone", "https://github.com/googleapis/google-cloud-go", temp)
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	diffs, diffingErrs, err := diffModules(root, temp, m)
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -111,15 +122,9 @@ type manifestEntry struct {
 
 type manifest map[string]manifestEntry
 
-func diffModules(root string, m manifest) (map[string]string, map[string]error, error) {
+func diffModules(root, baseDir string, m manifest) (map[string]string, map[string]error, error) {
 	diffs := map[string]string{}
 	issues := map[string]error{}
-
-	goCloud, err := cloneGoCloud()
-	if err != nil {
-		return diffs, issues, err
-	}
-	defer os.RemoveAll(goCloud)
 
 	for imp, entry := range m {
 		// Only diff stable clients.
@@ -129,7 +134,7 @@ func diffModules(root string, m manifest) (map[string]string, map[string]error, 
 
 		// Prepare module directory paths relative to the repo root.
 		pkg := strings.TrimPrefix(imp, rootMod+"/")
-		baseModDir := goCloud
+		baseModDir := baseDir
 		modDir := root
 
 		// Manual clients are also submodules, so we need to run apidiff in the
@@ -228,15 +233,6 @@ func manualParent(m manifest, imp string) string {
 	}
 
 	return pkg
-}
-
-func cloneGoCloud() (string, error) {
-	temp, err := ioutil.TempDir("/tmp", "google-cloud-go-*")
-	if err != nil {
-		return "", err
-	}
-	_, err = exec("git", "clone", "https://github.com/googleapis/google-cloud-go", temp)
-	return temp, err
 }
 
 func isSubModErr(msg string) bool {
