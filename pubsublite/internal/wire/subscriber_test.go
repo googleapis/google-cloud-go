@@ -983,31 +983,20 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 	// Assignment stream
 	asnStream := test.NewRPCVerifier(t)
 	asnStream.Push(initAssignmentReq(subscription, fakeUUID[:]), assignmentResp([]int64{1}), nil)
-	assignmentBarrier1 := asnStream.PushWithBarrier(assignmentAckReq(), assignmentResp([]int64{2}), nil)
+	assignmentBarrier1 := asnStream.PushWithBarrier(assignmentAckReq(), assignmentResp([]int64{}), nil)
 	assignmentBarrier2 := asnStream.PushWithBarrier(assignmentAckReq(), nil, nil)
 	verifiers.AddAssignmentStream(subscription, asnStream)
 
 	// Partition 1
-	subStream1 := test.NewRPCVerifier(t)
-	subStream1.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
-	subStream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
-	verifiers.AddSubscribeStream(subscription, 1, subStream1)
+	subStream := test.NewRPCVerifier(t)
+	subStream.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
+	verifiers.AddSubscribeStream(subscription, 1, subStream)
 
-	cmtStream1 := test.NewRPCVerifier(t)
-	commitBarrier := cmtStream1.PushWithBarrier(initCommitReq(subscriptionPartition{Path: subscription, Partition: 1}), initCommitResp(), nil)
-	// Note: no commit expected.
-	verifiers.AddCommitStream(subscription, 1, cmtStream1)
-
-	// Partition 2
-	subStream2 := test.NewRPCVerifier(t)
-	subStream2.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
-	subStream2.Push(initFlowControlReq(), msgSubResp(msg2), nil)
-	verifiers.AddSubscribeStream(subscription, 2, subStream2)
-
-	cmtStream2 := test.NewRPCVerifier(t)
-	cmtStream2.Push(initCommitReq(subscriptionPartition{Path: subscription, Partition: 2}), initCommitResp(), nil)
-	cmtStream2.Push(commitReq(23), commitResp(1), nil)
-	verifiers.AddCommitStream(subscription, 2, cmtStream2)
+	cmtStream := test.NewRPCVerifier(t)
+	cmtStream.Push(initCommitReq(subscriptionPartition{Path: subscription, Partition: 1}), initCommitResp(), nil)
+	cmtStream.Push(commitReq(12), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription, 1, cmtStream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
@@ -1018,18 +1007,15 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 	}
 
 	// Partition assignments are initially {1}.
-	ack1 := receiver.ValidateMsg(msg1)
+	receiver.ValidateMsg(msg1).Ack()
+	ack2 := receiver.ValidateMsg(msg2)
 
-	// Partition assignments will now be {2}.
+	// Partition assignments will now be {}.
 	assignmentBarrier1.Release()
-	receiver.ValidateMsg(msg2).Ack()
+	assignmentBarrier2.Release() // Wait for ack to ensure the test is deterministic
 
-	// These barriers ensure that this test is deterministic by ensuring that the
-	// server has received expected requests before proceeding.
-	commitBarrier.Release()
-	assignmentBarrier2.Release()
 	// Partition 1 has already been unassigned, so this ack is discarded.
-	ack1.Ack()
+	ack2.Ack()
 
 	sub.Stop()
 	if gotErr := sub.WaitStopped(); gotErr != nil {
