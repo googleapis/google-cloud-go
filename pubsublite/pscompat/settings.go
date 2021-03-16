@@ -106,7 +106,7 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold:    10 * time.Millisecond,
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
-	Timeout:           60 * time.Second,
+	Timeout:           60 * time.Minute,
 	BufferedByteLimit: 1e8,
 }
 
@@ -206,7 +206,7 @@ type ReceiveSettings struct {
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9,
-	Timeout:                60 * time.Second,
+	Timeout:                60 * time.Minute,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
