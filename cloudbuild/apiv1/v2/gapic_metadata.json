@@ -70,6 +70,11 @@
                 "ListWorkerPools"
               ]
             },
+            "ReceiveTriggerWebhook": {
+              "methods": [
+                "ReceiveTriggerWebhook"
+              ]
+            },
             "RetryBuild": {
               "methods": [
                 "RetryBuild"
