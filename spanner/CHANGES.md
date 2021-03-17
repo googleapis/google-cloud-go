@@ -6,6 +6,7 @@
 ### Features
 
 * **spanner:** add `optimizer_statistics_package` field in `QueryOptions` ([18c88c4](https://www.github.com/googleapis/google-cloud-go/commit/18c88c437bd1741eaf5bf5911b9da6f6ea7cd75d))
+* **spanner/admin/database:** add CMEK fields to backup and database ([16597fa](https://github.com/googleapis/google-cloud-go/commit/16597fa1ce549053c7183e8456e23f554a5501de))
 
 
 ### Bug Fixes
