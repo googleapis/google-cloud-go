@@ -297,14 +297,6 @@ var manualEntries = []manifestEntry{
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/spanner",
 		ReleaseLevel:      "ga",
 	},
-	{
-		DistributionName:  "cloud.google.com/go/trace",
-		Description:       "Stackdriver Trace",
-		Language:          "Go",
-		ClientLibraryType: "manual",
-		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/trace",
-		ReleaseLevel:      "ga",
-	},
 }
 
 // manifest writes a manifest file with info about all of the confs.

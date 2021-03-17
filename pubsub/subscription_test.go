@@ -22,13 +22,14 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/pstest"
-	"github.com/golang/protobuf/ptypes"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // All returns the remaining subscriptions from this iterator.
@@ -339,7 +340,7 @@ func TestDeadLettering_toMessage(t *testing.T) {
 		Message: &pb.PubsubMessage{
 			Data:        []byte("some message"),
 			MessageId:   "id-1234",
-			PublishTime: ptypes.TimestampNow(),
+			PublishTime: timestamppb.Now(),
 		},
 	}
 	got, err := toMessage(receivedMsg, time.Time{}, nil)
@@ -368,8 +369,8 @@ func TestRetryPolicy_toProto(t *testing.T) {
 	}
 	got := in.toProto()
 	want := &pb.RetryPolicy{
-		MinimumBackoff: ptypes.DurationProto(20 * time.Second),
-		MaximumBackoff: ptypes.DurationProto(300 * time.Second),
+		MinimumBackoff: durationpb.New(20 * time.Second),
+		MaximumBackoff: durationpb.New(300 * time.Second),
 	}
 	if diff := testutil.Diff(got, want); diff != "" {
 		t.Errorf("Roundtrip to Proto failed\ngot: - want: +\n%s", diff)

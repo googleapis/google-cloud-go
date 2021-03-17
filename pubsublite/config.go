@@ -61,7 +61,7 @@ type TopicConfig struct {
 	// The provisioned storage, in bytes, per partition. If the number of bytes
 	// stored in any of the topic's partitions grows beyond this value, older
 	// messages will be dropped to make room for newer ones, regardless of the
-	// value of `RetentionDuration`. Must be > 0.
+	// value of `RetentionDuration`. Must be >= 30 GiB.
 	PerPartitionBytes int64
 
 	// How long a published message is retained. If set to `InfiniteRetention`,
@@ -120,17 +120,21 @@ type TopicConfigToUpdate struct {
 	// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID". Required.
 	Name string
 
-	// If non-zero, will update the number of partitions in the topic. The number
-	// of partitions can only be increased, not decreased.
+	// If non-zero, will update the number of partitions in the topic.
+	// Set value must be >= 1. The number of partitions can only be increased, not
+	// decreased.
 	PartitionCount int
 
 	// If non-zero, will update the publish throughput capacity per partition.
+	// Set value must be >= 4 and <= 16.
 	PublishCapacityMiBPerSec int
 
 	// If non-zero, will update the subscribe throughput capacity per partition.
+	// Set value must be >= 4 and <= 32.
 	SubscribeCapacityMiBPerSec int
 
 	// If non-zero, will update the provisioned storage per partition.
+	// Set value must be >= 30 GiB.
 	PerPartitionBytes int64
 
 	// If specified, will update how long a published message is retained. To

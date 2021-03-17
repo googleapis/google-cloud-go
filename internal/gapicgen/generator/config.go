@@ -899,7 +899,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		inputDirectoryPath:   "google/appengine/v1",
 		pkg:                  "appengine",
 		importPath:           "cloud.google.com/go/appengine/apiv1",
-		apiServiceConfigPath: "google/appengine/v1/appengine.yaml",
+		apiServiceConfigPath: "google/appengine/v1/appengine_v1.yaml",
 		releaseLevel:         "ga",
 	},
 	{
@@ -1025,6 +1025,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/metastore/v1alpha/metastore_v1alpha.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/metastore/v1beta",
+		pkg:                   "metastore",
+		importPath:            "cloud.google.com/go/metastore/apiv1beta",
+		gRPCServiceConfigPath: "google/cloud/metastore/v1beta/metastore_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/metastore/v1beta/metastore_v1beta.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
@@ -1048,7 +1056,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "tables",
 		importPath:            "cloud.google.com/go/area120/tables/apiv1alpha1",
 		gRPCServiceConfigPath: "google/area120/tables/v1alpha1/tables_grpc_service_config.json",
-		apiServiceConfigPath:  "google/area120/tables/v1alpha1/language_gapic.yaml",
+		apiServiceConfigPath:  "google/area120/tables/v1alpha1/area120tables_v1alpha1.yaml",
 		releaseLevel:          "alpha",
 	},
 }

@@ -41,7 +41,7 @@
   },
   "cloud.google.com/go/area120/tables/apiv1alpha1": {
     "distribution_name": "cloud.google.com/go/area120/tables/apiv1alpha1",
-    "description": "",
+    "description": "Area120 Tables API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/area120/tables/apiv1alpha1",
@@ -575,6 +575,14 @@
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/metastore/apiv1alpha",
     "release_level": "alpha"
   },
+  "cloud.google.com/go/metastore/apiv1beta": {
+    "distribution_name": "cloud.google.com/go/metastore/apiv1beta",
+    "description": "Dataproc Metastore API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/metastore/apiv1beta",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/monitoring/apiv3/v2": {
     "distribution_name": "cloud.google.com/go/monitoring/apiv3/v2",
     "description": "Cloud Monitoring API",
@@ -973,14 +981,6 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://pkg.go.dev/cloud.google.com/go/texttospeech/apiv1",
-    "release_level": "ga"
-  },
-  "cloud.google.com/go/trace": {
-    "distribution_name": "cloud.google.com/go/trace",
-    "description": "Stackdriver Trace",
-    "language": "Go",
-    "client_library_type": "manual",
-    "docs_url": "https://pkg.go.dev/cloud.google.com/go/trace",
     "release_level": "ga"
   },
   "cloud.google.com/go/trace/apiv1": {
