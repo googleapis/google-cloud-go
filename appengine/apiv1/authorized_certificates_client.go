@@ -66,7 +66,7 @@ func defaultAuthorizedCertificatesCallOptions() *AuthorizedCertificatesCallOptio
 	}
 }
 
-// AuthorizedCertificatesClient is a client for interacting with App Engine Audit Data.
+// AuthorizedCertificatesClient is a client for interacting with App Engine Admin API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type AuthorizedCertificatesClient struct {
