@@ -154,9 +154,9 @@ func (c *SchemaClient) CreateSchema(ctx context.Context, schemaID string, s Sche
 	return protoToSchemaConfig(pbs), nil
 }
 
-// Schema retrieves the configuration of a topic. A valid schema path has the
-// format: "projects/PROJECT_ID/schemas/SCHEMA_ID".
-func (c *SchemaClient) Schema(ctx context.Context, schemaPath string, view SchemaView) (*SchemaConfig, error) {
+// Schema retrieves the configuration of a schema.
+func (c *SchemaClient) Schema(ctx context.Context, schemaID string, view SchemaView) (*SchemaConfig, error) {
+	schemaPath := fmt.Sprintf("projects/%s/schemas/%s", c.projectID, schemaID)
 	req := &pb.GetSchemaRequest{
 		Name: schemaPath,
 		View: pb.SchemaView(view),
@@ -242,13 +242,13 @@ func (s *SchemaClient) ValidateMessageWithConfig(ctx context.Context, msg []byte
 	return &ValidateMessageResult{}, nil
 }
 
-// ValidateMessageWithPath validates a message against an schema specified
-// by a schema path pointing to an existing schema.
-func (s *SchemaClient) ValidateMessageWithPath(ctx context.Context, msg []byte, encoding SchemaEncoding, schemaPath string) (*ValidateMessageResult, error) {
+// ValidateMessageWithID validates a message against an schema specified
+// by the schema ID of an existing schema.
+func (s *SchemaClient) ValidateMessageWithID(ctx context.Context, msg []byte, encoding SchemaEncoding, schemaID string) (*ValidateMessageResult, error) {
 	req := &pb.ValidateMessageRequest{
 		Parent: fmt.Sprintf("projects/%s", s.projectID),
 		SchemaSpec: &pb.ValidateMessageRequest_Name{
-			Name: schemaPath,
+			Name: fmt.Sprintf("projects/%s/schemas/%s", s.projectID, schemaID),
 		},
 		Message:  msg,
 		Encoding: pb.Encoding(encoding),

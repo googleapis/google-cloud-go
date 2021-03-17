@@ -59,7 +59,7 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 		t.Errorf("CreateSchema() -want, +got: %v", diff)
 	}
 
-	gotConfig, err := admin.Schema(ctx, schemaPath, SchemaViewFull)
+	gotConfig, err := admin.Schema(ctx, "my-schema", SchemaViewFull)
 	if err != nil {
 		t.Errorf("Schema() got err: %v", err)
 	}
