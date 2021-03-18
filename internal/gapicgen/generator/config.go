@@ -899,7 +899,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		inputDirectoryPath:   "google/appengine/v1",
 		pkg:                  "appengine",
 		importPath:           "cloud.google.com/go/appengine/apiv1",
-		apiServiceConfigPath: "google/appengine/v1/appengine.yaml",
+		apiServiceConfigPath: "google/appengine/v1/appengine_v1.yaml",
 		releaseLevel:         "ga",
 	},
 	{
