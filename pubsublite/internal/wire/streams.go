@@ -15,11 +15,13 @@ package wire
 
 import (
 	"context"
+	"errors"
 	"io"
 	"reflect"
 	"sync"
 	"time"
 
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -32,13 +34,19 @@ import (
 type streamStatus int
 
 const (
-	streamUninitialized streamStatus = 0
-	streamReconnecting  streamStatus = 1
-	streamConnected     streamStatus = 2
-	streamTerminated    streamStatus = 3
+	streamUninitialized streamStatus = iota
+	streamReconnecting
+	streamConnected
+	streamTerminated
 )
 
 type initialResponseRequired bool
+
+// Abort a stream initialization attempt after this duration to mitigate server
+// delays.
+const defaultStreamInitTimeout = 1 * time.Minute
+
+var errStreamInitTimeout = errors.New("pubsublite: stream initialization timed out")
 
 // streamHandler provides hooks for different Pub/Sub Lite streaming APIs
 // (e.g. publish, subscribe, streaming cursor, etc.) to use retryableStream.
@@ -88,10 +96,11 @@ type streamHandler interface {
 // are private implementation.
 type retryableStream struct {
 	// Immutable after creation.
-	ctx          context.Context
-	handler      streamHandler
-	responseType reflect.Type
-	timeout      time.Duration
+	ctx               context.Context
+	handler           streamHandler
+	responseType      reflect.Type
+	timeout           time.Duration
+	streamInitTimeout time.Duration
 
 	// Guards access to fields below.
 	mu sync.Mutex
@@ -109,10 +118,11 @@ type retryableStream struct {
 // proto received on the stream.
 func newRetryableStream(ctx context.Context, handler streamHandler, timeout time.Duration, responseType reflect.Type) *retryableStream {
 	return &retryableStream{
-		ctx:          ctx,
-		handler:      handler,
-		responseType: responseType,
-		timeout:      timeout,
+		ctx:               ctx,
+		handler:           handler,
+		responseType:      responseType,
+		timeout:           timeout,
+		streamInitTimeout: defaultStreamInitTimeout,
 	}
 }
 
@@ -210,11 +220,8 @@ func (rs *retryableStream) connectStream() {
 		rs.mu.Lock()
 		defer rs.mu.Unlock()
 
-		if rs.status == streamReconnecting {
+		if rs.status == streamReconnecting || rs.status == streamTerminated {
 			// There can only be 1 goroutine reconnecting.
-			return false
-		}
-		if rs.status == streamTerminated {
 			return false
 		}
 		rs.status = streamReconnecting
@@ -253,51 +260,98 @@ func (rs *retryableStream) connectStream() {
 	rs.listen(newStream)
 }
 
+type initStatus int
+
+const (
+	initInProgress initStatus = iota
+	initCanceled
+	initSuccess
+)
+
 func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelFunc context.CancelFunc, err error) {
 	r := newStreamRetryer(rs.timeout)
+	var initStatusMu sync.Mutex
+
 	for {
 		backoff, shouldRetry := func() (time.Duration, bool) {
-			defer func() {
-				if err != nil && cancelFunc != nil {
-					cancelFunc()
-					cancelFunc = nil
-					newStream = nil
-				}
-			}()
-
 			var cctx context.Context
 			cctx, cancelFunc = context.WithCancel(rs.ctx)
 			// Store the cancel func to quickly cancel reconnecting if the stream is
 			// terminated.
 			rs.setCancel(cancelFunc)
 
+			// Bounds the duration of the stream initialization attempt - from stream
+			// creation to the initial response.
+			status := initInProgress
+			initTimer := time.AfterFunc(rs.streamInitTimeout, func() {
+				initStatusMu.Lock()
+				defer initStatusMu.Unlock()
+				if status == initInProgress {
+					status = initCanceled
+					cancelFunc()
+				}
+			})
+			defer initTimer.Stop()
+
+			resolveError := func(err error) error {
+				initStatusMu.Lock()
+				defer initStatusMu.Unlock()
+				// If initTimer canceled the stream, the gRPC error would be Canceled
+				// (non-retryable) and should be replaced.
+				if status == initCanceled {
+					return errStreamInitTimeout
+				}
+				status = initCanceled
+				return err
+			}
+
 			newStream, err = rs.handler.newStream(cctx)
 			if err != nil {
+				err = resolveError(err)
 				return r.RetryRecv(err)
 			}
 			initReq, needsResponse := rs.handler.initialRequest()
 			if err = newStream.SendMsg(initReq); err != nil {
+				err = resolveError(err)
 				return r.RetrySend(err)
 			}
 			if needsResponse {
 				response := reflect.New(rs.responseType).Interface()
 				if err = newStream.RecvMsg(response); err != nil {
+					err = resolveError(err)
 					return r.RetryRecv(err)
 				}
 				if err = rs.handler.validateInitialResponse(response); err != nil {
 					// An unexpected initial response from the server is a permanent error.
+					cancelFunc()
 					return 0, false
 				}
 			}
 
+			initStatusMu.Lock()
+			defer initStatusMu.Unlock()
+			if status == initCanceled {
+				// Unfortunately, the initTimer just fired, so the stream needs to be
+				// reconnected.
+				err = errStreamInitTimeout
+				return r.RetryRecv(err)
+			}
 			// We have a valid connection and should break from the outer loop.
+			status = initSuccess
 			return 0, false
 		}()
 
-		if !shouldRetry {
+		if (shouldRetry || err != nil) && cancelFunc != nil {
+			// Ensure that streams aren't leaked.
+			cancelFunc()
+			cancelFunc = nil
+			newStream = nil
+		}
+		if !shouldRetry || rs.Status() == streamTerminated {
 			break
 		}
-		if rs.Status() == streamTerminated {
+		if r.ExceededDeadline() {
+			err = xerrors.Errorf("%v: %w", err, ErrBackendUnavailable)
 			break
 		}
 		if err = gax.Sleep(rs.ctx, backoff); err != nil {

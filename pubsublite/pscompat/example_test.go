@@ -20,6 +20,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/pscompat"
+	"golang.org/x/xerrors"
 )
 
 func ExamplePublisherClient_Publish() {
@@ -42,8 +43,9 @@ func ExamplePublisherClient_Publish() {
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
-			publishFailed = true
 			// TODO: Handle error.
+			publishFailed = true
+			continue
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -64,10 +66,11 @@ func ExamplePublisherClient_Publish() {
 func ExamplePublisherClient_Publish_batchingSettings() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	settings := pscompat.DefaultPublishSettings
-	settings.DelayThreshold = 50 * time.Millisecond
-	settings.CountThreshold = 200
-	settings.BufferedByteLimit = 5e8
+	settings := pscompat.PublishSettings{
+		DelayThreshold:    50 * time.Millisecond,
+		CountThreshold:    200,
+		BufferedByteLimit: 5e8,
+	}
 	publisher, err := pscompat.NewPublisherClientWithSettings(ctx, topic, settings)
 	if err != nil {
 		// TODO: Handle error.
@@ -85,8 +88,9 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
-			publishFailed = true
 			// TODO: Handle error.
+			publishFailed = true
+			continue
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
@@ -97,6 +101,74 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 	// republish failed messages.
 	if publishFailed {
 		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
+	}
+}
+
+// This example illustrates how to handle various publishing errors. Some errors
+// can be automatically handled (e.g. backend unavailable and buffer overflow),
+// while others are fatal errors that should be inspected.
+// If the application has a low tolerance to backend unavailability, set a lower
+// PublishSettings.Timeout value to detect and alert.
+func ExamplePublisherClient_Publish_errorHandling() {
+	type publishedMessage struct {
+		message *pubsub.Message
+		result  *pubsub.PublishResult
+	}
+
+	ctx := context.Background()
+	const topic = "projects/my-project/locations/zone/topics/my-topic"
+	settings := pscompat.PublishSettings{
+		// The PublisherClient will terminate when it cannot connect to backends for
+		// more than 10 minutes.
+		Timeout: 10 * time.Minute,
+		// Sets a conservative publish buffer byte limit, per partition.
+		BufferedByteLimit: 1e8,
+	}
+	publisher, err := pscompat.NewPublisherClientWithSettings(ctx, topic, settings)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer publisher.Stop()
+
+	var published []*publishedMessage
+	for i := 0; i < 10; i++ {
+		msg := &pubsub.Message{
+			Data: []byte(fmt.Sprintf("message-%d", i)),
+		}
+		result := publisher.Publish(ctx, msg)
+		published = append(published, &publishedMessage{msg, result})
+	}
+
+	var publishFailed bool
+	var toRepublish []*pubsub.Message
+	for _, pm := range published {
+		id, err := pm.result.Get(ctx)
+		if err != nil {
+			fmt.Printf("Publish error: %v\n", err)
+			// Oversized messages cannot be published.
+			if !xerrors.Is(err, pscompat.ErrOversizedMessage) {
+				toRepublish = append(toRepublish, pm.message)
+			}
+			publishFailed = true
+			continue
+		}
+		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+
+	// NOTE: A failed PublishResult indicates that the publisher client has
+	// permanently terminated.
+	if publishFailed {
+		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
+		switch {
+		case xerrors.Is(publisher.Error(), pscompat.ErrBackendUnavailable):
+			// TODO: Create a new publisher client to republish failed messages.
+		case xerrors.Is(publisher.Error(), pscompat.ErrOverflow):
+			// TODO: Create a new publisher client to republish failed messages.
+			// Throttle publishing. Note that backend unavailability can also cause
+			// buffer overflow before the ErrBackendUnavailable error.
+		default:
+			// TODO: Inspect and handle fatal error.
+		}
 	}
 }
 
@@ -117,8 +189,47 @@ func ExampleSubscriberClient_Receive() {
 		// TODO: Handle error.
 	}
 
-	// Call cancel from callback, or another goroutine.
+	// Call cancel from the receiver callback or another goroutine to stop
+	// receiving.
 	cancel()
+}
+
+// If the application has a low tolerance to backend unavailability, set a lower
+// ReceiveSettings.Timeout value to detect and alert.
+func ExampleSubscriberClient_Receive_errorHandling() {
+	ctx := context.Background()
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	settings := pscompat.ReceiveSettings{
+		// The SubscriberClient will terminate when it cannot connect to backends
+		// for more than 5 minutes.
+		Timeout: 5 * time.Minute,
+	}
+	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	for {
+		cctx, cancel := context.WithCancel(ctx)
+		err = subscriber.Receive(cctx, func(ctx context.Context, m *pubsub.Message) {
+			// TODO: Handle message.
+			// NOTE: May be called concurrently; synchronize access to shared memory.
+			m.Ack()
+		})
+		if err != nil {
+			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
+			if xerrors.Is(err, pscompat.ErrBackendUnavailable) {
+				// TODO: Alert if necessary.
+			} else {
+				// TODO: Handle fatal error.
+				break
+			}
+		}
+
+		// Call cancel from the receiver callback or another goroutine to stop
+		// receiving.
+		cancel()
+	}
 }
 
 // This example shows how to throttle SubscriberClient.Receive, which aims for
@@ -129,9 +240,10 @@ func ExampleSubscriberClient_Receive() {
 func ExampleSubscriberClient_Receive_maxOutstanding() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
-	settings := pscompat.DefaultReceiveSettings
-	settings.MaxOutstandingMessages = 5
-	settings.MaxOutstandingBytes = 10e6
+	settings := pscompat.ReceiveSettings{
+		MaxOutstandingMessages: 5,
+		MaxOutstandingBytes:    10e6,
+	}
 	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
 	if err != nil {
 		// TODO: Handle error.
@@ -158,9 +270,10 @@ func ExampleSubscriberClient_Receive_maxOutstanding() {
 func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
 	ctx := context.Background()
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
-	settings := pscompat.DefaultReceiveSettings
-	// NOTE: The corresponding topic must have 2 or more partitions.
-	settings.Partitions = []int{0, 1}
+	settings := pscompat.ReceiveSettings{
+		// NOTE: The corresponding topic must have 2 or more partitions.
+		Partitions: []int{0, 1},
+	}
 	subscriber, err := pscompat.NewSubscriberClientWithSettings(ctx, subscription, settings)
 	if err != nil {
 		// TODO: Handle error.

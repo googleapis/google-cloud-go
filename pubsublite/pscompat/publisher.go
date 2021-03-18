@@ -29,17 +29,24 @@ import (
 
 var (
 	// ErrOverflow is set for a PublishResult when publish buffers overflow.
+	// Use errors.Is for comparing errors.
 	ErrOverflow = bundler.ErrOverflow
 
 	// ErrOversizedMessage is set for a PublishResult when a published message
-	// exceeds MaxPublishRequestBytes.
+	// exceeds MaxPublishRequestBytes. Use errors.Is for comparing errors.
 	ErrOversizedMessage = bundler.ErrOversizedItem
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
 	// published because the publisher client has stopped or is in the process of
 	// stopping. PublisherClient.Error() returns the error that caused the
-	// publisher client to terminate (if any).
+	// publisher client to terminate (if any). Use errors.Is for comparing errors.
 	ErrPublisherStopped = wire.ErrServiceStopped
+
+	// ErrBackendUnavailable indicates that the backend service has been
+	// unavailable for a period of time. The timeout can be configured using
+	// PublishSettings.Timeout or ReceiveSettings.Timeout. Use errors.Is for
+	// comparing errors.
+	ErrBackendUnavailable = wire.ErrBackendUnavailable
 )
 
 // translateError transforms a subset of errors to what would be returned by the
