@@ -29,16 +29,15 @@ var (
 	errNoSubscriptionFieldsUpdated = errors.New("pubsublite: no fields updated for subscription")
 )
 
-// OffsetLocation refers to the location of an offset with respect to the
-// message backlog.
-type OffsetLocation int
+// BacklogLocation refers to a location with respect to the message backlog.
+type BacklogLocation int
 
 const (
-	// End refers to the offset past all currently published messages. End
+	// End refers to the location past all currently published messages. End
 	// skips the entire message backlog.
-	End OffsetLocation = iota + 1
+	End BacklogLocation = iota + 1
 
-	// Beginning represents the offset of the oldest retained message.
+	// Beginning refers to the location of the oldest retained message.
 	Beginning
 )
 
@@ -166,14 +165,14 @@ type CreateSubscriptionOption interface {
 }
 
 type startingOffset struct {
-	offsetLocation OffsetLocation
+	backlogLocation BacklogLocation
 }
 
 func (so startingOffset) createSubscriptionOption() {}
 
 // StartingOffset specifies the offset at which a newly created subscription
 // will start receiving messages.
-func StartingOffset(location OffsetLocation) CreateSubscriptionOption {
+func StartingOffset(location BacklogLocation) CreateSubscriptionOption {
 	return startingOffset{location}
 }
 
@@ -186,7 +185,7 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 	skipBacklog := true
 	for _, opt := range opts {
 		if _, ok := opt.(startingOffset); ok {
-			skipBacklog = opt.(startingOffset).offsetLocation != Beginning
+			skipBacklog = opt.(startingOffset).backlogLocation != Beginning
 		}
 	}
 
