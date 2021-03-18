@@ -15,6 +15,7 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
@@ -43,7 +44,8 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	ctx := context.Background()
 
 	// Inputs
-	const schemaPath = "projects/my-proj/schemas/my-schema"
+	schemaID := "my-schema"
+	schemaPath := fmt.Sprintf("projects/my-proj/schemas/%s", schemaID)
 	schemaConfig := SchemaConfig{
 		Name:       schemaPath,
 		Type:       SchemaAvro,
@@ -53,13 +55,13 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 	admin, _ := newSchemaFake(t)
 	defer admin.Close()
 
-	if gotConfig, err := admin.CreateSchema(ctx, "my-schema", schemaConfig); err != nil {
+	if gotConfig, err := admin.CreateSchema(ctx, schemaID, schemaConfig); err != nil {
 		t.Errorf("CreateSchema() got err: %v", err)
 	} else if diff := cmp.Diff(*gotConfig, schemaConfig); diff != "" {
 		t.Errorf("CreateSchema() -want, +got: %v", diff)
 	}
 
-	gotConfig, err := admin.Schema(ctx, "my-schema", SchemaViewFull)
+	gotConfig, err := admin.Schema(ctx, schemaID, SchemaViewFull)
 	if err != nil {
 		t.Errorf("Schema() got err: %v", err)
 	}
@@ -67,7 +69,7 @@ func TestSchemaBasicCreateGetDelete(t *testing.T) {
 		t.Errorf("Schema() -got, +want:\n%v", diff)
 	}
 
-	if err := admin.DeleteSchema(ctx, schemaPath); err != nil {
+	if err := admin.DeleteSchema(ctx, schemaID); err != nil {
 		t.Errorf("DeleteSchema() got err: %v", err)
 	}
 

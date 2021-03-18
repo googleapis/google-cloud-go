@@ -198,7 +198,8 @@ func (s *SchemaIterator) Next() (*SchemaConfig, error) {
 }
 
 // DeleteSchema deletes an existing schema.
-func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaPath string) error {
+func (s *SchemaClient) DeleteSchema(ctx context.Context, schemaID string) error {
+	schemaPath := fmt.Sprintf("projects/%s/schemas/%s", s.projectID, schemaID)
 	return s.sc.DeleteSchema(ctx, &pb.DeleteSchemaRequest{
 		Name: schemaPath,
 	})
