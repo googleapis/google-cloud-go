@@ -39,6 +39,7 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -117,6 +118,39 @@ func (ac *AdminClient) instancePrefix() string {
 
 func (ac *AdminClient) backupPath(cluster, backup string) string {
 	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
+}
+
+// EncryptionInfo represents the encryption info of a table.
+type EncryptionInfo struct {
+	EncryptionStatus *rpcstatus.Status
+	EncryptionType   btapb.EncryptionInfo_EncryptionType
+	KmsKeyVersion    string // TODO: should be KMSKeyVersion?
+}
+
+func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[string][]*btapb.EncryptionInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	res, err := ac.getTable(ctx, table)
+	if err != nil {
+		return nil, err
+	}
+
+	// TODO: why not just return the clusterstates, as it has a map of encryption info.
+	var encryptionInfo map[string][]*btapb.EncryptionInfo
+	for key, cs := range res.ClusterStates {
+		// TODO: we could return map[string][]*btapb.EncryptionInfo directly
+		encryptionInfo[key] = cs.EncryptionInfo
+
+		// TODO: can make a custom class?
+		for _, pbInfo := range cs.EncryptionInfo {
+			info := EncryptionInfo{}
+			info.EncryptionStatus = pbInfo.EncryptionStatus
+			info.EncryptionType = pbInfo.EncryptionType
+			info.KmsKeyVersion = pbInfo.KmsKeyVersion
+		}
+	}
+
+	return encryptionInfo, nil
 }
 
 // Tables returns a list of the tables in the instance.
@@ -247,8 +281,7 @@ type FamilyInfo struct {
 	GCPolicy string
 }
 
-// TableInfo retrieves information about a table.
-func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
+func (ac *AdminClient) getTable(ctx context.Context, table string) (*btapb.Table, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	req := &btapb.GetTableRequest{
@@ -262,6 +295,17 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 		res, err = ac.tClient.GetTable(ctx, req)
 		return err
 	}, retryOptions...)
+	if err != nil {
+		return nil, err
+	}
+	return res, nil
+}
+
+// TableInfo retrieves information about a table.
+func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, ac.md)
+
+	res, err := ac.getTable(ctx, table)
 	if err != nil {
 		return nil, err
 	}
