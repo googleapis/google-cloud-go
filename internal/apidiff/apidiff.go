@@ -127,11 +127,6 @@ func diffModules(root, baseDir string, m manifest) (map[string]string, map[strin
 	issues := map[string]error{}
 
 	for imp, entry := range m {
-		// Only diff stable clients.
-		if entry.ReleaseLevel != "ga" {
-			continue
-		}
-
 		// Prepare module directory paths relative to the repo root.
 		pkg := strings.TrimPrefix(imp, rootMod+"/")
 		baseModDir := baseDir
