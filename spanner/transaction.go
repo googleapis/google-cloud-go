@@ -946,6 +946,8 @@ func beginTransaction(ctx context.Context, sid string, client *vkit.Client) (tra
 // begin starts a read-write transacton on Cloud Spanner, it is always called
 // before any of the public APIs.
 func (t *ReadWriteTransaction) begin(ctx context.Context) error {
+	t.mu.Lock()
+	defer t.mu.Unlock()
 	if t.tx != nil {
 		t.state = txActive
 		return nil
