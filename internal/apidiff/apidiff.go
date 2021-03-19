@@ -215,7 +215,7 @@ func diff(m manifest, modDir, imp, pkg, base string) (string, error) {
 }
 
 func checkAllowBreakingChange(commit string) bool {
-	if strings.Contains(commit, "BREAKING_CHANGE") {
+	if strings.Contains(commit, "BREAKING CHANGE:") {
 		log.Println("Not running apidiff because description contained tag BREAKING_CHANGE.")
 		return true
 	}
