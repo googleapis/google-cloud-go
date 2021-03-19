@@ -37,14 +37,23 @@ func ExamplePublisherClient_Publish() {
 	})
 	results = append(results, r)
 	// Publish more messages ...
+
+	var publishFailed bool
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
+			publishFailed = true
 			// TODO: Handle error.
-			// NOTE: The publisher will terminate upon first error. Create a new
-			// publisher to republish failed messages.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
+	}
+
+	// NOTE: A failed PublishResult indicates that the publisher client
+	// encountered a fatal error and has permanently terminated. After the fatal
+	// error has been resolved, a new publisher client instance must be created to
+	// republish failed messages.
+	if publishFailed {
+		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
 	}
 }
 
@@ -71,43 +80,23 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 	})
 	results = append(results, r)
 	// Publish more messages ...
+
+	var publishFailed bool
 	for _, r := range results {
 		id, err := r.Get(ctx)
 		if err != nil {
+			publishFailed = true
 			// TODO: Handle error.
-			// NOTE: The publisher will terminate upon first error. Create a new
-			// publisher to republish failed messages.
 		}
 		fmt.Printf("Published a message with a message ID: %s\n", id)
 	}
-}
 
-func ExamplePublisherClient_Error() {
-	ctx := context.Background()
-	const topic = "projects/my-project/locations/zone/topics/my-topic"
-	publisher, err := pscompat.NewPublisherClient(ctx, topic)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	defer publisher.Stop()
-
-	var results []*pubsub.PublishResult
-	r := publisher.Publish(ctx, &pubsub.Message{
-		Data: []byte("hello world"),
-	})
-	results = append(results, r)
-	// Publish more messages ...
-	for _, r := range results {
-		id, err := r.Get(ctx)
-		if err != nil {
-			// Prints the fatal error that caused the publisher to terminate.
-			fmt.Printf("Publisher client stopped due to error: %v\n", publisher.Error())
-
-			// TODO: Handle error.
-			// NOTE: The publisher will terminate upon first error. Create a new
-			// publisher to republish failed messages.
-		}
-		fmt.Printf("Published a message with a message ID: %s\n", id)
+	// NOTE: A failed PublishResult indicates that the publisher client
+	// encountered a fatal error and has permanently terminated. After the fatal
+	// error has been resolved, a new publisher client instance must be created to
+	// republish failed messages.
+	if publishFailed {
+		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
 	}
 }
 
