@@ -17,7 +17,7 @@
 # That allows deploying and testing features in live GCP services.
 # Currently only configured to test logging & error reporting
 
-set -eox pipefail
+set -eo pipefail
 
 # Test prechecks
 if [[ -z "${ENVIRONMENT:-}" ]]; then
@@ -43,6 +43,8 @@ env | grep KOKORO
 # Set up service account credentials
 export GOOGLE_APPLICATION_CREDENTIALS=$KOKORO_KEYSTORE_DIR/72523_go_integration_service_account
 gcloud auth activate-service-account --key-file=$GOOGLE_APPLICATION_CREDENTIALS
+
+set -x
 export PROJECT_ID="dulcet-port-762"
 gcloud config set project $PROJECT_ID
 gcloud config set compute/zone us-central1-b
