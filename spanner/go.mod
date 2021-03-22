@@ -8,7 +8,6 @@ require (
 	github.com/google/go-cmp v0.5.5
 	github.com/googleapis/gax-go/v2 v2.0.5
 	go.opencensus.io v0.23.0
-	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.42.0
 	google.golang.org/genproto v0.0.0-20210319143718-93e7006c17a6
