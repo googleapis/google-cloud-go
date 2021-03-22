@@ -283,7 +283,7 @@ func TestBucketAttrsToRawBucket(t *testing.T) {
 	// Disable UBLA and reset PAP to default. Confirm that the IAM config is set
 	// to nil in the proto.
 	attrs.UniformBucketLevelAccess = UniformBucketLevelAccess{Enabled: false}
-	attrs.PublicAccessPrevention = PublicAccessPreventionDefault
+	attrs.PublicAccessPrevention = PublicAccessPreventionUnknown
 	got = attrs.toRawBucket()
 	want.IamConfiguration = nil
 	if msg := testutil.Diff(got, want); msg != "" {

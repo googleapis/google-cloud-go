@@ -367,9 +367,9 @@ type UniformBucketLevelAccess struct {
 type PublicAccessPrevention int
 
 const (
-	// PublicAccessPreventionDefault is a zero value, used only if this field is
+	// PublicAccessPreventionUnknown is a zero value, used only if this field is
 	// not set in a call to GCS.
-	PublicAccessPreventionDefault PublicAccessPrevention = iota
+	PublicAccessPreventionUnknown PublicAccessPrevention = iota
 
 	// PublicAccessPreventionUnspecified corresponds to a value of "unspecified"
 	// and is the default for buckets.
@@ -379,7 +379,7 @@ const (
 	// enforces Public Access Prevention on the bucket.
 	PublicAccessPreventionEnforced
 
-	publicAccessPreventionDefault     string = ""
+	publicAccessPreventionUnknown     string = ""
 	publicAccessPreventionUnspecified        = "unspecified"
 	publicAccessPreventionEnforced           = "enforced"
 )
@@ -391,7 +391,7 @@ func (p PublicAccessPrevention) String() string {
 	case PublicAccessPreventionEnforced:
 		return publicAccessPreventionEnforced
 	default:
-		return publicAccessPreventionDefault
+		return publicAccessPreventionUnknown
 	}
 }
 
@@ -621,14 +621,14 @@ func (b *BucketAttrs) toRawBucket() *raw.Bucket {
 		bb = &raw.BucketBilling{RequesterPays: true}
 	}
 	var bktIAM *raw.BucketIamConfiguration
-	if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled || b.PublicAccessPrevention != PublicAccessPreventionDefault {
+	if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled || b.PublicAccessPrevention != PublicAccessPreventionUnknown {
 		bktIAM = &raw.BucketIamConfiguration{}
 		if b.UniformBucketLevelAccess.Enabled || b.BucketPolicyOnly.Enabled {
 			bktIAM.UniformBucketLevelAccess = &raw.BucketIamConfigurationUniformBucketLevelAccess{
 				Enabled: true,
 			}
 		}
-		if b.PublicAccessPrevention != PublicAccessPreventionDefault {
+		if b.PublicAccessPrevention != PublicAccessPreventionUnknown {
 			bktIAM.PublicAccessPrevention = b.PublicAccessPrevention.String()
 		}
 	}
@@ -825,7 +825,7 @@ func (ua *BucketAttrsToUpdate) toRawBucket() *raw.Bucket {
 			},
 		}
 	}
-	if ua.PublicAccessPrevention != PublicAccessPreventionDefault {
+	if ua.PublicAccessPrevention != PublicAccessPreventionUnknown {
 		if rb.IamConfiguration == nil {
 			rb.IamConfiguration = &raw.BucketIamConfiguration{}
 		}
@@ -1201,7 +1201,7 @@ func toUniformBucketLevelAccess(b *raw.BucketIamConfiguration) UniformBucketLeve
 
 func toPublicAccessPrevention(b *raw.BucketIamConfiguration) PublicAccessPrevention {
 	if b == nil {
-		return PublicAccessPreventionDefault
+		return PublicAccessPreventionUnknown
 	}
 	switch b.PublicAccessPrevention {
 	case publicAccessPreventionUnspecified:
@@ -1209,7 +1209,7 @@ func toPublicAccessPrevention(b *raw.BucketIamConfiguration) PublicAccessPrevent
 	case publicAccessPreventionEnforced:
 		return PublicAccessPreventionEnforced
 	default:
-		return PublicAccessPreventionDefault
+		return PublicAccessPreventionUnknown
 	}
 }
 
