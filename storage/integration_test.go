@@ -2337,8 +2337,8 @@ func TestIntegration_PublicBucket(t *testing.T) {
 	}
 
 	const landsatBucket = "gcp-public-data-landsat"
-	const landsatPrefix = "LC08/PRE/044/034/LC80440342016259LGN00/"
-	const landsatObject = landsatPrefix + "LC80440342016259LGN00_MTL.txt"
+	const landsatPrefix = "LC08/01/001/002/LC08_L1GT_001002_20160817_20170322_01_T2/"
+	const landsatObject = landsatPrefix + "LC08_L1GT_001002_20160817_20170322_01_T2_ANG.txt"
 
 	// Create an unauthenticated client.
 	ctx := context.Background()
@@ -2353,7 +2353,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 
 	// Read a public object.
 	bytes := h.mustRead(obj)
-	if got, want := len(bytes), 7903; got != want {
+	if got, want := len(bytes), 117255; got != want {
 		t.Errorf("len(bytes) = %d, want %d", got, want)
 	}
 
@@ -2370,7 +2370,7 @@ func TestIntegration_PublicBucket(t *testing.T) {
 		}
 		gotCount++
 	}
-	if wantCount := 13; gotCount != wantCount {
+	if wantCount := 14; gotCount != wantCount {
 		t.Errorf("object count: got %d, want %d", gotCount, wantCount)
 	}
 
@@ -2408,7 +2408,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 		// This is an uncompressed file.
 		// See https://cloud.google.com/storage/docs/public-datasets/landsat
 		uncompressedBucket = "gcp-public-data-landsat"
-		uncompressedObject = "LC08/PRE/044/034/LC80440342016259LGN00/LC80440342016259LGN00_MTL.txt"
+		uncompressedObject = "LC08/01/001/002/LC08_L1GT_001002_20160817_20170322_01_T2/LC08_L1GT_001002_20160817_20170322_01_T2_ANG.txt"
 
 		gzippedObject = "gzipped-text.txt"
 	)

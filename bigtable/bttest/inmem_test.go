@@ -461,6 +461,7 @@ func TestCheckTimestampMaxValue(t *testing.T) {
 		t.Fatalf("want TimestampMicros rejection, got acceptance: %v", err)
 	}
 }
+
 func TestReadRows(t *testing.T) {
 	ctx := context.Background()
 	s := &server{
@@ -542,8 +543,10 @@ func TestReadRowsError(t *testing.T) {
 	}
 
 	mock := &MockReadRowsServer{}
-	req := &btpb.ReadRowsRequest{TableName: tblInfo.Name, Filter: &btpb.RowFilter{
-		Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("[")}}, // Invalid regex.
+	req := &btpb.ReadRowsRequest{
+		TableName: tblInfo.Name, Filter: &btpb.RowFilter{
+			Filter: &btpb.RowFilter_RowKeyRegexFilter{RowKeyRegexFilter: []byte("[")},
+		}, // Invalid regex.
 	}
 	if err = s.ReadRows(req, mock); err == nil {
 		t.Fatal("ReadRows got no error, want error")
@@ -1173,7 +1176,6 @@ func TestServer_ReadModifyWriteRow(t *testing.T) {
 	}
 
 	got, err := s.ReadModifyWriteRow(ctx, req)
-
 	if err != nil {
 		t.Fatalf("ReadModifyWriteRow error: %v", err)
 	}
@@ -1483,8 +1485,10 @@ func TestFilterRowWithErrors(t *testing.T) {
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte("[")}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_Chain_{
-			Chain: &btpb.RowFilter_Chain{Filters: []*btpb.RowFilter{
-				{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}}},
+			Chain: &btpb.RowFilter_Chain{
+				Filters: []*btpb.RowFilter{
+					{Filter: &btpb.RowFilter_ValueRegexFilter{[]byte("[")}},
+				},
 			},
 		}}},
 		{&btpb.RowFilter{Filter: &btpb.RowFilter_Condition_{
@@ -1553,6 +1557,45 @@ func TestFilterRowWithBinaryColumnQualifier(t *testing.T) {
 		{`\x80*`, true},         // succeeds: 0 or more 128s
 		{`[\x7f\x80]{2}`, true}, // succeeds: exactly two of either 127 or 128
 		{`\C{2}`, true},         // succeeds: two bytes
+	} {
+		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte(test.filter)}}, row.copy())
+		if got != test.want {
+			t.Errorf("%v: got %t, want %t", test.filter, got, test.want)
+		}
+	}
+}
+
+func TestFilterRowWithUnicodeColumnQualifier(t *testing.T) {
+	rs := []byte("a§b")
+	row := &row{
+		key: string(rs),
+		families: map[string]*family{
+			"fam": {
+				name: "fam",
+				cells: map[string][]cell{
+					string(rs): {{ts: 1000, value: []byte("val")}},
+				},
+			},
+		},
+	}
+	for _, test := range []struct {
+		filter string
+		want   bool
+	}{
+		{`a§b`, true},        // succeeds, exact match
+		{`a\xC2\xA7b`, true}, // succeeds, exact match
+		{`a\xC2.+`, true},    // succeeds, prefix match
+		{`a\xC2\C{2}`, true}, // succeeds, prefix match
+		{`a\xC.+`, false},    // fails, prefix match, bad escape
+		{`a§.+`, true},       // succeeds, prefix match
+		{`.+§b`, true},       // succeeds, suffix match
+		{`.§b`, true},        // succeeds
+		{`a§c`, false},       // fails
+		{`§b`, false},        // fails, because the regexp must match the entire input
+		{`.*§.*`, true},      // succeeds: anything with a §
+		{`.+§.+`, true},      // succeeds: anything with a § in the middle
+		{`a\C{2}b`, true},    // succeeds: § is two bytes
+		{`\C{4}`, true},      // succeeds: four bytes
 	} {
 		got, _ := filterRow(&btpb.RowFilter{Filter: &btpb.RowFilter_ColumnQualifierRegexFilter{[]byte(test.filter)}}, row.copy())
 		if got != test.want {
