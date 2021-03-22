@@ -51,8 +51,7 @@ func main() {
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if strings.Contains(head, "BREAKING_CHANGE") {
-		log.Println("Not running apidiff because description contained tag BREAKING_CHANGE.")
+	if checkAllowBreakingChange(head) {
 		return
 	}
 
@@ -213,6 +212,23 @@ func diff(m manifest, modDir, imp, pkg, base string) (string, error) {
 	}
 
 	return out, err
+}
+
+func checkAllowBreakingChange(commit string) bool {
+	if strings.Contains(commit, "BREAKING CHANGE:") {
+		log.Println("Not running apidiff because description contained tag BREAKING_CHANGE.")
+		return true
+	}
+
+	split := strings.Split(commit, "\n")
+	for _, s := range split {
+		if strings.Contains(s, "!:") || strings.Contains(s, "!(") {
+			log.Println("Not running apidiff because description contained breaking change indicator '!'.")
+			return true
+		}
+	}
+
+	return false
 }
 
 func manualParent(m manifest, imp string) string {
