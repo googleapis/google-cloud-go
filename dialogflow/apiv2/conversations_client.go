@@ -43,9 +43,6 @@ type ConversationsCallOptions struct {
 	ListConversations    []gax.CallOption
 	GetConversation      []gax.CallOption
 	CompleteConversation []gax.CallOption
-	CreateCallMatcher    []gax.CallOption
-	ListCallMatchers     []gax.CallOption
-	DeleteCallMatcher    []gax.CallOption
 	ListMessages         []gax.CallOption
 }
 
@@ -97,39 +94,6 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 			}),
 		},
 		CompleteConversation: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		CreateCallMatcher: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		ListCallMatchers: []gax.CallOption{
-			gax.WithRetry(func() gax.Retryer {
-				return gax.OnCodes([]codes.Code{
-					codes.Unavailable,
-				}, gax.Backoff{
-					Initial:    100 * time.Millisecond,
-					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
-				})
-			}),
-		},
-		DeleteCallMatcher: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -356,88 +320,6 @@ func (c *ConversationsClient) CompleteConversation(ctx context.Context, req *dia
 	return resp, nil
 }
 
-// CreateCallMatcher creates a call matcher that links incoming SIP calls to the specified
-// conversation if they fulfill specified criteria.
-func (c *ConversationsClient) CreateCallMatcher(ctx context.Context, req *dialogflowpb.CreateCallMatcherRequest, opts ...gax.CallOption) (*dialogflowpb.CallMatcher, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCallMatcher[0:len(c.CallOptions.CreateCallMatcher):len(c.CallOptions.CreateCallMatcher)], opts...)
-	var resp *dialogflowpb.CallMatcher
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.conversationsClient.CreateCallMatcher(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// ListCallMatchers returns the list of all call matchers in the specified conversation.
-func (c *ConversationsClient) ListCallMatchers(ctx context.Context, req *dialogflowpb.ListCallMatchersRequest, opts ...gax.CallOption) *CallMatcherIterator {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCallMatchers[0:len(c.CallOptions.ListCallMatchers):len(c.CallOptions.ListCallMatchers)], opts...)
-	it := &CallMatcherIterator{}
-	req = proto.Clone(req).(*dialogflowpb.ListCallMatchersRequest)
-	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.CallMatcher, string, error) {
-		var resp *dialogflowpb.ListCallMatchersResponse
-		req.PageToken = pageToken
-		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
-		} else {
-			req.PageSize = int32(pageSize)
-		}
-		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-			var err error
-			resp, err = c.conversationsClient.ListCallMatchers(ctx, req, settings.GRPC...)
-			return err
-		}, opts...)
-		if err != nil {
-			return nil, "", err
-		}
-
-		it.Response = resp
-		return resp.GetCallMatchers(), resp.GetNextPageToken(), nil
-	}
-	fetch := func(pageSize int, pageToken string) (string, error) {
-		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
-		if err != nil {
-			return "", err
-		}
-		it.items = append(it.items, items...)
-		return nextPageToken, nil
-	}
-	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
-	it.pageInfo.MaxSize = int(req.GetPageSize())
-	it.pageInfo.Token = req.GetPageToken()
-	return it
-}
-
-// DeleteCallMatcher requests deletion of a call matcher.
-func (c *ConversationsClient) DeleteCallMatcher(ctx context.Context, req *dialogflowpb.DeleteCallMatcherRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCallMatcher[0:len(c.CallOptions.DeleteCallMatcher):len(c.CallOptions.DeleteCallMatcher)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.conversationsClient.DeleteCallMatcher(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
-}
-
 // ListMessages lists messages that belong to a given conversation.
 // messages are ordered by create_time in descending order. To fetch
 // updates without duplication, send request with filter
@@ -480,53 +362,6 @@ func (c *ConversationsClient) ListMessages(ctx context.Context, req *dialogflowp
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
-}
-
-// CallMatcherIterator manages a stream of *dialogflowpb.CallMatcher.
-type CallMatcherIterator struct {
-	items    []*dialogflowpb.CallMatcher
-	pageInfo *iterator.PageInfo
-	nextFunc func() error
-
-	// Response is the raw response for the current page.
-	// It must be cast to the RPC response type.
-	// Calling Next() or InternalFetch() updates this value.
-	Response interface{}
-
-	// InternalFetch is for use by the Google Cloud Libraries only.
-	// It is not part of the stable interface of this package.
-	//
-	// InternalFetch returns results from a single call to the underlying RPC.
-	// The number of results is no greater than pageSize.
-	// If there are no more results, nextPageToken is empty and err is nil.
-	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.CallMatcher, nextPageToken string, err error)
-}
-
-// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
-func (it *CallMatcherIterator) PageInfo() *iterator.PageInfo {
-	return it.pageInfo
-}
-
-// Next returns the next result. Its second return value is iterator.Done if there are no more
-// results. Once Next returns Done, all subsequent calls will return Done.
-func (it *CallMatcherIterator) Next() (*dialogflowpb.CallMatcher, error) {
-	var item *dialogflowpb.CallMatcher
-	if err := it.nextFunc(); err != nil {
-		return item, err
-	}
-	item = it.items[0]
-	it.items = it.items[1:]
-	return item, nil
-}
-
-func (it *CallMatcherIterator) bufLen() int {
-	return len(it.items)
-}
-
-func (it *CallMatcherIterator) takeBuf() interface{} {
-	b := it.items
-	it.items = nil
-	return b
 }
 
 // ConversationIterator manages a stream of *dialogflowpb.Conversation.

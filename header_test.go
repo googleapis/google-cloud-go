@@ -39,8 +39,19 @@ func TestLicense(t *testing.T) {
 		"cmd/go-cloud-debug-agent/internal/debug/elf/elf.go": true,
 
 		// From https://github.com/golang/pkgsite.
-		"third_party/pkgsite/print_type.go": true,
-		"third_party/pkgsite/synopsis.go":   true,
+		"third_party/pkgsite/print_type.go":   true,
+		"third_party/pkgsite/synopsis.go":     true,
+		"third_party/go/doc/comment.go":       true,
+		"third_party/go/doc/comment_test.go":  true,
+		"third_party/go/doc/doc.go":           true,
+		"third_party/go/doc/example.go":       true,
+		"third_party/go/doc/example_test.go":  true,
+		"third_party/go/doc/exports.go":       true,
+		"third_party/go/doc/filter.go":        true,
+		"third_party/go/doc/headscan.go":      true,
+		"third_party/go/doc/reader.go":        true,
+		"third_party/go/doc/synopsis.go":      true,
+		"third_party/go/doc/synopsis_test.go": true,
 	}
 	err := filepath.Walk(".", func(path string, fi os.FileInfo, err error) error {
 		if err != nil {

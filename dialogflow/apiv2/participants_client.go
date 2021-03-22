@@ -39,14 +39,13 @@ var newParticipantsClientHook clientHook
 
 // ParticipantsCallOptions contains the retry settings for each method of ParticipantsClient.
 type ParticipantsCallOptions struct {
-	CreateParticipant       []gax.CallOption
-	GetParticipant          []gax.CallOption
-	ListParticipants        []gax.CallOption
-	UpdateParticipant       []gax.CallOption
-	AnalyzeContent          []gax.CallOption
-	StreamingAnalyzeContent []gax.CallOption
-	SuggestArticles         []gax.CallOption
-	SuggestFaqAnswers       []gax.CallOption
+	CreateParticipant []gax.CallOption
+	GetParticipant    []gax.CallOption
+	ListParticipants  []gax.CallOption
+	UpdateParticipant []gax.CallOption
+	AnalyzeContent    []gax.CallOption
+	SuggestArticles   []gax.CallOption
+	SuggestFaqAnswers []gax.CallOption
 }
 
 func defaultParticipantsClientOptions() []option.ClientOption {
@@ -118,7 +117,6 @@ func defaultParticipantsCallOptions() *ParticipantsCallOptions {
 				})
 			}),
 		},
-		StreamingAnalyzeContent: []gax.CallOption{},
 		SuggestArticles: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -347,36 +345,6 @@ func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflow
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.participantsClient.AnalyzeContent(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
-// StreamingAnalyzeContent adds a text (chat, for example), or audio (phone recording, for example)
-// message from a participant into the conversation.
-// Note: This method is only available through the gRPC API (not REST).
-//
-// The top-level message sent to the client by the server is
-// StreamingAnalyzeContentResponse. Multiple response messages can be
-// returned in order. The first one or more messages contain the
-// recognition_result field. Each result represents a more complete
-// transcript of what the user said. The next message contains the
-// reply_text field and potentially the reply_audio field. The message can
-// also contain the automated_agent_reply field.
-//
-// Note: Always use agent versions for production traffic
-// sent to virtual agents. See [Versions and
-// environments(https://cloud.google.com/dialogflow/es/docs/agents-versions (at https://cloud.google.com/dialogflow/es/docs/agents-versions)).
-func (c *ParticipantsClient) StreamingAnalyzeContent(ctx context.Context, opts ...gax.CallOption) (dialogflowpb.Participants_StreamingAnalyzeContentClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.StreamingAnalyzeContent[0:len(c.CallOptions.StreamingAnalyzeContent):len(c.CallOptions.StreamingAnalyzeContent)], opts...)
-	var resp dialogflowpb.Participants_StreamingAnalyzeContentClient
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.participantsClient.StreamingAnalyzeContent(ctx, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
