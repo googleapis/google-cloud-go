@@ -1,0 +1,120 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.recommendationengine.v1beta1",
+  "libraryPackage": "cloud.google.com/go/recommendationengine/apiv1beta1",
+  "services": {
+    "CatalogService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CatalogClient",
+          "rpcs": {
+            "CreateCatalogItem": {
+              "methods": [
+                "CreateCatalogItem"
+              ]
+            },
+            "DeleteCatalogItem": {
+              "methods": [
+                "DeleteCatalogItem"
+              ]
+            },
+            "GetCatalogItem": {
+              "methods": [
+                "GetCatalogItem"
+              ]
+            },
+            "ImportCatalogItems": {
+              "methods": [
+                "ImportCatalogItems"
+              ]
+            },
+            "ListCatalogItems": {
+              "methods": [
+                "ListCatalogItems"
+              ]
+            },
+            "UpdateCatalogItem": {
+              "methods": [
+                "UpdateCatalogItem"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PredictionApiKeyRegistry": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PredictionApiKeyRegistryClient",
+          "rpcs": {
+            "CreatePredictionApiKeyRegistration": {
+              "methods": [
+                "CreatePredictionApiKeyRegistration"
+              ]
+            },
+            "DeletePredictionApiKeyRegistration": {
+              "methods": [
+                "DeletePredictionApiKeyRegistration"
+              ]
+            },
+            "ListPredictionApiKeyRegistrations": {
+              "methods": [
+                "ListPredictionApiKeyRegistrations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PredictionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "Predict": {
+              "methods": [
+                "Predict"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "UserEventService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "UserEventClient",
+          "rpcs": {
+            "CollectUserEvent": {
+              "methods": [
+                "CollectUserEvent"
+              ]
+            },
+            "ImportUserEvents": {
+              "methods": [
+                "ImportUserEvents"
+              ]
+            },
+            "ListUserEvents": {
+              "methods": [
+                "ListUserEvents"
+              ]
+            },
+            "PurgeUserEvents": {
+              "methods": [
+                "PurgeUserEvents"
+              ]
+            },
+            "WriteUserEvent": {
+              "methods": [
+                "WriteUserEvent"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

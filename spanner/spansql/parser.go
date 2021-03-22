@@ -2389,15 +2389,12 @@ func (p *parser) parseInOp() (Expr, *parseError) {
 		return nil, err
 	}
 
-	// TODO: do we need to do lookahead?
-
 	inOp := InOp{LHS: expr}
-	if p.eat("NOT") {
+	if p.eat("NOT", "IN") {
 		inOp.Neg = true
-	}
-
-	if !p.eat("IN") {
-		// TODO: push back the "NOT"?
+	} else if p.eat("IN") {
+		// Okay.
+	} else {
 		return expr, nil
 	}
 
@@ -2431,37 +2428,30 @@ func (p *parser) parseComparisonOp() (Expr, *parseError) {
 	}
 
 	for {
-		tok := p.next()
-		if tok.err != nil {
-			p.back()
-			break
-		}
+		// There's a need for two token lookahead.
 		var op ComparisonOperator
-		var ok, rhs2 bool
-		if tok.value == "NOT" {
-			tok := p.next()
-			switch {
-			case tok.err != nil:
-				// TODO: Does this need to push back two?
-				return nil, err
-			case tok.value == "LIKE":
-				op, ok = NotLike, true
-			case tok.value == "BETWEEN":
-				op, ok, rhs2 = NotBetween, true, true
-			default:
-				// TODO: Does this need to push back two?
-				return nil, p.errorf("got %q, want LIKE or BETWEEN", tok.value)
-			}
-		} else if tok.value == "LIKE" {
-			op, ok = Like, true
-		} else if tok.value == "BETWEEN" {
-			op, ok, rhs2 = Between, true, true
+		var rhs2 bool
+		if p.eat("NOT", "LIKE") {
+			op = NotLike
+		} else if p.eat("NOT", "BETWEEN") {
+			op, rhs2 = NotBetween, true
+		} else if p.eat("LIKE") {
+			op = Like
+		} else if p.eat("BETWEEN") {
+			op, rhs2 = Between, true
 		} else {
+			// Check for a symbolic operator.
+			tok := p.next()
+			if tok.err != nil {
+				p.back()
+				break
+			}
+			var ok bool
 			op, ok = symbolicOperators[tok.value]
-		}
-		if !ok {
-			p.back()
-			break
+			if !ok {
+				p.back()
+				break
+			}
 		}
 
 		rhs, err := p.parseArithOp()

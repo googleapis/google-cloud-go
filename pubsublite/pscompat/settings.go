@@ -63,8 +63,8 @@ type PublishSettings struct {
 	// DefaultPublishSettings.ByteThreshold. Otherwise must be > 0.
 	ByteThreshold int
 
-	// The maximum time that the client will attempt to establish a publish stream
-	// connection to the server. If Timeout is 0, it will be treated as
+	// The maximum time that the client will attempt to open a publish stream
+	// to the server. If Timeout is 0, it will be treated as
 	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
 	//
 	// The timeout is exceeded, the publisher will terminate with the last error
@@ -95,6 +95,10 @@ type PublishSettings struct {
 	// Optional custom function that transforms a pubsub.Message to a
 	// PubSubMessage API proto.
 	MessageTransformer PublishMessageTransformerFunc
+
+	// The polling interval to watch for topic partition count updates.
+	// Currently internal only and overridden in tests.
+	configPollPeriod time.Duration
 }
 
 // DefaultPublishSettings holds the default values for PublishSettings.
@@ -102,7 +106,7 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold:    10 * time.Millisecond,
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
-	Timeout:           60 * time.Second,
+	Timeout:           60 * time.Minute,
 	BufferedByteLimit: 1e8,
 }
 
@@ -132,6 +136,9 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 	if s.BufferedByteLimit != 0 {
 		wireSettings.BufferedByteLimit = s.BufferedByteLimit
 	}
+	if s.configPollPeriod != 0 {
+		wireSettings.ConfigPollPeriod = s.configPollPeriod
+	}
 	return wireSettings
 }
 
@@ -146,8 +153,10 @@ func (s *PublishSettings) toWireSettings() wire.PublishSettings {
 type NackHandler func(*pubsub.Message) error
 
 // ReceiveMessageTransformerFunc transforms a Pub/Sub Lite SequencedMessage API
-// proto to a pubsub.Message. If this returns an error, the SubscriberClient
-// will consider this a fatal error and terminate.
+// proto to a pubsub.Message. The implementation must not set pubsub.Message.ID.
+//
+// If this returns an error, the SubscriberClient will consider this a fatal
+// error and terminate.
 type ReceiveMessageTransformerFunc func(*pb.SequencedMessage, *pubsub.Message) error
 
 // ReceiveSettings configure the SubscriberClient. Flow control settings
@@ -170,8 +179,8 @@ type ReceiveSettings struct {
 	// the associated topic.
 	MaxOutstandingBytes int
 
-	// The maximum time that the client will attempt to establish a subscribe
-	// stream connection to the server. If Timeout is 0, it will be treated as
+	// The maximum time that the client will attempt to open a subscribe stream
+	// to the server. If Timeout is 0, it will be treated as
 	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
 	//
 	// The timeout is exceeded, the SubscriberClient will terminate with the last
@@ -197,7 +206,7 @@ type ReceiveSettings struct {
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9,
-	Timeout:                60 * time.Second,
+	Timeout:                60 * time.Minute,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {

@@ -42,6 +42,7 @@ const commitCursorPeriod = 50 * time.Millisecond
 type committer struct {
 	// Immutable after creation.
 	cursorClient *vkit.CursorClient
+	subscription subscriptionPartition
 	initialReq   *pb.StreamingCommitCursorRequest
 	metadata     pubsubMetadata
 
@@ -50,6 +51,7 @@ type committer struct {
 	acks          *ackTracker
 	cursorTracker *commitCursorTracker
 	pollCommits   *periodicTask
+	enableCommits bool
 
 	abstractService
 }
@@ -59,6 +61,7 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 
 	c := &committer{
 		cursorClient: cursor,
+		subscription: subscription,
 		initialReq: &pb.StreamingCommitCursorRequest{
 			Request: &pb.StreamingCommitCursorRequest_Initial{
 				Initial: &pb.InitialCommitCursorRequest{
@@ -133,6 +136,7 @@ func (c *committer) onStreamStatusChange(status streamStatus) {
 
 	switch status {
 	case streamConnected:
+		c.enableCommits = true
 		c.unsafeUpdateStatus(serviceActive, nil)
 		// Once the stream connects, clear unconfirmed commits and immediately send
 		// the latest desired commit offset.
@@ -141,6 +145,8 @@ func (c *committer) onStreamStatusChange(status streamStatus) {
 		c.pollCommits.Start()
 
 	case streamReconnecting:
+		// Ensure there are no commits until streamConnected has been handled above.
+		c.enableCommits = false
 		c.pollCommits.Stop()
 
 	case streamTerminated:
@@ -183,6 +189,9 @@ func (c *committer) commitOffsetToStream() {
 }
 
 func (c *committer) unsafeCommitOffsetToStream() {
+	if !c.enableCommits {
+		return
+	}
 	nextOffset := c.cursorTracker.NextOffset()
 	if nextOffset == nilCursorOffset {
 		return
@@ -201,7 +210,8 @@ func (c *committer) unsafeCommitOffsetToStream() {
 }
 
 func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !c.unsafeUpdateStatus(targetStatus, err) {
+	if !c.unsafeUpdateStatus(targetStatus, wrapError("committer", c.subscription.String(), err)) {
+		c.unsafeCheckDone()
 		return
 	}
 

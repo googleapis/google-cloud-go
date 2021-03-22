@@ -279,6 +279,26 @@ func ExampleClient_RunBuildTrigger() {
 	_ = resp
 }
 
+func ExampleClient_ReceiveTriggerWebhook() {
+	// import cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
+
+	ctx := context.Background()
+	c, err := cloudbuild.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cloudbuildpb.ReceiveTriggerWebhookRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ReceiveTriggerWebhook(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_CreateWorkerPool() {
 	// import cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 
