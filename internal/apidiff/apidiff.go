@@ -47,7 +47,7 @@ func main() {
 		log.Fatalln("Missing required flag: -repo-metadata")
 	}
 
-	head, err := exec("git", "log", "-1")
+	head, err := exec("git", "log", "-2")
 	if err != nil {
 		log.Fatalln(err)
 	}
