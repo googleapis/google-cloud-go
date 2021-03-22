@@ -121,69 +121,6 @@ func ExampleConversationsClient_CompleteConversation() {
 	_ = resp
 }
 
-func ExampleConversationsClient_CreateCallMatcher() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
-	ctx := context.Background()
-	c, err := dialogflow.NewConversationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &dialogflowpb.CreateCallMatcherRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateCallMatcher(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleConversationsClient_ListCallMatchers() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
-	ctx := context.Background()
-	c, err := dialogflow.NewConversationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &dialogflowpb.ListCallMatchersRequest{
-		// TODO: Fill request struct fields.
-	}
-	it := c.ListCallMatchers(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleConversationsClient_DeleteCallMatcher() {
-	ctx := context.Background()
-	c, err := dialogflow.NewConversationsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &dialogflowpb.DeleteCallMatcherRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteCallMatcher(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-}
-
 func ExampleConversationsClient_ListMessages() {
 	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	// import "google.golang.org/api/iterator"
