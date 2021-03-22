@@ -39,7 +39,7 @@ import (
 	"google.golang.org/api/option"
 	gtransport "google.golang.org/api/transport/grpc"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
-	rpcstatus "google.golang.org/genproto/googleapis/rpc/status"
+	"google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc/metadata"
 )
@@ -122,10 +122,40 @@ func (ac *AdminClient) backupPath(cluster, backup string) string {
 
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
-	EncryptionStatus *rpcstatus.Status
-	EncryptionType   btapb.EncryptionInfo_EncryptionType
-	KmsKeyVersion    string // TODO: should be KMSKeyVersion?
+	// TODO: compare to https://github.com/googleapis/java-bigtable/pull/656/files#diff-10655a12f2a8430533dca76435f6829a1a0bc978ada1295529b59a46afbcd95fR28
+	EncryptionStatus *status.Status
+	EncryptionType   EncryptionType
+	KMSKeyVersion    string
 }
+
+func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) EncryptionInfo {
+	info := EncryptionInfo{}
+	info.EncryptionStatus = pbInfo.EncryptionStatus
+	// TODO: could also just return this as a string, but wrapped
+	info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
+	info.KMSKeyVersion = pbInfo.KmsKeyVersion
+
+	return info
+}
+
+type EncryptionType int32
+
+const (
+	// Encryption type was not specified, though data at rest remains encrypted.
+	ENCRYPTION_TYPE_UNSPECIFIED EncryptionType = 0
+	// The data backing this resource is encrypted at rest with a key that is
+	// fully managed by Google. No key version or status will be populated.
+	// This is the default state.
+	GOOGLE_DEFAULT_ENCRYPTION EncryptionType = 1
+	// The data backing this resource is encrypted at rest with a key that is
+	// managed by the customer.
+	// The in-use version of the key and its status are populated for
+	// CMEK-protected tables.
+	// CMEK-protected backups are pinned to the key version that was in use at
+	// the time the backup was taken. This key version is populated but its
+	// status is not tracked and is reported as `UNKNOWN`.
+	CUSTOMER_MANAGED_ENCRYPTION EncryptionType = 2
+)
 
 func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[string][]*btapb.EncryptionInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -135,6 +165,7 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 		return nil, err
 	}
 
+	// TODO: backups also needs this.
 	// TODO: why not just return the clusterstates, as it has a map of encryption info.
 	var encryptionInfo map[string][]*btapb.EncryptionInfo
 	for key, cs := range res.ClusterStates {
@@ -145,8 +176,9 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 		for _, pbInfo := range cs.EncryptionInfo {
 			info := EncryptionInfo{}
 			info.EncryptionStatus = pbInfo.EncryptionStatus
-			info.EncryptionType = pbInfo.EncryptionType
-			info.KmsKeyVersion = pbInfo.KmsKeyVersion
+			// TODO: could also just return this as a string, but wrapped
+			info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
+			info.KMSKeyVersion = pbInfo.KmsKeyVersion
 		}
 	}
 
@@ -1021,6 +1053,7 @@ type ClusterInfo struct {
 	ServeNodes  int         // number of allocated serve nodes
 	State       string      // state of the cluster
 	StorageType StorageType // the storage type of the cluster
+	KMSKeyName  string      // the customer managed encryption key for the cluster
 }
 
 // CreateCluster creates a new cluster in an instance.
@@ -1089,6 +1122,7 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 			ServeNodes:  int(c.ServeNodes),
 			State:       c.State.String(),
 			StorageType: storageTypeFromProto(c.DefaultStorageType),
+			KMSKeyName:  c.EncryptionConfig.KmsKeyName,
 		})
 	}
 	if len(res.FailedLocations) > 0 {
@@ -1615,13 +1649,14 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	}
 
 	return &BackupInfo{
-		Name:        name,
-		SourceTable: tableID,
-		SizeBytes:   backup.SizeBytes,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		ExpireTime:  expireTime,
-		State:       backup.State.String(),
+		Name:           name,
+		SourceTable:    tableID,
+		SizeBytes:      backup.SizeBytes,
+		StartTime:      startTime,
+		EndTime:        endTime,
+		ExpireTime:     expireTime,
+		State:          backup.State.String(),
+		EncryptionInfo: newEncryptionInfo(backup.EncryptionInfo),
 	}, nil
 }
 
@@ -1651,13 +1686,14 @@ func (it *BackupIterator) Next() (*BackupInfo, error) {
 
 // BackupInfo contains backup metadata. This struct is read-only.
 type BackupInfo struct {
-	Name        string
-	SourceTable string
-	SizeBytes   int64
-	StartTime   time.Time
-	EndTime     time.Time
-	ExpireTime  time.Time
-	State       string
+	Name           string
+	SourceTable    string
+	SizeBytes      int64
+	StartTime      time.Time
+	EndTime        time.Time
+	ExpireTime     time.Time
+	State          string
+	EncryptionInfo EncryptionInfo
 }
 
 // BackupInfo gets backup metadata.
