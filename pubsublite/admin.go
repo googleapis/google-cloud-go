@@ -159,16 +159,22 @@ func (ac *AdminClient) Topics(ctx context.Context, parent string) *TopicIterator
 	}
 }
 
+type createSubscriptionSettings struct {
+	backlogLocation BacklogLocation
+}
+
 // CreateSubscriptionOption is an option for AdminClient.CreateSubscription.
 type CreateSubscriptionOption interface {
-	createSubscriptionOption()
+	Apply(*createSubscriptionSettings)
 }
 
 type startingOffset struct {
 	backlogLocation BacklogLocation
 }
 
-func (so startingOffset) createSubscriptionOption() {}
+func (so startingOffset) Apply(settings *createSubscriptionSettings) {
+	settings.backlogLocation = so.backlogLocation
+}
 
 // StartingOffset specifies the offset at which a newly created subscription
 // will start receiving messages.
@@ -182,11 +188,9 @@ func StartingOffset(location BacklogLocation) CreateSubscriptionOption {
 // By default, a new subscription will only receive messages published after
 // the subscription was created. Use StartingOffset to override.
 func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig, opts ...CreateSubscriptionOption) (*SubscriptionConfig, error) {
-	skipBacklog := true
+	var settings createSubscriptionSettings
 	for _, opt := range opts {
-		if _, ok := opt.(startingOffset); ok {
-			skipBacklog = opt.(startingOffset).backlogLocation != Beginning
-		}
+		opt.Apply(&settings)
 	}
 
 	subsPath, err := wire.ParseSubscriptionPath(config.Name)
@@ -200,7 +204,7 @@ func (ac *AdminClient) CreateSubscription(ctx context.Context, config Subscripti
 		Parent:         subsPath.Location().String(),
 		Subscription:   config.toProto(),
 		SubscriptionId: subsPath.SubscriptionID,
-		SkipBacklog:    skipBacklog,
+		SkipBacklog:    settings.backlogLocation != Beginning,
 	}
 	subspb, err := ac.admin.CreateSubscription(ctx, req)
 	if err != nil {
