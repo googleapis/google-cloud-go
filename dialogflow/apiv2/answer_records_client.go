@@ -104,7 +104,8 @@ type AnswerRecordsClient struct {
 
 // NewAnswerRecordsClient creates a new answer records client.
 //
-// Service for managing AnswerRecords.
+// Service for managing
+// AnswerRecords.
 func NewAnswerRecordsClient(ctx context.Context, opts ...option.ClientOption) (*AnswerRecordsClient, error) {
 	clientOpts := defaultAnswerRecordsClientOptions()
 
