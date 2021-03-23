@@ -1045,6 +1045,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/metastore/v1beta/metastore_v1beta.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/resourcesettings/v1",
+		pkg:                   "resourcesettings",
+		importPath:            "cloud.google.com/go/resourcesettings/apiv1",
+		gRPCServiceConfigPath: "google/cloud/resourcesettings/v1/resourcesettings_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/resourcesettings/v1/resourcesettings_v1.yaml",
+		// GA after 2021/04/23
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
