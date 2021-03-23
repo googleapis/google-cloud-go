@@ -330,8 +330,8 @@ func (c *ParticipantsClient) UpdateParticipant(ctx context.Context, req *dialogf
 // message from a participant into the conversation.
 //
 // Note: Always use agent versions for production traffic
-// sent to virtual agents. See [Versions and
-// environments(https://cloud.google.com/dialogflow/es/docs/agents-versions (at https://cloud.google.com/dialogflow/es/docs/agents-versions)).
+// sent to virtual agents. See Versions and
+// environments (at https://cloud.google.com/dialogflow/es/docs/agents-versions).
 func (c *ParticipantsClient) AnalyzeContent(ctx context.Context, req *dialogflowpb.AnalyzeContentRequest, opts ...gax.CallOption) (*dialogflowpb.AnalyzeContentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 220000*time.Millisecond)
