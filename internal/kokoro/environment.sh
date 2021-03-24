@@ -52,7 +52,8 @@ gcloud config set compute/zone us-central1-b
 # Authenticate docker
 gcloud auth configure-docker -q
 
-# Install nox
+# Nox tests require Python 3.7, instead of 3.8
+pyenv global 3.7.10
 python3 -m pip uninstall --yes --quiet nox-automation
 python3 -m pip install --upgrade --quiet nox
 python3 -m nox --version
@@ -62,9 +63,9 @@ UUID=$(python  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
 export ENVCTL_ID=ci-$UUID
 echo $ENVCTL_ID
 
-# Run the specified environment test
+# Run the environment test for the specified GCP service
 set +e
-nox --python 3.7 --session "tests(language='go', platform='$ENVIRONMENT')"
+python3.7 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
 TEST_STATUS_CODE=$?
 
 # destroy resources
