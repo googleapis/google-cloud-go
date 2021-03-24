@@ -23,6 +23,8 @@ import (
 	"fmt"
 	"log"
 	"math/rand"
+	"net/http"
+	"net/url"
 	"os"
 	"strings"
 	"sync"
@@ -36,9 +38,12 @@ import (
 	"cloud.google.com/go/logging"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
+	"github.com/golang/protobuf/proto"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2"
 	"google.golang.org/api/iterator"
+	logpb "google.golang.org/api/logging/v2"
 	"google.golang.org/api/option"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	"google.golang.org/grpc"
@@ -623,5 +628,204 @@ func TestSeverityUnmarshal(t *testing.T) {
 	}
 	if entry.Severity != logging.Error {
 		t.Fatalf("Severity: got %v, want %v", entry.Severity, logging.Error)
+	}
+}
+
+func TestToLogEntryPayload(t *testing.T) {
+	lg := client.Logger(testLogID)
+	for _, test := range []struct {
+		in         interface{}
+		wantText   string
+		wantStruct *structpb.Struct
+	}{
+		{
+			in:       "string",
+			wantText: "string",
+		},
+		{
+			in: map[string]interface{}{"a": 1, "b": true},
+			wantStruct: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"a": {Kind: &structpb.Value_NumberValue{NumberValue: 1}},
+					"b": {Kind: &structpb.Value_BoolValue{BoolValue: true}},
+				},
+			},
+		},
+		{
+			in: json.RawMessage([]byte(`{"a": 1, "b": true}`)),
+			wantStruct: &structpb.Struct{
+				Fields: map[string]*structpb.Value{
+					"a": {Kind: &structpb.Value_NumberValue{NumberValue: 1}},
+					"b": {Kind: &structpb.Value_BoolValue{BoolValue: true}},
+				},
+			},
+		},
+	} {
+		e, err := lg.ToLogEntry(logging.Entry{Payload: test.in})
+		if err != nil {
+			t.Fatalf("%+v: %v", test.in, err)
+		}
+		if test.wantStruct != nil {
+			got := e.GetJsonPayload()
+			if !proto.Equal(got, test.wantStruct) {
+				t.Errorf("%+v: got %s, want %s", test.in, got, test.wantStruct)
+			}
+		} else {
+			got := e.GetTextPayload()
+			if got != test.wantText {
+				t.Errorf("%+v: got %s, want %s", test.in, got, test.wantText)
+			}
+		}
+	}
+}
+
+func TestToLogEntryTrace(t *testing.T) {
+	c, a := newClients(ctx, "P")
+	defer c.Close()
+	defer a.Close()
+	logger := c.Logger("")
+
+	// Verify that we get the trace from the HTTP request if it isn't
+	// provided by the caller.
+	u := &url.URL{Scheme: "http"}
+
+	tests := []struct {
+		name string
+		in   logging.Entry
+		want logpb.LogEntry
+	}{
+		{"BlankLogEntry", logging.Entry{}, logpb.LogEntry{}},
+		{"Already set Trace", logging.Entry{Trace: "t1"}, logpb.LogEntry{Trace: "t1"}},
+		{
+			"No X-Trace-Context header",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{URL: u, Header: http.Header{"foo": {"bar"}}},
+				},
+			},
+			logpb.LogEntry{},
+		},
+		{
+			"X-Trace-Context header with all fields",
+			logging.Entry{
+				TraceSampled: false,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+					},
+				},
+			},
+			logpb.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000", SpanId: "000000000000004a", TraceSampled: true},
+		},
+		{
+			"X-Trace-Context header with all fields; TraceSampled explicitly set",
+			logging.Entry{
+				TraceSampled: true,
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=0"}},
+					},
+				},
+			},
+			logpb.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000", SpanId: "000000000000004a", TraceSampled: true},
+		},
+		{
+			"X-Trace-Context header with all fields; TraceSampled from Header",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+					},
+				},
+			},
+			logpb.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000", SpanId: "000000000000004a", TraceSampled: true},
+		},
+		{
+			"X-Trace-Context header with blank trace",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"/0;o=1"}},
+					},
+				},
+			},
+			logpb.LogEntry{TraceSampled: true},
+		},
+		{
+			"X-Trace-Context header with blank span",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
+					},
+				},
+			},
+			logpb.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
+		},
+		{
+			"X-Trace-Context header with missing traceSampled aka ?o=*",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+					},
+				},
+			},
+			logpb.LogEntry{Trace: "projects/P/traces/105445aa7843bc8bf206b120001000"},
+		},
+		{
+			"X-Trace-Context header with all blank fields",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {""}},
+					},
+				},
+			},
+			logpb.LogEntry{},
+		},
+		{
+			"Invalid X-Trace-Context header but already set TraceID",
+			logging.Entry{
+				HTTPRequest: &logging.HTTPRequest{
+					Request: &http.Request{
+						URL:    u,
+						Header: http.Header{"X-Cloud-Trace-Context": {"t3"}},
+					},
+				},
+				Trace: "t4",
+			},
+			logpb.LogEntry{Trace: "t4"},
+		},
+		{
+			"Already set TraceID and SpanID",
+			logging.Entry{Trace: "t1", SpanID: "007"},
+			logpb.LogEntry{Trace: "t1", SpanId: "007"},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			e, err := logger.ToLogEntry(test.in)
+			if err != nil {
+				t.Fatalf("Unexpected error:: %+v: %v", test.in, err)
+			}
+			if got := e.Trace; got != test.want.Trace {
+				t.Errorf("TraceId: %+v: got %q, want %q", test.in, got, test.want.Trace)
+			}
+			if got := e.SpanId; got != test.want.SpanId {
+				t.Errorf("SpanId: %+v: got %q, want %q", test.in, got, test.want.SpanId)
+			}
+			if got := e.TraceSampled; got != test.want.TraceSampled {
+				t.Errorf("TraceSampled: %+v: got %t, want %t", test.in, got, test.want.TraceSampled)
+			}
+		})
 	}
 }

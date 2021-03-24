@@ -803,7 +803,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
-	ent, err := l.toLogEntry(e)
+	ent, err := l.ToLogEntry(e)
 	if err != nil {
 		return err
 	}
@@ -818,7 +818,7 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := l.toLogEntry(e)
+	ent, err := l.ToLogEntry(e)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -894,7 +894,8 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	return
 }
 
-func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
+// ToLogEntry takes an Entry structure and converts it to the LogEntry proto.
+func (l *Logger) ToLogEntry(e Entry) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
