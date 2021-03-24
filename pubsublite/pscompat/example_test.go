@@ -16,10 +16,12 @@ package pscompat_test
 import (
 	"context"
 	"fmt"
+	"sync"
 	"time"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/pscompat"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/xerrors"
 )
 
@@ -110,11 +112,6 @@ func ExamplePublisherClient_Publish_batchingSettings() {
 // If the application has a low tolerance to backend unavailability, set a lower
 // PublishSettings.Timeout value to detect and alert.
 func ExamplePublisherClient_Publish_errorHandling() {
-	type publishedMessage struct {
-		message *pubsub.Message
-		result  *pubsub.PublishResult
-	}
-
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
 	settings := pscompat.PublishSettings{
@@ -130,34 +127,36 @@ func ExamplePublisherClient_Publish_errorHandling() {
 	}
 	defer publisher.Stop()
 
-	var published []*publishedMessage
+	var toRepublish []*pubsub.Message
+	var mu sync.Mutex
+	g := new(errgroup.Group)
+
 	for i := 0; i < 10; i++ {
 		msg := &pubsub.Message{
 			Data: []byte(fmt.Sprintf("message-%d", i)),
 		}
 		result := publisher.Publish(ctx, msg)
-		published = append(published, &publishedMessage{msg, result})
-	}
 
-	var publishFailed bool
-	var toRepublish []*pubsub.Message
-	for _, pm := range published {
-		id, err := pm.result.Get(ctx)
-		if err != nil {
-			fmt.Printf("Publish error: %v\n", err)
-			// Oversized messages cannot be published.
-			if !xerrors.Is(err, pscompat.ErrOversizedMessage) {
-				toRepublish = append(toRepublish, pm.message)
+		g.Go(func() error {
+			id, err := result.Get(ctx)
+			if err != nil {
+				// NOTE: A failed PublishResult indicates that the publisher client has
+				// permanently terminated. A new publisher client instance must be
+				// created to republish failed messages.
+				fmt.Printf("Publish error: %v\n", err)
+				// Oversized messages cannot be published.
+				if !xerrors.Is(err, pscompat.ErrOversizedMessage) {
+					mu.Lock()
+					toRepublish = append(toRepublish, msg)
+					mu.Unlock()
+				}
+				return err
 			}
-			publishFailed = true
-			continue
-		}
-		fmt.Printf("Published a message with a message ID: %s\n", id)
+			fmt.Printf("Published a message with a message ID: %s\n", id)
+			return nil
+		})
 	}
-
-	// NOTE: A failed PublishResult indicates that the publisher client has
-	// permanently terminated.
-	if publishFailed {
+	if err := g.Wait(); err != nil {
 		fmt.Printf("Publisher client terminated due to error: %v\n", publisher.Error())
 		switch {
 		case xerrors.Is(publisher.Error(), pscompat.ErrBackendUnavailable):
@@ -219,7 +218,7 @@ func ExampleSubscriberClient_Receive_errorHandling() {
 		if err != nil {
 			fmt.Printf("Subscriber client stopped receiving due to error: %v\n", err)
 			if xerrors.Is(err, pscompat.ErrBackendUnavailable) {
-				// TODO: Alert if necessary.
+				// TODO: Alert if necessary. Receive can be retried.
 			} else {
 				// TODO: Handle fatal error.
 				break
