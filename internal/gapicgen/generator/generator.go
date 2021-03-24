@@ -73,7 +73,7 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*ChangeInfo, error) {
 	if err != nil {
 		return nil, err
 	}
-	commits, err := CommitsSinceHash(googleapisDir, string(lastHash), true)
+	commits, err := CommitsSinceHash(googleapisDir, string(lastHash), false)
 	if err != nil {
 		return nil, err
 	}
