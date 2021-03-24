@@ -1196,6 +1196,16 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Column family mismatch, got %v, want %v", tblInfo.Families, wantFams)
 	}
 
+	encInfo, err := adminClient.EncryptionInfo(ctx, tblConf.TableID)
+	fmt.Println(encInfo)
+	wantEnc := map[string]EncryptionInfo{}
+	if err != nil {
+		t.Errorf("Encryption Info does not expect err: %v", err)
+	}
+	if !testutil.Equal(encInfo, wantEnc) {
+		t.Errorf("Encryption Info mismatch, got %v, want %v", encInfo, wantEnc)
+	}
+
 	// Populate mytable and drop row ranges
 	if err = adminClient.CreateColumnFamily(ctx, "mytable", "cf"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
