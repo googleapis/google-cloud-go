@@ -53,6 +53,7 @@ type TestCasesCallOptions struct {
 	ImportTestCases      []gax.CallOption
 	ExportTestCases      []gax.CallOption
 	ListTestCaseResults  []gax.CallOption
+	GetTestCaseResult    []gax.CallOption
 }
 
 func defaultTestCasesClientOptions() []option.ClientOption {
@@ -180,6 +181,17 @@ func defaultTestCasesCallOptions() *TestCasesCallOptions {
 			}),
 		},
 		ListTestCaseResults: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetTestCaseResult: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -571,6 +583,28 @@ func (c *TestCasesClient) ListTestCaseResults(ctx context.Context, req *cxpb.Lis
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// GetTestCaseResult gets a test case result.
+func (c *TestCasesClient) GetTestCaseResult(ctx context.Context, req *cxpb.GetTestCaseResultRequest, opts ...gax.CallOption) (*cxpb.TestCaseResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetTestCaseResult[0:len(c.CallOptions.GetTestCaseResult):len(c.CallOptions.GetTestCaseResult)], opts...)
+	var resp *cxpb.TestCaseResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.testCasesClient.GetTestCaseResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // BatchRunTestCasesOperation manages a long-running operation from BatchRunTestCases.
