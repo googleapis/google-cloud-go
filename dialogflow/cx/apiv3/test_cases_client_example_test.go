@@ -283,3 +283,23 @@ func ExampleTestCasesClient_ListTestCaseResults() {
 		_ = resp
 	}
 }
+
+func ExampleTestCasesClient_GetTestCaseResult() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
+
+	ctx := context.Background()
+	c, err := cx.NewTestCasesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.GetTestCaseResultRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetTestCaseResult(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}

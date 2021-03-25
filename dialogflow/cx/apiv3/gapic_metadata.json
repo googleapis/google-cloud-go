@@ -425,6 +425,11 @@
                 "GetTestCase"
               ]
             },
+            "GetTestCaseResult": {
+              "methods": [
+                "GetTestCaseResult"
+              ]
+            },
             "ImportTestCases": {
               "methods": [
                 "ImportTestCases"
