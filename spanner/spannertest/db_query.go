@@ -519,7 +519,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 
 	// Handle aggregation.
 	// TODO: Support more than one aggregation function; does Spanner support that?
-	aggI := -1
+	var aggI []int
 	for i, e := range sel.List {
 		// Supported aggregate funcs have exactly one arg.
 		f, ok := e.(spansql.Func)
@@ -530,12 +530,9 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 		if !ok {
 			continue
 		}
-		if aggI > -1 {
-			return nil, fmt.Errorf("only one aggregate function is supported")
-		}
-		aggI = i
+		aggI = append(aggI, i)
 	}
-	if aggI > -1 {
+	if len(aggI) > 0 {
 		raw, err := toRawIter(ri)
 		if err != nil {
 			return nil, err
@@ -544,20 +541,6 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 			// No grouping, so aggregation applies to the entire table (e.g. COUNT(*)).
 			// This may result in a [0,0) entry for empty inputs.
 			rowGroups = [][2]int{{0, len(raw.rows)}}
-		}
-		fexpr := sel.List[aggI].(spansql.Func)
-		fn := aggregateFuncs[fexpr.Name]
-		starArg := fexpr.Args[0] == spansql.Star
-		if starArg && !fn.AcceptStar {
-			return nil, fmt.Errorf("aggregate function %s does not accept * as an argument", fexpr.Name)
-		}
-		var argType spansql.Type
-		if !starArg {
-			ci, err := ec.colInfo(fexpr.Args[0])
-			if err != nil {
-				return nil, fmt.Errorf("evaluating aggregate function %s arg type: %v", fexpr.Name, err)
-			}
-			argType = ci.Type
 		}
 
 		// Prepare output.
@@ -571,27 +554,6 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 
 		var aggType spansql.Type
 		for _, rg := range rowGroups {
-			// Compute aggregate value across this group.
-			var values []interface{}
-			for i := rg[0]; i < rg[1]; i++ {
-				ec.row = raw.rows[i]
-				if starArg {
-					// A non-NULL placeholder is sufficient for aggregation.
-					values = append(values, 1)
-				} else {
-					x, err := ec.evalExpr(fexpr.Args[0])
-					if err != nil {
-						return nil, err
-					}
-					values = append(values, x)
-				}
-			}
-			x, typ, err := fn.Eval(values, argType)
-			if err != nil {
-				return nil, err
-			}
-			aggType = typ
-
 			var outRow row
 			// Output for the row group is the first row of the group (arbitrary,
 			// but it should be representative), and the aggregate value.
@@ -609,27 +571,68 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 					outRow = append(outRow, nil)
 				}
 			}
-			outRow = append(outRow, x)
+
+			for _, aggI := range aggI {
+				fexpr := sel.List[aggI].(spansql.Func)
+				fn := aggregateFuncs[fexpr.Name]
+				starArg := fexpr.Args[0] == spansql.Star
+				if starArg && !fn.AcceptStar {
+					return nil, fmt.Errorf("aggregate function %s does not accept * as an argument", fexpr.Name)
+				}
+				var argType spansql.Type
+				if !starArg {
+					ci, err := ec.colInfo(fexpr.Args[0])
+					if err != nil {
+						return nil, fmt.Errorf("evaluating aggregate function %s arg type: %v", fexpr.Name, err)
+					}
+					argType = ci.Type
+				}
+
+				// Compute aggregate value across this group.
+				var values []interface{}
+				for i := rg[0]; i < rg[1]; i++ {
+					ec.row = raw.rows[i]
+					if starArg {
+						// A non-NULL placeholder is sufficient for aggregation.
+						values = append(values, 1)
+					} else {
+						x, err := ec.evalExpr(fexpr.Args[0])
+						if err != nil {
+							return nil, err
+						}
+						values = append(values, x)
+					}
+				}
+				x, typ, err := fn.Eval(values, argType)
+				if err != nil {
+					return nil, err
+				}
+				aggType = typ
+
+				outRow = append(outRow, x)
+			}
 			rawOut.rows = append(rawOut.rows, outRow)
 		}
 
-		if aggType == (spansql.Type{}) {
-			// Fallback; there might not be any groups.
-			// TODO: Should this be in aggregateFunc?
-			aggType = int64Type
+		for _, aggI := range aggI {
+			fexpr := sel.List[aggI].(spansql.Func)
+			if aggType == (spansql.Type{}) {
+				// Fallback; there might not be any groups.
+				// TODO: Should this be in aggregateFunc?
+				aggType = int64Type
+			}
+			rawOut.cols = append(rawOut.cols, colInfo{
+				Name:     spansql.ID(fexpr.SQL()), // TODO: this is a bit hokey, but it is output only
+				Type:     aggType,
+				AggIndex: aggI + 1,
+			})
+			sel.List[aggI] = aggSentinel{ // Mutate query so evalExpr in selIter picks out the new value.
+				Type:     aggType,
+				AggIndex: aggI + 1,
+			}
 		}
-		rawOut.cols = append(raw.cols, colInfo{
-			Name:     spansql.ID(fexpr.SQL()), // TODO: this is a bit hokey, but it is output only
-			Type:     aggType,
-			AggIndex: aggI + 1,
-		})
-
 		ri = rawOut
 		ec.cols = rawOut.cols
-		sel.List[aggI] = aggSentinel{ // Mutate query so evalExpr in selIter picks out the new value.
-			Type:     aggType,
-			AggIndex: aggI + 1,
-		}
 	}
 
 	// TODO: Support table sampling.
