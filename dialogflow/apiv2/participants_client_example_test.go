@@ -18,7 +18,6 @@ package dialogflow_test
 
 import (
 	"context"
-	"io"
 
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
 	"google.golang.org/api/iterator"
@@ -140,42 +139,6 @@ func ExampleParticipantsClient_AnalyzeContent() {
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleParticipantsClient_StreamingAnalyzeContent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
-	ctx := context.Background()
-	c, err := dialogflow.NewParticipantsClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	stream, err := c.StreamingAnalyzeContent(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	go func() {
-		reqs := []*dialogflowpb.StreamingAnalyzeContentRequest{
-			// TODO: Create requests.
-		}
-		for _, req := range reqs {
-			if err := stream.Send(req); err != nil {
-				// TODO: Handle error.
-			}
-		}
-		stream.CloseSend()
-	}()
-	for {
-		resp, err := stream.Recv()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			// TODO: handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
 }
 
 func ExampleParticipantsClient_SuggestArticles() {
