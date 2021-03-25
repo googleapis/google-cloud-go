@@ -39,96 +39,51 @@ import (
 	htransport "google.golang.org/api/transport/http"
 )
 
-type retryFunc func(ctx context.Context, c *Client) error
-
-type retryCase struct {
-	// Instruction header to send to the emulator.
-	instruction string
-	// Functions that will wrap the library method to call.
-	methods []retryFunc
-	// If true, the call should succeed after a retry.
-	expectSuccess bool
-}
+type retryFunc func(ctx context.Context, c *Client, preconditions bool) error
 
 var objName = "file.txt"
 
-// List of methods to retry. This is pretty much impossible to encode in a
-// schema because they vary a lot across libraries.
-// I'd want to flesh this out with two lists of functions:
-// 1. A list of idempotent calls (should give expectSuccess = True for
-//    retryable errors, false for other errors).
-// 2. A list of non-idempotent calls (should give expectSuccess = False for
-//    everything).
-var idempotentOps = []retryFunc{
-	// storage.objects.get
-	func(ctx context.Context, c *Client) error {
-		_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
-		return err
-	},
-	// GET object (XML API)
-	func(ctx context.Context, c *Client) error {
-		r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
-		if err != nil {
+// Methods to retry. This is a map whose keys are a string describing a standard
+// API call (e.g. storage.objects.get) and values are a list of functions which
+// wrap library methods that implement these calls. There may be multiple values
+// because multiple library methods may use the same call (e.g. get could be a
+// read or just a metadata get).
+var methods = map[string][]retryFunc{
+	"storage.objects.get": {
+		func(ctx context.Context, c *Client, _ bool) error {
+			_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
 			return err
-		}
-		_, err = io.Copy(ioutil.Discard, r)
-		return err
+		},
+		func(ctx context.Context, c *Client, _ bool) error {
+			r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			_, err = io.Copy(ioutil.Discard, r)
+			return err
+		},
 	},
-	// storage.objects.update (preconditions)
-	func(ctx context.Context, c *Client) error {
-		uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
-		conds := Conditions{MetagenerationMatch: 10}
-		_, err := c.Bucket(bucketName).Object(objName).If(conds).Update(ctx, uattrs)
-		return err
+	"storage.objects.update": {
+		func(ctx context.Context, c *Client, preconditions bool) error {
+			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
+			obj := c.Bucket(bucketName).Object(objName)
+			if preconditions {
+				obj = obj.If(Conditions{MetagenerationMatch: 10})
+			}
+			_, err := obj.Update(ctx, uattrs)
+			return err
+		},
 	},
-	// storage.buckets.update (preconditions)
-	func(ctx context.Context, c *Client) error {
-		uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
-		conds := BucketConditions{MetagenerationMatch: 10}
-		_, err := c.Bucket(bucketName).If(conds).Update(ctx, uattrs)
-		return err
-	},
-}
-
-var nonIdempotentOps = []retryFunc{
-	// storage.objects.update (no preconditions)
-	func(ctx context.Context, c *Client) error {
-		uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
-		_, err := c.Bucket(bucketName).Object(objName).Update(ctx, uattrs)
-		return err
-	},
-	// storage.buckets.update (no preconditions)
-	func(ctx context.Context, c *Client) error {
-		uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
-		_, err := c.Bucket(bucketName).Update(ctx, uattrs)
-		return err
-	},
-}
-
-
-// Create test cases.
-// TODO: add unmarshaling from conf test JSON
-var cases = []retryCase{
-	{
-		instruction:   "return-400",
-		methods:       idempotentOps,
-		expectSuccess: false,
-	},
-	{
-		instruction:   "return-400",
-		methods:       nonIdempotentOps,
-		expectSuccess: false,
-	},
-	{
-		instruction:   "reset-connection",
-		methods:       idempotentOps,
-		expectSuccess: true,
-	},
-	{
-		instruction:   "reset-connection",
-		methods:       nonIdempotentOps,
-		expectSuccess: true,
-	},
+	"storage.buckets.update": {
+		func(ctx context.Context, c *Client, preconditions bool) error {
+			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
+			bkt := c.Bucket(bucketName)
+			if preconditions {
+				bkt = bkt.If(BucketConditions{MetagenerationMatch: 10})
+			}
+			_, err := bkt.Update(ctx, uattrs)
+			return err
+		}},
 }
 
 func TestRetryConformance(t *testing.T) {
@@ -145,38 +100,51 @@ func TestRetryConformance(t *testing.T) {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
 
-	for _, c := range cases {
-		for i, m := range c.methods {
-			testName := fmt.Sprintf("%v - %v", c.instruction, i)
-			t.Run(testName, func(t *testing.T) {
-				// Setup bucket and object
-				if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
-					t.Errorf("Error creating bucket: %v", err)
-				}
+	_, _, testFiles := parseFiles(t)
+	for _, testFile := range(testFiles) {
+		for _, tc := range(testFile.RetryTests) {
+			for _, i := range(tc.Instructions) {
+				for _, m := range(tc.Methods) {
+					testName := fmt.Sprintf("%v - %v - %v", tc.Description, i, m)
+					t.Run(testName, func(t *testing.T) {
+						// Setup bucket and object
+						// TODO: customize this by operation.
+						if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
+							t.Errorf("Error creating bucket: %v", err)
+						}
 
-				w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
-				if _, err := w.Write([]byte("abcdef")); err != nil {
-					t.Errorf("Error writing object to emulator: %v", err)
-				}
-				if err := w.Close(); err != nil {
-					t.Errorf("Error writing object to emulator in Close: %v", err)
-				}
+						w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
+						if _, err := w.Write([]byte("abcdef")); err != nil {
+							t.Errorf("Error writing object to emulator: %v", err)
+						}
+						if err := w.Close(); err != nil {
+							t.Errorf("Error writing object to emulator in Close: %v", err)
+						}
 
-				// Create wrapped client which will send emulator instructions.
-				wrapped, err := wrappedClient(c)
-				if err != nil {
-					t.Errorf("error creating wrapped client: %v", err)
+						// Create wrapped client which will send emulator instructions.
+						wrapped, err := wrappedClient(i)
+						if err != nil {
+							t.Errorf("error creating wrapped client: %v", err)
+						}
+						if len(methods[m]) == 0 {
+							t.Logf("No tests for operation %v", m)
+						}
+						for _, f := range(methods[m]) {
+							err = f(ctx, wrapped, tc.PreconditionProvided)
+							if tc.ExpectSuccess && err != nil {
+								t.Errorf("want success, got %v", err)
+							}
+							if !tc.ExpectSuccess && err == nil {
+								t.Errorf("want failure, got success")
+							}
+						}
+
+					})
 				}
-				err = m(ctx, wrapped)
-				if c.expectSuccess && err != nil {
-					t.Errorf("want success, got %v", err)
-				}
-				if !c.expectSuccess && err == nil {
-					t.Errorf("want failure, got success")
-				}
-			})
+			}
 		}
 	}
+
 }
 
 type withInstruction struct {
@@ -199,7 +167,7 @@ func (wi *withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 // Create custom client that sends instruction
-func wrappedClient(r retryCase) (*Client, error) {
+func wrappedClient(instruction string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
 	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
@@ -210,7 +178,7 @@ func wrappedClient(r retryCase) (*Client, error) {
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client.
-	instr := r.instruction
+	instr := instruction
 	wrappedTrans := &withInstruction{rt: c.Transport, instr: instr, retries: 2}
 	c.Transport = wrappedTrans
 

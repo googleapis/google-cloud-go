@@ -1,0 +1,25 @@
+{
+  "retryTests": [
+    {
+      "description": "always idempotent, retryable errors",
+      "instructions": ["return-503", "reset-connection"],
+      "methods": ["storage.objects.get", "storage.buckets.get"],
+      "preconditionProvided": false,
+      "expectSuccess": true
+    },
+    {
+      "description": "always idempotent, retryable errors",
+      "instructions": ["return-503", "reset-connection"],
+      "methods": ["storage.objects.get", "storage.buckets.get"],
+      "preconditionProvided": true,
+      "expectSuccess": true
+    },
+    {
+      "description": "always idempotent, non-retryable errors",
+      "instructions": ["return-400", "return-401"],
+      "methods": ["storage.objects.get", "storage.buckets.get"],
+      "preconditionProvided": false,
+      "expectSuccess": false
+    }
+  ]
+}

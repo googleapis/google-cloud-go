@@ -25,6 +25,7 @@ option java_multiple_files = true;
 message TestFile {
   repeated SigningV4Test signing_v4_tests = 1;
   repeated PostPolicyV4Test post_policy_v4_tests = 2;
+  repeated RetryTest retry_tests = 3;
 }
 
 enum UrlStyle {
@@ -82,4 +83,13 @@ message PostPolicyV4Test {
   string description = 1;
   PolicyInput policyInput = 2;
   PolicyOutput policyOutput = 3;
+}
+
+message RetryTest {
+  string description = 1;
+  repeated string instructions = 2;  // e.g. return-503
+  repeated string methods = 3;  // e.g. storage.objects.get
+  bool preconditionProvided = 4;
+  bool expectSuccess = 5;
+  // repeated string setup = 6;  // List of setup steps required for the test. (e.g. bucket created, object created, etc)
 }
