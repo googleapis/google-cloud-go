@@ -259,9 +259,6 @@ func (c *SessionEntityTypesClient) GetSessionEntityType(ctx context.Context, req
 }
 
 // CreateSessionEntityType creates a session entity type.
-//
-// If the specified session entity type already exists, overrides the
-// session entity type.
 func (c *SessionEntityTypesClient) CreateSessionEntityType(ctx context.Context, req *cxpb.CreateSessionEntityTypeRequest, opts ...gax.CallOption) (*cxpb.SessionEntityType, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
