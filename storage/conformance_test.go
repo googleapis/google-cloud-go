@@ -103,33 +103,33 @@ func TestRetryConformance(t *testing.T) {
 	_, _, testFiles := parseFiles(t)
 	for _, testFile := range(testFiles) {
 		for _, tc := range(testFile.RetryTests) {
-			for _, i := range(tc.Instructions) {
+			for _, instr := range(tc.Instructions) {
 				for _, m := range(tc.Methods) {
-					testName := fmt.Sprintf("%v - %v - %v", tc.Description, i, m)
-					t.Run(testName, func(t *testing.T) {
-						// Setup bucket and object
-						// TODO: customize this by operation.
-						if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
-							t.Errorf("Error creating bucket: %v", err)
-						}
+					if len(methods[m]) == 0 {
+						t.Logf("No tests for operation %v", m)
+					}
+					for i, f := range(methods[m]){
+						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Description, instr, m, i)
+						t.Run(testName, func(t *testing.T) {
+							// Setup bucket and object
+							// TODO: customize this by operation.
+							if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
+								t.Errorf("Error creating bucket: %v", err)
+							}
 
-						w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
-						if _, err := w.Write([]byte("abcdef")); err != nil {
-							t.Errorf("Error writing object to emulator: %v", err)
-						}
-						if err := w.Close(); err != nil {
-							t.Errorf("Error writing object to emulator in Close: %v", err)
-						}
+							w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
+							if _, err := w.Write([]byte("abcdef")); err != nil {
+								t.Errorf("Error writing object to emulator: %v", err)
+							}
+							if err := w.Close(); err != nil {
+								t.Errorf("Error writing object to emulator in Close: %v", err)
+							}
 
-						// Create wrapped client which will send emulator instructions.
-						wrapped, err := wrappedClient(i)
-						if err != nil {
-							t.Errorf("error creating wrapped client: %v", err)
-						}
-						if len(methods[m]) == 0 {
-							t.Logf("No tests for operation %v", m)
-						}
-						for _, f := range(methods[m]) {
+							// Create wrapped client which will send emulator instructions.
+							wrapped, err := wrappedClient(instr)
+							if err != nil {
+								t.Errorf("error creating wrapped client: %v", err)
+							}
 							err = f(ctx, wrapped, tc.PreconditionProvided)
 							if tc.ExpectSuccess && err != nil {
 								t.Errorf("want success, got %v", err)
@@ -137,9 +137,10 @@ func TestRetryConformance(t *testing.T) {
 							if !tc.ExpectSuccess && err == nil {
 								t.Errorf("want failure, got success")
 							}
-						}
 
-					})
+						})
+					}
+
 				}
 			}
 		}
