@@ -251,45 +251,6 @@ func TestRetryableStreamConnectRetries(t *testing.T) {
 	}
 }
 
-func TestRetryableStreamInitTimeout(t *testing.T) {
-	const streamInitTimeout = 50 * time.Millisecond
-	const streamResponseDelay = 75 * time.Millisecond
-
-	pub := newTestStreamHandler(t, defaultStreamTimeout)
-	pub.Stream.streamInitTimeout = streamInitTimeout
-
-	verifiers := test.NewVerifiers(t)
-
-	// First stream will have a delayed response.
-	stream1 := test.NewRPCVerifier(t)
-	barrier1 := stream1.PushWithBarrier(pub.InitialReq, initPubResp(), nil)
-	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
-
-	// Second stream should succeed.
-	stream2 := test.NewRPCVerifier(t)
-	stream2.Push(pub.InitialReq, initPubResp(), nil)
-	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
-
-	mockServer.OnTestStart(verifiers)
-	defer mockServer.OnTestEnd()
-
-	pub.Stream.Start()
-	if got, want := pub.NextStatus(), streamReconnecting; got != want {
-		t.Errorf("Stream status change: got %d, want %d", got, want)
-	}
-
-	time.Sleep(streamResponseDelay)
-	barrier1.Release()
-	if got, want := pub.NextStatus(), streamConnected; got != want {
-		t.Errorf("Stream status change: got %d, want %d", got, want)
-	}
-
-	pub.Stream.Stop()
-	if got, want := pub.NextStatus(), streamTerminated; got != want {
-		t.Errorf("Stream status change: got %d, want %d", got, want)
-	}
-}
-
 func TestRetryableStreamConnectPermanentFailure(t *testing.T) {
 	pub := newTestStreamHandler(t, defaultStreamTimeout)
 	permanentErr := status.Error(codes.PermissionDenied, "denied")

@@ -135,6 +135,7 @@ const pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
+		// Keep inactive connections alive.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
 			Time: 5 * time.Minute,
 		})),
