@@ -19,9 +19,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
-	"google.golang.org/api/support/bundler"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
@@ -30,11 +28,11 @@ import (
 var (
 	// ErrOverflow is set for a PublishResult when publish buffers overflow.
 	// Use errors.Is for comparing errors.
-	ErrOverflow = bundler.ErrOverflow
+	ErrOverflow = wire.ErrOverflow
 
 	// ErrOversizedMessage is set for a PublishResult when a published message
 	// exceeds MaxPublishRequestBytes. Use errors.Is for comparing errors.
-	ErrOversizedMessage = bundler.ErrOversizedItem
+	ErrOversizedMessage = wire.ErrOversizedMessage
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
 	// published because the publisher client has stopped or is in the process of
@@ -48,18 +46,6 @@ var (
 	// comparing errors.
 	ErrBackendUnavailable = wire.ErrBackendUnavailable
 )
-
-// translateError transforms a subset of errors to what would be returned by the
-// pubsub package.
-func translateError(err error) error {
-	if xerrors.Is(err, wire.ErrOversizedMessage) {
-		return ErrOversizedMessage
-	}
-	if xerrors.Is(err, wire.ErrOverflow) {
-		return ErrOverflow
-	}
-	return err
-}
 
 // PublisherClient is a Pub/Sub Lite client to publish messages to a given
 // topic. A PublisherClient is safe to use from multiple goroutines.
@@ -137,7 +123,6 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 	}
 
 	p.wirePub.Publish(msgpb, func(metadata *wire.MessageMetadata, err error) {
-		err = translateError(err)
 		if metadata != nil {
 			ipubsub.SetPublishResult(result, metadata.String(), err)
 		} else {
