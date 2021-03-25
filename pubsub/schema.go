@@ -102,7 +102,7 @@ func schemaSettingsToProto(schema *SchemaSettings) *pb.SchemaSettings {
 
 func protoToSchemaSettings(pbs *pb.SchemaSettings) *SchemaSettings {
 	if pbs == nil {
-		return &SchemaSettings{}
+		return nil
 	}
 	return &SchemaSettings{
 		Schema:   pbs.Schema,

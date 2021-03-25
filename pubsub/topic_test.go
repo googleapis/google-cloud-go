@@ -204,8 +204,8 @@ func TestUpdateTopic_Label(t *testing.T) {
 		t.Fatal(err)
 	}
 	want := TopicConfig{}
-	if !testutil.Equal(config.Labels, want.Labels) {
-		t.Errorf("got %+v, want %+v", config.Labels, want.Labels)
+	if !testutil.Equal(config, want) {
+		t.Errorf("got %+v, want %+v", config, want)
 	}
 
 	// replace labels
@@ -219,8 +219,8 @@ func TestUpdateTopic_Label(t *testing.T) {
 	want = TopicConfig{
 		Labels: labels,
 	}
-	if !testutil.Equal(config2.Labels, want.Labels) {
-		t.Errorf("got %+v, want %+v", config2.Labels, want.Labels)
+	if !testutil.Equal(config2, want) {
+		t.Errorf("got %+v, want %+v", config2, want)
 	}
 
 	// delete all labels
@@ -230,8 +230,8 @@ func TestUpdateTopic_Label(t *testing.T) {
 		t.Fatal(err)
 	}
 	want.Labels = nil
-	if !testutil.Equal(config3.Labels, want.Labels) {
-		t.Errorf("got %+v, want %+v", config3.Labels, want.Labels)
+	if !testutil.Equal(config3, want) {
+		t.Errorf("got %+v, want %+v", config3, want)
 	}
 }
 
