@@ -77,7 +77,7 @@ type SchemaView pb.SchemaView
 const (
 	// SchemaViewUnspecified is the default/unset value.
 	SchemaViewUnspecified SchemaView = 0
-	// SchemaVeiwBasic includes the name and type of the schema, but not the definition.
+	// SchemaViewBasic includes the name and type of the schema, but not the definition.
 	SchemaViewBasic SchemaView = 1
 	// SchemaViewFull includes all Schema object fields.
 	SchemaViewFull SchemaView = 2
