@@ -808,8 +808,6 @@ type ReadWriteTransaction struct {
 	state txState
 	// wb is the set of buffered mutations waiting to be committed.
 	wb []*Mutation
-	// options contains additional options for the read/write transaction.
-	// options TransactionOptions
 }
 
 // BufferWrite adds a list of mutations to the set of updates that will be
