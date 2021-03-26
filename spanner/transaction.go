@@ -809,7 +809,7 @@ type ReadWriteTransaction struct {
 	// wb is the set of buffered mutations waiting to be committed.
 	wb []*Mutation
 	// options contains additional options for the read/write transaction.
-	options TransactionOptions
+	// options TransactionOptions
 }
 
 // BufferWrite adds a list of mutations to the set of updates that will be
@@ -1032,8 +1032,8 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	}
 
 	var opts *sppb.RequestOptions
-	if t.options.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
-		opts = &sppb.RequestOptions{Priority: t.options.CommitPriority}
+	if t.txOpts.CommitPriority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		opts = &sppb.RequestOptions{Priority: t.txOpts.CommitPriority}
 	}
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
@@ -1175,8 +1175,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	}
 	t = &ReadWriteStmtBasedTransaction{
 		ReadWriteTransaction: ReadWriteTransaction{
-			tx:      sh.getTransactionID(),
-			options: options,
+			tx: sh.getTransactionID(),
 		},
 	}
 	t.txReadOnly.sh = sh

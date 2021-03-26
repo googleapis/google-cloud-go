@@ -466,7 +466,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		} else {
 			t = &ReadWriteTransaction{}
 		}
-		t.options = options
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
