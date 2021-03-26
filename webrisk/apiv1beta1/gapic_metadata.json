@@ -1,0 +1,33 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.webrisk.v1beta1",
+  "libraryPackage": "cloud.google.com/go/webrisk/apiv1beta1",
+  "services": {
+    "WebRiskServiceV1Beta1": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "WebRiskServiceV1Beta1Client",
+          "rpcs": {
+            "ComputeThreatListDiff": {
+              "methods": [
+                "ComputeThreatListDiff"
+              ]
+            },
+            "SearchHashes": {
+              "methods": [
+                "SearchHashes"
+              ]
+            },
+            "SearchUris": {
+              "methods": [
+                "SearchUris"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

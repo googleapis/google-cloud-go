@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -68,6 +68,53 @@ func ExampleClient_ListTables() {
 		// TODO: Fill request struct fields.
 	}
 	it := c.ListTables(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_GetWorkspace() {
+	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
+
+	ctx := context.Background()
+	c, err := tables.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &tablespb.GetWorkspaceRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetWorkspace(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_ListWorkspaces() {
+	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := tables.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &tablespb.ListWorkspacesRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListWorkspaces(ctx, req)
 	for {
 		resp, err := it.Next()
 		if err == iterator.Done {
@@ -219,6 +266,22 @@ func ExampleClient_DeleteRow() {
 		// TODO: Fill request struct fields.
 	}
 	err = c.DeleteRow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleClient_BatchDeleteRows() {
+	ctx := context.Background()
+	c, err := tables.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &tablespb.BatchDeleteRowsRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.BatchDeleteRows(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

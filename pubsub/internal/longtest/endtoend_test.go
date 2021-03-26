@@ -184,7 +184,7 @@ func TestEndToEnd_LongProcessingTime(t *testing.T) {
 	sub.ReceiveSettings.Synchronous = true
 	sub.ReceiveSettings.MaxOutstandingMessages = 500
 
-	err = publish(ctx, topic, 1000)
+	err = publish(ctx, topic, 500)
 	topic.Stop()
 	if err != nil {
 		t.Fatalf("publish: %v", err)
@@ -208,7 +208,7 @@ func TestEndToEnd_LongProcessingTime(t *testing.T) {
 	//    deadline extended.
 	// 2. To wait for redelivery of messages that were en route when a Receive
 	//    is canceled. This can take considerably longer than the ack deadline.
-	quiescenceDur := ackDeadline * 6
+	quiescenceDur := 12 * ackDeadline
 	quiescenceTimer := time.NewTimer(quiescenceDur)
 loop:
 	for {

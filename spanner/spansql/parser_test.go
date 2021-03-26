@@ -21,6 +21,9 @@ import (
 	"math"
 	"reflect"
 	"testing"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 func TestParseQuery(t *testing.T) {
@@ -190,12 +193,16 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
-		{`SELECT * FROM UNNEST (@p) AS data`, // array literals aren't yet supported
+		{`SELECT * FROM UNNEST ([1, 2, 3]) AS data`,
 			Query{
 				Select: Select{
 					List: []Expr{Star},
 					From: []SelectFrom{SelectFromUnnest{
-						Expr:  Param("p"),
+						Expr: Array{
+							IntegerLiteral(1),
+							IntegerLiteral(2),
+							IntegerLiteral(3),
+						},
 						Alias: ID("data"),
 					}},
 				},
@@ -248,6 +255,7 @@ func TestParseExpr(t *testing.T) {
 		{`A AND NOT B`, LogicalOp{LHS: ID("A"), Op: And, RHS: LogicalOp{Op: Not, RHS: ID("B")}}},
 		{`X BETWEEN Y AND Z`, ComparisonOp{LHS: ID("X"), Op: Between, RHS: ID("Y"), RHS2: ID("Z")}},
 		{`@needle IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), RHS: []Expr{Param("haystack")}, Unnest: true}},
+		{`@needle NOT IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), Neg: true, RHS: []Expr{Param("haystack")}, Unnest: true}},
 
 		// String literal:
 		// Accept double quote and single quote.
@@ -297,6 +305,15 @@ func TestParseExpr(t *testing.T) {
 		{`BR'\\'`, BytesLiteral("\\\\")},
 		{`RB"""\\//\\//"""`, BytesLiteral("\\\\//\\\\//")},
 		{"RB'''\\\\//\n\\\\//'''", BytesLiteral("\\\\//\n\\\\//")},
+
+		// Date and timestamp literals:
+		{`DATE '2014-09-27'`, DateLiteral(civil.Date{Year: 2014, Month: time.September, Day: 27})},
+
+		// Array literals:
+		// https://cloud.google.com/spanner/docs/lexical#array_literals
+		{`[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
+		{`['x', 'y', 'xy']`, Array{StringLiteral("x"), StringLiteral("y"), StringLiteral("xy")}},
+		{`ARRAY[1, 2, 3]`, Array{IntegerLiteral(1), IntegerLiteral(2), IntegerLiteral(3)}},
 
 		// OR is lower precedence than AND.
 		{`A AND B OR C`, LogicalOp{LHS: LogicalOp{LHS: ID("A"), Op: And, RHS: ID("B")}, Op: Or, RHS: ID("C")}},

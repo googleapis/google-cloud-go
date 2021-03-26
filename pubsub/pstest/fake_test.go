@@ -25,12 +25,13 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestTopics(t *testing.T) {
@@ -185,7 +186,7 @@ func TestSubscriptionErrors(t *testing.T) {
 	checkCode(err, codes.NotFound)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{})
 	checkCode(err, codes.InvalidArgument)
-	srt := &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}
+	srt := &pb.SeekRequest_Time{Time: timestamppb.Now()}
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt})
 	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt, Subscription: "s"})
@@ -278,10 +279,7 @@ func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages
 	if err != nil {
 		t.Fatal(err)
 	}
-	tsPubTime, err := ptypes.TimestampProto(pubTime)
-	if err != nil {
-		t.Fatal(err)
-	}
+	tsPubTime := timestamppb.New(pubTime)
 	want := map[string]*pb.PubsubMessage{}
 	for i, id := range res.MessageIds {
 		want[id] = &pb.PubsubMessage{
@@ -639,7 +637,7 @@ func TestSeek(t *testing.T) {
 		Topic:              top.Name,
 		AckDeadlineSeconds: 10,
 	})
-	ts := ptypes.TimestampNow()
+	ts := timestamppb.Now()
 	_, err := sclient.Seek(context.Background(), &pb.SeekRequest{
 		Subscription: sub.Name,
 		Target:       &pb.SeekRequest_Time{Time: ts},
@@ -700,7 +698,7 @@ func TestTimeNowFunc(t *testing.T) {
 
 	m := s.Message(id)
 	if m == nil {
-		t.Error("got nil, want a message")
+		t.Fatalf("got nil, want a message")
 	}
 	if got, want := m.PublishTime, timeFunc(); got != want {
 		t.Fatalf("got %v, want %v", got, want)
@@ -797,8 +795,8 @@ func TestUpdateRetryPolicy(t *testing.T) {
 		Name:               "projects/P/subscriptions/S",
 		Topic:              top.Name,
 		RetryPolicy: &pb.RetryPolicy{
-			MinimumBackoff: ptypes.DurationProto(10 * time.Second),
-			MaximumBackoff: ptypes.DurationProto(60 * time.Second),
+			MinimumBackoff: durationpb.New(10 * time.Second),
+			MaximumBackoff: durationpb.New(60 * time.Second),
 		},
 	})
 
@@ -807,8 +805,8 @@ func TestUpdateRetryPolicy(t *testing.T) {
 		Name:               sub.Name,
 		Topic:              top.Name,
 		RetryPolicy: &pb.RetryPolicy{
-			MinimumBackoff: ptypes.DurationProto(20 * time.Second),
-			MaximumBackoff: ptypes.DurationProto(100 * time.Second),
+			MinimumBackoff: durationpb.New(20 * time.Second),
+			MaximumBackoff: durationpb.New(100 * time.Second),
 		},
 	}
 
@@ -1007,7 +1005,7 @@ func TestErrorInjection(t *testing.T) {
 		},
 		{
 			funcName: "Seek",
-			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}},
+			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: timestamppb.Now()}},
 		},
 	}
 

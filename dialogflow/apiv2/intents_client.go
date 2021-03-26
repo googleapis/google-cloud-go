@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"
-	structpbpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -452,8 +452,8 @@ func (op *BatchDeleteIntentsOperation) Poll(ctx context.Context, opts ...gax.Cal
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchDeleteIntentsOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *BatchDeleteIntentsOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {
@@ -521,8 +521,8 @@ func (op *BatchUpdateIntentsOperation) Poll(ctx context.Context, opts ...gax.Cal
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *BatchUpdateIntentsOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *BatchUpdateIntentsOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {

@@ -72,10 +72,15 @@ type txReadOnly struct {
 
 	// qo provides options for executing a sql query.
 	qo QueryOptions
+
+	// txOpts provides options for a transaction.
+	txOpts TransactionOptions
 }
 
 // TransactionOptions provides options for a transaction.
 type TransactionOptions struct {
+	CommitOptions CommitOptions
+
 	// CommitPriority is the priority to use for the Commit RPC for the
 	// transaction.
 	CommitPriority sppb.RequestOptions_Priority
@@ -1005,11 +1010,18 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 type CommitResponse struct {
 	// CommitTs is the commit time for a transaction.
 	CommitTs time.Time
+	// CommitStats is the commit statistics for a transaction.
+	CommitStats *sppb.CommitResponse_CommitStats
+}
+
+// CommitOptions provides options for commiting a transaction in a database.
+type CommitOptions struct {
+	ReturnCommitStats bool
 }
 
 // commit tries to commit a readwrite transaction to Cloud Spanner. It also
 // returns the commit response for the transactions.
-func (t *ReadWriteTransaction) commit(ctx context.Context) (CommitResponse, error) {
+func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
 	resp := CommitResponse{}
 	t.mu.Lock()
 	t.state = txClosed // No further operations after commit.
@@ -1035,14 +1047,18 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (CommitResponse, erro
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
-		Mutations:      mPb,
-		RequestOptions: opts,
+		RequestOptions:    opts,
+		Mutations:         mPb,
+		ReturnCommitStats: options.ReturnCommitStats,
 	})
 	if e != nil {
 		return resp, toSpannerErrorWithCommitInfo(e, true)
 	}
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
 		resp.CommitTs = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+	}
+	if options.ReturnCommitStats {
+		resp.CommitStats = res.CommitStats
 	}
 	if isSessionNotFoundError(err) {
 		t.sh.destroy()
@@ -1081,7 +1097,7 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 	)
 	if err = f(context.WithValue(ctx, transactionInProgressKey{}, 1), t); err == nil {
 		// Try to commit if transaction body returns no error.
-		resp, err = t.commit(ctx)
+		resp, err = t.commit(ctx, t.txOpts.CommitOptions)
 		errDuringCommit = err != nil
 	}
 	if err != nil {
@@ -1118,6 +1134,8 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 type ReadWriteStmtBasedTransaction struct {
 	// ReadWriteTransaction contains methods for performing transactional reads.
 	ReadWriteTransaction
+
+	options TransactionOptions
 }
 
 // NewReadWriteStmtBasedTransaction starts a read-write transaction. Commit() or
@@ -1164,6 +1182,7 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txOpts = options
 
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {
@@ -1177,7 +1196,14 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 // Commit tries to commit a readwrite transaction to Cloud Spanner. It also
 // returns the commit timestamp for the transactions.
 func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, error) {
-	resp, err := t.commit(ctx)
+	resp, err := t.CommitWithReturnResp(ctx)
+	return resp.CommitTs, err
+}
+
+// CommitWithReturnResp tries to commit a readwrite transaction. It also returns
+// the commit timestamp and stats for the transactions.
+func (t *ReadWriteStmtBasedTransaction) CommitWithReturnResp(ctx context.Context) (CommitResponse, error) {
+	resp, err := t.commit(ctx, t.txOpts.CommitOptions)
 	// Rolling back an aborted transaction is not necessary.
 	if err != nil && status.Code(err) != codes.Aborted {
 		t.rollback(ctx)
@@ -1185,7 +1211,7 @@ func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, 
 	if t.sh != nil {
 		t.sh.recycle()
 	}
-	return resp.CommitTs, err
+	return resp, err
 }
 
 // Rollback is called to cancel the ongoing transaction that has not been

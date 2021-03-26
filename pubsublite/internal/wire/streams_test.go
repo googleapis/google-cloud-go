@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +50,7 @@ type testStreamHandler struct {
 
 func newTestStreamHandler(t *testing.T, timeout time.Duration) *testStreamHandler {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -99,12 +100,17 @@ func (sh *testStreamHandler) validateInitialResponse(response interface{}) error
 	return nil
 }
 
-func (sh *testStreamHandler) initialRequest() (interface{}, bool) {
-	return sh.InitialReq, true
+func (sh *testStreamHandler) initialRequest() (interface{}, initialResponseRequired) {
+	return sh.InitialReq, initialResponseRequired(true)
 }
 
 func (sh *testStreamHandler) onStreamStatusChange(status streamStatus) {
 	sh.statuses <- status
+
+	// Close connections.
+	if status == streamTerminated {
+		sh.pubClient.Close()
+	}
 }
 
 func (sh *testStreamHandler) onResponse(response interface{}) {
@@ -303,8 +309,8 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	if pub.Stream.currentStream() != nil {
 		t.Error("Client stream should be nil")
 	}
-	if gotErr := pub.Stream.Error(); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, wantErr)
+	if gotErr := pub.Stream.Error(); !xerrors.Is(gotErr, ErrBackendUnavailable) {
+		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, ErrBackendUnavailable)
 	}
 }
 

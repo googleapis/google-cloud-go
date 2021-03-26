@@ -127,25 +127,67 @@ var keywords = map[string]bool{
 
 // funcs is the set of reserved keywords that are functions.
 // https://cloud.google.com/spanner/docs/functions-and-operators
-var funcs = map[string]bool{
+var funcs = make(map[string]bool)
+
+func init() {
+	for _, f := range allFuncs {
+		funcs[f] = true
+	}
+}
+
+var allFuncs = []string{
+	// TODO: many more
+
 	// Aggregate functions.
-	"ANY_VALUE": true,
-	"ARRAY_AGG": true,
-	"AVG":       true,
-	"BIT_XOR":   true,
-	"COUNT":     true,
-	"MAX":       true,
-	"MIN":       true,
-	"SUM":       true,
+	"ANY_VALUE",
+	"ARRAY_AGG",
+	"AVG",
+	"BIT_XOR",
+	"COUNT",
+	"MAX",
+	"MIN",
+	"SUM",
 
 	// Mathematical functions.
-	"ABS": true,
+	"ABS",
 
 	// Hash functions.
-	"SHA1": true,
+	"SHA1",
 
 	// String functions.
-	"CHAR_LENGTH": true,
+	"BYTE_LENGTH", "CHAR_LENGTH", "CHARACTER_LENGTH",
+	"CODE_POINTS_TO_BYTES", "CODE_POINTS_TO_STRING",
+	"CONCAT",
+	"ENDS_WITH",
+	"FORMAT",
+	"FROM_BASE32", "FROM_BASE64", "FROM_HEX",
+	"LENGTH",
+	"LOWER",
+	"LPAD",
+	"LTRIM",
+	"REGEXP_CONTAINS", "REGEXP_EXTRACT", "REGEXP_EXTRACT_ALL", "REGEXP_REPLACE",
+	"REPEAT",
+	"REPLACE",
+	"REVERSE",
+	"RPAD",
+	"RTRIM",
+	"SAFE_CONVERT_BYTES_TO_STRING",
+	"SPLIT",
+	"STARTS_WITH",
+	"STRPOS",
+	"SUBSTR",
+	"TO_BASE32", "TO_BASE64", "TO_CODE_POINTS", "TO_HEX",
+	"TRIM",
+	"UPPER",
 
-	// TODO: many more
+	// Array functions.
+	"ARRAY",
+	"ARRAY_CONCAT",
+	"ARRAY_LENGTH",
+	"ARRAY_TO_STRING",
+	"GENERATE_ARRAY", "GENERATE_DATE_ARRAY",
+	"OFFSET", "ORDINAL",
+	"ARRAY_REVERSE",
+	"ARRAY_IS_DISTINCT",
+	"SAFE_OFFSET", "SAFE_ORDINAL",
 }

@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os/exec"
 	"reflect"
 	"sort"
 	"strings"
@@ -29,6 +30,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/iam"
 	"cloud.google.com/go/internal"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
@@ -37,6 +39,10 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
+	v1 "google.golang.org/genproto/googleapis/iam/v1"
+	longrunning "google.golang.org/genproto/googleapis/longrunning"
+	grpc "google.golang.org/grpc"
+	"google.golang.org/protobuf/types/known/emptypb"
 )
 
 const (
@@ -47,9 +53,9 @@ const (
 var (
 	presidentsSocialGraph = map[string][]string{
 		"wmckinley":   {"tjefferson"},
-		"gwashington": {"jadams"},
-		"tjefferson":  {"gwashington", "jadams"},
-		"jadams":      {"gwashington", "tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams"},
+		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
 	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
@@ -69,9 +75,15 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
-var instanceToCreate string
-var instanceToCreateZone string
-var instanceToCreateZone2 string
+var (
+	instanceToCreate      string
+	instanceToCreateZone  string
+	instanceToCreateZone2 string
+	blackholeDpv6Cmd      string
+	blackholeDpv4Cmd      string
+	allowDpv6Cmd          string
+	allowDpv4Cmd          string
+)
 
 func init() {
 	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
@@ -81,6 +93,11 @@ func init() {
 		"The zone in which to create the new test instance.")
 	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
 		"The zone in which to create a second cluster in the test instance.")
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -116,15 +133,15 @@ func TestIntegration_ConditionalMutations(t *testing.T) {
 	verifyDirectPathRemoteAddress(testEnv, t)
 
 	// Fetch a row.
-	row, err := table.ReadRow(ctx, "jadams")
+	row, err := table.ReadRow(ctx, "j§adams")
 	if err != nil {
 		t.Fatalf("Reading a row: %v", err)
 	}
 	verifyDirectPathRemoteAddress(testEnv, t)
 	wantRow := Row{
 		"follows": []ReadItem{
-			{Row: "jadams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
-			{Row: "jadams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
+			{Row: "j§adams", Column: "follows:gwashington", Timestamp: 1000, Value: []byte("1")},
+			{Row: "j§adams", Column: "follows:tjefferson", Timestamp: 1000, Value: []byte("1")},
 		},
 	}
 	if !testutil.Equal(row, wantRow) {
@@ -177,8 +194,8 @@ func TestIntegration_ReadRowList(t *testing.T) {
 
 	// Read a RowList
 	var elt []string
-	keys := RowList{"wmckinley", "gwashington", "jadams"}
-	want := "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,wmckinley-tjefferson-1"
+	keys := RowList{"wmckinley", "gwashington", "j§adams"}
+	want := "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,wmckinley-tjefferson-1"
 	err = table.ReadRows(ctx, keys, func(r Row) bool {
 		for _, ris := range r {
 			for _, ri := range ris {
@@ -793,9 +810,9 @@ func TestIntegration_Read(t *testing.T) {
 	// Insert some data.
 	initialData := map[string][]string{
 		"wmckinley":   {"tjefferson"},
-		"gwashington": {"jadams"},
-		"tjefferson":  {"gwashington", "jadams", "wmckinley"},
-		"jadams":      {"gwashington", "tjefferson"},
+		"gwashington": {"j§adams"},
+		"tjefferson":  {"gwashington", "j§adams", "wmckinley"},
+		"j§adams":     {"gwashington", "tjefferson"},
 	}
 	for row, ss := range initialData {
 		mut := NewMutation()
@@ -822,22 +839,22 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc: "read all, unfiltered",
 			rr:   RowRange{},
-			want: "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+			want: "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc: "read with InfiniteRange, unfiltered",
 			rr:   InfiniteRange("tjefferson"),
-			want: "tjefferson-gwashington-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+			want: "tjefferson-gwashington-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc: "read with NewRange, unfiltered",
 			rr:   NewRange("gargamel", "hubbard"),
-			want: "gwashington-jadams-1",
+			want: "gwashington-j§adams-1",
 		},
 		{
 			desc: "read with PrefixRange, unfiltered",
-			rr:   PrefixRange("jad"),
-			want: "jadams-gwashington-1,jadams-tjefferson-1",
+			rr:   PrefixRange("j§ad"),
+			want: "j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc: "read with SingleRow, unfiltered",
@@ -847,8 +864,8 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc:   "read all, with ColumnFilter",
 			rr:     RowRange{},
-			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
-			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
+			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read all, with ColumnFilter, prefix",
@@ -860,25 +877,37 @@ func TestIntegration_Read(t *testing.T) {
 			desc:   "read range, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "h", "k"),
-			want:   "gwashington-jadams-1,tjefferson-jadams-1",
+			want:   "gwashington-j§adams-1,tjefferson-j§adams-1",
 		},
 		{
 			desc:   "read range from empty, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "", "u"),
-			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read range from start to empty, with ColumnRangeFilter",
 			rr:     RowRange{},
 			filter: ColumnRangeFilter("follows", "h", ""),
-			want:   "gwashington-jadams-1,jadams-tjefferson-1,tjefferson-jadams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-tjefferson-1,tjefferson-j§adams-1,tjefferson-wmckinley-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter",
 			rr:     RowRange{},
 			filter: RowKeyFilter(".*wash.*"),
-			want:   "gwashington-jadams-1",
+			want:   "gwashington-j§adams-1",
+		},
+		{
+			desc:   "read with RowKeyFilter unicode",
+			rr:     RowRange{},
+			filter: RowKeyFilter(".*j§.*"),
+			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
+		},
+		{
+			desc:   "read with RowKeyFilter escaped",
+			rr:     RowRange{},
+			filter: RowKeyFilter(`.*j\xC2\xA7.*`),
+			want:   "j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with RowKeyFilter, prefix",
@@ -901,49 +930,49 @@ func TestIntegration_Read(t *testing.T) {
 		{
 			desc:   "read with ColumnFilter + row limit",
 			rr:     RowRange{},
-			filter: ColumnFilter(".*j.*"), // matches "jadams" and "tjefferson"
+			filter: ColumnFilter(".*j.*"), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
-			want:   "gwashington-jadams-1,jadams-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:       "apply labels to the result rows",
 			rr:         RowRange{},
 			filter:     LabelFilter("test-label"),
 			limit:      LimitRows(2),
-			want:       "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			want:       "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
 			wantLabels: []string{"test-label", "test-label", "test-label"},
 		},
 		{
 			desc:   "read all, strip values",
 			rr:     RowRange{},
 			filter: StripValueFilter(),
-			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with ColumnFilter + row limit + strip values",
 			rr:     RowRange{},
-			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "jadams" and "tjefferson"
+			filter: ChainFilters(ColumnFilter(".*j.*"), StripValueFilter()), // matches "j§adams" and "tjefferson"
 			limit:  LimitRows(2),
-			want:   "gwashington-jadams-,jadams-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-tjefferson-",
 		},
 		{
 			desc:   "read with condition, strip values on true",
 			rr:     RowRange{},
 			filter: ConditionFilter(ColumnFilter(".*j.*"), StripValueFilter(), nil),
-			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with condition, strip values on false",
 			rr:     RowRange{},
 			filter: ConditionFilter(ColumnFilter(".*xxx.*"), nil, StripValueFilter()),
-			want:   "gwashington-jadams-,jadams-gwashington-,jadams-tjefferson-,tjefferson-gwashington-,tjefferson-jadams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
+			want:   "gwashington-j§adams-,j§adams-gwashington-,j§adams-tjefferson-,tjefferson-gwashington-,tjefferson-j§adams-,tjefferson-wmckinley-,wmckinley-tjefferson-",
 		},
 		{
 			desc:   "read with ValueRangeFilter + row limit",
 			rr:     RowRange{},
 			filter: ValueRangeFilter([]byte("1"), []byte("5")), // matches our value of "1"
 			limit:  LimitRows(2),
-			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1",
 		},
 		{
 			desc:   "read with ValueRangeFilter, no match on exclusive end",
@@ -967,18 +996,18 @@ func TestIntegration_Read(t *testing.T) {
 			desc:   "read with InterleaveFilter, no duplicate cells",
 			rr:     RowRange{},
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*j.*")),
-			want:   "gwashington-jadams-1,jadams-gwashington-1,jadams-tjefferson-1,tjefferson-gwashington-1,tjefferson-jadams-1,wmckinley-tjefferson-1",
+			want:   "gwashington-j§adams-1,j§adams-gwashington-1,j§adams-tjefferson-1,tjefferson-gwashington-1,tjefferson-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "read with InterleaveFilter, with duplicate cells",
 			rr:     RowRange{},
 			filter: InterleaveFilters(ColumnFilter(".*g.*"), ColumnFilter(".*g.*")),
-			want:   "jadams-gwashington-1,jadams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
+			want:   "j§adams-gwashington-1,j§adams-gwashington-1,tjefferson-gwashington-1,tjefferson-gwashington-1",
 		},
 		{
 			desc: "read with a RowRangeList and no filter",
 			rr:   RowRangeList{NewRange("gargamel", "hubbard"), InfiniteRange("wmckinley")},
-			want: "gwashington-jadams-1,wmckinley-tjefferson-1",
+			want: "gwashington-j§adams-1,wmckinley-tjefferson-1",
 		},
 		{
 			desc:   "chain that excludes rows and matches nothing, in a condition",
@@ -1036,8 +1065,8 @@ func TestIntegration_SampleRowKeys(t *testing.T) {
 	// Insert some data.
 	initialData := map[string][]string{
 		"wmckinley11":   {"tjefferson11"},
-		"gwashington77": {"jadams77"},
-		"tjefferson0":   {"gwashington0", "jadams0"},
+		"gwashington77": {"j§adams77"},
+		"tjefferson0":   {"gwashington0", "j§adams0"},
 	}
 
 	for row, ss := range initialData {
@@ -1266,6 +1295,70 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 }
 
+func TestIntegration_BackupIAM(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support IAM Policy creation")
+	}
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	cluster := testEnv.Config().Cluster
+
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+	// Create backup.
+	backup := "backup"
+	defer adminClient.DeleteBackup(ctx, cluster, backup)
+	if err = adminClient.CreateBackup(ctx, table, cluster, backup, time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	iamHandle := adminClient.BackupIAM(cluster, backup)
+	// Get backup policy.
+	p, err := iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	// The resource is new, so the policy should be empty.
+	if got := p.Roles(); len(got) > 0 {
+		t.Errorf("got roles %v, want none", got)
+	}
+	// Set backup policy.
+	member := "domain:google.com"
+	// Add a member, set the policy, then check that the member is present.
+	p.Add(member, iam.Viewer)
+	if err = iamHandle.SetPolicy(ctx, p); err != nil {
+		t.Errorf("iamHandle.SetPolicy: %v", err)
+	}
+	p, err = iamHandle.Policy(ctx)
+	if err != nil {
+		t.Errorf("iamHandle.Policy: %v", err)
+	}
+	if got, want := p.Members(iam.Viewer), []string{member}; !testutil.Equal(got, want) {
+		t.Errorf("iamHandle.Policy: got %v, want %v", got, want)
+	}
+	// Test backup permissions.
+	permissions := []string{"bigtable.backups.get", "bigtable.backups.update"}
+	_, err = iamHandle.TestPermissions(ctx, permissions)
+	if err != nil {
+		t.Errorf("iamHandle.TestPermissions: %v", err)
+	}
+}
+
 func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
@@ -1326,7 +1419,8 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5},
+		},
 	}
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
@@ -1359,7 +1453,6 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 }
 
 func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {
-
 	// Check the environments
 	if instanceToCreate == "" {
 		t.Skip("instanceToCreate not set, skipping instance creation testing")
@@ -1511,7 +1604,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		InstanceType: PRODUCTION,
 		Labels:       map[string]string{"new-label-key": "new-label-value"},
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 5}},
+			{ClusterID: clusterID, NumNodes: 5},
+		},
 	}
 
 	results, err := UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
@@ -1558,7 +1652,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
 			{ClusterID: clusterID},
-			{ClusterID: clusterID2, NumNodes: 3, StorageType: SSD, Zone: instanceToCreateZone2}},
+			{ClusterID: clusterID2, NumNodes: 3, StorageType: SSD, Zone: instanceToCreateZone2},
+		},
 	}
 
 	results, err = UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
@@ -1578,7 +1673,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	confWithClusters = &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		Clusters: []ClusterConfig{
-			{ClusterID: clusterID, NumNodes: 4}},
+			{ClusterID: clusterID, NumNodes: 4},
+		},
 	}
 
 	results, err = UpdateInstanceAndSyncClusters(ctx, iAdminClient, confWithClusters)
@@ -1734,6 +1830,136 @@ func TestIntegration_AdminSnapshot(t *testing.T) {
 	}
 }
 
+// instanceAdminClientMock is used to test FailedLocations field processing.
+type instanceAdminClientMock struct {
+	Clusters             []*btapb.Cluster
+	UnavailableLocations []string
+}
+
+func (iacm *instanceAdminClientMock) ListClusters(ctx context.Context, req *btapb.ListClustersRequest, opts ...grpc.CallOption) (*btapb.ListClustersResponse, error) {
+	res := btapb.ListClustersResponse{
+		Clusters:        iacm.Clusters,
+		FailedLocations: iacm.UnavailableLocations,
+	}
+	return &res, nil
+}
+
+func (iacm *instanceAdminClientMock) CreateInstance(ctx context.Context, in *btapb.CreateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) GetInstance(ctx context.Context, in *btapb.GetInstanceRequest, opts ...grpc.CallOption) (*btapb.Instance, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) ListInstances(ctx context.Context, in *btapb.ListInstancesRequest, opts ...grpc.CallOption) (*btapb.ListInstancesResponse, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) UpdateInstance(ctx context.Context, in *btapb.Instance, opts ...grpc.CallOption) (*btapb.Instance, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) PartialUpdateInstance(ctx context.Context, in *btapb.PartialUpdateInstanceRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) DeleteInstance(ctx context.Context, in *btapb.DeleteInstanceRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) CreateCluster(ctx context.Context, in *btapb.CreateClusterRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) GetCluster(ctx context.Context, in *btapb.GetClusterRequest, opts ...grpc.CallOption) (*btapb.Cluster, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) UpdateCluster(ctx context.Context, in *btapb.Cluster, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) DeleteCluster(ctx context.Context, in *btapb.DeleteClusterRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) CreateAppProfile(ctx context.Context, in *btapb.CreateAppProfileRequest, opts ...grpc.CallOption) (*btapb.AppProfile, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) GetAppProfile(ctx context.Context, in *btapb.GetAppProfileRequest, opts ...grpc.CallOption) (*btapb.AppProfile, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) ListAppProfiles(ctx context.Context, in *btapb.ListAppProfilesRequest, opts ...grpc.CallOption) (*btapb.ListAppProfilesResponse, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) UpdateAppProfile(ctx context.Context, in *btapb.UpdateAppProfileRequest, opts ...grpc.CallOption) (*longrunning.Operation, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) DeleteAppProfile(ctx context.Context, in *btapb.DeleteAppProfileRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) GetIamPolicy(ctx context.Context, in *v1.GetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) SetIamPolicy(ctx context.Context, in *v1.SetIamPolicyRequest, opts ...grpc.CallOption) (*v1.Policy, error) {
+	return nil, nil
+}
+
+func (iacm *instanceAdminClientMock) TestIamPermissions(ctx context.Context, in *v1.TestIamPermissionsRequest, opts ...grpc.CallOption) (*v1.TestIamPermissionsResponse, error) {
+	return nil, nil
+}
+
+func TestIntegration_InstanceAdminClient_Clusters_WithFailedLocations(t *testing.T) {
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support snapshots")
+	}
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	cluster1 := btapb.Cluster{Name: "cluster1"}
+	failedLoc := "euro1"
+
+	iAdminClient.iClient = &instanceAdminClientMock{
+		Clusters:             []*btapb.Cluster{&cluster1},
+		UnavailableLocations: []string{failedLoc},
+	}
+
+	cis, err := iAdminClient.Clusters(context.Background(), "instance-id")
+	convertedErr, ok := err.(ErrPartiallyUnavailable)
+	if !ok {
+		t.Fatalf("want error ErrPartiallyUnavailable, got other")
+	}
+	if got, want := len(convertedErr.Locations), 1; got != want {
+		t.Fatalf("want %v failed locations, got %v", want, got)
+	}
+	if got, want := convertedErr.Locations[0], failedLoc; got != want {
+		t.Fatalf("want failed location %v, got %v", want, got)
+	}
+	if got, want := len(cis), 1; got != want {
+		t.Fatalf("want %v failed locations, got %v", want, got)
+	}
+	if got, want := cis[0].Name, cluster1.Name; got != want {
+		t.Fatalf("want cluster %v, got %v", want, got)
+	}
+}
+
 func TestIntegration_Granularity(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
@@ -1845,18 +2071,15 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	createdProfile, err := iAdminClient.CreateAppProfile(ctx, profile)
 	if err != nil {
 		t.Fatalf("Creating app profile: %v", err)
-
 	}
 
 	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
-
 	if err != nil {
 		t.Fatalf("Get app profile: %v", err)
 	}
 
 	if !proto.Equal(createdProfile, gotProfile) {
 		t.Fatalf("created profile: %s, got profile: %s", createdProfile.Name, gotProfile.Name)
-
 	}
 
 	list := func(instanceID string) ([]*btapb.AppProfile, error) {
@@ -1903,7 +2126,8 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				Name:          gotProfile.Name,
 				Description:   "",
 				RoutingPolicy: gotProfile.RoutingPolicy,
-				Etag:          gotProfile.Etag},
+				Etag:          gotProfile.Etag,
+			},
 		},
 		{
 			desc: "routing update",
@@ -1918,7 +2142,8 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
 					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
 						ClusterId: testEnv.Config().Cluster,
-					}},
+					},
+				},
 			},
 		},
 	} {
@@ -1946,7 +2171,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Delete app profile: %v", err)
 	}
-
 }
 
 func TestIntegration_InstanceUpdate(t *testing.T) {
@@ -2068,9 +2292,10 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Create backup
+	backupName := "mybackup"
 	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
 
-	if err = adminClient.CreateBackup(ctx, table, cluster, "mybackup", time.Now().Add(8*time.Hour)); err != nil {
+	if err = adminClient.CreateBackup(ctx, table, cluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
@@ -2082,7 +2307,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	if got, want := len(backups), 1; got != want {
 		t.Fatalf("Listing backup count: %d, want: %d", got, want)
 	}
-	if got, want := backups[0].Name, "mybackup"; got != want {
+	if got, want := backups[0].Name, backupName; got != want {
 		t.Fatalf("Backup name: %s, want: %s", got, want)
 	}
 	if got, want := backups[0].SourceTable, table; got != want {
@@ -2093,7 +2318,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	backup, err := adminClient.BackupInfo(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
@@ -2103,13 +2328,13 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Update backup
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, cluster, "mybackup", newExpireTime)
+	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, "mybackup")
+	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
@@ -2122,7 +2347,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	// Restore backup
 	restoredTable := table + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, "mybackup"); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, backupName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
@@ -2130,7 +2355,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, cluster, "mybackup"); err != nil {
+	if err = adminClient.DeleteBackup(ctx, cluster, backupName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
 	backups, err = list(cluster)
@@ -2140,6 +2365,81 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	if got, want := len(backups), 0; got != want {
 		t.Fatalf("List after delete len: %d, want: %d", got, want)
 	}
+}
+
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	ctx := context.Background()
+	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer cleanup()
+
+	if !testEnv.Config().AttemptDirectPath {
+		t.Skip()
+	}
+
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	if err := populatePresidentsGraph(table); err != nil {
+		t.Fatal(err)
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	dpEnabled := examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeDirectPath(testEnv, t)
+	dpDisabled := examineTraffic(ctx, testEnv, table, true)
+	if !dpDisabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	allowDirectPath(testEnv, t)
+	dpEnabled = examineTraffic(ctx, testEnv, table, false)
+	if !dpEnabled {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
+// examineTraffic returns whether RPCs use DirectPath (blackholeDP = false) or CFE (blackholeDP = true).
+func examineTraffic(ctx context.Context, testEnv IntegrationEnv, table *Table, blackholeDP bool) bool {
+	numCount := 0
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+
+	start := time.Now()
+	for time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = table.ReadRow(ctx, "j§adams")
+			if _, useDP := isDirectPathRemoteAddress(testEnv); useDP != blackholeDP {
+				numCount++
+				if numCount >= minCompleteRPC {
+					return true
+				}
+			}
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
+	return false
 }
 
 func setupIntegration(ctx context.Context, t *testing.T) (_ IntegrationEnv, _ *Client, _ *AdminClient, table *Table, tableName string, cleanup func(), _ error) {
@@ -2227,9 +2527,9 @@ func deleteTable(ctx context.Context, t *testing.T, ac *AdminClient, name string
 	err := internal.Retry(ctx, bo, func() (bool, error) {
 		err := ac.DeleteTable(ctx, name)
 		if err != nil {
-			return true, err
+			return false, err
 		}
-		return false, nil
+		return true, nil
 	})
 	if err != nil {
 		t.Logf("DeleteTable: %v", err)
@@ -2258,4 +2558,28 @@ func isDirectPathRemoteAddress(testEnv IntegrationEnv) (_ string, _ bool) {
 	}
 	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
 	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+func blackholeDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
+}
+
+func allowDirectPath(testEnv IntegrationEnv, t *testing.T) {
+	cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+	out, _ := cmdRes.CombinedOutput()
+	t.Logf(string(out))
+	if testEnv.Config().DirectPathIPV4Only {
+		return
+	}
+	cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+	out, _ = cmdRes.CombinedOutput()
+	t.Logf(string(out))
 }

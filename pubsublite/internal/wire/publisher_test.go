@@ -47,7 +47,7 @@ type testPartitionPublisher struct {
 
 func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, settings PublishSettings) *testPartitionPublisher {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func newTestSinglePartitionPublisher(t *testing.T, topic topicPartition, setting
 	tp := &testPartitionPublisher{
 		pub: pubFactory.New(topic.Partition),
 	}
-	tp.initAndStart(t, tp.pub, "Publisher")
+	tp.initAndStart(t, tp.pub, "Publisher", pubClient)
 	return tp
 }
 
@@ -196,8 +196,7 @@ func TestSinglePartitionPublisherResendMessages(t *testing.T) {
 	// The publisher should resend all in-flight batches to the second stream.
 	stream2 := test.NewRPCVerifier(t)
 	stream2.Push(initPubReq(topic), initPubResp(), nil)
-	stream2.Push(msgPubReq(msg1), msgPubResp(0), nil)
-	stream2.Push(msgPubReq(msg2), msgPubResp(1), nil)
+	stream2.Push(msgPubReq(msg1, msg2), msgPubResp(0), nil)
 	stream2.Push(msgPubReq(msg3), msgPubResp(2), nil)
 	verifiers.AddPublishStream(topic.Path, topic.Partition, stream2)
 
@@ -506,14 +505,15 @@ type testRoutingPublisher struct {
 
 func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSettings, fakeSourceVal int64) *testRoutingPublisher {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
-	adminClient, err := NewAdminClient(ctx, "ignored", testClientOpts...)
+	adminClient, err := NewAdminClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
+	allClients := apiClients{pubClient, adminClient}
 
 	source := &test.FakeSource{Ret: fakeSourceVal}
 	msgRouterFactory := newMessageRouterFactory(rand.New(source))
@@ -523,7 +523,7 @@ func newTestRoutingPublisher(t *testing.T, topicPath string, settings PublishSet
 		settings:  settings,
 		topicPath: topicPath,
 	}
-	pub := newRoutingPublisher(adminClient, msgRouterFactory, pubFactory)
+	pub := newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory)
 	pub.Start()
 	return &testRoutingPublisher{t: t, pub: pub}
 }

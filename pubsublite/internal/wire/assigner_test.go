@@ -62,8 +62,7 @@ func fakeGenerateUUID() (uuid.UUID, error) {
 // testAssigner wraps an assigner for ease of testing.
 type testAssigner struct {
 	// Fake error to simulate receiver unable to handle assignment.
-	RetError error
-
+	recvError  error
 	t          *testing.T
 	asn        *assigner
 	partitions chan []int
@@ -71,14 +70,15 @@ type testAssigner struct {
 	serviceTestProxy
 }
 
-func newTestAssigner(t *testing.T, subscription string) *testAssigner {
+func newTestAssigner(t *testing.T, subscription string, recvErr error) *testAssigner {
 	ctx := context.Background()
-	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testClientOpts...)
+	assignmentClient, err := newPartitionAssignmentClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
 
 	ta := &testAssigner{
+		recvError:  recvErr,
 		t:          t,
 		partitions: make(chan []int, 1),
 	}
@@ -87,7 +87,7 @@ func newTestAssigner(t *testing.T, subscription string) *testAssigner {
 		t.Fatal(err)
 	}
 	ta.asn = asn
-	ta.initAndStart(t, ta.asn, "Assigner")
+	ta.initAndStart(t, ta.asn, "Assigner", assignmentClient)
 	return ta
 }
 
@@ -96,8 +96,8 @@ func (ta *testAssigner) receiveAssignment(partitions partitionSet) error {
 	sort.Ints(p)
 	ta.partitions <- p
 
-	if ta.RetError != nil {
-		return ta.RetError
+	if ta.recvError != nil {
+		return ta.recvError
 	}
 	return nil
 }
@@ -123,7 +123,7 @@ func TestAssignerNoInitialResponse(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	asn := newTestAssigner(t, subscription)
+	asn := newTestAssigner(t, subscription, nil)
 
 	// Assigner starts even though no initial response was received from the
 	// server.
@@ -157,7 +157,7 @@ func TestAssignerReconnect(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	asn := newTestAssigner(t, subscription)
+	asn := newTestAssigner(t, subscription, nil)
 
 	if gotErr := asn.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
@@ -184,17 +184,14 @@ func TestAssignerHandlePartitionFailure(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	asn := newTestAssigner(t, subscription)
 	// Simulates the assigningSubscriber discarding assignments.
-	asn.RetError = errors.New("subscriber shutting down")
+	wantErr := errors.New("subscriber shutting down")
+	asn := newTestAssigner(t, subscription, wantErr)
 
-	if gotErr := asn.StartError(); gotErr != nil {
-		t.Errorf("Start() got err: (%v)", gotErr)
+	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, wantErr) {
+		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 	if got, want := asn.NextPartitions(), []int{1, 2}; !testutil.Equal(got, want) {
 		t.Errorf("Partition assignments: got %v, want %v", got, want)
-	}
-	if gotErr := asn.FinalError(); !test.ErrorEqual(gotErr, asn.RetError) {
-		t.Errorf("Final err: (%v), want: (%v)", gotErr, asn.RetError)
 	}
 }

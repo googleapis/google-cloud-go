@@ -1,0 +1,191 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.pubsub.v1",
+  "libraryPackage": "cloud.google.com/go/pubsub/apiv1",
+  "services": {
+    "Publisher": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PublisherClient",
+          "rpcs": {
+            "CreateTopic": {
+              "methods": [
+                "CreateTopic"
+              ]
+            },
+            "DeleteTopic": {
+              "methods": [
+                "DeleteTopic"
+              ]
+            },
+            "DetachSubscription": {
+              "methods": [
+                "DetachSubscription"
+              ]
+            },
+            "GetTopic": {
+              "methods": [
+                "GetTopic"
+              ]
+            },
+            "ListTopicSnapshots": {
+              "methods": [
+                "ListTopicSnapshots"
+              ]
+            },
+            "ListTopicSubscriptions": {
+              "methods": [
+                "ListTopicSubscriptions"
+              ]
+            },
+            "ListTopics": {
+              "methods": [
+                "ListTopics"
+              ]
+            },
+            "Publish": {
+              "methods": [
+                "Publish"
+              ]
+            },
+            "UpdateTopic": {
+              "methods": [
+                "UpdateTopic"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SchemaService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SchemaClient",
+          "rpcs": {
+            "CreateSchema": {
+              "methods": [
+                "CreateSchema"
+              ]
+            },
+            "DeleteSchema": {
+              "methods": [
+                "DeleteSchema"
+              ]
+            },
+            "GetSchema": {
+              "methods": [
+                "GetSchema"
+              ]
+            },
+            "ListSchemas": {
+              "methods": [
+                "ListSchemas"
+              ]
+            },
+            "ValidateMessage": {
+              "methods": [
+                "ValidateMessage"
+              ]
+            },
+            "ValidateSchema": {
+              "methods": [
+                "ValidateSchema"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Subscriber": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SubscriberClient",
+          "rpcs": {
+            "Acknowledge": {
+              "methods": [
+                "Acknowledge"
+              ]
+            },
+            "CreateSnapshot": {
+              "methods": [
+                "CreateSnapshot"
+              ]
+            },
+            "CreateSubscription": {
+              "methods": [
+                "CreateSubscription"
+              ]
+            },
+            "DeleteSnapshot": {
+              "methods": [
+                "DeleteSnapshot"
+              ]
+            },
+            "DeleteSubscription": {
+              "methods": [
+                "DeleteSubscription"
+              ]
+            },
+            "GetSnapshot": {
+              "methods": [
+                "GetSnapshot"
+              ]
+            },
+            "GetSubscription": {
+              "methods": [
+                "GetSubscription"
+              ]
+            },
+            "ListSnapshots": {
+              "methods": [
+                "ListSnapshots"
+              ]
+            },
+            "ListSubscriptions": {
+              "methods": [
+                "ListSubscriptions"
+              ]
+            },
+            "ModifyAckDeadline": {
+              "methods": [
+                "ModifyAckDeadline"
+              ]
+            },
+            "ModifyPushConfig": {
+              "methods": [
+                "ModifyPushConfig"
+              ]
+            },
+            "Pull": {
+              "methods": [
+                "Pull"
+              ]
+            },
+            "Seek": {
+              "methods": [
+                "Seek"
+              ]
+            },
+            "StreamingPull": {
+              "methods": [
+                "StreamingPull"
+              ]
+            },
+            "UpdateSnapshot": {
+              "methods": [
+                "UpdateSnapshot"
+              ]
+            },
+            "UpdateSubscription": {
+              "methods": [
+                "UpdateSubscription"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

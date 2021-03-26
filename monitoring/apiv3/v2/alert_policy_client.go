@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -186,7 +186,7 @@ func (c *AlertPolicyClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListAlertPolicies lists the existing alerting policies for the project.
+// ListAlertPolicies lists the existing alerting policies for the workspace.
 func (c *AlertPolicyClient) ListAlertPolicies(ctx context.Context, req *monitoringpb.ListAlertPoliciesRequest, opts ...gax.CallOption) *AlertPolicyIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

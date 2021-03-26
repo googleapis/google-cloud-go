@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/big"
 	"os"
 	"strings"
 	"testing"
@@ -825,6 +826,112 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 			}
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
 		})
+	}
+}
+
+func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return err
+			}
+			rowCount++
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		return nil
+	}, TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+		ctx,
+		client,
+		TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating transaction: %v", err)
+	}
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Unexpected error when fetching query results: %v", err)
+		}
+		var singerID, albumID int64
+		var albumTitle string
+		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+			t.Fatalf("Unexpected error when getting query data: %v", err)
+		}
+		rowCount++
+	}
+	resp, err := tx.CommitWithReturnResp(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error when committing transaction: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Errorf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
+func TestClient_ReadWriteTransaction_DoNotLeakSessionOnPanic(t *testing.T) {
+	// Make sure that there is always only one session in the pool.
+	sc := SessionPoolConfig{
+		MinOpened: 1,
+		MaxOpened: 1,
+	}
+	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{SessionPoolConfig: sc})
+	defer teardown()
+	ctx := context.Background()
+
+	// If a panic occurs during a transaction, the session will not leak.
+	func() {
+		defer func() { recover() }()
+
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			panic("cause panic")
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("Unexpected error during transaction: %v", err)
+		}
+	}()
+
+	if g, w := client.idleSessions.idleList.Len(), 1; g != w {
+		t.Fatalf("idle session count mismatch.\nGot: %v\nWant: %v", g, w)
 	}
 }
 
@@ -2427,5 +2534,62 @@ func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServe
 	want := ro.Priority
 	if got != want {
 		t.Fatalf("Commit priority mismatch\nGot: %v\nWant: %v", got, want)
+	}
+}
+
+func TestClient_Single_Read_WithNumericKey(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{*big.NewRat(1, 1)}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
+	t.Parallel()
+
+	minOpened := uint64(5)
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MinOpened: minOpened,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+	server.TestSpanner.Freeze()
+	defer server.TestSpanner.Unfreeze()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	sp.close(ctx)
+
+	if w, g := context.DeadlineExceeded, ctx.Err(); w != g {
+		t.Fatalf("context error mismatch\nWant: %v\nGot: %v", w, g)
 	}
 }

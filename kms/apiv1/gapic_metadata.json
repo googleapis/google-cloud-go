@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.kms.v1",
+  "libraryPackage": "cloud.google.com/go/kms/apiv1",
+  "services": {
+    "KeyManagementService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "KeyManagementClient",
+          "rpcs": {
+            "AsymmetricDecrypt": {
+              "methods": [
+                "AsymmetricDecrypt"
+              ]
+            },
+            "AsymmetricSign": {
+              "methods": [
+                "AsymmetricSign"
+              ]
+            },
+            "CreateCryptoKey": {
+              "methods": [
+                "CreateCryptoKey"
+              ]
+            },
+            "CreateCryptoKeyVersion": {
+              "methods": [
+                "CreateCryptoKeyVersion"
+              ]
+            },
+            "CreateImportJob": {
+              "methods": [
+                "CreateImportJob"
+              ]
+            },
+            "CreateKeyRing": {
+              "methods": [
+                "CreateKeyRing"
+              ]
+            },
+            "Decrypt": {
+              "methods": [
+                "Decrypt"
+              ]
+            },
+            "DestroyCryptoKeyVersion": {
+              "methods": [
+                "DestroyCryptoKeyVersion"
+              ]
+            },
+            "Encrypt": {
+              "methods": [
+                "Encrypt"
+              ]
+            },
+            "GetCryptoKey": {
+              "methods": [
+                "GetCryptoKey"
+              ]
+            },
+            "GetCryptoKeyVersion": {
+              "methods": [
+                "GetCryptoKeyVersion"
+              ]
+            },
+            "GetImportJob": {
+              "methods": [
+                "GetImportJob"
+              ]
+            },
+            "GetKeyRing": {
+              "methods": [
+                "GetKeyRing"
+              ]
+            },
+            "GetPublicKey": {
+              "methods": [
+                "GetPublicKey"
+              ]
+            },
+            "ImportCryptoKeyVersion": {
+              "methods": [
+                "ImportCryptoKeyVersion"
+              ]
+            },
+            "ListCryptoKeyVersions": {
+              "methods": [
+                "ListCryptoKeyVersions"
+              ]
+            },
+            "ListCryptoKeys": {
+              "methods": [
+                "ListCryptoKeys"
+              ]
+            },
+            "ListImportJobs": {
+              "methods": [
+                "ListImportJobs"
+              ]
+            },
+            "ListKeyRings": {
+              "methods": [
+                "ListKeyRings"
+              ]
+            },
+            "RestoreCryptoKeyVersion": {
+              "methods": [
+                "RestoreCryptoKeyVersion"
+              ]
+            },
+            "UpdateCryptoKey": {
+              "methods": [
+                "UpdateCryptoKey"
+              ]
+            },
+            "UpdateCryptoKeyPrimaryVersion": {
+              "methods": [
+                "UpdateCryptoKeyPrimaryVersion"
+              ]
+            },
+            "UpdateCryptoKeyVersion": {
+              "methods": [
+                "UpdateCryptoKeyVersion"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

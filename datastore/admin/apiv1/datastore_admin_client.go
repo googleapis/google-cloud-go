@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -44,6 +44,8 @@ var newDatastoreAdminClientHook clientHook
 type DatastoreAdminCallOptions struct {
 	ExportEntities []gax.CallOption
 	ImportEntities []gax.CallOption
+	CreateIndex    []gax.CallOption
+	DeleteIndex    []gax.CallOption
 	GetIndex       []gax.CallOption
 	ListIndexes    []gax.CallOption
 }
@@ -64,6 +66,8 @@ func defaultDatastoreAdminCallOptions() *DatastoreAdminCallOptions {
 	return &DatastoreAdminCallOptions{
 		ExportEntities: []gax.CallOption{},
 		ImportEntities: []gax.CallOption{},
+		CreateIndex:    []gax.CallOption{},
+		DeleteIndex:    []gax.CallOption{},
 		GetIndex: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -289,6 +293,76 @@ func (c *DatastoreAdminClient) ImportEntities(ctx context.Context, req *adminpb.
 	}, nil
 }
 
+// CreateIndex creates the specified index.
+// A newly created index’s initial state is CREATING. On completion of the
+// returned google.longrunning.Operation, the state will be READY.
+// If the index already exists, the call will return an ALREADY_EXISTS
+// status.
+//
+// During index creation, the process could result in an error, in which
+// case the index will move to the ERROR state. The process can be recovered
+// by fixing the data that caused the error, removing the index with
+// delete, then
+// re-creating the index with [create]
+// [google.datastore.admin.v1.DatastoreAdmin.CreateIndex].
+//
+// Indexes with a single property cannot be created.
+func (c *DatastoreAdminClient) CreateIndex(ctx context.Context, req *adminpb.CreateIndexRequest, opts ...gax.CallOption) (*CreateIndexOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "project_id", url.QueryEscape(req.GetProjectId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateIndex[0:len(c.CallOptions.CreateIndex):len(c.CallOptions.CreateIndex)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datastoreAdminClient.CreateIndex(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateIndexOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// DeleteIndex deletes an existing index.
+// An index can only be deleted if it is in a READY or ERROR state. On
+// successful execution of the request, the index will be in a DELETING
+// state. And on completion of the
+// returned google.longrunning.Operation, the index will be removed.
+//
+// During index deletion, the process could result in an error, in which
+// case the index will move to the ERROR state. The process can be recovered
+// by fixing the data that caused the error, followed by calling
+// delete again.
+func (c *DatastoreAdminClient) DeleteIndex(ctx context.Context, req *adminpb.DeleteIndexRequest, opts ...gax.CallOption) (*DeleteIndexOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "index_id", url.QueryEscape(req.GetIndexId())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteIndex[0:len(c.CallOptions.DeleteIndex):len(c.CallOptions.DeleteIndex)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.datastoreAdminClient.DeleteIndex(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &DeleteIndexOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
 // GetIndex gets an index.
 func (c *DatastoreAdminClient) GetIndex(ctx context.Context, req *adminpb.GetIndexRequest, opts ...gax.CallOption) (*adminpb.Index, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
@@ -352,6 +426,144 @@ func (c *DatastoreAdminClient) ListIndexes(ctx context.Context, req *adminpb.Lis
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// CreateIndexOperation manages a long-running operation from CreateIndex.
+type CreateIndexOperation struct {
+	lro *longrunning.Operation
+}
+
+// CreateIndexOperation returns a new CreateIndexOperation from a given name.
+// The name must be that of a previously created CreateIndexOperation, possibly from a different process.
+func (c *DatastoreAdminClient) CreateIndexOperation(name string) *CreateIndexOperation {
+	return &CreateIndexOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *CreateIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.Index, error) {
+	var resp adminpb.Index
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *CreateIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.Index, error) {
+	var resp adminpb.Index
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *CreateIndexOperation) Metadata() (*adminpb.IndexOperationMetadata, error) {
+	var meta adminpb.IndexOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *CreateIndexOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *CreateIndexOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DeleteIndexOperation manages a long-running operation from DeleteIndex.
+type DeleteIndexOperation struct {
+	lro *longrunning.Operation
+}
+
+// DeleteIndexOperation returns a new DeleteIndexOperation from a given name.
+// The name must be that of a previously created DeleteIndexOperation, possibly from a different process.
+func (c *DatastoreAdminClient) DeleteIndexOperation(name string) *DeleteIndexOperation {
+	return &DeleteIndexOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DeleteIndexOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*adminpb.Index, error) {
+	var resp adminpb.Index
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DeleteIndexOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*adminpb.Index, error) {
+	var resp adminpb.Index
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DeleteIndexOperation) Metadata() (*adminpb.IndexOperationMetadata, error) {
+	var meta adminpb.IndexOperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DeleteIndexOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DeleteIndexOperation) Name() string {
+	return op.lro.Name()
 }
 
 // ExportEntitiesOperation manages a long-running operation from ExportEntities.

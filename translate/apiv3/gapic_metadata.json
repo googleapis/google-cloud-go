@@ -1,0 +1,58 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.translation.v3",
+  "libraryPackage": "cloud.google.com/go/translate/apiv3",
+  "services": {
+    "TranslationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TranslationClient",
+          "rpcs": {
+            "BatchTranslateText": {
+              "methods": [
+                "BatchTranslateText"
+              ]
+            },
+            "CreateGlossary": {
+              "methods": [
+                "CreateGlossary"
+              ]
+            },
+            "DeleteGlossary": {
+              "methods": [
+                "DeleteGlossary"
+              ]
+            },
+            "DetectLanguage": {
+              "methods": [
+                "DetectLanguage"
+              ]
+            },
+            "GetGlossary": {
+              "methods": [
+                "GetGlossary"
+              ]
+            },
+            "GetSupportedLanguages": {
+              "methods": [
+                "GetSupportedLanguages"
+              ]
+            },
+            "ListGlossaries": {
+              "methods": [
+                "ListGlossaries"
+              ]
+            },
+            "TranslateText": {
+              "methods": [
+                "TranslateText"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

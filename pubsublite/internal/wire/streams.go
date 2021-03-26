@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -32,11 +33,13 @@ import (
 type streamStatus int
 
 const (
-	streamUninitialized streamStatus = 0
-	streamReconnecting  streamStatus = 1
-	streamConnected     streamStatus = 2
-	streamTerminated    streamStatus = 3
+	streamUninitialized streamStatus = iota
+	streamReconnecting
+	streamConnected
+	streamTerminated
 )
+
+type initialResponseRequired bool
 
 // streamHandler provides hooks for different Pub/Sub Lite streaming APIs
 // (e.g. publish, subscribe, streaming cursor, etc.) to use retryableStream.
@@ -56,7 +59,7 @@ type streamHandler interface {
 	newStream(context.Context) (grpc.ClientStream, error)
 	// initialRequest should return the initial request and whether an initial
 	// response is expected.
-	initialRequest() (interface{}, bool)
+	initialRequest() (interface{}, initialResponseRequired)
 	validateInitialResponse(interface{}) error
 
 	// onStreamStatusChange is used to notify stream handlers when the stream has
@@ -120,10 +123,9 @@ func (rs *retryableStream) Start() {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 
-	if rs.status != streamUninitialized {
-		return
+	if rs.status == streamUninitialized {
+		go rs.connectStream()
 	}
-	go rs.connectStream()
 }
 
 // Stop gracefully closes the stream without error.
@@ -136,6 +138,7 @@ func (rs *retryableStream) Stop() {
 // in progress.
 func (rs *retryableStream) Send(request interface{}) (sent bool) {
 	rs.mu.Lock()
+	defer rs.mu.Unlock()
 
 	if rs.stream != nil {
 		err := rs.stream.SendMsg(request)
@@ -150,13 +153,9 @@ func (rs *retryableStream) Send(request interface{}) (sent bool) {
 		case isRetryableSendError(err):
 			go rs.connectStream()
 		default:
-			rs.mu.Unlock() // terminate acquires the mutex.
-			rs.terminate(err)
-			return
+			rs.unsafeTerminate(err)
 		}
 	}
-
-	rs.mu.Unlock()
 	return
 }
 
@@ -196,6 +195,8 @@ func (rs *retryableStream) unsafeClearStream() {
 func (rs *retryableStream) setCancel(cancel context.CancelFunc) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
+
+	rs.unsafeClearStream()
 	rs.cancelStream = cancel
 }
 
@@ -257,14 +258,6 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 	r := newStreamRetryer(rs.timeout)
 	for {
 		backoff, shouldRetry := func() (time.Duration, bool) {
-			defer func() {
-				if err != nil && cancelFunc != nil {
-					cancelFunc()
-					cancelFunc = nil
-					newStream = nil
-				}
-			}()
-
 			var cctx context.Context
 			cctx, cancelFunc = context.WithCancel(rs.ctx)
 			// Store the cancel func to quickly cancel reconnecting if the stream is
@@ -286,6 +279,7 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 				}
 				if err = rs.handler.validateInitialResponse(response); err != nil {
 					// An unexpected initial response from the server is a permanent error.
+					cancelFunc()
 					return 0, false
 				}
 			}
@@ -294,10 +288,17 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 			return 0, false
 		}()
 
-		if !shouldRetry {
+		if (shouldRetry || err != nil) && cancelFunc != nil {
+			// Ensure that streams aren't leaked.
+			cancelFunc()
+			cancelFunc = nil
+			newStream = nil
+		}
+		if !shouldRetry || rs.Status() == streamTerminated {
 			break
 		}
-		if rs.Status() == streamTerminated {
+		if r.ExceededDeadline() {
+			err = xerrors.Errorf("%v: %w", err, ErrBackendUnavailable)
 			break
 		}
 		if err = gax.Sleep(rs.ctx, backoff); err != nil {
@@ -337,7 +338,10 @@ func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 func (rs *retryableStream) terminate(err error) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
+	rs.unsafeTerminate(err)
+}
 
+func (rs *retryableStream) unsafeTerminate(err error) {
 	if rs.status == streamTerminated {
 		return
 	}
