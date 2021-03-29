@@ -47,12 +47,11 @@ func main() {
 		log.Fatalln("Missing required flag: -repo-metadata")
 	}
 
-	head, err := exec("git", "log", "-1")
+	head, err := exec("git", "log", "-2")
 	if err != nil {
 		log.Fatalln(err)
 	}
-	if strings.Contains(head, "BREAKING_CHANGE") {
-		log.Println("Not running apidiff because description contained tag BREAKING_CHANGE.")
+	if checkAllowBreakingChange(head) {
 		return
 	}
 
@@ -127,11 +126,6 @@ func diffModules(root, baseDir string, m manifest) (map[string]string, map[strin
 	issues := map[string]error{}
 
 	for imp, entry := range m {
-		// Only diff stable clients.
-		if entry.ReleaseLevel != "ga" {
-			continue
-		}
-
 		// Prepare module directory paths relative to the repo root.
 		pkg := strings.TrimPrefix(imp, rootMod+"/")
 		baseModDir := baseDir
@@ -218,6 +212,23 @@ func diff(m manifest, modDir, imp, pkg, base string) (string, error) {
 	}
 
 	return out, err
+}
+
+func checkAllowBreakingChange(commit string) bool {
+	if strings.Contains(commit, "BREAKING CHANGE:") {
+		log.Println("Not running apidiff because description contained tag BREAKING_CHANGE.")
+		return true
+	}
+
+	split := strings.Split(commit, "\n")
+	for _, s := range split {
+		if strings.Contains(s, "!:") || strings.Contains(s, "!(") {
+			log.Println("Not running apidiff because description contained breaking change indicator '!'.")
+			return true
+		}
+	}
+
+	return false
 }
 
 func manualParent(m manifest, imp string) string {

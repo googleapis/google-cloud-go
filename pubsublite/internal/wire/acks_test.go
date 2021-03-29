@@ -117,6 +117,7 @@ func TestAckTrackerRelease(t *testing.T) {
 	ack1 := newAckConsumer(1, 0, emptyAckConsumer)
 	ack2 := newAckConsumer(2, 0, onAckAfterRelease)
 	ack3 := newAckConsumer(3, 0, onAckAfterRelease)
+	ack4 := newAckConsumer(4, 0, onAckAfterRelease)
 
 	if err := ackTracker.Push(ack1); err != nil {
 		t.Errorf("ackTracker.Push() got err %v", err)
@@ -135,6 +136,15 @@ func TestAckTrackerRelease(t *testing.T) {
 	ackTracker.Release()
 	ack2.Ack()
 	ack3.Ack()
+
+	// New acks should be cleared and discarded.
+	if err := ackTracker.Push(ack4); err != nil {
+		t.Errorf("ackTracker.Push() got err %v", err)
+	}
+	if got, want := ackTracker.Empty(), true; got != want {
+		t.Errorf("ackTracker.Empty() got %v, want %v", got, want)
+	}
+	ack4.Ack()
 
 	if got, want := ackTracker.CommitOffset(), int64(2); got != want {
 		t.Errorf("ackTracker.CommitOffset() got %v, want %v", got, want)

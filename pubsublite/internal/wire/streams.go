@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 
 	gax "github.com/googleapis/gax-go/v2"
@@ -32,10 +33,10 @@ import (
 type streamStatus int
 
 const (
-	streamUninitialized streamStatus = 0
-	streamReconnecting  streamStatus = 1
-	streamConnected     streamStatus = 2
-	streamTerminated    streamStatus = 3
+	streamUninitialized streamStatus = iota
+	streamReconnecting
+	streamConnected
+	streamTerminated
 )
 
 type initialResponseRequired bool
@@ -257,14 +258,6 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 	r := newStreamRetryer(rs.timeout)
 	for {
 		backoff, shouldRetry := func() (time.Duration, bool) {
-			defer func() {
-				if err != nil && cancelFunc != nil {
-					cancelFunc()
-					cancelFunc = nil
-					newStream = nil
-				}
-			}()
-
 			var cctx context.Context
 			cctx, cancelFunc = context.WithCancel(rs.ctx)
 			// Store the cancel func to quickly cancel reconnecting if the stream is
@@ -286,6 +279,7 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 				}
 				if err = rs.handler.validateInitialResponse(response); err != nil {
 					// An unexpected initial response from the server is a permanent error.
+					cancelFunc()
 					return 0, false
 				}
 			}
@@ -294,10 +288,17 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 			return 0, false
 		}()
 
-		if !shouldRetry {
+		if (shouldRetry || err != nil) && cancelFunc != nil {
+			// Ensure that streams aren't leaked.
+			cancelFunc()
+			cancelFunc = nil
+			newStream = nil
+		}
+		if !shouldRetry || rs.Status() == streamTerminated {
 			break
 		}
-		if rs.Status() == streamTerminated {
+		if r.ExceededDeadline() {
+			err = xerrors.Errorf("%v: %w", err, ErrBackendUnavailable)
 			break
 		}
 		if err = gax.Sleep(rs.ctx, backoff); err != nil {
