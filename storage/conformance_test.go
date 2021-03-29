@@ -103,13 +103,13 @@ func TestRetryConformance(t *testing.T) {
 	_, _, testFiles := parseFiles(t)
 	for _, testFile := range(testFiles) {
 		for _, tc := range(testFile.RetryTests) {
-			for _, instr := range(tc.Instructions) {
+			for _, instructions := range(tc.Cases) {
 				for _, m := range(tc.Methods) {
 					if len(methods[m]) == 0 {
 						t.Logf("No tests for operation %v", m)
 					}
 					for i, f := range(methods[m]){
-						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Description, instr, m, i)
+						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Description, instructions, m, i)
 						t.Run(testName, func(t *testing.T) {
 							// Setup bucket and object
 							// TODO: customize this by operation.
@@ -126,7 +126,7 @@ func TestRetryConformance(t *testing.T) {
 							}
 
 							// Create wrapped client which will send emulator instructions.
-							wrapped, err := wrappedClient(instr)
+							wrapped, err := wrappedClient(instructions.Instructions)
 							if err != nil {
 								t.Errorf("error creating wrapped client: %v", err)
 							}
@@ -150,16 +150,15 @@ func TestRetryConformance(t *testing.T) {
 
 type withInstruction struct {
 	rt      http.RoundTripper
-	instr   string
-	retries int
+	instructions   []string
 }
 
 func (wi *withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
-	if wi.retries > 0 {
-		r.Header.Set("x-goog-testbench-instructions", wi.instr)
-		wi.retries -= 1
+	if len(wi.instructions) > 0 {
+		r.Header.Set("x-goog-testbench-instructions", wi.instructions[0])
+		wi.instructions = wi.instructions[1:]
 	}
-	log.Printf("Request: %+v\nRetries: %v\n\n", r, wi.retries)
+	log.Printf("Request: %+v\nRemaining instructions: %v\n\n", r, wi.instructions)
 	resp, err := wi.rt.RoundTrip(r)
 	//if err != nil{
 	//	log.Printf("Error: %+v", err)
@@ -168,7 +167,7 @@ func (wi *withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 // Create custom client that sends instruction
-func wrappedClient(instruction string) (*Client, error) {
+func wrappedClient(instructions []string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
 	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
@@ -179,8 +178,7 @@ func wrappedClient(instruction string) (*Client, error) {
 	c := http.Client{Transport: trans}
 
 	// Add RoundTripper to the created HTTP client.
-	instr := instruction
-	wrappedTrans := &withInstruction{rt: c.Transport, instr: instr, retries: 2}
+	wrappedTrans := &withInstruction{rt: c.Transport, instructions: instructions}
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient

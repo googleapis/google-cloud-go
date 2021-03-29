@@ -2,21 +2,51 @@
   "retryTests": [
     {
       "description": "always idempotent, retryable errors",
-      "instructions": ["return-503", "reset-connection"],
-      "methods": ["storage.objects.get", "storage.buckets.get"],
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],      "methods": ["storage.objects.get", "storage.buckets.get"],
       "preconditionProvided": false,
       "expectSuccess": true
     },
     {
       "description": "always idempotent, retryable errors",
-      "instructions": ["return-503", "reset-connection"],
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],
       "methods": ["storage.objects.get", "storage.buckets.get"],
       "preconditionProvided": true,
       "expectSuccess": true
     },
     {
       "description": "always idempotent, non-retryable errors",
-      "instructions": ["return-400", "return-401"],
+      "cases": [
+        {
+          "instructions": [
+            "return-400",
+            "return-400",
+            "return-400"
+          ]
+        },
+        {
+          "instructions": ["return-401", "return-401", "return-401"]
+        }
+      ],
       "methods": ["storage.objects.get", "storage.buckets.get"],
       "preconditionProvided": false,
       "expectSuccess": false

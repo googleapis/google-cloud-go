@@ -85,9 +85,13 @@ message PostPolicyV4Test {
   PolicyOutput policyOutput = 3;
 }
 
+message InstructionList {
+  repeated string instructions = 1; // e.g. return-503
+}
+
 message RetryTest {
   string description = 1;
-  repeated string instructions = 2;  // e.g. return-503
+  repeated InstructionList cases = 2;
   repeated string methods = 3;  // e.g. storage.objects.get
   bool preconditionProvided = 4;
   bool expectSuccess = 5;
