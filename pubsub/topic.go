@@ -199,10 +199,6 @@ type TopicConfig struct {
 
 	// Schema defines the schema settings upon topic creation. This cannot
 	// be modified after a topic has been created.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. It is subject to change
-	// or removal without notice.
 	SchemaSettings *SchemaSettings
 }
 
