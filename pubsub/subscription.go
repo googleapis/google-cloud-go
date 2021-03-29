@@ -223,10 +223,6 @@ type SubscriptionConfig struct {
 	Labels map[string]string
 
 	// EnableMessageOrdering enables message ordering.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	EnableMessageOrdering bool
 
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in
@@ -237,10 +233,6 @@ type SubscriptionConfig struct {
 	// non-empty, then only `PubsubMessage`s whose `attributes` field matches the
 	// filter are delivered on this subscription. If empty, then no messages are
 	// filtered out. Cannot be changed after the subscription is created.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	Filter string
 
 	// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
