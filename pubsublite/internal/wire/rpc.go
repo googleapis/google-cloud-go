@@ -22,7 +22,9 @@ import (
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -50,24 +52,22 @@ func newStreamRetryer(timeout time.Duration) *streamRetryer {
 	}
 }
 
-func (r *streamRetryer) RetrySend(err error) (time.Duration, bool) {
-	if time.Now().After(r.deadline) {
-		return 0, false
-	}
+func (r *streamRetryer) RetrySend(err error) (backoff time.Duration, shouldRetry bool) {
 	if isRetryableSendError(err) {
 		return r.bo.Pause(), true
 	}
 	return 0, false
 }
 
-func (r *streamRetryer) RetryRecv(err error) (time.Duration, bool) {
-	if time.Now().After(r.deadline) {
-		return 0, false
-	}
+func (r *streamRetryer) RetryRecv(err error) (backoff time.Duration, shouldRetry bool) {
 	if isRetryableRecvError(err) {
 		return r.bo.Pause(), true
 	}
 	return 0, false
+}
+
+func (r *streamRetryer) ExceededDeadline() bool {
+	return time.Now().After(r.deadline)
 }
 
 func isRetryableSendCode(code codes.Code) bool {
@@ -135,6 +135,10 @@ const pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
+		// Keep inactive connections alive.
+		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time: 5 * time.Minute,
+		})),
 	}
 }
 

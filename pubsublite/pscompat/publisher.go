@@ -19,9 +19,7 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
-	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
-	"google.golang.org/api/support/bundler"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
@@ -29,30 +27,25 @@ import (
 
 var (
 	// ErrOverflow is set for a PublishResult when publish buffers overflow.
-	ErrOverflow = bundler.ErrOverflow
+	// Use errors.Is for comparing errors.
+	ErrOverflow = wire.ErrOverflow
 
 	// ErrOversizedMessage is set for a PublishResult when a published message
-	// exceeds MaxPublishRequestBytes.
-	ErrOversizedMessage = bundler.ErrOversizedItem
+	// exceeds MaxPublishRequestBytes. Use errors.Is for comparing errors.
+	ErrOversizedMessage = wire.ErrOversizedMessage
 
 	// ErrPublisherStopped is set for a PublishResult when a message cannot be
 	// published because the publisher client has stopped or is in the process of
 	// stopping. PublisherClient.Error() returns the error that caused the
-	// publisher client to terminate (if any).
+	// publisher client to terminate (if any). Use errors.Is for comparing errors.
 	ErrPublisherStopped = wire.ErrServiceStopped
-)
 
-// translateError transforms a subset of errors to what would be returned by the
-// pubsub package.
-func translateError(err error) error {
-	if xerrors.Is(err, wire.ErrOversizedMessage) {
-		return ErrOversizedMessage
-	}
-	if xerrors.Is(err, wire.ErrOverflow) {
-		return ErrOverflow
-	}
-	return err
-}
+	// ErrBackendUnavailable indicates that the backend service has been
+	// unavailable for a period of time. The timeout can be configured using
+	// PublishSettings.Timeout or ReceiveSettings.Timeout. Use errors.Is for
+	// comparing errors.
+	ErrBackendUnavailable = wire.ErrBackendUnavailable
+)
 
 // PublisherClient is a Pub/Sub Lite client to publish messages to a given
 // topic. A PublisherClient is safe to use from multiple goroutines.
@@ -68,16 +61,17 @@ type PublisherClient struct {
 	err error
 }
 
-// NewPublisherClient creates a new Pub/Sub Lite client to publish messages to
-// a given topic, using DefaultPublishSettings. A valid topic path has the
-// format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+// NewPublisherClient creates a new Pub/Sub Lite publisher client to publish
+// messages to a given topic, using DefaultPublishSettings. A valid topic path
+// has the format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
 func NewPublisherClient(ctx context.Context, topic string, opts ...option.ClientOption) (*PublisherClient, error) {
 	return NewPublisherClientWithSettings(ctx, topic, DefaultPublishSettings, opts...)
 }
 
-// NewPublisherClientWithSettings creates a new Pub/Sub Lite client to publish
-// messages to a given topic, using the specified PublishSettings. A valid topic
-// path has the format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
+// NewPublisherClientWithSettings creates a new Pub/Sub Lite publisher client to
+// publish messages to a given topic, using the specified PublishSettings. A
+// valid topic path has the format:
+// "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
 func NewPublisherClientWithSettings(ctx context.Context, topic string, settings PublishSettings, opts ...option.ClientOption) (*PublisherClient, error) {
 	topicPath, err := wire.ParseTopicPath(topic)
 	if err != nil {
@@ -106,15 +100,18 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 // sent according to the client's PublishSettings. Publish never blocks.
 //
 // Publish returns a non-nil PublishResult which will be ready when the
-// message has been sent (or has failed to be sent) to the server. Once the
-// first publish error occurs, the publisher will terminate and subsequent
-// PublishResults will also have an error. A new publisher must be created to
-// republish failed messages.
+// message has been sent (or has failed to be sent) to the server. Retryable
+// errors are automatically handled. If a PublishResult returns an error, this
+// indicates that the publisher client encountered a fatal error and has
+// permanently terminated. After the fatal error has been resolved, a new
+// publisher client instance must be created to republish failed messages.
 //
-// Once Stop() has been called or the publisher has failed permanently due to an
-// error, future calls to Publish will immediately return a PublishResult with
-// error ErrPublisherStopped. Error() returns the error that caused the
-// publisher to terminate.
+// Once Stop() has been called or the publisher client has failed permanently
+// due to an error, future calls to Publish will immediately return a
+// PublishResult with error ErrPublisherStopped.
+//
+// Error() returns the error that caused the publisher client to terminate and
+// may contain more context than the error returned by PublishResult.
 func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pubsub.PublishResult {
 	result := ipubsub.NewPublishResult()
 	msgpb := new(pb.PubSubMessage)
@@ -126,7 +123,6 @@ func (p *PublisherClient) Publish(ctx context.Context, msg *pubsub.Message) *pub
 	}
 
 	p.wirePub.Publish(msgpb, func(metadata *wire.MessageMetadata, err error) {
-		err = translateError(err)
 		if metadata != nil {
 			ipubsub.SetPublishResult(result, metadata.String(), err)
 		} else {
@@ -144,8 +140,9 @@ func (p *PublisherClient) Stop() {
 	p.wirePub.WaitStopped()
 }
 
-// Error returns the error that caused the publisher client to terminate. It
-// may be nil if Stop() was called.
+// Error returns the error that caused the publisher client to terminate. The
+// error returned here may contain more context than PublishResult errors. The
+// return value may be nil if Stop() was called.
 func (p *PublisherClient) Error() error {
 	p.mu.Lock()
 	defer p.mu.Unlock()
