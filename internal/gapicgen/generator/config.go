@@ -706,7 +706,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "pubsublite",
 		importPath:            "cloud.google.com/go/pubsublite/apiv1",
 		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/pubsublite/v1/pubsublite_v1.yaml",
 		// Update to "ga" after the manual client (beta) for pubsublite is released.
 		// Also make sure the manual client is generated in .repo-metadata-full.json.
 		releaseLevel: "beta",
