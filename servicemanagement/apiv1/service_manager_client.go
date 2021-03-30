@@ -91,7 +91,7 @@ func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 	}
 }
 
-// ServiceManagerClient is a client for interacting with .
+// ServiceManagerClient is a client for interacting with Service Management API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ServiceManagerClient struct {

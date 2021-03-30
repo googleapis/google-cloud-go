@@ -101,7 +101,7 @@ func defaultTenantCallOptions() *TenantCallOptions {
 	}
 }
 
-// TenantClient is a client for interacting with .
+// TenantClient is a client for interacting with Cloud Talent Solution API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type TenantClient struct {
