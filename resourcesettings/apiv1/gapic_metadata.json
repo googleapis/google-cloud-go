@@ -1,0 +1,53 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.resourcesettings.v1",
+  "libraryPackage": "cloud.google.com/go/resourcesettings/apiv1",
+  "services": {
+    "ResourceSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateSettingValue": {
+              "methods": [
+                "CreateSettingValue"
+              ]
+            },
+            "DeleteSettingValue": {
+              "methods": [
+                "DeleteSettingValue"
+              ]
+            },
+            "GetSettingValue": {
+              "methods": [
+                "GetSettingValue"
+              ]
+            },
+            "ListSettings": {
+              "methods": [
+                "ListSettings"
+              ]
+            },
+            "LookupEffectiveSettingValue": {
+              "methods": [
+                "LookupEffectiveSettingValue"
+              ]
+            },
+            "SearchSettingValues": {
+              "methods": [
+                "SearchSettingValues"
+              ]
+            },
+            "UpdateSettingValue": {
+              "methods": [
+                "UpdateSettingValue"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

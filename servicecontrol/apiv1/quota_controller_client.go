@@ -78,7 +78,7 @@ type QuotaControllerClient struct {
 
 // NewQuotaControllerClient creates a new quota controller client.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).

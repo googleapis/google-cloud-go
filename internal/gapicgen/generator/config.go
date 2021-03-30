@@ -96,8 +96,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/memcache/apiv1",
 		gRPCServiceConfigPath: "google/cloud/memcache/v1/memcache_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/memcache/v1/memcache_v1.yaml",
-		// GA after 2021/02/20
-		releaseLevel: "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/memcache/v1beta2",
@@ -572,6 +571,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/dialogflow/cx/v3",
+		pkg:                   "cx",
+		importPath:            "cloud.google.com/go/dialogflow/cx/apiv3",
+		gRPCServiceConfigPath: "google/cloud/dialogflow/cx/v3/dialogflow_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/dialogflow/cx/v3/dialogflow_v3.yaml",
+		// GA after 2021/04/23
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/dialogflow/v2",
 		pkg:                   "dialogflow",
 		importPath:            "cloud.google.com/go/dialogflow/apiv2",
@@ -674,7 +682,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "talent",
 		importPath:            "cloud.google.com/go/talent/apiv4",
 		gRPCServiceConfigPath: "google/cloud/talent/v4/talent_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/talent/v4/talent_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/talent/v4/jobs_v4.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -698,7 +706,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "pubsublite",
 		importPath:            "cloud.google.com/go/pubsublite/apiv1",
 		gRPCServiceConfigPath: "google/cloud/pubsublite/v1/pubsublite_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/pubsublite/v1/gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/pubsublite/v1/pubsublite_v1.yaml",
 		// Update to "ga" after the manual client (beta) for pubsublite is released.
 		// Also make sure the manual client is generated in .repo-metadata-full.json.
 		releaseLevel: "beta",
@@ -748,7 +756,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "gaming",
 		importPath:            "cloud.google.com/go/gaming/apiv1",
 		gRPCServiceConfigPath: "google/cloud/gaming/v1/gaming_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/gaming/v1/gaming_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/gaming/v1/gameservices_v1.yaml",
 		releaseLevel:          "ga",
 	},
 	{
@@ -756,7 +764,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "gaming",
 		importPath:            "cloud.google.com/go/gaming/apiv1beta",
 		gRPCServiceConfigPath: "google/cloud/gaming/v1beta/gaming_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/gaming/v1beta/gaming_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/gaming/v1beta/gameservices_v1beta.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -772,7 +780,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "dashboard",
 		importPath:            "cloud.google.com/go/monitoring/dashboard/apiv1",
 		gRPCServiceConfigPath: "google/monitoring/dashboard/v1/dashboards_grpc_service_config.json",
-		apiServiceConfigPath:  "google/monitoring/dashboard/v1/monitoring_gapic.yaml",
+		apiServiceConfigPath:  "google/monitoring/dashboard/v1/monitoring.yaml",
 		releaseLevel:          "ga",
 	},
 	{
@@ -780,7 +788,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "functions",
 		importPath:            "cloud.google.com/go/functions/apiv1",
 		gRPCServiceConfigPath: "google/cloud/functions/v1/functions_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/functions/v1/functions_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/functions/v1/cloudfunctions_v1.yaml",
 		releaseLevel:          "ga",
 	},
 	{
@@ -812,7 +820,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "budgets",
 		importPath:            "cloud.google.com/go/billing/budgets/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/billing/budgets/v1beta1/billingbudgets_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/billing/budgets/v1beta1/billingbudgets.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -820,7 +828,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "transcoder",
 		importPath:            "cloud.google.com/go/video/transcoder/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/video/transcoder/v1beta1/transcoder_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/video/transcoder/v1beta1/transcoder_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/video/transcoder/v1beta1/transcoder_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -828,7 +836,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "workflows",
 		importPath:            "cloud.google.com/go/workflows/apiv1beta",
 		gRPCServiceConfigPath: "google/cloud/workflows/v1beta/workflows_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/workflows/v1beta/workflows_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/workflows/v1beta/workflows_v1beta.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -836,7 +844,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "executions",
 		importPath:            "cloud.google.com/go/workflows/executions/apiv1beta",
 		gRPCServiceConfigPath: "google/cloud/workflows/executions/v1beta/executions_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/workflows/executions/v1beta/executions_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/workflows/executions/v1beta/workflowexecutions_v1beta.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -844,7 +852,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "privateca",
 		importPath:            "cloud.google.com/go/security/privateca/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/security/privateca/v1beta1/privateca_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/security/privateca/v1beta1/privateca_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/security/privateca/v1beta1/privateca_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -852,7 +860,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "assuredworkloads",
 		importPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
 		gRPCServiceConfigPath: "google/cloud/assuredworkloads/v1beta1/assuredworkloads_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/assuredworkloads/v1beta1/assuredworkloads_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/assuredworkloads/v1beta1/assuredworkloads_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -860,7 +868,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "accessapproval",
 		importPath:            "cloud.google.com/go/accessapproval/apiv1",
 		gRPCServiceConfigPath: "google/cloud/accessapproval/v1/accessapproval_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/accessapproval/v1/accessapproval_gapic.yaml",
+		apiServiceConfigPath:  "google/cloud/accessapproval/v1/accessapproval_v1.yaml",
 		releaseLevel:          "ga",
 	},
 	{
@@ -923,8 +931,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                  "resourcemanager",
 		importPath:           "cloud.google.com/go/resourcemanager/apiv2",
 		apiServiceConfigPath: "google/cloud/resourcemanager/v2/cloudresourcemanager_v2.yaml",
-		// GA after 2021/02/19
-		releaseLevel: "beta",
+		releaseLevel:         "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/datalabeling/v1beta1",
@@ -943,6 +950,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "alpha",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/documentai/v1",
+		pkg:                   "documentai",
+		importPath:            "cloud.google.com/go/documentai/apiv1",
+		gRPCServiceConfigPath: "google/cloud/documentai/v1/documentai_v1_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/documentai/v1/documentai_v1.yaml",
+		// GA after 2021/04/23
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/documentai/v1beta3",
 		pkg:                   "documentai",
 		importPath:            "cloud.google.com/go/documentai/apiv1beta3",
@@ -955,9 +971,8 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "servicemanagement",
 		importPath:            "cloud.google.com/go/servicemanagement/apiv1",
 		gRPCServiceConfigPath: "google/api/servicemanagement/v1/servicemanagement_grpc_service_config.json",
-		apiServiceConfigPath:  "google/api/servicemanagement/v1/servicemanagement_gapic.yaml",
-		// GA after 2021/02/26
-		releaseLevel: "beta",
+		apiServiceConfigPath:  "google/api/servicemanagement/v1/servicemanagement_v1.yaml",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/domains/v1beta1",
@@ -979,9 +994,8 @@ var microgenGapicConfigs = []*microgenConfig{
 		inputDirectoryPath:   "google/api/servicecontrol/v1",
 		pkg:                  "servicecontrol",
 		importPath:           "cloud.google.com/go/servicecontrol/apiv1",
-		apiServiceConfigPath: "google/api/servicecontrol/v1/servicecontrol_gapic.yaml",
-		// GA after 2021/03/01
-		releaseLevel: "beta",
+		apiServiceConfigPath: "google/api/servicecontrol/v1/servicecontrol.yaml",
+		releaseLevel:         "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/orgpolicy/v2",
@@ -989,8 +1003,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/orgpolicy/apiv2",
 		gRPCServiceConfigPath: "google/cloud/orgpolicy/v2/orgpolicy_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/orgpolicy/v2/orgpolicy_v2.yaml",
-		// GA after 2021/03/02
-		releaseLevel: "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/recommendationengine/v1beta1",
@@ -1014,8 +1027,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		importPath:            "cloud.google.com/go/apigateway/apiv1",
 		gRPCServiceConfigPath: "google/cloud/apigateway/v1/apigateway_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/apigateway/v1/apigateway_v1.yaml",
-		// GA after 2021/03/23
-		releaseLevel: "beta",
+		releaseLevel:          "ga",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/metastore/v1alpha",
@@ -1033,6 +1045,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/metastore/v1beta/metastore_v1beta.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/resourcesettings/v1",
+		pkg:                   "resourcesettings",
+		importPath:            "cloud.google.com/go/resourcesettings/apiv1",
+		gRPCServiceConfigPath: "google/cloud/resourcesettings/v1/resourcesettings_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/resourcesettings/v1/resourcesettings_v1.yaml",
+		// GA after 2021/04/23
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
@@ -1040,7 +1061,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "admin",
 		importPath:            "cloud.google.com/go/analytics/admin/apiv1alpha",
 		gRPCServiceConfigPath: "google/analytics/admin/v1alpha/admin_grpc_service_config.json",
-		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_gapic.yaml",
+		apiServiceConfigPath:  "google/analytics/admin/v1alpha/analyticsadmin_v1alpha.yaml",
 		releaseLevel:          "alpha",
 	},
 	{
@@ -1048,7 +1069,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "data",
 		importPath:            "cloud.google.com/go/analytics/data/apiv1alpha",
 		gRPCServiceConfigPath: "google/analytics/data/v1alpha/analytics_data_grpc_service_config.json",
-		apiServiceConfigPath:  "google/analytics/data/v1alpha/analyticsdata_gapic.yaml",
+		apiServiceConfigPath:  "google/analytics/data/v1alpha/analyticsdata_v1alpha.yaml",
 		releaseLevel:          "alpha",
 	},
 	{
