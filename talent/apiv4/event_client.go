@@ -57,7 +57,7 @@ func defaultEventCallOptions() *EventCallOptions {
 	}
 }
 
-// EventClient is a client for interacting with .
+// EventClient is a client for interacting with Cloud Talent Solution API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type EventClient struct {

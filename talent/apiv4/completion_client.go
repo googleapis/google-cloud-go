@@ -69,7 +69,7 @@ func defaultCompletionCallOptions() *CompletionCallOptions {
 	}
 }
 
-// CompletionClient is a client for interacting with .
+// CompletionClient is a client for interacting with Cloud Talent Solution API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type CompletionClient struct {

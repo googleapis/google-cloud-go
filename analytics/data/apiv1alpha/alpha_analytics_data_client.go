@@ -88,7 +88,7 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 	}
 }
 
-// AlphaAnalyticsDataClient is a client for interacting with .
+// AlphaAnalyticsDataClient is a client for interacting with Google Analytics Data API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type AlphaAnalyticsDataClient struct {

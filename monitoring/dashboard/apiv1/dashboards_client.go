@@ -90,7 +90,7 @@ func defaultDashboardsCallOptions() *DashboardsCallOptions {
 	}
 }
 
-// DashboardsClient is a client for interacting with .
+// DashboardsClient is a client for interacting with Cloud Monitoring API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type DashboardsClient struct {

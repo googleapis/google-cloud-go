@@ -129,7 +129,7 @@ func defaultGameServerDeploymentsCallOptions() *GameServerDeploymentsCallOptions
 	}
 }
 
-// GameServerDeploymentsClient is a client for interacting with .
+// GameServerDeploymentsClient is a client for interacting with Game Services API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type GameServerDeploymentsClient struct {
