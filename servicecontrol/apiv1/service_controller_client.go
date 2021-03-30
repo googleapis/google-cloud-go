@@ -58,7 +58,7 @@ func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	}
 }
 
-// ServiceControllerClient is a client for interacting with .
+// ServiceControllerClient is a client for interacting with Service Control API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ServiceControllerClient struct {
