@@ -1080,6 +1080,10 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 }
 
 func TestIntegration_InsertErrors(t *testing.T) {
+	// This test serves to verify streaming behavior in the face of oversized data.
+	// BigQuery will reject insertAll payloads that exceed a defined limit (10MB).
+	// Additionally, if a payload vastly exceeds this limit, the request is rejected
+	// by the intermediate architecture.
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
@@ -1090,45 +1094,31 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	ins := table.Inserter()
 	var saverRows []*ValuesSaver
 
-	// badSaver represents an excessively sized (>5Mb) row message for insertion.
+	// badSaver represents an excessively sized (>10MB) row message for insertion.
 	badSaver := &ValuesSaver{
 		Schema:   schema,
 		InsertID: NoDedupeID,
-		Row:      []Value{strings.Repeat("X", 5242881), []Value{int64(1)}, []Value{true}},
+		Row:      []Value{strings.Repeat("X", 10485760), []Value{int64(1)}, []Value{true}},
 	}
 
-	// Case 1: A single oversized row.
 	saverRows = append(saverRows, badSaver)
 	err := ins.Put(ctx, saverRows)
 	if err == nil {
 		t.Errorf("Wanted row size error, got successful insert.")
 	}
-	if _, ok := err.(PutMultiError); !ok {
-		t.Errorf("Wanted PutMultiError, but wasn't: %v", err)
-	}
-	got := putError(err)
-	want := "Maximum allowed row size exceeded"
-	if !strings.Contains(got, want) {
-		t.Errorf("Error didn't contain expected substring (%s): %s", want, got)
-	}
-	// Case 2: The overall request size > 10MB)
-	// 2x 5MB rows
-	saverRows = append(saverRows, badSaver)
-	err = ins.Put(ctx, saverRows)
-	if err == nil {
-		t.Errorf("Wanted structured size error, got successful insert.")
-	}
 	e, ok := err.(*googleapi.Error)
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	want = "Request payload size exceeds the limit"
+	want := "Request payload size exceeds the limit"
 	if !strings.Contains(e.Message, want) {
 		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
 	}
-	// Case 3: Very Large Request
-	// Request so large it gets rejected by an intermediate (4x 5MB rows)
-	saverRows = append(saverRows, saverRows...)
+	// Case 2: Very Large Request
+	// Request so large it gets rejected by intermediate infra (3x 10MB rows)
+	saverRows = append(saverRows, badSaver)
+	saverRows = append(saverRows, badSaver)
+
 	err = ins.Put(ctx, saverRows)
 	if err == nil {
 		t.Errorf("Wanted error, got successful insert.")
@@ -1627,6 +1617,63 @@ func TestIntegration_TableUpdate(t *testing.T) {
 		} else if !hasStatusCode(err, 400) {
 			t.Errorf("%s: want 400, got %v", test.desc, err)
 		}
+	}
+}
+
+func TestIntegration_QueryStatistics(t *testing.T) {
+	// Make a bunch of assertions on a simple query.
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT 17 as foo, 3.14 as bar")
+	// disable cache to ensure we have query statistics
+	q.DisableQueryCache = true
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("job Run failure: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("job Wait failure: %v", err)
+	}
+	if status.Statistics == nil {
+		t.Fatal("expected job statistics, none found")
+	}
+
+	if status.Statistics.NumChildJobs != 0 {
+		t.Errorf("expected no children, %d reported", status.Statistics.NumChildJobs)
+	}
+
+	if status.Statistics.ParentJobID != "" {
+		t.Errorf("expected no parent, but parent present: %s", status.Statistics.ParentJobID)
+	}
+
+	if status.Statistics.Details == nil {
+		t.Fatal("expected job details, none present")
+	}
+
+	qStats, ok := status.Statistics.Details.(*QueryStatistics)
+	if !ok {
+		t.Fatalf("expected query statistics not present")
+	}
+
+	if qStats.CacheHit {
+		t.Error("unexpected cache hit")
+	}
+
+	if qStats.StatementType != "SELECT" {
+		t.Errorf("expected SELECT statement type, got: %s", qStats.StatementType)
+	}
+
+	if len(qStats.QueryPlan) == 0 {
+		t.Error("expected query plan, none present")
+	}
+
+	if len(qStats.Timeline) == 0 {
+		t.Error("expected query timeline, none present")
 	}
 }
 
@@ -2859,17 +2906,32 @@ func TestIntegration_RoutineJSUDF(t *testing.T) {
 	// Create a scalar UDF routine via API.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
-	err := routine.Create(ctx, &RoutineMetadata{
+	meta := &RoutineMetadata{
 		Language: "JAVASCRIPT", Type: "SCALAR_FUNCTION",
-		Description: "capitalizes using javascript",
+		Description:      "capitalizes using javascript",
+		DeterminismLevel: Deterministic,
 		Arguments: []*RoutineArgument{
 			{Name: "instr", Kind: "FIXED_TYPE", DataType: &StandardSQLDataType{TypeKind: "STRING"}},
 		},
 		ReturnType: &StandardSQLDataType{TypeKind: "STRING"},
 		Body:       "return instr.toUpperCase();",
-	})
-	if err != nil {
+	}
+	if err := routine.Create(ctx, meta); err != nil {
 		t.Fatalf("Create: %v", err)
+	}
+
+	newMeta := &RoutineMetadataToUpdate{
+		Language:    meta.Language,
+		Body:        meta.Body,
+		Arguments:   meta.Arguments,
+		Description: meta.Description,
+		ReturnType:  meta.ReturnType,
+		Type:        meta.Type,
+
+		DeterminismLevel: NotDeterministic,
+	}
+	if _, err := routine.Update(ctx, newMeta, ""); err != nil {
+		t.Fatalf("Update: %v", err)
 	}
 }
 

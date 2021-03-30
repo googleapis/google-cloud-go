@@ -91,12 +91,15 @@ type ackTracker struct {
 	ackedPrefixOffset int64
 	// Outstanding message acks, strictly ordered by increasing message offsets.
 	outstandingAcks *list.List // Value = *ackConsumer
+	// Whether new acks can be pushed.
+	enablePush bool
 }
 
 func newAckTracker() *ackTracker {
 	return &ackTracker{
 		ackedPrefixOffset: nilCursorOffset,
 		outstandingAcks:   list.New(),
+		enablePush:        true,
 	}
 }
 
@@ -104,6 +107,11 @@ func newAckTracker() *ackTracker {
 func (at *ackTracker) Push(ack *ackConsumer) error {
 	at.mu.Lock()
 	defer at.mu.Unlock()
+
+	if !at.enablePush {
+		ack.Clear()
+		return nil
+	}
 
 	// These errors should not occur unless there is a bug in the client library
 	// as message ordering should have been validated by subscriberOffsetTracker.
@@ -136,12 +144,13 @@ func (at *ackTracker) CommitOffset() int64 {
 	return at.ackedPrefixOffset + 1
 }
 
-// Release clears and invalidates any outstanding acks. This should be called
-// when the subscriber terminates.
+// Release clears and invalidates any outstanding acks. Push will clear and
+// discard new acks. This should be called when the committer terminates.
 func (at *ackTracker) Release() {
 	at.mu.Lock()
 	defer at.mu.Unlock()
 
+	at.enablePush = false
 	at.unsafeProcessAcks()
 
 	for elem := at.outstandingAcks.Front(); elem != nil; elem = elem.Next() {

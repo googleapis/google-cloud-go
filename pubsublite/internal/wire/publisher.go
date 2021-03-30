@@ -31,7 +31,6 @@ import (
 var (
 	errInvalidInitialPubResponse = errors.New("pubsublite: first response from server was not an initial response for publish")
 	errInvalidMsgPubResponse     = errors.New("pubsublite: received invalid publish response from server")
-	errDecreasingPartitions      = errors.New("pubsublite: publisher does not support decreasing topic partition count")
 )
 
 // singlePartitionPublisher publishes messages to a single topic partition.
@@ -55,6 +54,7 @@ type singlePartitionPublisher struct {
 	pubClient  *vkit.PublisherClient
 	topic      topicPartition
 	initialReq *pb.PublishRequest
+	metadata   pubsubMetadata
 
 	// Fields below must be guarded with mu.
 	stream             *retryableStream
@@ -85,9 +85,12 @@ func (f *singlePartitionPublisherFactory) New(partition int) *singlePartitionPub
 				},
 			},
 		},
+		metadata: newPubsubMetadata(),
 	}
 	pp.batcher = newPublishMessageBatcher(&f.settings, partition, pp.onNewBatch)
 	pp.stream = newRetryableStream(f.ctx, pp, f.settings.Timeout, reflect.TypeOf(pb.PublishResponse{}))
+	pp.metadata.AddTopicRoutingMetadata(pp.topic)
+	pp.metadata.AddClientInfo(f.settings.Framework)
 	return pp
 }
 
@@ -140,11 +143,11 @@ func (pp *singlePartitionPublisher) Publish(msg *pb.PubSubMessage, onResult Publ
 }
 
 func (pp *singlePartitionPublisher) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return pp.pubClient.Publish(addTopicRoutingMetadata(ctx, pp.topic))
+	return pp.pubClient.Publish(pp.metadata.AddToContext(ctx))
 }
 
-func (pp *singlePartitionPublisher) initialRequest() (interface{}, bool) {
-	return pp.initialReq, true
+func (pp *singlePartitionPublisher) initialRequest() (interface{}, initialResponseRequired) {
+	return pp.initialReq, initialResponseRequired(true)
 }
 
 func (pp *singlePartitionPublisher) validateInitialResponse(response interface{}) error {
@@ -233,7 +236,7 @@ func (pp *singlePartitionPublisher) onResponse(response interface{}) {
 //
 // Expected to be called with singlePartitionPublisher.mu held.
 func (pp *singlePartitionPublisher) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !pp.unsafeUpdateStatus(targetStatus, err) {
+	if !pp.unsafeUpdateStatus(targetStatus, wrapError("publisher", pp.topic.String(), err)) {
 		return
 	}
 
@@ -276,6 +279,7 @@ func (pp *singlePartitionPublisher) unsafeCheckDone() {
 // count, but not decreasing.
 type routingPublisher struct {
 	// Immutable after creation.
+	clients          apiClients
 	msgRouterFactory *messageRouterFactory
 	pubFactory       *singlePartitionPublisherFactory
 	partitionWatcher *partitionCountWatcher
@@ -287,8 +291,9 @@ type routingPublisher struct {
 	compositeService
 }
 
-func newRoutingPublisher(adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
+func newRoutingPublisher(allClients apiClients, adminClient *vkit.AdminClient, msgRouterFactory *messageRouterFactory, pubFactory *singlePartitionPublisherFactory) *routingPublisher {
 	pub := &routingPublisher{
+		clients:          allClients,
 		msgRouterFactory: msgRouterFactory,
 		pubFactory:       pubFactory,
 	}
@@ -309,7 +314,7 @@ func (rp *routingPublisher) onPartitionCountChanged(partitionCount int) {
 		return
 	}
 	if partitionCount < len(rp.publishers) {
-		rp.unsafeInitiateShutdown(serviceTerminating, errDecreasingPartitions)
+		// TODO: Log the decrease in partition count.
 		return
 	}
 
@@ -354,6 +359,12 @@ func (rp *routingPublisher) routeToPublisher(msg *pb.PubSubMessage) (*singlePart
 	return rp.publishers[partition], nil
 }
 
+func (rp *routingPublisher) WaitStopped() error {
+	err := rp.compositeService.WaitStopped()
+	rp.clients.Close()
+	return err
+}
+
 // Publisher is the client interface exported from this package for publishing
 // messages.
 type Publisher interface {
@@ -382,6 +393,7 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 	if err != nil {
 		return nil, err
 	}
+	allClients := apiClients{pubClient, adminClient}
 
 	msgRouterFactory := newMessageRouterFactory(rand.New(rand.NewSource(time.Now().UnixNano())))
 	pubFactory := &singlePartitionPublisherFactory{
@@ -390,5 +402,5 @@ func NewPublisher(ctx context.Context, settings PublishSettings, region, topicPa
 		settings:  settings,
 		topicPath: topicPath,
 	}
-	return newRoutingPublisher(adminClient, msgRouterFactory, pubFactory), nil
+	return newRoutingPublisher(allClients, adminClient, msgRouterFactory, pubFactory), nil
 }

@@ -19,9 +19,7 @@ set -e
 # Display commands being run
 set -x
 
-# Only run the linter on go1.15, because:
-# - It only has to run once per CI (so we just have to pick 1 version).
-if [[ $(go version) != *"go1.15"* ]]; then
+if [[ $(go version) != *"go1.16"* ]]; then
   exit 0
 fi
 
@@ -80,7 +78,8 @@ golint ./... 2>&1 | (
     grep -v "a blank import should be only in a main or test package" |
     grep -v "method ExecuteSql should be ExecuteSQL" |
     grep -vE "spanner/spansql/(sql|types).go:.*should have comment" |
-    grep -vE "\.pb\.go:"
+    grep -vE "\.pb\.go:" |
+    grep -v "third_party/go/doc"
 ) |
   tee /dev/stderr | (! read)
 
@@ -102,7 +101,8 @@ staticcheck -go 1.11 ./... 2>&1 | (
     grep -v bigtable/reader.go |
     grep -v internal/btree/btree.go |
     grep -v container/apiv1/mock_test.go |
-    grep -v third_party/pkgsite/synopsis.go
+    grep -v third_party/pkgsite/synopsis.go |
+    grep -v third_party/go/doc
 ) |
   tee /dev/stderr | (! read)
 

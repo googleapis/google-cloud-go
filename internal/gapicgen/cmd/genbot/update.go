@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build !windows
+
 package main
 
 import (
@@ -68,8 +70,8 @@ for i in $(find . -name go.mod); do
 		# Update genproto and api to latest for every module (latest version is
 		# always correct version). tidy will remove the dependencies if they're not
 		# actually used by the client.
-		go get -u google.golang.org/api | true # We don't care that there's no files at root.
-		go get -u google.golang.org/genproto | true # We don't care that there's no files at root.
+		go get -d google.golang.org/api | true # We don't care that there's no files at root.
+		go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
 		go mod tidy;
 	popd;
 done

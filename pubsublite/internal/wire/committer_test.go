@@ -30,7 +30,7 @@ type testCommitter struct {
 
 func newTestCommitter(t *testing.T, subscription subscriptionPartition, acks *ackTracker) *testCommitter {
 	ctx := context.Background()
-	cursorClient, err := newCursorClient(ctx, "ignored", testClientOpts...)
+	cursorClient, err := newCursorClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -38,7 +38,7 @@ func newTestCommitter(t *testing.T, subscription subscriptionPartition, acks *ac
 	tc := &testCommitter{
 		cmt: newCommitter(ctx, cursorClient, testReceiveSettings(), subscription, acks, true),
 	}
-	tc.initAndStart(t, tc.cmt, "Committer")
+	tc.initAndStart(t, tc.cmt, "Committer", cursorClient)
 	return tc
 }
 
@@ -46,6 +46,10 @@ func newTestCommitter(t *testing.T, subscription subscriptionPartition, acks *ac
 // periodic task is disabled in tests.
 func (tc *testCommitter) SendBatchCommit() {
 	tc.cmt.commitOffsetToStream()
+}
+
+func (tc *testCommitter) Terminate() {
+	tc.cmt.Terminate()
 }
 
 func TestCommitterStreamReconnect(t *testing.T) {
@@ -118,6 +122,64 @@ func TestCommitterStopFlushesCommits(t *testing.T) {
 	ack2.Ack() // Acks after Stop() are processed
 	cmt.SendBatchCommit()
 	// Committer terminates when all acks are processed.
+	if gotErr := cmt.FinalError(); gotErr != nil {
+		t.Errorf("Final err: (%v), want: <nil>", gotErr)
+	}
+}
+
+func TestCommitterTerminateDiscardsOutstandingAcks(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack1 := newAckConsumer(33, 0, nil)
+	ack2 := newAckConsumer(55, 0, nil)
+	acks := newAckTracker()
+	acks.Push(ack1)
+	acks.Push(ack2)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	stream.Push(commitReq(34), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	ack1.Ack()
+	cmt.Terminate()       // Terminate should flush the first offset
+	ack2.Ack()            // Acks after Terminate() are discarded
+	cmt.SendBatchCommit() // Should do nothing (server does not expect second commit)
+	if gotErr := cmt.FinalError(); gotErr != nil {
+		t.Errorf("Final err: (%v), want: <nil>", gotErr)
+	}
+}
+
+func TestCommitterStopThenTerminateDiscardsOutstandingAcks(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack := newAckConsumer(33, 0, nil)
+	acks := newAckTracker()
+	acks.Push(ack)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	// No commits expected.
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	cmt.Stop()      // Stop waits for outstanding acks
+	cmt.Terminate() // Terminate should discard all outstanding acks
 	if gotErr := cmt.FinalError(); gotErr != nil {
 		t.Errorf("Final err: (%v), want: <nil>", gotErr)
 	}

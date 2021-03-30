@@ -42,13 +42,16 @@ const commitCursorPeriod = 50 * time.Millisecond
 type committer struct {
 	// Immutable after creation.
 	cursorClient *vkit.CursorClient
+	subscription subscriptionPartition
 	initialReq   *pb.StreamingCommitCursorRequest
+	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mutex.
 	stream        *retryableStream
 	acks          *ackTracker
 	cursorTracker *commitCursorTracker
 	pollCommits   *periodicTask
+	enableCommits bool
 
 	abstractService
 }
@@ -58,6 +61,7 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 
 	c := &committer{
 		cursorClient: cursor,
+		subscription: subscription,
 		initialReq: &pb.StreamingCommitCursorRequest{
 			Request: &pb.StreamingCommitCursorRequest_Initial{
 				Initial: &pb.InitialCommitCursorRequest{
@@ -66,10 +70,12 @@ func newCommitter(ctx context.Context, cursor *vkit.CursorClient, settings Recei
 				},
 			},
 		},
+		metadata:      newPubsubMetadata(),
 		acks:          acks,
 		cursorTracker: newCommitCursorTracker(acks),
 	}
 	c.stream = newRetryableStream(ctx, c, settings.Timeout, reflect.TypeOf(pb.StreamingCommitCursorResponse{}))
+	c.metadata.AddClientInfo(settings.Framework)
 
 	backgroundTask := c.commitOffsetToStream
 	if disableTasks {
@@ -98,14 +104,22 @@ func (c *committer) Stop() {
 	c.unsafeInitiateShutdown(serviceTerminating, nil)
 }
 
-func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return c.cursorClient.StreamingCommitCursor(ctx)
+// Terminate will discard outstanding acks and send the final commit offset to
+// the server.
+func (c *committer) Terminate() {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+
+	c.acks.Release()
+	c.unsafeInitiateShutdown(serviceTerminating, nil)
 }
 
-func (c *committer) initialRequest() (req interface{}, needsResp bool) {
-	req = c.initialReq
-	needsResp = true
-	return
+func (c *committer) newStream(ctx context.Context) (grpc.ClientStream, error) {
+	return c.cursorClient.StreamingCommitCursor(c.metadata.AddToContext(ctx))
+}
+
+func (c *committer) initialRequest() (interface{}, initialResponseRequired) {
+	return c.initialReq, initialResponseRequired(true)
 }
 
 func (c *committer) validateInitialResponse(response interface{}) error {
@@ -122,6 +136,7 @@ func (c *committer) onStreamStatusChange(status streamStatus) {
 
 	switch status {
 	case streamConnected:
+		c.enableCommits = true
 		c.unsafeUpdateStatus(serviceActive, nil)
 		// Once the stream connects, clear unconfirmed commits and immediately send
 		// the latest desired commit offset.
@@ -130,6 +145,8 @@ func (c *committer) onStreamStatusChange(status streamStatus) {
 		c.pollCommits.Start()
 
 	case streamReconnecting:
+		// Ensure there are no commits until streamConnected has been handled above.
+		c.enableCommits = false
 		c.pollCommits.Stop()
 
 	case streamTerminated:
@@ -172,6 +189,9 @@ func (c *committer) commitOffsetToStream() {
 }
 
 func (c *committer) unsafeCommitOffsetToStream() {
+	if !c.enableCommits {
+		return
+	}
 	nextOffset := c.cursorTracker.NextOffset()
 	if nextOffset == nilCursorOffset {
 		return
@@ -190,7 +210,8 @@ func (c *committer) unsafeCommitOffsetToStream() {
 }
 
 func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !c.unsafeUpdateStatus(targetStatus, err) {
+	if !c.unsafeUpdateStatus(targetStatus, wrapError("committer", c.subscription.String(), err)) {
+		c.unsafeCheckDone()
 		return
 	}
 
@@ -203,18 +224,18 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 
 	// Otherwise discard outstanding acks and immediately terminate the stream.
 	c.acks.Release()
-	c.unsafeTerminate()
+	c.unsafeOnTerminated()
 }
 
 func (c *committer) unsafeCheckDone() {
 	// The commit stream can be closed once the final commit offset has been
 	// confirmed and there are no outstanding acks.
 	if c.status == serviceTerminating && c.cursorTracker.UpToDate() && c.acks.Empty() {
-		c.unsafeTerminate()
+		c.unsafeOnTerminated()
 	}
 }
 
-func (c *committer) unsafeTerminate() {
+func (c *committer) unsafeOnTerminated() {
 	c.pollCommits.Stop()
 	c.stream.Stop()
 }

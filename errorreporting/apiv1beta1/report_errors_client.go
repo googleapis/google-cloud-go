@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -43,8 +43,9 @@ func defaultReportErrorsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -56,7 +57,7 @@ func defaultReportErrorsCallOptions() *ReportErrorsCallOptions {
 	}
 }
 
-// ReportErrorsClient is a client for interacting with Cloud Error Reporting API.
+// ReportErrorsClient is a client for interacting with Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ReportErrorsClient struct {
@@ -133,14 +134,22 @@ func (c *ReportErrorsClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ReportErrorEvent report an individual error event.
+// ReportErrorEvent report an individual error event and record the event to a log.
 //
 // This endpoint accepts either an OAuth token,
 // or an API key (at https://support.google.com/cloud/answer/6158862)
 // for authentication. To use an API key, append it to the URL as the value of
 // a key parameter. For example:
 //
-// POST https://clouderrorreporting.googleapis.com/v1beta1/projects/example-project/events:report?key=123ABC456
+// POST https://clouderrorreporting.googleapis.com/v1beta1/{projectName}/events:report?key=123ABC456
+//
+// Note: Error Reporting (at /error-reporting) is a global service built
+// on Cloud Logging and doesn’t analyze logs stored
+// in regional log buckets or logs routed to other Google Cloud projects.
+//
+// For more information, see
+// Using Error Reporting with regionalized
+// logs (at /error-reporting/docs/regionalization).
 func (c *ReportErrorsClient) ReportErrorEvent(ctx context.Context, req *clouderrorreportingpb.ReportErrorEventRequest, opts ...gax.CallOption) (*clouderrorreportingpb.ReportErrorEventResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)

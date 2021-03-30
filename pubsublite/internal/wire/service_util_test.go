@@ -33,14 +33,16 @@ type serviceTestProxy struct {
 	t          *testing.T
 	service    service
 	name       string
+	clients    apiClients
 	started    chan struct{}
 	terminated chan struct{}
 }
 
-func (sp *serviceTestProxy) initAndStart(t *testing.T, s service, name string) {
+func (sp *serviceTestProxy) initAndStart(t *testing.T, s service, name string, clients ...apiClient) {
 	sp.t = t
 	sp.service = s
 	sp.name = name
+	sp.clients = clients
 	sp.started = make(chan struct{})
 	sp.terminated = make(chan struct{})
 	s.AddStatusChangeReceiver(nil, sp.onStatusChange)
@@ -65,6 +67,7 @@ func (sp *serviceTestProxy) StartError() error {
 	case <-time.After(serviceTestWaitTimeout):
 		return fmt.Errorf("%s did not start within %v", sp.name, serviceTestWaitTimeout)
 	case <-sp.terminated:
+		sp.clients.Close()
 		return sp.service.Error()
 	case <-sp.started:
 		return sp.service.Error()
@@ -77,6 +80,7 @@ func (sp *serviceTestProxy) FinalError() error {
 	case <-time.After(serviceTestWaitTimeout):
 		return fmt.Errorf("%s did not terminate within %v", sp.name, serviceTestWaitTimeout)
 	case <-sp.terminated:
+		sp.clients.Close()
 		return sp.service.Error()
 	}
 }

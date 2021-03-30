@@ -328,6 +328,12 @@ func (s *session) recycle() {
 // destroy removes the session from its home session pool, healthcheck queue
 // and Cloud Spanner service.
 func (s *session) destroy(isExpire bool) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+	return s.destroyWithContext(ctx, isExpire)
+}
+
+func (s *session) destroyWithContext(ctx context.Context, isExpire bool) bool {
 	// Remove s from session pool.
 	if !s.pool.remove(s, isExpire) {
 		return false
@@ -335,8 +341,6 @@ func (s *session) destroy(isExpire bool) bool {
 	// Unregister s from healthcheck queue.
 	s.pool.hc.unregister(s)
 	// Remove s from Cloud Spanner service.
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
-	defer cancel()
 	s.delete(ctx)
 	return true
 }
@@ -345,7 +349,9 @@ func (s *session) delete(ctx context.Context) {
 	// Ignore the error because even if we fail to explicitly destroy the
 	// session, it will be eventually garbage collected by Cloud Spanner.
 	err := s.client.DeleteSession(contextWithOutgoingMetadata(ctx, s.md), &sppb.DeleteSessionRequest{Name: s.getID()})
-	if err != nil {
+	// Do not log DeadlineExceeded errors when deleting sessions, as these do
+	// not indicate anything the user can or should act upon.
+	if err != nil && ErrCode(err) != codes.DeadlineExceeded {
 		logf(s.logger, "Failed to delete session %v. Error: %v", s.getID(), err)
 	}
 }
@@ -725,8 +731,11 @@ func (p *sessionPool) isValid() bool {
 	return p.valid
 }
 
-// close marks the session pool as closed.
-func (p *sessionPool) close() {
+// close marks the session pool as closed and deletes all sessions in parallel.
+// Any errors that are returned by the Delete RPC are logged but otherwise
+// ignored, except for DeadlineExceeded errors, which are ignored and not
+// logged.
+func (p *sessionPool) close(ctx context.Context) {
 	if p == nil {
 		return
 	}
@@ -743,9 +752,17 @@ func (p *sessionPool) close() {
 	allSessions := make([]*session, len(p.hc.queue.sessions))
 	copy(allSessions, p.hc.queue.sessions)
 	p.hc.mu.Unlock()
+	wg := sync.WaitGroup{}
 	for _, s := range allSessions {
-		s.destroy(false)
+		wg.Add(1)
+		go deleteSession(ctx, s, &wg)
 	}
+	wg.Wait()
+}
+
+func deleteSession(ctx context.Context, s *session, wg *sync.WaitGroup) {
+	defer wg.Done()
+	s.destroyWithContext(ctx, false)
 }
 
 // errInvalidSessionPool is the error for using an invalid session pool.
