@@ -1113,7 +1113,6 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 	if iAdminClient != nil {
 		defer iAdminClient.Close()
-
 		iInfo, err := iAdminClient.InstanceInfo(ctx, adminClient.instance)
 		if err != nil {
 			t.Errorf("InstanceInfo: %v", err)
@@ -1197,13 +1196,11 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 
 	encInfo, err := adminClient.EncryptionInfo(ctx, tblConf.TableID)
-	fmt.Println(encInfo)
-	wantEnc := map[string]EncryptionInfo{}
 	if err != nil {
 		t.Errorf("Encryption Info does not expect err: %v", err)
 	}
-	if !testutil.Equal(encInfo, wantEnc) {
-		t.Errorf("Encryption Info mismatch, got %v, want %v", encInfo, wantEnc)
+	if !testutil.Equal(len(encInfo), 0) {
+		t.Errorf("Encryption Info mismatch, got %v, want %v", len(encInfo), 0)
 	}
 
 	// Populate mytable and drop row ranges
@@ -1407,6 +1404,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
+
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
@@ -1432,6 +1430,25 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 			{ClusterID: clusterID, NumNodes: 5},
 		},
 	}
+
+	// TODO: should this know how to create a cluster/instance pair?
+	// conf := InstanceWithClustersConfig{
+	// 	InstanceID:  "g-c-p-crw",
+	// 	DisplayName: "g-c-p-crw",
+	// 	Clusters: []ClusterConfig{
+	// 		ClusterConfig{
+	// 			ClusterID:  "g-c-p-crw-cluster",
+	// 			KMSKeyName: "crwilcox-cmek-test-key",
+	// 			Zone:       "us-west2-b",
+	// 			NumNodes:   1,
+	// 		},
+	// 	},
+	// }
+
+	// err = iAdminClient.CreateInstanceWithClusters(ctx, &conf)
+	// if err != nil {
+	// 	t.Errorf("Creation: %v", err)
+	// }
 
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
 		t.Fatalf("UpdateInstanceWithClusters: %v", err)
@@ -1460,6 +1477,123 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
 	}
+
+	if cInfo.KMSKeyName != "" {
+		t.Fatalf("KMSKeyName: %v, want: %v", cInfo.KMSKeyName, "")
+	}
+}
+
+func TestIntegration_AdminEncryptionInfo(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, _ := context.WithTimeout(context.Background(), timeout)
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	// TODO: It may be good to automate, or allow this to be passed in ;)
+	clusterID := instanceToCreate + "-cluster"
+	project := "firestore-harvard-library"
+	loc := "us-central1" // NOTE: cannot use "global"
+	ring := "crwilcox-cmek-test-key2"
+	key := "crwilcox-cmek-test-key2"
+	kmsKeyName := fmt.Sprintf("projects/%s/locations/%s/keyRings/%s/cryptoKeys/%s", project, loc, ring, key)
+
+	// TODO: should this know how to create a cluster/instance pair?
+	conf := &InstanceWithClustersConfig{
+		InstanceID: instanceToCreate,
+		// InstanceType: PRODUCTION,
+		DisplayName: "test instance",
+		Clusters: []ClusterConfig{
+			ClusterConfig{
+				ClusterID:  clusterID,
+				KMSKeyName: kmsKeyName,
+				Zone:       instanceToCreateZone,
+				NumNodes:   1,
+			},
+		},
+	}
+	if err := iAdminClient.CreateInstanceWithClusters(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
+	if err != nil {
+		t.Fatalf("InstanceInfo: %v", err)
+	}
+	fmt.Println(iInfo)
+
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	// TODO:[X] Add kms_key_name field to Cluster
+	if got, want := cInfo.KMSKeyName, kmsKeyName; !cmp.Equal(got, want) {
+		t.Fatalf("KMSKeyName: %v, want: %v", got, want)
+	}
+
+	// https://github.com/googleapis/java-bigtable/pull/656/files#diff-d73f6370f98371679471d7c0732b459d7b56b26dd3e7f7cf6fdf1e14d791af20R92
+	// TODO:[] Create EncryptionInfo class
+	// TODO:[] Create Status class for EncryptionInfo.encryption_status field
+
+	// TODO:[] Add encryption_info field to Backup
+	// 	  /**
+	//    * Get the encryption information for the backup.
+	//    *
+	//    * <p>If encryption_type is CUSTOMER_MANAGED_ENCRYPTION, kms_key_version will be filled in with
+	//    * status UNKNOWN.
+	//    *
+	//    * <p>If encryption_type is GOOGLE_DEFAULT_ENCRYPTION, all other fields will have default value.
+	//    */
+	//    public EncryptionInfo getEncryptionInfo() {
+	//     return EncryptionInfo.fromProto(proto.getEncryptionInfo());
+	//   }
+
+	// TODO:[] Add get_encryption_info method to Table
+	// 	/**
+	// 	* Gets the current encryption info for the table across all of the clusters.
+	// 	*
+	// 	* <p>The returned Map will be keyed by cluster id and contain a status for all of the keys in
+	// 	* use.
+	// 	*/
+	//    public Map<String, List<EncryptionInfo>> getEncryptionInfo(String tableId) {
+	// 	 return ApiExceptions.callAndTranslateApiException(getEncryptionInfoAsync(tableId));
+	//    }
+
+	// TODO: Cluster class should have a getKMSKeyName Method?
+	/**
+	 * Google Cloud Key Management Service (KMS) settings for a CMEK-protected Bigtable cluster. This
+	 * returns the full resource name of the Cloud KMS key in the format
+	 * `projects/{key_project_id}/locations/{location}/keyRings/{ring_name}/cryptoKeys/{key_name}`
+	 */
+	//    public String getKmsKeyName() {
+	//     if (stateProto.hasEncryptionConfig()) {
+	//       return stateProto.getEncryptionConfig().getKmsKeyName();
+	//     }
+	//     return null;
+	//   }
+
+	// TODO Unit tests
+	// - test that an instance create with cmek sends that field.
+	// -
 }
 
 func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {

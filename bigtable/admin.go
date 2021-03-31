@@ -318,6 +318,7 @@ func (ac *AdminClient) getTable(ctx context.Context, table string) (*btapb.Table
 	prefix := ac.instancePrefix()
 	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
+		View: btapb.Table_ENCRYPTION_VIEW,
 	}
 
 	var res *btapb.Table
@@ -1036,13 +1037,26 @@ type ClusterConfig struct {
 	InstanceID, ClusterID, Zone string
 	NumNodes                    int32
 	StorageType                 StorageType
+
+	// Describes the Cloud KMS encryption key that will be used to protect the
+	// destination Bigtable cluster. The requirements for this key are:
+	//  1) The Cloud Bigtable service account associated with the project that
+	//  contains this cluster must be granted the
+	//  `cloudkms.cryptoKeyEncrypterDecrypter` role on the CMEK key.
+	//  2) Only regional keys can be used and the region of the CMEK key must
+	//  match the region of the cluster.
+	// 3) All clusters within an instance must use the same CMEK key.
+	KMSKeyName string
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
+	ec := btapb.Cluster_EncryptionConfig{}
+	ec.KmsKeyName = cc.KMSKeyName
 	return &btapb.Cluster{
 		ServeNodes:         cc.NumNodes,
 		DefaultStorageType: cc.StorageType.proto(),
 		Location:           "projects/" + project + "/locations/" + cc.Zone,
+		EncryptionConfig:   &ec,
 	}
 }
 
@@ -1136,7 +1150,10 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 // GetCluster fetches a cluster in an instance
 func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clusterID string) (*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
-	req := &btapb.GetClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
+	req := &btapb.GetClusterRequest{
+		Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
+		// View: btapb.Table_ENCRYPTION_VIEW
+	}
 	var c *btapb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
 		var err error
@@ -1155,6 +1172,7 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 		ServeNodes:  int(c.ServeNodes),
 		State:       c.State.String(),
 		StorageType: storageTypeFromProto(c.DefaultStorageType),
+		KMSKeyName:  c.EncryptionConfig.KmsKeyName,
 	}
 	return cis, nil
 }
@@ -1648,16 +1666,25 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
 
-	return &BackupInfo{
-		Name:           name,
-		SourceTable:    tableID,
-		SizeBytes:      backup.SizeBytes,
-		StartTime:      startTime,
-		EndTime:        endTime,
-		ExpireTime:     expireTime,
-		State:          backup.State.String(),
-		EncryptionInfo: newEncryptionInfo(backup.EncryptionInfo),
-	}, nil
+	bi := BackupInfo{
+		Name:        name,
+		SourceTable: tableID,
+		SizeBytes:   backup.SizeBytes,
+		StartTime:   startTime,
+		EndTime:     endTime,
+		ExpireTime:  expireTime,
+		State:       backup.State.String(),
+		// EncryptionInfo: newEncryptionInfo(backup.EncryptionInfo),
+	}
+	encInfo := backup.GetEncryptionInfo()
+	fmt.Println(encInfo)
+	fmt.Println(backup.EncryptionInfo)
+	if encInfo != nil {
+		bi.EncryptionInfo = newEncryptionInfo(encInfo)
+	} else {
+		fmt.Println("NO ENCRYPTION INFO")
+	}
+	return &bi, nil
 }
 
 // BackupIterator is an EntryIterator that iterates over log entries.
@@ -1703,6 +1730,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 
 	req := &btapb.GetBackupRequest{
 		Name: backupPath,
+		//View: btapb.Table_ENCRYPTION_VIEW,
 	}
 
 	var resp *btapb.Backup
