@@ -1058,7 +1058,7 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 		}
 	}
 
-	txOpts := TransactionOptions{CommitOptions{ReturnCommitStats: true}}
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
 	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		// Query Foo's balance and Bar's balance.
 		bf, e := readBalance(tx.Query(ctx,
@@ -1237,7 +1237,7 @@ func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T
 	}
 
 	var resp CommitResponse
-	txOpts := TransactionOptions{CommitOptions{ReturnCommitStats: true}}
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
 	for {
 		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, txOpts)
 		if err != nil {
