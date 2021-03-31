@@ -105,6 +105,11 @@
                 "RenameTagTemplateField"
               ]
             },
+            "RenameTagTemplateFieldEnumValue": {
+              "methods": [
+                "RenameTagTemplateFieldEnumValue"
+              ]
+            },
             "SearchCatalog": {
               "methods": [
                 "SearchCatalog"
@@ -143,6 +148,99 @@
             "UpdateTagTemplateField": {
               "methods": [
                 "UpdateTagTemplateField"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PolicyTagManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyTagManagerClient",
+          "rpcs": {
+            "CreatePolicyTag": {
+              "methods": [
+                "CreatePolicyTag"
+              ]
+            },
+            "CreateTaxonomy": {
+              "methods": [
+                "CreateTaxonomy"
+              ]
+            },
+            "DeletePolicyTag": {
+              "methods": [
+                "DeletePolicyTag"
+              ]
+            },
+            "DeleteTaxonomy": {
+              "methods": [
+                "DeleteTaxonomy"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetPolicyTag": {
+              "methods": [
+                "GetPolicyTag"
+              ]
+            },
+            "GetTaxonomy": {
+              "methods": [
+                "GetTaxonomy"
+              ]
+            },
+            "ListPolicyTags": {
+              "methods": [
+                "ListPolicyTags"
+              ]
+            },
+            "ListTaxonomies": {
+              "methods": [
+                "ListTaxonomies"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdatePolicyTag": {
+              "methods": [
+                "UpdatePolicyTag"
+              ]
+            },
+            "UpdateTaxonomy": {
+              "methods": [
+                "UpdateTaxonomy"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "PolicyTagManagerSerialization": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyTagManagerSerializationClient",
+          "rpcs": {
+            "ExportTaxonomies": {
+              "methods": [
+                "ExportTaxonomies"
+              ]
+            },
+            "ImportTaxonomies": {
+              "methods": [
+                "ImportTaxonomies"
               ]
             }
           }

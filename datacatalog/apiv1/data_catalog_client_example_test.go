@@ -424,6 +424,26 @@ func ExampleClient_RenameTagTemplateField() {
 	_ = resp
 }
 
+func ExampleClient_RenameTagTemplateFieldEnumValue() {
+	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
+
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datacatalogpb.RenameTagTemplateFieldEnumValueRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.RenameTagTemplateFieldEnumValue(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_DeleteTagTemplateField() {
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)

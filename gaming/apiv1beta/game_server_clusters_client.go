@@ -127,7 +127,7 @@ func defaultGameServerClustersCallOptions() *GameServerClustersCallOptions {
 	}
 }
 
-// GameServerClustersClient is a client for interacting with .
+// GameServerClustersClient is a client for interacting with Game Services API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type GameServerClustersClient struct {
