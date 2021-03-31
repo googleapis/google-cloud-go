@@ -65,6 +65,10 @@ type LoadConfig struct {
 	// For ingestion from datastore backups, ProjectionFields governs which fields
 	// are projected from the backup.  The default behavior projects all fields.
 	ProjectionFields []string
+
+	// HivePartitioningOptions allows use of Hive partitioning based on the
+	// layout of objects in Google Cloud Storage.
+	HivePartitioningOptions *HivePartitioningOptions
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -82,6 +86,9 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
 			ProjectionFields:                   l.ProjectionFields,
 		},
+	}
+	if l.HivePartitioningOptions != nil {
+		config.Load.HivePartitioningOptions = l.HivePartitioningOptions.toBQ()
 	}
 	media := l.Src.populateLoadConfig(config.Load)
 	return config, media
@@ -110,6 +117,9 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		s := NewGCSReference(q.Load.SourceUris...)
 		fc = &s.FileConfig
 		lc.Src = s
+	}
+	if q.Load.HivePartitioningOptions != nil {
+		lc.HivePartitioningOptions = bqToHivePartitioningOptions(q.Load.HivePartitioningOptions)
 	}
 	bqPopulateFileConfig(q.Load, fc)
 	return lc
