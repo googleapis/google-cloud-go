@@ -341,7 +341,7 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 	}
 }
 
-// CertificateAuthorityClient is a client for interacting with .
+// CertificateAuthorityClient is a client for interacting with Certificate Authority API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type CertificateAuthorityClient struct {

@@ -187,7 +187,7 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 	}
 }
 
-// AnalyticsAdminClient is a client for interacting with .
+// AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type AnalyticsAdminClient struct {
