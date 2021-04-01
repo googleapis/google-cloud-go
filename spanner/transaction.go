@@ -117,12 +117,6 @@ func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, ke
 
 // ReadOptions provides options for reading rows from a database.
 type ReadOptions struct {
-	// The request tag to use for this request.
-	RequestTag string
-
-	// Priority is the RPC priority to use for the operation.
-	Priority sppb.RequestOptions_Priority
-
 	// The index to use for reading. If non-empty, you can only read columns
 	// that are part of the index key, part of the primary key, or stored in the
 	// index due to a STORING clause in the index definition.
@@ -131,6 +125,12 @@ type ReadOptions struct {
 	// The maximum number of rows to read. A limit value less than 1 means no
 	// limit.
 	Limit int
+
+	// Priority is the RPC priority to use for the operation.
+	Priority sppb.RequestOptions_Priority
+
+	// The request tag to use for this request.
+	RequestTag string
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -257,22 +257,14 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 
 // QueryOptions provides options for executing a sql query or update statement.
 type QueryOptions struct {
-	// The request tag to use for this request.
-	RequestTag string
-
-	// Priority is the RPC priority to use for the operation.
-	Priority sppb.RequestOptions_Priority
-
 	Mode    *sppb.ExecuteSqlRequest_QueryMode
 	Options *sppb.ExecuteSqlRequest_QueryOptions
-}
 
-func (qo *QueryOptions) requestPriority() sppb.RequestOptions_Priority {
-	return qo.Priority
-}
+	// Priority is the RPC priority to use for the query/update.
+	Priority sppb.RequestOptions_Priority
 
-func (qo *QueryOptions) requestTag() string {
-	return qo.RequestTag
+	// The request tag to use for this request.
+	RequestTag string
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
@@ -1269,14 +1261,6 @@ type writeOnlyTransaction struct {
 	transactionTag string
 	// commitPriority is the RPC priority to use for the commit operation.
 	commitPriority sppb.RequestOptions_Priority
-}
-
-func (t *writeOnlyTransaction) requestPriority() sppb.RequestOptions_Priority {
-	return t.commitPriority
-}
-
-func (t *writeOnlyTransaction) requestTag() string {
-	return ""
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
