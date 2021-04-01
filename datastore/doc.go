@@ -67,6 +67,7 @@ Example code:
 		if err != nil {
 			// Handle error.
 		}
+		defer dsClient.Close()
 
 		k := datastore.NameKey("Entity", "stringID", nil)
 		e := new(Entity)
@@ -213,6 +214,7 @@ Example code:
 		if err != nil {
 			// Handle error.
 		}
+		defer dsClient.Close()
 
 		k := datastore.NameKey("Entity", "stringID", nil)
 		e := MyEntity{A: 12}

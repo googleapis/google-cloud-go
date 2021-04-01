@@ -300,12 +300,10 @@ of the transaction:
         }
         balance -= 10
         m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
-        txn.BufferWrite([]*spanner.Mutation{m})
-
         // The buffered mutation will be committed.  If the commit
         // fails with an Aborted error, this function will be called
         // again.
-        return nil
+        return txn.BufferWrite([]*spanner.Mutation{m})
     })
 
 
@@ -357,3 +355,8 @@ at https://godoc.org/go.opencensus.io/trace. OpenCensus tracing requires Go 1.8
 or higher.
 */
 package spanner // import "cloud.google.com/go/spanner"
+
+// clientUserAgent identifies the version of this package.
+// It should be the same as https://pkg.go.dev/cloud.google.com/go/spanner.
+// TODO: We will want to automate the version with a bash script.
+const clientUserAgent = "spanner-go/v1.12.0"

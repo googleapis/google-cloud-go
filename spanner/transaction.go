@@ -72,6 +72,27 @@ type txReadOnly struct {
 
 	// qo provides options for executing a sql query.
 	qo QueryOptions
+
+	// txOpts provides options for a transaction.
+	txOpts TransactionOptions
+}
+
+// Internal interface for types that can configure the priority of an RPC.
+type requestPrioritizer interface {
+	requestPriority() sppb.RequestOptions_Priority
+}
+
+// TransactionOptions provides options for a transaction.
+type TransactionOptions struct {
+	CommitOptions CommitOptions
+
+	// CommitPriority is the priority to use for the Commit RPC for the
+	// transaction.
+	CommitPriority sppb.RequestOptions_Priority
+}
+
+func (to *TransactionOptions) requestPriority() sppb.RequestOptions_Priority {
+	return to.CommitPriority
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -100,6 +121,13 @@ type ReadOptions struct {
 	// The maximum number of rows to read. A limit value less than 1 means no
 	// limit.
 	Limit int
+
+	// Priority is the RPC priority to use for the read operation.
+	Priority sppb.RequestOptions_Priority
+}
+
+func (ro *ReadOptions) requestPriority() sppb.RequestOptions_Priority {
+	return ro.Priority
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -127,11 +155,13 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	}
 	index := ""
 	limit := 0
+	var ro *sppb.RequestOptions
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
 			limit = opts.Limit
 		}
+		ro = createRequestOptions(opts)
 	}
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
@@ -139,14 +169,15 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:     t.sh.getID(),
-					Transaction: ts,
-					Table:       table,
-					Index:       index,
-					Columns:     columns,
-					KeySet:      kset,
-					ResumeToken: resumeToken,
-					Limit:       int64(limit),
+					Session:        t.sh.getID(),
+					Transaction:    ts,
+					Table:          table,
+					Index:          index,
+					Columns:        columns,
+					KeySet:         kset,
+					ResumeToken:    resumeToken,
+					Limit:          int64(limit),
+					RequestOptions: ro,
 				})
 		},
 		t.replaceSessionFunc,
@@ -219,25 +250,46 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 	}
 }
 
-// QueryOptions provides options for executing a sql query from a database.
+// QueryOptions provides options for executing a sql query or update statement.
 type QueryOptions struct {
 	Mode    *sppb.ExecuteSqlRequest_QueryMode
 	Options *sppb.ExecuteSqlRequest_QueryOptions
+
+	// Priority is the RPC priority to use for the query/update.
+	Priority sppb.RequestOptions_Priority
+}
+
+func (qo *QueryOptions) requestPriority() sppb.RequestOptions_Priority {
+	return qo.Priority
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:    qo.Mode,
-		Options: &sppb.ExecuteSqlRequest_QueryOptions{},
+		Mode:     qo.Mode,
+		Options:  &sppb.ExecuteSqlRequest_QueryOptions{},
+		Priority: qo.Priority,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
 	}
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
+	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
 	return merged
+}
+
+func createRequestOptions(prioritizer requestPrioritizer) (ro *sppb.RequestOptions) {
+	if prioritizer == nil {
+		return nil
+	}
+	if prioritizer.requestPriority() != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		ro = &sppb.RequestOptions{Priority: prioritizer.requestPriority()}
+	}
+	return ro
 }
 
 // Query executes a query against the database. It returns a RowIterator for
@@ -336,14 +388,15 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		mode = *options.Mode
 	}
 	req := &sppb.ExecuteSqlRequest{
-		Session:      sid,
-		Transaction:  ts,
-		Sql:          stmt.SQL,
-		QueryMode:    mode,
-		Seqno:        atomic.AddInt64(&t.sequenceNumber, 1),
-		Params:       params,
-		ParamTypes:   paramTypes,
-		QueryOptions: options.Options,
+		Session:        sid,
+		Transaction:    ts,
+		Sql:            stmt.SQL,
+		QueryMode:      mode,
+		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
+		Params:         params,
+		ParamTypes:     paramTypes,
+		QueryOptions:   options.Options,
+		RequestOptions: createRequestOptions(&options),
 	}
 	return req, sh, nil
 }
@@ -485,7 +538,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 				rts = time.Unix(res.ReadTimestamp.Seconds, int64(res.ReadTimestamp.Nanos))
 			}
 		} else {
-			err = toSpannerError(err)
+			err = ToSpannerError(err)
 		}
 		break
 	}
@@ -808,8 +861,8 @@ func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowC
 }
 
 // UpdateWithOptions executes a DML statement against the database. It returns
-// the number of affected rows. The sql query execution will be optimized
-// based on the given query options.
+// the number of affected rows. The given QueryOptions will be used for the
+// execution of this statement.
 func (t *ReadWriteTransaction) UpdateWithOptions(ctx context.Context, stmt Statement, opts QueryOptions) (rowCount int64, err error) {
 	return t.update(ctx, stmt, t.qo.merge(opts))
 }
@@ -823,7 +876,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 	}
 	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata()), req)
 	if err != nil {
-		return 0, toSpannerError(err)
+		return 0, ToSpannerError(err)
 	}
 	if resultSet.Stats == nil {
 		return 0, spannerErrorf(codes.InvalidArgument, "query passed to Update: %q", stmt.SQL)
@@ -838,6 +891,20 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 // affected rows for the given query at the same index. If an error occurs,
 // counts will be returned up to the query that encountered the error.
 func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statement) (_ []int64, err error) {
+	return t.BatchUpdateWithOptions(ctx, stmts, QueryOptions{})
+}
+
+// BatchUpdateWithOptions groups one or more DML statements and sends them to
+// Spanner in a single RPC. This is an efficient way to execute multiple DML
+// statements.
+//
+// A slice of counts is returned, where each count represents the number of
+// affected rows for the given query at the same index. If an error occurs,
+// counts will be returned up to the query that encountered the error.
+//
+// The priority given in the QueryOptions will be included with the RPC.
+// Any other options that are set in the QueryOptions struct will be ignored.
+func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -866,13 +933,14 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 	}
 
 	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
-		Session:     sh.getID(),
-		Transaction: ts,
-		Statements:  sppbStmts,
-		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
+		Session:        sh.getID(),
+		Transaction:    ts,
+		Statements:     sppbStmts,
+		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
+		RequestOptions: createRequestOptions(&opts),
 	})
 	if err != nil {
-		return nil, toSpannerError(err)
+		return nil, ToSpannerError(err)
 	}
 
 	var counts []int64
@@ -954,22 +1022,36 @@ func (t *ReadWriteTransaction) begin(ctx context.Context) error {
 	return err
 }
 
+// CommitResponse provides a response of a transaction commit in a database.
+type CommitResponse struct {
+	// CommitTs is the commit time for a transaction.
+	CommitTs time.Time
+	// CommitStats is the commit statistics for a transaction.
+	CommitStats *sppb.CommitResponse_CommitStats
+}
+
+// CommitOptions provides options for commiting a transaction in a database.
+type CommitOptions struct {
+	ReturnCommitStats bool
+}
+
 // commit tries to commit a readwrite transaction to Cloud Spanner. It also
-// returns the commit timestamp for the transactions.
-func (t *ReadWriteTransaction) commit(ctx context.Context) (time.Time, error) {
-	var ts time.Time
+// returns the commit response for the transactions.
+func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions) (CommitResponse, error) {
+	resp := CommitResponse{}
 	t.mu.Lock()
 	t.state = txClosed // No further operations after commit.
 	mPb, err := mutationsProto(t.wb)
 	t.mu.Unlock()
 	if err != nil {
-		return ts, err
+		return resp, err
 	}
+
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
 	sid, client := t.sh.getID(), t.sh.getClient()
 	if sid == "" || client == nil {
-		return ts, errSessionClosed(t.sh)
+		return resp, errSessionClosed(t.sh)
 	}
 
 	res, e := client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata()), &sppb.CommitRequest{
@@ -977,18 +1059,23 @@ func (t *ReadWriteTransaction) commit(ctx context.Context) (time.Time, error) {
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
-		Mutations: mPb,
+		RequestOptions:    createRequestOptions(&t.txOpts),
+		Mutations:         mPb,
+		ReturnCommitStats: options.ReturnCommitStats,
 	})
 	if e != nil {
-		return ts, toSpannerErrorWithCommitInfo(e, true)
+		return resp, toSpannerErrorWithCommitInfo(e, true)
 	}
 	if tstamp := res.GetCommitTimestamp(); tstamp != nil {
-		ts = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+		resp.CommitTs = time.Unix(tstamp.Seconds, int64(tstamp.Nanos))
+	}
+	if options.ReturnCommitStats {
+		resp.CommitStats = res.CommitStats
 	}
 	if isSessionNotFoundError(err) {
 		t.sh.destroy()
 	}
-	return ts, err
+	return resp, err
 }
 
 // rollback is called when a commit is aborted or the transaction body runs
@@ -1014,15 +1101,15 @@ func (t *ReadWriteTransaction) rollback(ctx context.Context) {
 }
 
 // runInTransaction executes f under a read-write transaction context.
-func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (time.Time, error) {
+func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(context.Context, *ReadWriteTransaction) error) (CommitResponse, error) {
 	var (
-		ts              time.Time
+		resp            CommitResponse
 		err             error
 		errDuringCommit bool
 	)
 	if err = f(context.WithValue(ctx, transactionInProgressKey{}, 1), t); err == nil {
 		// Try to commit if transaction body returns no error.
-		ts, err = t.commit(ctx)
+		resp, err = t.commit(ctx, t.txOpts.CommitOptions)
 		errDuringCommit = err != nil
 	}
 	if err != nil {
@@ -1030,11 +1117,11 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 			// Retry the transaction using the same session on ABORT error.
 			// Cloud Spanner will create the new transaction with the previous
 			// one's wound-wait priority.
-			return ts, err
+			return resp, err
 		}
 		if isSessionNotFoundError(err) {
 			t.sh.destroy()
-			return ts, err
+			return resp, err
 		}
 		// Rollback the transaction unless the error occurred during the
 		// commit. Executing a rollback after a commit has failed will
@@ -1045,10 +1132,10 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 		if !errDuringCommit {
 			t.rollback(ctx)
 		}
-		return ts, err
+		return resp, err
 	}
-	// err == nil, return commit timestamp.
-	return ts, nil
+	// err == nil, return commit response.
+	return resp, nil
 }
 
 // ReadWriteStmtBasedTransaction provides a wrapper of ReadWriteTransaction in
@@ -1059,6 +1146,8 @@ func (t *ReadWriteTransaction) runInTransaction(ctx context.Context, f func(cont
 type ReadWriteStmtBasedTransaction struct {
 	// ReadWriteTransaction contains methods for performing transactional reads.
 	ReadWriteTransaction
+
+	options TransactionOptions
 }
 
 // NewReadWriteStmtBasedTransaction starts a read-write transaction. Commit() or
@@ -1074,6 +1163,18 @@ type ReadWriteStmtBasedTransaction struct {
 // For most use cases, client.ReadWriteTransaction should be used, as it will
 // handle all Aborted and 'Session not found' errors automatically.
 func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWriteStmtBasedTransaction, error) {
+	return NewReadWriteStmtBasedTransactionWithOptions(ctx, c, TransactionOptions{})
+}
+
+// NewReadWriteStmtBasedTransactionWithOptions starts a read-write transaction
+// with configurable options. Commit() or Rollback() must be called to end a
+// transaction. If Commit() or Rollback() is not called, the session that is
+// used by the transaction will not be returned to the pool and cause a session
+// leak.
+//
+// NewReadWriteStmtBasedTransactionWithOptions is a configurable version of
+// NewReadWriteStmtBasedTransaction.
+func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client, options TransactionOptions) (*ReadWriteStmtBasedTransaction, error) {
 	var (
 		sh  *sessionHandle
 		err error
@@ -1092,6 +1193,7 @@ func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWrit
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
+	t.txOpts = options
 
 	if err = t.begin(ctx); err != nil {
 		if sh != nil {
@@ -1105,11 +1207,14 @@ func NewReadWriteStmtBasedTransaction(ctx context.Context, c *Client) (*ReadWrit
 // Commit tries to commit a readwrite transaction to Cloud Spanner. It also
 // returns the commit timestamp for the transactions.
 func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, error) {
-	var (
-		ts  time.Time
-		err error
-	)
-	ts, err = t.commit(ctx)
+	resp, err := t.CommitWithReturnResp(ctx)
+	return resp.CommitTs, err
+}
+
+// CommitWithReturnResp tries to commit a readwrite transaction. It also returns
+// the commit timestamp and stats for the transactions.
+func (t *ReadWriteStmtBasedTransaction) CommitWithReturnResp(ctx context.Context) (CommitResponse, error) {
+	resp, err := t.commit(ctx, t.txOpts.CommitOptions)
 	// Rolling back an aborted transaction is not necessary.
 	if err != nil && status.Code(err) != codes.Aborted {
 		t.rollback(ctx)
@@ -1117,7 +1222,7 @@ func (t *ReadWriteStmtBasedTransaction) Commit(ctx context.Context) (time.Time, 
 	if t.sh != nil {
 		t.sh.recycle()
 	}
-	return ts, err
+	return resp, err
 }
 
 // Rollback is called to cancel the ongoing transaction that has not been
@@ -1135,6 +1240,12 @@ type writeOnlyTransaction struct {
 	// sp is the session pool which writeOnlyTransaction uses to get Cloud
 	// Spanner sessions for blind writes.
 	sp *sessionPool
+	// commitPriority is the RPC priority to use for the commit operation.
+	commitPriority sppb.RequestOptions_Priority
+}
+
+func (t *writeOnlyTransaction) requestPriority() sppb.RequestOptions_Priority {
+	return t.commitPriority
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1176,7 +1287,8 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 					},
 				},
 			},
-			Mutations: mPb,
+			Mutations:      mPb,
+			RequestOptions: createRequestOptions(t),
 		})
 		if err != nil && !isAbortedErr(err) {
 			if isSessionNotFoundError(err) {
@@ -1191,7 +1303,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 			break
 		}
 	}
-	return ts, toSpannerError(err)
+	return ts, ToSpannerError(err)
 }
 
 // isAbortedErr returns true if the error indicates that an gRPC call is

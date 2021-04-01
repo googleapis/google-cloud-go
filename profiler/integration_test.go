@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build linux
+
 package profiler
 
 import (
@@ -74,7 +76,11 @@ retry curl -sL -o /tmp/bin/gimme https://raw.githubusercontent.com/travis-ci/gim
 chmod +x /tmp/bin/gimme
 export PATH=$PATH:/tmp/bin
 
-retry eval "$(gimme {{.GoVersion}})"
+gimme_retrier() {
+  eval "$(gimme {{.GoVersion}})"
+  which go # To retry on non-zero code if go not installed.
+}
+retry gimme_retrier
 
 # Set $GOPATH
 export GOPATH="$HOME/go"
@@ -337,9 +343,9 @@ func TestAgentIntegration(t *testing.T) {
 
 			timeoutCtx, cancel := context.WithTimeout(ctx, tc.timeout)
 			defer cancel()
-			output, err := gceTr.PollForAndReturnSerialOutput(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString)
+			output, err := gceTr.PollAndLogSerialPort(timeoutCtx, &tc.InstanceConfig, benchFinishString, errorString, t.Logf)
 			if err != nil {
-				t.Fatalf("PollForSerialOutput() got error: %v", err)
+				t.Fatalf("PollAndLogSerialPort() got error: %v", err)
 			}
 
 			if tc.backoffTest {

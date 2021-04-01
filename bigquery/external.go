@@ -92,6 +92,10 @@ type ExternalDataConfig struct {
 
 	// Additional options for CSV, GoogleSheets and Bigtable formats.
 	Options ExternalDataConfigOptions
+
+	// HivePartitioningOptions allows use of Hive partitioning based on the
+	// layout of objects in Google Cloud Storage.
+	HivePartitioningOptions *HivePartitioningOptions
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -105,6 +109,9 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
+	}
+	if e.HivePartitioningOptions != nil {
+		q.HivePartitioningOptions = e.HivePartitioningOptions.toBQ()
 	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
@@ -133,6 +140,9 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		if err != nil {
 			return nil, err
 		}
+	}
+	if q.HivePartitioningOptions != nil {
+		e.HivePartitioningOptions = bqToHivePartitioningOptions(q.HivePartitioningOptions)
 	}
 	return e, nil
 }
@@ -408,4 +418,66 @@ func bqToBigtableColumn(q *bq.BigtableColumn) (*BigtableColumn, error) {
 		b.Qualifier = string(bytes)
 	}
 	return b, nil
+}
+
+// HivePartitioningMode is used in conjunction with HivePartitioningOptions.
+type HivePartitioningMode string
+
+const (
+	// AutoHivePartitioningMode automatically infers partitioning key and types.
+	AutoHivePartitioningMode HivePartitioningMode = "AUTO"
+	// StringHivePartitioningMode automatically infers partitioning keys and treats values as string.
+	StringHivePartitioningMode HivePartitioningMode = "STRINGS"
+	// CustomHivePartitioningMode allows custom definition of the external partitioning.
+	CustomHivePartitioningMode HivePartitioningMode = "CUSTOM"
+)
+
+// HivePartitioningOptions defines the behavior of Hive partitioning
+// when working with external data.
+type HivePartitioningOptions struct {
+
+	// Mode defines which hive partitioning mode to use when reading data.
+	Mode HivePartitioningMode
+
+	// When hive partition detection is requested, a common prefix for
+	// all source uris should be supplied.  The prefix must end immediately
+	// before the partition key encoding begins.
+	//
+	// For example, consider files following this data layout.
+	//   gs://bucket/path_to_table/dt=2019-01-01/country=BR/id=7/file.avro
+	//   gs://bucket/path_to_table/dt=2018-12-31/country=CA/id=3/file.avro
+	//
+	// When hive partitioning is requested with either AUTO or STRINGS
+	// detection, the common prefix can be either of
+	// gs://bucket/path_to_table or gs://bucket/path_to_table/ (trailing
+	// slash does not matter).
+	SourceURIPrefix string
+
+	// If set to true, queries against this external table require
+	// a partition filter to be present that can perform partition
+	// elimination.  Hive-partitioned load jobs with this field
+	// set to true will fail.
+	RequirePartitionFilter bool
+}
+
+func (o *HivePartitioningOptions) toBQ() *bq.HivePartitioningOptions {
+	if o == nil {
+		return nil
+	}
+	return &bq.HivePartitioningOptions{
+		Mode:                   string(o.Mode),
+		SourceUriPrefix:        o.SourceURIPrefix,
+		RequirePartitionFilter: o.RequirePartitionFilter,
+	}
+}
+
+func bqToHivePartitioningOptions(q *bq.HivePartitioningOptions) *HivePartitioningOptions {
+	if q == nil {
+		return nil
+	}
+	return &HivePartitioningOptions{
+		Mode:                   HivePartitioningMode(q.Mode),
+		SourceURIPrefix:        q.SourceUriPrefix,
+		RequirePartitionFilter: q.RequirePartitionFilter,
+	}
 }

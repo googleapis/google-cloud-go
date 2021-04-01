@@ -44,6 +44,7 @@ import (
 	"regexp"
 	"runtime"
 	"runtime/pprof"
+	"strings"
 	"sync"
 	"time"
 
@@ -67,6 +68,7 @@ var (
 	config       Config
 	startOnce    allowUntilSuccess
 	mutexEnabled bool
+	logger       *log.Logger
 	// The functions below are stubbed to be overrideable for testing.
 	getProjectID     = gcemd.ProjectID
 	getInstanceName  = gcemd.InstanceName
@@ -222,6 +224,7 @@ func Start(cfg Config, options ...option.ClientOption) error {
 }
 
 func start(cfg Config, options ...option.ClientOption) error {
+	logger = log.New(os.Stderr, "Cloud Profiler: ", log.LstdFlags)
 	if err := initializeConfig(cfg); err != nil {
 		debugLog("failed to initialize config: %v", err)
 		return err
@@ -261,7 +264,7 @@ func start(cfg Config, options ...option.ClientOption) error {
 
 func debugLog(format string, e ...interface{}) {
 	if config.DebugLogging {
-		log.Printf(format, e...)
+		logger.Printf(format, e...)
 	}
 }
 
@@ -297,13 +300,13 @@ func abortedBackoffDuration(md grpcmd.MD) (time.Duration, error) {
 
 type retryer struct {
 	backoff gax.Backoff
-	md      grpcmd.MD
+	md      *grpcmd.MD
 }
 
 func (r *retryer) Retry(err error) (time.Duration, bool) {
 	st, _ := status.FromError(err)
 	if st != nil && st.Code() == codes.Aborted {
-		dur, err := abortedBackoffDuration(r.md)
+		dur, err := abortedBackoffDuration(*r.md)
 		if err == nil {
 			return dur, true
 		}
@@ -315,7 +318,8 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 // createProfile talks to the profiler server to create profile. In
 // case of error, the goroutine will sleep and retry. Sleep duration may
 // be specified by the server. Otherwise it will be an exponentially
-// increasing value, bounded by maxBackoff.
+// increasing value, bounded by maxBackoff. Special handling for
+// certificate errors is described below.
 func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
@@ -324,7 +328,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	}
 
 	var p *pb.Profile
-	md := grpcmd.New(map[string]string{})
+	md := grpcmd.New(nil)
 
 	gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		debugLog("creating a new profile via profiler service")
@@ -332,6 +336,11 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 		p, err = a.client.CreateProfile(ctx, &req, grpc.Trailer(&md))
 		if err != nil {
 			debugLog("failed to create profile, will retry: %v", err)
+			if strings.Contains(err.Error(), "x509: certificate signed by unknown authority") {
+				// gax.Invoke does not retry missing certificate error. Force a retry by returning
+				// a different error. See https://github.com/googleapis/google-cloud-go/issues/3158.
+				err = errors.New("retry the certificate error")
+			}
 		}
 		return err
 	}, gax.WithRetry(func() gax.Retryer {
@@ -341,7 +350,7 @@ func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 				Max:        maxBackoff,
 				Multiplier: backoffMultiplier,
 			},
-			md: md,
+			md: &md,
 		}
 	}))
 

@@ -17,3 +17,13 @@ godocfx -print cloud.google.com/go/storage/...
 godocfx -out custom/output/dir cloud.google.com/go/...
 godocfx -rm custom/output/dir cloud.google.com/go/...
 ```
+
+## Testing
+
+You can run the tests with `go test`.
+
+If you need to update the golden files, add the `-update-goldens` flag:
+
+```
+go test -v -update-goldens
+```

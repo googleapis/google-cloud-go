@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,8 +16,6 @@
 
 // Package storage is an auto-generated package for the
 // BigQuery Storage API.
-//
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // Use of Context
 //
@@ -48,7 +46,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20200912"
+const versionClient = "20210331"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
@@ -75,6 +73,7 @@ func checkDisableDeadlines() (bool, error) {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/bigquery",
+		"https://www.googleapis.com/auth/bigquery.insertdata",
 		"https://www.googleapis.com/auth/bigquery.readonly",
 		"https://www.googleapis.com/auth/cloud-platform",
 	}

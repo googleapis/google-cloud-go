@@ -32,7 +32,6 @@ import (
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
@@ -43,6 +42,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -292,7 +293,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 	})
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Now().Sub(now) >= time.Minute {
+			if time.Since(now) >= time.Minute {
 				t.Fatal("pullN took too long")
 			}
 		} else {
@@ -390,8 +391,8 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	length := MaxPublishRequestBytes - calcFieldSizeString(topic.String())
 	// Next, account for the overhead from encoding an individual PubsubMessage,
 	// and the inner PubsubMessage.Data field.
-	pbMsgOverhead := 1 + proto.SizeVarint(uint64(length))
-	dataOverhead := 1 + proto.SizeVarint(uint64(length-pbMsgOverhead))
+	pbMsgOverhead := 1 + protowire.SizeVarint(uint64(length))
+	dataOverhead := 1 + protowire.SizeVarint(uint64(length-pbMsgOverhead))
 	maxLengthSingleMessage := length - pbMsgOverhead - dataOverhead
 
 	publishReq := &pb.PublishRequest{
@@ -762,6 +763,7 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 // NOTE: This test should be skipped by open source contributors. It requires
 // allowlisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
+	t.Skip("Skipping due to org level policy failing. https://github.com/googleapis/google-cloud-go/issues/3065")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -890,6 +892,7 @@ func TestIntegration_Errors(t *testing.T) {
 }
 
 func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
+	t.Skip("Skipping due to org level policy failing. https://github.com/googleapis/google-cloud-go/issues/3065")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -1147,9 +1150,8 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 			OrderingKey: orderingKey,
 		})
 		go func() {
-			<-r.ready
-			if r.err != nil {
-				t.Error(r.err)
+			if _, err := r.Get(ctx); err != nil {
+				t.Error(err)
 			}
 		}()
 	}
@@ -1318,8 +1320,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        bytes.Repeat([]byte("A"), 1000),
 		OrderingKey: orderingKey,
 	})
-	<-r.ready
-	if r.err == nil {
+	if _, err := r.Get(ctx); err == nil {
 		t.Fatalf("expected bundle byte limit error, got nil")
 	}
 	// Publish a normal sized message now, which should fail
@@ -1328,9 +1329,8 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        []byte("should fail"),
 		OrderingKey: orderingKey,
 	})
-	<-r.ready
-	if r.err == nil || !strings.Contains(r.err.Error(), "pubsub: Publishing for ordering key") {
-		t.Fatalf("expected ordering keys publish error, got %v", r.err)
+	if _, err := r.Get(ctx); err == nil || !strings.Contains(err.Error(), "pubsub: Publishing for ordering key") {
+		t.Fatalf("expected ordering keys publish error, got %v", err)
 	}
 
 	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
@@ -1339,9 +1339,8 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        []byte("should succeed"),
 		OrderingKey: orderingKey,
 	})
-	<-r.ready
-	if r.err != nil {
-		t.Fatalf("got error while publishing message: %v", r.err)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("got error while publishing message: %v", err)
 	}
 }
 

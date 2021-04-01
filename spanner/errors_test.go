@@ -63,7 +63,7 @@ func TestToSpannerError(t *testing.T) {
 				wrapped: errors.New("wha?"),
 				msg:     "error with wrapped non-gRPC and non-Spanner error"}},
 	} {
-		err := toSpannerError(test.err)
+		err := ToSpannerError(test.err)
 		errDuringCommit := toSpannerErrorWithCommitInfo(test.err, true)
 		if got, want := ErrCode(err), test.wantCode; got != want {
 			t.Errorf("%v: got %s, want %s", test.err, got, want)

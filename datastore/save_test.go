@@ -15,9 +15,11 @@
 package datastore
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/civil"
 	"cloud.google.com/go/internal/testutil"
 	pb "google.golang.org/genproto/googleapis/datastore/v1"
 )
@@ -321,6 +323,27 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 		N2 interface{}
 	}
 
+	civDateVal := civil.Date{
+		Year:  2020,
+		Month: 11,
+		Day:   10,
+	}
+	civTimeValNano := civil.Time{
+		Hour:       1,
+		Minute:     1,
+		Second:     1,
+		Nanosecond: 1,
+	}
+	civTimeVal := civil.Time{
+		Hour:   1,
+		Minute: 1,
+		Second: 1,
+	}
+	timeValNano, _ := time.Parse("15:04:05.000000000", civTimeValNano.String())
+	timeVal, _ := time.Parse("15:04:05", civTimeVal.String())
+	dateTimeStr := fmt.Sprintf("%v %v", civDateVal.String(), civTimeVal.String())
+	dateTimeVal, _ := time.ParseInLocation("2006-01-02 15:04:05", dateTimeStr, time.UTC)
+
 	cases := []struct {
 		name string
 		in   interface{}
@@ -369,6 +392,65 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 			in:   &Struct{},
 			want: []Property{
 				{Name: "Map", Value: []Property{}},
+			},
+		},
+		{
+			name: "civil.Date",
+			in: &struct {
+				CivDate civil.Date
+			}{
+				CivDate: civDateVal,
+			},
+			want: []Property{
+				{
+					Name:  "CivDate",
+					Value: civDateVal.In(time.UTC),
+				},
+			},
+		},
+		{
+			name: "civil.Time-nano",
+			in: &struct {
+				CivTimeNano civil.Time
+			}{
+				CivTimeNano: civTimeValNano,
+			},
+			want: []Property{
+				{
+					Name:  "CivTimeNano",
+					Value: timeValNano,
+				},
+			},
+		},
+		{
+			name: "civil.Time",
+			in: &struct {
+				CivTime civil.Time
+			}{
+				CivTime: civTimeVal,
+			},
+			want: []Property{
+				{
+					Name:  "CivTime",
+					Value: timeVal,
+				},
+			},
+		},
+		{
+			name: "civil.DateTime",
+			in: &struct {
+				CivDateTime civil.DateTime
+			}{
+				CivDateTime: civil.DateTime{
+					Date: civDateVal,
+					Time: civTimeVal,
+				},
+			},
+			want: []Property{
+				{
+					Name:  "CivDateTime",
+					Value: dateTimeVal,
+				},
 			},
 		},
 		{

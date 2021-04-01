@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// +build !windows
+
 package main
 
 import (
@@ -51,23 +53,30 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/googleapis", googleapisDir)
+		return gitDeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/go-genproto", genprotoDir)
+		return gitDeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
+		return gitDeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
 	})
 	grp.Go(func() error {
-		return gitClone("https://github.com/google/protobuf", protoDir)
+		return gitDeepClone("https://github.com/protocolbuffers/protobuf", protoDir)
 	})
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
 	}
 
 	// Regen.
-	if err := generator.Generate(ctx, googleapisDir, genprotoDir, gocloudDir, protoDir, ""); err != nil {
+	conf := &generator.Config{
+		GoogleapisDir: googleapisDir,
+		GenprotoDir:   genprotoDir,
+		GapicDir:      gocloudDir,
+		ProtoDir:      protoDir,
+	}
+	changes, err := generator.Generate(ctx, conf)
+	if err != nil {
 		return err
 	}
 
@@ -85,17 +94,17 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 	switch {
 	case genprotoHasChanges && gocloudHasChanges:
 		// Both have changes.
-		genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, true)
+		genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, true, changes)
 		if err != nil {
 			return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %v", err)
 		}
 
-		gocloudPRNum, err := githubClient.CreateGocloudPR(ctx, gocloudDir, genprotoPRNum)
+		gocloudPRNum, err := githubClient.CreateGocloudPR(ctx, gocloudDir, genprotoPRNum, changes)
 		if err != nil {
 			return fmt.Errorf("error creating CL for veneers (may need to check logs for more errors): %v", err)
 		}
 
-		if err := githubClient.AmendWithPRURL(ctx, genprotoPRNum, genprotoDir, gocloudPRNum); err != nil {
+		if err := githubClient.AmendGenprotoPR(ctx, genprotoPRNum, genprotoDir, gocloudPRNum, changes); err != nil {
 			return fmt.Errorf("error amending genproto PR: %v", err)
 		}
 
@@ -105,7 +114,7 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 		log.Println(gocloudPRURL)
 	case genprotoHasChanges:
 		// Only genproto has changes.
-		genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, false)
+		genprotoPRNum, err := githubClient.CreateGenprotoPR(ctx, genprotoDir, false, changes)
 		if err != nil {
 			return fmt.Errorf("error creating PR for genproto (may need to check logs for more errors): %v", err)
 		}
@@ -115,7 +124,7 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 		log.Println("gocloud had no changes")
 	case gocloudHasChanges:
 		// Only gocloud has changes.
-		gocloudPRNum, err := githubClient.CreateGocloudPR(ctx, gocloudDir, -1)
+		gocloudPRNum, err := githubClient.CreateGocloudPR(ctx, gocloudDir, -1, changes)
 		if err != nil {
 			return fmt.Errorf("error creating CL for veneers (may need to check logs for more errors): %v", err)
 		}
@@ -131,7 +140,7 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 }
 
 // gitClone clones a repository in the given directory.
-func gitClone(repo, dir string) error {
+func gitDeepClone(repo, dir string) error {
 	log.Printf("cloning %s\n", repo)
 
 	_, err := git.PlainClone(dir, false, &git.CloneOptions{
@@ -145,7 +154,7 @@ func gitClone(repo, dir string) error {
 func hasChanges(dir string) (bool, error) {
 	// Write command output to both os.Stderr and local, so that we can check
 	// whether there are modified files.
-	inmem := bytes.NewBuffer([]byte{}) // TODO(deklerk): Try `var inmem bytes.Buffer`.
+	inmem := &bytes.Buffer{}
 	w := io.MultiWriter(os.Stderr, inmem)
 
 	c := exec.Command("bash", "-c", "git status --short")

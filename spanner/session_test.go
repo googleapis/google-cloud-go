@@ -1355,7 +1355,7 @@ func TestSessionHealthCheck(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cannot get session from session pool: %v", err)
 	}
-	sp.close()
+	sp.close(context.Background())
 	if sh.session.isValid() {
 		t.Fatalf("session(%v) is still alive, want it to be garbage collected", s)
 	}
@@ -1454,7 +1454,7 @@ func TestStressSessionPool(t *testing.T) {
 				t.Fatalf("%v: session in healthcheck queue (%v) was not found on server", ti, id)
 			}
 		}
-		sp.close()
+		sp.close(context.Background())
 		mockSessions = server.TestSpanner.DumpSessions()
 		for id, b := range hcSessions {
 			if b && mockSessions[id] {
@@ -1477,7 +1477,7 @@ func testStressSessionPool(t *testing.T, cfg SessionPoolConfig, ti int, idx int,
 		if idx%10 == 0 && j >= 900 {
 			// Close the pool in selected set of workers during the
 			// middle of the test.
-			pool.close()
+			pool.close(context.Background())
 		}
 		// Take a write sessions ~ 20% of the times.
 		takeWrite := rand.Intn(5) == 4
@@ -1557,7 +1557,7 @@ func TestMaintainer(t *testing.T) {
 	waitFor(t, func() error {
 		sp.mu.Lock()
 		defer sp.mu.Unlock()
-		if sp.numOpened != 5 {
+		if sp.numOpened != minOpened {
 			return fmt.Errorf("Replenish. Expect %d open, got %d", sp.MinOpened, sp.numOpened)
 		}
 		return nil
@@ -1574,12 +1574,22 @@ func TestMaintainer(t *testing.T) {
 			t.Fatalf("cannot get session from session pool: %v", err)
 		}
 	}
-	sp.mu.Lock()
-	g, w := sp.numOpened, sp.MinOpened+sp.incStep
-	sp.mu.Unlock()
-	if g != w {
-		t.Fatalf("numOpened sessions mismatch\nGot: %d\nWant: %d", g, w)
-	}
+	// Wait for all sessions to be added to the pool.
+	// The pool already contained 5 sessions (MinOpened=5).
+	// The test took 20 sessions from the pool. That initiated the creation of
+	// additional sessions, and that is done in batches of 25 sessions, so the
+	// pool should contain 30 sessions (with 20 currently checked out). It
+	// could take a couple of milliseconds before all sessions have been
+	// created and added to the pool.
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		g, w := sp.numOpened, sp.MinOpened+sp.incStep
+		if g != w {
+			return fmt.Errorf("numOpened sessions mismatch\nGot: %d\nWant: %d", g, w)
+		}
+		return nil
+	})
 
 	// Return 14 sessions to the pool. There are still 6 sessions checked out.
 	for _, sh := range shs[:14] {

@@ -17,7 +17,7 @@ limitations under the License.
 /*
 Package spannertest contains test helpers for working with Cloud Spanner.
 
-This package is EXPERIMENTAL, and is lacking many features. See the README.md
+This package is EXPERIMENTAL, and is lacking several features. See the README.md
 file in this directory for more details.
 
 In-memory fake
@@ -55,6 +55,7 @@ import (
 	"net"
 	"strconv"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/golang/protobuf/proto"
@@ -145,9 +146,26 @@ func timestampProto(t time.Time) *timestamppb.Timestamp {
 
 // lro represents a Long-Running Operation, generally a schema change.
 type lro struct {
-	mu      sync.Mutex
-	state   *lropb.Operation
-	waiters bool // Whether anyone appears to be waiting.
+	mu    sync.Mutex
+	state *lropb.Operation
+
+	// waitc is closed when anyone starts waiting on the LRO.
+	// waitatom is CAS'd from 0 to 1 to make that closing safe.
+	waitc    chan struct{}
+	waitatom int32
+}
+
+func newLRO(initState *lropb.Operation) *lro {
+	return &lro{
+		state: initState,
+		waitc: make(chan struct{}),
+	}
+}
+
+func (l *lro) noWait() {
+	if atomic.CompareAndSwapInt32(&l.waitatom, 0, 1) {
+		close(l.waitc)
+	}
 }
 
 func (l *lro) State() *lropb.Operation {
@@ -229,9 +247,7 @@ func (s *server) GetOperation(ctx context.Context, req *lropb.GetOperationReques
 	}
 
 	// Someone is waiting on this LRO. Disable sleeping in its Run method.
-	lro.mu.Lock()
-	lro.waiters = true
-	lro.mu.Unlock()
+	lro.noWait()
 
 	return lro.State(), nil
 }
@@ -276,11 +292,7 @@ func (s *server) UpdateDatabaseDdl(ctx context.Context, req *adminpb.UpdateDatab
 	// Nothing should be depending on the exact structure of this,
 	// but it is specified in google/spanner/admin/database/v1/spanner_database_admin.proto.
 	id := "projects/fake-proj/instances/fake-instance/databases/fake-db/operations/" + genRandomOperation()
-	lro := &lro{
-		state: &lropb.Operation{
-			Name: id,
-		},
-	}
+	lro := newLRO(&lropb.Operation{Name: id})
 	s.mu.Lock()
 	s.lros[id] = lro
 	s.mu.Unlock()
@@ -293,12 +305,10 @@ func (l *lro) Run(s *server, stmts []spansql.DDLStmt) {
 	ctx := context.Background()
 
 	for _, stmt := range stmts {
-		l.mu.Lock()
-		waiters := l.waiters
-		l.mu.Unlock()
-		if !waiters {
-			// Simulate delayed DDL application, but only if nobody is waiting.
-			time.Sleep(100 * time.Millisecond)
+		// Simulate delayed DDL application, but only if nobody is waiting.
+		select {
+		case <-time.After(100 * time.Millisecond):
+		case <-l.waitc:
 		}
 
 		if st := s.runOneDDL(ctx, stmt); st.Code() != codes.OK {
@@ -475,8 +485,18 @@ func (s *server) readTx(ctx context.Context, session string, tsel *spannerpb.Tra
 }
 
 func (s *server) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest) (*spannerpb.ResultSet, error) {
-	// Assume this is probably a DML statement. Queries tend to use ExecuteStreamingSql.
+	// Assume this is probably a DML statement or a ping from the session pool.
+	// Queries normally use ExecuteStreamingSql.
 	// TODO: Expand this to support more things.
+
+	// If it is a single-use transaction we assume it is a query.
+	if req.Transaction.GetSelector() == nil || req.Transaction.GetSingleUse().GetReadOnly() != nil {
+		ri, err := s.executeQuery(req)
+		if err != nil {
+			return nil, err
+		}
+		return s.resultSet(ri)
+	}
 
 	obj, ok := req.Transaction.Selector.(*spannerpb.TransactionSelector_Id)
 	if !ok {
@@ -517,15 +537,23 @@ func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream sp
 	}
 	defer cleanup()
 
+	ri, err := s.executeQuery(req)
+	if err != nil {
+		return err
+	}
+	return s.readStream(stream.Context(), tx, stream.Send, ri)
+}
+
+func (s *server) executeQuery(req *spannerpb.ExecuteSqlRequest) (ri rowIter, err error) {
 	q, err := spansql.ParseQuery(req.Sql)
 	if err != nil {
 		// TODO: check what code the real Spanner returns here.
-		return status.Errorf(codes.InvalidArgument, "bad query: %v", err)
+		return nil, status.Errorf(codes.InvalidArgument, "bad query: %v", err)
 	}
 
 	params, err := parseQueryParams(req.GetParams(), req.ParamTypes)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.logf("Querying: %s", q.SQL())
@@ -533,11 +561,7 @@ func (s *server) ExecuteStreamingSql(req *spannerpb.ExecuteSqlRequest, stream sp
 		s.logf("        ▹ %v", params)
 	}
 
-	ri, err := s.db.Query(q, params)
-	if err != nil {
-		return err
-	}
-	return s.readStream(stream.Context(), tx, stream.Send, ri)
+	return s.db.Query(q, params)
 }
 
 // TODO: Read
@@ -565,10 +589,10 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	var ri rowIter
 	if req.KeySet.All {
 		s.logf("Reading all from %s (cols: %v)", req.Table, req.Columns)
-		ri, err = s.db.ReadAll(req.Table, req.Columns, req.Limit)
+		ri, err = s.db.ReadAll(spansql.ID(req.Table), idList(req.Columns), req.Limit)
 	} else {
 		s.logf("Reading rows from %d keys and %d ranges from %s (cols: %v)", len(req.KeySet.Keys), len(req.KeySet.Ranges), req.Table, req.Columns)
-		ri, err = s.db.Read(req.Table, req.Columns, req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
+		ri, err = s.db.Read(spansql.ID(req.Table), idList(req.Columns), req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
 	}
 	if err != nil {
 		return err
@@ -581,21 +605,39 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	return s.readStream(stream.Context(), tx, stream.Send, ri)
 }
 
-func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
-	// Build the result set metadata.
-	rsm := &spannerpb.ResultSetMetadata{
-		RowType: &spannerpb.StructType{},
-		// TODO: transaction info?
+func (s *server) resultSet(ri rowIter) (*spannerpb.ResultSet, error) {
+	rsm, err := s.buildResultSetMetadata(ri)
+	if err != nil {
+		return nil, err
 	}
-	for _, ci := range ri.Cols() {
-		st, err := spannerTypeFromType(ci.Type)
-		if err != nil {
-			return err
+	rs := &spannerpb.ResultSet{
+		Metadata: rsm,
+	}
+	for {
+		row, err := ri.Next()
+		if err == io.EOF {
+			break
+		} else if err != nil {
+			return nil, err
 		}
-		rsm.RowType.Fields = append(rsm.RowType.Fields, &spannerpb.StructType_Field{
-			Name: ci.Name,
-			Type: st,
-		})
+
+		values := make([]*structpb.Value, len(row))
+		for i, x := range row {
+			v, err := spannerValueFromValue(x)
+			if err != nil {
+				return nil, err
+			}
+			values[i] = v
+		}
+		rs.Rows = append(rs.Rows, &structpb.ListValue{Values: values})
+	}
+	return rs, nil
+}
+
+func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spannerpb.PartialResultSet) error, ri rowIter) error {
+	rsm, err := s.buildResultSetMetadata(ri)
+	if err != nil {
+		return err
 	}
 
 	for {
@@ -628,6 +670,25 @@ func (s *server) readStream(ctx context.Context, tx *transaction, send func(*spa
 	}
 
 	return nil
+}
+
+func (s *server) buildResultSetMetadata(ri rowIter) (*spannerpb.ResultSetMetadata, error) {
+	// Build the result set metadata.
+	rsm := &spannerpb.ResultSetMetadata{
+		RowType: &spannerpb.StructType{},
+		// TODO: transaction info?
+	}
+	for _, ci := range ri.Cols() {
+		st, err := spannerTypeFromType(ci.Type)
+		if err != nil {
+			return nil, err
+		}
+		rsm.RowType.Fields = append(rsm.RowType.Fields, &spannerpb.StructType_Field{
+			Name: string(ci.Name),
+			Type: st,
+		})
+	}
+	return rsm, nil
 }
 
 func (s *server) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest) (*spannerpb.Transaction, error) {
@@ -686,19 +747,19 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp
 			return nil, fmt.Errorf("unsupported mutation operation type %T", op)
 		case *spannerpb.Mutation_Insert:
 			ins := op.Insert
-			err := s.db.Insert(tx, ins.Table, ins.Columns, ins.Values)
+			err := s.db.Insert(tx, spansql.ID(ins.Table), idList(ins.Columns), ins.Values)
 			if err != nil {
 				return nil, err
 			}
 		case *spannerpb.Mutation_Update:
 			up := op.Update
-			err := s.db.Update(tx, up.Table, up.Columns, up.Values)
+			err := s.db.Update(tx, spansql.ID(up.Table), idList(up.Columns), up.Values)
 			if err != nil {
 				return nil, err
 			}
 		case *spannerpb.Mutation_InsertOrUpdate:
 			iou := op.InsertOrUpdate
-			err := s.db.InsertOrUpdate(tx, iou.Table, iou.Columns, iou.Values)
+			err := s.db.InsertOrUpdate(tx, spansql.ID(iou.Table), idList(iou.Columns), iou.Values)
 			if err != nil {
 				return nil, err
 			}
@@ -706,7 +767,7 @@ func (s *server) Commit(ctx context.Context, req *spannerpb.CommitRequest) (resp
 			del := op.Delete
 			ks := del.KeySet
 
-			err := s.db.Delete(tx, del.Table, ks.Keys, makeKeyRangeList(ks.Ranges), ks.All)
+			err := s.db.Delete(tx, spansql.ID(del.Table), ks.Keys, makeKeyRangeList(ks.Ranges), ks.All)
 			if err != nil {
 				return nil, err
 			}
@@ -916,4 +977,11 @@ func makeKeyRange(r *spannerpb.KeyRange) *keyRange {
 		kr.end = e.EndOpen
 	}
 	return &kr
+}
+
+func idList(ss []string) (ids []spansql.ID) {
+	for _, s := range ss {
+		ids = append(ids, spansql.ID(s))
+	}
+	return
 }

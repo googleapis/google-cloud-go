@@ -30,6 +30,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
 	"google.golang.org/grpc"
@@ -39,6 +40,7 @@ import (
 )
 
 const prodAddr = "bigtable.googleapis.com:443"
+const mtlsProdAddr = "bigtable.mtls.googleapis.com:443"
 
 // Client is a client for reading and writing data to tables in an instance.
 //
@@ -65,7 +67,7 @@ func NewClient(ctx context.Context, project, instance string, opts ...option.Cli
 
 // NewClientWithConfig creates a new client with the given config.
 func NewClientWithConfig(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
-	o, err := btopt.DefaultClientOptions(prodAddr, Scope, clientUserAgent)
+	o, err := btopt.DefaultClientOptions(prodAddr, mtlsProdAddr, Scope, clientUserAgent)
 	if err != nil {
 		return nil, err
 	}
@@ -80,6 +82,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// TODO(grpc/grpc-go#1388) using connection pool without WithBlock
 		// can cause RPCs to fail randomly. We can delete this after the issue is fixed.
 		option.WithGRPCDialOption(grpc.WithBlock()))
+	// Attempts direct access to spanner service over gRPC to improve throughput,
+	// whether the attempt is allowed is totally controlled by service owner.
+	o = append(o, internaloption.EnableDirectPath(true))
 	o = append(o, opts...)
 	connPool, err := gtransport.DialPool(ctx, o...)
 	if err != nil {

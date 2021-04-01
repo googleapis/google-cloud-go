@@ -3,11 +3,15 @@ module cloud.google.com/go/internal/godocfx
 go 1.15
 
 require (
-	cloud.google.com/go v0.65.0
+	cloud.google.com/go v0.79.0
+	cloud.google.com/go/bigquery v1.8.0
+	cloud.google.com/go/datastore v1.1.0
 	cloud.google.com/go/storage v1.11.0
-	golang.org/x/tools v0.0.0-20200915173823-2db8f0ff891c
-	google.golang.org/protobuf v1.25.0 // indirect
-	gopkg.in/yaml.v2 v2.3.0
+	github.com/kr/pretty v0.2.1 // indirect
+	github.com/yuin/goldmark v1.3.3
+	golang.org/x/mod v0.4.1 // indirect
+	golang.org/x/tools v0.1.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 replace cloud.google.com/go => ../..

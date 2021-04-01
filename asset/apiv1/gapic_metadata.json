@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.asset.v1",
+  "libraryPackage": "cloud.google.com/go/asset/apiv1",
+  "services": {
+    "AssetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnalyzeIamPolicy": {
+              "methods": [
+                "AnalyzeIamPolicy"
+              ]
+            },
+            "AnalyzeIamPolicyLongrunning": {
+              "methods": [
+                "AnalyzeIamPolicyLongrunning"
+              ]
+            },
+            "BatchGetAssetsHistory": {
+              "methods": [
+                "BatchGetAssetsHistory"
+              ]
+            },
+            "CreateFeed": {
+              "methods": [
+                "CreateFeed"
+              ]
+            },
+            "DeleteFeed": {
+              "methods": [
+                "DeleteFeed"
+              ]
+            },
+            "ExportAssets": {
+              "methods": [
+                "ExportAssets"
+              ]
+            },
+            "GetFeed": {
+              "methods": [
+                "GetFeed"
+              ]
+            },
+            "ListFeeds": {
+              "methods": [
+                "ListFeeds"
+              ]
+            },
+            "SearchAllIamPolicies": {
+              "methods": [
+                "SearchAllIamPolicies"
+              ]
+            },
+            "SearchAllResources": {
+              "methods": [
+                "SearchAllResources"
+              ]
+            },
+            "UpdateFeed": {
+              "methods": [
+                "UpdateFeed"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

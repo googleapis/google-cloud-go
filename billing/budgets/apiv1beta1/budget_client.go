@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1beta1"
 	"google.golang.org/grpc"
@@ -47,9 +48,11 @@ type BudgetCallOptions struct {
 
 func defaultBudgetClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		option.WithEndpoint("billingbudgets.googleapis.com:443"),
+		internaloption.WithDefaultEndpoint("billingbudgets.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("billingbudgets.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://billingbudgets.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -109,7 +112,7 @@ func defaultBudgetCallOptions() *BudgetCallOptions {
 	}
 }
 
-// BudgetClient is a client for interacting with .
+// BudgetClient is a client for interacting with Cloud Billing Budget API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type BudgetClient struct {

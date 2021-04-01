@@ -18,17 +18,20 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"reflect"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/ptypes"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/genproto/protobuf/field_mask"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestTopics(t *testing.T) {
@@ -183,7 +186,7 @@ func TestSubscriptionErrors(t *testing.T) {
 	checkCode(err, codes.NotFound)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{})
 	checkCode(err, codes.InvalidArgument)
-	srt := &pb.SeekRequest_Time{Time: ptypes.TimestampNow()}
+	srt := &pb.SeekRequest_Time{Time: timestamppb.Now()}
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt})
 	checkCode(err, codes.InvalidArgument)
 	_, err = sclient.Seek(ctx, &pb.SeekRequest{Target: srt, Subscription: "s"})
@@ -276,10 +279,7 @@ func publish(t *testing.T, pclient pb.PublisherClient, topic *pb.Topic, messages
 	if err != nil {
 		t.Fatal(err)
 	}
-	tsPubTime, err := ptypes.TimestampProto(pubTime)
-	if err != nil {
-		t.Fatal(err)
-	}
+	tsPubTime := timestamppb.New(pubTime)
 	want := map[string]*pb.PubsubMessage{}
 	for i, id := range res.MessageIds {
 		want[id] = &pb.PubsubMessage{
@@ -637,7 +637,7 @@ func TestSeek(t *testing.T) {
 		Topic:              top.Name,
 		AckDeadlineSeconds: 10,
 	})
-	ts := ptypes.TimestampNow()
+	ts := timestamppb.Now()
 	_, err := sclient.Seek(context.Background(), &pb.SeekRequest{
 		Subscription: sub.Name,
 		Target:       &pb.SeekRequest_Time{Time: ts},
@@ -698,7 +698,7 @@ func TestTimeNowFunc(t *testing.T) {
 
 	m := s.Message(id)
 	if m == nil {
-		t.Error("got nil, want a message")
+		t.Fatalf("got nil, want a message")
 	}
 	if got, want := m.PublishTime, timeFunc(); got != want {
 		t.Fatalf("got %v, want %v", got, want)
@@ -780,6 +780,72 @@ func TestUpdateDeadLetterPolicy(t *testing.T) {
 	})
 
 	if got, want := updated.DeadLetterPolicy.MaxDeliveryAttempts, update.DeadLetterPolicy.MaxDeliveryAttempts; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestUpdateRetryPolicy(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		RetryPolicy: &pb.RetryPolicy{
+			MinimumBackoff: durationpb.New(10 * time.Second),
+			MaximumBackoff: durationpb.New(60 * time.Second),
+		},
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		RetryPolicy: &pb.RetryPolicy{
+			MinimumBackoff: durationpb.New(20 * time.Second),
+			MaximumBackoff: durationpb.New(100 * time.Second),
+		},
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"retry_policy"}},
+	})
+
+	if got, want := updated.RetryPolicy, update.RetryPolicy; testutil.Diff(got, want) != "" {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+}
+
+func TestUpdateFilter(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, _, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	top := mustCreateTopic(ctx, t, pclient, &pb.Topic{Name: "projects/P/topics/T"})
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		AckDeadlineSeconds: minAckDeadlineSecs,
+		Name:               "projects/P/subscriptions/S",
+		Topic:              top.Name,
+		Filter:             "some-filter",
+	})
+
+	update := &pb.Subscription{
+		AckDeadlineSeconds: sub.AckDeadlineSeconds,
+		Name:               sub.Name,
+		Topic:              top.Name,
+		Filter:             "new-filter",
+	}
+
+	updated := mustUpdateSubscription(ctx, t, sclient, &pb.UpdateSubscriptionRequest{
+		Subscription: update,
+		UpdateMask:   &field_mask.FieldMask{Paths: []string{"filter"}},
+	})
+
+	if got, want := updated.Filter, update.Filter; got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 }
@@ -867,8 +933,8 @@ func mustUpdateSubscription(ctx context.Context, t *testing.T, sc pb.SubscriberC
 // client. Its final return is a cleanup function.
 //
 // Note: be sure to call cleanup!
-func newFake(ctx context.Context, t *testing.T) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
-	srv := NewServer()
+func newFake(ctx context.Context, t *testing.T, opts ...ServerReactorOption) (pb.PublisherClient, pb.SubscriberClient, *Server, func()) {
+	srv := NewServer(opts...)
 	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
 	if err != nil {
 		t.Fatal(err)
@@ -876,5 +942,106 @@ func newFake(ctx context.Context, t *testing.T) (pb.PublisherClient, pb.Subscrib
 	return pb.NewPublisherClient(conn), pb.NewSubscriberClient(conn), srv, func() {
 		srv.Close()
 		conn.Close()
+	}
+}
+
+func TestErrorInjection(t *testing.T) {
+	testcases := []struct {
+		funcName string
+		param    interface{}
+		code     codes.Code
+	}{
+		{
+			funcName: "CreateTopic",
+			code:     codes.Internal,
+		},
+		{
+			funcName: "GetTopic",
+			code:     codes.Aborted,
+		},
+		{
+			funcName: "UpdateTopic",
+			code:     codes.DeadlineExceeded,
+		},
+		{
+			funcName: "ListTopics",
+		},
+		{
+			funcName: "ListTopicSubscriptions",
+		},
+		{
+			funcName: "DeleteTopic",
+		},
+		{
+			funcName: "CreateSubscription",
+		},
+		{
+			funcName: "GetSubscription",
+		},
+		{
+			funcName: "UpdateSubscription",
+			param:    &pb.UpdateSubscriptionRequest{Subscription: &pb.Subscription{}},
+		},
+		{
+			funcName: "ListSubscriptions",
+		},
+		{
+			funcName: "DeleteSubscription",
+		},
+		{
+			funcName: "DetachSubscription",
+		},
+		{
+			funcName: "Publish",
+		},
+		{
+			funcName: "Acknowledge",
+		},
+		{
+			funcName: "ModifyAckDeadline",
+		},
+		{
+			funcName: "Pull",
+		},
+		{
+			funcName: "Seek",
+			param:    &pb.SeekRequest{Target: &pb.SeekRequest_Time{Time: timestamppb.Now()}},
+		},
+	}
+
+	for _, tc := range testcases {
+		ctx := context.TODO()
+		errMsg := "error-injection-" + tc.funcName
+		// set error code to unknown unless specified
+		ec := codes.Unknown
+		if tc.code != codes.OK {
+			ec = tc.code
+		}
+		opts := []ServerReactorOption{
+			WithErrorInjection(tc.funcName, ec, errMsg),
+		}
+		_, _, server, cleanup := newFake(ctx, t, opts...)
+		defer cleanup()
+
+		// We used reflection here to blindly look up the function by name and pass
+		// context and a typed nil, as all the functions under test will have such
+		// a function signature.
+		f := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName)
+		if !f.IsValid() {
+			t.Fatalf("Method %v Not Found", tc.funcName)
+		}
+		// If param is provided, use the param, otherwise create a typed nil that matches the parameter type.
+		var req reflect.Value
+		if tc.param != nil {
+			req = reflect.ValueOf(tc.param)
+		} else {
+			req = reflect.New(f.Type().In(1).Elem())
+		}
+		ret := reflect.ValueOf(&server.GServer).MethodByName(tc.funcName).Call([]reflect.Value{reflect.ValueOf(ctx), req})
+
+		got := ret[1].Interface().(error)
+		if got == nil || status.Code(got) != ec || !strings.Contains(got.Error(), errMsg) {
+			t.Errorf("Got error does not contain the right key %v", got)
+		}
 	}
 }

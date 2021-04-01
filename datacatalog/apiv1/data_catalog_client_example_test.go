@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -417,6 +417,26 @@ func ExampleClient_RenameTagTemplateField() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.RenameTagTemplateField(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_RenameTagTemplateFieldEnumValue() {
+	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
+
+	ctx := context.Background()
+	c, err := datacatalog.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &datacatalogpb.RenameTagTemplateFieldEnumValueRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.RenameTagTemplateFieldEnumValue(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
