@@ -148,7 +148,11 @@ func process(mod indexEntry, tempDir, outDir string, print bool) error {
 	}
 
 	optionalExtraFiles := []string{}
-	r, err := parse(mod.Path+"/...", tempDir, optionalExtraFiles)
+	filter := []string{
+		"cloud.google.com/go/analytics",
+		"cloud.google.com/go/area120",
+	}
+	r, err := parse(mod.Path+"/...", tempDir, optionalExtraFiles, filter)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)
 	}
