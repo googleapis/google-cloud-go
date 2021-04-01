@@ -54,7 +54,7 @@ func defaultPartitionAssignmentCallOptions() *PartitionAssignmentCallOptions {
 	}
 }
 
-// PartitionAssignmentClient is a client for interacting with .
+// PartitionAssignmentClient is a client for interacting with Pub/Sub Lite API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type PartitionAssignmentClient struct {

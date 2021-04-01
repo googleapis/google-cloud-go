@@ -79,12 +79,24 @@ type txReadOnly struct {
 
 // TransactionOptions provides options for a transaction.
 type TransactionOptions struct {
+	CommitOptions CommitOptions
+
 	// The transaction tag to use for a read/write transaction.
 	// This tag is automatically included with each statement and the commit
 	// request of a read/write transaction.
 	TransactionTag string
 
-	CommitOptions CommitOptions
+	// CommitPriority is the priority to use for the Commit RPC for the
+	// transaction.
+	CommitPriority sppb.RequestOptions_Priority
+}
+
+func (to *TransactionOptions) requestPriority() sppb.RequestOptions_Priority {
+	return to.CommitPriority
+}
+
+func (to *TransactionOptions) requestTag() string {
+	return ""
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -105,6 +117,12 @@ func (t *txReadOnly) ReadUsingIndex(ctx context.Context, table, index string, ke
 
 // ReadOptions provides options for reading rows from a database.
 type ReadOptions struct {
+	// The request tag to use for this request.
+	RequestTag string
+
+	// Priority is the RPC priority to use for the operation.
+	Priority sppb.RequestOptions_Priority
+
 	// The index to use for reading. If non-empty, you can only read columns
 	// that are part of the index key, part of the primary key, or stored in the
 	// index due to a STORING clause in the index definition.
@@ -113,9 +131,6 @@ type ReadOptions struct {
 	// The maximum number of rows to read. A limit value less than 1 means no
 	// limit.
 	Limit int
-
-	// The request tag to use for this read request.
-	RequestTag string
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -143,12 +158,14 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	}
 	index := ""
 	limit := 0
+	prio := sppb.RequestOptions_PRIORITY_UNSPECIFIED
 	requestTag := ""
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
 			limit = opts.Limit
 		}
+		prio = opts.Priority
 		requestTag = opts.RequestTag
 	}
 	return streamWithReplaceSessionFunc(
@@ -157,18 +174,15 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		func(ctx context.Context, resumeToken []byte) (streamingReceiver, error) {
 			return client.StreamingRead(ctx,
 				&sppb.ReadRequest{
-					Session:     t.sh.getID(),
-					Transaction: ts,
-					Table:       table,
-					Index:       index,
-					Columns:     columns,
-					KeySet:      kset,
-					ResumeToken: resumeToken,
-					Limit:       int64(limit),
-					RequestOptions: &sppb.RequestOptions{
-						RequestTag:     requestTag,
-						TransactionTag: t.qo.transactionTag,
-					},
+					Session:        t.sh.getID(),
+					Transaction:    ts,
+					Table:          table,
+					Index:          index,
+					Columns:        columns,
+					KeySet:         kset,
+					ResumeToken:    resumeToken,
+					Limit:          int64(limit),
+					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
 				})
 		},
 		t.replaceSessionFunc,
@@ -243,22 +257,32 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 
 // QueryOptions provides options for executing a sql query or update statement.
 type QueryOptions struct {
-	Mode       *sppb.ExecuteSqlRequest_QueryMode
-	Options    *sppb.ExecuteSqlRequest_QueryOptions
+	// The request tag to use for this request.
 	RequestTag string
-	// transactionTag is unexported as applications should set this on the transaction and
-	// the transaction will then set this field for each request during the transaction.
-	transactionTag string
+
+	// Priority is the RPC priority to use for the operation.
+	Priority sppb.RequestOptions_Priority
+
+	Mode    *sppb.ExecuteSqlRequest_QueryMode
+	Options *sppb.ExecuteSqlRequest_QueryOptions
+}
+
+func (qo *QueryOptions) requestPriority() sppb.RequestOptions_Priority {
+	return qo.Priority
+}
+
+func (qo *QueryOptions) requestTag() string {
+	return qo.RequestTag
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:           qo.Mode,
-		Options:        &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag:     qo.RequestTag,
-		transactionTag: qo.transactionTag,
+		Mode:       qo.Mode,
+		Options:    &sppb.ExecuteSqlRequest_QueryOptions{},
+		RequestTag: qo.RequestTag,
+		Priority:   qo.Priority,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
@@ -266,19 +290,26 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	if opts.RequestTag != "" {
 		merged.RequestTag = opts.RequestTag
 	}
-	if opts.transactionTag != "" {
-		merged.transactionTag = opts.transactionTag
+	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		merged.Priority = opts.Priority
 	}
 	proto.Merge(merged.Options, qo.Options)
 	proto.Merge(merged.Options, opts.Options)
 	return merged
 }
 
-func (qo QueryOptions) createRequestOptions() *sppb.RequestOptions {
-	return &sppb.RequestOptions{
-		RequestTag:     qo.RequestTag,
-		TransactionTag: qo.transactionTag,
+func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transactionTag string) (ro *sppb.RequestOptions) {
+	ro = &sppb.RequestOptions{}
+	if prio != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		ro.Priority = prio
 	}
+	if requestTag != "" {
+		ro.RequestTag = requestTag
+	}
+	if transactionTag != "" {
+		ro.TransactionTag = transactionTag
+	}
+	return ro
 }
 
 // Query executes a query against the database. It returns a RowIterator for
@@ -385,7 +416,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		Params:         params,
 		ParamTypes:     paramTypes,
 		QueryOptions:   options.Options,
-		RequestOptions: options.createRequestOptions(),
+		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
 	}
 	return req, sh, nil
 }
@@ -844,9 +875,8 @@ func (t *ReadWriteTransaction) BufferWrite(ms []*Mutation) error {
 func (t *ReadWriteTransaction) Update(ctx context.Context, stmt Statement) (rowCount int64, err error) {
 	mode := sppb.ExecuteSqlRequest_NORMAL
 	return t.update(ctx, stmt, QueryOptions{
-		Mode:           &mode,
-		Options:        t.qo.Options,
-		transactionTag: t.qo.transactionTag,
+		Mode:    &mode,
+		Options: t.qo.Options,
 	})
 }
 
@@ -892,9 +922,13 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 // affected rows for the given query at the same index. If an error occurs,
 // counts will be returned up to the query that encountered the error.
 //
-// The request tag given in the QueryOptions will be included with the RPC.
-// Any other options that are set in the QueryOptions struct will be ignored.
+// The request tag and priority given in the QueryOptions are included with the
+// RPC. Any other options that are set in the QueryOptions struct are ignored.
 func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
+	return t.batchUpdateWithOptions(ctx, stmts, t.qo.merge(opts))
+}
+
+func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -923,14 +957,11 @@ func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts
 	}
 
 	resp, err := sh.getClient().ExecuteBatchDml(contextWithOutgoingMetadata(ctx, sh.getMetadata()), &sppb.ExecuteBatchDmlRequest{
-		Session:     sh.getID(),
-		Transaction: ts,
-		Statements:  sppbStmts,
-		Seqno:       atomic.AddInt64(&t.sequenceNumber, 1),
-		RequestOptions: &sppb.RequestOptions{
-			RequestTag:     opts.RequestTag,
-			TransactionTag: t.qo.transactionTag,
-		},
+		Session:        sh.getID(),
+		Transaction:    ts,
+		Statements:     sppbStmts,
+		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
+		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
 	})
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -1039,6 +1070,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 	if err != nil {
 		return resp, err
 	}
+
 	// In case that sessionHandle was destroyed but transaction body fails to
 	// report it.
 	sid, client := t.sh.getID(), t.sh.getClient()
@@ -1051,8 +1083,8 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
+		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
 		Mutations:         mPb,
-		RequestOptions:    &sppb.RequestOptions{TransactionTag: t.txReadOnly.qo.transactionTag},
 		ReturnCommitStats: options.ReturnCommitStats,
 	})
 	if e != nil {
@@ -1185,7 +1217,6 @@ func NewReadWriteStmtBasedTransactionWithOptions(ctx context.Context, c *Client,
 	t.txReadOnly.sh = sh
 	t.txReadOnly.txReadEnv = t
 	t.txReadOnly.qo = c.qo
-	t.txReadOnly.qo.transactionTag = options.TransactionTag
 	t.txOpts = options
 
 	if err = t.begin(ctx); err != nil {
@@ -1236,6 +1267,16 @@ type writeOnlyTransaction struct {
 	// transactionTag is the tag that will be included with the CommitRequest
 	// of the write-only transaction.
 	transactionTag string
+	// commitPriority is the RPC priority to use for the commit operation.
+	commitPriority sppb.RequestOptions_Priority
+}
+
+func (t *writeOnlyTransaction) requestPriority() sppb.RequestOptions_Priority {
+	return t.commitPriority
+}
+
+func (t *writeOnlyTransaction) requestTag() string {
+	return ""
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1246,17 +1287,13 @@ type writeOnlyTransaction struct {
 //     3) There is a malformed Mutation object.
 func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Mutation) (time.Time, error) {
 	var (
-		ts   time.Time
-		sh   *sessionHandle
-		opts *sppb.RequestOptions
+		ts time.Time
+		sh *sessionHandle
 	)
 	mPb, err := mutationsProto(ms)
 	if err != nil {
 		// Malformed mutation found, just return the error.
 		return ts, err
-	}
-	if t.transactionTag != "" {
-		opts = &sppb.RequestOptions{TransactionTag: t.transactionTag}
 	}
 
 	// Retry-loop for aborted transactions.
@@ -1282,7 +1319,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				},
 			},
 			Mutations:      mPb,
-			RequestOptions: opts,
+			RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
 		})
 		if err != nil && !isAbortedErr(err) {
 			if isSessionNotFoundError(err) {

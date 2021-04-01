@@ -469,7 +469,6 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 		t.txReadOnly.sh = sh
 		t.txReadOnly.txReadEnv = t
 		t.txReadOnly.qo = c.qo
-		t.txReadOnly.qo.transactionTag = options.TransactionTag
 		t.txOpts = options
 
 		trace.TracePrintf(ctx, map[string]interface{}{"transactionID": string(sh.getTransactionID())},
@@ -490,6 +489,8 @@ type applyOption struct {
 	atLeastOnce bool
 	// transactionTag will be included with the CommitRequest.
 	transactionTag string
+	// priority is the RPC priority that is used for the commit operation.
+	priority sppb.RequestOptions_Priority
 }
 
 // An ApplyOption is an optional argument to Apply.
@@ -520,6 +521,14 @@ func TransactionTag(tag string) ApplyOption {
 	}
 }
 
+// Priority returns an ApplyOptions that sets the RPC priority to use for the
+// commit operation.
+func Priority(priority sppb.RequestOptions_Priority) ApplyOption {
+	return func(ao *applyOption) {
+		ao.priority = priority
+	}
+}
+
 // Apply applies a list of mutations atomically to the database.
 func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption) (commitTimestamp time.Time, err error) {
 	ao := &applyOption{}
@@ -533,10 +542,10 @@ func (c *Client) Apply(ctx context.Context, ms []*Mutation, opts ...ApplyOption)
 	if !ao.atLeastOnce {
 		resp, err := c.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, t *ReadWriteTransaction) error {
 			return t.BufferWrite(ms)
-		}, TransactionOptions{TransactionTag: ao.transactionTag})
+		}, TransactionOptions{CommitPriority: ao.priority, TransactionTag: ao.transactionTag})
 		return resp.CommitTs, err
 	}
-	t := &writeOnlyTransaction{sp: c.idleSessions, transactionTag: ao.transactionTag}
+	t := &writeOnlyTransaction{sp: c.idleSessions, commitPriority: ao.priority, transactionTag: ao.transactionTag}
 	return t.applyAtLeastOnce(ctx, ms...)
 }
 

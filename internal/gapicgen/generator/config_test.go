@@ -58,6 +58,9 @@ func TestMicrogenConfigs(t *testing.T) {
 		if entry.apiServiceConfigPath == "" {
 			t.Errorf("config %q (#%d) expected non-empty apiServiceConfigPath", entry.importPath, k)
 		}
+		if p := entry.apiServiceConfigPath; p != "" && strings.HasSuffix(p, "gapic.yaml") {
+			t.Errorf("config %q (#%d) should not use GAPIC yaml for apiServiceConfigPath", entry.importPath, k)
+		}
 		// Internally, an empty release level means "ga" to the underlying tool, but we
 		// want to be explicit in this configuration.
 		if entry.releaseLevel == "" {
