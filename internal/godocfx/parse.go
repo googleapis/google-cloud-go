@@ -124,10 +124,10 @@ type result struct {
 // workingDir is the directory to use to run go commands.
 //
 // optionalExtraFiles is a list of paths relative to the module root to include.
-func parse(glob string, workingDir string, optionalExtraFiles []string) (*result, error) {
+func parse(glob string, workingDir string, optionalExtraFiles []string, filter []string) (*result, error) {
 	pages := map[string]*page{}
 
-	pkgInfos, err := loadPackages(glob, workingDir)
+	pkgInfos, err := loadPackages(glob, workingDir, filter)
 	if err != nil {
 		return nil, err
 	}
@@ -599,7 +599,7 @@ type pkgInfo struct {
 	importRenames map[string]string
 }
 
-func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
+func loadPackages(glob, workingDir string, filter []string) ([]pkgInfo, error) {
 	config := &packages.Config{
 		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule | packages.NeedImports | packages.NeedDeps,
 		Tests: true,
@@ -626,6 +626,11 @@ func loadPackages(glob, workingDir string) ([]pkgInfo, error) {
 	idToPkg := map[string]*packages.Package{}
 	pkgNames := []string{}
 	for _, pkg := range allPkgs {
+		// Ignore filtered packages.
+		if hasPrefix(pkg.PkgPath, filter) {
+			continue
+		}
+
 		id := pkg.ID
 		// See https://pkg.go.dev/golang.org/x/tools/go/packages#Config.
 		// The uncompiled test package shows up as "foo_test [foo.test]".
