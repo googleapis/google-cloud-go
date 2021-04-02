@@ -45,7 +45,7 @@
       "expectSuccess": true
     },
     {
-      "id": 2,
+      "id": 3,
       "description": "conditionally idempotent, precondition not present",
       "cases": [
         {
