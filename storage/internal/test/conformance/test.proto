@@ -89,11 +89,22 @@ message InstructionList {
   repeated string instructions = 1; // e.g. return-503
 }
 
+enum Fixture {
+  BUCKET = 0;
+  OBJECT = 1;
+  NOTIFICATION = 2;
+  HMAC_KEY = 3;
+}
+message Method {
+  string name = 1;
+  repeated Fixture fixtures = 2;
+}
+
 message RetryTest {
-  string description = 1;
-  repeated InstructionList cases = 2;
-  repeated string methods = 3;  // e.g. storage.objects.get
-  bool preconditionProvided = 4;
-  bool expectSuccess = 5;
-  // repeated string setup = 6;  // List of setup steps required for the test. (e.g. bucket created, object created, etc)
+  int32 id = 1;
+  string description = 2;
+  repeated InstructionList cases = 3;
+  repeated Method methods = 4;  // e.g. storage.objects.get
+  bool preconditionProvided = 5;
+  bool expectSuccess = 6;
 }

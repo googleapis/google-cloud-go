@@ -31,6 +31,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-cmp/cmp"
@@ -39,9 +40,72 @@ import (
 	htransport "google.golang.org/api/transport/http"
 )
 
-type retryFunc func(ctx context.Context, c *Client, preconditions bool) error
+var (
+	bucketIDs           = uid.NewSpace("bucket", nil)
+	objectIDs           = uid.NewSpace("object", nil)
+	notificationIDs     = uid.NewSpace("notification", nil)
+	projectID           = "my-project-id"
+	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
+)
 
-var objName = "file.txt"
+// Holds the fixtures for a particular test case. Only the necessary fields will
+// be populated; others will be nil.
+type fixtures struct {
+	bucket       *BucketAttrs
+	object       *ObjectAttrs
+	notification *Notification
+	hmacKey      *HMACKey
+}
+
+func (fs *fixtures) populate(ctx context.Context, c *Client, fixture storage_v1_tests.Fixture) error {
+	switch fixture {
+	case storage_v1_tests.Fixture_BUCKET:
+		bkt := c.Bucket(bucketIDs.New())
+		if err := bkt.Create(ctx, projectID, &BucketAttrs{}); err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("getting bucket attrs: %v", err)
+		}
+		fs.bucket = attrs
+	case storage_v1_tests.Fixture_OBJECT:
+		// Assumes bucket has been populated first.
+		obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write([]byte("abcdef")); err != nil {
+			return fmt.Errorf("writing object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("closing object: %v", err)
+		}
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("getting object attrs: %v", err)
+		}
+		fs.object = attrs
+	case storage_v1_tests.Fixture_NOTIFICATION:
+		// Assumes bucket has been populated first.
+		n, err := c.Bucket(fs.bucket.Name).AddNotification(ctx, &Notification{
+			TopicProjectID: projectID,
+			TopicID:        notificationIDs.New(),
+			PayloadFormat:  JSONPayload,
+		})
+		if err != nil {
+			return fmt.Errorf("adding notification: %v", err)
+		}
+		fs.notification = n
+	case storage_v1_tests.Fixture_HMAC_KEY:
+		key, err := c.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+		if err != nil {
+			return fmt.Errorf("creating HMAC key: %v", err)
+		}
+		fs.hmacKey = key
+	}
+	return nil
+}
+
+type retryFunc func(ctx context.Context, c *Client, fs *fixtures, preconditions bool) error
 
 // Methods to retry. This is a map whose keys are a string describing a standard
 // API call (e.g. storage.objects.get) and values are a list of functions which
@@ -50,12 +114,12 @@ var objName = "file.txt"
 // read or just a metadata get).
 var methods = map[string][]retryFunc{
 	"storage.objects.get": {
-		func(ctx context.Context, c *Client, _ bool) error {
-			_, err := c.Bucket(bucketName).Object(objName).Attrs(ctx)
+		func(ctx context.Context, c *Client, fs *fixtures, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
 			return err
 		},
-		func(ctx context.Context, c *Client, _ bool) error {
-			r, err := c.Bucket(bucketName).Object(objName).NewReader(ctx)
+		func(ctx context.Context, c *Client, fs *fixtures, _ bool) error {
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
 			if err != nil {
 				return err
 			}
@@ -64,22 +128,22 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.objects.update": {
-		func(ctx context.Context, c *Client, preconditions bool) error {
+		func(ctx context.Context, c *Client, fs *fixtures, preconditions bool) error {
 			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
-			obj := c.Bucket(bucketName).Object(objName)
+			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
 			if preconditions {
-				obj = obj.If(Conditions{MetagenerationMatch: 10})
+				obj = obj.If(Conditions{MetagenerationMatch: fs.object.Metageneration})
 			}
 			_, err := obj.Update(ctx, uattrs)
 			return err
 		},
 	},
 	"storage.buckets.update": {
-		func(ctx context.Context, c *Client, preconditions bool) error {
+		func(ctx context.Context, c *Client, fs *fixtures, preconditions bool) error {
 			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
-			bkt := c.Bucket(bucketName)
+			bkt := c.Bucket(fs.bucket.Name)
 			if preconditions {
-				bkt = bkt.If(BucketConditions{MetagenerationMatch: 10})
+				bkt = bkt.If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration})
 			}
 			_, err := bkt.Update(ctx, uattrs)
 			return err
@@ -101,28 +165,22 @@ func TestRetryConformance(t *testing.T) {
 	}
 
 	_, _, testFiles := parseFiles(t)
-	for _, testFile := range(testFiles) {
-		for _, tc := range(testFile.RetryTests) {
-			for _, instructions := range(tc.Cases) {
-				for _, m := range(tc.Methods) {
-					if len(methods[m]) == 0 {
-						t.Logf("No tests for operation %v", m)
+	for _, testFile := range testFiles {
+		for _, tc := range testFile.RetryTests {
+			for _, instructions := range tc.Cases {
+				for _, m := range tc.Methods {
+					if len(methods[m.Name]) == 0 {
+						t.Logf("No tests for operation %v", m.Name)
 					}
-					for i, f := range(methods[m]){
-						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Description, instructions, m, i)
+					for i, f := range methods[m.Name] {
+						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Id, instructions.Instructions, m.Name, i)
 						t.Run(testName, func(t *testing.T) {
-							// Setup bucket and object
-							// TODO: customize this by operation.
-							if err := client.Bucket(bucketName).Create(ctx, "myproj", &BucketAttrs{}); err != nil {
-								t.Errorf("Error creating bucket: %v", err)
-							}
 
-							w := client.Bucket(bucketName).Object(objName).NewWriter(ctx)
-							if _, err := w.Write([]byte("abcdef")); err != nil {
-								t.Errorf("Error writing object to emulator: %v", err)
-							}
-							if err := w.Close(); err != nil {
-								t.Errorf("Error writing object to emulator in Close: %v", err)
+							fs := &fixtures{}
+							for _, f := range m.Fixtures {
+								if err := fs.populate(ctx, client, f); err != nil {
+									t.Fatalf("creating test fixtures: %v", err)
+								}
 							}
 
 							// Create wrapped client which will send emulator instructions.
@@ -130,7 +188,7 @@ func TestRetryConformance(t *testing.T) {
 							if err != nil {
 								t.Errorf("error creating wrapped client: %v", err)
 							}
-							err = f(ctx, wrapped, tc.PreconditionProvided)
+							err = f(ctx, wrapped, fs, tc.PreconditionProvided)
 							if tc.ExpectSuccess && err != nil {
 								t.Errorf("want success, got %v", err)
 							}
@@ -149,8 +207,8 @@ func TestRetryConformance(t *testing.T) {
 }
 
 type withInstruction struct {
-	rt      http.RoundTripper
-	instructions   []string
+	rt           http.RoundTripper
+	instructions []string
 }
 
 func (wi *withInstruction) RoundTrip(r *http.Request) (*http.Response, error) {
