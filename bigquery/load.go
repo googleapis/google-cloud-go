@@ -85,10 +85,8 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			SchemaUpdateOptions:                l.SchemaUpdateOptions,
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
 			ProjectionFields:                   l.ProjectionFields,
+			HivePartitioningOptions:            l.HivePartitioningOptions.toBQ(),
 		},
-	}
-	if l.HivePartitioningOptions != nil {
-		config.Load.HivePartitioningOptions = l.HivePartitioningOptions.toBQ()
 	}
 	media := l.Src.populateLoadConfig(config.Load)
 	return config, media

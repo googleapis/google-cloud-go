@@ -121,13 +121,14 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 
 func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfig, error) {
 	e := &ExternalDataConfig{
-		SourceFormat:        DataFormat(q.SourceFormat),
-		SourceURIs:          q.SourceUris,
-		AutoDetect:          q.Autodetect,
-		Compression:         Compression(q.Compression),
-		IgnoreUnknownValues: q.IgnoreUnknownValues,
-		MaxBadRecords:       q.MaxBadRecords,
-		Schema:              bqToSchema(q.Schema),
+		SourceFormat:            DataFormat(q.SourceFormat),
+		SourceURIs:              q.SourceUris,
+		AutoDetect:              q.Autodetect,
+		Compression:             Compression(q.Compression),
+		IgnoreUnknownValues:     q.IgnoreUnknownValues,
+		MaxBadRecords:           q.MaxBadRecords,
+		Schema:                  bqToSchema(q.Schema),
+		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 	}
 	switch {
 	case q.CsvOptions != nil:
@@ -140,9 +141,6 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		if err != nil {
 			return nil, err
 		}
-	}
-	if q.HivePartitioningOptions != nil {
-		e.HivePartitioningOptions = bqToHivePartitioningOptions(q.HivePartitioningOptions)
 	}
 	return e, nil
 }
