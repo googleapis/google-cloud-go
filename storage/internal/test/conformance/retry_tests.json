@@ -2,7 +2,7 @@
   "retryTests": [
     {
       "id": 1,
-      "description": "always idempotent, retryable errors",
+      "description": "always idempotent",
       "cases": [
         {
           "instructions": ["return-503", "return-503", "return-503"]
@@ -15,22 +15,64 @@
         }
       ],
       "methods": [
-        {"name":  "storage.objects.get", "fixtures":  ["BUCKET", "OBJECT"]},
-        {"name": "storage.buckets.get", "fixtures":  ["BUCKET"]}
+        {"name": "storage.buckets.get", "fixtures":  ["BUCKET"]},
+        {"name": "storage.objects.get", "fixtures":  ["BUCKET", "OBJECT"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": true
     },
     {
       "id": 2,
-      "description": "always idempotent, non-retryable errors",
+      "description": "conditionally idempotent, precondition present",
       "cases": [
         {
-          "instructions": [
-            "return-400",
-            "return-400",
-            "return-400"
-          ]
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],
+      "methods": [
+        {"name":  "storage.buckets.insert", "fixtures":  []},
+        {"name":  "storage.buckets.update", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.objects.insert", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.objects.update", "fixtures":  ["BUCKET", "OBJECT"]}
+      ],
+      "preconditionProvided": true,
+      "expectSuccess": true
+    },
+    {
+      "id": 2,
+      "description": "conditionally idempotent, precondition not present",
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],
+      "methods": [
+        {"name":  "storage.buckets.insert", "fixtures":  []},
+        {"name":  "storage.buckets.update", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.objects.insert", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.objects.update", "fixtures":  ["BUCKET", "OBJECT"]}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": false
+    },
+    {
+      "id": 6,
+      "description": "non-retryable errors",
+      "cases": [
+        {
+          "instructions": ["return-400", "return-400", "return-400"]
         },
         {
           "instructions": ["return-401", "return-401", "return-401"]
@@ -38,7 +80,11 @@
       ],
       "methods": [
         {"name":  "storage.objects.get", "fixtures":  ["BUCKET", "OBJECT"]},
-        {"name": "storage.buckets.get", "fixtures":  ["BUCKET"]}
+        {"name": "storage.buckets.get", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.buckets.insert", "fixtures":  []},
+        {"name":  "storage.buckets.update", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.objects.insert", "fixtures":  ["BUCKET"]},
+        {"name":  "storage.objects.update", "fixtures":  ["BUCKET", "OBJECT"]}
       ],
       "preconditionProvided": false,
       "expectSuccess": false
