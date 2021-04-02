@@ -68,7 +68,7 @@ func Example_cancellation() {
 // and authenticate clients.
 //
 // For information on how to create and obtain Application Default Credentials, see
-// https://developers.google.com/identity/protocols/application-default-credentials.
+// https://cloud.google.com/docs/authentication/production.
 func Example_applicationDefaultCredentials() {
 	client, err := secretmanager.NewClient(context.Background())
 	if err != nil {
@@ -80,7 +80,7 @@ func Example_applicationDefaultCredentials() {
 // You can use a file with credentials to authenticate and authorize, such as a JSON
 // key file associated with a Google service account. Service Account keys can be
 // created and downloaded from
-// https://console.developers.google.com/permissions/serviceaccounts.
+// https://console.cloud.google.com/iam-admin/serviceaccounts.
 //
 // This example uses the Datastore client, but the same steps apply to
 // the other client libraries underneath this package.
@@ -100,7 +100,7 @@ func Example_credentialsFile() {
 //
 // This example uses the Secret Manager client, but the same steps apply to
 // the other client libraries underneath this package. Note that scopes can be
-// found at https://developers.google.com/identity/protocols/googlescopes, and
+// found at https://developers.google.com/identity/protocols/oauth2/scopes, and
 // are also provided in all auto-generated libraries: for example,
 // cloud.google.com/go/secretmanager/apiv1 provides DefaultAuthScopes.
 func Example_credentialsFromJSON() {
