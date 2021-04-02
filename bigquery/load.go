@@ -67,7 +67,7 @@ type LoadConfig struct {
 	ProjectionFields []string
 
 	// HivePartitioningOptions allows use of Hive partitioning based on the
-	// layout of objects in Google Cloud Storage.
+	// layout of objects in Cloud Storage.
 	HivePartitioningOptions *HivePartitioningOptions
 }
 
