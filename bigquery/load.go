@@ -65,6 +65,10 @@ type LoadConfig struct {
 	// For ingestion from datastore backups, ProjectionFields governs which fields
 	// are projected from the backup.  The default behavior projects all fields.
 	ProjectionFields []string
+
+	// HivePartitioningOptions allows use of Hive partitioning based on the
+	// layout of objects in Cloud Storage.
+	HivePartitioningOptions *HivePartitioningOptions
 }
 
 func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
@@ -81,6 +85,7 @@ func (l *LoadConfig) toBQ() (*bq.JobConfiguration, io.Reader) {
 			SchemaUpdateOptions:                l.SchemaUpdateOptions,
 			UseAvroLogicalTypes:                l.UseAvroLogicalTypes,
 			ProjectionFields:                   l.ProjectionFields,
+			HivePartitioningOptions:            l.HivePartitioningOptions.toBQ(),
 		},
 	}
 	media := l.Src.populateLoadConfig(config.Load)
@@ -100,6 +105,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		SchemaUpdateOptions:         q.Load.SchemaUpdateOptions,
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
 		ProjectionFields:            q.Load.ProjectionFields,
+		HivePartitioningOptions:     bqToHivePartitioningOptions(q.Load.HivePartitioningOptions),
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {
