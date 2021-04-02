@@ -105,6 +105,7 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		SchemaUpdateOptions:         q.Load.SchemaUpdateOptions,
 		UseAvroLogicalTypes:         q.Load.UseAvroLogicalTypes,
 		ProjectionFields:            q.Load.ProjectionFields,
+		HivePartitioningOptions:     bqToHivePartitioningOptions(q.Load.HivePartitioningOptions),
 	}
 	var fc *FileConfig
 	if len(q.Load.SourceUris) == 0 {
@@ -115,9 +116,6 @@ func bqToLoadConfig(q *bq.JobConfiguration, c *Client) *LoadConfig {
 		s := NewGCSReference(q.Load.SourceUris...)
 		fc = &s.FileConfig
 		lc.Src = s
-	}
-	if q.Load.HivePartitioningOptions != nil {
-		lc.HivePartitioningOptions = bqToHivePartitioningOptions(q.Load.HivePartitioningOptions)
 	}
 	bqPopulateFileConfig(q.Load, fc)
 	return lc

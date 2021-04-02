@@ -100,18 +100,16 @@ type ExternalDataConfig struct {
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	q := bq.ExternalDataConfiguration{
-		SourceFormat:        string(e.SourceFormat),
-		SourceUris:          e.SourceURIs,
-		Autodetect:          e.AutoDetect,
-		Compression:         string(e.Compression),
-		IgnoreUnknownValues: e.IgnoreUnknownValues,
-		MaxBadRecords:       e.MaxBadRecords,
+		SourceFormat:            string(e.SourceFormat),
+		SourceUris:              e.SourceURIs,
+		Autodetect:              e.AutoDetect,
+		Compression:             string(e.Compression),
+		IgnoreUnknownValues:     e.IgnoreUnknownValues,
+		MaxBadRecords:           e.MaxBadRecords,
+		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
-	}
-	if e.HivePartitioningOptions != nil {
-		q.HivePartitioningOptions = e.HivePartitioningOptions.toBQ()
 	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
