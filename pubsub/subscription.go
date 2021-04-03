@@ -774,7 +774,8 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	// Call getSubscription before to check for EnableMessageOrdering field.
+	// Check config to check EnableMessageOrdering field.
+	// See: https://github.com/googleapis/google-cloud-go/issues/3884
 	cfg, err := s.Config(ctx)
 	if err != nil {
 		return fmt.Errorf("sub.Config err: %v", err)
@@ -910,8 +911,7 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
-					// If using a key, make sure the subscription has ordering enabled.
-					// See: https://github.com/googleapis/google-cloud-go/issues/3884
+					// Make sure the subscription has ordering enabled before adding to scheduler.
 					var key string
 					if s.enableOrdering {
 						key = msg.OrderingKey

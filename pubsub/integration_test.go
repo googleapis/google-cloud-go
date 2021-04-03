@@ -686,10 +686,12 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 
 // publishSync is a utility function for publishing a message and
 // blocking until the message has been confirmed.
-func publishSync(ctx context.Context, topic *Topic, msg *Message) error {
+func publishSync(ctx context.Context, t *testing.T, topic *Topic, msg *Message) {
 	res := topic.Publish(ctx, msg)
 	_, err := res.Get(ctx)
-	return err
+	if err != nil {
+		t.Fatalf("publishSync err: %v", err)
+	}
 }
 
 func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
@@ -1388,12 +1390,12 @@ func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 	}
 	defer sub.Delete(ctx)
 
-	publishSync(ctx, topic, &Message{
+	publishSync(ctx, t, topic, &Message{
 		Data:        []byte("message-1"),
 		OrderingKey: "ordering-key-1",
 	})
 
-	publishSync(ctx, topic, &Message{
+	publishSync(ctx, t, topic, &Message{
 		Data:        []byte("message-2"),
 		OrderingKey: "ordering-key-1",
 	})
