@@ -474,7 +474,7 @@ func (t *Topic) Stop() {
 	t.scheduler.FlushAndStop()
 }
 
-// Flush ensures all remaining messages are sent.
+// Flush blocks until all remaining messages are sent.
 func (t *Topic) Flush() {
 	if t.stopped || t.scheduler == nil {
 		return
