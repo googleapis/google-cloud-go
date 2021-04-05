@@ -1357,7 +1357,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 
 // TestIntegration_OrderedKeys_SubscriptionOrdering tests that messages
 // with ordering keys are not processed as such if the subscription
-// does not message ordering enabled.
+// does not have message ordering enabled.
 func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))

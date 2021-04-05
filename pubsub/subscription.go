@@ -915,8 +915,6 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 					var key string
 					if s.enableOrdering {
 						key = msg.OrderingKey
-					} else {
-						key = ""
 					}
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?

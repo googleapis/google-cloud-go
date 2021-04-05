@@ -118,7 +118,7 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 				t.Fatal("expected to receive a grpc ResourceExhausted error")
 			}
 		} else {
-			t.Fatal("expected to receive a grpc ResourceExhausted error")
+			t.Fatalf("expected to receive a grpc ResourceExhausted error, got: %v", err)
 		}
 	}
 }
