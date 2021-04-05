@@ -9,6 +9,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
 	google.golang.org/api v0.43.0
-	google.golang.org/genproto v0.0.0-20210405143950-714cd6049ff4
+	google.golang.org/genproto v0.0.0-20210405150802-d70529258950
 	google.golang.org/grpc v1.36.1
 )
