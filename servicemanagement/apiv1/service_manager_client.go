@@ -118,7 +118,7 @@ type ServiceManagerClient struct {
 
 // NewServiceManagerClient creates a new service manager client.
 //
-// Google Service Management API (at /service-management/overview)
+// Google Service Management API (at https://cloud.google.com/service-management/overview)
 func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
 	clientOpts := defaultServiceManagerClientOptions()
 
