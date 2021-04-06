@@ -2480,6 +2480,141 @@ func TestClient_Apply_Priority(t *testing.T) {
 	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM})
 }
 
+func TestClient_ReadOnlyTransaction_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, qo := range []QueryOptions{
+		{},
+		{RequestTag: "tag-1"},
+	} {
+		for _, tx := range []*ReadOnlyTransaction{
+			client.Single(),
+			client.ReadOnlyTransaction(),
+		} {
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			if tx.singleUse {
+				tx = client.Single()
+			}
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{RequestTag: qo.RequestTag})
+			iter.Next()
+			iter.Stop()
+
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, sppb.RequestOptions{RequestTag: qo.RequestTag})
+			tx.Close()
+		}
+	}
+}
+
+func TestClient_ReadWriteTransaction_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{TransactionTag: "tx-tag-1"},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{RequestTag: "request-tag-1"},
+		} {
+			client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+				iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+				iter.Next()
+				iter.Stop()
+
+				iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{RequestTag: qo.RequestTag})
+				iter.Next()
+				iter.Stop()
+
+				tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+				tx.BatchUpdateWithOptions(context.Background(), []Statement{
+					NewStatement(UpdateBarSetFoo),
+				}, qo)
+
+				// Check for SQL requests inside the transaction to prevent the check to
+				// drain the commit request from the server.
+				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{RequestTag: qo.RequestTag, TransactionTag: to.TransactionTag})
+				return nil
+			}, to)
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: to.TransactionTag})
+		}
+	}
+}
+
+func TestClient_StmtBasedReadWriteTransaction_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{TransactionTag: "tx-tag-1"},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{RequestTag: "request-tag-1"},
+		} {
+			tx, _ := NewReadWriteStmtBasedTransactionWithOptions(context.Background(), client, to)
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{RequestTag: qo.RequestTag})
+			iter.Next()
+			iter.Stop()
+
+			tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+			tx.BatchUpdateWithOptions(context.Background(), []Statement{
+				NewStatement(UpdateBarSetFoo),
+			}, qo)
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{RequestTag: qo.RequestTag, TransactionTag: to.TransactionTag})
+
+			tx.Commit(context.Background())
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: to.TransactionTag})
+		}
+	}
+}
+
+func TestClient_PDML_Tag(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, qo := range []QueryOptions{
+		{},
+		{RequestTag: "request-tag-1"},
+	} {
+		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: qo.RequestTag})
+	}
+}
+
+func TestClient_Apply_Tagging(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, TransactionTag("tx-tag"))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: "tx-tag"})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce())
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), TransactionTag("tx-tag"))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: "tx-tag"})
+}
+
 func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, ro sppb.RequestOptions) {
 	reqs := drainRequestsFromServer(server)
 	reqOptions := []*sppb.RequestOptions{}
@@ -2509,6 +2644,12 @@ func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerSer
 		if got != want {
 			t.Fatalf("Request priority mismatch\nGot: %v\nWant: %v", got, want)
 		}
+		if got, want := opts.RequestTag, ro.RequestTag; got != want {
+			t.Fatalf("Request tag mismatch\nGot: %v\nWant: %v", got, want)
+		}
+		if got, want := opts.TransactionTag, ro.TransactionTag; got != want {
+			t.Fatalf("Transaction tag mismatch\nGot: %v\nWant: %v", got, want)
+		}
 	}
 }
 
@@ -2534,6 +2675,19 @@ func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServe
 	want := ro.Priority
 	if got != want {
 		t.Fatalf("Commit priority mismatch\nGot: %v\nWant: %v", got, want)
+	}
+
+	var requestTag string
+	var transactionTag string
+	if commit.RequestOptions != nil {
+		requestTag = commit.RequestOptions.RequestTag
+		transactionTag = commit.RequestOptions.TransactionTag
+	}
+	if got, want := requestTag, ro.RequestTag; got != want {
+		t.Fatalf("Commit request tag mismatch\nGot: %v\nWant: %v", got, want)
+	}
+	if got, want := transactionTag, ro.TransactionTag; got != want {
+		t.Fatalf("Commit transaction tag mismatch\nGot: %v\nWant: %v", got, want)
 	}
 }
 
