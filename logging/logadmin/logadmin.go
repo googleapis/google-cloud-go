@@ -243,17 +243,18 @@ func listLogEntriesRequest(parent string, opts []EntriesOption) *logpb.ListLogEn
 	for _, opt := range opts {
 		opt.set(req)
 	}
-	req.Filter = defaultTimestamp(req.Filter)
+	req.Filter = defaultTimestampFilter(req.Filter)
 	return req
 }
 
-func defaultTimestamp(filter string) string {
+// defaultTimestampFilter returns a timestamp filter that looks back 24 hours in the past.
+// This default setting is consistent with documentation. Note: user filters containing 'timestamp'
+// substring disables this default timestamp filter, e.g. `textPayload: "timestamp"`
+func defaultTimestampFilter(filter string) string {
 	dayAgo := time.Now().Add(-24 * time.Hour).UTC()
 	switch {
 	case len(filter) == 0:
 		return fmt.Sprintf(`timestamp >= "%s"`, dayAgo.Format(time.RFC3339))
-	// This heuristic is consistent with gcloud CLI logic.
-	// Note: user filters like `textPayload: "timestamp"` disables default timestamp
 	case !strings.Contains(strings.ToLower(filter), "timestamp"):
 		return fmt.Sprintf(`%s AND timestamp >= "%s"`, filter, dayAgo.Format(time.RFC3339))
 	default:
