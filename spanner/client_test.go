@@ -2461,6 +2461,28 @@ func TestClient_PDML_Priority(t *testing.T) {
 	}
 }
 
+func TestClient_PartitionQuery_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, qo := range []QueryOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_LOW},
+	} {
+		ctx := context.Background()
+		txn, _ := client.BatchReadOnlyTransaction(ctx, StrongRead())
+		partitions, _ := txn.PartitionQueryWithOptions(ctx, NewStatement(SelectFooFromBar), PartitionOptions{MaxPartitions: 10}, qo)
+		for _, p := range partitions {
+			iter := txn.Execute(ctx, p)
+			iter.Next()
+			iter.Stop()
+		}
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), sppb.RequestOptions{Priority: qo.Priority})
+	}
+}
+
 func TestClient_Apply_Priority(t *testing.T) {
 	t.Parallel()
 

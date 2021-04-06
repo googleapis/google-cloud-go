@@ -183,6 +183,7 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 		Params:       params,
 		ParamTypes:   paramTypes,
 		QueryOptions: qOpts.Options,
+		RequestOptions: createRequestOptions(&qOpts),
 	}
 
 	// generate Partitions
@@ -282,6 +283,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				Params:         p.qreq.Params,
 				ParamTypes:     p.qreq.ParamTypes,
 				QueryOptions:   p.qreq.QueryOptions,
+				RequestOptions: p.qreq.RequestOptions,
 				PartitionToken: p.pt,
 				ResumeToken:    resumeToken,
 			})
