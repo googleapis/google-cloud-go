@@ -644,21 +644,32 @@ func TestIntegration_QueryDocuments(t *testing.T) {
 		h.mustCreate(doc, map[string]interface{}{"q": i, "x": 1})
 		wants = append(wants, map[string]interface{}{"q": int64(i)})
 	}
-	q := coll.Select("q").OrderBy("q", Asc)
+	q := coll.Select("q")
 	for i, test := range []struct {
-		q    Query
-		want []map[string]interface{}
+		q       Query
+		want    []map[string]interface{}
+		orderBy bool // Some query types do not allow ordering.
 	}{
-		{q, wants},
-		{q.Where("q", ">", 1), wants[2:]},
-		{q.WherePath([]string{"q"}, ">", 1), wants[2:]},
-		{q.Offset(1).Limit(1), wants[1:2]},
-		{q.StartAt(1), wants[1:]},
-		{q.StartAfter(1), wants[2:]},
-		{q.EndAt(1), wants[:2]},
-		{q.EndBefore(1), wants[:1]},
-		{q.LimitToLast(2), wants[1:]},
+		{q, wants, true},
+		{q.Where("q", ">", 1), wants[2:], true},
+		{q.Where("q", "<", 1), wants[:1], true},
+		{q.Where("q", "==", 1), wants[1:2], false},
+		{q.Where("q", "!=", 0), wants[1:], true},
+		{q.Where("q", ">=", 1), wants[1:], true},
+		{q.Where("q", "<=", 1), wants[:2], true},
+		{q.Where("q", "in", []int{0}), wants[:1], false},
+		{q.Where("q", "not-in", []int{0, 1}), wants[2:], true},
+		{q.WherePath([]string{"q"}, ">", 1), wants[2:], true},
+		{q.Offset(1).Limit(1), wants[1:2], true},
+		{q.StartAt(1), wants[1:], true},
+		{q.StartAfter(1), wants[2:], true},
+		{q.EndAt(1), wants[:2], true},
+		{q.EndBefore(1), wants[:1], true},
+		{q.LimitToLast(2), wants[1:], true},
 	} {
+		if test.orderBy {
+			test.q = test.q.OrderBy("q", Asc)
+		}
 		gotDocs, err := test.q.Documents(ctx).GetAll()
 		if err != nil {
 			t.Errorf("#%d: %+v: %v", i, test.q, err)

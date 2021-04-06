@@ -407,6 +407,13 @@ func determineSetFunc(ftype reflect.Type, stype FieldType) setFunc {
 				return setNull(v, x, func() interface{} { return x.(*big.Rat) })
 			}
 		}
+
+	case BigNumericFieldType:
+		if ftype == typeOfRat {
+			return func(v reflect.Value, x interface{}) error {
+				return setNull(v, x, func() interface{} { return x.(*big.Rat) })
+			}
+		}
 	}
 	return nil
 }
@@ -692,7 +699,7 @@ func structFieldToUploadValue(vfield reflect.Value, schemaField *FieldSchema) (i
 }
 
 func toUploadValue(val interface{}, fs *FieldSchema) interface{} {
-	if fs.Type == TimeFieldType || fs.Type == DateTimeFieldType || fs.Type == NumericFieldType {
+	if fs.Type == TimeFieldType || fs.Type == DateTimeFieldType || fs.Type == NumericFieldType || fs.Type == BigNumericFieldType {
 		return toUploadValueReflect(reflect.ValueOf(val), fs)
 	}
 	return val
@@ -720,6 +727,13 @@ func toUploadValueReflect(v reflect.Value, fs *FieldSchema) interface{} {
 		}
 		return formatUploadValue(v, fs, func(v reflect.Value) string {
 			return NumericString(v.Interface().(*big.Rat))
+		})
+	case BigNumericFieldType:
+		if r, ok := v.Interface().(*big.Rat); ok && r == nil {
+			return nil
+		}
+		return formatUploadValue(v, fs, func(v reflect.Value) string {
+			return BigNumericString(v.Interface().(*big.Rat))
 		})
 	default:
 		if !fs.Repeated || v.Len() > 0 {
@@ -786,6 +800,12 @@ const (
 
 	// NumericScaleDigits is the maximum number of digits after the decimal point in a NUMERIC value.
 	NumericScaleDigits = 9
+
+	// BigNumericPrecisionDigits is the maximum number of full digits in a BIGNUMERIC value.
+	BigNumericPrecisionDigits = 76
+
+	// BigNumericScaleDigits is the maximum number of full digits in a BIGNUMERIC value.
+	BigNumericScaleDigits = 38
 )
 
 // NumericString returns a string representing a *big.Rat in a format compatible
@@ -793,6 +813,12 @@ const (
 // after the decimal point.
 func NumericString(r *big.Rat) string {
 	return r.FloatString(NumericScaleDigits)
+}
+
+// BigNumericString returns a string representing a *big.Rat in a format compatible with BigQuery
+// SQL.  It returns a floating point literal with 38 digits after the decimal point.
+func BigNumericString(r *big.Rat) string {
+	return r.FloatString(BigNumericScaleDigits)
 }
 
 // convertRows converts a series of TableRows into a series of Value slices.
@@ -911,6 +937,12 @@ func convertBasicType(val string, typ FieldType) (Value, error) {
 		r, ok := (&big.Rat{}).SetString(val)
 		if !ok {
 			return nil, fmt.Errorf("bigquery: invalid NUMERIC value %q", val)
+		}
+		return Value(r), nil
+	case BigNumericFieldType:
+		r, ok := (&big.Rat{}).SetString(val)
+		if !ok {
+			return nil, fmt.Errorf("bigquery: invalid BIGNUMERIC value %q", val)
 		}
 		return Value(r), nil
 	case GeographyFieldType:

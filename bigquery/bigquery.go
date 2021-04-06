@@ -166,6 +166,14 @@ func runWithRetry(ctx context.Context, call func() error) error {
 // retryable; these are returned by systems between the client and the BigQuery
 // service.
 func retryableError(err error) bool {
+	// Special case due to http2: https://github.com/googleapis/google-cloud-go/issues/1793
+	// Due to Go's default being higher for streams-per-connection than is accepted by the
+	// BQ backend, it's possible to get streams refused immediately after a connection is
+	// started but before we receive SETTINGS frame from the backend.  This generally only
+	// happens when we try to enqueue > 100 requests onto a newly initiated connection.
+	if err.Error() == "http2: stream closed" {
+		return true
+	}
 	e, ok := err.(*googleapi.Error)
 	if !ok {
 		return false

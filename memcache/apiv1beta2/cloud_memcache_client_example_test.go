@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -192,6 +192,31 @@ func ExampleCloudMemcacheClient_ApplyParameters() {
 		// TODO: Fill request struct fields.
 	}
 	op, err := c.ApplyParameters(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudMemcacheClient_ApplySoftwareUpdate() {
+	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1beta2"
+
+	ctx := context.Background()
+	c, err := memcache.NewCloudMemcacheClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &memcachepb.ApplySoftwareUpdateRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ApplySoftwareUpdate(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

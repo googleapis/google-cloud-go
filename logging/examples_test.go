@@ -99,6 +99,8 @@ func ExampleHTTPRequest() {
 		HTTPRequest: &logging.HTTPRequest{
 			// TODO: pass in request
 			Request: &http.Request{},
+			// TODO: set the status code
+			Status: http.StatusOK,
 		},
 	}
 	lg.Log(httpEntry)

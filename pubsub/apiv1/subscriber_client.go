@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -61,8 +61,9 @@ func defaultSubscriberClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsub.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsub.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://pubsub.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -762,7 +763,8 @@ func (c *SubscriberClient) DeleteSnapshot(ctx context.Context, req *pubsubpb.Del
 }
 
 // Seek seeks an existing subscription to a point in time or to a given snapshot,
-// whichever is provided in the request. Snapshots are used in Seek (at https://cloud.google.com/pubsub/docs/replay-overview) operations, which
+// whichever is provided in the request. Snapshots are used in [Seek]
+// (https://cloud.google.com/pubsub/docs/replay-overview (at https://cloud.google.com/pubsub/docs/replay-overview)) operations, which
 // allow you to manage message acknowledgments in bulk. That is, you can set
 // the acknowledgment state of messages in an existing subscription to the
 // state captured by a snapshot. Note that both the subscription and the

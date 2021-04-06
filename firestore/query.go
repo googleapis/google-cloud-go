@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/btree"
+	"cloud.google.com/go/internal/trace"
 	"github.com/golang/protobuf/ptypes/wrappers"
 	"google.golang.org/api/iterator"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
@@ -94,8 +95,8 @@ func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
 // A Query can have multiple filters.
 // The path argument can be a single field or a dot-separated sequence of
 // fields, and must not contain any of the runes "˜*/[]".
-// The op argument must be one of "==", "<", "<=", ">", ">=", "array-contains",
-// "array-contains-any" or "in".
+// The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) Where(path, op string, value interface{}) Query {
 	fp, err := parseDotSeparatedString(path)
 	if err != nil {
@@ -108,8 +109,8 @@ func (q Query) Where(path, op string, value interface{}) Query {
 
 // WherePath returns a new Query that filters the set of results.
 // A Query can have multiple filters.
-// The op argument must be one of "==", "<", "<=", ">", ">=", "array-contains",
-// "array-contains-any" or "in".
+// The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
+// "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
 	q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
 	return q
@@ -500,8 +501,12 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		op = pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL
 	case "==":
 		op = pb.StructuredQuery_FieldFilter_EQUAL
+	case "!=":
+		op = pb.StructuredQuery_FieldFilter_NOT_EQUAL
 	case "in":
 		op = pb.StructuredQuery_FieldFilter_IN
+	case "not-in":
+		op = pb.StructuredQuery_FieldFilter_NOT_IN
 	case "array-contains":
 		op = pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS
 	case "array-contains-any":
@@ -695,7 +700,10 @@ func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryD
 	}
 }
 
-func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
+func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
+	it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
+	defer func() { trace.EndSpan(it.ctx, err) }()
+
 	client := it.q.c
 	if it.streamClient == nil {
 		sq, err := it.q.toProto()
@@ -715,7 +723,6 @@ func (it *queryDocumentIterator) next() (*DocumentSnapshot, error) {
 		}
 	}
 	var res *pb.RunQueryResponse
-	var err error
 	for {
 		res, err = it.streamClient.Recv()
 		if err == io.EOF {

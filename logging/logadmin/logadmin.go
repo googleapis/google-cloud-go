@@ -66,7 +66,6 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 		parent = "projects/" + parent
 	}
 	opts = append([]option.ClientOption{
-		option.WithEndpoint(internal.ProdAddr),
 		option.WithScopes(logging.AdminScope),
 	}, opts...)
 	lc, err := vkit.NewClient(ctx, opts...)
@@ -162,9 +161,12 @@ func toHTTPRequest(p *logtypepb.HttpRequest) (*logging.HTTPRequest, error) {
 		Status:                         int(p.Status),
 		ResponseSize:                   p.ResponseSize,
 		Latency:                        dur,
+		LocalIP:                        p.ServerIp,
 		RemoteIP:                       p.RemoteIp,
 		CacheHit:                       p.CacheHit,
 		CacheValidatedWithOriginServer: p.CacheValidatedWithOriginServer,
+		CacheFillBytes:                 p.CacheFillBytes,
+		CacheLookup:                    p.CacheLookup,
 	}, nil
 }
 

@@ -23,6 +23,9 @@ import (
 	"math"
 	"sort"
 	"strings"
+	"time"
+
+	"cloud.google.com/go/civil"
 )
 
 // TODO: More Position fields throughout; maybe in Query/Select.
@@ -217,7 +220,25 @@ type Delete struct {
 func (d *Delete) String() string { return fmt.Sprintf("%#v", d) }
 func (*Delete) isDMLStmt()       {}
 
-// TODO: Insert, Update.
+// TODO: Insert.
+
+// Update represents an UPDATE statement.
+// https://cloud.google.com/spanner/docs/dml-syntax#update-statement
+type Update struct {
+	Table ID
+	Items []UpdateItem
+	Where BoolExpr
+
+	// TODO: Alias
+}
+
+func (u *Update) String() string { return fmt.Sprintf("%#v", u) }
+func (*Update) isDMLStmt()       {}
+
+type UpdateItem struct {
+	Column ID
+	Value  Expr // or nil for DEFAULT
+}
 
 // ColumnDef represents a column definition as part of a CREATE TABLE
 // or ALTER TABLE statement.
@@ -225,6 +246,8 @@ type ColumnDef struct {
 	Name    ID
 	Type    Type
 	NotNull bool
+
+	Generated Expr // set of this is a generated column
 
 	Options ColumnOptions
 
@@ -273,7 +296,7 @@ func (Check) isConstraint()   {}
 // Type represents a column type.
 type Type struct {
 	Array bool
-	Base  TypeBase // Bool, Int64, Float64, String, Bytes, Date, Timestamp
+	Base  TypeBase // Bool, Int64, Float64, Numeric, String, Bytes, Date, Timestamp
 	Len   int64    // if Base is String or Bytes; may be MaxLen
 }
 
@@ -286,6 +309,7 @@ const (
 	Bool TypeBase = iota
 	Int64
 	Float64
+	Numeric
 	String
 	Bytes
 	Date
@@ -370,6 +394,17 @@ const (
 	LeftJoin
 	RightJoin
 )
+
+// SelectFromUnnest is a SelectFrom that yields a virtual table from an array.
+// https://cloud.google.com/spanner/docs/query-syntax#unnest
+type SelectFromUnnest struct {
+	Expr  Expr
+	Alias ID // empty if not aliased
+
+	// TODO: Implicit
+}
+
+func (SelectFromUnnest) isSelectFrom() {}
 
 // TODO: SelectFromSubquery, etc.
 
@@ -536,6 +571,11 @@ type Paren struct {
 func (Paren) isBoolExpr() {} // possibly bool
 func (Paren) isExpr()     {}
 
+// Array represents an array literal.
+type Array []Expr
+
+func (Array) isExpr() {}
+
 // ID represents an identifier.
 // https://cloud.google.com/spanner/docs/lexical#identifiers
 type ID string
@@ -592,6 +632,18 @@ func (StringLiteral) isExpr() {}
 type BytesLiteral string
 
 func (BytesLiteral) isExpr() {}
+
+// DateLiteral represents a date literal.
+// https://cloud.google.com/spanner/docs/lexical#date_literals
+type DateLiteral civil.Date
+
+func (DateLiteral) isExpr() {}
+
+// TimestampLiteral represents a timestamp literal.
+// https://cloud.google.com/spanner/docs/lexical#timestamp_literals
+type TimestampLiteral time.Time
+
+func (TimestampLiteral) isExpr() {}
 
 type StarExpr int
 

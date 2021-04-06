@@ -1,5 +1,24 @@
 # Changes
 
+## v1.3.0
+
+- Updates to various dependencies.
+
+## [1.2.0](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.1.2...v1.2.0) (2021-01-25)
+
+
+### Features
+
+* **logging:** add localIP and Cache fields to HTTPRequest conversion from proto ([#3600](https://www.github.com/googleapis/google-cloud-go/issues/3600)) ([f93027b](https://www.github.com/googleapis/google-cloud-go/commit/f93027b47735e7c181989666e0826bea57ec51e1))
+
+### [1.1.2](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.1.1...v1.1.2) (2020-11-09)
+
+
+### Bug Fixes
+
+* **logging:** allow X-Cloud-Trace-Context fields to be optional ([#3062](https://www.github.com/googleapis/google-cloud-go/issues/3062)) ([7ff03cf](https://www.github.com/googleapis/google-cloud-go/commit/7ff03cf9a544e753de5b034e18339ecf517d2193))
+* **logging:** do not panic in library code ([#3076](https://www.github.com/googleapis/google-cloud-go/issues/3076)) ([529be97](https://www.github.com/googleapis/google-cloud-go/commit/529be977f766443f49cb8914e17ba07c93841e84)), closes [#1862](https://www.github.com/googleapis/google-cloud-go/issues/1862)
+
 ## v1.1.1
 
 - Rebrand "Stackdriver Logging" to "Cloud Logging".

@@ -3,10 +3,8 @@ module cloud.google.com/go/internal/examples/fake
 go 1.15
 
 require (
-	cloud.google.com/go v0.68.0
-	github.com/golang/protobuf v1.4.3 // indirect
-	golang.org/x/net v0.0.0-20201021035429-f5854403a974 // indirect
-	google.golang.org/api v0.34.0
-	google.golang.org/genproto v0.0.0-20201030142918-24207fddd1c3
-	google.golang.org/grpc v1.32.0
+	cloud.google.com/go v0.79.0
+	google.golang.org/api v0.43.0
+	google.golang.org/genproto v0.0.0-20210406143921-e86de6bf7a46
+	google.golang.org/grpc v1.36.1
 )

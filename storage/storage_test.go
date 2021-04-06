@@ -26,6 +26,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"os"
 	"reflect"
 	"regexp"
 	"sort"
@@ -1220,22 +1221,67 @@ func TestAttrToFieldMapCoverage(t *testing.T) {
 	}
 }
 
-// Create a client using a custom endpoint, and verify that raw.BasePath (used
-// for writes) and readHost (used for reads) are both set correctly.
+// Create a client using a combination of custom endpoint and
+// STORAGE_EMULATOR_HOST env variable and verify that raw.BasePath (used
+// for writes) and readHost and scheme (used for reads) are all set correctly.
 func TestWithEndpoint(t *testing.T) {
+	originalStorageEmulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	testCases := []struct {
+		CustomEndpoint      string
+		StorageEmulatorHost string
+		WantRawBasePath     string
+		WantReadHost        string
+		WantScheme          string
+	}{
+		{
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "",
+			WantRawBasePath:     "https://storage.googleapis.com/storage/v1/",
+			WantReadHost:        "storage.googleapis.com",
+			WantScheme:          "https",
+		},
+		{
+			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
+			StorageEmulatorHost: "",
+			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
+			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "https",
+		},
+		{
+			CustomEndpoint:      "",
+			StorageEmulatorHost: "http://emu.com",
+			WantRawBasePath:     "http://emu.com",
+			WantReadHost:        "emu.com",
+			WantScheme:          "http",
+		},
+		{
+			CustomEndpoint:      "https://fake.gcs.com:8080/storage/v1",
+			StorageEmulatorHost: "http://emu.com",
+			WantRawBasePath:     "https://fake.gcs.com:8080/storage/v1",
+			WantReadHost:        "fake.gcs.com:8080",
+			WantScheme:          "http",
+		},
+	}
 	ctx := context.Background()
-	endpoint := "https://fake.gcs.com:8080/storage/v1"
-	c, err := NewClient(ctx, option.WithEndpoint(endpoint))
-	if err != nil {
-		t.Fatalf("error creating client: %v", err)
-	}
+	for _, tc := range testCases {
+		os.Setenv("STORAGE_EMULATOR_HOST", tc.StorageEmulatorHost)
+		c, err := NewClient(ctx, option.WithEndpoint(tc.CustomEndpoint))
+		if err != nil {
+			t.Fatalf("error creating client: %v", err)
+		}
+		if err != nil {
+			t.Fatalf("error creating client: %v", err)
+		}
 
-	if c.raw.BasePath != endpoint {
-		t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, endpoint)
+		if c.raw.BasePath != tc.WantRawBasePath {
+			t.Errorf("raw.BasePath not set correctly: got %v, want %v", c.raw.BasePath, tc.WantRawBasePath)
+		}
+		if c.readHost != tc.WantReadHost {
+			t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, tc.WantReadHost)
+		}
+		if c.scheme != tc.WantScheme {
+			t.Errorf("scheme not set correctly: got %v, want %v", c.scheme, tc.WantScheme)
+		}
 	}
-
-	want := "fake.gcs.com:8080"
-	if c.readHost != want {
-		t.Errorf("readHost not set correctly: got %v, want %v", c.readHost, want)
-	}
+	os.Setenv("STORAGE_EMULATOR_HOST", originalStorageEmulatorHost)
 }

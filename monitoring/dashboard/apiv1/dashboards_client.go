@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -50,8 +50,9 @@ func defaultDashboardsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://monitoring.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -89,7 +90,7 @@ func defaultDashboardsCallOptions() *DashboardsCallOptions {
 	}
 }
 
-// DashboardsClient is a client for interacting with .
+// DashboardsClient is a client for interacting with Cloud Monitoring API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type DashboardsClient struct {
@@ -167,11 +168,8 @@ func (c *DashboardsClient) setGoogleClientInfo(keyval ...string) {
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateDashboard creates a new custom dashboard.
-//
-// This method requires the monitoring.dashboards.create permission
-// on the specified project. For more information, see
-// Google Cloud IAM (at https://cloud.google.com/iam).
+// CreateDashboard creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API (at https://cloud.google.com/monitoring/dashboards/api-dashboard).
+// This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management (at https://cloud.google.com/iam).
 func (c *DashboardsClient) CreateDashboard(ctx context.Context, req *dashboardpb.CreateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
@@ -197,7 +195,7 @@ func (c *DashboardsClient) CreateDashboard(ctx context.Context, req *dashboardpb
 //
 // This method requires the monitoring.dashboards.list permission
 // on the specified project. For more information, see
-// Google Cloud IAM (at https://cloud.google.com/iam).
+// Cloud Identity and Access Management (at https://cloud.google.com/iam).
 func (c *DashboardsClient) ListDashboards(ctx context.Context, req *dashboardpb.ListDashboardsRequest, opts ...gax.CallOption) *DashboardIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -242,7 +240,7 @@ func (c *DashboardsClient) ListDashboards(ctx context.Context, req *dashboardpb.
 //
 // This method requires the monitoring.dashboards.get permission
 // on the specified dashboard. For more information, see
-// Google Cloud IAM (at https://cloud.google.com/iam).
+// Cloud Identity and Access Management (at https://cloud.google.com/iam).
 func (c *DashboardsClient) GetDashboard(ctx context.Context, req *dashboardpb.GetDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
@@ -268,7 +266,7 @@ func (c *DashboardsClient) GetDashboard(ctx context.Context, req *dashboardpb.Ge
 //
 // This method requires the monitoring.dashboards.delete permission
 // on the specified dashboard. For more information, see
-// Google Cloud IAM (at https://cloud.google.com/iam).
+// Cloud Identity and Access Management (at https://cloud.google.com/iam).
 func (c *DashboardsClient) DeleteDashboard(ctx context.Context, req *dashboardpb.DeleteDashboardRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
@@ -290,7 +288,7 @@ func (c *DashboardsClient) DeleteDashboard(ctx context.Context, req *dashboardpb
 //
 // This method requires the monitoring.dashboards.update permission
 // on the specified dashboard. For more information, see
-// Google Cloud IAM (at https://cloud.google.com/iam).
+// Cloud Identity and Access Management (at https://cloud.google.com/iam).
 func (c *DashboardsClient) UpdateDashboard(ctx context.Context, req *dashboardpb.UpdateDashboardRequest, opts ...gax.CallOption) (*dashboardpb.Dashboard, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)

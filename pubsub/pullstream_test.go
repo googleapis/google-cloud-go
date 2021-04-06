@@ -67,7 +67,7 @@ func TestPullStreamGet(t *testing.T) {
 			test.errors = test.errors[1:]
 			return &testStreamingPullClient{sendError: err}, nil
 		}
-		ps := newPullStream(context.Background(), streamingPull, "", 100, 1000)
+		ps := newPullStream(context.Background(), streamingPull, "", 100, 1000, 0)
 		_, err := ps.get(nil)
 		if got := status.Code(err); got != test.wantCode {
 			t.Errorf("%s: got %s, want %s", test.desc, got, test.wantCode)
@@ -101,10 +101,20 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer client.Close()
+	topic, err := client.CreateTopic(ctx, "foo")
+	if err != nil {
+		t.Fatal(err)
+	}
+	sub, err := client.CreateSubscription(ctx, "foo", SubscriptionConfig{
+		Topic: topic,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 
 	errc := make(chan error)
 	go func() {
-		errc <- client.Subscription("foo").Receive(ctx, func(context.Context, *Message) {
+		errc <- sub.Receive(ctx, func(context.Context, *Message) {
 			t.Error("should not have received any data")
 		})
 	}()
@@ -118,7 +128,7 @@ func TestPullStreamGet_ResourceUnavailable(t *testing.T) {
 				t.Fatal("expected to receive a grpc ResourceExhausted error")
 			}
 		} else {
-			t.Fatal("expected to receive a grpc ResourceExhausted error")
+			t.Fatalf("expected to receive a grpc ResourceExhausted error: %v", err)
 		}
 	}
 }

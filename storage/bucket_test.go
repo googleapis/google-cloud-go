@@ -268,8 +268,9 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 				},
 			},
 		},
-		Logging: &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
-		Website: &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		Logging:      &BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
+		Website:      &BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		StorageClass: "NEARLINE",
 	}
 	au.SetLabel("a", "foo")
 	au.DeleteLabel("b")
@@ -308,6 +309,7 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 		},
 		Logging:         &raw.BucketLogging{LogBucket: "lb", LogObjectPrefix: "p"},
 		Website:         &raw.BucketWebsite{MainPageSuffix: "mps", NotFoundPage: "404"},
+		StorageClass:    "NEARLINE",
 		ForceSendFields: []string{"DefaultEventBasedHold", "Lifecycle"},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {

@@ -37,7 +37,7 @@ func TestMain(m *testing.M) {
 
 func TestParse(t *testing.T) {
 	mod := "cloud.google.com/go/bigquery"
-	r, err := parse(mod+"/...", ".", []string{"README.md"})
+	r, err := parse(mod+"/...", ".", []string{"README.md"}, nil)
 	if err != nil {
 		t.Fatalf("Parse: %v", err)
 	}
@@ -103,7 +103,7 @@ func TestGoldens(t *testing.T) {
 	extraFiles := []string{"README.md"}
 
 	testPath := "cloud.google.com/go/storage"
-	r, err := parse(testPath, ".", extraFiles)
+	r, err := parse(testPath, ".", extraFiles, nil)
 	if err != nil {
 		t.Fatalf("parse: %v", err)
 	}
@@ -165,6 +165,36 @@ func TestGoldens(t *testing.T) {
 
 		if string(gotContent) != string(goldenContent) {
 			t.Errorf("got %s is different from expected %s", gotPath, goldenPath)
+		}
+	}
+}
+
+func TestHasPrefix(t *testing.T) {
+	tests := []struct {
+		s        string
+		prefixes []string
+		want     bool
+	}{
+		{
+			s:        "abc",
+			prefixes: []string{"1", "a"},
+			want:     true,
+		},
+		{
+			s:        "abc",
+			prefixes: []string{"1"},
+			want:     false,
+		},
+		{
+			s:        "abc",
+			prefixes: []string{"1", "2"},
+			want:     false,
+		},
+	}
+
+	for _, test := range tests {
+		if got := hasPrefix(test.s, test.prefixes); got != test.want {
+			t.Errorf("hasPrefix(%q, %q) got %v, want %v", test.s, test.prefixes, got, test.want)
 		}
 	}
 }

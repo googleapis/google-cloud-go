@@ -36,6 +36,7 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner"
 	dbadmin "cloud.google.com/go/spanner/admin/database/apiv1"
+	v1 "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -56,7 +57,7 @@ func dbName() string {
 	return "projects/fake-proj/instances/fake-instance/databases/fake-db"
 }
 
-func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, func()) {
+func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v1.Client, func()) {
 	// Despite the docs, this context is also used for auth,
 	// so it needs to be long-lived.
 	ctx := context.Background()
@@ -73,7 +74,13 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, fu
 			client.Close()
 			t.Fatalf("Connecting DB admin client: %v", err)
 		}
-		return client, adminClient, func() { client.Close(); adminClient.Close() }
+		gapicClient, err := v1.NewClient(ctx, dialOpt)
+		if err != nil {
+			client.Close()
+			adminClient.Close()
+			t.Fatalf("Connecting Spanner generated client: %v", err)
+		}
+		return client, adminClient, gapicClient, func() { client.Close(); adminClient.Close(); gapicClient.Close() }
 	}
 
 	// Don't use SPANNER_EMULATOR_HOST because we need the raw connection for
@@ -102,16 +109,23 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, fu
 		srv.Close()
 		t.Fatalf("Connecting to in-memory fake DB admin: %v", err)
 	}
-	return client, adminClient, func() {
+	gapicClient, err := v1.NewClient(ctx, option.WithGRPCConn(conn))
+	if err != nil {
+		srv.Close()
+		t.Fatalf("Connecting to in-memory fake generated Spanner client: %v", err)
+	}
+
+	return client, adminClient, gapicClient, func() {
 		client.Close()
 		adminClient.Close()
+		gapicClient.Close()
 		conn.Close()
 		srv.Close()
 	}
 }
 
 func TestIntegration_SpannerBasics(t *testing.T) {
-	client, adminClient, cleanup := makeClient(t)
+	client, adminClient, generatedClient, cleanup := makeClient(t)
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -136,6 +150,34 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 		t.Errorf("Reading second row of trivial query gave %v, want iterator.Done", err)
 	}
 	it.Stop()
+
+	// Try to execute the equivalent of a session pool ping.
+	// This used to cause a panic as ExecuteSql did not expect any requests
+	// that would execute a query without a transaction selector.
+	// https://github.com/googleapis/google-cloud-go/issues/3639
+	s, err := generatedClient.CreateSession(ctx, &spannerpb.CreateSessionRequest{Database: dbName()})
+	if err != nil {
+		t.Fatalf("Creating session: %v", err)
+	}
+	rs, err := generatedClient.ExecuteSql(ctx, &spannerpb.ExecuteSqlRequest{
+		Session: s.Name,
+		Sql:     "SELECT 1",
+	})
+	if err != nil {
+		t.Fatalf("Executing ping: %v", err)
+	}
+	if len(rs.Rows) != 1 {
+		t.Fatalf("Ping gave %v rows, want 1", len(rs.Rows))
+	}
+	if len(rs.Rows[0].Values) != 1 {
+		t.Fatalf("Ping gave %v cols, want 1", len(rs.Rows[0].Values))
+	}
+	if rs.Rows[0].Values[0].GetStringValue() != "1" {
+		t.Fatalf("Ping gave value %v, want '1'", rs.Rows[0].Values[0].GetStringValue())
+	}
+	if err = generatedClient.DeleteSession(ctx, &spannerpb.DeleteSessionRequest{Name: s.Name}); err != nil {
+		t.Fatalf("Deleting session: %v", err)
+	}
 
 	// Drop any previous test table/index, and make a fresh one in a few stages.
 	const tableName = "Characters"
@@ -400,7 +442,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 }
 
 func TestIntegration_ReadsAndQueries(t *testing.T) {
-	client, adminClient, cleanup := makeClient(t)
+	client, adminClient, _, cleanup := makeClient(t)
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -412,7 +454,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		"Staff",
 		"PlayerStats",
 		"JoinA", "JoinB", "JoinC", "JoinD", "JoinE", "JoinF",
-		"SomeStrings",
+		"SomeStrings", "Updateable",
 	}
 	errc := make(chan error)
 	for _, table := range allTables {
@@ -618,6 +660,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		`CREATE TABLE JoinF ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
 		// Some other test tables.
 		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
+		`CREATE TABLE Updateable (
+			id INT64,
+			first STRING(MAX),
+			last STRING(MAX),
+		) PRIMARY KEY (id)`,
 	)
 	if err != nil {
 		t.Fatalf("Creating sample tables: %v", err)
@@ -661,9 +708,37 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{3, "bbar"}),
+
+		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{0, "joe", nil}),
+		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{1, "doe", "joan"}),
+		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{2, "wong", "wong"}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
+	}
+
+	// Perform UPDATE DML; the results are checked later on.
+	n = 0
+	_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+		for _, u := range []string{
+			`UPDATE Updateable SET last = "bloggs" WHERE id = 0`,
+			`UPDATE Updateable SET first = last, last = first WHERE id = 1`,
+			`UPDATE Updateable SET last = DEFAULT WHERE id = 2`,
+			`UPDATE Updateable SET first = "noname" WHERE id = 3`, // no id=3
+		} {
+			nr, err := tx.Update(ctx, spanner.NewStatement(u))
+			if err != nil {
+				return err
+			}
+			n += nr
+		}
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("Updating with DML: %v", err)
+	}
+	if n != 3 {
+		t.Errorf("Updating with DML affected %d rows, want 3", n)
 	}
 
 	// Do some complex queries.
@@ -857,6 +932,14 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			// From https://cloud.google.com/spanner/docs/aggregate_functions#avg.
+			`SELECT AVG(x) AS avg FROM UNNEST([0, 2, 4, 4, 5]) AS x`,
+			nil,
+			[][]interface{}{
+				{float64(3)},
+			},
+		},
+		{
 			`SELECT MAX(Name) FROM Staff WHERE Name < @lim`,
 			map[string]interface{}{"lim": "Teal'c"},
 			[][]interface{}{
@@ -927,6 +1010,34 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			},
 		},
 		{
+			// Same as in docs, but with a weird ORDER BY clause to match the row ordering.
+			`SELECT * FROM JoinA FULL OUTER JOIN JoinB ON JoinA.w = JoinB.y ORDER BY w IS NULL, w, x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", nil, nil},
+				{int64(2), "b", int64(2), "k"},
+				{int64(3), "c", int64(3), "m"},
+				{int64(3), "c", int64(3), "n"},
+				{int64(3), "d", int64(3), "m"},
+				{int64(3), "d", int64(3), "n"},
+				{nil, nil, int64(4), "p"},
+			},
+		},
+		{
+			// Same as the previous, but using a USING clause instead of an ON clause.
+			`SELECT * FROM JoinC FULL OUTER JOIN JoinD USING (x) ORDER BY x, y, z`,
+			nil,
+			[][]interface{}{
+				{int64(1), "a", nil},
+				{int64(2), "b", "k"},
+				{int64(3), "c", "m"},
+				{int64(3), "c", "n"},
+				{int64(3), "d", "m"},
+				{int64(3), "d", "n"},
+				{int64(4), nil, "p"},
+			},
+		},
+		{
 			`SELECT * FROM JoinA LEFT OUTER JOIN JoinB AS B ON JoinA.w = B.y ORDER BY w, x, y, z`,
 			nil,
 			[][]interface{}{
@@ -974,6 +1085,16 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{int64(3), "d", "m"},
 				{int64(3), "d", "n"},
 				{int64(4), nil, "p"},
+			},
+		},
+		// Check the output of the UPDATE DML.
+		{
+			`SELECT id, first, last FROM Updateable ORDER BY id`,
+			nil,
+			[][]interface{}{
+				{int64(0), "joe", "bloggs"},
+				{int64(1), "joan", "doe"},
+				{int64(2), "wong", nil},
 			},
 		},
 		// Regression test for aggregating no rows; it used to return an empty row.

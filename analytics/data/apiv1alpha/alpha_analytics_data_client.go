@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -41,16 +41,17 @@ type AlphaAnalyticsDataCallOptions struct {
 	RunPivotReport       []gax.CallOption
 	BatchRunReports      []gax.CallOption
 	BatchRunPivotReports []gax.CallOption
-	GetUniversalMetadata []gax.CallOption
 	GetMetadata          []gax.CallOption
+	RunRealtimeReport    []gax.CallOption
 }
 
 func defaultAlphaAnalyticsDataClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticsdata.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticsdata.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://analyticsdata.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -62,7 +63,7 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 		RunPivotReport:       []gax.CallOption{},
 		BatchRunReports:      []gax.CallOption{},
 		BatchRunPivotReports: []gax.CallOption{},
-		GetUniversalMetadata: []gax.CallOption{
+		GetMetadata: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -73,7 +74,7 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 				})
 			}),
 		},
-		GetMetadata: []gax.CallOption{
+		RunRealtimeReport: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unknown,
@@ -87,7 +88,7 @@ func defaultAlphaAnalyticsDataCallOptions() *AlphaAnalyticsDataCallOptions {
 	}
 }
 
-// AlphaAnalyticsDataClient is a client for interacting with .
+// AlphaAnalyticsDataClient is a client for interacting with Google Analytics Data API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type AlphaAnalyticsDataClient struct {
@@ -260,35 +261,9 @@ func (c *AlphaAnalyticsDataClient) BatchRunPivotReports(ctx context.Context, req
 	return resp, nil
 }
 
-// GetUniversalMetadata returns metadata for dimensions and metrics available in reporting methods.
-// Used to explore the dimensions and metrics. Dimensions and metrics will be
-// mostly added over time, but renames and deletions may occur.
-//
-// This method returns Universal Metadata. Universal Metadata are dimensions
-// and metrics applicable to any property such as country and totalUsers.
-func (c *AlphaAnalyticsDataClient) GetUniversalMetadata(ctx context.Context, req *datapb.GetUniversalMetadataRequest, opts ...gax.CallOption) (*datapb.UniversalMetadata, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.GetUniversalMetadata[0:len(c.CallOptions.GetUniversalMetadata):len(c.CallOptions.GetUniversalMetadata)], opts...)
-	var resp *datapb.UniversalMetadata
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.alphaAnalyticsDataClient.GetUniversalMetadata(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
-}
-
 // GetMetadata returns metadata for dimensions and metrics available in reporting methods.
 // Used to explore the dimensions and metrics. In this method, a Google
-// Analytics App + Web Property Identifier is specified in the request, and
+// Analytics GA4 Property Identifier is specified in the request, and
 // the metadata response includes Custom dimensions and metrics as well as
 // Universal metadata.
 //
@@ -309,6 +284,30 @@ func (c *AlphaAnalyticsDataClient) GetMetadata(ctx context.Context, req *datapb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.alphaAnalyticsDataClient.GetMetadata(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// RunRealtimeReport the Google Analytics Realtime API returns a customized report of realtime
+// event data for your property. These reports show events and usage from the
+// last 30 minutes.
+func (c *AlphaAnalyticsDataClient) RunRealtimeReport(ctx context.Context, req *datapb.RunRealtimeReportRequest, opts ...gax.CallOption) (*datapb.RunRealtimeReportResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "property", url.QueryEscape(req.GetProperty())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.RunRealtimeReport[0:len(c.CallOptions.RunRealtimeReport):len(c.CallOptions.RunRealtimeReport)], opts...)
+	var resp *datapb.RunRealtimeReportResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.alphaAnalyticsDataClient.RunRealtimeReport(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,8 +48,9 @@ func defaultErrorStatsClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("clouderrorreporting.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("clouderrorreporting.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://clouderrorreporting.googleapis.com/"),
+		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
-		option.WithScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
@@ -96,7 +97,7 @@ func defaultErrorStatsCallOptions() *ErrorStatsCallOptions {
 	}
 }
 
-// ErrorStatsClient is a client for interacting with Cloud Error Reporting API.
+// ErrorStatsClient is a client for interacting with Error Reporting API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ErrorStatsClient struct {

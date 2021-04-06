@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -32,7 +33,6 @@ import (
 	"cloud.google.com/go/internal/version"
 	kms "cloud.google.com/go/kms/apiv1"
 	testutil2 "cloud.google.com/go/pubsub/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/iterator"
@@ -43,6 +43,8 @@ import (
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/encoding/protowire"
+	"google.golang.org/protobuf/proto"
 )
 
 var (
@@ -292,7 +294,7 @@ func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronou
 	})
 	if err != nil {
 		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Now().Sub(now) >= time.Minute {
+			if time.Since(now) >= time.Minute {
 				t.Fatal("pullN took too long")
 			}
 		} else {
@@ -390,8 +392,8 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	length := MaxPublishRequestBytes - calcFieldSizeString(topic.String())
 	// Next, account for the overhead from encoding an individual PubsubMessage,
 	// and the inner PubsubMessage.Data field.
-	pbMsgOverhead := 1 + proto.SizeVarint(uint64(length))
-	dataOverhead := 1 + proto.SizeVarint(uint64(length-pbMsgOverhead))
+	pbMsgOverhead := 1 + protowire.SizeVarint(uint64(length))
+	dataOverhead := 1 + protowire.SizeVarint(uint64(length-pbMsgOverhead))
 	maxLengthSingleMessage := length - pbMsgOverhead - dataOverhead
 
 	publishReq := &pb.PublishRequest{
@@ -679,6 +681,16 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	_, err = sub.Update(ctx, SubscriptionConfigToUpdate{})
 	if err == nil {
 		t.Fatal("got nil, wanted error")
+	}
+}
+
+// publishSync is a utility function for publishing a message and
+// blocking until the message has been confirmed.
+func publishSync(ctx context.Context, t *testing.T, topic *Topic, msg *Message) {
+	res := topic.Publish(ctx, msg)
+	_, err := res.Get(ctx)
+	if err != nil {
+		t.Fatalf("publishSync err: %v", err)
 	}
 }
 
@@ -1149,9 +1161,8 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 			OrderingKey: orderingKey,
 		})
 		go func() {
-			<-r.ready
-			if r.err != nil {
-				t.Error(r.err)
+			if _, err := r.Get(ctx); err != nil {
+				t.Error(err)
 			}
 		}()
 	}
@@ -1320,8 +1331,7 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        bytes.Repeat([]byte("A"), 1000),
 		OrderingKey: orderingKey,
 	})
-	<-r.ready
-	if r.err == nil {
+	if _, err := r.Get(ctx); err == nil {
 		t.Fatalf("expected bundle byte limit error, got nil")
 	}
 	// Publish a normal sized message now, which should fail
@@ -1330,9 +1340,8 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        []byte("should fail"),
 		OrderingKey: orderingKey,
 	})
-	<-r.ready
-	if r.err == nil || !strings.Contains(r.err.Error(), "pubsub: Publishing for ordering key") {
-		t.Fatalf("expected ordering keys publish error, got %v", r.err)
+	if _, err := r.Get(ctx); err == nil || !strings.Contains(err.Error(), "pubsub: Publishing for ordering key") {
+		t.Fatalf("expected ordering keys publish error, got %v", err)
 	}
 
 	// Lastly, call ResumePublish and make sure subsequent publishes succeed.
@@ -1341,9 +1350,78 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 		Data:        []byte("should succeed"),
 		OrderingKey: orderingKey,
 	})
-	<-r.ready
-	if r.err != nil {
-		t.Fatalf("got error while publishing message: %v", r.err)
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("got error while publishing message: %v", err)
+	}
+}
+
+// TestIntegration_OrderedKeys_SubscriptionOrdering tests that messages
+// with ordering keys are not processed as such if the subscription
+// does not have message ordering enabled.
+func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	topic.EnableMessageOrdering = true
+
+	// Explicitly disable message ordering on the subscription.
+	enableMessageOrdering := false
+	subCfg := SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: enableMessageOrdering,
+	}
+	sub, err := client.CreateSubscription(ctx, subIDs.New(), subCfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sub.Delete(ctx)
+
+	publishSync(ctx, t, topic, &Message{
+		Data:        []byte("message-1"),
+		OrderingKey: "ordering-key-1",
+	})
+
+	publishSync(ctx, t, topic, &Message{
+		Data:        []byte("message-2"),
+		OrderingKey: "ordering-key-1",
+	})
+
+	sub.ReceiveSettings.Synchronous = true
+	ctx2, cancel := context.WithTimeout(ctx, 12*time.Second)
+	defer cancel()
+
+	var numAcked int32
+	sub.Receive(ctx2, func(_ context.Context, msg *Message) {
+		// Create artificial constraints on message processing time.
+		if string(msg.Data) == "message-1" {
+			time.Sleep(10 * time.Second)
+		} else {
+			time.Sleep(5 * time.Second)
+		}
+		msg.Ack()
+		atomic.AddInt32(&numAcked, 1)
+	})
+	if sub.enableOrdering != enableMessageOrdering {
+		t.Fatalf("enableOrdering mismatch: got: %v, want: %v", sub.enableOrdering, enableMessageOrdering)
+	}
+	// If the messages were received on a subscription with the EnableMessageOrdering=true,
+	// total processing would exceed the timeout and only one message would be processed.
+	if numAcked < 2 {
+		t.Fatalf("did not process all messages in time, numAcked: %d", numAcked)
 	}
 }
 

@@ -119,7 +119,8 @@ To group all the log entries written during a single HTTP request, create two
 Loggers, a "parent" and a "child," with different log IDs. Both should be in the same
 project, and have the same MonitoredResource type and labels.
 
-- Parent entries must have HTTPRequest.Request populated. (Strictly speaking, only the URL is necessary.)
+- Parent entries must have HTTPRequest.Request (strictly speaking, only Method and URL are necessary),
+  and HTTPRequest.Status populated.
 
 - A child entry's timestamp must be within the time interval covered by the parent request. (i.e., before
 the parent.Timestamp and after the parent.Timestamp - parent.HTTPRequest.Latency. This assumes the

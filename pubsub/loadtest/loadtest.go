@@ -31,7 +31,6 @@ import (
 
 	"cloud.google.com/go/pubsub"
 	pb "cloud.google.com/go/pubsub/loadtest/pb"
-	"github.com/golang/protobuf/ptypes"
 	"golang.org/x/time/rate"
 )
 
@@ -56,10 +55,7 @@ func (l *PubServer) Start(ctx context.Context, req *pb.StartRequest) (*pb.StartR
 	if err != nil {
 		return nil, err
 	}
-	dur, err := ptypes.Duration(req.PublishBatchDuration)
-	if err != nil {
-		return nil, err
-	}
+	dur := req.PublishBatchDuration.AsDuration()
 	l.init(c, req.Topic, req.MessageSize, req.PublishBatchSize, dur)
 	log.Println("started")
 	return &pb.StartResponse{}, nil
