@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -683,6 +684,16 @@ func TestIntegration_UpdateSubscription(t *testing.T) {
 	}
 }
 
+// publishSync is a utility function for publishing a message and
+// blocking until the message has been confirmed.
+func publishSync(ctx context.Context, t *testing.T, topic *Topic, msg *Message) {
+	res := topic.Publish(ctx, msg)
+	_, err := res.Get(ctx)
+	if err != nil {
+		t.Fatalf("publishSync err: %v", err)
+	}
+}
+
 func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
@@ -1341,6 +1352,76 @@ func TestIntegration_OrderedKeys_ResumePublish(t *testing.T) {
 	})
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("got error while publishing message: %v", err)
+	}
+}
+
+// TestIntegration_OrderedKeys_SubscriptionOrdering tests that messages
+// with ordering keys are not processed as such if the subscription
+// does not have message ordering enabled.
+func TestIntegration_OrderedKeys_SubscriptionOrdering(t *testing.T) {
+	ctx := context.Background()
+	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
+	defer client.Close()
+
+	topic, err := client.CreateTopic(ctx, topicIDs.New())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer topic.Delete(ctx)
+	defer topic.Stop()
+	exists, err := topic.Exists(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if !exists {
+		t.Fatalf("topic %v should exist, but it doesn't", topic)
+	}
+	topic.EnableMessageOrdering = true
+
+	// Explicitly disable message ordering on the subscription.
+	enableMessageOrdering := false
+	subCfg := SubscriptionConfig{
+		Topic:                 topic,
+		EnableMessageOrdering: enableMessageOrdering,
+	}
+	sub, err := client.CreateSubscription(ctx, subIDs.New(), subCfg)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer sub.Delete(ctx)
+
+	publishSync(ctx, t, topic, &Message{
+		Data:        []byte("message-1"),
+		OrderingKey: "ordering-key-1",
+	})
+
+	publishSync(ctx, t, topic, &Message{
+		Data:        []byte("message-2"),
+		OrderingKey: "ordering-key-1",
+	})
+
+	sub.ReceiveSettings.Synchronous = true
+	ctx2, cancel := context.WithTimeout(ctx, 12*time.Second)
+	defer cancel()
+
+	var numAcked int32
+	sub.Receive(ctx2, func(_ context.Context, msg *Message) {
+		// Create artificial constraints on message processing time.
+		if string(msg.Data) == "message-1" {
+			time.Sleep(10 * time.Second)
+		} else {
+			time.Sleep(5 * time.Second)
+		}
+		msg.Ack()
+		atomic.AddInt32(&numAcked, 1)
+	})
+	if sub.enableOrdering != enableMessageOrdering {
+		t.Fatalf("enableOrdering mismatch: got: %v, want: %v", sub.enableOrdering, enableMessageOrdering)
+	}
+	// If the messages were received on a subscription with the EnableMessageOrdering=true,
+	// total processing would exceed the timeout and only one message would be processed.
+	if numAcked < 2 {
+		t.Fatalf("did not process all messages in time, numAcked: %d", numAcked)
 	}
 }
 
