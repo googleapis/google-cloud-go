@@ -899,7 +899,7 @@ func TestIntegration_Tables(t *testing.T) {
 	}
 }
 
-// helper function that establishes a basic policy tag setup.
+// setupPolicyTag is a helper for setting up policy tags in the datacatalog service.
 //
 // It returns a string for a policy tag identifier and a cleanup function, or an error.
 func setupPolicyTag(ctx context.Context) (string, func(), error) {
