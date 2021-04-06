@@ -159,21 +159,23 @@ const (
 
 // Gets the current encryption info for the table across all of the clusters.
 // The returned map will be keyed by cluster id and contain a status for all of the keys in use.
-func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[string][]*btapb.EncryptionInfo, error) {
+func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[string][]EncryptionInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
 	res, err := ac.getTable(ctx, table)
 	if err != nil {
 		return nil, err
 	}
-
 	// TODO: backups also needs this.
 	// TODO: why not just return the clusterstates, as it has a map of encryption info.
-	encryptionInfo := map[string][]*btapb.EncryptionInfo{}
+	encryptionInfo := map[string][]EncryptionInfo{}
 	for key, cs := range res.ClusterStates {
 		// TODO: we could return map[string][]*btapb.EncryptionInfo directly
-		encryptionInfo[key] = cs.EncryptionInfo
-
+		// encryptionInfo[key] = cs.EncryptionInfo
+		encInfo := cs.GetEncryptionInfo()
+		if encInfo == nil {
+			return nil, nil
+		}
 		// TODO: can make a custom class?
 		for _, pbInfo := range cs.EncryptionInfo {
 			info := EncryptionInfo{}
@@ -181,6 +183,7 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 			// TODO: could also just return this as a string, but wrapped
 			info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
 			info.KMSKeyVersion = pbInfo.KmsKeyVersion
+			encryptionInfo[key] = append(encryptionInfo[key], info)
 		}
 	}
 
@@ -320,7 +323,8 @@ func (ac *AdminClient) getTable(ctx context.Context, table string) (*btapb.Table
 	prefix := ac.instancePrefix()
 	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
-		View: btapb.Table_ENCRYPTION_VIEW,
+		View: btapb.Table_FULL,
+		// View: btapb.Table_ENCRYPTION_VIEW,
 	}
 
 	var res *btapb.Table
