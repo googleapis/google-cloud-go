@@ -1680,15 +1680,11 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 		EndTime:     endTime,
 		ExpireTime:  expireTime,
 		State:       backup.State.String(),
-		// EncryptionInfo: newEncryptionInfo(backup.EncryptionInfo),
+		// EncryptionInfo: // populate this after verifying 'nil-nes'
 	}
-	encInfo := backup.GetEncryptionInfo()
-	fmt.Println(encInfo)
-	fmt.Println(backup.EncryptionInfo)
-	if encInfo != nil {
-		bi.EncryptionInfo = newEncryptionInfo(encInfo)
-	} else {
-		fmt.Println("NO ENCRYPTION INFO")
+	// Do not attempt to populate encryption info if not available.
+	if backup.EncryptionInfo != nil {
+		bi.EncryptionInfo = newEncryptionInfo(backup.EncryptionInfo)
 	}
 	return &bi, nil
 }

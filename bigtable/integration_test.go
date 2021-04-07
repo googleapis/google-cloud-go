@@ -1549,13 +1549,6 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	// table2, err := adminClient.getTable(ctx, table)
-	// if err != nil {
-	// 	t.Fatalf("Getting Table: %v", err)
-	// }
-	// // TODO: GET ENCRYPTION INFO
-	// fmt.Println(table2)
-
 	encryptionKeyVersion := kmsKeyName + "/cryptoKeyVersions/1"
 
 	// The encryption info can take 30-300s (currently about 120-190s) to
@@ -1574,6 +1567,31 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		time.Sleep(time.Second * 10)
 	}
 
+	// Validate Encryption Info under getTable
+	table2, err := adminClient.getTable(ctx, table)
+	if err != nil {
+		t.Fatalf("Getting Table: %v", err)
+	}
+	if got, want := len(table2.ClusterStates), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Cluster States %v, want: %v", got, want)
+	}
+	clusterState := table2.ClusterStates[clusterID]
+	if got, want := len(clusterState.EncryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Encryption Info Length: %v, want: %v", got, want)
+	}
+	tableEncInfo := clusterState.EncryptionInfo[0]
+	if got, want := int(tableEncInfo.EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is btapb.EncryptionInfo_EncryptionType
+	if got, want := tableEncInfo.EncryptionType, btapb.EncryptionInfo_CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := tableEncInfo.KmsKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate Encyrption Info retrieved via EncryptionInfo
 	encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 	if err != nil {
 		t.Fatalf("EncryptionInfo: %v", err)
@@ -1582,43 +1600,31 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
 		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 	}
-	for k, v := range encryptionInfo {
-		if k != clusterID {
-			t.Fatalf("Expected key to match the cluster ID")
-		}
-		if len(v) != 1 {
-			t.Fatalf("Expected Single EncryptionInfo")
-		}
-
-		if got, want := int(v[0].EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
-			t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
-		}
-		// TODO: I think this type is still the pb type for managed encryption, so getting a comparison that is wrong
-		if got, want := v[0].EncryptionType, CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
-			t.Fatalf("EncryptionType: %v, want: %v", got, want)
-		}
-		//time.Sleep(time.Second * 300)
-		if got, want := v[0].KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
-			// TODO: Igor let me know this might be a consistency problem. try waiting 5 minutes.
-			// TODO: Should fail. today kms key is ""?
-			t.Fatalf("KMS Key Version: %v, want: %v", got, want)
-		}
-
-		fmt.Println("k:", k, "v:", v)
+	encryptionInfos := encryptionInfo[clusterID]
+	if got, want := len(encryptionInfos), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Encryption Info Length: %v, want: %v", got, want)
+	}
+	if len(encryptionInfos) != 1 {
+		t.Fatalf("Expected Single EncryptionInfo")
+	}
+	v := encryptionInfos[0]
+	if got, want := int(v.EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is EncryptionType
+	if got, want := v.EncryptionType, CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := v.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
 	}
 
-	// iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
-	// if err != nil {
-	// 	t.Fatalf("InstanceInfo: %v", err)
-	// }
-	// fmt.Println(iInfo)
-
+	// Validate CMEK on Cluster Info
 	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
 	if err != nil {
 		t.Fatalf("GetCluster: %v", err)
 	}
 
-	// Verify Cluster Info
 	if got, want := cInfo.KMSKeyName, kmsKeyName; !cmp.Equal(got, want) {
 		t.Fatalf("KMSKeyName: %v, want: %v", got, want)
 	}
@@ -1646,8 +1652,8 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 
 	// TODO TODO
 	// https://github.com/googleapis/java-bigtable/pull/656/files#diff-d73f6370f98371679471d7c0732b459d7b56b26dd3e7f7cf6fdf1e14d791af20R92
-	// TODO:[] Create EncryptionInfo class
-	// TODO:[] Create Status class for EncryptionInfo.encryption_status field
+	// TODO:[X] Create EncryptionInfo class
+	// TODO:[] Create Status class for EncryptionInfo.encryption_status field or use status.Status?
 	// TODO Unit tests
 	// - test that an instance create with cmek sends that field.
 	// -
