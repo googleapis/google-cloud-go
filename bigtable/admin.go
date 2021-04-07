@@ -142,11 +142,11 @@ type EncryptionType int32
 
 const (
 	// Encryption type was not specified, though data at rest remains encrypted.
-	ENCRYPTION_TYPE_UNSPECIFIED EncryptionType = 0
+	EncryptionTypeUnspecified EncryptionType = 0
 	// The data backing this resource is encrypted at rest with a key that is
 	// fully managed by Google. No key version or status will be populated.
 	// This is the default state.
-	GOOGLE_DEFAULT_ENCRYPTION EncryptionType = 1
+	GoogleDefaultEncryption EncryptionType = 1
 	// The data backing this resource is encrypted at rest with a key that is
 	// managed by the customer.
 	// The in-use version of the key and its status are populated for
@@ -154,7 +154,7 @@ const (
 	// CMEK-protected backups are pinned to the key version that was in use at
 	// the time the backup was taken. This key version is populated but its
 	// status is not tracked and is reported as `UNKNOWN`.
-	CUSTOMER_MANAGED_ENCRYPTION EncryptionType = 2
+	CustomerManagedEncryption EncryptionType = 2
 )
 
 // Gets the current encryption info for the table across all of the clusters.
@@ -173,11 +173,6 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 		// TODO: if we didn't wrap EncryptionInfo, this could reduce to
 		// returning map[string][]*btapb.EncryptionInfo directly
 		// encryptionInfo[key] = cs.EncryptionInfo
-		encInfo := cs.GetEncryptionInfo()
-		if encInfo == nil {
-			return nil, nil
-		}
-		// TODO: can make a custom class?
 		for _, pbInfo := range cs.EncryptionInfo {
 			info := EncryptionInfo{}
 			info.EncryptionStatus = pbInfo.EncryptionStatus
@@ -1044,8 +1039,9 @@ type ClusterConfig struct {
 	NumNodes                    int32
 	StorageType                 StorageType
 
-	// Describes the Cloud KMS encryption key that will be used to protect the
-	// destination Bigtable cluster. The requirements for this key are:
+	// KMSKeyName describes the Cloud KMS encryption key that will be used to
+	// protect the destination Bigtable cluster. The requirements for this key
+	// are:
 	//  1) The Cloud Bigtable service account associated with the project that
 	//  contains this cluster must be granted the
 	//  `cloudkms.cryptoKeyEncrypterDecrypter` role on the CMEK key.

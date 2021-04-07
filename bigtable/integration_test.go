@@ -1612,7 +1612,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
 	}
 	// NOTE: this EncryptionType is EncryptionType
-	if got, want := v.EncryptionType, CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+	if got, want := v.EncryptionType, CustomerManagedEncryption; !cmp.Equal(got, want) {
 		t.Fatalf("EncryptionType: %v, want: %v", got, want)
 	}
 	if got, want := v.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
@@ -1640,7 +1640,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
 
-	if got, want := backup.EncryptionInfo.EncryptionType, CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+	if got, want := backup.EncryptionInfo.EncryptionType, CustomerManagedEncryption; !cmp.Equal(got, want) {
 		t.Fatalf("Backup Encryption EncryptionType: %v, want: %v", got, want)
 	}
 	if got, want := backup.EncryptionInfo.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
