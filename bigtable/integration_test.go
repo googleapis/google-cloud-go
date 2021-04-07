@@ -1558,6 +1558,22 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 
 	encryptionKeyVersion := kmsKeyName + "/cryptoKeyVersions/1"
 
+	// The encryption info can take 30-300s (currently about 120-190s) to
+	// become ready.
+	for i := 0; i < 30; i++ {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+
+		kmsKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
+		if kmsKeyVersion != "" {
+			break
+		}
+
+		time.Sleep(time.Second * 10)
+	}
+
 	encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 	if err != nil {
 		t.Fatalf("EncryptionInfo: %v", err)
@@ -1574,16 +1590,18 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 			t.Fatalf("Expected Single EncryptionInfo")
 		}
 
-		if got, want := int(v[0].EncryptionStatus.Code), 2; !cmp.Equal(got, want) {
+		if got, want := int(v[0].EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
 			t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
 		}
 		// TODO: I think this type is still the pb type for managed encryption, so getting a comparison that is wrong
 		if got, want := v[0].EncryptionType, CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
 			t.Fatalf("EncryptionType: %v, want: %v", got, want)
 		}
+		//time.Sleep(time.Second * 300)
 		if got, want := v[0].KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+			// TODO: Igor let me know this might be a consistency problem. try waiting 5 minutes.
 			// TODO: Should fail. today kms key is ""?
-			// t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+			t.Fatalf("KMS Key Version: %v, want: %v", got, want)
 		}
 
 		fmt.Println("k:", k, "v:", v)
@@ -1633,7 +1651,6 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	// TODO Unit tests
 	// - test that an instance create with cmek sends that field.
 	// -
-
 }
 
 func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {

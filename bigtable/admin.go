@@ -123,7 +123,7 @@ func (ac *AdminClient) backupPath(cluster, backup string) string {
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	// TODO: compare to https://github.com/googleapis/java-bigtable/pull/656/files#diff-10655a12f2a8430533dca76435f6829a1a0bc978ada1295529b59a46afbcd95fR28
-	EncryptionStatus *status.Status
+	EncryptionStatus *status.Status // TODO: should this be wrapped as EncryptionType has been?
 	EncryptionType   EncryptionType
 	KMSKeyVersion    string
 }
@@ -170,7 +170,8 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 	// TODO: why not just return the clusterstates, as it has a map of encryption info.
 	encryptionInfo := map[string][]EncryptionInfo{}
 	for key, cs := range res.ClusterStates {
-		// TODO: we could return map[string][]*btapb.EncryptionInfo directly
+		// TODO: if we didn't wrap EncryptionInfo, this could reduce to
+		// returning map[string][]*btapb.EncryptionInfo directly
 		// encryptionInfo[key] = cs.EncryptionInfo
 		encInfo := cs.GetEncryptionInfo()
 		if encInfo == nil {
@@ -180,7 +181,6 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 		for _, pbInfo := range cs.EncryptionInfo {
 			info := EncryptionInfo{}
 			info.EncryptionStatus = pbInfo.EncryptionStatus
-			// TODO: could also just return this as a string, but wrapped
 			info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
 			info.KMSKeyVersion = pbInfo.KmsKeyVersion
 			encryptionInfo[key] = append(encryptionInfo[key], info)
