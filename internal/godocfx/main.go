@@ -33,9 +33,6 @@ See:
 * https://dotnet.github.io/docfx/spec/metadata_format_spec.html
 * https://github.com/googleapis/doc-templates
 * https://github.com/googleapis/doc-pipeline
-
-TODO:
-  * Cross link referenced packages.
 */
 package main
 
@@ -150,10 +147,12 @@ func process(mod indexEntry, tempDir, outDir string, print bool) error {
 		return err
 	}
 
-	optionalExtraFiles := []string{
-		"README.md",
+	optionalExtraFiles := []string{}
+	filter := []string{
+		"cloud.google.com/go/analytics",
+		"cloud.google.com/go/area120",
 	}
-	r, err := parse(mod.Path+"/...", tempDir, optionalExtraFiles)
+	r, err := parse(mod.Path+"/...", tempDir, optionalExtraFiles, filter)
 	if err != nil {
 		return fmt.Errorf("parse: %v", err)
 	}
