@@ -319,7 +319,6 @@ func (ac *AdminClient) getTable(ctx context.Context, table string) (*btapb.Table
 	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
 		View: btapb.Table_FULL,
-		// View: btapb.Table_ENCRYPTION_VIEW,
 	}
 
 	var res *btapb.Table
@@ -1154,7 +1153,6 @@ func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clus
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetClusterRequest{
 		Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
-		// View: btapb.Table_ENCRYPTION_VIEW
 	}
 	var c *btapb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
@@ -1728,7 +1726,6 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 
 	req := &btapb.GetBackupRequest{
 		Name: backupPath,
-		//View: btapb.Table_ENCRYPTION_VIEW,
 	}
 
 	var resp *btapb.Backup

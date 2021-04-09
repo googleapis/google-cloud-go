@@ -1431,25 +1431,6 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 		},
 	}
 
-	// TODO: should this know how to create a cluster/instance pair?
-	// conf := InstanceWithClustersConfig{
-	// 	InstanceID:  "g-c-p-crw",
-	// 	DisplayName: "g-c-p-crw",
-	// 	Clusters: []ClusterConfig{
-	// 		ClusterConfig{
-	// 			ClusterID:  "g-c-p-crw-cluster",
-	// 			KMSKeyName: "crwilcox-cmek-test-key",
-	// 			Zone:       "us-west2-b",
-	// 			NumNodes:   1,
-	// 		},
-	// 	},
-	// }
-
-	// err = iAdminClient.CreateInstanceWithClusters(ctx, &conf)
-	// if err != nil {
-	// 	t.Errorf("Creation: %v", err)
-	// }
-
 	if err = iAdminClient.UpdateInstanceWithClusters(ctx, confWithClusters); err != nil {
 		t.Fatalf("UpdateInstanceWithClusters: %v", err)
 	}
@@ -1523,7 +1504,6 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	key := "crwilcox-cmek-test-key2"
 	kmsKeyName := fmt.Sprintf("projects/%s/locations/%s/keyRings/%s/cryptoKeys/%s", project, loc, ring, key)
 
-	// TODO: should this know how to create a cluster/instance pair?
 	conf := &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,
 		// InstanceType: PRODUCTION,
