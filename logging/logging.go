@@ -137,9 +137,7 @@ type Client struct {
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
-	if !strings.ContainsRune(parent, '/') {
-		parent = "projects/" + parent
-	}
+	parent = makeParent(parent)
 	opts = append([]option.ClientOption{
 		option.WithScopes(WriteScope),
 	}, opts...)
@@ -170,6 +168,13 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 		}
 	}()
 	return client, nil
+}
+
+func makeParent(parent string) string {
+	if !strings.ContainsRune(parent, '/') {
+		return "projects/" + parent
+	}
+	return parent
 }
 
 // Ping reports whether the client's connection to the logging service and the
@@ -803,7 +808,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
-	ent, err := l.toLogEntry(e)
+	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
 	if err != nil {
 		return err
 	}
@@ -818,7 +823,7 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := l.toLogEntry(e)
+	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -894,7 +899,26 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	return
 }
 
-func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
+// ToLogEntry takes an Entry structure and converts it to the LogEntry proto.
+// A parent can take any of the following forms:
+//    projects/PROJECT_ID
+//    folders/FOLDER_ID
+//    billingAccounts/ACCOUNT_ID
+//    organizations/ORG_ID
+// for backwards compatibility, a string with no '/' is also allowed and is interpreted
+// as a project ID.
+//
+// ToLogEntry is implied when users invoke Logger.Log or Logger.LogSync,
+// but its exported as a pub function here to give users additional flexibility
+// when using the library. Don't call this method manually if Logger.Log or
+// Logger.LogSync are used, it is intended to be used together with direct call
+// to WriteLogEntries method.
+func ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
+	// We have this method to support logging agents that need a bigger flexibility.
+	return toLogEntryInternal(e, nil, makeParent(parent))
+}
+
+func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
@@ -913,7 +937,7 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 			// https://cloud.google.com/appengine/docs/flexible/go/writing-application-logs.
 			traceID, spanID, traceSampled := deconstructXCloudTraceContext(traceHeader)
 			if traceID != "" {
-				e.Trace = fmt.Sprintf("%s/traces/%s", l.client.parent, traceID)
+				e.Trace = fmt.Sprintf("%s/traces/%s", parent, traceID)
 			}
 			if e.SpanID == "" {
 				e.SpanID = spanID
@@ -927,7 +951,11 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	}
 	req, err := fromHTTPRequest(e.HTTPRequest)
 	if err != nil {
-		l.client.error(err)
+		if client != nil {
+			client.error(err)
+		} else {
+			return nil, err
+		}
 	}
 	ent := &logpb.LogEntry{
 		Timestamp:      ts,
