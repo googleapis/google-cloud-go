@@ -319,13 +319,49 @@ func detectCloudRunResource() *mrpb.MonitoredResource {
 	}
 }
 
+func isCloudFunction() bool {
+	_ , name := os.LookupEnv("FUNCTION_NAME");
+	_ , target := os.LookupEnv("FUNCTION_TARGET");
+	if (name || target) {
+		return true
+	} else {
+		return false
+	}
+}
+
+func detectCloudFunction() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	// Newer functions runtimes store name in K_SERVICE
+	function_name, exists := os.LookupEnv("K_SERVICE")
+	if !exists {
+		function_name, _ = os.LookupEnv("FUNCTION_NAME")
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_function",
+		Labels: map[string]string{
+			"project_id":		projectID,
+			"region":           regionFromZone(zone),
+			"function_name":	function_name,
+		},
+	}
+}
+
+// TODO(nicoleczhu): Memoize this function
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// GAE needs to come first, as metadata.OnGCE() is actually true on GAE
-		// Second Gen runtimes.
+		// GAE, CloudRun need to come first, as metadata.OnGCE() returns true on these runtimes.
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
+		case isCloudFunction():
+			detectedResource.pb = detectCloudFunction()
 		case isCloudRun():
 			detectedResource.pb = detectCloudRunResource()
 		case metadata.OnGCE():
