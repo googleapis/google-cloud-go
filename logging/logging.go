@@ -293,6 +293,32 @@ func detectGAEResource() *mrpb.MonitoredResource {
 	}
 }
 
+func isCloudRun() bool {
+	_, config := os.LookupEnv("K_CONFIGURATION")
+	return config
+}
+
+func detectCloudRunResource() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_run_revision",
+		Labels: map[string]string{
+			"project_id":         projectID,
+			"location":           regionFromZone(zone),
+			"service_name":       os.Getenv("K_SERVICE"),
+			"revision_name":      os.Getenv("K_REVISION"),
+			"configuration_name": os.Getenv("K_CONFIGURATION"),
+		},
+	}
+}
+
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
@@ -300,6 +326,8 @@ func detectResource() *mrpb.MonitoredResource {
 		// Second Gen runtimes.
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
+		case isCloudRun():
+			detectedResource.pb = detectCloudRunResource()
 		case metadata.OnGCE():
 			detectedResource.pb = detectGCEResource()
 		}
@@ -327,6 +355,11 @@ func monitoredResource(parent string) *mrpb.MonitoredResource {
 		Type:   info.rtype,
 		Labels: map[string]string{info.label: parts[1]},
 	}
+}
+
+// TODO add a simple test for this
+func regionFromZone(zone string) string {
+	return zone[:strings.LastIndex(zone,"-")]
 }
 
 func globalResource(projectID string) *mrpb.MonitoredResource {
