@@ -342,6 +342,31 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				HivePartitioningOptions: &HivePartitioningOptions{
+					Mode:                   CustomHivePartitioningMode,
+					SourceURIPrefix:        "source_uri",
+					RequirePartitionFilter: true,
+				},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.HivePartitioningOptions = &bq.HivePartitioningOptions{
+					Mode:                   "CUSTOM",
+					RequirePartitionFilter: true,
+					SourceUriPrefix:        "source_uri",
+				}
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {

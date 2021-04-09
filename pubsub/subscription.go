@@ -47,6 +47,8 @@ type Subscription struct {
 
 	mu            sync.Mutex
 	receiveActive bool
+
+	enableOrdering bool
 }
 
 // Subscription creates a reference to a subscription.
@@ -223,10 +225,6 @@ type SubscriptionConfig struct {
 	Labels map[string]string
 
 	// EnableMessageOrdering enables message ordering.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	EnableMessageOrdering bool
 
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in
@@ -237,10 +235,6 @@ type SubscriptionConfig struct {
 	// non-empty, then only `PubsubMessage`s whose `attributes` field matches the
 	// filter are delivered on this subscription. If empty, then no messages are
 	// filtered out. Cannot be changed after the subscription is created.
-	//
-	// It is EXPERIMENTAL and a part of a closed alpha that may not be
-	// accessible to all users. This field is subject to change or removal
-	// without notice.
 	Filter string
 
 	// RetryPolicy specifies how Cloud Pub/Sub retries message delivery.
@@ -780,6 +774,14 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
+	// Check config to check EnableMessageOrdering field.
+	// See: https://github.com/googleapis/google-cloud-go/issues/3884
+	cfg, err := s.Config(ctx)
+	if err != nil {
+		return fmt.Errorf("sub.Config err: %v", err)
+	}
+	s.enableOrdering = cfg.EnableMessageOrdering
+
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
 		maxCount = DefaultReceiveSettings.MaxOutstandingMessages
@@ -909,9 +911,14 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 						old(ackID, ack, receiveTime)
 					}
 					wg.Add(1)
+					// Make sure the subscription has ordering enabled before adding to scheduler.
+					var key string
+					if s.enableOrdering {
+						key = msg.OrderingKey
+					}
 					// TODO(deklerk): Can we have a generic handler at the
 					// constructor level?
-					if err := sched.Add(msg.OrderingKey, msg, func(msg interface{}) {
+					if err := sched.Add(key, msg, func(msg interface{}) {
 						defer wg.Done()
 						f(ctx2, msg.(*Message))
 					}); err != nil {

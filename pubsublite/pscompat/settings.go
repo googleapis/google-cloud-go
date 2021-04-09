@@ -67,9 +67,12 @@ type PublishSettings struct {
 	// to the server. If Timeout is 0, it will be treated as
 	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
 	//
-	// The timeout is exceeded, the publisher will terminate with the last error
-	// that occurred while trying to reconnect. Note that if the timeout duration
-	// is long, ErrOverflow may occur first.
+	// If your application has a low tolerance to backend unavailability, set
+	// Timeout to a lower duration to detect and handle. When the timeout is
+	// exceeded, the PublisherClient will terminate with ErrBackendUnavailable and
+	// details of the last error that occurred while trying to reconnect to
+	// backends. Note that if the timeout duration is long, ErrOverflow may occur
+	// first.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -106,8 +109,8 @@ var DefaultPublishSettings = PublishSettings{
 	DelayThreshold:    10 * time.Millisecond,
 	CountThreshold:    100,
 	ByteThreshold:     1e6,
-	Timeout:           60 * time.Minute,
-	BufferedByteLimit: 1e8,
+	Timeout:           7 * 24 * time.Hour,
+	BufferedByteLimit: 1e10,
 }
 
 func (s *PublishSettings) toWireSettings() wire.PublishSettings {
@@ -183,8 +186,11 @@ type ReceiveSettings struct {
 	// to the server. If Timeout is 0, it will be treated as
 	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
 	//
-	// The timeout is exceeded, the SubscriberClient will terminate with the last
-	// error that occurred while trying to reconnect.
+	// If your application has a low tolerance to backend unavailability, set
+	// Timeout to a lower duration to detect and handle. When the timeout is
+	// exceeded, the SubscriberClient will terminate with ErrBackendUnavailable
+	// and details of the last error that occurred while trying to reconnect to
+	// backends.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.
@@ -206,7 +212,7 @@ type ReceiveSettings struct {
 var DefaultReceiveSettings = ReceiveSettings{
 	MaxOutstandingMessages: 1000,
 	MaxOutstandingBytes:    1e9,
-	Timeout:                60 * time.Minute,
+	Timeout:                7 * 24 * time.Hour,
 }
 
 func (s *ReceiveSettings) toWireSettings() wire.ReceiveSettings {
