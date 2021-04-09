@@ -320,9 +320,9 @@ func detectCloudRunResource() *mrpb.MonitoredResource {
 }
 
 func isCloudFunction() bool {
-	_ , name := os.LookupEnv("FUNCTION_NAME");
-	_ , target := os.LookupEnv("FUNCTION_TARGET");
-	if (name || target) {
+	_, name := os.LookupEnv("FUNCTION_NAME")
+	_, target := os.LookupEnv("FUNCTION_TARGET")
+	if name || target {
 		return true
 	} else {
 		return false
@@ -346,9 +346,9 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 	return &mrpb.MonitoredResource{
 		Type: "cloud_function",
 		Labels: map[string]string{
-			"project_id":		projectID,
-			"region":           regionFromZone(zone),
-			"function_name":	function_name,
+			"project_id":    projectID,
+			"region":        regionFromZone(zone),
+			"function_name": function_name,
 		},
 	}
 }
@@ -393,9 +393,8 @@ func monitoredResource(parent string) *mrpb.MonitoredResource {
 	}
 }
 
-// TODO add a simple test for this
 func regionFromZone(zone string) string {
-	return zone[:strings.LastIndex(zone,"-")]
+	return zone[:strings.LastIndex(zone, "-")]
 }
 
 func globalResource(projectID string) *mrpb.MonitoredResource {
