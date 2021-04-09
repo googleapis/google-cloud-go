@@ -324,9 +324,8 @@ func isCloudFunction() bool {
 	_, target := os.LookupEnv("FUNCTION_TARGET")
 	if name || target {
 		return true
-	} else {
-		return false
 	}
+	return false
 }
 
 func detectCloudFunction() *mrpb.MonitoredResource {
@@ -339,21 +338,20 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 		return nil
 	}
 	// Newer functions runtimes store name in K_SERVICE
-	function_name, exists := os.LookupEnv("K_SERVICE")
+	functionName, exists := os.LookupEnv("K_SERVICE")
 	if !exists {
-		function_name, _ = os.LookupEnv("FUNCTION_NAME")
+		functionName, _ = os.LookupEnv("FUNCTION_NAME")
 	}
 	return &mrpb.MonitoredResource{
 		Type: "cloud_function",
 		Labels: map[string]string{
 			"project_id":    projectID,
 			"region":        regionFromZone(zone),
-			"function_name": function_name,
+			"function_name": functionName,
 		},
 	}
 }
 
-// TODO(nicoleczhu): Memoize this function
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
