@@ -128,14 +128,17 @@ type EncryptionInfo struct {
 	KMSKeyVersion    string
 }
 
-func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) EncryptionInfo {
+func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
+	if pbInfo == nil {
+		return nil
+	}
 	info := EncryptionInfo{}
 	info.EncryptionStatus = pbInfo.EncryptionStatus
 	// TODO: could also just return this as a string, but wrapped
 	info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
 	info.KMSKeyVersion = pbInfo.KmsKeyVersion
 
-	return info
+	return &info
 }
 
 type EncryptionType int32
@@ -1665,21 +1668,18 @@ func newBackupInfo(backup *btapb.Backup) (*BackupInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("invalid expireTime: %v", err)
 	}
-
+	encryptionInfo := newEncryptionInfo(backup.EncryptionInfo)
 	bi := BackupInfo{
-		Name:        name,
-		SourceTable: tableID,
-		SizeBytes:   backup.SizeBytes,
-		StartTime:   startTime,
-		EndTime:     endTime,
-		ExpireTime:  expireTime,
-		State:       backup.State.String(),
-		// EncryptionInfo: // populate this after verifying 'nil-nes'
+		Name:           name,
+		SourceTable:    tableID,
+		SizeBytes:      backup.SizeBytes,
+		StartTime:      startTime,
+		EndTime:        endTime,
+		ExpireTime:     expireTime,
+		State:          backup.State.String(),
+		EncryptionInfo: encryptionInfo,
 	}
-	// Do not attempt to populate encryption info if not available.
-	if backup.EncryptionInfo != nil {
-		bi.EncryptionInfo = newEncryptionInfo(backup.EncryptionInfo)
-	}
+
 	return &bi, nil
 }
 
@@ -1716,7 +1716,7 @@ type BackupInfo struct {
 	EndTime        time.Time
 	ExpireTime     time.Time
 	State          string
-	EncryptionInfo EncryptionInfo
+	EncryptionInfo *EncryptionInfo
 }
 
 // BackupInfo gets backup metadata.
