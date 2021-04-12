@@ -1749,10 +1749,28 @@ func TestClient_WriteStructWithCustomTypes(t *testing.T) {
 	}
 }
 
-func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
+func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     1,
+			WriteSessions: 0,
+		},
+	})
 	defer teardown()
+
+	// Wait until session creation has seized so that
+	// context timeout won't happen while a session is being created.
+	waitFor(t, func() error {
+		sp := client.idleSessions
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.createReqs != 0 {
+			return fmt.Errorf("%d sessions are still in creation", sp.createReqs)
+		}
+		return nil
+	})
+
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
 			MinimumExecutionTime: time.Minute,
