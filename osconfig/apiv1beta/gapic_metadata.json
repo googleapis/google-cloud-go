@@ -1,87 +1,87 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.osconfig.v1beta",
-  "libraryPackage": "cloud.google.com/go/osconfig/apiv1beta",
-  "services": {
-    "OsConfigService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "Client",
-          "rpcs": {
-            "CancelPatchJob": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.osconfig.v1beta",
+  "libraryPackage":  "cloud.google.com/go/osconfig/apiv1beta",
+  "services":  {
+    "OsConfigService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "Client",
+          "rpcs":  {
+            "CancelPatchJob":  {
+              "methods":  [
                 "CancelPatchJob"
               ]
             },
-            "CreateGuestPolicy": {
-              "methods": [
+            "CreateGuestPolicy":  {
+              "methods":  [
                 "CreateGuestPolicy"
               ]
             },
-            "CreatePatchDeployment": {
-              "methods": [
+            "CreatePatchDeployment":  {
+              "methods":  [
                 "CreatePatchDeployment"
               ]
             },
-            "DeleteGuestPolicy": {
-              "methods": [
+            "DeleteGuestPolicy":  {
+              "methods":  [
                 "DeleteGuestPolicy"
               ]
             },
-            "DeletePatchDeployment": {
-              "methods": [
+            "DeletePatchDeployment":  {
+              "methods":  [
                 "DeletePatchDeployment"
               ]
             },
-            "ExecutePatchJob": {
-              "methods": [
+            "ExecutePatchJob":  {
+              "methods":  [
                 "ExecutePatchJob"
               ]
             },
-            "GetGuestPolicy": {
-              "methods": [
+            "GetGuestPolicy":  {
+              "methods":  [
                 "GetGuestPolicy"
               ]
             },
-            "GetPatchDeployment": {
-              "methods": [
+            "GetPatchDeployment":  {
+              "methods":  [
                 "GetPatchDeployment"
               ]
             },
-            "GetPatchJob": {
-              "methods": [
+            "GetPatchJob":  {
+              "methods":  [
                 "GetPatchJob"
               ]
             },
-            "ListGuestPolicies": {
-              "methods": [
+            "ListGuestPolicies":  {
+              "methods":  [
                 "ListGuestPolicies"
               ]
             },
-            "ListPatchDeployments": {
-              "methods": [
+            "ListPatchDeployments":  {
+              "methods":  [
                 "ListPatchDeployments"
               ]
             },
-            "ListPatchJobInstanceDetails": {
-              "methods": [
+            "ListPatchJobInstanceDetails":  {
+              "methods":  [
                 "ListPatchJobInstanceDetails"
               ]
             },
-            "ListPatchJobs": {
-              "methods": [
+            "ListPatchJobs":  {
+              "methods":  [
                 "ListPatchJobs"
               ]
             },
-            "LookupEffectiveGuestPolicy": {
-              "methods": [
+            "LookupEffectiveGuestPolicy":  {
+              "methods":  [
                 "LookupEffectiveGuestPolicy"
               ]
             },
-            "UpdateGuestPolicy": {
-              "methods": [
+            "UpdateGuestPolicy":  {
+              "methods":  [
                 "UpdateGuestPolicy"
               ]
             }
