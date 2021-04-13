@@ -1,47 +1,47 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.memcache.v1",
-  "libraryPackage": "cloud.google.com/go/memcache/apiv1",
-  "services": {
-    "CloudMemcache": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "CloudMemcacheClient",
-          "rpcs": {
-            "ApplyParameters": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.memcache.v1",
+  "libraryPackage":  "cloud.google.com/go/memcache/apiv1",
+  "services":  {
+    "CloudMemcache":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "CloudMemcacheClient",
+          "rpcs":  {
+            "ApplyParameters":  {
+              "methods":  [
                 "ApplyParameters"
               ]
             },
-            "CreateInstance": {
-              "methods": [
+            "CreateInstance":  {
+              "methods":  [
                 "CreateInstance"
               ]
             },
-            "DeleteInstance": {
-              "methods": [
+            "DeleteInstance":  {
+              "methods":  [
                 "DeleteInstance"
               ]
             },
-            "GetInstance": {
-              "methods": [
+            "GetInstance":  {
+              "methods":  [
                 "GetInstance"
               ]
             },
-            "ListInstances": {
-              "methods": [
+            "ListInstances":  {
+              "methods":  [
                 "ListInstances"
               ]
             },
-            "UpdateInstance": {
-              "methods": [
+            "UpdateInstance":  {
+              "methods":  [
                 "UpdateInstance"
               ]
             },
-            "UpdateParameters": {
-              "methods": [
+            "UpdateParameters":  {
+              "methods":  [
                 "UpdateParameters"
               ]
             }
