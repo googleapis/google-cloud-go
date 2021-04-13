@@ -1,32 +1,32 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.vision.v1",
-  "libraryPackage": "cloud.google.com/go/vision/apiv1",
-  "services": {
-    "ImageAnnotator": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "ImageAnnotatorClient",
-          "rpcs": {
-            "AsyncBatchAnnotateFiles": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.vision.v1",
+  "libraryPackage":  "cloud.google.com/go/vision/apiv1",
+  "services":  {
+    "ImageAnnotator":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "ImageAnnotatorClient",
+          "rpcs":  {
+            "AsyncBatchAnnotateFiles":  {
+              "methods":  [
                 "AsyncBatchAnnotateFiles"
               ]
             },
-            "AsyncBatchAnnotateImages": {
-              "methods": [
+            "AsyncBatchAnnotateImages":  {
+              "methods":  [
                 "AsyncBatchAnnotateImages"
               ]
             },
-            "BatchAnnotateFiles": {
-              "methods": [
+            "BatchAnnotateFiles":  {
+              "methods":  [
                 "BatchAnnotateFiles"
               ]
             },
-            "BatchAnnotateImages": {
-              "methods": [
+            "BatchAnnotateImages":  {
+              "methods":  [
                 "BatchAnnotateImages"
               ]
             }
@@ -34,103 +34,103 @@
         }
       }
     },
-    "ProductSearch": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "ProductSearchClient",
-          "rpcs": {
-            "AddProductToProductSet": {
-              "methods": [
+    "ProductSearch":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "ProductSearchClient",
+          "rpcs":  {
+            "AddProductToProductSet":  {
+              "methods":  [
                 "AddProductToProductSet"
               ]
             },
-            "CreateProduct": {
-              "methods": [
+            "CreateProduct":  {
+              "methods":  [
                 "CreateProduct"
               ]
             },
-            "CreateProductSet": {
-              "methods": [
+            "CreateProductSet":  {
+              "methods":  [
                 "CreateProductSet"
               ]
             },
-            "CreateReferenceImage": {
-              "methods": [
+            "CreateReferenceImage":  {
+              "methods":  [
                 "CreateReferenceImage"
               ]
             },
-            "DeleteProduct": {
-              "methods": [
+            "DeleteProduct":  {
+              "methods":  [
                 "DeleteProduct"
               ]
             },
-            "DeleteProductSet": {
-              "methods": [
+            "DeleteProductSet":  {
+              "methods":  [
                 "DeleteProductSet"
               ]
             },
-            "DeleteReferenceImage": {
-              "methods": [
+            "DeleteReferenceImage":  {
+              "methods":  [
                 "DeleteReferenceImage"
               ]
             },
-            "GetProduct": {
-              "methods": [
+            "GetProduct":  {
+              "methods":  [
                 "GetProduct"
               ]
             },
-            "GetProductSet": {
-              "methods": [
+            "GetProductSet":  {
+              "methods":  [
                 "GetProductSet"
               ]
             },
-            "GetReferenceImage": {
-              "methods": [
+            "GetReferenceImage":  {
+              "methods":  [
                 "GetReferenceImage"
               ]
             },
-            "ImportProductSets": {
-              "methods": [
+            "ImportProductSets":  {
+              "methods":  [
                 "ImportProductSets"
               ]
             },
-            "ListProductSets": {
-              "methods": [
+            "ListProductSets":  {
+              "methods":  [
                 "ListProductSets"
               ]
             },
-            "ListProducts": {
-              "methods": [
+            "ListProducts":  {
+              "methods":  [
                 "ListProducts"
               ]
             },
-            "ListProductsInProductSet": {
-              "methods": [
+            "ListProductsInProductSet":  {
+              "methods":  [
                 "ListProductsInProductSet"
               ]
             },
-            "ListReferenceImages": {
-              "methods": [
+            "ListReferenceImages":  {
+              "methods":  [
                 "ListReferenceImages"
               ]
             },
-            "PurgeProducts": {
-              "methods": [
+            "PurgeProducts":  {
+              "methods":  [
                 "PurgeProducts"
               ]
             },
-            "RemoveProductFromProductSet": {
-              "methods": [
+            "RemoveProductFromProductSet":  {
+              "methods":  [
                 "RemoveProductFromProductSet"
               ]
             },
-            "UpdateProduct": {
-              "methods": [
+            "UpdateProduct":  {
+              "methods":  [
                 "UpdateProduct"
               ]
             },
-            "UpdateProductSet": {
-              "methods": [
+            "UpdateProductSet":  {
+              "methods":  [
                 "UpdateProductSet"
               ]
             }
