@@ -232,6 +232,9 @@ func InstanceID() (string, error) { return defaultClient.InstanceID() }
 // InstanceName returns the current VM's instance ID string.
 func InstanceName() (string, error) { return defaultClient.InstanceName() }
 
+// InstanceRegion returns the current VM's numeric instance region, such as "us-central1".
+func InstanceRegion() (string, error) { return defaultClient.InstanceRegion() }
+
 // Zone returns the current VM's zone, such as "us-central1-b".
 func Zone() (string, error) { return defaultClient.Zone() }
 
@@ -405,6 +408,16 @@ func (c *Client) InstanceTags() ([]string, error) {
 // InstanceName returns the current VM's instance ID string.
 func (c *Client) InstanceName() (string, error) {
 	return c.getTrimmed("instance/name")
+}
+
+// InstanceRegion returns the current VM's numeric instance region, such as "us-central1".
+func (c *Client) InstanceRegion() (string, error) {
+	region, err := c.getTrimmed("instance/region")
+	// region is of the form "projects/<projNum>/regions/<region>".
+	if err != nil {
+		return "", err
+	}
+	return region[strings.LastIndex(region, "/")+1:], nil
 }
 
 // Zone returns the current VM's zone, such as "us-central1-b".
