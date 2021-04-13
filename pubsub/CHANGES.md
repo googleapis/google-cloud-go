@@ -1,5 +1,13 @@
 # Changes
 
+### [1.10.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.1...pubsub/v1.10.2) (2021-04-08)
+
+
+### Bug Fixes
+
+* **pubsub:** respect subscription message ordering field in scheduler ([#3886](https://www.github.com/googleapis/google-cloud-go/issues/3886)) ([1fcc78a](https://www.github.com/googleapis/google-cloud-go/commit/1fcc78ac6ecb461c3bbede9667436614c9df1535))
+* **pubsub:** update quiescenceDur in failing e2e test ([#3780](https://www.github.com/googleapis/google-cloud-go/issues/3780)) ([97e6c69](https://www.github.com/googleapis/google-cloud-go/commit/97e6c696c39bf4cf49fa5ef51145cfcb2a1a5d71))
+
 ### [1.10.1](https://www.github.com/googleapis/google-cloud-go/compare/v1.10.0...v1.10.1) (2021-03-04)
 
 
