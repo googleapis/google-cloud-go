@@ -15,13 +15,13 @@
 // Command gensnippets writes all of the GoDoc examples to the given
 // output directory.
 //
-// Every module in the current directory is processed.
+// Every module in the current directory is processed. You can optionally
+// pass a directory to process instead.
 package main
 
 import (
 	"bytes"
 	"flag"
-	"fmt"
 	"go/format"
 	"go/printer"
 	"go/token"
@@ -40,11 +40,19 @@ func main() {
 
 	flag.Parse()
 
+	rootDir := "."
+	if flag.NArg() > 0 {
+		rootDir = flag.Arg(0)
+	}
+
 	// Find all modules in the current directory.
 	dirs := []string{}
-	filepath.WalkDir(".", func(path string, d fs.DirEntry, err error) error {
+	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+		if d.Name() == "internal" {
+			return filepath.SkipDir
 		}
 		if d.Name() == "go.mod" {
 			dirs = append(dirs, filepath.Dir(path))
@@ -52,7 +60,7 @@ func main() {
 		return nil
 	})
 
-	fmt.Printf("Processing %v modules\n", len(dirs))
+	log.Printf("Processing %v directories: %q\n", len(dirs), dirs)
 
 	trimPrefix := "cloud.google.com/go"
 	for _, dir := range dirs {
