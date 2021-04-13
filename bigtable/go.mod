@@ -8,7 +8,6 @@ require (
 	github.com/google/btree v1.0.1
 	github.com/google/go-cmp v0.5.5
 	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/mod v0.4.1 // indirect
 	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
 	golang.org/x/sys v0.0.0-20210412220455-f1c623a9e750
 	google.golang.org/api v0.44.0
