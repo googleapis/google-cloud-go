@@ -25,9 +25,7 @@ package main
 import (
 	"bytes"
 	"fmt"
-	"go/ast"
 	"go/format"
-	"go/parser"
 	"go/printer"
 	"go/token"
 	"log"
@@ -35,10 +33,10 @@ import (
 	"path/filepath"
 	"regexp"
 	"sort"
-	"strconv"
 	"strings"
 
 	goldmarkcodeblock "cloud.google.com/go/internal/godocfx/goldmark-codeblock"
+	"cloud.google.com/go/internal/godocfx/pkgload"
 	"cloud.google.com/go/third_party/go/doc"
 	"cloud.google.com/go/third_party/pkgsite"
 	"github.com/yuin/goldmark"
@@ -127,11 +125,11 @@ type result struct {
 func parse(glob string, workingDir string, optionalExtraFiles []string, filter []string) (*result, error) {
 	pages := map[string]*page{}
 
-	pkgInfos, err := loadPackages(glob, workingDir, filter)
+	pkgInfos, err := pkgload.Load(glob, workingDir, filter)
 	if err != nil {
 		return nil, err
 	}
-	module := pkgInfos[0].pkg.Module
+	module := pkgInfos[0].Pkg.Module
 
 	// Filter out extra files that don't exist because some modules don't have a
 	// README.
@@ -160,65 +158,65 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 	// independently.
 	for _, pi := range pkgInfos {
 		link := newLinker(pi)
-		topLevelDecls := pkgsite.TopLevelDecls(pi.doc)
+		topLevelDecls := pkgsite.TopLevelDecls(pi.Doc)
 		pkgItem := &item{
-			UID:      pi.doc.ImportPath,
-			Name:     pi.doc.ImportPath,
-			ID:       pi.doc.Name,
-			Summary:  toHTML(pi.doc.Doc),
+			UID:      pi.Doc.ImportPath,
+			Name:     pi.Doc.ImportPath,
+			ID:       pi.Doc.Name,
+			Summary:  toHTML(pi.Doc.Doc),
 			Langs:    onlyGo,
 			Type:     "package",
-			Examples: processExamples(pi.doc.Examples, pi.fset),
-			AltLink:  "https://pkg.go.dev/" + pi.doc.ImportPath,
+			Examples: processExamples(pi.Doc.Examples, pi.Fset),
+			AltLink:  "https://pkg.go.dev/" + pi.Doc.ImportPath,
 		}
 		pkgPage := &page{Items: []*item{pkgItem}}
-		pages[pi.doc.ImportPath] = pkgPage
+		pages[pi.Doc.ImportPath] = pkgPage
 
-		for _, c := range pi.doc.Consts {
+		for _, c := range pi.Doc.Consts {
 			name := strings.Join(c.Names, ", ")
 			id := strings.Join(c.Names, ",")
-			uid := pi.doc.ImportPath + "." + id
+			uid := pi.Doc.ImportPath + "." + id
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
 				UID:     uid,
 				Name:    name,
 				ID:      id,
-				Parent:  pi.doc.ImportPath,
+				Parent:  pi.Doc.ImportPath,
 				Type:    "const",
 				Summary: c.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, link.toURL, topLevelDecls)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, c.Decl, link.toURL, topLevelDecls)},
 			})
 		}
-		for _, v := range pi.doc.Vars {
+		for _, v := range pi.Doc.Vars {
 			name := strings.Join(v.Names, ", ")
 			id := strings.Join(v.Names, ",")
-			uid := pi.doc.ImportPath + "." + id
+			uid := pi.Doc.ImportPath + "." + id
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
 				UID:     uid,
 				Name:    name,
 				ID:      id,
-				Parent:  pi.doc.ImportPath,
+				Parent:  pi.Doc.ImportPath,
 				Type:    "variable",
 				Summary: v.Doc,
 				Langs:   onlyGo,
-				Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, link.toURL, topLevelDecls)},
+				Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, v.Decl, link.toURL, topLevelDecls)},
 			})
 		}
-		for _, t := range pi.doc.Types {
-			uid := pi.doc.ImportPath + "." + t.Name
+		for _, t := range pi.Doc.Types {
+			uid := pi.Doc.ImportPath + "." + t.Name
 			pkgItem.addChild(child(uid))
 			typeItem := &item{
 				UID:      uid,
 				Name:     t.Name,
 				ID:       t.Name,
-				Parent:   pi.doc.ImportPath,
+				Parent:   pi.Doc.ImportPath,
 				Type:     "type",
 				Summary:  t.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.PrintType(pi.fset, t.Decl, link.toURL, topLevelDecls)},
-				Examples: processExamples(t.Examples, pi.fset),
+				Syntax:   syntax{Content: pkgsite.PrintType(pi.Fset, t.Decl, link.toURL, topLevelDecls)},
+				Examples: processExamples(t.Examples, pi.Fset),
 			}
 			// Note: items are added as page.Children, rather than
 			// typeItem.Children, as a workaround for the DocFX template.
@@ -226,7 +224,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 			for _, c := range t.Consts {
 				name := strings.Join(c.Names, ", ")
 				id := strings.Join(c.Names, ",")
-				cUID := pi.doc.ImportPath + "." + id
+				cUID := pi.Doc.ImportPath + "." + id
 				pkgItem.addChild(child(cUID))
 				pkgPage.addItem(&item{
 					UID:     cUID,
@@ -236,13 +234,13 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Type:    "const",
 					Summary: c.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, c.Decl, link.toURL, topLevelDecls)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, c.Decl, link.toURL, topLevelDecls)},
 				})
 			}
 			for _, v := range t.Vars {
 				name := strings.Join(v.Names, ", ")
 				id := strings.Join(v.Names, ",")
-				cUID := pi.doc.ImportPath + "." + id
+				cUID := pi.Doc.ImportPath + "." + id
 				pkgItem.addChild(child(cUID))
 				pkgPage.addItem(&item{
 					UID:     cUID,
@@ -252,7 +250,7 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Type:    "variable",
 					Summary: v.Doc,
 					Langs:   onlyGo,
-					Syntax:  syntax{Content: pkgsite.PrintType(pi.fset, v.Decl, link.toURL, topLevelDecls)},
+					Syntax:  syntax{Content: pkgsite.PrintType(pi.Fset, v.Decl, link.toURL, topLevelDecls)},
 				})
 			}
 
@@ -267,8 +265,8 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Type:     "function",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
-					Examples: processExamples(fn.Examples, pi.fset),
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
+					Examples: processExamples(fn.Examples, pi.Fset),
 				})
 			}
 			for _, fn := range t.Methods {
@@ -282,24 +280,24 @@ func parse(glob string, workingDir string, optionalExtraFiles []string, filter [
 					Type:     "method",
 					Summary:  fn.Doc,
 					Langs:    onlyGo,
-					Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
-					Examples: processExamples(fn.Examples, pi.fset),
+					Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
+					Examples: processExamples(fn.Examples, pi.Fset),
 				})
 			}
 		}
-		for _, fn := range pi.doc.Funcs {
-			uid := pi.doc.ImportPath + "." + fn.Name
+		for _, fn := range pi.Doc.Funcs {
+			uid := pi.Doc.ImportPath + "." + fn.Name
 			pkgItem.addChild(child(uid))
 			pkgPage.addItem(&item{
 				UID:      uid,
 				Name:     fmt.Sprintf("func %s\n", fn.Name),
 				ID:       fn.Name,
-				Parent:   pi.doc.ImportPath,
+				Parent:   pi.Doc.ImportPath,
 				Type:     "function",
 				Summary:  fn.Doc,
 				Langs:    onlyGo,
-				Syntax:   syntax{Content: pkgsite.Synopsis(pi.fset, fn.Decl, link.linkify)},
-				Examples: processExamples(fn.Examples, pi.fset),
+				Syntax:   syntax{Content: pkgsite.Synopsis(pi.Fset, fn.Decl, link.linkify)},
+				Examples: processExamples(fn.Examples, pi.Fset),
 			})
 		}
 	}
@@ -327,16 +325,16 @@ type linker struct {
 	sameDomainModules map[string]*packages.Module
 }
 
-func newLinker(pi pkgInfo) *linker {
+func newLinker(pi pkgload.Info) *linker {
 	sameDomainPrefixes := []string{"cloud.google.com/go"}
 
 	imports := map[string]string{}
 	sameDomainModules := map[string]*packages.Module{}
 	idToAnchor := map[string]map[string]string{}
 
-	for path, pkg := range pi.pkg.Imports {
+	for path, pkg := range pi.Pkg.Imports {
 		name := pkg.Name
-		if rename := pi.importRenames[path]; rename != "" {
+		if rename := pi.ImportRenames[path]; rename != "" {
 			name = rename
 		}
 		imports[name] = path
@@ -351,14 +349,14 @@ func newLinker(pi pkgInfo) *linker {
 		}
 	}
 
-	idToAnchor[""] = buildIDToAnchor(pi.doc)
+	idToAnchor[""] = buildIDToAnchor(pi.Doc)
 
 	return &linker{imports: imports, idToAnchor: idToAnchor, sameDomainModules: sameDomainModules}
 }
 
 // nonWordRegex is based on
 // https://github.com/googleapis/doc-templates/blob/70eba5908e7b9aef5525d0f1f24194ae750f267e/third_party/docfx/templates/devsite/common.js#L27-L30.
-var nonWordRegex = regexp.MustCompile("\\W")
+var nonWordRegex = regexp.MustCompile(`\W`)
 
 func buildIDToAnchor(pkg *doc.Package) map[string]string {
 	idToAnchor := map[string]string{}
@@ -521,7 +519,7 @@ func processExamples(exs []*doc.Example, fset *token.FileSet) []example {
 	return result
 }
 
-func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents {
+func buildTOC(mod string, pis []pkgload.Info, extraFiles []extraFile) tableOfContents {
 	toc := tableOfContents{}
 
 	modTOC := &tocItem{
@@ -551,7 +549,7 @@ func buildTOC(mod string, pis []pkgInfo, extraFiles []extraFile) tableOfContents
 
 	trimmedPkgs := []string{}
 	for _, pi := range pis {
-		importPath := pi.doc.ImportPath
+		importPath := pi.Doc.ImportPath
 		if importPath == mod {
 			continue
 		}
@@ -589,138 +587,6 @@ func toHTML(s string) string {
 	}
 
 	return mdBuf.String()
-}
-
-type pkgInfo struct {
-	pkg  *packages.Package
-	doc  *doc.Package
-	fset *token.FileSet
-	// importRenames is a map from package path to local name or "".
-	importRenames map[string]string
-}
-
-func loadPackages(glob, workingDir string, filter []string) ([]pkgInfo, error) {
-	config := &packages.Config{
-		Mode:  packages.NeedName | packages.NeedSyntax | packages.NeedTypes | packages.NeedTypesInfo | packages.NeedModule | packages.NeedImports | packages.NeedDeps,
-		Tests: true,
-		Dir:   workingDir,
-	}
-
-	allPkgs, err := packages.Load(config, glob)
-	if err != nil {
-		return nil, fmt.Errorf("packages.Load: %v", err)
-	}
-	packages.PrintErrors(allPkgs) // Don't fail everything because of one package.
-
-	if len(allPkgs) == 0 {
-		return nil, fmt.Errorf("pattern %q matched 0 packages", glob)
-	}
-
-	module := allPkgs[0].Module
-	skippedModules := map[string]struct{}{}
-
-	// First, collect all of the files grouped by package, including test
-	// packages.
-	pkgFiles := map[string][]string{}
-
-	idToPkg := map[string]*packages.Package{}
-	pkgNames := []string{}
-	for _, pkg := range allPkgs {
-		// Ignore filtered packages.
-		if hasPrefix(pkg.PkgPath, filter) {
-			continue
-		}
-
-		id := pkg.ID
-		// See https://pkg.go.dev/golang.org/x/tools/go/packages#Config.
-		// The uncompiled test package shows up as "foo_test [foo.test]".
-		if strings.HasSuffix(id, ".test") ||
-			strings.Contains(id, "internal") ||
-			strings.Contains(id, "third_party") ||
-			(strings.Contains(id, " [") && !strings.Contains(id, "_test [")) {
-			continue
-		}
-		if strings.Contains(id, "_test") {
-			id = id[0:strings.Index(id, "_test [")]
-		} else if pkg.Module != nil {
-			idToPkg[pkg.PkgPath] = pkg
-			pkgNames = append(pkgNames, pkg.PkgPath)
-			// The test package doesn't have Module set.
-			if pkg.Module.Path != module.Path {
-				skippedModules[pkg.Module.Path] = struct{}{}
-				continue
-			}
-		}
-		for _, f := range pkg.Syntax {
-			name := pkg.Fset.File(f.Pos()).Name()
-			if strings.HasSuffix(name, ".go") {
-				pkgFiles[id] = append(pkgFiles[id], name)
-			}
-		}
-	}
-
-	sort.Strings(pkgNames)
-
-	result := []pkgInfo{}
-
-	for _, pkgPath := range pkgNames {
-		// Check if pkgPath has prefix of skipped module.
-		skip := false
-		for skipModule := range skippedModules {
-			if strings.HasPrefix(pkgPath, skipModule) {
-				skip = true
-				break
-			}
-		}
-		if skip {
-			continue
-		}
-		parsedFiles := []*ast.File{}
-		fset := token.NewFileSet()
-		for _, f := range pkgFiles[pkgPath] {
-			pf, err := parser.ParseFile(fset, f, nil, parser.ParseComments)
-			if err != nil {
-				return nil, fmt.Errorf("ParseFile: %v", err)
-			}
-			parsedFiles = append(parsedFiles, pf)
-		}
-
-		// Parse out GoDoc.
-		docPkg, err := doc.NewFromFiles(fset, parsedFiles, pkgPath)
-		if err != nil {
-			return nil, fmt.Errorf("doc.NewFromFiles: %v", err)
-		}
-
-		// Extra filter in case the file filtering didn't catch everything.
-		if !strings.HasPrefix(docPkg.ImportPath, module.Path) {
-			continue
-		}
-
-		imports := map[string]string{}
-		for _, f := range parsedFiles {
-			for _, i := range f.Imports {
-				name := ""
-				// i.Name is nil for imports that aren't renamed.
-				if i.Name != nil {
-					name = i.Name.Name
-				}
-				iPath, err := strconv.Unquote(i.Path.Value)
-				if err != nil {
-					return nil, fmt.Errorf("strconv.Unquote: %v", err)
-				}
-				imports[iPath] = name
-			}
-		}
-
-		result = append(result, pkgInfo{
-			pkg:           idToPkg[pkgPath],
-			doc:           docPkg,
-			fset:          fset,
-			importRenames: imports,
-		})
-	}
-
-	return result, nil
 }
 
 func hasPrefix(s string, prefixes []string) bool {
