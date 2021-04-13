@@ -9,5 +9,5 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	google.golang.org/api v0.44.0
 	google.golang.org/genproto v0.0.0-20210413151531-c14fb6ef47c3
-	google.golang.org/grpc v1.36.1
+	google.golang.org/grpc v1.37.0
 )
