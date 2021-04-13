@@ -22,6 +22,7 @@ package main
 import (
 	"bytes"
 	"flag"
+	"fmt"
 	"go/format"
 	"go/printer"
 	"go/token"
@@ -30,6 +31,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/internal/godocfx/pkgload"
 	"cloud.google.com/go/third_party/go/doc"
@@ -81,29 +83,31 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, outDir s
 	trimmed := strings.TrimPrefix(pkg.ImportPath, trimPrefix)
 	outDir = filepath.Join(outDir, trimmed)
 
+	regionTag := "generated" + strings.ReplaceAll(trimmed, "/", "_")
+
 	// Note: variables and constants don't have examples.
 
 	for _, f := range pkg.Funcs {
 		dir := filepath.Join(outDir, f.Name)
-		if err := writeExamples(dir, f.Examples, fset); err != nil {
+		if err := writeExamples(dir, f.Examples, fset, regionTag); err != nil {
 			return err
 		}
 	}
 
 	for _, t := range pkg.Types {
 		dir := filepath.Join(outDir, t.Name)
-		if err := writeExamples(dir, t.Examples, fset); err != nil {
+		if err := writeExamples(dir, t.Examples, fset, regionTag); err != nil {
 			return err
 		}
 		for _, f := range t.Funcs {
 			fDir := filepath.Join(dir, f.Name)
-			if err := writeExamples(fDir, f.Examples, fset); err != nil {
+			if err := writeExamples(fDir, f.Examples, fset, regionTag); err != nil {
 				return err
 			}
 		}
 		for _, m := range t.Methods {
 			mDir := filepath.Join(dir, m.Name)
-			if err := writeExamples(mDir, m.Examples, fset); err != nil {
+			if err := writeExamples(mDir, m.Examples, fset, regionTag); err != nil {
 				return err
 			}
 		}
@@ -111,7 +115,7 @@ func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, outDir s
 	return nil
 }
 
-func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet) error {
+func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regionTag string) error {
 	if len(exs) == 0 {
 		// Nothing to do.
 		return nil
@@ -148,9 +152,46 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet) error
 		if err := os.MkdirAll(dir, 0755); err != nil {
 			return err
 		}
-		if err := os.WriteFile(filename, []byte(s), 0644); err != nil {
+
+		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		if _, err := f.WriteString(header()); err != nil {
+			return err
+		}
+		tag := regionTag + "_" + ex.Name
+		// Include an extra newline to keep separate from the package declaration.
+		if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
+			return err
+		}
+		if _, err := f.WriteString(s); err != nil {
+			return err
+		}
+		if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
 			return err
 		}
 	}
 	return nil
 }
+
+func header() string {
+	return fmt.Sprintf(licenseHeader, time.Now().Year())
+}
+
+const licenseHeader string = `// Copyright %v Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+`
