@@ -244,7 +244,7 @@ type LoggerOption interface {
 
 // CommonResource sets the monitored resource associated with all log entries
 // written from a Logger. If not provided, the resource is automatically
-// detected based on the running environment (on GCE and GAE Standard only).
+// detected based on the running environment (on GCE, GCR, GCF and GAE Standard only).
 // This value can be overridden per-entry by setting an Entry's Resource field.
 func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResource{r} }
 
@@ -300,7 +300,9 @@ func detectGAEResource() *mrpb.MonitoredResource {
 
 func isCloudRun() bool {
 	_, config := os.LookupEnv("K_CONFIGURATION")
-	return config
+	_, service := os.LookupEnv("K_SERVICE")
+	_, revision := os.LookupEnv("K_REVISION")
+	return config && service && revision
 }
 
 func detectCloudRunResource() *mrpb.MonitoredResource {
@@ -325,12 +327,16 @@ func detectCloudRunResource() *mrpb.MonitoredResource {
 }
 
 func isCloudFunction() bool {
+	// Reserved envvars in older function runtimes, e.g. Node.js 8, Python 3.7 and Go 1.11.
 	_, name := os.LookupEnv("FUNCTION_NAME")
+	_, region := os.LookupEnv("FUNCTION_REGION")
+	_, entry := os.LookupEnv("ENTRY_POINT")
+
+	// Reserved envvars in newer function runtimes.
 	_, target := os.LookupEnv("FUNCTION_TARGET")
-	if name || target {
-		return true
-	}
-	return false
+	_, signature := os.LookupEnv("FUNCTION_SIGNATURE_TYPE")
+	_, service := os.LookupEnv("K_SERVICE")
+	return (name && region && entry) || (target && signature && service)
 }
 
 func detectCloudFunction() *mrpb.MonitoredResource {
@@ -342,7 +348,7 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-	// Newer functions runtimes store name in K_SERVICE
+	// Newer functions runtimes store name in K_SERVICE.
 	functionName, exists := os.LookupEnv("K_SERVICE")
 	if !exists {
 		functionName, _ = os.LookupEnv("FUNCTION_NAME")
@@ -360,7 +366,7 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// GAE, CloudRun need to come first, as metadata.OnGCE() returns true on these runtimes.
+		// AppEngine, Functions, CloudRun need to come first, as metadata.OnGCE() returns true on these runtimes.
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
 		case isCloudFunction():
