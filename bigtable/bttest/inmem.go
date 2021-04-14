@@ -1232,10 +1232,18 @@ func (t *table) gc() {
 		return
 	}
 
+	// We delete rows that no longer have any cells
 	t.mu.Lock()
 	defer t.mu.Unlock()
 	for _, i := range toDelete {
-		t.rows.Delete(i)
+		r := i.(*row)
+		// Make sure the row still has no cells. We've not been holding a lock
+		// so it could have changed since we checked it.
+		r.mu.Lock()
+		if len(r.families) == 0 {
+			t.rows.Delete(i)
+		}
+		r.mu.Unlock()
 	}
 }
 
