@@ -1629,14 +1629,6 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	if got, want := int(backup.EncryptionInfo.EncryptionStatus.Code), 2; !cmp.Equal(got, want) {
 		t.Fatalf("Backup EncryptionStatus: %v, want: %v", got, want)
 	}
-
-	// TODO TODO
-	// https://github.com/googleapis/java-bigtable/pull/656/files#diff-d73f6370f98371679471d7c0732b459d7b56b26dd3e7f7cf6fdf1e14d791af20R92
-	// TODO:[X] Create EncryptionInfo class
-	// TODO:[] Create Status class for EncryptionInfo.encryption_status field or use status.Status?
-	// TODO Unit tests
-	// - test that an instance create with cmek sends that field.
-	// -
 }
 
 func TestIntegration_AdminUpdateInstanceLabels(t *testing.T) {

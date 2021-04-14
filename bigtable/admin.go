@@ -133,7 +133,6 @@ func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
 	}
 	info := EncryptionInfo{}
 	info.EncryptionStatus = pbInfo.EncryptionStatus
-	// TODO: could also just return this as a string, but wrapped
 	info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
 	info.KMSKeyVersion = pbInfo.KmsKeyVersion
 
@@ -172,8 +171,6 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (Encryp
 	if err != nil {
 		return nil, err
 	}
-	// TODO: backups also needs this.
-	// TODO: why not just return the clusterstates, as it has a map of encryption info.
 	encryptionInfo := EncryptionInfoByCluster{}
 	for key, cs := range res.ClusterStates {
 		// TODO: if we didn't wrap EncryptionInfo, this could reduce to
@@ -1043,17 +1040,7 @@ type ClusterConfig struct {
 	InstanceID, ClusterID, Zone string
 	NumNodes                    int32
 	StorageType                 StorageType
-
-	// KMSKeyName describes the Cloud KMS encryption key that will be used to
-	// protect the destination Bigtable cluster. The requirements for this key
-	// are:
-	//  1) The Cloud Bigtable service account associated with the project that
-	//  contains this cluster must be granted the
-	//  `cloudkms.cryptoKeyEncrypterDecrypter` role on the CMEK key.
-	//  2) Only regional keys can be used and the region of the CMEK key must
-	//  match the region of the cluster.
-	// 3) All clusters within an instance must use the same CMEK key.
-	KMSKeyName string
+	KMSKeyName                  string
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
