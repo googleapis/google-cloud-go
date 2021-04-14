@@ -1227,6 +1227,19 @@ func (t *table) mutableRow(key string) *row {
 }
 
 func (t *table) gc() {
+	toDelete := t.gcReadOnly()
+	if len(toDelete) == 0 {
+		return
+	}
+
+	t.mu.Lock()
+	defer t.mu.Unlock()
+	for _, i := range toDelete {
+		t.rows.Delete(i)
+	}
+}
+
+func (t *table) gcReadOnly() (toDelete []btree.Item) {
 	// This method doesn't add or remove rows, so we only need a read lock for the table.
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -1239,12 +1252,11 @@ func (t *table) gc() {
 		}
 	}
 	if len(rules) == 0 {
-		return
+		return nil
 	}
 
 	// It isn't clear whether it's safe to delete within the iterator, so we do
 	// not
-	var toDelete []btree.Item
 	t.rows.Ascend(func(i btree.Item) bool {
 		r := i.(*row)
 		r.mu.Lock()
@@ -1256,9 +1268,7 @@ func (t *table) gc() {
 		return true
 	})
 
-	for _, i := range toDelete {
-		t.rows.Delete(i)
-	}
+	return toDelete
 }
 
 type byRowKey []*row
