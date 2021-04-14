@@ -29,6 +29,7 @@ import (
 	"io/fs"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 	"time"
@@ -75,6 +76,14 @@ func main() {
 			if err := processExamples(pi.Doc, pi.Fset, trimPrefix, *outDir); err != nil {
 				log.Fatalf("failed to process examples: %v", err)
 			}
+		}
+	}
+
+	if len(dirs) > 0 {
+		cmd := exec.Command("goimports", "-w", ".")
+		cmd.Dir = *outDir
+		if err := cmd.Run(); err != nil {
+			log.Fatalf("failed to run goimports: %v", err)
 		}
 	}
 }
