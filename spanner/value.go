@@ -24,6 +24,7 @@ import (
 	"math/big"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -54,6 +55,32 @@ const (
 // decimal point.
 func NumericString(r *big.Rat) string {
 	return r.FloatString(NumericScaleDigits)
+}
+
+// validateNumeric returns nil if there are no errors. It will return an error
+// when the numeric number is not valid.
+func validateNumeric(r *big.Rat) error {
+	if r == nil {
+		return nil
+	}
+	// Add one more digit to the scale component to find out if there are more
+	// digits than required.
+	strRep := r.FloatString(NumericScaleDigits + 1)
+	strRep = strings.TrimRight(strRep, "0")
+	strRep = strings.TrimLeft(strRep, "-")
+	s := strings.Split(strRep, ".")
+	if len(s) != 2 {
+		return fmt.Errorf("invalid numeric float string: %s", strRep)
+	}
+	whole := s[0]
+	scale := s[1]
+	if len(scale) > NumericScaleDigits {
+		return fmt.Errorf("max scale for a numeric is %d. The requested numeric has more", NumericScaleDigits)
+	}
+	if len(whole) > NumericPrecisionDigits-NumericScaleDigits {
+		return fmt.Errorf("max precision for the whole component of a numeric is %d. The requested numeric has a whole component with precision %d", NumericPrecisionDigits-NumericScaleDigits, len(whole))
+	}
+	return nil
 }
 
 var (
@@ -2654,6 +2681,10 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = listType(floatType())
 	case big.Rat:
 		pb.Kind = stringKind(NumericString(&v))
+		err = validateNumeric(&v)
+		if err != nil {
+			return nil, nil, err
+		}
 		pt = numericType()
 	case []big.Rat:
 		if v != nil {
@@ -2679,6 +2710,10 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 	case *big.Rat:
 		if v != nil {
 			pb.Kind = stringKind(NumericString(v))
+		}
+		err = validateNumeric(v)
+		if err != nil {
+			return nil, nil, err
 		}
 		pt = numericType()
 	case []*big.Rat:
