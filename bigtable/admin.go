@@ -160,9 +160,11 @@ const (
 	CustomerManagedEncryption EncryptionType = 2
 )
 
+type EncryptionInfoByCluster map[string][]EncryptionInfo
+
 // Gets the current encryption info for the table across all of the clusters.
 // The returned map will be keyed by cluster id and contain a status for all of the keys in use.
-func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[string][]EncryptionInfo, error) {
+func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (EncryptionInfoByCluster, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
 	res, err := ac.getTable(ctx, table)
@@ -171,7 +173,7 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (map[st
 	}
 	// TODO: backups also needs this.
 	// TODO: why not just return the clusterstates, as it has a map of encryption info.
-	encryptionInfo := map[string][]EncryptionInfo{}
+	encryptionInfo := EncryptionInfoByCluster{}
 	for key, cs := range res.ClusterStates {
 		// TODO: if we didn't wrap EncryptionInfo, this could reduce to
 		// returning map[string][]*btapb.EncryptionInfo directly
