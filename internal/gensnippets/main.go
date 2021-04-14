@@ -36,6 +36,7 @@ import (
 
 	"cloud.google.com/go/internal/godocfx/pkgload"
 	"cloud.google.com/go/third_party/go/doc"
+	"golang.org/x/sys/execabs"
 )
 
 func main() {
@@ -80,7 +81,7 @@ func main() {
 	}
 
 	if len(dirs) > 0 {
-		cmd := exec.Command("goimports", "-w", ".")
+		cmd := execabs.Command("goimports", "-w", ".")
 		cmd.Dir = *outDir
 		if err := cmd.Run(); err != nil {
 			log.Fatalf("failed to run goimports: %v", err)
