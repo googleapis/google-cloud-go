@@ -203,7 +203,9 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	}
 	err = updateDDL(t, adminClient,
 		`ALTER TABLE `+tableName+` ADD COLUMN Age INT64`,
-		`CREATE INDEX AgeIndex ON `+tableName+` (Age DESC)`)
+		`CREATE INDEX AgeIndexAsc ON `+tableName+` (Age)`,
+		`CREATE INDEX AgeIndexDesc ON `+tableName+` (Age DESC)`,
+		`CREATE INDEX AgeIndexStoring ON `+tableName+` (Age, FirstName) STORING (LastName)`)
 	if err != nil {
 		t.Fatalf("Adding new column: %v", err)
 	}
@@ -439,6 +441,214 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 	if !reflect.DeepEqual(ages, wantAges) {
 		t.Errorf("Query with IN UNNEST gave wrong ages: got %+v, want %+v", ages, wantAges)
 	}
+	t.Run("Read all from index", func(t *testing.T) {
+		cases := []struct {
+			indexName string
+			want      []int64
+		}{
+			{
+				indexName: "AgeIndexAsc",
+				want:      []int64{0, 0, 35, 49, 102},
+			},
+			{
+				indexName: "AgeIndexDesc",
+				want:      []int64{102, 49, 35, 0, 0},
+			},
+			{
+				indexName: "AgeIndexStoring",
+				want:      []int64{0, 0, 35, 49, 102},
+			},
+		}
+
+		for _, tc := range cases {
+			ages := ages[:0]
+			if err := client.Single().ReadUsingIndex(ctx, tableName, tc.indexName, spanner.AllKeys(), []string{"Age"}).Do(func(row *spanner.Row) error {
+				var age spanner.NullInt64
+				if err := row.Column(0, &age); err != nil {
+					return err
+				}
+				ages = append(ages, age.Int64) // zero for NULL
+				return nil
+			}); err != nil {
+				t.Fatalf("Getting ages using index: %v", err)
+			}
+			if !reflect.DeepEqual(ages, tc.want) {
+				t.Fatalf("Read index %s gave wrong ages: got %+v, want %+v", tc.indexName, ages, tc.want)
+			}
+		}
+	})
+	t.Run("Read all from index desc", func(t *testing.T) {
+		ages := ages[:0]
+		if err := client.Single().ReadUsingIndex(ctx, tableName, "AgeIndexDesc", spanner.AllKeys(), []string{"Age"}).Do(func(row *spanner.Row) error {
+			var age spanner.NullInt64
+			if err := row.Column(0, &age); err != nil {
+				return err
+			}
+			ages = append(ages, age.Int64) // zero for NULL
+			return nil
+		}); err != nil {
+			t.Fatalf("Getting ages using index: %v", err)
+		}
+		wantAges = []int64{102, 49, 35, 0, 0}
+		if !reflect.DeepEqual(ages, wantAges) {
+			t.Fatalf("Read index gave wrong ages: got %+v, want %+v", ages, wantAges)
+		}
+	})
+	t.Run("Read ranges from index", func(t *testing.T) {
+		int64p := func(v int64) *int64 {
+			return &v
+		}
+		cases := []struct {
+			indexName   string
+			start       *int64
+			end         *int64
+			startClosed bool
+			endClosed   bool
+			want        []int64
+		}{
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(102),
+				end:         int64p(35),
+				startClosed: false,
+				endClosed:   false,
+				want:        []int64{49},
+			},
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(102),
+				end:         int64p(35),
+				startClosed: true,
+				endClosed:   false,
+				want:        []int64{102, 49},
+			},
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(102),
+				end:         int64p(35),
+				startClosed: false,
+				endClosed:   true,
+				want:        []int64{49, 35},
+			},
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(102),
+				end:         int64p(35),
+				startClosed: true,
+				endClosed:   true,
+				want:        []int64{102, 49, 35},
+			},
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(35),
+				end:         int64p(102),
+				startClosed: true,
+				endClosed:   true,
+				want:        []int64{},
+			},
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(102),
+				end:         nil,
+				startClosed: false,
+				endClosed:   false,
+				want:        []int64{49, 35, 0, 0},
+			},
+			{
+				indexName:   "AgeIndexDesc",
+				start:       int64p(102),
+				end:         int64p(0),
+				startClosed: true,
+				endClosed:   true,
+				want:        []int64{102, 49, 35},
+			},
+			{
+				indexName:   "AgeIndexAsc",
+				start:       int64p(35),
+				end:         int64p(102),
+				startClosed: false,
+				endClosed:   false,
+				want:        []int64{49},
+			},
+			{
+				indexName:   "AgeIndexAsc",
+				start:       int64p(35),
+				end:         int64p(102),
+				startClosed: true,
+				endClosed:   false,
+				want:        []int64{35, 49},
+			},
+			{
+				indexName:   "AgeIndexAsc",
+				start:       int64p(35),
+				end:         int64p(102),
+				startClosed: false,
+				endClosed:   true,
+				want:        []int64{49, 102},
+			},
+			{
+				indexName:   "AgeIndexAsc",
+				start:       int64p(35),
+				end:         int64p(102),
+				startClosed: true,
+				endClosed:   true,
+				want:        []int64{35, 49, 102},
+			},
+			{
+				indexName:   "AgeIndexAsc",
+				start:       int64p(102),
+				end:         int64p(35),
+				startClosed: true,
+				endClosed:   true,
+				want:        []int64{},
+			},
+			{
+				indexName:   "AgeIndexAsc",
+				start:       nil,
+				end:         int64p(102),
+				startClosed: false,
+				endClosed:   false,
+				want:        []int64{0, 0, 35, 49},
+			},
+		}
+		for j, tc := range cases {
+			ages := ages[:0]
+			rng := spanner.KeyRange{}
+
+			if tc.start != nil {
+				rng.Start = spanner.Key{*tc.start}
+			}
+			if tc.end != nil {
+				rng.End = spanner.Key{*tc.end}
+			}
+			if tc.startClosed {
+				if tc.endClosed {
+					rng.Kind = spanner.ClosedClosed
+				} else {
+					rng.Kind = spanner.ClosedOpen
+				}
+			} else {
+				if tc.endClosed {
+					rng.Kind = spanner.OpenClosed
+				} else {
+					rng.Kind = spanner.OpenOpen
+				}
+			}
+			if err := client.Single().ReadUsingIndex(ctx, tableName, tc.indexName, rng, []string{"Age"}).Do(func(row *spanner.Row) error {
+				var age spanner.NullInt64
+				if err := row.Column(0, &age); err != nil {
+					return err
+				}
+				ages = append(ages, age.Int64) // zero for NULL
+				return nil
+			}); err != nil {
+				t.Fatalf("Getting ages using index: %v", err)
+			}
+			if !reflect.DeepEqual(ages, tc.want) {
+				t.Fatalf("Read index case %d %s gave wrong ages: got %+v, want %+v", j, rng, ages, tc.want)
+			}
+		}
+	})
 }
 
 func TestIntegration_ReadsAndQueries(t *testing.T) {
