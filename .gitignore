@@ -10,3 +10,4 @@ coverage.txt
 
 # Other
 .DS_Store
+internal/env-tests-logging

@@ -244,7 +244,7 @@ type LoggerOption interface {
 
 // CommonResource sets the monitored resource associated with all log entries
 // written from a Logger. If not provided, the resource is automatically
-// detected based on the running environment (on GCE and GAE Standard only).
+// detected based on the running environment (on GCE, GCR, GCF and GAE Standard only).
 // This value can be overridden per-entry by setting an Entry's Resource field.
 func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResource{r} }
 
@@ -298,13 +298,81 @@ func detectGAEResource() *mrpb.MonitoredResource {
 	}
 }
 
+func isCloudRun() bool {
+	_, config := os.LookupEnv("K_CONFIGURATION")
+	_, service := os.LookupEnv("K_SERVICE")
+	_, revision := os.LookupEnv("K_REVISION")
+	return config && service && revision
+}
+
+func detectCloudRunResource() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_run_revision",
+		Labels: map[string]string{
+			"project_id":         projectID,
+			"location":           regionFromZone(zone),
+			"service_name":       os.Getenv("K_SERVICE"),
+			"revision_name":      os.Getenv("K_REVISION"),
+			"configuration_name": os.Getenv("K_CONFIGURATION"),
+		},
+	}
+}
+
+func isCloudFunction() bool {
+	// Reserved envvars in older function runtimes, e.g. Node.js 8, Python 3.7 and Go 1.11.
+	_, name := os.LookupEnv("FUNCTION_NAME")
+	_, region := os.LookupEnv("FUNCTION_REGION")
+	_, entry := os.LookupEnv("ENTRY_POINT")
+
+	// Reserved envvars in newer function runtimes.
+	_, target := os.LookupEnv("FUNCTION_TARGET")
+	_, signature := os.LookupEnv("FUNCTION_SIGNATURE_TYPE")
+	_, service := os.LookupEnv("K_SERVICE")
+	return (name && region && entry) || (target && signature && service)
+}
+
+func detectCloudFunction() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	// Newer functions runtimes store name in K_SERVICE.
+	functionName, exists := os.LookupEnv("K_SERVICE")
+	if !exists {
+		functionName, _ = os.LookupEnv("FUNCTION_NAME")
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_function",
+		Labels: map[string]string{
+			"project_id":    projectID,
+			"region":        regionFromZone(zone),
+			"function_name": functionName,
+		},
+	}
+}
+
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// GAE needs to come first, as metadata.OnGCE() is actually true on GAE
-		// Second Gen runtimes.
+		// AppEngine, Functions, CloudRun need to come first, as metadata.OnGCE() returns true on these runtimes.
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
+		case isCloudFunction():
+			detectedResource.pb = detectCloudFunction()
+		case isCloudRun():
+			detectedResource.pb = detectCloudRunResource()
 		case metadata.OnGCE():
 			detectedResource.pb = detectGCEResource()
 		}
@@ -332,6 +400,10 @@ func monitoredResource(parent string) *mrpb.MonitoredResource {
 		Type:   info.rtype,
 		Labels: map[string]string{info.label: parts[1]},
 	}
+}
+
+func regionFromZone(zone string) string {
+	return zone[:strings.LastIndex(zone, "-")]
 }
 
 func globalResource(projectID string) *mrpb.MonitoredResource {
