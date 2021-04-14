@@ -221,7 +221,13 @@ func (si *selIter) next() (row, error) {
 	var out row
 	for _, e := range si.list {
 		if e == spansql.Star {
-			out = append(out, r...)
+			if len(si.ec.starCols) > 0 {
+				for _, j := range si.ec.starCols {
+					out = append(out, r[j])
+				}
+			} else {
+				out = append(out, r...)
+			}
 		} else {
 			v, err := si.ec.evalExpr(e)
 			if err != nil {
@@ -405,6 +411,13 @@ func (d *database) queryContext(q spansql.Query, params queryParams) (*queryCont
 		switch sf := sf.(type) {
 		default:
 			return fmt.Errorf("can't prepare query context for SelectFrom of type %T", sf)
+		case spansql.SelectFromList:
+			for j := range sf {
+				if err := findTables(sf[j]); err != nil {
+					return err
+				}
+			}
+			return nil
 		case spansql.SelectFromTable:
 			return addTable(sf.Table)
 		case spansql.SelectFromJoin:
@@ -436,23 +449,197 @@ func (d *database) queryContext(q spansql.Query, params queryParams) (*queryCont
 	return qc, nil
 }
 
+func (d *database) evalCartesian(qc *queryContext, ff []evalContext, rr []rowIter) (evalContext, rowIter, error) {
+	if len(ff) != len(rr) {
+		return evalContext{}, nil, fmt.Errorf("mismatched context and iterator sizes")
+	}
+	for len(rr) > 0 {
+		if _, ok := rr[0].(*nullIter); !ok {
+			break
+		}
+		params := ff[0].params
+		ff, rr = ff[1:], rr[1:]
+		if len(ff) > 0 {
+			if ff[0].params == nil {
+				ff[0].params = params
+			} else {
+				for k, v := range params {
+					ff[0].params[k] = v
+				}
+			}
+		}
+	}
+	if len(ff) == 0 {
+		return evalContext{}, &nullIter{}, nil
+	}
+	if len(ff) == 1 {
+		return ff[0], rr[0], nil
+	}
+	rows := make([][]row, len(ff))
+	var cols []colInfo
+	mergedEC := evalContext{}
+	for j := range ff {
+		raw, err := toRawIter(rr[j])
+		if err != nil {
+			return evalContext{}, nil, err
+		}
+		rows[j] = raw.rows
+		cols = append(cols, raw.cols...)
+		mergedEC, err = mergedEC.merge(ff[j])
+		if err != nil {
+			return evalContext{}, nil, err
+		}
+	}
+	return mergedEC, &cartesianIterator{
+		rows: rows,
+		cols: cols,
+	}, nil
+}
+
+type cartesianIterator struct {
+	rows [][]row
+	cols []colInfo
+
+	loop     int
+	counters []int
+}
+
+func (ci *cartesianIterator) Cols() []colInfo { return ci.cols }
+func (ci *cartesianIterator) Next() (row, error) {
+	if len(ci.rows) == 0 {
+		return nil, io.EOF
+	}
+	if len(ci.counters) != len(ci.rows) {
+		ci.counters = make([]int, len(ci.rows))
+		ci.loop = len(ci.rows) - 1
+	}
+	if ci.loop < 0 {
+		return nil, io.EOF
+	}
+	res := make(row, 0, len(ci.cols))
+	for j := range ci.rows {
+		if ci.counters[j] < len(ci.rows[j]) {
+			r := ci.rows[j][ci.counters[j]]
+			res = append(res, r...)
+		}
+	}
+	ci.increment()
+	return res, nil
+}
+
+func (ci *cartesianIterator) increment() bool {
+	if ci.loop < 0 {
+		return false
+	}
+
+	ci.counters[ci.loop]++
+	res := true
+	if ci.counters[ci.loop] >= len(ci.rows[ci.loop]) {
+		ci.counters[ci.loop] = 0
+		ci.loop--
+		res = ci.increment()
+		if res {
+			ci.loop++
+		}
+	}
+	return res
+}
+
+// unnestIter is a rowIter that processes an unnest operation per input row
+type unnestIter struct {
+	vals []interface{}
+	cols []colInfo
+	pos  int
+
+	ec   evalContext
+	sf   spansql.SelectFromUnnest
+	iter rowIter
+	err  error
+}
+
+func (u *unnestIter) Bind(ec evalContext) error {
+	u.ec = ec
+	// TODO: Do all relevant types flow through here? Path expressions might be tricky here.
+	col, err := u.ec.colInfo(u.sf.Expr)
+	if err != nil {
+		return fmt.Errorf("evaluating type of UNNEST arg: %v", err)
+	}
+	if !col.Type.Array {
+		return fmt.Errorf("type of UNNEST arg is non-array %s", col.Type.SQL())
+	}
+	// The output of this UNNEST is the non-array version.
+	col.Name = u.sf.Alias // may be empty
+	col.Type.Array = false
+	col.Alias = nil
+
+	offsetName := u.sf.OffsetAlias
+	if offsetName == "" {
+		offsetName = "offset"
+	}
+	offsetCol := colInfo{
+		Type:    int64Type,
+		Name:    offsetName,
+		NotNull: true,
+	}
+
+	cols := []colInfo{col, offsetCol}
+	u.cols = cols
+	return nil
+}
+
+func (u *unnestIter) Cols() []colInfo {
+	var res []colInfo
+	res = append(res, u.iter.Cols()...)
+	res = append(res, u.cols...)
+	return res
+}
+
+func (u *unnestIter) Next() (row, error) {
+	if u.err != nil {
+		return nil, u.err
+	}
+	for u.pos >= len(u.vals) {
+		r, err := u.iter.Next()
+		if err != nil {
+			u.err = err
+			return nil, err
+		}
+
+		u.ec.row = r
+		u.pos = 0
+
+		// Evaluate the expression, and yield a virtual table with one column.
+		e, err := u.ec.evalExpr(u.sf.Expr)
+		if err != nil {
+			return nil, fmt.Errorf("evaluating UNNEST arg: %v", err)
+		}
+		if e == nil {
+			u.vals = nil
+			continue
+		}
+		arr, ok := e.([]interface{})
+		if !ok {
+			return nil, fmt.Errorf("evaluating UNNEST arg with %+v from %+v gave %t, want array", u.ec, u.iter, e)
+		}
+		u.vals = arr
+	}
+	var r row
+	r = append(r, u.ec.row...)
+	r = append(r, row{u.vals[u.pos], int64(u.pos)}...)
+	u.pos++
+	return r, nil
+}
+
 func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter, evalErr error) {
-	var ri rowIter = &nullIter{}
 	ec := evalContext{
 		params: qc.params,
 	}
 
 	// First stage is to identify the data source.
 	// If there's a FROM then that names a table to use.
-	if len(sel.From) > 1 {
-		return nil, fmt.Errorf("selecting with more than one FROM clause not yet supported")
-	}
-	if len(sel.From) == 1 {
-		var err error
-		ec, ri, err = d.evalSelectFrom(qc, ec, sel.From[0])
-		if err != nil {
-			return nil, err
-		}
+	ec, ri, err := d.evalSelectFrom(qc, ec, spansql.SelectFromList(sel.From), &nullIter{})
+	if err != nil {
+		return nil, err
 	}
 
 	// Apply WHERE.
@@ -641,7 +828,13 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 	var colInfos []colInfo
 	for i, e := range sel.List {
 		if e == spansql.Star {
-			colInfos = append(colInfos, ec.cols...)
+			if len(ec.starCols) > 0 {
+				for _, j := range ec.starCols {
+					colInfos = append(colInfos, ec.cols[j])
+				}
+			} else {
+				colInfos = append(colInfos, ec.cols...)
+			}
 		} else {
 			ci, err := ec.colInfo(e)
 			if err != nil {
@@ -668,10 +861,22 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 	}, nil
 }
 
-func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.SelectFrom) (evalContext, rowIter, error) {
+func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.SelectFrom, iter rowIter) (evalContext, rowIter, error) {
 	switch sf := sf.(type) {
 	default:
 		return ec, nil, fmt.Errorf("selecting with FROM clause of type %T not yet supported", sf)
+	case spansql.SelectFromList:
+		ri := iter
+		for j := range sf {
+			fec, fri, err := d.evalSelectFrom(qc, ec, sf[j], ri)
+			if err != nil {
+				return ec, nil, err
+			}
+
+			ri = fri
+			ec = fec
+		}
+		return ec, ri, nil
 	case spansql.SelectFromTable:
 		t, ok := qc.tableIndex[sf.Table]
 		if !ok {
@@ -686,12 +891,28 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 			// https://cloud.google.com/spanner/docs/query-syntax#implicit_aliases
 			ti.alias = sf.Table
 		}
-		ec.cols = ti.Cols()
-		return ec, ti, nil
+		cols := ti.Cols()
+		starCols := make([]int, len(cols))
+		for j := range starCols {
+			starCols[j] = j
+		}
+
+		fec := evalContext{
+			cols:     cols,
+			starCols: starCols,
+		}
+		return d.evalCartesian(qc, []evalContext{ec, fec}, []rowIter{iter, ti})
 	case spansql.SelectFromJoin:
 		// TODO: Avoid the toRawIter calls here by doing the RHS recursive evalSelectFrom in joinIter.Next on demand.
 
-		lhsEC, lhs, err := d.evalSelectFrom(qc, ec, sf.LHS)
+		var lhsEC evalContext
+		var lhs rowIter
+		var err error
+		if sf.LHS == nil {
+			lhsEC, lhs = ec, iter
+		} else {
+			lhsEC, lhs, err = d.evalSelectFrom(qc, ec, sf.LHS, iter)
+		}
 		if err != nil {
 			return ec, nil, err
 		}
@@ -700,7 +921,7 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 			return ec, nil, err
 		}
 
-		rhsEC, rhs, err := d.evalSelectFrom(qc, ec, sf.RHS)
+		rhsEC, rhs, err := d.evalSelectFrom(qc, ec, sf.RHS, iter)
 		if err != nil {
 			return ec, nil, err
 		}
@@ -709,44 +930,28 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 			return ec, nil, err
 		}
 
-		ji, ec, err := newJoinIter(lhsRaw, rhsRaw, lhsEC, rhsEC, sf)
+		ji, jec, err := newJoinIter(lhsRaw, rhsRaw, lhsEC, rhsEC, sf)
 		if err != nil {
 			return ec, nil, err
 		}
-		return ec, ji, nil
+		//return d.evalCartesian(qc, []evalContext{ec, jec}, []rowIter{iter, ji})
+		return jec, ji, nil
 	case spansql.SelectFromUnnest:
-		// TODO: Do all relevant types flow through here? Path expressions might be tricky here.
-		col, err := ec.colInfo(sf.Expr)
+		u := &unnestIter{
+			sf:   sf,
+			iter: iter,
+		}
+		if err := u.Bind(ec); err != nil {
+			return ec, nil, err
+		}
+		uec, err := ec.merge(evalContext{
+			cols:     u.cols,
+			starCols: []int{0},
+		})
 		if err != nil {
-			return ec, nil, fmt.Errorf("evaluating type of UNNEST arg: %v", err)
+			return ec, nil, err
 		}
-		if !col.Type.Array {
-			return ec, nil, fmt.Errorf("type of UNNEST arg is non-array %s", col.Type.SQL())
-		}
-		// The output of this UNNEST is the non-array version.
-		col.Name = sf.Alias // may be empty
-		col.Type.Array = false
-
-		// Evaluate the expression, and yield a virtual table with one column.
-		e, err := ec.evalExpr(sf.Expr)
-		if err != nil {
-			return ec, nil, fmt.Errorf("evaluating UNNEST arg: %v", err)
-		}
-		arr, ok := e.([]interface{})
-		if !ok {
-			return ec, nil, fmt.Errorf("evaluating UNNEST arg gave %t, want array", e)
-		}
-		var rows []row
-		for _, v := range arr {
-			rows = append(rows, row{v})
-		}
-
-		ri := &rawIter{
-			cols: []colInfo{col},
-			rows: rows,
-		}
-		ec.cols = ri.cols
-		return ec, ri, nil
+		return uec, u, nil
 	}
 }
 
@@ -806,9 +1011,18 @@ func newJoinIter(lhs, rhs *rawIter, lhsEC, rhsEC evalContext, sfj spansql.Select
 func (ji *joinIter) prepNonUsing(on spansql.BoolExpr, lhsEC, rhsEC evalContext) {
 	// Having ON or no clause results in the full set of columns from both sides.
 	// Force a copy.
+	lhsOffset := len(ji.ec.cols)
 	ji.ec.cols = append(ji.ec.cols, lhsEC.cols...)
+	rhsOffset := len(ji.ec.cols)
 	ji.ec.cols = append(ji.ec.cols, rhsEC.cols...)
 	ji.ec.row = make(row, len(ji.ec.cols))
+	ji.ec.starCols = make([]int, 0, len(lhsEC.starCols)+len(rhsEC.starCols))
+	for j := range lhsEC.starCols {
+		ji.ec.starCols = append(ji.ec.starCols, lhsEC.starCols[j]+lhsOffset)
+	}
+	for j := range rhsEC.starCols {
+		ji.ec.starCols = append(ji.ec.starCols, rhsEC.starCols[j]+rhsOffset)
+	}
 
 	ji.cond = func(primary, secondary row) (bool, error) {
 		copy(ji.ec.row[ji.primaryOffset:], primary)
@@ -840,9 +1054,11 @@ func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext, flip
 	// rhsUsing is similar.
 	// lhsNotUsing/rhsNotUsing are the complement.
 	var lhsUsing, rhsUsing []int
-	var lhsNotUsing, rhsNotUsing []int
 	// lhsUsed, rhsUsed are the set of column indexes in lhsUsing/rhsUsing.
 	lhsUsed, rhsUsed := make(map[int]bool), make(map[int]bool)
+	primaryLength, secondaryLength := len(lhsEC.cols), len(rhsEC.cols)
+	ji.ec.cols = nil
+	ji.ec.starCols = nil
 	for _, id := range using {
 		lhsi, err := lhsEC.resolveColumnIndex(id)
 		if err != nil {
@@ -857,59 +1073,68 @@ func (ji *joinIter) prepUsing(using []spansql.ID, lhsEC, rhsEC evalContext, flip
 		}
 		rhsUsing = append(rhsUsing, rhsi)
 		rhsUsed[rhsi] = true
+		ji.ec.starCols = append(ji.ec.starCols, len(ji.ec.cols))
+		col := lhsEC.cols[lhsi]
+		if flipped {
+			col = rhsEC.cols[rhsi]
+		}
+		col.Alias = nil
+		col.AggIndex = 0
+		ji.ec.cols = append(ji.ec.cols, col)
+	}
 
-		// TODO: Should this hide or merge column aliases?
-		ji.ec.cols = append(ji.ec.cols, lhsEC.cols[lhsi])
-	}
-	for i, col := range lhsEC.cols {
+	for i := range lhsEC.cols {
 		if !lhsUsed[i] {
-			ji.ec.cols = append(ji.ec.cols, col)
-			lhsNotUsing = append(lhsNotUsing, i)
+			ji.ec.starCols = append(ji.ec.starCols, len(ji.ec.cols))
 		}
+		ji.ec.cols = append(ji.ec.cols, lhsEC.cols[i])
 	}
-	for i, col := range rhsEC.cols {
+	for i := range rhsEC.cols {
 		if !rhsUsed[i] {
-			ji.ec.cols = append(ji.ec.cols, col)
-			rhsNotUsing = append(rhsNotUsing, i)
+			ji.ec.starCols = append(ji.ec.starCols, len(ji.ec.cols))
 		}
+		ji.ec.cols = append(ji.ec.cols, rhsEC.cols[i])
 	}
-	ji.ec.row = make(row, len(ji.ec.cols))
 
 	primaryUsing, secondaryUsing := lhsUsing, rhsUsing
+	primaryUsed, secondaryUsed := lhsUsed, rhsUsed
 	if flipped {
 		primaryUsing, secondaryUsing = secondaryUsing, primaryUsing
+		primaryUsed, secondaryUsed = secondaryUsed, primaryUsed
 	}
 
+	ji.ec.row = make(row, len(ji.ec.cols))
+
 	orNil := func(r row, i int) interface{} {
-		if r == nil {
+		if len(r) == 0 {
 			return nil
 		}
 		return r[i]
 	}
+
 	// populate writes the data to ji.ec.row in the correct positions.
 	populate := func(primary, secondary row) { // either may be nil
 		j := 0
 		if primary != nil {
-			for _, pi := range primaryUsing {
-				ji.ec.row[j] = primary[pi]
+			for _, i := range primaryUsing {
+				ji.ec.row[j] = orNil(primary, i)
 				j++
 			}
 		} else {
-			for _, si := range secondaryUsing {
-				ji.ec.row[j] = secondary[si]
+			for _, i := range secondaryUsing {
+				ji.ec.row[j] = orNil(secondary, i)
 				j++
 			}
 		}
-		lhs, rhs := primary, secondary
 		if flipped {
-			rhs, lhs = lhs, rhs
+			primary, secondary = secondary, primary
 		}
-		for _, i := range lhsNotUsing {
-			ji.ec.row[j] = orNil(lhs, i)
+		for i := 0; i < primaryLength; i++ {
+			ji.ec.row[j] = orNil(primary, i)
 			j++
 		}
-		for _, i := range rhsNotUsing {
-			ji.ec.row[j] = orNil(rhs, i)
+		for i := 0; i < secondaryLength; i++ {
+			ji.ec.row[j] = orNil(secondary, i)
 			j++
 		}
 	}
