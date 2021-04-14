@@ -1242,13 +1242,23 @@ func (t *table) gc() {
 		return
 	}
 
+	// It isn't clear whether it's safe to delete within the iterator, so we do
+	// not
+	var toDelete []btree.Item
 	t.rows.Ascend(func(i btree.Item) bool {
 		r := i.(*row)
 		r.mu.Lock()
 		r.gc(rules)
+		if len(r.families) == 0 {
+			toDelete = append(toDelete, i)
+		}
 		r.mu.Unlock()
 		return true
 	})
+
+	for _, i := range toDelete {
+		t.rows.Delete(i)
+	}
 }
 
 type byRowKey []*row
@@ -1334,7 +1344,15 @@ func (r *row) gc(rules map[string]*btapb.GcRule) {
 			continue
 		}
 		for col, cs := range fam.cells {
-			r.families[fam.name].cells[col] = applyGC(cs, rule)
+			cs = applyGC(cs, rule)
+			if len(cs) == 0 {
+				delete(fam.cells, col)
+			} else {
+				fam.cells[col] = cs
+			}
+		}
+		if len(fam.cells) == 0 {
+			delete(r.families, fam.name)
 		}
 	}
 }
