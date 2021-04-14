@@ -453,7 +453,8 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 	allTables := []string{
 		"Staff",
 		"PlayerStats",
-		"JoinA", "JoinB", "JoinC", "JoinD", "JoinE", "JoinF",
+		"Episodes",
+		"JoinA", "JoinB", "JoinC", "JoinD", "JoinE", "JoinF", "JoinG",
 		"SomeStrings", "Updateable",
 	}
 	errc := make(chan error)
@@ -658,6 +659,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		`CREATE TABLE JoinD ( x INT64, z STRING(MAX) ) PRIMARY KEY (x, z)`,
 		`CREATE TABLE JoinE ( w INT64, x STRING(MAX) ) PRIMARY KEY (w, x)`,
 		`CREATE TABLE JoinF ( y INT64, z STRING(MAX) ) PRIMARY KEY (y, z)`,
+		`CREATE TABLE JoinG ( x INT64, a STRING(MAX), b STRING(MAX) ) PRIMARY KEY (x, a, b)`,
 		// Some other test tables.
 		`CREATE TABLE SomeStrings ( i INT64, str STRING(MAX) ) PRIMARY KEY (i)`,
 		`CREATE TABLE Updateable (
@@ -665,6 +667,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			first STRING(MAX),
 			last STRING(MAX),
 		) PRIMARY KEY (id)`,
+		`CREATE TABLE Episodes (
+			EpisodeID INT64,
+			StaffNames ARRAY<STRING(MAX)>,
+			StaffIDs ARRAY<INT64>,
+		) PRIMARY KEY (EpisodeID)`,
 	)
 	if err != nil {
 		t.Fatalf("Creating sample tables: %v", err)
@@ -704,6 +711,9 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("JoinF", []string{"y", "z"}, []interface{}{2, "c"}),
 		spanner.Insert("JoinF", []string{"y", "z"}, []interface{}{3, "d"}),
 
+		spanner.Insert("JoinG", []string{"x", "a", "b"}, []interface{}{3, "c", "x"}),
+		spanner.Insert("JoinG", []string{"x", "a", "b"}, []interface{}{3, "d", "y"}),
+
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{0, "afoo"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{1, "abar"}),
 		spanner.Insert("SomeStrings", []string{"i", "str"}, []interface{}{2, nil}),
@@ -712,6 +722,11 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{0, "joe", nil}),
 		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{1, "doe", "joan"}),
 		spanner.Insert("Updateable", []string{"id", "first", "last"}, []interface{}{2, "wong", "wong"}),
+
+		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{1, []string{"Jack", "Daniel"}, []int64{1, 2}}),
+		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{2, []string{"Jack", "Daniel", "Sam"}, []int64{1, 2, 3}}),
+		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{3, []string{"Teal'c"}, []int64{4}}),
+		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{4, []string{"Jack", "Daniel", "Sam", "Teal'c", "George"}, []int64{1,2,3,4,5}}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
@@ -1143,6 +1158,39 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			[][]interface{}{
 				{"Jack"},
 				{"Daniel"},
+			},
+		},
+		{
+			`SELECT MIN(Name), MAX(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel", "Teal'c"},
+			},
+		},
+		{
+			// Same as the previous, but using a USING clause instead of an ON clause.
+			`SELECT JoinC.x, JoinD.z FROM JoinC JOIN JoinD USING (x) WHERE z != 'n' ORDER BY x`,
+			nil,
+			[][]interface{}{
+				{int64(2), "k"},
+				{int64(3), "m"},
+				{int64(3), "m"},
+			},
+		},
+		{
+			`SELECT * FROM JoinG RIGHT OUTER JOIN JoinD USING (x) WHERE JoinG.x IS NULL ORDER BY x, z, a, b`,
+			nil,
+			[][]interface{}{
+				{int64(2), nil, nil, "k"},
+				{int64(4), nil, nil, "p"},
+			},
+		},
+		{
+			`SELECT EpisodeID, offset, Cool FROM Episodes AS e, UNNEST(e.StaffIDs) as id WITH OFFSET as offset JOIN Staff AS s ON id = s.ID LEFT JOIN Staff as taller ON s.Height < taller.Height WHERE taller.ID IS NULL ORDER BY offset`,
+			nil,
+			[][]interface{}{
+				{int64(3), int64(0), true},
+				{int64(4), int64(3), true},
 			},
 		},
 	}
