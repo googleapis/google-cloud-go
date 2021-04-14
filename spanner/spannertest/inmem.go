@@ -574,10 +574,6 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	defer cleanup()
 
 	// Bail out if various advanced features are being used.
-	if req.Index != "" {
-		// This is okay; we can still return results.
-		s.logf("Warning: index reads (%q) not supported", req.Index)
-	}
 	if len(req.ResumeToken) > 0 {
 		// This should only happen if we send resume_token ourselves.
 		return fmt.Errorf("read resumption not supported")
@@ -587,12 +583,22 @@ func (s *server) StreamingRead(req *spannerpb.ReadRequest, stream spannerpb.Span
 	}
 
 	var ri rowIter
-	if req.KeySet.All {
-		s.logf("Reading all from %s (cols: %v)", req.Table, req.Columns)
-		ri, err = s.db.ReadAll(spansql.ID(req.Table), idList(req.Columns), req.Limit)
+	if req.Index == "" {
+		if req.KeySet.All {
+			s.logf("Reading all from %s (cols: %v)", req.Table, req.Columns)
+			ri, err = s.db.ReadAll(spansql.ID(req.Table), idList(req.Columns), req.Limit)
+		} else {
+			s.logf("Reading rows from %d keys and %d ranges from %s (cols: %v)", len(req.KeySet.Keys), len(req.KeySet.Ranges), req.Table, req.Columns)
+			ri, err = s.db.Read(spansql.ID(req.Table), idList(req.Columns), req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
+		}
 	} else {
-		s.logf("Reading rows from %d keys and %d ranges from %s (cols: %v)", len(req.KeySet.Keys), len(req.KeySet.Ranges), req.Table, req.Columns)
-		ri, err = s.db.Read(spansql.ID(req.Table), idList(req.Columns), req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
+		if req.KeySet.All {
+			s.logf("Reading all from %s.%s (cols: %v)", req.Table, req.Index, req.Columns)
+			ri, err = s.db.IndexReadAll(spansql.ID(req.Table), spansql.ID(req.Index), idList(req.Columns), req.Limit)
+		} else {
+			s.logf("Reading rows from %d keys and %d ranges from %s (cols: %v)", len(req.KeySet.Keys), len(req.KeySet.Ranges), req.Table, req.Columns)
+			ri, err = s.db.IndexRead(spansql.ID(req.Table), spansql.ID(req.Index), idList(req.Columns), req.KeySet.Keys, makeKeyRangeList(req.KeySet.Ranges), req.Limit)
+		}
 	}
 	if err != nil {
 		return err
