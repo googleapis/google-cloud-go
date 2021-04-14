@@ -208,6 +208,39 @@ func TestParseQuery(t *testing.T) {
 				},
 			},
 		},
+		{`SELECT c.Alias FROM Characters AS c` + "\n\t",
+			Query{
+				Select: Select{
+					List: []Expr{PathExp{
+						"c",
+						"Alias",
+					}},
+					From: []SelectFrom{SelectFromTable{
+						Table: "Characters",
+						Alias: "c",
+					}},
+				},
+			},
+		},
+		// Joins with hints.
+		{`SELECT * FROM A JOIN B USING (x) JOIN C USING (x)`,
+			Query{
+				Select: Select{
+					List: []Expr{Star},
+					From: []SelectFrom{SelectFromJoin{
+						Type: InnerJoin,
+						LHS: SelectFromJoin{
+							Type:  InnerJoin,
+							LHS:   SelectFromTable{Table: "A"},
+							RHS:   SelectFromTable{Table: "B"},
+							Using: []ID{"x"},
+						},
+						RHS:   SelectFromTable{Table: "C"},
+						Using: []ID{"x"},
+					}},
+				},
+			},
+		},
 	}
 	for _, test := range tests {
 		got, err := ParseQuery(test.in)

@@ -908,7 +908,7 @@ func (p *parser) eat(want ...string) bool {
 
 	for _, w := range want {
 		tok := p.next()
-		if tok.err != nil || tok.value != w {
+		if tok.err != nil || !strings.EqualFold(tok.value, w) {
 			// Mismatch.
 			*p = orig
 			return false
@@ -1832,6 +1832,23 @@ func (p *parser) parseSelect() (Select, *parseError) {
 		}
 
 		for {
+			if len(sel.From) > 0 {
+				var lhs SelectFrom = SelectFromList(sel.From)
+				if len(sel.From) == 1 {
+					lhs = sel.From[0]
+				}
+				sfj, isJoin, err := p.parseJoin(lhs)
+				if err != nil {
+					return Select{}, err
+				}
+				if isJoin {
+					sel.From = []SelectFrom{sfj}
+					continue
+				}
+				if !p.eat(",") {
+					break
+				}
+			}
 			from, err := p.parseSelectFrom()
 			if err != nil {
 				return Select{}, err
@@ -1846,11 +1863,6 @@ func (p *parser) parseSelect() (Select, *parseError) {
 				padTS()
 				sel.TableSamples[len(sel.TableSamples)-1] = &ts
 			}
-
-			if p.eat(",") {
-				continue
-			}
-			break
 		}
 
 		if sel.TableSamples != nil {
@@ -1917,27 +1929,114 @@ func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 	return list, aliases, nil
 }
 
+func (p *parser) parseJoin(lhs SelectFrom) (SelectFrom, bool, *parseError) {
+	debugf("parseJoin: %v", p)
+	// Look ahead to see if this is a join.
+	tok := p.next()
+	if tok.err != nil {
+		p.back()
+		return lhs, false, nil
+	}
+	var hashJoin bool // Special case for "HASH JOIN" syntax.
+	if tok.value == "HASH" {
+		hashJoin = true
+		tok = p.next()
+		if tok.err != nil {
+			return nil, false, tok.err
+		}
+	}
+	var jt JoinType
+	if tok.value == "JOIN" {
+		// This is implicitly an inner join.
+		jt = InnerJoin
+	} else if j, ok := joinKeywords[tok.value]; ok {
+		jt = j
+		switch jt {
+		case FullJoin, LeftJoin, RightJoin:
+			// These join types are implicitly "outer" joins,
+			// so the "OUTER" keyword is optional.
+			p.eat("OUTER")
+		}
+		if err := p.expect("JOIN"); err != nil {
+			return nil, false, err
+		}
+	} else {
+		p.back()
+		return lhs, false, nil
+	}
+
+	sfj := SelectFromJoin{
+		Type: jt,
+		LHS:  lhs,
+	}
+	setHint := func(k, v string) {
+		if sfj.Hints == nil {
+			sfj.Hints = make(map[string]string)
+		}
+		sfj.Hints[k] = v
+	}
+	if hashJoin {
+		setHint("JOIN_METHOD", "HASH_JOIN")
+	}
+
+	if p.eat("@") {
+		if err := p.expect("{"); err != nil {
+			return nil, false, err
+		}
+		for {
+			if p.sniff("}") {
+				break
+			}
+			tok := p.next()
+			if tok.err != nil {
+				return nil, false, tok.err
+			}
+			k := tok.value
+			if err := p.expect("="); err != nil {
+				return nil, false, err
+			}
+			tok = p.next()
+			if tok.err != nil {
+				return nil, false, tok.err
+			}
+			v := tok.value
+			setHint(k, v)
+			if !p.eat(",") {
+				break
+			}
+		}
+		if err := p.expect("}"); err != nil {
+			return nil, false, err
+		}
+	}
+
+	var err *parseError
+	sfj.RHS, err = p.parseSelectFrom()
+	if err != nil {
+		return nil, false, err
+	}
+
+	if p.eat("ON") {
+		sfj.On, err = p.parseBoolExpr()
+		if err != nil {
+			return nil, false, err
+		}
+	}
+	if p.eat("USING") {
+		if sfj.On != nil {
+			return nil, false, p.errorf("join may not have both ON and USING clauses")
+		}
+		sfj.Using, err = p.parseColumnNameList()
+		if err != nil {
+			return nil, false, err
+		}
+	}
+
+	return sfj, true, nil
+}
+
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	debugf("parseSelectFrom: %v", p)
-
-	/*
-		from_item: {
-			table_name [ table_hint_expr ] [ [ AS ] alias ] |
-			join |
-			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
-			field_path |
-			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
-				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
-			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
-		}
-
-		join:
-			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
-				[ ON bool_expression | USING ( join_column [, ...] ) ]
-
-		join_type:
-			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
-	*/
 
 	if p.eat("UNNEST") {
 		if err := p.expect("("); err != nil {
@@ -1957,6 +2056,16 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 				return nil, err
 			}
 			sfu.Alias = alias
+		}
+		if p.eat("WITH", "OFFSET") {
+			alias := ID("offset")
+			if p.eat("AS") { // TODO: The "AS" keyword is optional.
+				alias, err = p.parseAlias()
+				if err != nil {
+					return nil, err
+				}
+			}
+			sfu.OffsetAlias = alias
 		}
 		// TODO: hint, offset
 		return sfu, nil
@@ -1981,106 +2090,10 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		sf.Alias = alias
 	}
 
-	// Look ahead to see if this is a join.
-	tok := p.next()
-	if tok.err != nil {
-		p.back()
-		return sf, nil
-	}
-	var hashJoin bool // Special case for "HASH JOIN" syntax.
-	if tok.value == "HASH" {
-		hashJoin = true
-		tok = p.next()
-		if tok.err != nil {
-			return nil, err
-		}
-	}
-	var jt JoinType
-	if tok.value == "JOIN" {
-		// This is implicitly an inner join.
-		jt = InnerJoin
-	} else if j, ok := joinKeywords[tok.value]; ok {
-		jt = j
-		switch jt {
-		case FullJoin, LeftJoin, RightJoin:
-			// These join types are implicitly "outer" joins,
-			// so the "OUTER" keyword is optional.
-			p.eat("OUTER")
-		}
-		if err := p.expect("JOIN"); err != nil {
-			return nil, err
-		}
-	} else {
-		p.back()
-		return sf, nil
-	}
-
-	sfj := SelectFromJoin{
-		Type: jt,
-		LHS:  sf,
-	}
-	setHint := func(k, v string) {
-		if sfj.Hints == nil {
-			sfj.Hints = make(map[string]string)
-		}
-		sfj.Hints[k] = v
-	}
-	if hashJoin {
-		setHint("JOIN_METHOD", "HASH_JOIN")
-	}
-
-	if p.eat("@") {
-		if err := p.expect("{"); err != nil {
-			return nil, err
-		}
-		for {
-			if p.sniff("}") {
-				break
-			}
-			tok := p.next()
-			if tok.err != nil {
-				return nil, tok.err
-			}
-			k := tok.value
-			if err := p.expect("="); err != nil {
-				return nil, err
-			}
-			tok = p.next()
-			if tok.err != nil {
-				return nil, tok.err
-			}
-			v := tok.value
-			setHint(k, v)
-			if !p.eat(",") {
-				break
-			}
-		}
-		if err := p.expect("}"); err != nil {
-			return nil, err
-		}
-	}
-
-	sfj.RHS, err = p.parseSelectFrom()
+	sfj, _, err := p.parseJoin(sf)
 	if err != nil {
 		return nil, err
 	}
-
-	if p.eat("ON") {
-		sfj.On, err = p.parseBoolExpr()
-		if err != nil {
-			return nil, err
-		}
-	}
-	if p.eat("USING") {
-		if sfj.On != nil {
-			return nil, p.errorf("join may not have both ON and USING clauses")
-		}
-		sfj.Using, err = p.parseColumnNameList()
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	return sfj, nil
 }
 

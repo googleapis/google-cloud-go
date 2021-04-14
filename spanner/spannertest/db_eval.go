@@ -36,10 +36,43 @@ type evalContext struct {
 	cols []colInfo
 	row  row
 
+	starCols []int // columns to use in `select *`
+
 	// If there are visible aliases, they are populated here.
 	aliases map[spansql.ID]spansql.Expr
 
 	params queryParams
+}
+
+func (ec evalContext) merge(other evalContext) (evalContext, error) {
+	res := ec
+	res.cols = append([]colInfo(nil), ec.cols...)
+	res.cols = append(res.cols, other.cols...)
+
+	res.starCols = append([]int(nil), ec.starCols...)
+	offset := len(res.starCols)
+	for j := range other.starCols {
+		res.starCols = append(res.starCols, other.starCols[j]+offset)
+	}
+
+	res.row = append(row(nil), ec.row...)
+	res.row = append(res.row, other.row...)
+
+	res.aliases = map[spansql.ID]spansql.Expr{}
+	for k, v := range ec.aliases {
+		res.aliases[k] = v
+	}
+	res.params = queryParams{}
+	for k, v := range ec.params {
+		res.params[k] = v
+	}
+	for k, v := range other.aliases {
+		if _, ok := res.aliases[k]; ok {
+			return ec, fmt.Errorf("duplicate alias: %s", k.SQL())
+		}
+		res.aliases[k] = v
+	}
+	return res, nil
 }
 
 // coercedValue represents a literal value that has been coerced to a different type.

@@ -351,6 +351,9 @@ func (sfu SelectFromUnnest) SQL() string {
 	if sfu.Alias != "" {
 		str += " AS " + sfu.Alias.SQL()
 	}
+	if sfu.OffsetAlias != "" {
+		str += " WITH OFFSET " + sfu.OffsetAlias.SQL()
+	}
 	return str
 }
 

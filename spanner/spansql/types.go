@@ -398,13 +398,25 @@ const (
 // SelectFromUnnest is a SelectFrom that yields a virtual table from an array.
 // https://cloud.google.com/spanner/docs/query-syntax#unnest
 type SelectFromUnnest struct {
-	Expr  Expr
-	Alias ID // empty if not aliased
-
+	Expr        Expr
+	Alias       ID // empty if not aliased
+	OffsetAlias ID // empty if no offset
 	// TODO: Implicit
 }
 
 func (SelectFromUnnest) isSelectFrom() {}
+
+type SelectFromList []SelectFrom
+
+func (SelectFromList) isSelectFrom() {}
+
+func (sfl SelectFromList) SQL() string {
+	sqls := make([]string, len(sfl))
+	for j := range sfl {
+		sqls[j] = sfl[j].SQL()
+	}
+	return strings.Join(sqls, ", ")
+}
 
 // TODO: SelectFromSubquery, etc.
 
