@@ -1,67 +1,67 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.resourcemanager.v2",
-  "libraryPackage":  "cloud.google.com/go/resourcemanager/apiv2",
-  "services":  {
-    "Folders":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "FoldersClient",
-          "rpcs":  {
-            "CreateFolder":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.resourcemanager.v2",
+  "libraryPackage": "cloud.google.com/go/resourcemanager/apiv2",
+  "services": {
+    "Folders": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FoldersClient",
+          "rpcs": {
+            "CreateFolder": {
+              "methods": [
                 "CreateFolder"
               ]
             },
-            "DeleteFolder":  {
-              "methods":  [
+            "DeleteFolder": {
+              "methods": [
                 "DeleteFolder"
               ]
             },
-            "GetFolder":  {
-              "methods":  [
+            "GetFolder": {
+              "methods": [
                 "GetFolder"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "ListFolders":  {
-              "methods":  [
+            "ListFolders": {
+              "methods": [
                 "ListFolders"
               ]
             },
-            "MoveFolder":  {
-              "methods":  [
+            "MoveFolder": {
+              "methods": [
                 "MoveFolder"
               ]
             },
-            "SearchFolders":  {
-              "methods":  [
+            "SearchFolders": {
+              "methods": [
                 "SearchFolders"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UndeleteFolder":  {
-              "methods":  [
+            "UndeleteFolder": {
+              "methods": [
                 "UndeleteFolder"
               ]
             },
-            "UpdateFolder":  {
-              "methods":  [
+            "UpdateFolder": {
+              "methods": [
                 "UpdateFolder"
               ]
             }

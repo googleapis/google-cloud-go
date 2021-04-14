@@ -1,147 +1,147 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.datacatalog.v1beta1",
-  "libraryPackage":  "cloud.google.com/go/datacatalog/apiv1beta1",
-  "services":  {
-    "DataCatalog":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "CreateEntry":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.datacatalog.v1beta1",
+  "libraryPackage": "cloud.google.com/go/datacatalog/apiv1beta1",
+  "services": {
+    "DataCatalog": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateEntry": {
+              "methods": [
                 "CreateEntry"
               ]
             },
-            "CreateEntryGroup":  {
-              "methods":  [
+            "CreateEntryGroup": {
+              "methods": [
                 "CreateEntryGroup"
               ]
             },
-            "CreateTag":  {
-              "methods":  [
+            "CreateTag": {
+              "methods": [
                 "CreateTag"
               ]
             },
-            "CreateTagTemplate":  {
-              "methods":  [
+            "CreateTagTemplate": {
+              "methods": [
                 "CreateTagTemplate"
               ]
             },
-            "CreateTagTemplateField":  {
-              "methods":  [
+            "CreateTagTemplateField": {
+              "methods": [
                 "CreateTagTemplateField"
               ]
             },
-            "DeleteEntry":  {
-              "methods":  [
+            "DeleteEntry": {
+              "methods": [
                 "DeleteEntry"
               ]
             },
-            "DeleteEntryGroup":  {
-              "methods":  [
+            "DeleteEntryGroup": {
+              "methods": [
                 "DeleteEntryGroup"
               ]
             },
-            "DeleteTag":  {
-              "methods":  [
+            "DeleteTag": {
+              "methods": [
                 "DeleteTag"
               ]
             },
-            "DeleteTagTemplate":  {
-              "methods":  [
+            "DeleteTagTemplate": {
+              "methods": [
                 "DeleteTagTemplate"
               ]
             },
-            "DeleteTagTemplateField":  {
-              "methods":  [
+            "DeleteTagTemplateField": {
+              "methods": [
                 "DeleteTagTemplateField"
               ]
             },
-            "GetEntry":  {
-              "methods":  [
+            "GetEntry": {
+              "methods": [
                 "GetEntry"
               ]
             },
-            "GetEntryGroup":  {
-              "methods":  [
+            "GetEntryGroup": {
+              "methods": [
                 "GetEntryGroup"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetTagTemplate":  {
-              "methods":  [
+            "GetTagTemplate": {
+              "methods": [
                 "GetTagTemplate"
               ]
             },
-            "ListEntries":  {
-              "methods":  [
+            "ListEntries": {
+              "methods": [
                 "ListEntries"
               ]
             },
-            "ListEntryGroups":  {
-              "methods":  [
+            "ListEntryGroups": {
+              "methods": [
                 "ListEntryGroups"
               ]
             },
-            "ListTags":  {
-              "methods":  [
+            "ListTags": {
+              "methods": [
                 "ListTags"
               ]
             },
-            "LookupEntry":  {
-              "methods":  [
+            "LookupEntry": {
+              "methods": [
                 "LookupEntry"
               ]
             },
-            "RenameTagTemplateField":  {
-              "methods":  [
+            "RenameTagTemplateField": {
+              "methods": [
                 "RenameTagTemplateField"
               ]
             },
-            "SearchCatalog":  {
-              "methods":  [
+            "SearchCatalog": {
+              "methods": [
                 "SearchCatalog"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdateEntry":  {
-              "methods":  [
+            "UpdateEntry": {
+              "methods": [
                 "UpdateEntry"
               ]
             },
-            "UpdateEntryGroup":  {
-              "methods":  [
+            "UpdateEntryGroup": {
+              "methods": [
                 "UpdateEntryGroup"
               ]
             },
-            "UpdateTag":  {
-              "methods":  [
+            "UpdateTag": {
+              "methods": [
                 "UpdateTag"
               ]
             },
-            "UpdateTagTemplate":  {
-              "methods":  [
+            "UpdateTagTemplate": {
+              "methods": [
                 "UpdateTagTemplate"
               ]
             },
-            "UpdateTagTemplateField":  {
-              "methods":  [
+            "UpdateTagTemplateField": {
+              "methods": [
                 "UpdateTagTemplateField"
               ]
             }
@@ -149,73 +149,73 @@
         }
       }
     },
-    "PolicyTagManager":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "PolicyTagManagerClient",
-          "rpcs":  {
-            "CreatePolicyTag":  {
-              "methods":  [
+    "PolicyTagManager": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyTagManagerClient",
+          "rpcs": {
+            "CreatePolicyTag": {
+              "methods": [
                 "CreatePolicyTag"
               ]
             },
-            "CreateTaxonomy":  {
-              "methods":  [
+            "CreateTaxonomy": {
+              "methods": [
                 "CreateTaxonomy"
               ]
             },
-            "DeletePolicyTag":  {
-              "methods":  [
+            "DeletePolicyTag": {
+              "methods": [
                 "DeletePolicyTag"
               ]
             },
-            "DeleteTaxonomy":  {
-              "methods":  [
+            "DeleteTaxonomy": {
+              "methods": [
                 "DeleteTaxonomy"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetPolicyTag":  {
-              "methods":  [
+            "GetPolicyTag": {
+              "methods": [
                 "GetPolicyTag"
               ]
             },
-            "GetTaxonomy":  {
-              "methods":  [
+            "GetTaxonomy": {
+              "methods": [
                 "GetTaxonomy"
               ]
             },
-            "ListPolicyTags":  {
-              "methods":  [
+            "ListPolicyTags": {
+              "methods": [
                 "ListPolicyTags"
               ]
             },
-            "ListTaxonomies":  {
-              "methods":  [
+            "ListTaxonomies": {
+              "methods": [
                 "ListTaxonomies"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdatePolicyTag":  {
-              "methods":  [
+            "UpdatePolicyTag": {
+              "methods": [
                 "UpdatePolicyTag"
               ]
             },
-            "UpdateTaxonomy":  {
-              "methods":  [
+            "UpdateTaxonomy": {
+              "methods": [
                 "UpdateTaxonomy"
               ]
             }
@@ -223,18 +223,18 @@
         }
       }
     },
-    "PolicyTagManagerSerialization":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "PolicyTagManagerSerializationClient",
-          "rpcs":  {
-            "ExportTaxonomies":  {
-              "methods":  [
+    "PolicyTagManagerSerialization": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PolicyTagManagerSerializationClient",
+          "rpcs": {
+            "ExportTaxonomies": {
+              "methods": [
                 "ExportTaxonomies"
               ]
             },
-            "ImportTaxonomies":  {
-              "methods":  [
+            "ImportTaxonomies": {
+              "methods": [
                 "ImportTaxonomies"
               ]
             }
