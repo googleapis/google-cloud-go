@@ -366,7 +366,8 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// AppEngine, Functions, CloudRun need to come first, as metadata.OnGCE() returns true on these runtimes.
+		// AppEngine, Functions, CloudRun are detected first, as metadata.OnGCE()
+		// erroneously returns true on these runtimes.
 		case os.Getenv("GAE_ENV") == "standard":
 			detectedResource.pb = detectGAEResource()
 		case isCloudFunction():
