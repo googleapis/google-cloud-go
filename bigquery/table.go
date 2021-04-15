@@ -755,6 +755,8 @@ type TableMetadataToUpdate struct {
 	Schema Schema
 
 	// The table's clustering configuration.
+	// For more information on how modifying clustering affects the table, see:
+	// https://cloud.google.com/bigquery/docs/creating-clustered-tables#modifying-cluster-spec
 	Clustering *Clustering
 
 	// The table's encryption configuration.
