@@ -356,7 +356,7 @@ func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
 	}
 }
 
-// Clustering governs the organization of data within a partitioned table.
+// Clustering governs the organization of data within a managed table.
 // For more information, see https://cloud.google.com/bigquery/docs/clustered-tables
 type Clustering struct {
 	Fields []string
