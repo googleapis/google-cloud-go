@@ -1,5 +1,18 @@
 # Changes
 
+## [1.4.0](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.2.0...logging/v1.4.0) (2021-04-15)
+
+
+### Features
+
+* **logging:** cloud run and functions resource autodetection ([#3909](https://www.github.com/googleapis/google-cloud-go/issues/3909)) ([1204de8](https://www.github.com/googleapis/google-cloud-go/commit/1204de85e58334bf93fecdcb0ab8b581449c2745))
+* **logging:** make toLogEntry function public ([#3863](https://www.github.com/googleapis/google-cloud-go/issues/3863)) ([71828c2](https://www.github.com/googleapis/google-cloud-go/commit/71828c28d424c34da6d0392651739a364cd57e79))
+
+
+### Bug Fixes
+
+* **logging:** Entries has a 24H default filter ([#3120](https://www.github.com/googleapis/google-cloud-go/issues/3120)) ([b32eb82](https://www.github.com/googleapis/google-cloud-go/commit/b32eb822d17838bde91c610a5a9d392d325a592d))
+
 ## v1.3.0
 
 - Updates to various dependencies.
