@@ -28,7 +28,7 @@ import (
 
 func updateGocloudPR(ctx context.Context, githubClient *GithubClient, pr *PullRequest) error {
 	if pr.Author != githubClient.Username {
-		return fmt.Errorf("Pull request author %q does not match authenticated user %q", pr.Author, githubClient.Username)
+		return fmt.Errorf("pull request author %q does not match authenticated user %q", pr.Author, githubClient.Username)
 	}
 
 	// Checkout PR and update go.mod
