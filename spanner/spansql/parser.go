@@ -1917,28 +1917,7 @@ func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 	return list, aliases, nil
 }
 
-func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
-	debugf("parseSelectFrom: %v", p)
-
-	/*
-		from_item: {
-			table_name [ table_hint_expr ] [ [ AS ] alias ] |
-			join |
-			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
-			field_path |
-			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
-				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
-			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
-		}
-
-		join:
-			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
-				[ ON bool_expression | USING ( join_column [, ...] ) ]
-
-		join_type:
-			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
-	*/
-
+func (p *parser) parseSelectFromTable() (SelectFrom, *parseError) {
 	if p.eat("UNNEST") {
 		if err := p.expect("("); err != nil {
 			return nil, err
@@ -1980,19 +1959,22 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		}
 		sf.Alias = alias
 	}
+	return sf, nil
+}
 
+func (p *parser) parseSelectFromJoin(lhs SelectFrom) (SelectFrom, *parseError) {
 	// Look ahead to see if this is a join.
 	tok := p.next()
 	if tok.err != nil {
 		p.back()
-		return sf, nil
+		return nil, nil
 	}
 	var hashJoin bool // Special case for "HASH JOIN" syntax.
 	if tok.value == "HASH" {
 		hashJoin = true
 		tok = p.next()
 		if tok.err != nil {
-			return nil, err
+			return nil, tok.err
 		}
 	}
 	var jt JoinType
@@ -2011,13 +1993,13 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 			return nil, err
 		}
 	} else {
+		// Not a join
 		p.back()
-		return sf, nil
+		return nil, nil
 	}
-
 	sfj := SelectFromJoin{
 		Type: jt,
-		LHS:  sf,
+		LHS:  lhs,
 	}
 	setHint := func(k, v string) {
 		if sfj.Hints == nil {
@@ -2060,7 +2042,8 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		}
 	}
 
-	sfj.RHS, err = p.parseSelectFrom()
+	rhs, err := p.parseSelectFromTable()
+	sfj.RHS = rhs
 	if err != nil {
 		return nil, err
 	}
@@ -2082,6 +2065,46 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	}
 
 	return sfj, nil
+}
+
+func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
+	debugf("parseSelectFrom: %v", p)
+
+	/*
+		from_item: {
+			table_name [ table_hint_expr ] [ [ AS ] alias ] |
+			join |
+			( query_expr ) [ table_hint_expr ] [ [ AS ] alias ] |
+			field_path |
+			{ UNNEST( array_expression ) | UNNEST( array_path ) | array_path }
+				[ table_hint_expr ] [ [ AS ] alias ] [ WITH OFFSET [ [ AS ] alias ] ] |
+			with_query_name [ table_hint_expr ] [ [ AS ] alias ]
+		}
+
+		join:
+			from_item [ join_type ] [ join_method ] JOIN  [ join_hint_expr ] from_item
+				[ ON bool_expression | USING ( join_column [, ...] ) ]
+
+		join_type:
+			{ INNER | CROSS | FULL [OUTER] | LEFT [OUTER] | RIGHT [OUTER] }
+	*/
+	leftHandSide, err := p.parseSelectFromTable()
+	if err != nil {
+		return nil, err
+	}
+	// Lets keep consuming joins until we no longer find more joins
+	for {
+		sfj, err := p.parseSelectFromJoin(leftHandSide)
+		if err != nil {
+			return nil, err
+		}
+		if sfj == nil {
+			// There was no join to consume
+			break
+		}
+		leftHandSide = sfj
+	}
+	return leftHandSide, nil
 }
 
 var joinKeywords = map[string]JoinType{
