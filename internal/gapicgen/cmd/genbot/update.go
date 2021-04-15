@@ -22,7 +22,8 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
+
+	"cloud.google.com/go/internal/gapicgen/command"
 )
 
 func updateGocloudPR(ctx context.Context, githubClient *GithubClient, pr *PullRequest) error {
@@ -55,7 +56,7 @@ func updateGocloudGoMod(pr *PullRequest) error {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	c := exec.Command("/bin/bash", "-c", `
+	c := command.Create("/bin/bash", "-c", `
 set -ex
 
 git init
@@ -85,9 +86,6 @@ then
 	git push -f origin $BRANCH_NAME
 fi
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	c.Env = []string{
 		fmt.Sprintf("BRANCH_NAME=%s", gocloudBranchName),
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
