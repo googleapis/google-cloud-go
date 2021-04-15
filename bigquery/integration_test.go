@@ -2559,6 +2559,7 @@ func TestIntegration_DeleteJob(t *testing.T) {
 	ctx := context.Background()
 
 	q := client.Query("SELECT 17 as foo")
+	q.Location = "us-east1"
 
 	job, err := q.Run(ctx)
 	if err != nil {
