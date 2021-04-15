@@ -139,7 +139,13 @@ func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
 	return &info
 }
 
-type EncryptionStatus *status.Status
+// TODO: This will surface details, we don't surface that in java.
+// TODO: should this be wrapped to enable hiding this? https://github.com/grpc/grpc-go/blob/v1.37.0/internal/status/status.go#L123
+
+// EncryptionStatus references google.golang.org/grpc/status.
+// It represents an RPC status code, message, and details of EncryptionInfo.
+// https://godoc.org/google.golang.org/grpc/internal/status
+type EncryptionStatus = status.Status
 
 type EncryptionType int32
 
@@ -1037,10 +1043,39 @@ func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID str
 
 // ClusterConfig contains the information necessary to create a cluster
 type ClusterConfig struct {
-	InstanceID, ClusterID, Zone string
-	NumNodes                    int32
-	StorageType                 StorageType
-	KMSKeyName                  string
+	// InstanceID specifies the unique name of the instance. Required.
+	InstanceID string
+
+	// ClusterID specifies the unique name of the cluster. Required.
+	ClusterID string
+
+	// Zone specifies the location where this cluster's nodes and storage reside.
+	// For best performance, clients should be located as close as possible to this
+	// cluster. Required.
+	Zone string
+
+	// NumNodes specifies the number of nodes allocated to this cluster. More
+	// nodes enable higher throughput and more consistent performance. Required.
+	NumNodes int32
+
+	// StorageType specifies the type of storage used by this cluster to serve
+	// its parent instance's tables, unless explicitly overridden. Required.
+	StorageType StorageType
+
+	// KMSKeyName is the name of the KMS customer managed encryption key (CMEK)
+	// to use for at-rest encryption of data in this cluster.  If omitted,
+	// Google's default encryption will be used. If specified, the requirements
+	// for this key are:
+	// 1) The Cloud Bigtable service account associated with the
+	//    project that contains the cluster must be granted the
+	//    ``cloudkms.cryptoKeyEncrypterDecrypter`` role on the
+	//    CMEK.
+	// 2) Only regional keys can be used and the region of the
+	//    CMEK key must match the region of the cluster.
+	// 3) All clusters within an instance must use the same CMEK
+	//    key.
+	// Optional. Immutable.
+	KMSKeyName string
 }
 
 func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
@@ -1056,12 +1091,23 @@ func (cc *ClusterConfig) proto(project string) *btapb.Cluster {
 
 // ClusterInfo represents information about a cluster.
 type ClusterInfo struct {
-	Name        string      // name of the cluster
-	Zone        string      // GCP zone of the cluster (e.g. "us-central1-a")
-	ServeNodes  int         // number of allocated serve nodes
-	State       string      // state of the cluster
-	StorageType StorageType // the storage type of the cluster
-	KMSKeyName  string      // the customer managed encryption key for the cluster
+	// Name is the name of the cluster.
+	Name string
+
+	// Zone is the GCP zone of the cluster (e.g. "us-central1-a").
+	Zone string
+
+	// ServeNodes is the number of allocated serve nodes.
+	ServeNodes int
+
+	// State is the state of the cluster.
+	State string
+
+	// StorageType is the storage type of the cluster.
+	StorageType StorageType
+
+	// KMSKeyName is the customer managed encryption key for the cluster.
+	KMSKeyName string
 }
 
 // CreateCluster creates a new cluster in an instance.
