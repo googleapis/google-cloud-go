@@ -12,16 +12,11 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Command gensnippets writes all of the GoDoc examples to the given
-// output directory.
-//
-// Every module in the current directory is processed. You can optionally
-// pass a directory to process instead.
-package main
+// Package gensnippets processes GoDoc examples.
+package gensnippets
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"go/format"
 	"go/printer"
@@ -38,17 +33,16 @@ import (
 	"golang.org/x/sys/execabs"
 )
 
-func main() {
-	outDir := flag.String("out", "internal/generated/snippets", "Output directory (default internal/generated/snippets)")
-
-	flag.Parse()
-
-	rootDir := "."
-	if flag.NArg() > 0 {
-		rootDir = flag.Arg(0)
+// Generate reads all modules in rootDir and outputs their examples in outDir.
+func Generate(rootDir, outDir string) error {
+	if rootDir == "" {
+		rootDir = "."
+	}
+	if outDir == "" {
+		outDir = "internal/generated/snippets"
 	}
 
-	// Find all modules in the current directory.
+	// Find all modules in rootDir.
 	dirs := []string{}
 	filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -63,29 +57,31 @@ func main() {
 		return nil
 	})
 
-	log.Printf("Processing %v directories: %q\n", len(dirs), dirs)
+	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
 
 	trimPrefix := "cloud.google.com/go"
 	for _, dir := range dirs {
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
 		if err != nil {
-			log.Fatalf("failed to load packages: %v", err)
+			return fmt.Errorf("failed to load packages: %v", err)
 		}
 		for _, pi := range pis {
-			if err := processExamples(pi.Doc, pi.Fset, trimPrefix, *outDir); err != nil {
-				log.Fatalf("failed to process examples: %v", err)
+			if err := processExamples(pi.Doc, pi.Fset, trimPrefix, outDir); err != nil {
+				return fmt.Errorf("failed to process examples: %v", err)
 			}
 		}
 	}
 
 	if len(dirs) > 0 {
 		cmd := execabs.Command("goimports", "-w", ".")
-		cmd.Dir = *outDir
+		cmd.Dir = outDir
 		if err := cmd.Run(); err != nil {
-			log.Fatalf("failed to run goimports: %v", err)
+			return fmt.Errorf("failed to run goimports: %v", err)
 		}
 	}
+
+	return nil
 }
 
 func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, outDir string) error {
@@ -170,17 +166,18 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 		if _, err := f.WriteString(header()); err != nil {
 			return err
 		}
-		tag := regionTag + "_" + ex.Name
+		// TODO(tbpg): print the right region tag.
+		// tag := regionTag + "_" + ex.Name
 		// Include an extra newline to keep separate from the package declaration.
-		if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
-			return err
-		}
+		// if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
+		// 	return err
+		// }
 		if _, err := f.WriteString(s); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
-			return err
-		}
+		// if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
+		// 	return err
+		// }
 	}
 	return nil
 }

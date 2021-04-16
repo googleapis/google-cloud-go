@@ -12,5 +12,10 @@
     "groupName": "all",
     "ignoreDeps": [
         "google.golang.org/genproto"
-    ]
+    ],
+    "force": {
+        "constraints": {
+          "go": "1.16"
+        }
+      }
 }
