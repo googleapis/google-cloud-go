@@ -23,7 +23,7 @@ import (
 	"flag"
 	"log"
 
-	"cloud.google.com/go/internal/gensnippets"
+	"cloud.google.com/go/internal/gapicgen/gensnippets"
 )
 
 func main() {
