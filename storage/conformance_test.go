@@ -44,6 +44,7 @@ var (
 	bucketIDs           = uid.NewSpace("bucket", nil)
 	objectIDs           = uid.NewSpace("object", nil)
 	notificationIDs     = uid.NewSpace("notification", nil)
+	testIDs							= uid.NewSpace("test", nil)
 	projectID           = "my-project-id"
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
 )
@@ -150,6 +151,11 @@ var methods = map[string][]retryFunc{
 		}},
 }
 
+type payload struct {
+	id string
+	instructions []string
+}
+
 func TestRetryConformance(t *testing.T) {
 
 	if os.Getenv("STORAGE_EMULATOR_HOST") == "" {
@@ -181,6 +187,20 @@ func TestRetryConformance(t *testing.T) {
 								if err := fs.populate(ctx, client, f); err != nil {
 									t.Fatalf("creating test fixtures: %v", err)
 								}
+							}
+
+							host := os.Getenv("STORAGE_EMULATOR_HOST")
+							endpoint := host + "/setup_retry_test"
+							c := http.DefaultClient
+
+							p := payload{
+								id: testIDs.New(),
+								instructions: instructions.Instructions,
+							}
+							body := bytes.NewBuffer(json.Marshal(p))
+							r, err := c.Post(endpoint, "application/json", body)
+							if err != nil {
+
 							}
 
 							// Create wrapped client which will send emulator instructions.
