@@ -442,6 +442,12 @@ type QueryStatistics struct {
 
 	// The DDL target table, present only for CREATE/DROP FUNCTION/PROCEDURE queries.
 	DDLTargetRoutine *Routine
+
+	// The number of row access policies affected by a DDL statement. Present only for DROP ALL ROW ACCESS POLICIES queries.
+	DDLAffectedRowAccessPolicyCount int64
+
+	// The DDL target row access policy. Present only for CREATE/DROP ROW ACCESS POLICY queries.
+	DDLTargetRowAccessPolicy *RowAccessPolicy
 }
 
 // ExplainQueryStage describes one stage of a query.
@@ -856,22 +862,24 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			tables = append(tables, bqToTable(tr, c))
 		}
 		js.Details = &QueryStatistics{
-			BillingTier:                   s.Query.BillingTier,
-			CacheHit:                      s.Query.CacheHit,
-			DDLTargetTable:                bqToTable(s.Query.DdlTargetTable, c),
-			DDLOperationPerformed:         s.Query.DdlOperationPerformed,
-			DDLTargetRoutine:              bqToRoutine(s.Query.DdlTargetRoutine, c),
-			StatementType:                 s.Query.StatementType,
-			TotalBytesBilled:              s.Query.TotalBytesBilled,
-			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
-			TotalBytesProcessedAccuracy:   s.Query.TotalBytesProcessedAccuracy,
-			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
-			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
-			Schema:                        bqToSchema(s.Query.Schema),
-			SlotMillis:                    s.Query.TotalSlotMs,
-			Timeline:                      timelineFromProto(s.Query.Timeline),
-			ReferencedTables:              tables,
-			UndeclaredQueryParameterNames: names,
+			BillingTier:                     s.Query.BillingTier,
+			CacheHit:                        s.Query.CacheHit,
+			DDLTargetTable:                  bqToTable(s.Query.DdlTargetTable, c),
+			DDLOperationPerformed:           s.Query.DdlOperationPerformed,
+			DDLTargetRoutine:                bqToRoutine(s.Query.DdlTargetRoutine, c),
+			DDLTargetRowAccessPolicy:        bqToRowAccessPolicy(s.Query.DdlTargetRowAccessPolicy, c),
+			StatementType:                   s.Query.StatementType,
+			TotalBytesBilled:                s.Query.TotalBytesBilled,
+			TotalBytesProcessed:             s.Query.TotalBytesProcessed,
+			TotalBytesProcessedAccuracy:     s.Query.TotalBytesProcessedAccuracy,
+			NumDMLAffectedRows:              s.Query.NumDmlAffectedRows,
+			DDLAffectedRowAccessPolicyCount: s.Query.DdlAffectedRowAccessPolicyCount,
+			QueryPlan:                       queryPlanFromProto(s.Query.QueryPlan),
+			Schema:                          bqToSchema(s.Query.Schema),
+			SlotMillis:                      s.Query.TotalSlotMs,
+			Timeline:                        timelineFromProto(s.Query.Timeline),
+			ReferencedTables:                tables,
+			UndeclaredQueryParameterNames:   names,
 		}
 	}
 	j.lastStatus.Statistics = js
