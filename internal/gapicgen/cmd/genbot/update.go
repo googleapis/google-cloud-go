@@ -22,12 +22,13 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
+
+	"cloud.google.com/go/internal/gapicgen/execv"
 )
 
 func updateGocloudPR(ctx context.Context, githubClient *GithubClient, pr *PullRequest) error {
 	if pr.Author != githubClient.Username {
-		return fmt.Errorf("Pull request author %q does not match authenticated user %q", pr.Author, githubClient.Username)
+		return fmt.Errorf("pull request author %q does not match authenticated user %q", pr.Author, githubClient.Username)
 	}
 
 	// Checkout PR and update go.mod
@@ -55,7 +56,7 @@ func updateGocloudGoMod(pr *PullRequest) error {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	c := exec.Command("/bin/bash", "-c", `
+	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
 git init
@@ -85,9 +86,6 @@ then
 	git push -f origin $BRANCH_NAME
 fi
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	c.Env = []string{
 		fmt.Sprintf("BRANCH_NAME=%s", gocloudBranchName),
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.

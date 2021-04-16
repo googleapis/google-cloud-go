@@ -23,9 +23,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
-	"strings"
+
+	"cloud.google.com/go/internal/gapicgen/execv"
 )
 
 // Config contains inputs needed to generate sources.
@@ -110,7 +110,7 @@ func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
 // build attempts to build all packages recursively from the given directory.
 func build(dir string) error {
 	log.Println("building generated code")
-	c := command("go", "build", "./...")
+	c := execv.Command("go", "build", "./...")
 	c.Dir = dir
 	return c.Run()
 }
@@ -118,31 +118,13 @@ func build(dir string) error {
 // vet runs linters on all .go files recursively from the given directory.
 func vet(dir string) error {
 	log.Println("vetting generated code")
-	c := command("goimports", "-w", ".")
+	c := execv.Command("goimports", "-w", ".")
 	c.Dir = dir
 	if err := c.Run(); err != nil {
 		return err
 	}
 
-	c = command("gofmt", "-s", "-d", "-w", "-l", ".")
+	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
 	c.Dir = dir
 	return c.Run()
-}
-
-type cmdWrapper struct {
-	*exec.Cmd
-}
-
-// command wraps a exec.Command to add some logging about commands being run.
-// The commands stdout/stderr default to os.Stdout/os.Stderr respectfully.
-func command(name string, arg ...string) *cmdWrapper {
-	c := &cmdWrapper{exec.Command(name, arg...)}
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	return c
-}
-
-func (cw *cmdWrapper) Run() error {
-	log.Printf(">>>> %v <<<<", strings.Join(cw.Cmd.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
-	return cw.Cmd.Run()
 }
