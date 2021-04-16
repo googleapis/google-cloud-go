@@ -22,12 +22,12 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"os/user"
 	"path"
 	"strings"
 	"time"
 
+	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/generator"
 	"github.com/google/go-github/v34/github"
 	"github.com/shurcooL/githubv4"
@@ -118,10 +118,7 @@ func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) er
 	if err := ioutil.WriteFile(path.Join(u.HomeDir, ".git-credentials"), gitCredentials, 0644); err != nil {
 		return err
 	}
-	c := exec.Command("git", "config", "--global", "user.name", githubName)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
+	c := execv.Command("git", "config", "--global", "user.name", githubName)
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -130,10 +127,7 @@ func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) er
 		return err
 	}
 
-	c = exec.Command("git", "config", "--global", "user.email", githubEmail)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
+	c = execv.Command("git", "config", "--global", "user.email", githubEmail)
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -191,7 +185,7 @@ func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string
 	}
 	body := sb.String()
 
-	c := exec.Command("/bin/bash", "-c", `
+	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
 git config credential.helper store # cache creds from ~/.git-credentials
@@ -204,9 +198,6 @@ git checkout -b $BRANCH_NAME
 git commit -m "$COMMIT_TITLE" -m "$COMMIT_BODY"
 git push origin $BRANCH_NAME
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -267,7 +258,7 @@ func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, 
 	sb.WriteString(generator.FormatChanges(changes, true))
 	body := sb.String()
 
-	c := exec.Command("/bin/bash", "-c", `
+	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
 git config credential.helper store # cache creds from ~/.git-credentials
@@ -280,9 +271,6 @@ git checkout -b $BRANCH_NAME
 git commit -m "$COMMIT_TITLE" -m "$COMMIT_BODY"
 git push origin $BRANCH_NAME
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -320,7 +308,7 @@ func (gc *GithubClient) AmendGenprotoPR(ctx context.Context, genprotoPRNum int, 
 	body.WriteString(fmt.Sprintf("\n\nCorresponding google-cloud-go PR: googleapis/google-cloud-go#%d\n", gocloudPRNum))
 	body.WriteString(generator.FormatChanges(changes, false))
 	sBody := body.String()
-	c := exec.Command("/bin/bash", "-c", `
+	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
 git config credential.helper store # cache creds from ~/.git-credentials
@@ -329,9 +317,6 @@ git checkout $BRANCH_NAME
 git commit --amend -m "$COMMIT_TITLE" -m "$COMMIT_BODY"
 git push -f origin $BRANCH_NAME
 `)
-	c.Stdout = os.Stdout
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.

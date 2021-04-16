@@ -28,16 +28,6 @@ import (
 	"cloud.google.com/go/internal/gapicgen"
 )
 
-type prStatus uint8
-
-func (ps prStatus) Has(status prStatus) bool { return ps&status != 0 }
-
-const (
-	noOpenPRs prStatus = 1 << iota
-	openGenprotoPR
-	openGocloudPR
-)
-
 func main() {
 	log.SetFlags(0)
 	if err := gapicgen.VerifyAllToolsExist([]string{"git", "go", "protoc"}); err != nil {
