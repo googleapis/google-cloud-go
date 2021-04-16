@@ -122,7 +122,7 @@ func (ac *AdminClient) backupPath(cluster, backup string) string {
 
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
-	EncryptionStatus EncryptionStatus
+	EncryptionStatus *Status
 	EncryptionType   EncryptionType
 	KMSKeyVersion    string
 }
@@ -139,13 +139,10 @@ func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
 	return &info
 }
 
-// TODO: This will surface details, we don't surface that in java.
-// TODO: should this be wrapped to enable hiding this? https://github.com/grpc/grpc-go/blob/v1.37.0/internal/status/status.go#L123
-
-// EncryptionStatus references google.golang.org/grpc/status.
+// Status references google.golang.org/grpc/status.
 // It represents an RPC status code, message, and details of EncryptionInfo.
 // https://godoc.org/google.golang.org/grpc/internal/status
-type EncryptionStatus = *status.Status
+type Status = status.Status
 
 type EncryptionType int32
 
@@ -179,9 +176,6 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (Encryp
 	}
 	encryptionInfo := EncryptionInfoByCluster{}
 	for key, cs := range res.ClusterStates {
-		// TODO: if we didn't wrap EncryptionInfo, this could reduce to
-		// returning map[string][]*btapb.EncryptionInfo directly
-		// encryptionInfo[key] = cs.EncryptionInfo
 		for _, pbInfo := range cs.EncryptionInfo {
 			info := EncryptionInfo{}
 			info.EncryptionStatus = pbInfo.EncryptionStatus
