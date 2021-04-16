@@ -22,6 +22,7 @@ import (
 	"strings"
 )
 
+// CmdWrapper is a wrapper around exec.Cmd for debugging purposes.
 type CmdWrapper struct {
 	*exec.Cmd
 }
@@ -36,6 +37,7 @@ func Command(name string, arg ...string) *CmdWrapper {
 	return &CmdWrapper{exec.Command(name, arg...)}
 }
 
+// Run a command.
 func (c *CmdWrapper) Run() error {
 	log.Printf("[%s] >>>> %v <<<<", c.Dir, strings.Join(c.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
 	return c.Cmd.Run()
