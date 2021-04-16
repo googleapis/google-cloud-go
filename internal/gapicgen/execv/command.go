@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package command provides a wrapper around exec.Cmd for debugging purposes.
-package command
+// Package execv provides a wrapper around exec.Cmd for debugging purposes.
+package execv
 
 import (
 	"log"
@@ -26,9 +26,9 @@ type CmdWrapper struct {
 	*exec.Cmd
 }
 
-// Create wraps a exec.Command to add some logging about commands being run.
+// Command wraps a exec.Command to add some logging about commands being run.
 // The commands stdout/stderr default to os.Stdout/os.Stderr respectfully.
-func Create(name string, arg ...string) *CmdWrapper {
+func Command(name string, arg ...string) *CmdWrapper {
 	c := &CmdWrapper{exec.Command(name, arg...)}
 	c.Stdout = os.Stdout
 	c.Stderr = os.Stderr
@@ -37,6 +37,6 @@ func Create(name string, arg ...string) *CmdWrapper {
 }
 
 func (c *CmdWrapper) Run() error {
-	log.Printf(">>>> %v <<<<", strings.Join(c.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
+	log.Printf("[%s] >>>> %v <<<<", c.Dir, strings.Join(c.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
 	return c.Cmd.Run()
 }

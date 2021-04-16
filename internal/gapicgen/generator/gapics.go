@@ -23,7 +23,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"cloud.google.com/go/internal/gapicgen/command"
+	"cloud.google.com/go/internal/gapicgen/execv"
 	"gopkg.in/yaml.v2"
 )
 
@@ -99,7 +99,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 // changes that are necessary for the in-flight regen.
 func (g *GapicGenerator) addModReplaceGenproto() error {
 	log.Println("adding temporary genproto replace statement")
-	c := command.Create("bash", "-c", `
+	c := execv.Command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | awk '{print $2}')
@@ -118,7 +118,7 @@ go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR
 // to be run after addModReplaceGenproto.
 func (g *GapicGenerator) dropModReplaceGenproto() error {
 	log.Println("removing genproto replace statement")
-	c := command.Create("bash", "-c", `
+	c := execv.Command("bash", "-c", `
 set -ex
 
 GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | grep -v replace | awk '{print $2}')
@@ -139,7 +139,7 @@ func (g *GapicGenerator) setVersion() error {
 	log.Println("updating client version")
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
 
-	c := command.Create("bash", "-c", `
+	c := execv.Command("bash", "-c", `
 ver=$(date +%Y%m%d)
 git ls-files -mo | while read modified; do
 	dir=${modified%/*.*}
@@ -183,7 +183,7 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
 	args = append(args, protoFiles...)
-	c := command.Create("protoc", args...)
+	c := execv.Command("protoc", args...)
 	c.Dir = g.googleapisDir
 	return c.Run()
 }
@@ -343,13 +343,13 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 // and places them in gocloudDir.
 func (g *GapicGenerator) copyMicrogenFiles() error {
 	// The period at the end is analagous to * (copy everything in this dir).
-	c := command.Create("cp", "-R", g.googleCloudDir+"/cloud.google.com/go/.", ".")
+	c := execv.Command("cp", "-R", g.googleCloudDir+"/cloud.google.com/go/.", ".")
 	c.Dir = g.googleCloudDir
 	if err := c.Run(); err != nil {
 		return err
 	}
 
-	c = command.Create("rm", "-rf", "cloud.google.com")
+	c = execv.Command("rm", "-rf", "cloud.google.com")
 	c.Dir = g.googleCloudDir
 	return c.Run()
 }

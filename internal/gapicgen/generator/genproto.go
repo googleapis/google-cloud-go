@@ -25,7 +25,7 @@ import (
 	"strconv"
 	"strings"
 
-	"cloud.google.com/go/internal/gapicgen/command"
+	"cloud.google.com/go/internal/gapicgen/execv"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -89,7 +89,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating genproto")
 
 	// Create space to put generated .pb.go's.
-	c := command.Create("mkdir", "generated")
+	c := execv.Command("mkdir", "generated")
 	c.Dir = g.genprotoDir
 	if err := c.Run(); err != nil {
 		return err
@@ -168,7 +168,7 @@ func goPkg(fileName string) (string, error) {
 func (g *GenprotoGenerator) protoc(fileNames []string) error {
 	args := []string{"--experimental_allow_proto3_optional", fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir), "-I", g.googleapisDir, "-I", g.protoSrcDir}
 	args = append(args, fileNames...)
-	c := command.Create("protoc", args...)
+	c := execv.Command("protoc", args...)
 	c.Dir = g.genprotoDir
 	return c.Run()
 }
@@ -200,12 +200,12 @@ func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[strin
 func (g *GenprotoGenerator) moveAndCleanupGeneratedSrc() error {
 	log.Println("moving generated code")
 	// The period at the end is analogous to * (copy everything in this dir).
-	c := command.Create("cp", "-R", filepath.Join(g.genprotoDir, "generated", "google.golang.org", "genproto", "googleapis"), g.genprotoDir)
+	c := execv.Command("cp", "-R", filepath.Join(g.genprotoDir, "generated", "google.golang.org", "genproto", "googleapis"), g.genprotoDir)
 	if err := c.Run(); err != nil {
 		return err
 	}
 
-	c = command.Create("rm", "-rf", "generated")
+	c = execv.Command("rm", "-rf", "generated")
 	c.Dir = g.genprotoDir
 	if err := c.Run(); err != nil {
 		return err

@@ -23,7 +23,7 @@ import (
 	"log"
 	"os"
 
-	"cloud.google.com/go/internal/gapicgen/command"
+	"cloud.google.com/go/internal/gapicgen/execv"
 )
 
 func updateGocloudPR(ctx context.Context, githubClient *GithubClient, pr *PullRequest) error {
@@ -56,7 +56,7 @@ func updateGocloudGoMod(pr *PullRequest) error {
 	}
 	defer os.RemoveAll(tmpDir)
 
-	c := command.Create("/bin/bash", "-c", `
+	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
 git init

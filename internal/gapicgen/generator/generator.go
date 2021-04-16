@@ -25,7 +25,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"cloud.google.com/go/internal/gapicgen/command"
+	"cloud.google.com/go/internal/gapicgen/execv"
 )
 
 // Config contains inputs needed to generate sources.
@@ -110,7 +110,7 @@ func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
 // build attempts to build all packages recursively from the given directory.
 func build(dir string) error {
 	log.Println("building generated code")
-	c := command.Create("go", "build", "./...")
+	c := execv.Command("go", "build", "./...")
 	c.Dir = dir
 	return c.Run()
 }
@@ -118,13 +118,13 @@ func build(dir string) error {
 // vet runs linters on all .go files recursively from the given directory.
 func vet(dir string) error {
 	log.Println("vetting generated code")
-	c := command.Create("goimports", "-w", ".")
+	c := execv.Command("goimports", "-w", ".")
 	c.Dir = dir
 	if err := c.Run(); err != nil {
 		return err
 	}
 
-	c = command.Create("gofmt", "-s", "-d", "-w", "-l", ".")
+	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
 	c.Dir = dir
 	return c.Run()
 }

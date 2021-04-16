@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strings"
 
-	"cloud.google.com/go/internal/gapicgen/command"
+	"cloud.google.com/go/internal/gapicgen/execv"
 )
 
 // ChangeInfo represents a change and its associated metadata.
@@ -88,7 +88,7 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 	for _, hash := range hashes {
 		// Get commit title and body
 		rawBody := bytes.NewBuffer(nil)
-		c := command.Create("git", "show", "--pretty=format:%s~~%b", "-s", hash)
+		c := execv.Command("git", "show", "--pretty=format:%s~~%b", "-s", hash)
 		c.Stdout = rawBody
 		c.Dir = googleapisDir
 		if err := c.Run(); err != nil {
@@ -154,7 +154,7 @@ func CommitsSinceHash(gitDir, hash string, inclusive bool) ([]string, error) {
 	}
 
 	out := bytes.NewBuffer(nil)
-	c := command.Create("git", "rev-list", commitRange)
+	c := execv.Command("git", "rev-list", commitRange)
 	c.Stdout = out
 	c.Dir = gitDir
 	if err := c.Run(); err != nil {
@@ -172,7 +172,7 @@ func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
 	// - (C) Copied
 	// - (M) Modified
 	// - (R) Renamed
-	c := command.Create("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash))
+	c := execv.Command("git", "diff-tree", "--no-commit-id", "--name-only", "--diff-filter=ACMR", "-r", fmt.Sprintf("%s..HEAD", hash))
 	c.Stdout = out
 	c.Dir = gitDir
 	if err := c.Run(); err != nil {
@@ -185,7 +185,7 @@ func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
 // hash in the given gitDir.
 func filesChanged(gitDir, hash string) ([]string, error) {
 	out := bytes.NewBuffer(nil)
-	c := command.Create("git", "show", "--pretty=format:", "--name-only", hash)
+	c := execv.Command("git", "show", "--pretty=format:", "--name-only", hash)
 	c.Stdout = out
 	c.Dir = gitDir
 	if err := c.Run(); err != nil {

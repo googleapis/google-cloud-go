@@ -26,7 +26,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"cloud.google.com/go/internal/gapicgen/command"
+	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/generator"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/src-d/go-git.v4"
@@ -157,7 +157,7 @@ func hasChanges(dir string) (bool, error) {
 	inmem := &bytes.Buffer{}
 	w := io.MultiWriter(os.Stderr, inmem)
 
-	c := command.Create("bash", "-c", "git status --short")
+	c := execv.Command("bash", "-c", "git status --short")
 	c.Dir = dir
 	c.Stdout = w
 	err := c.Run()
