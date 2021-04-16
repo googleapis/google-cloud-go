@@ -127,7 +127,7 @@ func forEachMod(rootDir string, fn func(dir string) error) error {
 }
 
 func goModTidy(dir string) error {
-	log.Printf("[%s] running go mod tidy\n", dir)
+	log.Printf("[%s] running go mod tidy", dir)
 	c := command("go", "mod", "tidy")
 	c.Dir = dir
 	c.Env = []string{
@@ -172,7 +172,7 @@ func replaceAllForSnippets(googleCloudDir, snippetDir string) error {
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
 func (g *GapicGenerator) addModReplaceGenproto(dir string) error {
-	log.Printf("[%s] adding temporary genproto replace statement\n", dir)
+	log.Printf("[%s] adding temporary genproto replace statement", dir)
 	c := command("bash", "-c", `
 set -ex
 
@@ -190,7 +190,7 @@ go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
 func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
-	log.Printf("[%s] removing genproto replace statement\n", dir)
+	log.Printf("[%s] removing genproto replace statement", dir)
 	c := command("bash", "-c", `
 set -ex
 

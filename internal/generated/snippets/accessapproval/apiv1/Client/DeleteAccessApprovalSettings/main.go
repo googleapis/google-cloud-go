@@ -12,8 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START generated_accessapproval_apiv1_Client_DeleteAccessApprovalSettings]
-
 package main
 
 import (
@@ -38,5 +36,3 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
-// [END generated_accessapproval_apiv1_Client_DeleteAccessApprovalSettings]

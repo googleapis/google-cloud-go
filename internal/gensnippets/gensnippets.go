@@ -166,17 +166,18 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 		if _, err := f.WriteString(header()); err != nil {
 			return err
 		}
-		tag := regionTag + "_" + ex.Name
+		// TODO(tbpg): print the right region tag.
+		// tag := regionTag + "_" + ex.Name
 		// Include an extra newline to keep separate from the package declaration.
-		if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
-			return err
-		}
+		// if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
+		// 	return err
+		// }
 		if _, err := f.WriteString(s); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
-			return err
-		}
+		// if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
+		// 	return err
+		// }
 	}
 	return nil
 }
