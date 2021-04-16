@@ -78,7 +78,8 @@ type colInfo struct {
 type index struct {
 	table *table
 
-	includedCols map[int]bool
+	indexedCols map[int]bool
+	storingCols map[int]bool
 
 	// Information about the index columns.
 	cols     []int
@@ -405,7 +406,8 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 		cols := make([]int, len(stmt.Columns))
 		desc := make([]bool, len(stmt.Columns))
 		colIndex := make(map[spansql.ID]int, len(stmt.Columns))
-		inc := make(map[int]bool, len(stmt.Columns))
+		indexed := make(map[int]bool, len(stmt.Columns))
+		storing := make(map[int]bool, len(stmt.Storing)+t.pkCols)
 		for j := range stmt.Columns {
 			v, ok := t.colIndex[stmt.Columns[j].Column]
 			if !ok {
@@ -414,23 +416,28 @@ func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
 			cols[j] = v
 			desc[j] = stmt.Columns[j].Desc
 			colIndex[stmt.Columns[j].Column] = v
-			inc[v] = true
+			indexed[v] = true
 		}
 		for j := range stmt.Storing {
 			v, ok := t.colIndex[stmt.Columns[j].Column]
 			if !ok {
 				return status.Newf(codes.NotFound, "no column named %s in table %s", stmt.Columns[j].Column, stmt.Table)
 			}
-			inc[v] = true
+			storing[v] = true
+		}
+		// Primary key columns are implicitly stored.
+		for j := 0; j < t.pkCols; j++ {
+			storing[j] = true
 		}
 		stor := btree.New(2)
 		idx := &index{
-			table:        t,
-			cols:         cols,
-			includedCols: inc,
-			colIndex:     colIndex,
-			desc:         desc,
-			tree:         stor,
+			table:       t,
+			cols:        cols,
+			indexedCols: indexed,
+			storingCols: storing,
+			colIndex:    colIndex,
+			desc:        desc,
+			tree:        stor,
 		}
 		d.indexes[stmt.Name] = idx
 		t.indexes = append(t.indexes, idx)
@@ -695,7 +702,7 @@ func (i *index) key(values []*structpb.Value) ([]interface{}, error) {
 	return res, nil
 }
 
-// readTable executes a read option (Read, ReadAll).
+// readIndex executes a read option (Read, ReadAll) from a secondary index.
 func (d *database) readIndex(tbl, idx spansql.ID, cols []spansql.ID, f func(*index, *rawIter, []int) error) (*rawIter, error) {
 	i, err := d.index(idx)
 	if err != nil {
@@ -708,7 +715,7 @@ func (d *database) readIndex(tbl, idx spansql.ID, cols []spansql.ID, f func(*ind
 	}
 
 	if t != i.table {
-		return nil, status.Errorf(codes.InvalidArgument, "wrong table for index")
+		return nil, status.Errorf(codes.FailedPrecondition, "Index %s is not an index on %s.", idx, tbl)
 	}
 
 	t.mu.Lock()
@@ -722,8 +729,8 @@ func (d *database) readIndex(tbl, idx spansql.ID, cols []spansql.ID, f func(*ind
 	ri := &rawIter{}
 	for _, j := range colIndexes {
 		ri.cols = append(ri.cols, t.cols[j])
-		if !i.includedCols[j] {
-			return nil, status.Error(codes.InvalidArgument, "column not included in index")
+		if !i.columnIncluded(j) {
+			return nil, status.Errorf(codes.Unimplemented, "Reading non-indexed columns using an index is not supported. Consider adding %s to the index using a STORING clause.", t.cols[j].Name)
 		}
 	}
 	return ri, f(i, ri, colIndexes)
@@ -1057,13 +1064,21 @@ func (t *table) insertRow(rowNum int, r row) {
 }
 
 func (t *table) updateRow(rowNum int, r row, colIndexes []int) {
-	for _, idx := range t.indexes {
-		idx.deleteRow(t.rows[rowNum])
+	var updatedIndexes []int
+	for j, idx := range t.indexes {
+		for _, c := range colIndexes {
+			if idx.indexedCols[c] {
+				idx.deleteRow(t.rows[rowNum])
+				updatedIndexes = append(updatedIndexes, j)
+				break
+			}
+		}
 	}
 	for _, i := range colIndexes {
 		t.rows[rowNum][i] = r[i]
 	}
-	for _, idx := range t.indexes {
+	for _, j := range updatedIndexes {
+		idx := t.indexes[j]
 		idx.insertRow(t.rows[rowNum])
 	}
 }
@@ -1289,16 +1304,22 @@ func (i *index) clear() {
 }
 
 func (i *index) removedColumn(pre int) {
-	for j := range i.includedCols {
+	for j := range i.indexedCols {
 		if j > pre {
-			delete(i.includedCols, j)
-			i.includedCols[j-1] = true
+			delete(i.indexedCols, j)
+			i.indexedCols[j-1] = true
+		}
+	}
+	for j := range i.storingCols {
+		if j > pre {
+			delete(i.storingCols, j)
+			i.storingCols[j-1] = true
 		}
 	}
 	for c, j := range i.colIndex {
 		if j > pre {
 			i.colIndex[c]--
-			delete(i.includedCols, j)
+			delete(i.indexedCols, j)
 		}
 	}
 	for n, j := range i.cols {
@@ -1306,6 +1327,10 @@ func (i *index) removedColumn(pre int) {
 			i.cols[n]--
 		}
 	}
+}
+
+func (i *index) columnIncluded(j int) bool {
+	return i.indexedCols[j] || i.storingCols[j]
 }
 
 // rowCmp compares two rows, returning -1/0/+1.
