@@ -18,11 +18,14 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
 	"strings"
 
+	"cloud.google.com/go/internal/gensnippets"
+	"golang.org/x/sys/execabs"
 	"gopkg.in/yaml.v2"
 )
 
@@ -74,7 +77,18 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := g.addModReplaceGenproto(); err != nil {
+	if err := forEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
+		return err
+	}
+
+	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
+	if err := gensnippets.Generate(g.googleCloudDir, snippetDir); err != nil {
+		return fmt.Errorf("error generating snippets: %v", err)
+	}
+	if err := replaceAllForSnippets(g.googleCloudDir, snippetDir); err != nil {
+		return err
+	}
+	if err := goModTidy(snippetDir); err != nil {
 		return err
 	}
 
@@ -86,25 +100,85 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := g.dropModReplaceGenproto(); err != nil {
+	if err := forEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+// forEachMod runs the given function with the directory of
+// every non-internal module.
+func forEachMod(rootDir string, fn func(dir string) error) error {
+	return filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+		if strings.Contains(path, "internal") {
+			return filepath.SkipDir
+		}
+		if d.Name() == "go.mod" {
+			if err := fn(filepath.Dir(path)); err != nil {
+				return err
+			}
+		}
+		return nil
+	})
+}
+
+func goModTidy(dir string) error {
+	log.Printf("[%s] running go mod tidy", dir)
+	c := command("go", "mod", "tidy")
+	c.Dir = dir
+	c.Env = []string{
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+	}
+	return c.Run()
+}
+
+func replaceAllForSnippets(googleCloudDir, snippetDir string) error {
+	return forEachMod(googleCloudDir, func(dir string) error {
+		if dir == snippetDir {
+			return nil
+		}
+
+		// Get the module name in this dir.
+		modC := execabs.Command("go", "list", "-m")
+		modC.Dir = dir
+		mod, err := modC.Output()
+		if err != nil {
+			return err
+		}
+
+		// Replace it. Use a relative path to avoid issues on different systems.
+		rel, err := filepath.Rel(snippetDir, dir)
+		if err != nil {
+			return err
+		}
+		c := command("bash", "-c", `go mod edit -replace "$MODULE=$MODULE_PATH"`)
+		c.Dir = snippetDir
+		c.Env = []string{
+			fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+			fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+			fmt.Sprintf("MODULE=%s", mod),
+			fmt.Sprintf("MODULE_PATH=%s", rel),
+		}
+		return c.Run()
+	})
+}
+
 // addModReplaceGenproto adds a genproto replace statement that points genproto
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
-func (g *GapicGenerator) addModReplaceGenproto() error {
-	log.Println("adding temporary genproto replace statement")
+func (g *GapicGenerator) addModReplaceGenproto(dir string) error {
+	log.Printf("[%s] adding temporary genproto replace statement", dir)
 	c := command("bash", "-c", `
 set -ex
 
-GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | awk '{print $2}')
-go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR"
+go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
 `)
-	c.Dir = g.googleCloudDir
+	c.Dir = dir
 	c.Env = []string{
 		"GENPROTO_DIR=" + g.genprotoDir,
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -115,15 +189,14 @@ go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR
 
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
-func (g *GapicGenerator) dropModReplaceGenproto() error {
-	log.Println("removing genproto replace statement")
+func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
+	log.Printf("[%s] removing genproto replace statement", dir)
 	c := command("bash", "-c", `
 set -ex
 
-GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | grep -v replace | awk '{print $2}')
-go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
+go mod edit -dropreplace "google.golang.org/genproto"
 `)
-	c.Dir = g.googleCloudDir
+	c.Dir = dir
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
