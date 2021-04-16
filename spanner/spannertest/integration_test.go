@@ -205,7 +205,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 		`ALTER TABLE `+tableName+` ADD COLUMN Age INT64`,
 		`CREATE INDEX AgeIndexAsc ON `+tableName+` (Age)`,
 		`CREATE INDEX AgeIndexDesc ON `+tableName+` (Age DESC)`,
-		`CREATE INDEX AgeIndexStoring ON `+tableName+` (Age, FirstName) STORING (LastName)`)
+		`CREATE INDEX AgeIndexStoring ON `+tableName+` (Age, Alias) STORING (FirstName, LastName)`)
 	if err != nil {
 		t.Fatalf("Adding new column: %v", err)
 	}
@@ -649,6 +649,124 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 			}
 		}
 	})
+	t.Run("Indexes are consistent", func(t *testing.T) {
+		cases := []struct {
+			prepare func() error
+			want    map[int64][]string
+		}{
+			{
+				prepare: func() error {
+					_, err = client.Apply(ctx, []*spanner.Mutation{
+						spanner.Insert(tableName,
+							[]string{"FirstName", "LastName", "Alias", "Age"},
+							[]interface{}{"Luke", "Cage", "Power Man", 38}),
+						spanner.Insert(tableName,
+							[]string{"LastName", "FirstName", "Age", "Alias"},
+							[]interface{}{"Lang", "Scott", 50, "Ant-Man"}),
+						spanner.Insert(tableName,
+							[]string{"Age", "Alias", "FirstName", "LastName"},
+							[]interface{}{50, "Hulk", "Bruce", "Banner"}),
+					})
+					return err
+				},
+				want: map[int64][]string{
+					38: []string{"Power Man"},
+					50: []string{"Ant-Man", "Hulk"},
+				},
+			},
+			{
+				prepare: func() error {
+					_, err = client.Apply(ctx, []*spanner.Mutation{
+						spanner.Update(tableName,
+							[]string{"FirstName", "LastName", "Alias", "Age"},
+							[]interface{}{"Luke", "Cage", "Power Man", 50}),
+					})
+					return err
+				},
+				want: map[int64][]string{
+					38: nil,
+					50: []string{"Ant-Man", "Hulk", "Power Man"},
+				},
+			},
+			{
+				prepare: func() error {
+					_, err = client.Apply(ctx, []*spanner.Mutation{
+						spanner.Update(tableName,
+							[]string{"LastName", "FirstName", "Age", "Alias"},
+							[]interface{}{"Lang", "Scott", spanner.NullInt64{}, "Ant-Man"}),
+						spanner.Update(tableName,
+							[]string{"Age", "Alias", "FirstName", "LastName"},
+							[]interface{}{spanner.NullInt64{}, "Hulk", "Bruce", "Banner"}),
+					})
+					return err
+				},
+				want: map[int64][]string{
+					38: nil,
+					50: []string{"Power Man"},
+				},
+			},
+			{
+				prepare: func() error {
+					_, err = client.Apply(ctx, []*spanner.Mutation{
+						spanner.Delete(tableName, spanner.KeySetFromKeys(spanner.Key{"Luke", "Cage"})),
+					})
+					return err
+				},
+				want: map[int64][]string{
+					38: nil,
+					50: nil,
+				},
+			},
+		}
+		for j, tc := range cases[:2] {
+			t.Logf("Preparing test case %d", j)
+			if err := tc.prepare(); err != nil {
+				t.Fatalf("Preparing test: %v", err)
+			}
+			got := map[int64][]string{}
+			for age := range tc.want {
+				key := spanner.Key{age}
+				ages := ages[:0]
+				got[age] = nil
+
+				if err := client.Single().ReadUsingIndex(ctx, tableName, "AgeIndexAsc", spanner.KeySetFromKeys(key), []string{"Age"}).Do(func(row *spanner.Row) error {
+					var age spanner.NullInt64
+					if err := row.Column(0, &age); err != nil {
+						return err
+					}
+					ages = append(ages, age.Int64) // zero for NULL
+					return nil
+				}); err != nil {
+					t.Errorf("Getting ages using index: %v", err)
+				}
+				if len(ages) != len(tc.want[age]) {
+					t.Errorf("Case %d gave wrong count for age %d: got %d, want %d", j, age, len(ages), len(tc.want[age]))
+				}
+
+				if err := client.Single().ReadUsingIndex(ctx, tableName, "AgeIndexStoring", spanner.KeyRange{
+					Start: key,
+					End:   key,
+					Kind:  spanner.ClosedClosed,
+				}, []string{"Age", "Alias"}).Do(func(row *spanner.Row) error {
+					var age spanner.NullInt64
+					if err := row.Column(0, &age); err != nil {
+						return err
+					}
+					var alias spanner.NullString
+					if err := row.Column(1, &alias); err != nil {
+						return err
+					}
+					got[age.Int64] = append(got[age.Int64], alias.StringVal)
+					return nil
+				}); err != nil {
+					t.Errorf("Getting aliases from age index: %v", err)
+				}
+			}
+			if !reflect.DeepEqual(got, tc.want) {
+				t.Errorf("Case %d gave wrong results: got %+v, want %+v", j, got, tc.want)
+			}
+		}
+	})
 }
 
 func TestIntegration_ReadsAndQueries(t *testing.T) {
@@ -936,7 +1054,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{1, []string{"Jack", "Daniel"}, []int64{1, 2}}),
 		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{2, []string{"Jack", "Daniel", "Sam"}, []int64{1, 2, 3}}),
 		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{3, []string{"Teal'c"}, []int64{4}}),
-		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{4, []string{"Jack", "Daniel", "Sam", "Teal'c", "George"}, []int64{1,2,3,4,5}}),
+		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{4, []string{"Jack", "Daniel", "Sam", "Teal'c", "George"}, []int64{1, 2, 3, 4, 5}}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)
