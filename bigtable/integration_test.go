@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -1497,12 +1498,11 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	table := testEnv.Config().Table
 	clusterID := testEnv.Config().Cluster
 
-	// TODO: It may be good to automate, or allow this to be passed in ;)
-	project := "firestore-harvard-library"
-	loc := "us-central1" // NOTE: cannot use "global"
-	ring := "crwilcox-cmek-test-key2"
-	key := "crwilcox-cmek-test-key2"
-	kmsKeyName := fmt.Sprintf("projects/%s/locations/%s/keyRings/%s/cryptoKeys/%s", project, loc, ring, key)
+	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+	if keyRingName == "" {
+		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+	}
+	kmsKeyName := keyRingName + "/cryptoKeys/key1"
 
 	conf := &InstanceWithClustersConfig{
 		InstanceID: instanceToCreate,

@@ -145,7 +145,7 @@ func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
 // EncryptionStatus references google.golang.org/grpc/status.
 // It represents an RPC status code, message, and details of EncryptionInfo.
 // https://godoc.org/google.golang.org/grpc/internal/status
-type EncryptionStatus = status.Status
+type EncryptionStatus = *status.Status
 
 type EncryptionType int32
 
