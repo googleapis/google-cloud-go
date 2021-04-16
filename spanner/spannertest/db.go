@@ -274,11 +274,11 @@ func (r *indexRow) lessThan(than *indexRow, inclusive bool) bool {
 	for j := range r.i.cols {
 		left, ok := r.item(j)
 		if !ok {
-			return !r.i.desc[j]
+			return !r.i.desc[j] || inclusive
 		}
 		right, ok := than.item(j)
 		if !ok {
-			return r.i.desc[j]
+			return r.i.desc[j] || inclusive
 		}
 		n := compareVals(left, right)
 		if n < 0 {
@@ -297,6 +297,40 @@ func (r *indexRow) Less(than btree.Item) bool {
 
 func (r *indexRow) LessOrEqual(than btree.Item) bool {
 	return r.lessThan(than.(*indexRow), true)
+}
+
+func (r *indexRow) searchRows(find row) (int, bool) {
+	t := r.i.table
+	var found bool
+	j := sort.Search(len(r.rows), func(i int) bool {
+		res := compareValLists(r.rows[i][:t.pkCols], find[:t.pkCols], t.pkDesc)
+		if res == 0 {
+			found = true
+		}
+		return res >= 0
+	})
+	return j, found
+}
+
+func (r *indexRow) insertRow(v row) bool {
+	j, found := r.searchRows(v)
+	if !found {
+		r.rows = append(r.rows, nil)
+		copy(r.rows[j+1:], r.rows[j:])
+		r.rows[j] = v
+	}
+	return !found
+}
+
+func (r *indexRow) deleteRow(v row) bool {
+	j, found := r.searchRows(v)
+	if found {
+		copy(r.rows[j:], r.rows[j+1:])
+		if len(r.rows) > 0 {
+			r.r = r.rows[0]
+		}
+	}
+	return found
 }
 
 func (d *database) ApplyDDL(stmt spansql.DDLStmt) *status.Status {
@@ -551,9 +585,7 @@ func (d *database) Update(tx *transaction, tbl spansql.ID, cols []spansql.ID, va
 			return status.Errorf(codes.NotFound, "row not in table")
 		}
 
-		for _, i := range colIndexes {
-			t.rows[rowNum][i] = r[i]
-		}
+		t.updateRow(rowNum, r, colIndexes)
 		return nil
 	})
 }
@@ -866,8 +898,14 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 			// TODO: what happens in this case?
 			return status.Newf(codes.Unimplemented, "can't add NOT NULL columns to non-empty tables yet")
 		}
+		for _, idx := range t.indexes {
+			idx.clear()
+		}
 		for i := range t.rows {
 			t.rows[i] = append(t.rows[i], nil)
+			for _, idx := range t.indexes {
+				idx.insertRow(t.rows[i])
+			}
 		}
 	}
 
@@ -919,9 +957,17 @@ func (t *table) dropColumn(name spansql.ID) *status.Status {
 		}
 	}
 
+	for _, idx := range t.indexes {
+		idx.clear()
+		idx.removedColumn(pre)
+	}
+
 	// Drop data.
 	for i := range t.rows {
 		t.rows[i] = append(t.rows[i][:ci], t.rows[i][ci+1:]...)
+		for _, idx := range t.indexes {
+			idx.insertRow(t.rows[i])
+		}
 	}
 
 	return nil
@@ -1043,7 +1089,7 @@ func (i *index) insertRow(r row) {
 		rows: []row{r},
 	}
 	if existing := i.tree.Get(item); existing != nil {
-		existing.(*indexRow).rows = append(existing.(*indexRow).rows, r)
+		existing.(*indexRow).insertRow(r)
 	} else {
 		i.tree.ReplaceOrInsert(item)
 	}
@@ -1054,18 +1100,10 @@ func (i *index) deleteRow(r row) {
 		i: i,
 		r: r,
 	}
-	t := i.table
 	if existing := i.tree.Get(item); existing != nil {
-		rows := existing.(*indexRow).rows
-		for j, v := range rows {
-			if compareValLists(r, v, t.pkDesc) == 0 {
-				copy(rows[j:], rows[j+1:])
-				existing.(*indexRow).rows = rows[:len(rows)-1]
-				if len(existing.(*indexRow).rows) == 0 {
-					i.tree.Delete(item)
-				}
-				break
-			}
+		ir := existing.(*indexRow)
+		if ir.deleteRow(r) && len(ir.rows) == 0 {
+			i.tree.Delete(item)
 		}
 	}
 }
@@ -1218,8 +1256,9 @@ func (i *index) rowForPK(pk []interface{}) *indexRow {
 	}
 
 	item := &indexRow{
-		i: i,
-		r: row(pk),
+		i:        i,
+		r:        row(pk),
+		isSearch: true,
 	}
 	existing := i.tree.Get(item)
 	if existing == nil {
@@ -1243,6 +1282,30 @@ func (i *index) keyPrefix(values []*structpb.Value) ([]interface{}, error) {
 		pk = append(pk, v)
 	}
 	return pk, nil
+}
+
+func (i *index) clear() {
+	i.tree.Clear(true)
+}
+
+func (i *index) removedColumn(pre int) {
+	for j := range i.includedCols {
+		if j > pre {
+			delete(i.includedCols, j)
+			i.includedCols[j-1] = true
+		}
+	}
+	for c, j := range i.colIndex {
+		if j > pre {
+			i.colIndex[c]--
+			delete(i.includedCols, j)
+		}
+	}
+	for n, j := range i.cols {
+		if j > pre {
+			i.cols[n]--
+		}
+	}
 }
 
 // rowCmp compares two rows, returning -1/0/+1.
