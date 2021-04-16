@@ -56,7 +56,7 @@ func defaultQuotaControllerCallOptions() *QuotaControllerCallOptions {
 	}
 }
 
-// QuotaControllerClient is a client for interacting with .
+// QuotaControllerClient is a client for interacting with Service Control API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type QuotaControllerClient struct {
@@ -78,7 +78,7 @@ type QuotaControllerClient struct {
 
 // NewQuotaControllerClient creates a new quota controller client.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).

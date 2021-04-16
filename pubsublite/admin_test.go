@@ -275,6 +275,13 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 		Parent:         "projects/my-proj/locations/us-central1-a",
 		SubscriptionId: "my-subscription",
 		Subscription:   subscriptionConfig.toProto(),
+		SkipBacklog:    true,
+	}
+	wantCreateAtBacklogReq := &pb.CreateSubscriptionRequest{
+		Parent:         "projects/my-proj/locations/us-central1-a",
+		SubscriptionId: "my-subscription",
+		Subscription:   subscriptionConfig.toProto(),
+		SkipBacklog:    false,
 	}
 	wantUpdateReq := updateConfig.toUpdateRequest()
 	wantGetReq := &pb.GetSubscriptionRequest{
@@ -286,6 +293,8 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 
 	verifiers := test.NewVerifiers(t)
 	verifiers.GlobalVerifier.Push(wantCreateReq, subscriptionConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantCreateReq, subscriptionConfig.toProto(), nil)
+	verifiers.GlobalVerifier.Push(wantCreateAtBacklogReq, subscriptionConfig.toProto(), nil)
 	verifiers.GlobalVerifier.Push(wantUpdateReq, subscriptionConfig.toProto(), nil)
 	verifiers.GlobalVerifier.Push(wantGetReq, subscriptionConfig.toProto(), nil)
 	verifiers.GlobalVerifier.Push(wantDeleteReq, &emptypb.Empty{}, nil)
@@ -296,6 +305,18 @@ func TestAdminSubscriptionCRUD(t *testing.T) {
 	defer admin.Close()
 
 	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig); err != nil {
+		t.Errorf("CreateSubscription() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
+		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
+	}
+
+	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig, StartingOffset(End)); err != nil {
+		t.Errorf("CreateSubscription() got err: %v", err)
+	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
+		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)
+	}
+
+	if gotConfig, err := admin.CreateSubscription(ctx, subscriptionConfig, StartingOffset(Beginning)); err != nil {
 		t.Errorf("CreateSubscription() got err: %v", err)
 	} else if !testutil.Equal(gotConfig, &subscriptionConfig) {
 		t.Errorf("CreateSubscription() got: %v\nwant: %v", gotConfig, subscriptionConfig)

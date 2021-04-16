@@ -186,6 +186,20 @@
         }
       }
     },
+    "QueryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "QueryClient",
+          "rpcs": {
+            "QueryTimeSeries": {
+              "methods": [
+                "QueryTimeSeries"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ServiceMonitoringService": {
       "clients": {
         "grpc": {

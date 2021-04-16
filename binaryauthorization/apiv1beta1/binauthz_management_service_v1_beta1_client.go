@@ -222,13 +222,16 @@ func (c *BinauthzManagementServiceV1Beta1Client) setGoogleClientInfo(keyval ...s
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// GetPolicy a policy specifies the attestors that must attest to
-// a container image, before the project is allowed to deploy that
+// GetPolicy a policy specifies the
+// attestors that must
+// attest to a container image, before the project is allowed to deploy that
 // image. There is at most one policy per project. All image admission
 // requests are permitted if a project has no policy.
 //
-// Gets the policy for this project. Returns a default
-// policy if the project does not have one.
+// Gets the policy for this
+// project. Returns a default
+// policy if the project
+// does not have one.
 func (c *BinauthzManagementServiceV1Beta1Client) GetPolicy(ctx context.Context, req *binaryauthorizationpb.GetPolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -250,11 +253,13 @@ func (c *BinauthzManagementServiceV1Beta1Client) GetPolicy(ctx context.Context, 
 	return resp, nil
 }
 
-// UpdatePolicy creates or updates a project’s policy, and returns a copy of the
-// new policy. A policy is always updated as a whole, to avoid race
-// conditions with concurrent policy enforcement (or management!)
-// requests. Returns NOT_FOUND if the project does not exist, INVALID_ARGUMENT
-// if the request is malformed.
+// UpdatePolicy creates or updates a project’s
+// policy, and returns a
+// copy of the new policy.
+// A policy is always updated as a whole, to avoid race conditions with
+// concurrent policy enforcement (or management!) requests. Returns NOT_FOUND
+// if the project does not exist, INVALID_ARGUMENT if the request is
+// malformed.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdatePolicy(ctx context.Context, req *binaryauthorizationpb.UpdatePolicyRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -276,10 +281,13 @@ func (c *BinauthzManagementServiceV1Beta1Client) UpdatePolicy(ctx context.Contex
 	return resp, nil
 }
 
-// CreateAttestor creates an attestor, and returns a copy of the new
-// attestor. Returns NOT_FOUND if the project does not exist,
-// INVALID_ARGUMENT if the request is malformed, ALREADY_EXISTS if the
-// attestor already exists.
+// CreateAttestor creates an attestor,
+// and returns a copy of the new
+// attestor. Returns
+// NOT_FOUND if the project does not exist, INVALID_ARGUMENT if the request is
+// malformed, ALREADY_EXISTS if the
+// attestor already
+// exists.
 func (c *BinauthzManagementServiceV1Beta1Client) CreateAttestor(ctx context.Context, req *binaryauthorizationpb.CreateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -302,7 +310,9 @@ func (c *BinauthzManagementServiceV1Beta1Client) CreateAttestor(ctx context.Cont
 }
 
 // GetAttestor gets an attestor.
-// Returns NOT_FOUND if the attestor does not exist.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *BinauthzManagementServiceV1Beta1Client) GetAttestor(ctx context.Context, req *binaryauthorizationpb.GetAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -325,7 +335,9 @@ func (c *BinauthzManagementServiceV1Beta1Client) GetAttestor(ctx context.Context
 }
 
 // UpdateAttestor updates an attestor.
-// Returns NOT_FOUND if the attestor does not exist.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *BinauthzManagementServiceV1Beta1Client) UpdateAttestor(ctx context.Context, req *binaryauthorizationpb.UpdateAttestorRequest, opts ...gax.CallOption) (*binaryauthorizationpb.Attestor, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -389,8 +401,10 @@ func (c *BinauthzManagementServiceV1Beta1Client) ListAttestors(ctx context.Conte
 	return it
 }
 
-// DeleteAttestor deletes an attestor. Returns NOT_FOUND if the
-// attestor does not exist.
+// DeleteAttestor deletes an attestor.
+// Returns NOT_FOUND if the
+// attestor does not
+// exist.
 func (c *BinauthzManagementServiceV1Beta1Client) DeleteAttestor(ctx context.Context, req *binaryauthorizationpb.DeleteAttestorRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
