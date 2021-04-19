@@ -1509,7 +1509,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		// InstanceType: PRODUCTION,
 		DisplayName: "test instance",
 		Clusters: []ClusterConfig{
-			ClusterConfig{
+			{
 				ClusterID:  clusterID,
 				KMSKeyName: kmsKeyName,
 				Zone:       instanceToCreateZone,
