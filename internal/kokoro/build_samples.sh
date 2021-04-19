@@ -34,7 +34,7 @@ goVersionShouldSkip() {
     return 1
   fi
 
-  go list -f "{{context.ReleaseTags}}" | grep -q -v "go$modVersion\b"
+  go list -f "{{context.ReleaseTags}}" ./... | grep -q -v "go$modVersion\b"
 }
 
 # For each module, build the code with local google-cloud-go changes.
