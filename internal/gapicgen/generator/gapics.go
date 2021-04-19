@@ -25,7 +25,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"cloud.google.com/go/internal/gensnippets"
+	"cloud.google.com/go/internal/gapicgen/gensnippets"
 	"gopkg.in/yaml.v2"
 )
 
