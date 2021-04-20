@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+// [START accessapproval_generated_accessapproval_apiv1_NewClient]
+
 package main
 
 import (
@@ -29,3 +31,5 @@ func main() {
 	// TODO: Use client.
 	_ = c
 }
+
+// [END accessapproval_generated_accessapproval_apiv1_NewClient]
