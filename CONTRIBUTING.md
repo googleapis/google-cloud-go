@@ -69,7 +69,7 @@ these projects as "general project" and "Firestore project".
 
 After creating each project, you must [create a service account](https://developers.google.com/identity/protocols/OAuth2ServiceAccount#creatinganaccount)
 for each project. Ensure the project-level **Owner**
-[IAM role](console.cloud.google.com/iam-admin/iam/project) role is added to
+[IAM role](https://console.cloud.google.com/iam-admin/iam/project) role is added to
 each service account. During the creation of the service account, you should
 download the JSON credential file for use later.
 

@@ -34,7 +34,7 @@ import (
 )
 
 // Generate reads all modules in rootDir and outputs their examples in outDir.
-func Generate(rootDir, outDir string) error {
+func Generate(rootDir, outDir string, apiShortnames map[string]string) error {
 	if rootDir == "" {
 		rootDir = "."
 	}
@@ -60,6 +60,7 @@ func Generate(rootDir, outDir string) error {
 	log.Printf("Processing examples in %v directories: %q\n", len(dirs), dirs)
 
 	trimPrefix := "cloud.google.com/go"
+	errs := []error{}
 	for _, dir := range dirs {
 		// Load does not look at nested modules.
 		pis, err := pkgload.Load("./...", dir, nil)
@@ -67,10 +68,13 @@ func Generate(rootDir, outDir string) error {
 			return fmt.Errorf("failed to load packages: %v", err)
 		}
 		for _, pi := range pis {
-			if err := processExamples(pi.Doc, pi.Fset, trimPrefix, outDir); err != nil {
-				return fmt.Errorf("failed to process examples: %v", err)
+			if err := processExamples(pi.Doc, pi.Fset, trimPrefix, outDir, apiShortnames); err != nil {
+				errs = append(errs, fmt.Errorf("failed to process examples: %v", err))
 			}
 		}
+	}
+	if len(errs) > 0 {
+		log.Fatal(errs)
 	}
 
 	if len(dirs) > 0 {
@@ -84,11 +88,48 @@ func Generate(rootDir, outDir string) error {
 	return nil
 }
 
-func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, outDir string) error {
+var skip = map[string]bool{
+	"cloud.google.com/go":                          true, // No product for root package.
+	"cloud.google.com/go/civil":                    true, // General time/date package.
+	"cloud.google.com/go/cloudbuild/apiv1":         true, // Has v2.
+	"cloud.google.com/go/cmd/go-cloud-debug-agent": true, // Command line tool.
+	"cloud.google.com/go/container":                true, // Deprecated.
+	"cloud.google.com/go/containeranalysis/apiv1":  true, // Accidental beta at wrong path?
+	"cloud.google.com/go/grafeas/apiv1":            true, // With containeranalysis.
+	"cloud.google.com/go/httpreplay":               true, // Helper.
+	"cloud.google.com/go/httpreplay/cmd/httpr":     true, // Helper.
+	"cloud.google.com/go/longrunning":              true, // Helper.
+	"cloud.google.com/go/monitoring/apiv3":         true, // Has v2.
+	"cloud.google.com/go/translate":                true, // Has newer version.
+}
+
+func processExamples(pkg *doc.Package, fset *token.FileSet, trimPrefix, outDir string, apiShortnames map[string]string) error {
+	if skip[pkg.ImportPath] {
+		return nil
+	}
 	trimmed := strings.TrimPrefix(pkg.ImportPath, trimPrefix)
 	outDir = filepath.Join(outDir, trimmed)
 
-	regionTag := "generated" + strings.ReplaceAll(trimmed, "/", "_")
+	shortname, ok := apiShortnames[pkg.ImportPath]
+	if !ok {
+		// Do our best to find a shortname. For example,
+		// cloud.google.com/go/bigtable/bttest should lead to
+		// cloud.google.com/go/bigtable.
+		bestMatch := ""
+		for path := range apiShortnames {
+			if strings.HasPrefix(pkg.ImportPath, path) {
+				if len(path) > len(bestMatch) {
+					bestMatch = path
+				}
+			}
+		}
+		if bestMatch == "" {
+			return fmt.Errorf("could not find API shortname for %v", pkg.ImportPath)
+		}
+		log.Printf("The best match for %q is %q", pkg.ImportPath, bestMatch)
+		shortname = apiShortnames[bestMatch]
+	}
+	regionTag := shortname + "_generated" + strings.ReplaceAll(trimmed, "/", "_")
 
 	// Note: variables and constants don't have examples.
 
@@ -166,18 +207,17 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 		if _, err := f.WriteString(header()); err != nil {
 			return err
 		}
-		// TODO(tbpg): print the right region tag.
-		// tag := regionTag + "_" + ex.Name
+		tag := regionTag + "_" + ex.Name
 		// Include an extra newline to keep separate from the package declaration.
-		// if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
-		// 	return err
-		// }
+		if _, err := fmt.Fprintf(f, "// [START %v]\n\n", tag); err != nil {
+			return err
+		}
 		if _, err := f.WriteString(s); err != nil {
 			return err
 		}
-		// if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
-		// 	return err
-		// }
+		if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
+			return err
+		}
 	}
 	return nil
 }
