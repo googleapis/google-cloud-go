@@ -266,13 +266,41 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 
 // manifestEntry is used for JSON marshaling in manifest.
 type manifestEntry struct {
-	DistributionName  string `json:"distribution_name"`
-	Description       string `json:"description"`
-	Language          string `json:"language"`
-	ClientLibraryType string `json:"client_library_type"`
-	DocsURL           string `json:"docs_url"`
-	ReleaseLevel      string `json:"release_level"`
+	DistributionName  string      `json:"distribution_name"`
+	Description       string      `json:"description"`
+	Language          string      `json:"language"`
+	ClientLibraryType string      `json:"client_library_type"`
+	DocsURL           string      `json:"docs_url"`
+	ReleaseLevel      string      `json:"release_level"`
+	LibraryType       LibraryType `json:"library_type"`
 }
+
+type LibraryType int
+
+func (l LibraryType) MarshalJSON() ([]byte, error) {
+	switch l {
+	case GapicAutoLibraryType:
+		return []byte(`"GAPIC_AUTO"`), nil
+	case GapicManualLibraryType:
+		return []byte(`"GAPIC_MANUAL"`), nil
+	case CoreLibraryType:
+		return []byte(`"CORE"`), nil
+	case AgentLibraryType:
+		return []byte(`"AGENT"`), nil
+	case OtherLibraryType:
+		return []byte(`"OTHER"`), nil
+	default:
+		return nil, fmt.Errorf("unable to marshal value: %v", l)
+	}
+}
+
+const (
+	GapicAutoLibraryType LibraryType = iota
+	GapicManualLibraryType
+	CoreLibraryType
+	AgentLibraryType
+	OtherLibraryType
+)
 
 // TODO: consider getting Description from the gapic, if there is one.
 var manualEntries = []manifestEntry{
@@ -284,6 +312,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigquery",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/bigtable",
@@ -292,6 +321,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigtable",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/datastore",
@@ -300,6 +330,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/datastore",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/iam",
@@ -308,6 +339,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/iam",
 		ReleaseLevel:      "ga",
+		LibraryType:       CoreLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/storage",
@@ -316,6 +348,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/storage",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/rpcreplay",
@@ -324,6 +357,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
 		ReleaseLevel:      "ga",
+		LibraryType:       OtherLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/profiler",
@@ -332,6 +366,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
 		ReleaseLevel:      "ga",
+		LibraryType:       AgentLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/compute/metadata",
@@ -340,6 +375,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/compute/metadata",
 		ReleaseLevel:      "ga",
+		LibraryType:       CoreLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/functions/metadata",
@@ -348,6 +384,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/functions/metadata",
 		ReleaseLevel:      "alpha",
+		LibraryType:       CoreLibraryType,
 	},
 	// Manuals with a GAPIC.
 	{
@@ -357,6 +394,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
 		ReleaseLevel:      "beta",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/firestore",
@@ -365,6 +403,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/firestore",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/logging",
@@ -373,6 +412,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/logging",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/pubsub",
@@ -381,6 +421,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/pubsub",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/spanner",
@@ -389,6 +430,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/spanner",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 }
 
