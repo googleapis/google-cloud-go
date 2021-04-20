@@ -92,6 +92,7 @@ staticcheck -go 1.11 ./... 2>&1 | (
     grep -v go-cloud-debug-agent |
     grep -v pubsub/integration_test.go |
     grep -v internal/fields/fold.go |
+    grep -v internal/generated/snippets |
     grep -v httpreplay/internal/proxy/debug.go |
     grep -v bigtable/internal/cbtconfig/cbtconfig.go |
     grep -v bigtable/cmd/cbt/cbt.go |
