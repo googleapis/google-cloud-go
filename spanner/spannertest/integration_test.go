@@ -1145,6 +1145,13 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{"Daniel"},
 			},
 		},
+		{
+			`SELECT MIN(Name), MAX(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel", "Teal'c"},
+			},
+		},
 	}
 	var failures int
 	for _, test := range tests {
