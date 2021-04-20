@@ -82,7 +82,11 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 	}
 
 	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
-	if err := gensnippets.Generate(g.googleCloudDir, snippetDir); err != nil {
+	apiShortnames, err := g.parseAPIShortnames(microgenGapicConfigs, manualEntries)
+	if err != nil {
+		return err
+	}
+	if err := gensnippets.Generate(g.googleCloudDir, snippetDir, apiShortnames); err != nil {
 		return fmt.Errorf("error generating snippets: %v", err)
 	}
 	if err := replaceAllForSnippets(g.googleCloudDir, snippetDir); err != nil {
@@ -329,6 +333,22 @@ var manualEntries = []manifestEntry{
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
 		ReleaseLevel:      "ga",
 	},
+	{
+		DistributionName:  "cloud.google.com/go/compute/metadata",
+		Description:       "Service Metadata API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/compute/metadata",
+		ReleaseLevel:      "ga",
+	},
+	{
+		DistributionName:  "cloud.google.com/go/functions/metadata",
+		Description:       "Cloud Functions",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/functions/metadata",
+		ReleaseLevel:      "alpha",
+	},
 	// Manuals with a GAPIC.
 	{
 		DistributionName:  "cloud.google.com/go/errorreporting",
@@ -424,4 +444,33 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 	c = execv.Command("rm", "-rf", "cloud.google.com")
 	c.Dir = g.googleCloudDir
 	return c.Run()
+}
+
+func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntries []manifestEntry) (map[string]string, error) {
+	shortnames := map[string]string{}
+	for _, conf := range confs {
+		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return nil, err
+		}
+		config := struct {
+			Name string `yaml:"name"`
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&config); err != nil {
+			return nil, fmt.Errorf("Decode: %v", err)
+		}
+		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
+		shortnames[conf.importPath] = shortname
+	}
+
+	// Do our best for manuals.
+	for _, manual := range manualEntries {
+		p := strings.TrimPrefix(manual.DistributionName, "cloud.google.com/go/")
+		if strings.Contains(p, "/") {
+			p = p[0:strings.Index(p, "/")]
+		}
+		shortnames[manual.DistributionName] = p
+	}
+	return shortnames, nil
 }
