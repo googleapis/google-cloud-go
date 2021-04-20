@@ -47,7 +47,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		return err
 	} else if pr != nil {
-		return fmt.Errorf("There is already a re-generation in progress")
+		return fmt.Errorf("there is already a re-generation in progress")
 	}
 	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
 		return err
