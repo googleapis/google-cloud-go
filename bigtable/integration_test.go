@@ -1481,7 +1481,8 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	}
 
 	timeout := 5 * time.Minute
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
 
 	iAdminClient, err := testEnv.NewInstanceAdminClient()
 	if err != nil {
@@ -1576,7 +1577,6 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	if err != nil {
 		t.Fatalf("EncryptionInfo: %v", err)
 	}
-	fmt.Println("Encinfo:", encryptionInfo)
 	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
 		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 	}

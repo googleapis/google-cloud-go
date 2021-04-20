@@ -128,33 +128,29 @@ type EncryptionInfo struct {
 }
 
 func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
-	if pbInfo == nil {
-		return nil
+	return &EncryptionInfo{
+		EncryptionStatus: pbInfo.EncryptionStatus,
+		EncryptionType:   EncryptionType(pbInfo.EncryptionType.Number()),
+		KMSKeyVersion:    pbInfo.KmsKeyVersion,
 	}
-	info := EncryptionInfo{}
-	info.EncryptionStatus = pbInfo.EncryptionStatus
-	info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
-	info.KMSKeyVersion = pbInfo.KmsKeyVersion
-
-	return &info
 }
 
 // Status references google.golang.org/grpc/status.
 // It represents an RPC status code, message, and details of EncryptionInfo.
-// https://godoc.org/google.golang.org/grpc/internal/status
+// https://pkg.go.dev/google.golang.org/grpc/internal/status
 type Status = status.Status
 
 type EncryptionType int32
 
 const (
-	// Encryption type was not specified, though data at rest remains encrypted.
+	// EncryptionTypeUnspecified is the type was not specified, though data at rest remains encrypted.
 	EncryptionTypeUnspecified EncryptionType = iota
-	// The data backing this resource is encrypted at rest with a key that is
-	// fully managed by Google. No key version or status will be populated.
-	// This is the default state.
+	// GoogleDefaultEncryption represents that data backing this resource is
+	// encrypted at rest with a key that is fully managed by Google. No key
+	// version or status will be populated. This is the default state.
 	GoogleDefaultEncryption
-	// The data backing this resource is encrypted at rest with a key that is
-	// managed by the customer.
+	// CustomerManagedEncryption represents that data backing this resource is
+	// encrypted at rest with a key that is managed by the customer.
 	// The in-use version of the key and its status are populated for
 	// CMEK-protected tables.
 	// CMEK-protected backups are pinned to the key version that was in use at
@@ -163,7 +159,7 @@ const (
 	CustomerManagedEncryption
 )
 
-type EncryptionInfoByCluster map[string][]EncryptionInfo
+type EncryptionInfoByCluster map[string][]*EncryptionInfo
 
 // Gets the current encryption info for the table across all of the clusters.
 // The returned map will be keyed by cluster id and contain a status for all of the keys in use.
@@ -181,7 +177,7 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (Encryp
 			info.EncryptionStatus = pbInfo.EncryptionStatus
 			info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
 			info.KMSKeyVersion = pbInfo.KmsKeyVersion
-			encryptionInfo[key] = append(encryptionInfo[key], info)
+			encryptionInfo[key] = append(encryptionInfo[key], &info)
 		}
 	}
 
@@ -1185,7 +1181,7 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clusterID string) (*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetClusterRequest{
-		Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID,
+		Name: fmt.Sprintf("projects/%s/instances/%s/clusters/%s", iac.project, instanceID, clusterID),
 	}
 	var c *btapb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
