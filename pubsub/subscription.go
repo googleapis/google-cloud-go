@@ -224,7 +224,18 @@ type SubscriptionConfig struct {
 	// The set of labels for the subscription.
 	Labels map[string]string
 
-	// EnableMessageOrdering enables message ordering.
+	// EnableMessageOrdering enables message ordering on this subscription.
+	// This value is only used for subscription creation and update, and
+	// is not used directly client-side, such as in calls to Subscription.Receive.
+	//
+	// If set to false, even if messages are published with ordering keys,
+	// messages will not be delivered in order.
+	//
+	// When calling Subscription.Receive, the client will try to populate this
+	// value from the subscription config with a call to Subscription.Config(),
+	// which requires the roles/viewer or roles/pubsub.viewer role on your
+	// service account. If that call fails due to insufficient permissions,
+	// mesages will be delivered in order.
 	EnableMessageOrdering bool
 
 	// DeadLetterPolicy specifies the conditions for dead lettering messages in
@@ -774,13 +785,21 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	s.mu.Unlock()
 	defer func() { s.mu.Lock(); s.receiveActive = false; s.mu.Unlock() }()
 
-	// Check config to check EnableMessageOrdering field.
+	// Check config to check EnableMessageOrdering field. If this
+	// call fails with a permissions error, because the service account
+	// doesn't have the roles/viewer or roles/pubsub.viewer role, we
+	// will assume EnableMessageOrdering to be true.
 	// See: https://github.com/googleapis/google-cloud-go/issues/3884
 	cfg, err := s.Config(ctx)
 	if err != nil {
-		return fmt.Errorf("sub.Config err: %v", err)
+		if status.Code(err) == codes.PermissionDenied {
+			s.enableOrdering = true
+		} else {
+			return fmt.Errorf("sub.Config err: %v", err)
+		}
+	} else {
+		s.enableOrdering = cfg.EnableMessageOrdering
 	}
-	s.enableOrdering = cfg.EnableMessageOrdering
 
 	maxCount := s.ReceiveSettings.MaxOutstandingMessages
 	if maxCount == 0 {
