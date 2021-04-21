@@ -1,6 +1,30 @@
 # Changes
 
 
+## [1.14.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.81.0...v1.14.0) (2021-04-21)
+
+
+### Features
+
+* **billing/budgets:** Added support for configurable budget time period. fix: Updated some documentation links. ([83b1b3b](https://www.github.com/googleapis/google-cloud-go/commit/83b1b3b648c6d9225f07f00e8c0cdabc3d1fc1ab))
+* **billing/budgets:** Added support for configurable budget time period. fix: Updated some documentation links. ([83b1b3b](https://www.github.com/googleapis/google-cloud-go/commit/83b1b3b648c6d9225f07f00e8c0cdabc3d1fc1ab))
+* **cloudbuild/apiv1:** Add fields for Pub/Sub triggers ([8b4adbf](https://www.github.com/googleapis/google-cloud-go/commit/8b4adbf9815e1ec229dfbcfb9189d3ea63112e1b))
+* **dataproc:** update the Dataproc V1 API client library ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+* **dialogflow/cx:** support setting current_page to resume sessions; expose transition_route_groups in flows and language_code in webhook ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+* **dialogflow/cx:** support setting current_page to resume sessions; expose transition_route_groups in flows and language_code in webhook ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+* **internal/gensnippets:** add license header and region tags ([#3924](https://www.github.com/googleapis/google-cloud-go/issues/3924)) ([e9ff7a0](https://www.github.com/googleapis/google-cloud-go/commit/e9ff7a0f9bb1cc67f5d0de47934811960429e72c))
+* **internal/gensnippets:** initial commit ([#3922](https://www.github.com/googleapis/google-cloud-go/issues/3922)) ([3fabef0](https://www.github.com/googleapis/google-cloud-go/commit/3fabef032388713f732ab4dbfc51624cdca0f481))
+* **internal:** auto-generate snippets ([#3949](https://www.github.com/googleapis/google-cloud-go/issues/3949)) ([b70e0fc](https://www.github.com/googleapis/google-cloud-go/commit/b70e0fccdc86813e0d97ff63b585822d4deafb38))
+* **internal:** generate region tags for snippets ([#3962](https://www.github.com/googleapis/google-cloud-go/issues/3962)) ([ef2b90e](https://www.github.com/googleapis/google-cloud-go/commit/ef2b90ea6d47e27744c98a1a9ae0c487c5051808))
+* **speech:** Support for spoken punctuation and spoken emojis. ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+
+
+### Bug Fixes
+
+* **binaryauthorization:** add Java options to Binaryauthorization protos ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+* **internal/gensnippets:** run goimports ([#3931](https://www.github.com/googleapis/google-cloud-go/issues/3931)) ([10050f0](https://www.github.com/googleapis/google-cloud-go/commit/10050f05c20c226547d87c08168fa4bc551395c5))
+* **metastore:** increase metastore lro polling timeouts ([83b1b3b](https://www.github.com/googleapis/google-cloud-go/commit/83b1b3b648c6d9225f07f00e8c0cdabc3d1fc1ab))
+
 ## [0.81.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.80.0...v0.81.0) (2021-04-02)
 
 
