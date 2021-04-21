@@ -940,7 +940,7 @@ func (t *table) dropColumn(name spansql.ID) *status.Status {
 		return status.Newf(codes.InvalidArgument, "can't drop primary key column %q", name)
 	}
 	for _, idx := range t.indexes {
-		if idx.indexedCols[ci] || idx.storingCols[ci] {
+		if idx.columnIncluded(ci) {
 			return status.Newf(codes.InvalidArgument, "can't drop indexed column %q", name)
 		}
 	}
