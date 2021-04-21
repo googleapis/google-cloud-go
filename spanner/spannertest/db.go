@@ -78,16 +78,15 @@ type colInfo struct {
 type index struct {
 	table *table
 
-	indexedCols map[int]bool
-	storingCols map[int]bool
+	indexedCols map[int]bool // whether each column in the table is indexed; map index corresponds to the ordering of table.cols
+	storingCols map[int]bool // whether each column in the table is stored; map index corresponds to the ordering of table.cols
 
 	// Information about the index columns.
-	cols     []int
+	cols     []int              // which columns are indexed; these are array indices into table.cols
 	colIndex map[spansql.ID]int // col name to index
 	desc     []bool             // whether each indexed column is in descending order
 
-	toItem func(r row) btree.Item
-	tree   *btree.BTree
+	tree *btree.BTree // the btree structure that holds the index rows
 }
 
 // commitTimestampSentinel is a sentinel value for TIMESTAMP fields with allow_commit_timestamp=true.
@@ -254,11 +253,13 @@ func (d *database) GetDDL() []spansql.DDLStmt {
 	return stmts
 }
 
+// indexRow is a logical row in an index.
 type indexRow struct {
-	i        *index
-	r        row
-	rows     []row
-	isSearch bool
+	i    *index // the index this row belongs to
+	r    row    // a representative row in the index, expected to be one of the rows of the indexed table
+	rows []row  // the rows in the underlying table that map to this same index key
+
+	isSearch bool // when true, indicates that r contains a search key instead of a representative row
 }
 
 func (r *indexRow) item(j int) (interface{}, bool) {
@@ -814,13 +815,6 @@ func (d *database) ReadAll(tbl spansql.ID, cols []spansql.ID, limit int64) (*raw
 }
 
 func (d *database) IndexRead(tbl, idx spansql.ID, cols []spansql.ID, keys []*structpb.ListValue, keyRanges keyRangeList, limit int64) (rowIter, error) {
-	// The real Cloud Spanner returns an error if the key set is empty by definition.
-	// That doesn't seem to be well-defined, but it is a common error to attempt a read with no keys,
-	// so catch that here and return a representative error.
-	if len(keys) == 0 && len(keyRanges) == 0 {
-		return nil, status.Error(codes.Unimplemented, "Cloud Spanner does not support reading no keys")
-	}
-
 	return d.readIndex(tbl, idx, cols, func(i *index, ri *rawIter, colIndexes []int) error {
 		// "If the same key is specified multiple times in the set (for
 		// example if two ranges, two keys, or a key and a range
@@ -834,21 +828,21 @@ func (d *database) IndexRead(tbl, idx spansql.ID, cols []spansql.ID, keys []*str
 			}
 			done[row] = true
 			for _, r := range row.rows {
-				ri.add(r, colIndexes)
 				if limit > 0 && len(ri.rows) >= int(limit) {
 					return false
 				}
+				ri.add(r, colIndexes)
 			}
 			return true
 		}
 		// Specific keys.
 		for _, key := range keys {
-			pk, err := i.key(key.Values)
+			indexKey, err := i.key(key.Values)
 			if err != nil {
 				return err
 			}
 			// Not an error if the key does not exist.
-			row := i.rowForPK(pk)
+			row := i.rowForKey(indexKey)
 			if !add(row) {
 				return nil
 			}
@@ -866,7 +860,7 @@ func (d *database) IndexRead(tbl, idx spansql.ID, cols []spansql.ID, keys []*str
 				return err
 			}
 			n := len(ri.rows)
-			if !i.findRange(r, add) {
+			if !i.doWithRange(r, add) {
 				// Rows were added in reverse order. Flip them.
 				a := ri.rows[n:]
 				for i, j := 0, len(a)-1; i < j; i, j = i+1, j-1 {
@@ -880,7 +874,7 @@ func (d *database) IndexRead(tbl, idx spansql.ID, cols []spansql.ID, keys []*str
 
 func (d *database) IndexReadAll(tbl, idx spansql.ID, cols []spansql.ID, limit int64) (*rawIter, error) {
 	return d.readIndex(tbl, idx, cols, func(i *index, ri *rawIter, colIndexes []int) error {
-		i.findRange(&keyRange{}, func(row *indexRow) bool {
+		i.doWithRange(&keyRange{}, func(row *indexRow) bool {
 			for _, r := range row.rows {
 				ri.add(r, colIndexes)
 				if limit > 0 && len(ri.rows) >= int(limit) {
@@ -946,7 +940,7 @@ func (t *table) dropColumn(name spansql.ID) *status.Status {
 		return status.Newf(codes.InvalidArgument, "can't drop primary key column %q", name)
 	}
 	for _, idx := range t.indexes {
-		if _, ok := idx.colIndex[name]; ok {
+		if idx.indexedCols[ci] || idx.storingCols[ci] {
 			return status.Newf(codes.InvalidArgument, "can't drop indexed column %q", name)
 		}
 	}
@@ -965,12 +959,13 @@ func (t *table) dropColumn(name spansql.ID) *status.Status {
 		}
 	}
 
+	// Clear indexes and adjust structure.
 	for _, idx := range t.indexes {
 		idx.clear()
-		idx.removedColumn(pre)
+		idx.removedTableColumn(pre)
 	}
 
-	// Drop data.
+	// Rebuild rows and indexes.
 	for i := range t.rows {
 		t.rows[i] = append(t.rows[i][:ci], t.rows[i][ci+1:]...)
 		for _, idx := range t.indexes {
@@ -1150,10 +1145,13 @@ func (t *table) findRange(r *keyRange) (int, int) {
 	return startRow, endRow
 }
 
-// findRange finds the rows included in the key range,
-// r.startKey and r.endKey should be populated.
+// doWithRange finds the rows included in the key range and executes function f on each, stopping if f returns false.
+// If r.endKey is populated but r.startKey is not, doWithRange will return false and f will be called with index rows
+// in reverse order because the index must be read descending. Callers may use this return value to reverse results as
+// needed; this could be made to use a stack instead if limit logic were pushed into this function or we wouldn't mind
+// copying far more rows than necessary to satisfy a limit read.
 // Returns true if results are ordered properly and false if reversed.
-func (i *index) findRange(r *keyRange, f func(row *indexRow) bool) bool {
+func (i *index) doWithRange(r *keyRange, f func(row *indexRow) bool) bool {
 	hasStart, hasEnd := r != nil && len(r.startKey) > 0, r != nil && len(r.endKey) > 0
 	if hasStart {
 		start := &indexRow{
@@ -1265,15 +1263,15 @@ func (t *table) rowForPK(pk []interface{}) (row int, found bool) {
 	return i, rowEqual(pk, t.rows[i][:t.pkCols])
 }
 
-// rowForPK returns the row for the given index key
-func (i *index) rowForPK(pk []interface{}) *indexRow {
-	if len(pk) != len(i.cols) {
-		panic(fmt.Sprintf("key length mismatch: got %d values, index has %d", len(pk), len(i.cols)))
+// rowForKey returns the row for the given index key
+func (i *index) rowForKey(key []interface{}) *indexRow {
+	if len(key) != len(i.cols) {
+		panic(fmt.Sprintf("key length mismatch: got %d values, index has %d", len(key), len(i.cols)))
 	}
 
 	item := &indexRow{
 		i:        i,
-		r:        row(pk),
+		r:        row(key),
 		isSearch: true,
 	}
 	existing := i.tree.Get(item)
@@ -1304,27 +1302,27 @@ func (i *index) clear() {
 	i.tree.Clear(true)
 }
 
-func (i *index) removedColumn(pre int) {
+// removedTableColumn adjusts the index data structure to account for the removal of a table column.
+func (i *index) removedTableColumn(columnIndex int) {
 	for j := range i.indexedCols {
-		if j > pre {
+		if j > columnIndex {
 			delete(i.indexedCols, j)
 			i.indexedCols[j-1] = true
 		}
 	}
 	for j := range i.storingCols {
-		if j > pre {
+		if j > columnIndex {
 			delete(i.storingCols, j)
 			i.storingCols[j-1] = true
 		}
 	}
 	for c, j := range i.colIndex {
-		if j > pre {
+		if j > columnIndex {
 			i.colIndex[c]--
-			delete(i.indexedCols, j)
 		}
 	}
 	for n, j := range i.cols {
-		if j > pre {
+		if j > columnIndex {
 			i.cols[n]--
 		}
 	}
