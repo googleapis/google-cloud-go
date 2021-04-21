@@ -1496,8 +1496,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 				return 0, err
 			}
 			if b != nil && *b {
-				copy(t.rows[i:], t.rows[i+1:])
-				t.rows = t.rows[:len(t.rows)-1]
+				t.deleteRows(i, i+1)
 				n++
 				continue
 			}
@@ -1535,7 +1534,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 		}
 
 		n := 0
-		values := make(row, len(stmt.Items)) // scratch space for new values
+		values := make(row, len(t.cols)) // scratch space for new values
 		for i := 0; i < len(t.rows); i++ {
 			ec.row = t.rows[i]
 			b, err := ec.evalBoolExpr(stmt.Where)
@@ -1544,7 +1543,7 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 			}
 			if b != nil && *b {
 				// Compute every update item.
-				for j := range dstIndex {
+				for j, c := range dstIndex {
 					if expr[j] == nil { // DEFAULT
 						values[j] = nil
 						continue
@@ -1553,12 +1552,9 @@ func (d *database) Execute(stmt spansql.DMLStmt, params queryParams) (int, error
 					if err != nil {
 						return 0, err
 					}
-					values[j] = v
+					values[c] = v
 				}
-				// Write them to the row.
-				for j, v := range values {
-					t.rows[i][dstIndex[j]] = v
-				}
+				t.updateRow(i, values, dstIndex)
 				n++
 			}
 		}

@@ -707,6 +707,33 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 			},
 			{
 				prepare: func() error {
+					_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+						stmt := spanner.NewStatement("UPDATE " + tableName + " SET Age=38 WHERE Age=50")
+						_, err = tx.Update(ctx, stmt)
+						return err
+					})
+					return err
+				},
+				want: map[int64][]string{
+					38: []string{"Power Man"},
+					50: nil,
+				},
+			},
+			{
+				prepare: func() error {
+					_, err = client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *spanner.ReadWriteTransaction) error {
+						stmt := spanner.NewStatement("DELETE FROM " + tableName + " WHERE Age IS NULL")
+						_, err = tx.Update(ctx, stmt)
+						return err
+					})
+					return err
+				},
+				want: map[int64][]string{
+					0: nil,
+				},
+			},
+			{
+				prepare: func() error {
 					_, err = client.Apply(ctx, []*spanner.Mutation{
 						spanner.Delete(tableName, spanner.KeySetFromKeys(spanner.Key{"Luke", "Cage"})),
 					})
