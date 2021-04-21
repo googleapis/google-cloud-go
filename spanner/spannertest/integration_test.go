@@ -726,7 +726,7 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{1, []string{"Jack", "Daniel"}, []int64{1, 2}}),
 		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{2, []string{"Jack", "Daniel", "Sam"}, []int64{1, 2, 3}}),
 		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{3, []string{"Teal'c"}, []int64{4}}),
-		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{4, []string{"Jack", "Daniel", "Sam", "Teal'c", "George"}, []int64{1,2,3,4,5}}),
+		spanner.Insert("Episodes", []string{"EpisodeID", "StaffNames", "StaffIDs"}, []interface{}{4, []string{"Jack", "Daniel", "Sam", "Teal'c", "George"}, []int64{1, 2, 3, 4, 5}}),
 	})
 	if err != nil {
 		t.Fatalf("Inserting sample data: %v", err)

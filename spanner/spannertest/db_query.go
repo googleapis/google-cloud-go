@@ -221,12 +221,8 @@ func (si *selIter) next() (row, error) {
 	var out row
 	for _, e := range si.list {
 		if e == spansql.Star {
-			if len(si.ec.starCols) > 0 {
-				for _, j := range si.ec.starCols {
-					out = append(out, r[j])
-				}
-			} else {
-				out = append(out, r...)
+			for _, j := range si.ec.starCols {
+				out = append(out, r[j])
 			}
 		} else {
 			v, err := si.ec.evalExpr(e)
@@ -449,35 +445,41 @@ func (d *database) queryContext(q spansql.Query, params queryParams) (*queryCont
 	return qc, nil
 }
 
-func (d *database) evalCartesian(qc *queryContext, ff []evalContext, rr []rowIter) (evalContext, rowIter, error) {
+// evalCartesian returns the cartesian product of the provided evalContext and rowIter slices, which
+// are expected to be correlated by slice index.
+func (d *database) evalCartesian(ff []evalContext, rr []rowIter) (evalContext, rowIter, error) {
 	if len(ff) != len(rr) {
 		return evalContext{}, nil, fmt.Errorf("mismatched context and iterator sizes")
 	}
-	for len(rr) > 0 {
-		if _, ok := rr[0].(*nullIter); !ok {
-			break
-		}
-		params := ff[0].params
-		ff, rr = ff[1:], rr[1:]
-		if len(ff) > 0 {
-			if ff[0].params == nil {
-				ff[0].params = params
-			} else {
-				for k, v := range params {
-					ff[0].params[k] = v
-				}
+	mergedEC := evalContext{}
+
+	// When we cartesian iterators, we convert them to raw iterators, which copies all rows. We want to avoid
+	// this overhead in the common case of computing a cartesian with a nullIter (which has a single empty row).
+	// However, the evalContext that corresponds to a nullIter may contain columns and query parameters,
+	// so we merge it and ignore the iterator.
+	for j := len(rr) - 1; j >= 0; j-- {
+		if _, ok := rr[j].(*nullIter); ok {
+			var err error
+			mergedEC, err = mergedEC.merge(ff[j])
+			if err != nil {
+				return evalContext{}, nil, err
 			}
+			ff, rr = append(ff[:j], ff[j+1:]...), append(rr[:j], rr[j+1:]...)
 		}
 	}
 	if len(ff) == 0 {
-		return evalContext{}, &nullIter{}, nil
+		return mergedEC, &nullIter{}, nil
 	}
 	if len(ff) == 1 {
-		return ff[0], rr[0], nil
+		var err error
+		mergedEC, err = mergedEC.merge(ff[0])
+		if err != nil {
+			return evalContext{}, nil, err
+		}
+		return mergedEC, rr[0], nil
 	}
 	rows := make([][]row, len(ff))
 	var cols []colInfo
-	mergedEC := evalContext{}
 	for j := range ff {
 		raw, err := toRawIter(rr[j])
 		if err != nil {
@@ -825,12 +827,8 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 	var colInfos []colInfo
 	for i, e := range sel.List {
 		if e == spansql.Star {
-			if len(ec.starCols) > 0 {
-				for _, j := range ec.starCols {
-					colInfos = append(colInfos, ec.cols[j])
-				}
-			} else {
-				colInfos = append(colInfos, ec.cols...)
+			for _, j := range ec.starCols {
+				colInfos = append(colInfos, ec.cols[j])
 			}
 		} else {
 			ci, err := ec.colInfo(e)
@@ -898,7 +896,7 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 			cols:     cols,
 			starCols: starCols,
 		}
-		return d.evalCartesian(qc, []evalContext{ec, fec}, []rowIter{iter, ti})
+		return d.evalCartesian([]evalContext{ec, fec}, []rowIter{iter, ti})
 	case spansql.SelectFromJoin:
 		// TODO: Avoid the toRawIter calls here by doing the RHS recursive evalSelectFrom in joinIter.Next on demand.
 
@@ -931,7 +929,6 @@ func (d *database) evalSelectFrom(qc *queryContext, ec evalContext, sf spansql.S
 		if err != nil {
 			return ec, nil, err
 		}
-		//return d.evalCartesian(qc, []evalContext{ec, jec}, []rowIter{iter, ji})
 		return jec, ji, nil
 	case spansql.SelectFromUnnest:
 		u := &unnestIter{

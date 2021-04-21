@@ -58,13 +58,17 @@ func (ec evalContext) merge(other evalContext) (evalContext, error) {
 	res.row = append(row(nil), ec.row...)
 	res.row = append(res.row, other.row...)
 
-	res.aliases = map[spansql.ID]spansql.Expr{}
-	for k, v := range ec.aliases {
-		res.aliases[k] = v
-	}
 	res.params = queryParams{}
 	for k, v := range ec.params {
 		res.params[k] = v
+	}
+	for k, v := range other.params {
+		res.params[k] = v
+	}
+
+	res.aliases = map[spansql.ID]spansql.Expr{}
+	for k, v := range ec.aliases {
+		res.aliases[k] = v
 	}
 	for k, v := range other.aliases {
 		if _, ok := res.aliases[k]; ok {

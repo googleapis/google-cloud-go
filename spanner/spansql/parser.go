@@ -1837,12 +1837,12 @@ func (p *parser) parseSelect() (Select, *parseError) {
 				if len(sel.From) == 1 {
 					lhs = sel.From[0]
 				}
-				sfj, isJoin, err := p.parseJoin(lhs)
+				sfj, err := p.parseJoin(lhs)
 				if err != nil {
 					return Select{}, err
 				}
-				if isJoin {
-					sel.From = []SelectFrom{sfj}
+				if sfj != nil {
+					sel.From = []SelectFrom{*sfj}
 					continue
 				}
 				if !p.eat(",") {
@@ -1929,20 +1929,22 @@ func (p *parser) parseSelectList() ([]Expr, []ID, *parseError) {
 	return list, aliases, nil
 }
 
-func (p *parser) parseJoin(lhs SelectFrom) (SelectFrom, bool, *parseError) {
+// parseJoin tries to parse a join.
+// Returns nil if there is no join to parse.
+func (p *parser) parseJoin(lhs SelectFrom) (*SelectFromJoin, *parseError) {
 	debugf("parseJoin: %v", p)
 	// Look ahead to see if this is a join.
 	tok := p.next()
 	if tok.err != nil {
 		p.back()
-		return lhs, false, nil
+		return nil, nil
 	}
 	var hashJoin bool // Special case for "HASH JOIN" syntax.
 	if tok.value == "HASH" {
 		hashJoin = true
 		tok = p.next()
 		if tok.err != nil {
-			return nil, false, tok.err
+			return nil, tok.err
 		}
 	}
 	var jt JoinType
@@ -1958,14 +1960,14 @@ func (p *parser) parseJoin(lhs SelectFrom) (SelectFrom, bool, *parseError) {
 			p.eat("OUTER")
 		}
 		if err := p.expect("JOIN"); err != nil {
-			return nil, false, err
+			return nil, err
 		}
 	} else {
 		p.back()
-		return lhs, false, nil
+		return nil, nil
 	}
 
-	sfj := SelectFromJoin{
+	sfj := &SelectFromJoin{
 		Type: jt,
 		LHS:  lhs,
 	}
@@ -1981,7 +1983,7 @@ func (p *parser) parseJoin(lhs SelectFrom) (SelectFrom, bool, *parseError) {
 
 	if p.eat("@") {
 		if err := p.expect("{"); err != nil {
-			return nil, false, err
+			return nil, err
 		}
 		for {
 			if p.sniff("}") {
@@ -1989,15 +1991,15 @@ func (p *parser) parseJoin(lhs SelectFrom) (SelectFrom, bool, *parseError) {
 			}
 			tok := p.next()
 			if tok.err != nil {
-				return nil, false, tok.err
+				return nil, tok.err
 			}
 			k := tok.value
 			if err := p.expect("="); err != nil {
-				return nil, false, err
+				return nil, err
 			}
 			tok = p.next()
 			if tok.err != nil {
-				return nil, false, tok.err
+				return nil, tok.err
 			}
 			v := tok.value
 			setHint(k, v)
@@ -2006,33 +2008,33 @@ func (p *parser) parseJoin(lhs SelectFrom) (SelectFrom, bool, *parseError) {
 			}
 		}
 		if err := p.expect("}"); err != nil {
-			return nil, false, err
+			return nil, err
 		}
 	}
 
 	var err *parseError
 	sfj.RHS, err = p.parseSelectFrom()
 	if err != nil {
-		return nil, false, err
+		return nil, err
 	}
 
 	if p.eat("ON") {
 		sfj.On, err = p.parseBoolExpr()
 		if err != nil {
-			return nil, false, err
+			return nil, err
 		}
 	}
 	if p.eat("USING") {
 		if sfj.On != nil {
-			return nil, false, p.errorf("join may not have both ON and USING clauses")
+			return nil, p.errorf("join may not have both ON and USING clauses")
 		}
 		sfj.Using, err = p.parseColumnNameList()
 		if err != nil {
-			return nil, false, err
+			return nil, err
 		}
 	}
 
-	return sfj, true, nil
+	return sfj, nil
 }
 
 func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
@@ -2090,11 +2092,14 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		sf.Alias = alias
 	}
 
-	sfj, _, err := p.parseJoin(sf)
+	sfj, err := p.parseJoin(sf)
 	if err != nil {
 		return nil, err
 	}
-	return sfj, nil
+	if sfj == nil {
+		return sf, nil
+	}
+	return *sfj, nil
 }
 
 var joinKeywords = map[string]JoinType{
