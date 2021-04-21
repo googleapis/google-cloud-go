@@ -275,31 +275,14 @@ type manifestEntry struct {
 	LibraryType       LibraryType `json:"library_type"`
 }
 
-type LibraryType int
-
-func (l LibraryType) MarshalJSON() ([]byte, error) {
-	switch l {
-	case GapicAutoLibraryType:
-		return []byte(`"GAPIC_AUTO"`), nil
-	case GapicManualLibraryType:
-		return []byte(`"GAPIC_MANUAL"`), nil
-	case CoreLibraryType:
-		return []byte(`"CORE"`), nil
-	case AgentLibraryType:
-		return []byte(`"AGENT"`), nil
-	case OtherLibraryType:
-		return []byte(`"OTHER"`), nil
-	default:
-		return nil, fmt.Errorf("unable to marshal value: %v", l)
-	}
-}
+type LibraryType string
 
 const (
-	GapicAutoLibraryType LibraryType = iota
-	GapicManualLibraryType
-	CoreLibraryType
-	AgentLibraryType
-	OtherLibraryType
+	GapicAutoLibraryType   LibraryType = "GAPIC_AUTO"
+	GapicManualLibraryType LibraryType = "GAPIC_MANUAL"
+	CoreLibraryType        LibraryType = "CORE"
+	AgentLibraryType       LibraryType = "AGENT"
+	OtherLibraryType       LibraryType = "OTHER"
 )
 
 // TODO: consider getting Description from the gapic, if there is one.
