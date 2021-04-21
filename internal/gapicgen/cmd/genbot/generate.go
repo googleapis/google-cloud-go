@@ -24,9 +24,9 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
-	"os/exec"
 	"path/filepath"
 
+	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/generator"
 	"golang.org/x/sync/errgroup"
 	"gopkg.in/src-d/go-git.v4"
@@ -157,12 +157,9 @@ func hasChanges(dir string) (bool, error) {
 	inmem := &bytes.Buffer{}
 	w := io.MultiWriter(os.Stderr, inmem)
 
-	c := exec.Command("bash", "-c", "git status --short")
+	c := execv.Command("bash", "-c", "git status --short")
 	c.Dir = dir
 	c.Stdout = w
-	c.Stderr = os.Stderr
-	c.Stdin = os.Stdin // Prevents "the input device is not a TTY" error.
 	err := c.Run()
-
 	return inmem.Len() > 0, err
 }

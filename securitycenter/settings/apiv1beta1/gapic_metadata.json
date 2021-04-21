@@ -1,77 +1,77 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.securitycenter.settings.v1beta1",
-  "libraryPackage":  "cloud.google.com/go/securitycenter/settings/apiv1beta1",
-  "services":  {
-    "SecurityCenterSettingsService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "SecurityCenterSettingsClient",
-          "rpcs":  {
-            "BatchCalculateEffectiveSettings":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.securitycenter.settings.v1beta1",
+  "libraryPackage": "cloud.google.com/go/securitycenter/settings/apiv1beta1",
+  "services": {
+    "SecurityCenterSettingsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SecurityCenterSettingsClient",
+          "rpcs": {
+            "BatchCalculateEffectiveSettings": {
+              "methods": [
                 "BatchCalculateEffectiveSettings"
               ]
             },
-            "BatchGetSettings":  {
-              "methods":  [
+            "BatchGetSettings": {
+              "methods": [
                 "BatchGetSettings"
               ]
             },
-            "CalculateEffectiveComponentSettings":  {
-              "methods":  [
+            "CalculateEffectiveComponentSettings": {
+              "methods": [
                 "CalculateEffectiveComponentSettings"
               ]
             },
-            "CalculateEffectiveSettings":  {
-              "methods":  [
+            "CalculateEffectiveSettings": {
+              "methods": [
                 "CalculateEffectiveSettings"
               ]
             },
-            "GetComponentSettings":  {
-              "methods":  [
+            "GetComponentSettings": {
+              "methods": [
                 "GetComponentSettings"
               ]
             },
-            "GetServiceAccount":  {
-              "methods":  [
+            "GetServiceAccount": {
+              "methods": [
                 "GetServiceAccount"
               ]
             },
-            "GetSettings":  {
-              "methods":  [
+            "GetSettings": {
+              "methods": [
                 "GetSettings"
               ]
             },
-            "ListComponents":  {
-              "methods":  [
+            "ListComponents": {
+              "methods": [
                 "ListComponents"
               ]
             },
-            "ListDetectors":  {
-              "methods":  [
+            "ListDetectors": {
+              "methods": [
                 "ListDetectors"
               ]
             },
-            "ResetComponentSettings":  {
-              "methods":  [
+            "ResetComponentSettings": {
+              "methods": [
                 "ResetComponentSettings"
               ]
             },
-            "ResetSettings":  {
-              "methods":  [
+            "ResetSettings": {
+              "methods": [
                 "ResetSettings"
               ]
             },
-            "UpdateComponentSettings":  {
-              "methods":  [
+            "UpdateComponentSettings": {
+              "methods": [
                 "UpdateComponentSettings"
               ]
             },
-            "UpdateSettings":  {
-              "methods":  [
+            "UpdateSettings": {
+              "methods": [
                 "UpdateSettings"
               ]
             }
