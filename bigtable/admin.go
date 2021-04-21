@@ -140,6 +140,7 @@ func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
 // https://pkg.go.dev/google.golang.org/grpc/internal/status
 type Status = status.Status
 
+// EncryptionType is the type of encryption for an instance.
 type EncryptionType int32
 
 const (
@@ -159,9 +160,10 @@ const (
 	CustomerManagedEncryption
 )
 
+// EncryptionInfoByCluster is a map of cluster name to EncryptionInfo
 type EncryptionInfoByCluster map[string][]*EncryptionInfo
 
-// Gets the current encryption info for the table across all of the clusters.
+// EncryptionInfo gets the current encryption info for the table across all of the clusters.
 // The returned map will be keyed by cluster id and contain a status for all of the keys in use.
 func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (EncryptionInfoByCluster, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
