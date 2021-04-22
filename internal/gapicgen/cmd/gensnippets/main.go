@@ -35,8 +35,8 @@ func main() {
 	if flag.NArg() > 0 {
 		rootDir = flag.Arg(0)
 	}
-
-	if err := gensnippets.Generate(rootDir, *outDir); err != nil {
+	// TODO(tbp): route proper api short names
+	if err := gensnippets.Generate(rootDir, *outDir, map[string]string{}); err != nil {
 		log.Fatal(err)
 	}
 }
