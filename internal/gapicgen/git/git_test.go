@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package generator
+package git
 
 import "testing"
 
@@ -28,7 +28,7 @@ func TestParseConventionalCommitPkg(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := parseConventionalCommitPkg(tc.importPath); got != tc.want {
+			if got := ParseConventionalCommitPkg(tc.importPath); got != tc.want {
 				t.Errorf("parseConventionalCommitPkg(%q) = %q, want %q", tc.importPath, got, tc.want)
 			}
 		})

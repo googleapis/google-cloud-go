@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"cloud.google.com/go/internal/gapicgen/git"
 )
 
 func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, githubEmail string) error {
@@ -38,7 +40,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 	}
 
 	// Setup the client and git environment.
-	githubClient, err := NewGithubClient(ctx, githubUsername, githubName, githubEmail, githubAccessToken)
+	githubClient, err := git.NewGithubClient(ctx, githubUsername, githubName, githubEmail, githubAccessToken)
 	if err != nil {
 		return err
 	}
