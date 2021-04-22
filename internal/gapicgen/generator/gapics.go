@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -77,7 +76,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := forEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
+	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
 		return err
 	}
 
@@ -104,30 +103,11 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := forEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
+	if err := execv.ForEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
 		return err
 	}
 
 	return nil
-}
-
-// forEachMod runs the given function with the directory of
-// every non-internal module.
-func forEachMod(rootDir string, fn func(dir string) error) error {
-	return filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if strings.Contains(path, "internal") {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			if err := fn(filepath.Dir(path)); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
 }
 
 func goModTidy(dir string) error {
@@ -142,7 +122,7 @@ func goModTidy(dir string) error {
 }
 
 func replaceAllForSnippets(googleCloudDir, snippetDir string) error {
-	return forEachMod(googleCloudDir, func(dir string) error {
+	return execv.ForEachMod(googleCloudDir, func(dir string) error {
 		if dir == snippetDir {
 			return nil
 		}
