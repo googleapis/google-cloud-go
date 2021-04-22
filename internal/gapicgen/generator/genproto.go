@@ -179,7 +179,7 @@ func (g *GenprotoGenerator) protoc(fileNames []string) error {
 func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[string][]string, error) {
 	files, err := git.UpdateFilesSinceHash(g.googleapisDir, googleapisHash)
 	if err != nil {
-
+		return nil, err
 	}
 	pkgFiles := make(map[string][]string)
 	for _, v := range files {

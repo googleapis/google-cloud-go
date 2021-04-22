@@ -419,7 +419,7 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 			Title string `yaml:"title"` // We only need the title field.
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return fmt.Errorf("Decode: %v", err)
+			return fmt.Errorf("decode: %v", err)
 		}
 		entry := manifestEntry{
 			DistributionName:  conf.importPath,
@@ -463,7 +463,7 @@ func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntri
 			Name string `yaml:"name"`
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&config); err != nil {
-			return nil, fmt.Errorf("Decode: %v", err)
+			return nil, fmt.Errorf("decode: %v", err)
 		}
 		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
 		shortnames[conf.importPath] = shortname
