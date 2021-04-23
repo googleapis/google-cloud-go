@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package generator
+package git
 
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"log"
+	"os"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
+	"gopkg.in/src-d/go-git.v4"
 )
 
 // ChangeInfo represents a change and its associated metadata.
@@ -76,15 +80,8 @@ func FormatChanges(changes []*ChangeInfo, onlyGapicChanges bool) string {
 }
 
 // ParseChangeInfo gets the ChangeInfo for a given googleapis hash.
-func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, error) {
+func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string]string) ([]*ChangeInfo, error) {
 	var changes []*ChangeInfo
-	// gapicPkgs is a map of googleapis inputDirectoryPath to the gapic package
-	// name used for conventional commits.
-	gapicPkgs := make(map[string]string)
-	for _, v := range microgenGapicConfigs {
-		gapicPkgs[v.inputDirectoryPath] = parseConventionalCommitPkg(v.importPath)
-	}
-
 	for _, hash := range hashes {
 		// Get commit title and body
 		rawBody := bytes.NewBuffer(nil)
@@ -135,7 +132,9 @@ func ParseChangeInfo(googleapisDir string, hashes []string) ([]*ChangeInfo, erro
 	return changes, nil
 }
 
-func parseConventionalCommitPkg(importPath string) string {
+// ParseConventionalCommitPkg parses the package context for conventional commit
+// messages.
+func ParseConventionalCommitPkg(importPath string) string {
 	s := strings.TrimPrefix(importPath, "cloud.google.com/go/")
 	ss := strings.Split(s, "/")
 	// remove the version, i.e /apiv1
@@ -179,6 +178,31 @@ func UpdateFilesSinceHash(gitDir, hash string) ([]string, error) {
 		return nil, err
 	}
 	return strings.Split(out.String(), "\n"), nil
+}
+
+// HasChanges reports whether the given directory has uncommitted git changes.
+func HasChanges(dir string) (bool, error) {
+	// Write command output to both os.Stderr and local, so that we can check
+	// whether there are modified files.
+	inmem := &bytes.Buffer{}
+	w := io.MultiWriter(os.Stderr, inmem)
+
+	c := execv.Command("bash", "-c", "git status --short")
+	c.Dir = dir
+	c.Stdout = w
+	err := c.Run()
+	return inmem.Len() > 0, err
+}
+
+// DeepClone clones a repository in the given directory.
+func DeepClone(repo, dir string) error {
+	log.Printf("cloning %s\n", repo)
+
+	_, err := git.PlainClone(dir, false, &git.CloneOptions{
+		URL:      repo,
+		Progress: os.Stdout,
+	})
+	return err
 }
 
 // filesChanged returns a list of files changed in a commit for the provdied
