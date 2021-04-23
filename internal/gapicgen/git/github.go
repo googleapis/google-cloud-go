@@ -12,9 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// +build !windows
-
-package main
+package git
 
 import (
 	"context"
@@ -28,7 +26,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
-	"cloud.google.com/go/internal/gapicgen/generator"
 	"github.com/google/go-github/v34/github"
 	"github.com/shurcooL/githubv4"
 	"golang.org/x/oauth2"
@@ -175,13 +172,13 @@ func (gc *GithubClient) GetRegenPR(ctx context.Context, repo string, status stri
 // CreateGenprotoPR creates a PR for a given genproto change.
 //
 // hasCorrespondingPR indicates that there is a corresponding google-cloud-go PR.
-func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string, hasCorrespondingPR bool, changes []*generator.ChangeInfo) (prNumber int, _ error) {
+func (gc *GithubClient) CreateGenprotoPR(ctx context.Context, genprotoDir string, hasCorrespondingPR bool, changes []*ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating genproto PR")
 	var sb strings.Builder
 	sb.WriteString(genprotoCommitBody)
 	if !hasCorrespondingPR {
 		sb.WriteString("\n\nThere is no corresponding google-cloud-go PR.\n")
-		sb.WriteString(generator.FormatChanges(changes, false))
+		sb.WriteString(FormatChanges(changes, false))
 	}
 	body := sb.String()
 
@@ -243,7 +240,7 @@ git push origin $BRANCH_NAME
 }
 
 // CreateGocloudPR creates a PR for a given google-cloud-go change.
-func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, genprotoPRNum int, changes []*generator.ChangeInfo) (prNumber int, _ error) {
+func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, genprotoPRNum int, changes []*ChangeInfo) (prNumber int, _ error) {
 	log.Println("creating google-cloud-go PR")
 
 	var sb strings.Builder
@@ -255,7 +252,7 @@ func (gc *GithubClient) CreateGocloudPR(ctx context.Context, gocloudDir string, 
 	} else {
 		sb.WriteString("\n\nThere is no corresponding genproto PR.\n")
 	}
-	sb.WriteString(generator.FormatChanges(changes, true))
+	sb.WriteString(FormatChanges(changes, true))
 	body := sb.String()
 
 	c := execv.Command("/bin/bash", "-c", `
@@ -302,11 +299,11 @@ git push origin $BRANCH_NAME
 
 // AmendGenprotoPR amends the given genproto PR with a link to the given
 // google-cloud-go PR.
-func (gc *GithubClient) AmendGenprotoPR(ctx context.Context, genprotoPRNum int, genprotoDir string, gocloudPRNum int, changes []*generator.ChangeInfo) error {
+func (gc *GithubClient) AmendGenprotoPR(ctx context.Context, genprotoPRNum int, genprotoDir string, gocloudPRNum int, changes []*ChangeInfo) error {
 	var body strings.Builder
 	body.WriteString(genprotoCommitBody)
 	body.WriteString(fmt.Sprintf("\n\nCorresponding google-cloud-go PR: googleapis/google-cloud-go#%d\n", gocloudPRNum))
-	body.WriteString(generator.FormatChanges(changes, false))
+	body.WriteString(FormatChanges(changes, false))
 	sBody := body.String()
 	c := execv.Command("/bin/bash", "-c", `
 set -ex
@@ -351,4 +348,52 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 		return err
 	}
 	return nil
+}
+
+// UpdateGocloudGoMod updates the go.mod to include latest version of genproto
+// for the given gocloud ref.
+func (gc *GithubClient) UpdateGocloudGoMod(pr *PullRequest) error {
+	tmpDir, err := ioutil.TempDir("", "finalize-gerrit-cl")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(tmpDir)
+
+	c := execv.Command("/bin/bash", "-c", `
+set -ex
+
+git init
+git remote add origin https://github.com/googleapis/google-cloud-go
+git fetch --all
+git checkout $BRANCH_NAME
+
+# tidyall
+go mod tidy
+for i in $(find . -name go.mod); do
+	pushd $(dirname $i);
+		# Update genproto and api to latest for every module (latest version is
+		# always correct version). tidy will remove the dependencies if they're not
+		# actually used by the client.
+		go get -d google.golang.org/api | true # We don't care that there's no files at root.
+		go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
+		go mod tidy;
+	popd;
+done
+
+git add -A
+filesUpdated=$( git status --short | wc -l )
+if [ $filesUpdated -gt 0 ];
+then
+    git config credential.helper store # cache creds from ~/.git-credentials
+   	git commit --amend --no-edit
+	git push -f origin $BRANCH_NAME
+fi
+`)
+	c.Env = []string{
+		fmt.Sprintf("BRANCH_NAME=%s", "regen_gocloud"),
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+	}
+	c.Dir = tmpDir
+	return c.Run()
 }
