@@ -285,19 +285,6 @@ func detectGCEResource() *mrpb.MonitoredResource {
 	}
 }
 
-func detectGAEResource() *mrpb.MonitoredResource {
-	return &mrpb.MonitoredResource{
-		Type: "gae_app",
-		Labels: map[string]string{
-			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
-			"module_id":   os.Getenv("GAE_SERVICE"),
-			"version_id":  os.Getenv("GAE_VERSION"),
-			"instance_id": os.Getenv("GAE_INSTANCE"),
-			"runtime":     os.Getenv("GAE_RUNTIME"),
-		},
-	}
-}
-
 func isCloudRun() bool {
 	_, config := os.LookupEnv("K_CONFIGURATION")
 	_, service := os.LookupEnv("K_SERVICE")
@@ -363,13 +350,48 @@ func detectCloudFunction() *mrpb.MonitoredResource {
 	}
 }
 
+// isAppEngine returns true for both standard and flex
+func isAppEngine() bool {
+	_, service := os.LookupEnv("GAE_SERVICE")
+	_, version := os.LookupEnv("GAE_VERSION")
+	_, instance := os.LookupEnv("GAE_INSTANCE")
+
+	return service && version && instance
+}
+
+func detectAppEngineResource() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	if projectID == "" {
+		projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+
+	return &mrpb.MonitoredResource{
+		Type: "gae_app",
+		Labels: map[string]string{
+			"project_id":  projectID,
+			"module_id":   os.Getenv("GAE_SERVICE"),
+			"version_id":  os.Getenv("GAE_VERSION"),
+			"instance_id": os.Getenv("GAE_INSTANCE"),
+			"runtime":     os.Getenv("GAE_RUNTIME"),
+			"zone":        zone,
+		},
+	}
+}
+
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
 		// AppEngine, Functions, CloudRun are detected first, as metadata.OnGCE()
 		// erroneously returns true on these runtimes.
-		case os.Getenv("GAE_ENV") == "standard":
-			detectedResource.pb = detectGAEResource()
+		case isAppEngine():
+			detectedResource.pb = detectAppEngineResource()
 		case isCloudFunction():
 			detectedResource.pb = detectCloudFunction()
 		case isCloudRun():
