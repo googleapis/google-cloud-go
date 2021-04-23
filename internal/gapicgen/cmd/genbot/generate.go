@@ -17,24 +17,21 @@
 package main
 
 import (
-	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
 
-	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/generator"
+	"cloud.google.com/go/internal/gapicgen/git"
 	"golang.org/x/sync/errgroup"
-	"gopkg.in/src-d/go-git.v4"
 )
 
 // generate downloads sources and generates pull requests for go-genproto and
 // google-cloud-go if needed.
-func generate(ctx context.Context, githubClient *GithubClient) error {
+func generate(ctx context.Context, githubClient *git.GithubClient) error {
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
@@ -53,16 +50,16 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 
 	grp, _ := errgroup.WithContext(ctx)
 	grp.Go(func() error {
-		return gitDeepClone("https://github.com/googleapis/googleapis", googleapisDir)
+		return git.DeepClone("https://github.com/googleapis/googleapis", googleapisDir)
 	})
 	grp.Go(func() error {
-		return gitDeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
+		return git.DeepClone("https://github.com/googleapis/go-genproto", genprotoDir)
 	})
 	grp.Go(func() error {
-		return gitDeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
+		return git.DeepClone("https://github.com/googleapis/google-cloud-go", gocloudDir)
 	})
 	grp.Go(func() error {
-		return gitDeepClone("https://github.com/protocolbuffers/protobuf", protoDir)
+		return git.DeepClone("https://github.com/protocolbuffers/protobuf", protoDir)
 	})
 	if err := grp.Wait(); err != nil {
 		log.Println(err)
@@ -81,12 +78,12 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 	}
 
 	// Create PRs.
-	genprotoHasChanges, err := hasChanges(genprotoDir)
+	genprotoHasChanges, err := git.HasChanges(genprotoDir)
 	if err != nil {
 		return err
 	}
 
-	gocloudHasChanges, err := hasChanges(gocloudDir)
+	gocloudHasChanges, err := git.HasChanges(gocloudDir)
 	if err != nil {
 		return err
 	}
@@ -137,29 +134,4 @@ func generate(ctx context.Context, githubClient *GithubClient) error {
 		log.Println("Neither genproto nor gocloud had changes")
 	}
 	return nil
-}
-
-// gitClone clones a repository in the given directory.
-func gitDeepClone(repo, dir string) error {
-	log.Printf("cloning %s\n", repo)
-
-	_, err := git.PlainClone(dir, false, &git.CloneOptions{
-		URL:      repo,
-		Progress: os.Stdout,
-	})
-	return err
-}
-
-// hasChanges reports whether the given directory has uncommitted git changes.
-func hasChanges(dir string) (bool, error) {
-	// Write command output to both os.Stderr and local, so that we can check
-	// whether there are modified files.
-	inmem := &bytes.Buffer{}
-	w := io.MultiWriter(os.Stderr, inmem)
-
-	c := execv.Command("bash", "-c", "git status --short")
-	c.Dir = dir
-	c.Stdout = w
-	err := c.Run()
-	return inmem.Len() > 0, err
 }
