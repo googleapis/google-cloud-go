@@ -774,22 +774,13 @@ func TestIntegration_UpdateSubscription_ExpirationPolicy(t *testing.T) {
 // NOTE: This test should be skipped by open source contributors. It requires
 // allowlisting, a (gsuite) organization project, and specific permissions.
 func TestIntegration_UpdateTopicLabels(t *testing.T) {
-	t.Skip("Skipping due to org level policy failing. https://github.com/googleapis/google-cloud-go/issues/3065")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
 	defer client.Close()
 
 	compareConfig := func(got TopicConfig, wantLabels map[string]string) bool {
-		if !testutil.Equal(got.Labels, wantLabels) {
-			return false
-		}
-		// For MessageStoragePolicy, we don't want to check for an exact set of regions.
-		// That set may change at any time. Instead, just make sure that the set isn't empty.
-		if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
-			return false
-		}
-		return true
+		return testutil.Equal(got.Labels, wantLabels)
 	}
 
 	topic, err := client.CreateTopic(ctx, topicIDs.New())
@@ -903,7 +894,6 @@ func TestIntegration_Errors(t *testing.T) {
 }
 
 func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
-	t.Skip("Skipping due to org level policy failing. https://github.com/googleapis/google-cloud-go/issues/3065")
 	t.Parallel()
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t)
@@ -916,18 +906,9 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 	defer topic.Delete(ctx)
 	defer topic.Stop()
 
-	// Initially the message storage policy should just be non-empty
-	got, err := topic.Config(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
-		t.Fatalf("Empty AllowedPersistenceRegions in :\n%+v", got)
-	}
-
 	// Specify some regions to set.
 	regions := []string{"asia-east1", "us-east1"}
-	got, err = topic.Update(ctx, TopicConfigToUpdate{
+	got, err := topic.Update(ctx, TopicConfigToUpdate{
 		MessageStoragePolicy: &MessageStoragePolicy{
 			AllowedPersistenceRegions: regions,
 		},
@@ -942,17 +923,6 @@ func TestIntegration_MessageStoragePolicy_TopicLevel(t *testing.T) {
 	}
 	if !testutil.Equal(got, want) {
 		t.Fatalf("\ngot  %+v\nwant regions%+v", got, want)
-	}
-
-	// Reset all allowed regions to project default.
-	got, err = topic.Update(ctx, TopicConfigToUpdate{
-		MessageStoragePolicy: &MessageStoragePolicy{},
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	if len(got.MessageStoragePolicy.AllowedPersistenceRegions) == 0 {
-		t.Fatalf("Unexpectedly got empty MessageStoragePolicy.AllowedPersistenceRegions in:\n%+v", got)
 	}
 
 	// Removing all regions should fail
