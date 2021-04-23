@@ -954,12 +954,12 @@ func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Mes
 	return group.Wait()
 }
 
+// checkOrdering calls Config to check theEnableMessageOrdering field.
+// If this call fails (e.g. because the service account doesn't have
+// the roles/viewer or roles/pubsub.viewer role) we will assume
+// EnableMessageOrdering to be true.
+// See: https://github.com/googleapis/google-cloud-go/issues/3884
 func (s *Subscription) checkOrdering() {
-	// Check config to check EnableMessageOrdering field. If this
-	// call fails (e.g. because the service account doesn't have
-	// the roles/viewer or roles/pubsub.viewer role) we
-	// will assume EnableMessageOrdering to be true.
-	// See: https://github.com/googleapis/google-cloud-go/issues/3884
 	ctx := context.Background()
 	cfg, err := s.Config(ctx)
 	if err != nil {
