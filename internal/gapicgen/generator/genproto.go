@@ -26,6 +26,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
+	"cloud.google.com/go/internal/gapicgen/git"
 	"golang.org/x/sync/errgroup"
 )
 
@@ -176,9 +177,9 @@ func (g *GenprotoGenerator) protoc(fileNames []string) error {
 // getUpdatedPackages parses all of the new commits to find what packages need
 // to be regenerated.
 func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[string][]string, error) {
-	files, err := UpdateFilesSinceHash(g.googleapisDir, googleapisHash)
+	files, err := git.UpdateFilesSinceHash(g.googleapisDir, googleapisHash)
 	if err != nil {
-
+		return nil, err
 	}
 	pkgFiles := make(map[string][]string)
 	for _, v := range files {
