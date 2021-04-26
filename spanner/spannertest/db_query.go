@@ -518,7 +518,6 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 	}
 
 	// Handle aggregation.
-	// TODO: Support more than one aggregation function; does Spanner support that?
 	var aggI []int
 	for i, e := range sel.List {
 		// Supported aggregate funcs have exactly one arg.
@@ -552,7 +551,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 			cols: append([]colInfo(nil), raw.cols...),
 		}
 
-		var aggType spansql.Type
+		aggType := make([]*spansql.Type, len(aggI))
 		for _, rg := range rowGroups {
 			var outRow row
 			// Output for the row group is the first row of the group (arbitrary,
@@ -572,7 +571,7 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 				}
 			}
 
-			for _, aggI := range aggI {
+			for j, aggI := range aggI {
 				fexpr := sel.List[aggI].(spansql.Func)
 				fn := aggregateFuncs[fexpr.Name]
 				starArg := fexpr.Args[0] == spansql.Star
@@ -607,27 +606,27 @@ func (d *database) evalSelect(sel spansql.Select, qc *queryContext) (si *selIter
 				if err != nil {
 					return nil, err
 				}
-				aggType = typ
+				aggType[j] = &typ
 
 				outRow = append(outRow, x)
 			}
 			rawOut.rows = append(rawOut.rows, outRow)
 		}
 
-		for _, aggI := range aggI {
+		for j, aggI := range aggI {
 			fexpr := sel.List[aggI].(spansql.Func)
-			if aggType == (spansql.Type{}) {
+			if aggType[j] == nil {
 				// Fallback; there might not be any groups.
 				// TODO: Should this be in aggregateFunc?
-				aggType = int64Type
+				aggType[j] = &int64Type
 			}
 			rawOut.cols = append(rawOut.cols, colInfo{
 				Name:     spansql.ID(fexpr.SQL()), // TODO: this is a bit hokey, but it is output only
-				Type:     aggType,
+				Type:     *aggType[j],
 				AggIndex: aggI + 1,
 			})
 			sel.List[aggI] = aggSentinel{ // Mutate query so evalExpr in selIter picks out the new value.
-				Type:     aggType,
+				Type:     *aggType[j],
 				AggIndex: aggI + 1,
 			}
 		}
