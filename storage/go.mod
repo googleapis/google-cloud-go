@@ -7,8 +7,8 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.5
 	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/oauth2 v0.0.0-20210402161424-2e8d93401602
-	google.golang.org/api v0.43.0
-	google.golang.org/genproto v0.0.0-20210405150802-d70529258950
-	google.golang.org/grpc v1.36.1
+	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
+	google.golang.org/api v0.45.0
+	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b
+	google.golang.org/grpc v1.37.0
 )

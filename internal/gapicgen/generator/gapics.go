@@ -23,6 +23,8 @@ import (
 	"path/filepath"
 	"strings"
 
+	"cloud.google.com/go/internal/gapicgen/execv"
+	"cloud.google.com/go/internal/gapicgen/gensnippets"
 	"gopkg.in/yaml.v2"
 )
 
@@ -74,7 +76,22 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := g.addModReplaceGenproto(); err != nil {
+	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
+		return err
+	}
+
+	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
+	apiShortnames, err := g.parseAPIShortnames(microgenGapicConfigs, manualEntries)
+	if err != nil {
+		return err
+	}
+	if err := gensnippets.Generate(g.googleCloudDir, snippetDir, apiShortnames); err != nil {
+		return fmt.Errorf("error generating snippets: %v", err)
+	}
+	if err := replaceAllForSnippets(g.googleCloudDir, snippetDir); err != nil {
+		return err
+	}
+	if err := goModTidy(snippetDir); err != nil {
 		return err
 	}
 
@@ -86,25 +103,66 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := g.dropModReplaceGenproto(); err != nil {
+	if err := execv.ForEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
 		return err
 	}
 
 	return nil
 }
 
+func goModTidy(dir string) error {
+	log.Printf("[%s] running go mod tidy", dir)
+	c := execv.Command("go", "mod", "tidy")
+	c.Dir = dir
+	c.Env = []string{
+		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+	}
+	return c.Run()
+}
+
+func replaceAllForSnippets(googleCloudDir, snippetDir string) error {
+	return execv.ForEachMod(googleCloudDir, func(dir string) error {
+		if dir == snippetDir {
+			return nil
+		}
+
+		// Get the module name in this dir.
+		modC := execv.Command("go", "list", "-m")
+		modC.Dir = dir
+		mod, err := modC.Output()
+		if err != nil {
+			return err
+		}
+
+		// Replace it. Use a relative path to avoid issues on different systems.
+		rel, err := filepath.Rel(snippetDir, dir)
+		if err != nil {
+			return err
+		}
+		c := execv.Command("bash", "-c", `go mod edit -replace "$MODULE=$MODULE_PATH"`)
+		c.Dir = snippetDir
+		c.Env = []string{
+			fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+			fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
+			fmt.Sprintf("MODULE=%s", mod),
+			fmt.Sprintf("MODULE_PATH=%s", rel),
+		}
+		return c.Run()
+	})
+}
+
 // addModReplaceGenproto adds a genproto replace statement that points genproto
 // to the local copy. This is necessary since the remote genproto may not have
 // changes that are necessary for the in-flight regen.
-func (g *GapicGenerator) addModReplaceGenproto() error {
-	log.Println("adding temporary genproto replace statement")
-	c := command("bash", "-c", `
+func (g *GapicGenerator) addModReplaceGenproto(dir string) error {
+	log.Printf("[%s] adding temporary genproto replace statement", dir)
+	c := execv.Command("bash", "-c", `
 set -ex
 
-GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | awk '{print $2}')
-go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR"
+go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
 `)
-	c.Dir = g.googleCloudDir
+	c.Dir = dir
 	c.Env = []string{
 		"GENPROTO_DIR=" + g.genprotoDir,
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -115,15 +173,14 @@ go mod edit -replace "google.golang.org/genproto@$GENPROTO_VERSION=$GENPROTO_DIR
 
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
-func (g *GapicGenerator) dropModReplaceGenproto() error {
-	log.Println("removing genproto replace statement")
-	c := command("bash", "-c", `
+func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
+	log.Printf("[%s] removing genproto replace statement", dir)
+	c := execv.Command("bash", "-c", `
 set -ex
 
-GENPROTO_VERSION=$(cat go.mod | cat go.mod | grep genproto | grep -v replace | awk '{print $2}')
-go mod edit -dropreplace "google.golang.org/genproto@$GENPROTO_VERSION"
+go mod edit -dropreplace "google.golang.org/genproto"
 `)
-	c.Dir = g.googleCloudDir
+	c.Dir = dir
 	c.Env = []string{
 		fmt.Sprintf("PATH=%s", os.Getenv("PATH")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
 		fmt.Sprintf("HOME=%s", os.Getenv("HOME")), // TODO(deklerk): Why do we need to do this? Doesn't seem to be necessary in other exec.Commands.
@@ -138,7 +195,7 @@ func (g *GapicGenerator) setVersion() error {
 	log.Println("updating client version")
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
 
-	c := command("bash", "-c", `
+	c := execv.Command("bash", "-c", `
 ver=$(date +%Y%m%d)
 git ls-files -mo | while read modified; do
 	dir=${modified%/*.*}
@@ -182,20 +239,31 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
 	args = append(args, protoFiles...)
-	c := command("protoc", args...)
+	c := execv.Command("protoc", args...)
 	c.Dir = g.googleapisDir
 	return c.Run()
 }
 
 // manifestEntry is used for JSON marshaling in manifest.
 type manifestEntry struct {
-	DistributionName  string `json:"distribution_name"`
-	Description       string `json:"description"`
-	Language          string `json:"language"`
-	ClientLibraryType string `json:"client_library_type"`
-	DocsURL           string `json:"docs_url"`
-	ReleaseLevel      string `json:"release_level"`
+	DistributionName  string      `json:"distribution_name"`
+	Description       string      `json:"description"`
+	Language          string      `json:"language"`
+	ClientLibraryType string      `json:"client_library_type"`
+	DocsURL           string      `json:"docs_url"`
+	ReleaseLevel      string      `json:"release_level"`
+	LibraryType       LibraryType `json:"library_type"`
 }
+
+type LibraryType string
+
+const (
+	GapicAutoLibraryType   LibraryType = "GAPIC_AUTO"
+	GapicManualLibraryType LibraryType = "GAPIC_MANUAL"
+	CoreLibraryType        LibraryType = "CORE"
+	AgentLibraryType       LibraryType = "AGENT"
+	OtherLibraryType       LibraryType = "OTHER"
+)
 
 // TODO: consider getting Description from the gapic, if there is one.
 var manualEntries = []manifestEntry{
@@ -207,6 +275,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigquery",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/bigtable",
@@ -215,6 +284,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/bigtable",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/datastore",
@@ -223,6 +293,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/datastore",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/iam",
@@ -231,6 +302,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/iam",
 		ReleaseLevel:      "ga",
+		LibraryType:       CoreLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/storage",
@@ -239,6 +311,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/storage",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/rpcreplay",
@@ -247,6 +320,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/rpcreplay",
 		ReleaseLevel:      "ga",
+		LibraryType:       OtherLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/profiler",
@@ -255,6 +329,25 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/profiler",
 		ReleaseLevel:      "ga",
+		LibraryType:       AgentLibraryType,
+	},
+	{
+		DistributionName:  "cloud.google.com/go/compute/metadata",
+		Description:       "Service Metadata API",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/compute/metadata",
+		ReleaseLevel:      "ga",
+		LibraryType:       CoreLibraryType,
+	},
+	{
+		DistributionName:  "cloud.google.com/go/functions/metadata",
+		Description:       "Cloud Functions",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/functions/metadata",
+		ReleaseLevel:      "alpha",
+		LibraryType:       CoreLibraryType,
 	},
 	// Manuals with a GAPIC.
 	{
@@ -264,6 +357,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/errorreporting",
 		ReleaseLevel:      "beta",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/firestore",
@@ -272,6 +366,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/firestore",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/logging",
@@ -280,6 +375,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/logging",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/pubsub",
@@ -288,6 +384,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/pubsub",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 	{
 		DistributionName:  "cloud.google.com/go/spanner",
@@ -296,6 +393,7 @@ var manualEntries = []manifestEntry{
 		ClientLibraryType: "manual",
 		DocsURL:           "https://pkg.go.dev/cloud.google.com/go/spanner",
 		ReleaseLevel:      "ga",
+		LibraryType:       GapicManualLibraryType,
 	},
 }
 
@@ -321,7 +419,7 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 			Title string `yaml:"title"` // We only need the title field.
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return fmt.Errorf("Decode: %v", err)
+			return fmt.Errorf("decode: %v", err)
 		}
 		entry := manifestEntry{
 			DistributionName:  conf.importPath,
@@ -342,13 +440,42 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 // and places them in gocloudDir.
 func (g *GapicGenerator) copyMicrogenFiles() error {
 	// The period at the end is analagous to * (copy everything in this dir).
-	c := command("cp", "-R", g.googleCloudDir+"/cloud.google.com/go/.", ".")
+	c := execv.Command("cp", "-R", g.googleCloudDir+"/cloud.google.com/go/.", ".")
 	c.Dir = g.googleCloudDir
 	if err := c.Run(); err != nil {
 		return err
 	}
 
-	c = command("rm", "-rf", "cloud.google.com")
+	c = execv.Command("rm", "-rf", "cloud.google.com")
 	c.Dir = g.googleCloudDir
 	return c.Run()
+}
+
+func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntries []manifestEntry) (map[string]string, error) {
+	shortnames := map[string]string{}
+	for _, conf := range confs {
+		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		yamlFile, err := os.Open(yamlPath)
+		if err != nil {
+			return nil, err
+		}
+		config := struct {
+			Name string `yaml:"name"`
+		}{}
+		if err := yaml.NewDecoder(yamlFile).Decode(&config); err != nil {
+			return nil, fmt.Errorf("decode: %v", err)
+		}
+		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
+		shortnames[conf.importPath] = shortname
+	}
+
+	// Do our best for manuals.
+	for _, manual := range manualEntries {
+		p := strings.TrimPrefix(manual.DistributionName, "cloud.google.com/go/")
+		if strings.Contains(p, "/") {
+			p = p[0:strings.Index(p, "/")]
+		}
+		shortnames[manual.DistributionName] = p
+	}
+	return shortnames, nil
 }

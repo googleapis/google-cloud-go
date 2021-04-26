@@ -1139,6 +1139,16 @@ func TestErrorOnPrepareSession(t *testing.T) {
 		})
 		sp := client.idleSessions
 
+		// Wait until session creation has seized.
+		waitFor(t, func() error {
+			sp.mu.Lock()
+			defer sp.mu.Unlock()
+			if sp.createReqs != 0 {
+				return fmt.Errorf("%d sessions are still in creation", sp.createReqs)
+			}
+			return nil
+		})
+
 		// Wait until the health checker has tried to write-prepare a session.
 		// This will cause the session pool to write some errors to the log that
 		// preparing sessions failed.
