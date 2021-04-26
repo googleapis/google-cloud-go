@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go v0.81.0
 	cloud.google.com/go/internal/godocfx v0.0.0-20210416164805-eb2ed0dc7d6b
 	github.com/golang/protobuf v1.5.2 // indirect
-	github.com/google/go-github/v34 v34.0.0
+	github.com/google/go-github/v35 v35.1.0
 	github.com/kr/text v0.2.0 // indirect
 	github.com/niemeyer/pretty v0.0.0-20200227124842-a10e7caefd8e // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20201206200315-234843c633fa
