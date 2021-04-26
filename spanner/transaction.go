@@ -77,14 +77,14 @@ type txReadOnly struct {
 	txOpts TransactionOptions
 }
 
+// Internal interface for types that can configure the priority of an RPC.
+type requestPrioritizer interface {
+	requestPriority() sppb.RequestOptions_Priority
+}
+
 // TransactionOptions provides options for a transaction.
 type TransactionOptions struct {
 	CommitOptions CommitOptions
-
-	// The transaction tag to use for a read/write transaction.
-	// This tag is automatically included with each statement and the commit
-	// request of a read/write transaction.
-	TransactionTag string
 
 	// CommitPriority is the priority to use for the Commit RPC for the
 	// transaction.
@@ -93,10 +93,6 @@ type TransactionOptions struct {
 
 func (to *TransactionOptions) requestPriority() sppb.RequestOptions_Priority {
 	return to.CommitPriority
-}
-
-func (to *TransactionOptions) requestTag() string {
-	return ""
 }
 
 // errSessionClosed returns error for using a recycled/destroyed session
@@ -126,11 +122,12 @@ type ReadOptions struct {
 	// limit.
 	Limit int
 
-	// Priority is the RPC priority to use for the operation.
+	// Priority is the RPC priority to use for the read operation.
 	Priority sppb.RequestOptions_Priority
+}
 
-	// The request tag to use for this request.
-	RequestTag string
+func (ro *ReadOptions) requestPriority() sppb.RequestOptions_Priority {
+	return ro.Priority
 }
 
 // ReadWithOptions returns a RowIterator for reading multiple rows from the
@@ -158,15 +155,13 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	}
 	index := ""
 	limit := 0
-	prio := sppb.RequestOptions_PRIORITY_UNSPECIFIED
-	requestTag := ""
+	var ro *sppb.RequestOptions
 	if opts != nil {
 		index = opts.Index
 		if opts.Limit > 0 {
 			limit = opts.Limit
 		}
-		prio = opts.Priority
-		requestTag = opts.RequestTag
+		ro = createRequestOptions(opts)
 	}
 	return streamWithReplaceSessionFunc(
 		contextWithOutgoingMetadata(ctx, sh.getMetadata()),
@@ -182,7 +177,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 					KeySet:         kset,
 					ResumeToken:    resumeToken,
 					Limit:          int64(limit),
-					RequestOptions: createRequestOptions(prio, requestTag, t.txOpts.TransactionTag),
+					RequestOptions: ro,
 				})
 		},
 		t.replaceSessionFunc,
@@ -262,25 +257,22 @@ type QueryOptions struct {
 
 	// Priority is the RPC priority to use for the query/update.
 	Priority sppb.RequestOptions_Priority
+}
 
-	// The request tag to use for this request.
-	RequestTag string
+func (qo *QueryOptions) requestPriority() sppb.RequestOptions_Priority {
+	return qo.Priority
 }
 
 // merge combines two QueryOptions that the input parameter will have higher
 // order of precedence.
 func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	merged := QueryOptions{
-		Mode:       qo.Mode,
-		Options:    &sppb.ExecuteSqlRequest_QueryOptions{},
-		RequestTag: qo.RequestTag,
-		Priority:   qo.Priority,
+		Mode:     qo.Mode,
+		Options:  &sppb.ExecuteSqlRequest_QueryOptions{},
+		Priority: qo.Priority,
 	}
 	if opts.Mode != nil {
 		merged.Mode = opts.Mode
-	}
-	if opts.RequestTag != "" {
-		merged.RequestTag = opts.RequestTag
 	}
 	if opts.Priority != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
 		merged.Priority = opts.Priority
@@ -290,16 +282,12 @@ func (qo QueryOptions) merge(opts QueryOptions) QueryOptions {
 	return merged
 }
 
-func createRequestOptions(prio sppb.RequestOptions_Priority, requestTag, transactionTag string) (ro *sppb.RequestOptions) {
-	ro = &sppb.RequestOptions{}
-	if prio != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
-		ro.Priority = prio
+func createRequestOptions(prioritizer requestPrioritizer) (ro *sppb.RequestOptions) {
+	if prioritizer == nil {
+		return nil
 	}
-	if requestTag != "" {
-		ro.RequestTag = requestTag
-	}
-	if transactionTag != "" {
-		ro.TransactionTag = transactionTag
+	if prioritizer.requestPriority() != sppb.RequestOptions_PRIORITY_UNSPECIFIED {
+		ro = &sppb.RequestOptions{Priority: prioritizer.requestPriority()}
 	}
 	return ro
 }
@@ -408,7 +396,7 @@ func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, opti
 		Params:         params,
 		ParamTypes:     paramTypes,
 		QueryOptions:   options.Options,
-		RequestOptions: createRequestOptions(options.Priority, options.RequestTag, t.txOpts.TransactionTag),
+		RequestOptions: createRequestOptions(&options),
 	}
 	return req, sh, nil
 }
@@ -914,13 +902,9 @@ func (t *ReadWriteTransaction) BatchUpdate(ctx context.Context, stmts []Statemen
 // affected rows for the given query at the same index. If an error occurs,
 // counts will be returned up to the query that encountered the error.
 //
-// The request tag and priority given in the QueryOptions are included with the
-// RPC. Any other options that are set in the QueryOptions struct are ignored.
+// The priority given in the QueryOptions will be included with the RPC.
+// Any other options that are set in the QueryOptions struct will be ignored.
 func (t *ReadWriteTransaction) BatchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
-	return t.batchUpdateWithOptions(ctx, stmts, t.qo.merge(opts))
-}
-
-func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts []Statement, opts QueryOptions) (_ []int64, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/spanner.BatchUpdate")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -953,7 +937,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Transaction:    ts,
 		Statements:     sppbStmts,
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
-		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag),
+		RequestOptions: createRequestOptions(&opts),
 	})
 	if err != nil {
 		return nil, ToSpannerError(err)
@@ -1075,7 +1059,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		Transaction: &sppb.CommitRequest_TransactionId{
 			TransactionId: t.tx,
 		},
-		RequestOptions:    createRequestOptions(t.txOpts.CommitPriority, "", t.txOpts.TransactionTag),
+		RequestOptions:    createRequestOptions(&t.txOpts),
 		Mutations:         mPb,
 		ReturnCommitStats: options.ReturnCommitStats,
 	})
@@ -1256,11 +1240,12 @@ type writeOnlyTransaction struct {
 	// sp is the session pool which writeOnlyTransaction uses to get Cloud
 	// Spanner sessions for blind writes.
 	sp *sessionPool
-	// transactionTag is the tag that will be included with the CommitRequest
-	// of the write-only transaction.
-	transactionTag string
 	// commitPriority is the RPC priority to use for the commit operation.
 	commitPriority sppb.RequestOptions_Priority
+}
+
+func (t *writeOnlyTransaction) requestPriority() sppb.RequestOptions_Priority {
+	return t.commitPriority
 }
 
 // applyAtLeastOnce commits a list of mutations to Cloud Spanner at least once,
@@ -1303,7 +1288,7 @@ func (t *writeOnlyTransaction) applyAtLeastOnce(ctx context.Context, ms ...*Muta
 				},
 			},
 			Mutations:      mPb,
-			RequestOptions: createRequestOptions(t.commitPriority, "", t.transactionTag),
+			RequestOptions: createRequestOptions(t),
 		})
 		if err != nil && !isAbortedErr(err) {
 			if isSessionNotFoundError(err) {

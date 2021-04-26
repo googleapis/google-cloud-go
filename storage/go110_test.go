@@ -19,6 +19,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"io"
 	"net/url"
 	"testing"
 
@@ -43,6 +44,7 @@ func TestInvoke(t *testing.T) {
 		{2, &googleapi.Error{Code: 518}, nil},
 		{2, &googleapi.Error{Code: 599}, &googleapi.Error{Code: 428}},
 		{1, &url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")}, nil},
+		{1, io.ErrUnexpectedEOF, nil},
 	} {
 		counter := 0
 		call := func() error {
