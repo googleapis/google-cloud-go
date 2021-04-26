@@ -94,25 +94,9 @@ func (t *BatchReadOnlyTransaction) PartitionRead(ctx context.Context, table stri
 	return t.PartitionReadUsingIndex(ctx, table, "", keys, columns, opt)
 }
 
-// PartitionReadWithOptions returns a list of Partitions that can be used to
-// read rows from the database. These partitions can be executed across multiple
-// processes, even across different machines. The partition size and count hints
-// can be configured using PartitionOptions. Pass a ReadOptions to modify the
-// read operation.
-func (t *BatchReadOnlyTransaction) PartitionReadWithOptions(ctx context.Context, table string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions) ([]*Partition, error) {
-	return t.PartitionReadUsingIndexWithOptions(ctx, table, "", keys, columns, opt, readOptions)
-}
-
 // PartitionReadUsingIndex returns a list of Partitions that can be used to read
 // rows from the database using an index.
 func (t *BatchReadOnlyTransaction) PartitionReadUsingIndex(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions) ([]*Partition, error) {
-	return t.PartitionReadUsingIndexWithOptions(ctx, table, index, keys, columns, opt, ReadOptions{})
-}
-
-// PartitionReadUsingIndexWithOptions returns a list of Partitions that can be
-// used to read rows from the database using an index. Pass a ReadOptions to
-// modify the read operation.
-func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx context.Context, table, index string, keys KeySet, columns []string, opt PartitionOptions, readOptions ReadOptions) ([]*Partition, error) {
 	sh, ts, err := t.acquire(ctx)
 	if err != nil {
 		return nil, err
@@ -139,13 +123,12 @@ func (t *BatchReadOnlyTransaction) PartitionReadUsingIndexWithOptions(ctx contex
 	})
 	// Prepare ReadRequest.
 	req := &sppb.ReadRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Table:          table,
-		Index:          index,
-		Columns:        columns,
-		KeySet:         kset,
-		RequestOptions: createRequestOptions(readOptions.Priority, readOptions.RequestTag, ""),
+		Session:     sid,
+		Transaction: ts,
+		Table:       table,
+		Index:       index,
+		Columns:     columns,
+		KeySet:      kset,
 	}
 	// Generate partitions.
 	for _, p := range resp.GetPartitions() {
@@ -194,13 +177,12 @@ func (t *BatchReadOnlyTransaction) partitionQuery(ctx context.Context, statement
 
 	// prepare ExecuteSqlRequest
 	r := &sppb.ExecuteSqlRequest{
-		Session:        sid,
-		Transaction:    ts,
-		Sql:            statement.SQL,
-		Params:         params,
-		ParamTypes:     paramTypes,
-		QueryOptions:   qOpts.Options,
-		RequestOptions: createRequestOptions(qOpts.Priority, qOpts.RequestTag, ""),
+		Session:      sid,
+		Transaction:  ts,
+		Sql:          statement.SQL,
+		Params:       params,
+		ParamTypes:   paramTypes,
+		QueryOptions: qOpts.Options,
 	}
 
 	// generate Partitions
@@ -288,7 +270,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				Columns:        p.rreq.Columns,
 				KeySet:         p.rreq.KeySet,
 				PartitionToken: p.pt,
-				RequestOptions: p.rreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
 		}
@@ -302,7 +283,6 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 				ParamTypes:     p.qreq.ParamTypes,
 				QueryOptions:   p.qreq.QueryOptions,
 				PartitionToken: p.pt,
-				RequestOptions: p.qreq.RequestOptions,
 				ResumeToken:    resumeToken,
 			})
 		}
