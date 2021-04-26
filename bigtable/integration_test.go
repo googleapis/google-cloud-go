@@ -1262,6 +1262,15 @@ func TestIntegration_Admin(t *testing.T) {
 	if gotRowCount != 0 {
 		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
 	}
+
+	// Validate Encyrption Info not configured
+	encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
+	if err != nil {
+		t.Fatalf("EncryptionInfo: %v", err)
+	}
+	if got, want := len(encryptionInfo), 0; !cmp.Equal(got, want) {
+		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+	}
 }
 
 func TestIntegration_TableIam(t *testing.T) {
@@ -1506,8 +1515,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	kmsKeyName := keyRingName + "/cryptoKeys/key1"
 
 	conf := &InstanceWithClustersConfig{
-		InstanceID: instanceToCreate,
-		// InstanceType: PRODUCTION,
+		InstanceID:  instanceToCreate,
 		DisplayName: "test instance",
 		Clusters: []ClusterConfig{
 			{
