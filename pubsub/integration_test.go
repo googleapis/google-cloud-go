@@ -1217,7 +1217,8 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 	scanner := bufio.NewScanner(inFile)
 	for scanner.Scan() {
 		line := scanner.Text()
-		line = strings.ReplaceAll(line, "\"", "")
+		// TODO: use strings.ReplaceAll once we only support 1.11+.
+		line = strings.Replace(line, "\"", "", -1)
 		parts := strings.Split(line, ",")
 		key := parts[0]
 		msg := parts[1]
