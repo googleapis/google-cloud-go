@@ -1171,6 +1171,38 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		it, [][]Value{{int64(10)}})
 }
 
+func TestIntegration_RoutineUserTVF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// Define a simple stored procedure via DDL.
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	sql := fmt.Sprintf(`
+	    CREATE OR REPLACE TABLE FUNCTION `+"`%s`"+`(a INT64)
+		AS (SELECT x FROM UNNEST([1,2,3]) x WHERE x = a);`,
+		routine.FullyQualifiedName())
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatal(err)
+	}
+	defer routine.Delete(ctx)
+
+	meta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	wantType := "TABLE_VALUED_FUNCTION"
+	if meta.Type != wantType {
+		t.Errorf("wanted routine type to be %s, got %s", wantType, meta.Type)
+	}
+	wantBody := "SELECT x FROM UNNEST([1,2,3]) x"
+	if meta.Body != wantBody {
+		t.Errorf("wanted routine body to be %s, got %s", wantBody, meta.Body)
+	}
+}
+
 func TestIntegration_InsertErrors(t *testing.T) {
 	// This test serves to verify streaming behavior in the face of oversized data.
 	// BigQuery will reject insertAll payloads that exceed a defined limit (10MB).
