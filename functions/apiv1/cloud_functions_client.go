@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import (
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 )
 
@@ -69,11 +70,55 @@ func defaultCloudFunctionsClientOptions() []option.ClientOption {
 
 func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 	return &CloudFunctionsCallOptions{
-		ListFunctions:       []gax.CallOption{},
-		GetFunction:         []gax.CallOption{},
-		CreateFunction:      []gax.CallOption{},
-		UpdateFunction:      []gax.CallOption{},
-		DeleteFunction:      []gax.CallOption{},
+		ListFunctions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetFunction: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateFunction: []gax.CallOption{},
+		UpdateFunction: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteFunction: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CallFunction:        []gax.CallOption{},
 		GenerateUploadUrl:   []gax.CallOption{},
 		GenerateDownloadUrl: []gax.CallOption{},
@@ -83,7 +128,7 @@ func defaultCloudFunctionsCallOptions() *CloudFunctionsCallOptions {
 	}
 }
 
-// CloudFunctionsClient is a client for interacting with .
+// CloudFunctionsClient is a client for interacting with Cloud Functions API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type CloudFunctionsClient struct {
@@ -218,6 +263,11 @@ func (c *CloudFunctionsClient) ListFunctions(ctx context.Context, req *functions
 
 // GetFunction returns a function with the given name from the requested project.
 func (c *CloudFunctionsClient) GetFunction(ctx context.Context, req *functionspb.GetFunctionRequest, opts ...gax.CallOption) (*functionspb.CloudFunction, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.GetFunction[0:len(c.CallOptions.GetFunction):len(c.CallOptions.GetFunction)], opts...)
@@ -237,6 +287,11 @@ func (c *CloudFunctionsClient) GetFunction(ctx context.Context, req *functionspb
 // the specified project, the long running operation will return
 // ALREADY_EXISTS error.
 func (c *CloudFunctionsClient) CreateFunction(ctx context.Context, req *functionspb.CreateFunctionRequest, opts ...gax.CallOption) (*CreateFunctionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CreateFunction[0:len(c.CallOptions.CreateFunction):len(c.CallOptions.CreateFunction)], opts...)
@@ -256,6 +311,11 @@ func (c *CloudFunctionsClient) CreateFunction(ctx context.Context, req *function
 
 // UpdateFunction updates existing function.
 func (c *CloudFunctionsClient) UpdateFunction(ctx context.Context, req *functionspb.UpdateFunctionRequest, opts ...gax.CallOption) (*UpdateFunctionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "function.name", url.QueryEscape(req.GetFunction().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.UpdateFunction[0:len(c.CallOptions.UpdateFunction):len(c.CallOptions.UpdateFunction)], opts...)
@@ -277,6 +337,11 @@ func (c *CloudFunctionsClient) UpdateFunction(ctx context.Context, req *function
 // given function is used by some trigger, the trigger will be updated to
 // remove this function.
 func (c *CloudFunctionsClient) DeleteFunction(ctx context.Context, req *functionspb.DeleteFunctionRequest, opts ...gax.CallOption) (*DeleteFunctionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.DeleteFunction[0:len(c.CallOptions.DeleteFunction):len(c.CallOptions.DeleteFunction)], opts...)
@@ -299,6 +364,11 @@ func (c *CloudFunctionsClient) DeleteFunction(ctx context.Context, req *function
 // the actual limits, refer to
 // Rate Limits (at https://cloud.google.com/functions/quotas#rate_limits).
 func (c *CloudFunctionsClient) CallFunction(ctx context.Context, req *functionspb.CallFunctionRequest, opts ...gax.CallOption) (*functionspb.CallFunctionResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CallFunction[0:len(c.CallOptions.CallFunction):len(c.CallOptions.CallFunction)], opts...)

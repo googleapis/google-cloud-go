@@ -35,6 +35,8 @@ if [[ -n "$FORCE_GENERATE_ALL" ]]; then
   for m in $(find . -name go.mod -execdir go list -m \; | grep -v internal); do
     godocfx -out obj/api/$m@latest $m
   done
+elif [[ -n "$MODULE" ]]; then
+  godocfx "$MODULE"
 else
   godocfx -project $GCLOUD_TESTS_GOLANG_PROJECT_ID -new-modules cloud.google.com/go
 fi

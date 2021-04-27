@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -72,6 +72,56 @@ func ExampleClusterControllerClient_UpdateCluster() {
 		// TODO: Fill request struct fields.
 	}
 	op, err := c.UpdateCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClusterControllerClient_StopCluster() {
+	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
+
+	ctx := context.Background()
+	c, err := dataproc.NewClusterControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dataprocpb.StopClusterRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.StopCluster(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClusterControllerClient_StartCluster() {
+	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
+
+	ctx := context.Background()
+	c, err := dataproc.NewClusterControllerClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dataprocpb.StartClusterRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.StartCluster(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

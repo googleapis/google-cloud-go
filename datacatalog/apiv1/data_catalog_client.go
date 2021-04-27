@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,33 +40,34 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	SearchCatalog          []gax.CallOption
-	CreateEntryGroup       []gax.CallOption
-	GetEntryGroup          []gax.CallOption
-	UpdateEntryGroup       []gax.CallOption
-	DeleteEntryGroup       []gax.CallOption
-	ListEntryGroups        []gax.CallOption
-	CreateEntry            []gax.CallOption
-	UpdateEntry            []gax.CallOption
-	DeleteEntry            []gax.CallOption
-	GetEntry               []gax.CallOption
-	LookupEntry            []gax.CallOption
-	ListEntries            []gax.CallOption
-	CreateTagTemplate      []gax.CallOption
-	GetTagTemplate         []gax.CallOption
-	UpdateTagTemplate      []gax.CallOption
-	DeleteTagTemplate      []gax.CallOption
-	CreateTagTemplateField []gax.CallOption
-	UpdateTagTemplateField []gax.CallOption
-	RenameTagTemplateField []gax.CallOption
-	DeleteTagTemplateField []gax.CallOption
-	CreateTag              []gax.CallOption
-	UpdateTag              []gax.CallOption
-	DeleteTag              []gax.CallOption
-	ListTags               []gax.CallOption
-	SetIamPolicy           []gax.CallOption
-	GetIamPolicy           []gax.CallOption
-	TestIamPermissions     []gax.CallOption
+	SearchCatalog                   []gax.CallOption
+	CreateEntryGroup                []gax.CallOption
+	GetEntryGroup                   []gax.CallOption
+	UpdateEntryGroup                []gax.CallOption
+	DeleteEntryGroup                []gax.CallOption
+	ListEntryGroups                 []gax.CallOption
+	CreateEntry                     []gax.CallOption
+	UpdateEntry                     []gax.CallOption
+	DeleteEntry                     []gax.CallOption
+	GetEntry                        []gax.CallOption
+	LookupEntry                     []gax.CallOption
+	ListEntries                     []gax.CallOption
+	CreateTagTemplate               []gax.CallOption
+	GetTagTemplate                  []gax.CallOption
+	UpdateTagTemplate               []gax.CallOption
+	DeleteTagTemplate               []gax.CallOption
+	CreateTagTemplateField          []gax.CallOption
+	UpdateTagTemplateField          []gax.CallOption
+	RenameTagTemplateField          []gax.CallOption
+	RenameTagTemplateFieldEnumValue []gax.CallOption
+	DeleteTagTemplateField          []gax.CallOption
+	CreateTag                       []gax.CallOption
+	UpdateTag                       []gax.CallOption
+	DeleteTag                       []gax.CallOption
+	ListTags                        []gax.CallOption
+	SetIamPolicy                    []gax.CallOption
+	GetIamPolicy                    []gax.CallOption
+	TestIamPermissions              []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -155,17 +156,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		CreateTagTemplate:      []gax.CallOption{},
-		GetTagTemplate:         []gax.CallOption{},
-		UpdateTagTemplate:      []gax.CallOption{},
-		DeleteTagTemplate:      []gax.CallOption{},
-		CreateTagTemplateField: []gax.CallOption{},
-		UpdateTagTemplateField: []gax.CallOption{},
-		RenameTagTemplateField: []gax.CallOption{},
-		DeleteTagTemplateField: []gax.CallOption{},
-		CreateTag:              []gax.CallOption{},
-		UpdateTag:              []gax.CallOption{},
-		DeleteTag:              []gax.CallOption{},
+		CreateTagTemplate:               []gax.CallOption{},
+		GetTagTemplate:                  []gax.CallOption{},
+		UpdateTagTemplate:               []gax.CallOption{},
+		DeleteTagTemplate:               []gax.CallOption{},
+		CreateTagTemplateField:          []gax.CallOption{},
+		UpdateTagTemplateField:          []gax.CallOption{},
+		RenameTagTemplateField:          []gax.CallOption{},
+		RenameTagTemplateFieldEnumValue: []gax.CallOption{},
+		DeleteTagTemplateField:          []gax.CallOption{},
+		CreateTag:                       []gax.CallOption{},
+		UpdateTag:                       []gax.CallOption{},
+		DeleteTag:                       []gax.CallOption{},
 		ListTags: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -277,7 +279,7 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // This is a custom method
 // (https://cloud.google.com/apis/design/custom_methods (at https://cloud.google.com/apis/design/custom_methods)) and does not return
 // the complete resource, only the resource identifier and high level
-// fields. Clients can subsequentally call Get methods.
+// fields. Clients can subsequently call Get methods.
 //
 // Note that Data Catalog search queries do not guarantee full recall. Query
 // results that match your query may not be returned, even in subsequent
@@ -477,8 +479,8 @@ func (c *Client) ListEntryGroups(ctx context.Context, req *datacatalogpb.ListEnt
 	return it
 }
 
-// CreateEntry creates an entry. Only entries of ‘FILESET’ type or user-specified type can
-// be created.
+// CreateEntry creates an entry. Only entries of types ‘FILESET’, ‘CLUSTER’, ‘DATA_STREAM’
+// or with a user-specified type can be created.
 //
 // Users should enable the Data Catalog API in the project identified by
 // the parent parameter (see [Data Catalog Resource Project]
@@ -811,6 +813,29 @@ func (c *Client) RenameTagTemplateField(ctx context.Context, req *datacatalogpb.
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.client.RenameTagTemplateField(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// RenameTagTemplateFieldEnumValue renames an enum value in a tag template. The enum values have to be unique
+// within one enum field.
+func (c *Client) RenameTagTemplateFieldEnumValue(ctx context.Context, req *datacatalogpb.RenameTagTemplateFieldEnumValueRequest, opts ...gax.CallOption) (*datacatalogpb.TagTemplateField, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.RenameTagTemplateFieldEnumValue[0:len(c.CallOptions.RenameTagTemplateFieldEnumValue):len(c.CallOptions.RenameTagTemplateFieldEnumValue)], opts...)
+	var resp *datacatalogpb.TagTemplateField
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.RenameTagTemplateFieldEnumValue(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

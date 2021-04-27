@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,22 +42,23 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	CreateBuild        []gax.CallOption
-	GetBuild           []gax.CallOption
-	ListBuilds         []gax.CallOption
-	CancelBuild        []gax.CallOption
-	RetryBuild         []gax.CallOption
-	CreateBuildTrigger []gax.CallOption
-	GetBuildTrigger    []gax.CallOption
-	ListBuildTriggers  []gax.CallOption
-	DeleteBuildTrigger []gax.CallOption
-	UpdateBuildTrigger []gax.CallOption
-	RunBuildTrigger    []gax.CallOption
-	CreateWorkerPool   []gax.CallOption
-	GetWorkerPool      []gax.CallOption
-	DeleteWorkerPool   []gax.CallOption
-	UpdateWorkerPool   []gax.CallOption
-	ListWorkerPools    []gax.CallOption
+	CreateBuild           []gax.CallOption
+	GetBuild              []gax.CallOption
+	ListBuilds            []gax.CallOption
+	CancelBuild           []gax.CallOption
+	RetryBuild            []gax.CallOption
+	CreateBuildTrigger    []gax.CallOption
+	GetBuildTrigger       []gax.CallOption
+	ListBuildTriggers     []gax.CallOption
+	DeleteBuildTrigger    []gax.CallOption
+	UpdateBuildTrigger    []gax.CallOption
+	RunBuildTrigger       []gax.CallOption
+	ReceiveTriggerWebhook []gax.CallOption
+	CreateWorkerPool      []gax.CallOption
+	GetWorkerPool         []gax.CallOption
+	DeleteWorkerPool      []gax.CallOption
+	UpdateWorkerPool      []gax.CallOption
+	ListWorkerPools       []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -138,9 +139,10 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
-		UpdateBuildTrigger: []gax.CallOption{},
-		RunBuildTrigger:    []gax.CallOption{},
-		CreateWorkerPool:   []gax.CallOption{},
+		UpdateBuildTrigger:    []gax.CallOption{},
+		RunBuildTrigger:       []gax.CallOption{},
+		ReceiveTriggerWebhook: []gax.CallOption{},
+		CreateWorkerPool:      []gax.CallOption{},
 		GetWorkerPool: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -597,6 +599,24 @@ func (c *Client) RunBuildTrigger(ctx context.Context, req *cloudbuildpb.RunBuild
 	return &RunBuildTriggerOperation{
 		lro: longrunning.InternalNewOperation(c.LROClient, resp),
 	}, nil
+}
+
+// ReceiveTriggerWebhook receiveTriggerWebhook [Experimental] is called when the API receives a
+// webhook request targeted at a specific trigger.
+func (c *Client) ReceiveTriggerWebhook(ctx context.Context, req *cloudbuildpb.ReceiveTriggerWebhookRequest, opts ...gax.CallOption) (*cloudbuildpb.ReceiveTriggerWebhookResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "trigger", url.QueryEscape(req.GetTrigger())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ReceiveTriggerWebhook[0:len(c.CallOptions.ReceiveTriggerWebhook):len(c.CallOptions.ReceiveTriggerWebhook)], opts...)
+	var resp *cloudbuildpb.ReceiveTriggerWebhookResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ReceiveTriggerWebhook(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateWorkerPool creates a WorkerPool to run the builds, and returns the new worker pool.

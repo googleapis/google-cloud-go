@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.osconfig.v1beta",
+  "libraryPackage": "cloud.google.com/go/osconfig/apiv1beta",
+  "services": {
+    "OsConfigService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelPatchJob": {
+              "methods": [
+                "CancelPatchJob"
+              ]
+            },
+            "CreateGuestPolicy": {
+              "methods": [
+                "CreateGuestPolicy"
+              ]
+            },
+            "CreatePatchDeployment": {
+              "methods": [
+                "CreatePatchDeployment"
+              ]
+            },
+            "DeleteGuestPolicy": {
+              "methods": [
+                "DeleteGuestPolicy"
+              ]
+            },
+            "DeletePatchDeployment": {
+              "methods": [
+                "DeletePatchDeployment"
+              ]
+            },
+            "ExecutePatchJob": {
+              "methods": [
+                "ExecutePatchJob"
+              ]
+            },
+            "GetGuestPolicy": {
+              "methods": [
+                "GetGuestPolicy"
+              ]
+            },
+            "GetPatchDeployment": {
+              "methods": [
+                "GetPatchDeployment"
+              ]
+            },
+            "GetPatchJob": {
+              "methods": [
+                "GetPatchJob"
+              ]
+            },
+            "ListGuestPolicies": {
+              "methods": [
+                "ListGuestPolicies"
+              ]
+            },
+            "ListPatchDeployments": {
+              "methods": [
+                "ListPatchDeployments"
+              ]
+            },
+            "ListPatchJobInstanceDetails": {
+              "methods": [
+                "ListPatchJobInstanceDetails"
+              ]
+            },
+            "ListPatchJobs": {
+              "methods": [
+                "ListPatchJobs"
+              ]
+            },
+            "LookupEffectiveGuestPolicy": {
+              "methods": [
+                "LookupEffectiveGuestPolicy"
+              ]
+            },
+            "UpdateGuestPolicy": {
+              "methods": [
+                "UpdateGuestPolicy"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

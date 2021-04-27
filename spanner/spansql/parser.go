@@ -47,7 +47,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode/utf8"
+
+	"cloud.google.com/go/civil"
 )
 
 const debug = false
@@ -780,7 +783,7 @@ func (p *parser) advance() {
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
-	// TODO: struct, date, timestamp literals
+	// TODO: struct literals
 	switch p.s[0] {
 	case ',', ';', '(', ')', '{', '}', '[', ']', '*', '+', '-':
 		// Single character symbol.
@@ -2386,15 +2389,12 @@ func (p *parser) parseInOp() (Expr, *parseError) {
 		return nil, err
 	}
 
-	// TODO: do we need to do lookahead?
-
 	inOp := InOp{LHS: expr}
-	if p.eat("NOT") {
+	if p.eat("NOT", "IN") {
 		inOp.Neg = true
-	}
-
-	if !p.eat("IN") {
-		// TODO: push back the "NOT"?
+	} else if p.eat("IN") {
+		// Okay.
+	} else {
 		return expr, nil
 	}
 
@@ -2428,37 +2428,30 @@ func (p *parser) parseComparisonOp() (Expr, *parseError) {
 	}
 
 	for {
-		tok := p.next()
-		if tok.err != nil {
-			p.back()
-			break
-		}
+		// There's a need for two token lookahead.
 		var op ComparisonOperator
-		var ok, rhs2 bool
-		if tok.value == "NOT" {
-			tok := p.next()
-			switch {
-			case tok.err != nil:
-				// TODO: Does this need to push back two?
-				return nil, err
-			case tok.value == "LIKE":
-				op, ok = NotLike, true
-			case tok.value == "BETWEEN":
-				op, ok, rhs2 = NotBetween, true, true
-			default:
-				// TODO: Does this need to push back two?
-				return nil, p.errorf("got %q, want LIKE or BETWEEN", tok.value)
-			}
-		} else if tok.value == "LIKE" {
-			op, ok = Like, true
-		} else if tok.value == "BETWEEN" {
-			op, ok, rhs2 = Between, true, true
+		var rhs2 bool
+		if p.eat("NOT", "LIKE") {
+			op = NotLike
+		} else if p.eat("NOT", "BETWEEN") {
+			op, rhs2 = NotBetween, true
+		} else if p.eat("LIKE") {
+			op = Like
+		} else if p.eat("BETWEEN") {
+			op, rhs2 = Between, true
 		} else {
+			// Check for a symbolic operator.
+			tok := p.next()
+			if tok.err != nil {
+				p.back()
+				break
+			}
+			var ok bool
 			op, ok = symbolicOperators[tok.value]
-		}
-		if !ok {
-			p.back()
-			break
+			if !ok {
+				p.back()
+				break
+			}
 		}
 
 		rhs, err := p.parseArithOp()
@@ -2601,13 +2594,20 @@ func (p *parser) parseLit() (Expr, *parseError) {
 		// case insensitivity for keywords.
 	}
 
-	// Handle array literals.
-	if tok.value == "ARRAY" || tok.value == "[" {
+	// Handle typed literals.
+	switch tok.value {
+	case "ARRAY", "[":
 		p.back()
 		return p.parseArrayLit()
+	case "DATE":
+		p.back()
+		return p.parseDateLit()
+	case "TIMESTAMP":
+		p.back()
+		return p.parseTimestampLit()
 	}
 
-	// TODO: more types of literals (struct, date, timestamp).
+	// TODO: struct literals
 
 	// Try a parameter.
 	// TODO: check character sets.
@@ -2643,6 +2643,76 @@ func (p *parser) parseArrayLit() (Array, *parseError) {
 		return nil
 	})
 	return arr, err
+}
+
+// TODO: There should be exported Parse{Date,Timestamp}Literal package-level funcs
+// to support spannertest coercing plain string literals when used in a typed context.
+// Those should wrap parseDateLit and parseTimestampLit below.
+
+func (p *parser) parseDateLit() (DateLiteral, *parseError) {
+	if err := p.expect("DATE"); err != nil {
+		return DateLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return DateLiteral{}, err
+	}
+	d, perr := civil.ParseDate(string(s))
+	if perr != nil {
+		return DateLiteral{}, p.errorf("bad date literal %q: %v", s, perr)
+	}
+	// TODO: Enforce valid range.
+	return DateLiteral(d), nil
+}
+
+// TODO: A manual parser is probably better than this.
+// There are a lot of variations that this does not handle.
+var timestampFormats = []string{
+	// 'YYYY-[M]M-[D]D [[H]H:[M]M:[S]S[.DDDDDD] [timezone]]'
+	"2006-01-02",
+	"2006-01-02 15:04:05",
+	"2006-01-02 15:04:05.000000",
+	"2006-01-02 15:04:05 -07:00",
+	"2006-01-02 15:04:05.000000 -07:00",
+}
+
+var defaultLocation = func() *time.Location {
+	// The docs say "America/Los_Angeles" is the default.
+	// Use that if we can load it, but fall back on UTC if we don't have timezone data.
+	loc, err := time.LoadLocation("America/Los_Angeles")
+	if err == nil {
+		return loc
+	}
+	return time.UTC
+}()
+
+func (p *parser) parseTimestampLit() (TimestampLiteral, *parseError) {
+	if err := p.expect("TIMESTAMP"); err != nil {
+		return TimestampLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return TimestampLiteral{}, err
+	}
+	for _, format := range timestampFormats {
+		t, err := time.ParseInLocation(format, string(s), defaultLocation)
+		if err == nil {
+			// TODO: Enforce valid range.
+			return TimestampLiteral(t), nil
+		}
+	}
+	return TimestampLiteral{}, p.errorf("invalid timestamp literal %q", s)
+}
+
+func (p *parser) parseStringLit() (StringLiteral, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return "", tok.err
+	}
+	if tok.typ != stringToken {
+		return "", p.errorf("got %q, want string literal", tok.value)
+	}
+	return StringLiteral(tok.string), nil
 }
 
 func (p *parser) parsePathExp() (PathExp, *parseError) {

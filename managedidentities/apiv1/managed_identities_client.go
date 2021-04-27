@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -107,7 +107,9 @@ type Client struct {
 
 // NewClient creates a new managed identities service client.
 //
-// API OverviewThe managedidentites.googleapis.com service implements the Google Cloud
+// API Overview
+//
+// The managedidentites.googleapis.com service implements the Google Cloud
 // Managed Identites API for identity services
 // (e.g. Microsoft Active Directory).
 //
@@ -115,7 +117,9 @@ type Client struct {
 // (create/read/update/delete) domains, reset managed identities admin password,
 // add/remove domain controllers in GCP regions and add/remove VPC peering.
 //
-// Data ModelThe Managed Identities service exposes the following resources:
+// Data Model
+//
+// The Managed Identities service exposes the following resources:
 //
 //   Locations as global, named as follows:
 //   projects/{project_id}/locations/global.

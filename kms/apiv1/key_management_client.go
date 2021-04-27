@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -81,7 +81,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		ListKeyRings: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -94,7 +93,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		ListCryptoKeys: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -107,7 +105,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		ListCryptoKeyVersions: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -120,7 +117,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		ListImportJobs: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -133,7 +129,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		GetKeyRing: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -146,7 +141,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		GetCryptoKey: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -159,7 +153,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		GetCryptoKeyVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -172,7 +165,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		GetPublicKey: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -185,7 +177,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		GetImportJob: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -198,7 +189,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		CreateKeyRing: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -211,7 +201,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		CreateCryptoKey: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -226,7 +215,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		CreateImportJob: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -239,7 +227,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		UpdateCryptoKey: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -252,7 +239,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		UpdateCryptoKeyVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -265,7 +251,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		Encrypt: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -278,7 +263,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		Decrypt: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -291,7 +275,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		AsymmetricSign: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -304,7 +287,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		AsymmetricDecrypt: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -317,7 +299,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		UpdateCryptoKeyPrimaryVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -330,7 +311,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		DestroyCryptoKeyVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{
@@ -343,7 +323,6 @@ func defaultKeyManagementCallOptions() *KeyManagementCallOptions {
 		RestoreCryptoKeyVersion: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
-					codes.Internal,
 					codes.Unavailable,
 					codes.DeadlineExceeded,
 				}, gax.Backoff{

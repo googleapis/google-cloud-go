@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"
-	structpbpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -43,12 +43,14 @@ var newFlowsClientHook clientHook
 
 // FlowsCallOptions contains the retry settings for each method of FlowsClient.
 type FlowsCallOptions struct {
-	CreateFlow []gax.CallOption
-	DeleteFlow []gax.CallOption
-	ListFlows  []gax.CallOption
-	GetFlow    []gax.CallOption
-	UpdateFlow []gax.CallOption
-	TrainFlow  []gax.CallOption
+	CreateFlow              []gax.CallOption
+	DeleteFlow              []gax.CallOption
+	ListFlows               []gax.CallOption
+	GetFlow                 []gax.CallOption
+	UpdateFlow              []gax.CallOption
+	TrainFlow               []gax.CallOption
+	ValidateFlow            []gax.CallOption
+	GetFlowValidationResult []gax.CallOption
 }
 
 func defaultFlowsClientOptions() []option.ClientOption {
@@ -121,6 +123,28 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		TrainFlow: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ValidateFlow: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetFlowValidationResult: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -376,6 +400,53 @@ func (c *FlowsClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequest,
 	}, nil
 }
 
+// ValidateFlow validates the specified flow and creates or updates validation results.
+// Please call this API after the training is completed to get the complete
+// validation results.
+func (c *FlowsClient) ValidateFlow(ctx context.Context, req *cxpb.ValidateFlowRequest, opts ...gax.CallOption) (*cxpb.FlowValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ValidateFlow[0:len(c.CallOptions.ValidateFlow):len(c.CallOptions.ValidateFlow)], opts...)
+	var resp *cxpb.FlowValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.flowsClient.ValidateFlow(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetFlowValidationResult gets the latest flow validation result. Flow validation is performed
+// when ValidateFlow is called.
+func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.GetFlowValidationResultRequest, opts ...gax.CallOption) (*cxpb.FlowValidationResult, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetFlowValidationResult[0:len(c.CallOptions.GetFlowValidationResult):len(c.CallOptions.GetFlowValidationResult)], opts...)
+	var resp *cxpb.FlowValidationResult
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.flowsClient.GetFlowValidationResult(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 // TrainFlowOperation manages a long-running operation from TrainFlow.
 type TrainFlowOperation struct {
 	lro *longrunning.Operation
@@ -413,8 +484,8 @@ func (op *TrainFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) 
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *TrainFlowOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *TrainFlowOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {

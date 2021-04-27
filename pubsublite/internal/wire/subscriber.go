@@ -37,14 +37,13 @@ var (
 // ReceivedMessage stores a received Pub/Sub message and AckConsumer for
 // acknowledging the message.
 type ReceivedMessage struct {
-	Msg *pb.SequencedMessage
-	Ack AckConsumer
+	Msg       *pb.SequencedMessage
+	Ack       AckConsumer
+	Partition int
 }
 
 // MessageReceiverFunc receives a Pub/Sub message from a topic partition.
 type MessageReceiverFunc func(*ReceivedMessage)
-
-const maxMessageBufferSize = 10000
 
 // messageDeliveryQueue delivers received messages to the client-provided
 // MessageReceiverFunc sequentially.
@@ -57,12 +56,6 @@ type messageDeliveryQueue struct {
 }
 
 func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
-	// The buffer size is based on ReceiveSettings.MaxOutstandingMessages. But
-	// ensure there's a reasonable limit as channel buffer capacity is allocated
-	// on creation.
-	if bufferSize > maxMessageBufferSize {
-		bufferSize = maxMessageBufferSize
-	}
 	return &messageDeliveryQueue{
 		acks:      acks,
 		receiver:  receiver,
@@ -85,11 +78,9 @@ func (mq *messageDeliveryQueue) Stop() {
 	}
 }
 
-func (mq *messageDeliveryQueue) Add(messages []*ReceivedMessage) {
+func (mq *messageDeliveryQueue) Add(msg *ReceivedMessage) {
 	if mq.status == serviceActive {
-		for _, msg := range messages {
-			mq.messagesC <- msg
-		}
+		mq.messagesC <- msg
 	}
 }
 
@@ -129,9 +120,10 @@ type subscribeStream struct {
 	settings     ReceiveSettings
 	subscription subscriptionPartition
 	initialReq   *pb.SubscribeRequest
-	messageQueue *messageDeliveryQueue
+	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mu.
+	messageQueue    *messageDeliveryQueue
 	stream          *retryableStream
 	offsetTracker   subscriberOffsetTracker
 	flowControl     flowControlBatcher
@@ -157,8 +149,11 @@ func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, s
 			},
 		},
 		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
+		metadata:     newPubsubMetadata(),
 	}
 	s.stream = newRetryableStream(ctx, s, settings.Timeout, reflect.TypeOf(pb.SubscribeResponse{}))
+	s.metadata.AddSubscriptionRoutingMetadata(s.subscription)
+	s.metadata.AddClientInfo(settings.Framework)
 
 	backgroundTask := s.sendBatchFlowControl
 	if disableTasks {
@@ -194,7 +189,7 @@ func (s *subscribeStream) Stop() {
 }
 
 func (s *subscribeStream) newStream(ctx context.Context) (grpc.ClientStream, error) {
-	return s.subClient.Subscribe(addSubscriptionRoutingMetadata(ctx, s.subscription))
+	return s.subClient.Subscribe(s.metadata.AddToContext(ctx))
 }
 
 func (s *subscribeStream) initialRequest() (interface{}, initialResponseRequired) {
@@ -281,12 +276,10 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 		return err
 	}
 
-	var receivedMsgs []*ReceivedMessage
 	for _, msg := range response.Messages {
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
-		receivedMsgs = append(receivedMsgs, &ReceivedMessage{Msg: msg, Ack: ack})
+		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack, Partition: s.subscription.Partition})
 	}
-	s.messageQueue.Add(receivedMsgs)
 	return nil
 }
 
@@ -332,7 +325,7 @@ func (s *subscribeStream) unsafeSendFlowControl(req *pb.FlowControlRequest) {
 }
 
 func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !s.unsafeUpdateStatus(targetStatus, err) {
+	if !s.unsafeUpdateStatus(targetStatus, wrapError("subscriber", s.subscription.String(), err)) {
 		return
 	}
 
@@ -351,6 +344,13 @@ type singlePartitionSubscriber struct {
 	committer  *committer
 
 	compositeService
+}
+
+// Terminate shuts down the singlePartitionSubscriber without waiting for
+// outstanding acks. Alternatively, Stop() will wait for outstanding acks.
+func (s *singlePartitionSubscriber) Terminate() {
+	s.subscriber.Stop()
+	s.committer.Terminate()
 }
 
 type singlePartitionSubscriberFactory struct {
@@ -380,18 +380,42 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // multiPartitionSubscriber receives messages from a fixed set of topic
 // partitions.
 type multiPartitionSubscriber struct {
+	// Immutable after creation.
+	clients     apiClients
+	subscribers []*singlePartitionSubscriber
+
 	compositeService
 }
 
-func newMultiPartitionSubscriber(subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
-	ms := new(multiPartitionSubscriber)
+func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
+	ms := &multiPartitionSubscriber{
+		clients: allClients,
+	}
 	ms.init()
 
 	for _, partition := range subFactory.settings.Partitions {
 		subscriber := subFactory.New(partition)
 		ms.unsafeAddServices(subscriber)
+		ms.subscribers = append(ms.subscribers, subscriber)
 	}
 	return ms
+}
+
+// Terminate shuts down all singlePartitionSubscribers without waiting for
+// outstanding acks. Alternatively, Stop() will wait for outstanding acks.
+func (ms *multiPartitionSubscriber) Terminate() {
+	ms.mu.Lock()
+	defer ms.mu.Unlock()
+
+	for _, sub := range ms.subscribers {
+		sub.Terminate()
+	}
+}
+
+func (ms *multiPartitionSubscriber) WaitStopped() error {
+	err := ms.compositeService.WaitStopped()
+	ms.clients.Close()
+	return err
 }
 
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
@@ -399,6 +423,7 @@ func newMultiPartitionSubscriber(subFactory *singlePartitionSubscriberFactory) *
 // singlePartitionSubscribers.
 type assigningSubscriber struct {
 	// Immutable after creation.
+	clients    apiClients
 	subFactory *singlePartitionSubscriberFactory
 	assigner   *assigner
 
@@ -409,8 +434,9 @@ type assigningSubscriber struct {
 	compositeService
 }
 
-func newAssigningSubscriber(assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
+func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
+		clients:     allClients,
 		subFactory:  subFactory,
 		subscribers: make(map[int]*singlePartitionSubscriber),
 	}
@@ -444,6 +470,10 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	// Handle removed partitions.
 	for partition, subscriber := range as.subscribers {
 		if !partitions.Contains(partition) {
+			// Ignore unacked messages from this point on to avoid conflicting with
+			// the commits of the new subscriber that will be assigned this partition.
+			subscriber.Terminate()
+
 			as.unsafeRemoveService(subscriber)
 			// Safe to delete map entry during range loop:
 			// https://golang.org/ref/spec#For_statements
@@ -453,6 +483,23 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	return nil
 }
 
+// Terminate shuts down all singlePartitionSubscribers without waiting for
+// outstanding acks. Alternatively, Stop() will wait for outstanding acks.
+func (as *assigningSubscriber) Terminate() {
+	as.mu.Lock()
+	defer as.mu.Unlock()
+
+	for _, sub := range as.subscribers {
+		sub.Terminate()
+	}
+}
+
+func (as *assigningSubscriber) WaitStopped() error {
+	err := as.compositeService.WaitStopped()
+	as.clients.Close()
+	return err
+}
+
 // Subscriber is the client interface exported from this package for receiving
 // messages.
 type Subscriber interface {
@@ -460,6 +507,7 @@ type Subscriber interface {
 	WaitStarted() error
 	Stop()
 	WaitStopped() error
+	Terminate()
 }
 
 // NewSubscriber creates a new client for receiving messages.
@@ -478,6 +526,7 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	if err != nil {
 		return nil, err
 	}
+	allClients := apiClients{subClient, cursorClient}
 
 	subFactory := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -489,11 +538,12 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	}
 
 	if len(settings.Partitions) > 0 {
-		return newMultiPartitionSubscriber(subFactory), nil
+		return newMultiPartitionSubscriber(allClients, subFactory), nil
 	}
 	partitionClient, err := newPartitionAssignmentClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
-	return newAssigningSubscriber(partitionClient, uuid.NewRandom, subFactory)
+	allClients = append(allClients, partitionClient)
+	return newAssigningSubscriber(allClients, partitionClient, uuid.NewRandom, subFactory)
 }

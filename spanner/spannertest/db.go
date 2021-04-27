@@ -68,6 +68,7 @@ type table struct {
 type colInfo struct {
 	Name     spansql.ID
 	Type     spansql.Type
+	NotNull  bool            // only set for table columns
 	AggIndex int             // Index+1 of SELECT list for which this is an aggregate value.
 	Alias    spansql.PathExp // an alternate name for this column (result sets only)
 }
@@ -216,9 +217,10 @@ func (d *database) GetDDL() []spansql.DDLStmt {
 		t.mu.Lock()
 		for i, col := range t.cols {
 			ct.Columns = append(ct.Columns, spansql.ColumnDef{
-				Name: col.Name,
-				Type: col.Type,
-				// TODO: NotNull, AllowCommitTimestamp
+				Name:    col.Name,
+				Type:    col.Type,
+				NotNull: col.NotNull,
+				// TODO: AllowCommitTimestamp
 			})
 			if i < t.pkCols {
 				ct.PrimaryKey = append(ct.PrimaryKey, spansql.KeyPart{
@@ -400,10 +402,12 @@ func (d *database) writeValues(tx *transaction, tbl spansql.ID, cols []spansql.I
 			if x == commitTimestampSentinel {
 				x = tx.commitTimestamp
 			}
+			if x == nil && t.cols[i].NotNull {
+				return status.Errorf(codes.FailedPrecondition, "%s must not be NULL in table %s", t.cols[i].Name, tbl)
+			}
 
 			r[i] = x
 		}
-		// TODO: enforce NOT NULL?
 		// TODO: enforce that provided timestamp for commit_timestamp=true columns
 		// are not ahead of the transaction's commit timestamp.
 
@@ -632,8 +636,9 @@ func (t *table) addColumn(cd spansql.ColumnDef, newTable bool) *status.Status {
 	}
 
 	t.cols = append(t.cols, colInfo{
-		Name: cd.Name,
-		Type: cd.Type,
+		Name:    cd.Name,
+		Type:    cd.Type,
+		NotNull: cd.NotNull,
 	})
 	t.colIndex[cd.Name] = len(t.cols) - 1
 	if !newTable {
@@ -691,6 +696,9 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 	//	Enable or disable commit timestamps in value and primary key columns.
 	// https://cloud.google.com/spanner/docs/schema-updates#supported-updates
 
+	// TODO: codes.InvalidArgument is used throughout here for reporting errors,
+	// but that has not been validated against the real Spanner.
+
 	sct, ok := alt.Alteration.(spansql.SetColumnType)
 	if !ok {
 		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
@@ -701,42 +709,56 @@ func (t *table) alterColumn(alt spansql.AlterColumn) *status.Status {
 
 	ci, ok := t.colIndex[alt.Name]
 	if !ok {
-		// TODO: What's the right response code?
 		return status.Newf(codes.InvalidArgument, "unknown column %q", alt.Name)
 	}
 
-	// Check and make type transformations.
 	oldT, newT := t.cols[ci].Type, sct.Type
 	stringOrBytes := func(bt spansql.TypeBase) bool { return bt == spansql.String || bt == spansql.Bytes }
 
-	// If the only change is adding NOT NULL, this is okay except for primary key columns and array types.
-	// We don't track whether commit timestamps are permitted on a per-column basis, so that's ignored.
-	// TODO: Do this when we track NOT NULL-ness.
-
-	// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
-	// TODO: This should permit array conversions too.
+	// First phase: Check the validity of the change.
+	// TODO: Don't permit changes to allow commit timestamps.
+	if !t.cols[ci].NotNull && sct.NotNull {
+		// Adding NOT NULL is not permitted for primary key columns or array typed columns.
+		if ci < t.pkCols {
+			return status.Newf(codes.InvalidArgument, "cannot set NOT NULL on primary key column %q", alt.Name)
+		}
+		if oldT.Array {
+			return status.Newf(codes.InvalidArgument, "cannot set NOT NULL on array-typed column %q", alt.Name)
+		}
+		// Validate that there are no NULL values.
+		for _, row := range t.rows {
+			if row[ci] == nil {
+				return status.Newf(codes.InvalidArgument, "cannot set NOT NULL on column %q that contains NULL values", alt.Name)
+			}
+		}
+	}
+	var conv func(x interface{}) interface{}
 	if stringOrBytes(oldT.Base) && stringOrBytes(newT.Base) && !oldT.Array && !newT.Array {
+		// Change between STRING and BYTES is fine, as is increasing/decreasing the length limit.
+		// TODO: This should permit array conversions too.
 		// TODO: Validate data; length limit changes should be rejected if they'd lead to data loss, for instance.
-		var conv func(x interface{}) interface{}
 		if oldT.Base == spansql.Bytes && newT.Base == spansql.String {
 			conv = func(x interface{}) interface{} { return string(x.([]byte)) }
 		} else if oldT.Base == spansql.String && newT.Base == spansql.Bytes {
 			conv = func(x interface{}) interface{} { return []byte(x.(string)) }
 		}
-		if conv != nil {
-			for _, row := range t.rows {
-				if row[ci] != nil { // NULL stays as NULL.
-					row[ci] = conv(row[ci])
-				}
-			}
-		}
-		t.cols[ci].Type = newT
-		return nil
+	} else if oldT == newT {
+		// Same type; only NOT NULL changes.
+	} else { // TODO: Support other alterations.
+		return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
 	}
 
-	// TODO: Support other alterations.
-
-	return status.Newf(codes.InvalidArgument, "unsupported ALTER COLUMN %s", alt.SQL())
+	// Second phase: Make type transformations.
+	t.cols[ci].NotNull = sct.NotNull
+	t.cols[ci].Type = newT
+	if conv != nil {
+		for _, row := range t.rows {
+			if row[ci] != nil { // NULL stays as NULL.
+				row[ci] = conv(row[ci])
+			}
+		}
+	}
+	return nil
 }
 
 func (t *table) insertRow(rowNum int, r row) {
@@ -856,7 +878,6 @@ func rowEqual(a, b []interface{}) bool {
 // valForType converts a value from its RPC form into its internal representation.
 func valForType(v *structpb.Value, t spansql.Type) (interface{}, error) {
 	if _, ok := v.Kind.(*structpb.Value_NullValue); ok {
-		// TODO: enforce NOT NULL constraints?
 		return nil, nil
 	}
 

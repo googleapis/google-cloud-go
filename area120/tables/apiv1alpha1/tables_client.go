@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,8 @@ var newClientHook clientHook
 type CallOptions struct {
 	GetTable        []gax.CallOption
 	ListTables      []gax.CallOption
+	GetWorkspace    []gax.CallOption
+	ListWorkspaces  []gax.CallOption
 	GetRow          []gax.CallOption
 	ListRows        []gax.CallOption
 	CreateRow       []gax.CallOption
@@ -47,6 +49,7 @@ type CallOptions struct {
 	UpdateRow       []gax.CallOption
 	BatchUpdateRows []gax.CallOption
 	DeleteRow       []gax.CallOption
+	BatchDeleteRows []gax.CallOption
 }
 
 func defaultClientOptions() []option.ClientOption {
@@ -65,6 +68,8 @@ func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		GetTable:        []gax.CallOption{},
 		ListTables:      []gax.CallOption{},
+		GetWorkspace:    []gax.CallOption{},
+		ListWorkspaces:  []gax.CallOption{},
 		GetRow:          []gax.CallOption{},
 		ListRows:        []gax.CallOption{},
 		CreateRow:       []gax.CallOption{},
@@ -72,10 +77,11 @@ func defaultCallOptions() *CallOptions {
 		UpdateRow:       []gax.CallOption{},
 		BatchUpdateRows: []gax.CallOption{},
 		DeleteRow:       []gax.CallOption{},
+		BatchDeleteRows: []gax.CallOption{},
 	}
 }
 
-// Client is a client for interacting with .
+// Client is a client for interacting with Area120 Tables API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type Client struct {
@@ -105,6 +111,10 @@ type Client struct {
 //
 //   Each Table has a collection of [Row][google.area120.tables.v1alpha1.Row]
 //   resources, named tables/*/rows/*
+//
+//   The API has a collection of
+//   [Workspace][google.area120.tables.v1alpha1.Workspace]
+//   resources, named workspaces/*.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultClientOptions()
 
@@ -206,6 +216,68 @@ func (c *Client) ListTables(ctx context.Context, req *tablespb.ListTablesRequest
 
 		it.Response = resp
 		return resp.GetTables(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// GetWorkspace gets a workspace. Returns NOT_FOUND if the workspace does not exist.
+func (c *Client) GetWorkspace(ctx context.Context, req *tablespb.GetWorkspaceRequest, opts ...gax.CallOption) (*tablespb.Workspace, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetWorkspace[0:len(c.CallOptions.GetWorkspace):len(c.CallOptions.GetWorkspace)], opts...)
+	var resp *tablespb.Workspace
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetWorkspace(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ListWorkspaces lists workspaces for the user.
+func (c *Client) ListWorkspaces(ctx context.Context, req *tablespb.ListWorkspacesRequest, opts ...gax.CallOption) *WorkspaceIterator {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append(c.CallOptions.ListWorkspaces[0:len(c.CallOptions.ListWorkspaces):len(c.CallOptions.ListWorkspaces)], opts...)
+	it := &WorkspaceIterator{}
+	req = proto.Clone(req).(*tablespb.ListWorkspacesRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*tablespb.Workspace, string, error) {
+		var resp *tablespb.ListWorkspacesResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListWorkspaces(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetWorkspaces(), resp.GetNextPageToken(), nil
 	}
 	fetch := func(pageSize int, pageToken string) (string, error) {
 		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
@@ -390,6 +462,24 @@ func (c *Client) DeleteRow(ctx context.Context, req *tablespb.DeleteRowRequest, 
 	return err
 }
 
+// BatchDeleteRows deletes multiple rows.
+func (c *Client) BatchDeleteRows(ctx context.Context, req *tablespb.BatchDeleteRowsRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.BatchDeleteRows[0:len(c.CallOptions.BatchDeleteRows):len(c.CallOptions.BatchDeleteRows)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.BatchDeleteRows(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
 // RowIterator manages a stream of *tablespb.Row.
 type RowIterator struct {
 	items    []*tablespb.Row
@@ -479,6 +569,53 @@ func (it *TableIterator) bufLen() int {
 }
 
 func (it *TableIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// WorkspaceIterator manages a stream of *tablespb.Workspace.
+type WorkspaceIterator struct {
+	items    []*tablespb.Workspace
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*tablespb.Workspace, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *WorkspaceIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *WorkspaceIterator) Next() (*tablespb.Workspace, error) {
+	var item *tablespb.Workspace
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *WorkspaceIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *WorkspaceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -204,6 +204,11 @@ func (c *BigQueryWriteClient) setGoogleClientInfo(keyval ...string) {
 }
 
 // CreateWriteStream creates a write stream to the given table.
+// Additionally, every table has a special COMMITTED stream named ‘_default’
+// to which data can be written. This stream doesn’t need to be created using
+// CreateWriteStream. It is a stream that can be used simultaneously by any
+// number of clients. Data written to this stream is considered committed as
+// soon as an acknowledgement is received.
 func (c *BigQueryWriteClient) CreateWriteStream(ctx context.Context, req *storagepb.CreateWriteStreamRequest, opts ...gax.CallOption) (*storagepb.WriteStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -282,7 +287,7 @@ func (c *BigQueryWriteClient) GetWriteStream(ctx context.Context, req *storagepb
 }
 
 // FinalizeWriteStream finalize a write stream so that no new data can be appended to the
-// stream.
+// stream. Finalize is not supported on the ‘_default’ stream.
 func (c *BigQueryWriteClient) FinalizeWriteStream(ctx context.Context, req *storagepb.FinalizeWriteStreamRequest, opts ...gax.CallOption) (*storagepb.FinalizeWriteStreamResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -335,6 +340,7 @@ func (c *BigQueryWriteClient) BatchCommitWriteStreams(ctx context.Context, req *
 // required in order for the rows to become available for reading. A
 // Flush operation flushes up to any previously flushed offset in a BUFFERED
 // stream, to the offset specified in the request.
+// Flush is not supported on the _default stream, since it is not BUFFERED.
 func (c *BigQueryWriteClient) FlushRows(ctx context.Context, req *storagepb.FlushRowsRequest, opts ...gax.CallOption) (*storagepb.FlushRowsResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "write_stream", url.QueryEscape(req.GetWriteStream())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)

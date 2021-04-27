@@ -20,6 +20,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"math/big"
 	"os"
 	"strings"
 	"testing"
@@ -825,6 +826,84 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 			}
 			checkReqsForQueryOptions(t, server.TestSpanner, tt.want)
 		})
+	}
+}
+
+func TestClient_ReadWriteTransactionWithOptions(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+		defer iter.Stop()
+		rowCount := int64(0)
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				break
+			}
+			if err != nil {
+				return err
+			}
+			var singerID, albumID int64
+			var albumTitle string
+			if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+				return err
+			}
+			rowCount++
+		}
+		if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+			return status.Errorf(codes.FailedPrecondition, "Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+		}
+		return nil
+	}, TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}})
+	if err != nil {
+		t.Fatalf("Failed to execute the transaction: %s", err)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
+	}
+}
+
+func TestClient_ReadWriteStmtBasedTransactionWithOptions(t *testing.T) {
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	tx, err := NewReadWriteStmtBasedTransactionWithOptions(
+		ctx,
+		client,
+		TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}})
+	if err != nil {
+		t.Fatalf("Unexpected error when creating transaction: %v", err)
+	}
+
+	iter := tx.Query(ctx, NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums))
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		row, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Unexpected error when fetching query results: %v", err)
+		}
+		var singerID, albumID int64
+		var albumTitle string
+		if err := row.Columns(&singerID, &albumID, &albumTitle); err != nil {
+			t.Fatalf("Unexpected error when getting query data: %v", err)
+		}
+		rowCount++
+	}
+	resp, err := tx.CommitWithReturnResp(ctx)
+	if err != nil {
+		t.Fatalf("Unexpected error when committing transaction: %v", err)
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Errorf("Row count mismatch, got %v, expected %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(1); got != want {
+		t.Fatalf("Mismatch mutation count - got: %d, want: %d", got, want)
 	}
 }
 
@@ -1670,10 +1749,28 @@ func TestClient_WriteStructWithCustomTypes(t *testing.T) {
 	}
 }
 
-func TestReadWriteTransaction_ContextTimeoutDuringDuringCommit(t *testing.T) {
+func TestReadWriteTransaction_ContextTimeoutDuringCommit(t *testing.T) {
 	t.Parallel()
-	server, client, teardown := setupMockedTestServer(t)
+	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
+		SessionPoolConfig: SessionPoolConfig{
+			MinOpened:     1,
+			WriteSessions: 0,
+		},
+	})
 	defer teardown()
+
+	// Wait until session creation has seized so that
+	// context timeout won't happen while a session is being created.
+	waitFor(t, func() error {
+		sp := client.idleSessions
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if sp.createReqs != 0 {
+			return fmt.Errorf("%d sessions are still in creation", sp.createReqs)
+		}
+		return nil
+	})
+
 	server.TestSpanner.PutExecutionTime(MethodCommitTransaction,
 		SimulatedExecutionTime{
 			MinimumExecutionTime: time.Minute,
@@ -2265,5 +2362,252 @@ func TestClient_DoForEachRow_ShouldEndSpanWithQueryError(t *testing.T) {
 	s := te.Spans[len(te.Spans)-1].Status
 	if s.Code != int32(codes.InvalidArgument) {
 		t.Errorf("Span status mismatch\nGot: %v\nWant: %v", s.Code, codes.InvalidArgument)
+	}
+}
+
+func TestClient_ReadOnlyTransaction_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, qo := range []QueryOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_HIGH},
+	} {
+		for _, tx := range []*ReadOnlyTransaction{
+			client.Single(),
+			client.ReadOnlyTransaction(),
+		} {
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			if tx.singleUse {
+				tx = client.Single()
+			}
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{Priority: qo.Priority})
+			iter.Next()
+			iter.Stop()
+
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 2, sppb.RequestOptions{Priority: qo.Priority})
+			tx.Close()
+		}
+	}
+}
+
+func TestClient_ReadWriteTransaction_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{CommitPriority: sppb.RequestOptions_PRIORITY_MEDIUM},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{Priority: sppb.RequestOptions_PRIORITY_MEDIUM},
+		} {
+			client.ReadWriteTransactionWithOptions(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+				iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+				iter.Next()
+				iter.Stop()
+
+				iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{Priority: qo.Priority})
+				iter.Next()
+				iter.Stop()
+
+				tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+				tx.BatchUpdateWithOptions(context.Background(), []Statement{
+					NewStatement(UpdateBarSetFoo),
+				}, qo)
+				checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{Priority: qo.Priority})
+
+				return nil
+			}, to)
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: to.CommitPriority})
+		}
+	}
+}
+
+func TestClient_StmtBasedReadWriteTransaction_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	for _, to := range []TransactionOptions{
+		{},
+		{CommitPriority: sppb.RequestOptions_PRIORITY_LOW},
+	} {
+		for _, qo := range []QueryOptions{
+			{},
+			{Priority: sppb.RequestOptions_PRIORITY_LOW},
+		} {
+			tx, _ := NewReadWriteStmtBasedTransactionWithOptions(context.Background(), client, to)
+			iter := tx.QueryWithOptions(context.Background(), NewStatement(SelectSingerIDAlbumIDAlbumTitleFromAlbums), qo)
+			iter.Next()
+			iter.Stop()
+
+			iter = tx.ReadWithOptions(context.Background(), "FOO", AllKeys(), []string{"BAR"}, &ReadOptions{Priority: qo.Priority})
+			iter.Next()
+			iter.Stop()
+
+			tx.UpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+			tx.BatchUpdateWithOptions(context.Background(), []Statement{
+				NewStatement(UpdateBarSetFoo),
+			}, qo)
+
+			checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 4, sppb.RequestOptions{Priority: qo.Priority})
+			tx.Commit(context.Background())
+			checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: to.CommitPriority})
+		}
+	}
+}
+
+func TestClient_PDML_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, qo := range []QueryOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_HIGH},
+	} {
+		client.PartitionedUpdateWithOptions(context.Background(), NewStatement(UpdateBarSetFoo), qo)
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{Priority: qo.Priority})
+	}
+}
+
+func TestClient_Apply_Priority(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})})
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, Priority(sppb.RequestOptions_PRIORITY_HIGH))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_HIGH})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce())
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{})
+
+	client.Apply(context.Background(), []*Mutation{Insert("foo", []string{"col1"}, []interface{}{"val1"})}, ApplyAtLeastOnce(), Priority(sppb.RequestOptions_PRIORITY_MEDIUM))
+	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{Priority: sppb.RequestOptions_PRIORITY_MEDIUM})
+}
+
+func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, ro sppb.RequestOptions) {
+	reqs := drainRequestsFromServer(server)
+	reqOptions := []*sppb.RequestOptions{}
+
+	for _, req := range reqs {
+		if sqlReq, ok := req.(*sppb.ExecuteSqlRequest); ok {
+			reqOptions = append(reqOptions, sqlReq.RequestOptions)
+		}
+		if batchReq, ok := req.(*sppb.ExecuteBatchDmlRequest); ok {
+			reqOptions = append(reqOptions, batchReq.RequestOptions)
+		}
+		if readReq, ok := req.(*sppb.ReadRequest); ok {
+			reqOptions = append(reqOptions, readReq.RequestOptions)
+		}
+	}
+
+	if got, want := len(reqOptions), reqCount; got != want {
+		t.Fatalf("Requests length mismatch\nGot: %v\nWant: %v", got, want)
+	}
+
+	for _, opts := range reqOptions {
+		var got sppb.RequestOptions_Priority
+		if opts != nil {
+			got = opts.Priority
+		}
+		want := ro.Priority
+		if got != want {
+			t.Fatalf("Request priority mismatch\nGot: %v\nWant: %v", got, want)
+		}
+	}
+}
+
+func checkCommitForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, ro sppb.RequestOptions) {
+	reqs := drainRequestsFromServer(server)
+	var commit *sppb.CommitRequest
+	var ok bool
+
+	for _, req := range reqs {
+		if commit, ok = req.(*sppb.CommitRequest); ok {
+			break
+		}
+	}
+
+	if commit == nil {
+		t.Fatalf("Missing commit request")
+	}
+
+	var got sppb.RequestOptions_Priority
+	if commit.RequestOptions != nil {
+		got = commit.RequestOptions.Priority
+	}
+	want := ro.Priority
+	if got != want {
+		t.Fatalf("Commit priority mismatch\nGot: %v\nWant: %v", got, want)
+	}
+}
+
+func TestClient_Single_Read_WithNumericKey(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+	ctx := context.Background()
+	iter := client.Single().Read(ctx, "Albums", KeySets(Key{*big.NewRat(1, 1)}), []string{"SingerId", "AlbumId", "AlbumTitle"})
+	defer iter.Stop()
+	rowCount := int64(0)
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+		rowCount++
+	}
+	if rowCount != SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount {
+		t.Fatalf("row count mismatch\nGot: %v\nWant: %v", rowCount, SelectSingerIDAlbumIDAlbumTitleFromAlbumsRowCount)
+	}
+}
+
+func TestClient_CloseWithUnresponsiveBackend(t *testing.T) {
+	t.Parallel()
+
+	minOpened := uint64(5)
+	server, client, teardown := setupMockedTestServerWithConfig(t,
+		ClientConfig{
+			SessionPoolConfig: SessionPoolConfig{
+				MinOpened: minOpened,
+			},
+		})
+	defer teardown()
+	sp := client.idleSessions
+
+	waitFor(t, func() error {
+		sp.mu.Lock()
+		defer sp.mu.Unlock()
+		if uint64(sp.idleList.Len()) != minOpened {
+			return fmt.Errorf("num open sessions mismatch\nWant: %d\nGot: %d", sp.MinOpened, sp.numOpened)
+		}
+		return nil
+	})
+	server.TestSpanner.Freeze()
+	defer server.TestSpanner.Unfreeze()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Millisecond)
+	defer cancel()
+	sp.close(ctx)
+
+	if w, g := context.DeadlineExceeded, ctx.Err(); w != g {
+		t.Fatalf("context error mismatch\nWant: %v\nGot: %v", w, g)
 	}
 }

@@ -100,18 +100,16 @@ type ExternalDataConfig struct {
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	q := bq.ExternalDataConfiguration{
-		SourceFormat:        string(e.SourceFormat),
-		SourceUris:          e.SourceURIs,
-		Autodetect:          e.AutoDetect,
-		Compression:         string(e.Compression),
-		IgnoreUnknownValues: e.IgnoreUnknownValues,
-		MaxBadRecords:       e.MaxBadRecords,
+		SourceFormat:            string(e.SourceFormat),
+		SourceUris:              e.SourceURIs,
+		Autodetect:              e.AutoDetect,
+		Compression:             string(e.Compression),
+		IgnoreUnknownValues:     e.IgnoreUnknownValues,
+		MaxBadRecords:           e.MaxBadRecords,
+		HivePartitioningOptions: e.HivePartitioningOptions.toBQ(),
 	}
 	if e.Schema != nil {
 		q.Schema = e.Schema.toBQ()
-	}
-	if e.HivePartitioningOptions != nil {
-		q.HivePartitioningOptions = e.HivePartitioningOptions.toBQ()
 	}
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
@@ -121,13 +119,14 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 
 func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfig, error) {
 	e := &ExternalDataConfig{
-		SourceFormat:        DataFormat(q.SourceFormat),
-		SourceURIs:          q.SourceUris,
-		AutoDetect:          q.Autodetect,
-		Compression:         Compression(q.Compression),
-		IgnoreUnknownValues: q.IgnoreUnknownValues,
-		MaxBadRecords:       q.MaxBadRecords,
-		Schema:              bqToSchema(q.Schema),
+		SourceFormat:            DataFormat(q.SourceFormat),
+		SourceURIs:              q.SourceUris,
+		AutoDetect:              q.Autodetect,
+		Compression:             Compression(q.Compression),
+		IgnoreUnknownValues:     q.IgnoreUnknownValues,
+		MaxBadRecords:           q.MaxBadRecords,
+		Schema:                  bqToSchema(q.Schema),
+		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
 	}
 	switch {
 	case q.CsvOptions != nil:
@@ -140,9 +139,6 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		if err != nil {
 			return nil, err
 		}
-	}
-	if q.HivePartitioningOptions != nil {
-		e.HivePartitioningOptions = bqToHivePartitioningOptions(q.HivePartitioningOptions)
 	}
 	return e, nil
 }

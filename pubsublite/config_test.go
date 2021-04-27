@@ -18,7 +18,7 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
+	"google.golang.org/protobuf/proto"
 
 	dpb "github.com/golang/protobuf/ptypes/duration"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
@@ -30,10 +30,9 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 		desc       string
 		topicpb    *pb.Topic
 		wantConfig *TopicConfig
-		wantErr    bool
 	}{
 		{
-			desc: "valid: retention duration set",
+			desc: "retention duration set",
 			topicpb: &pb.Topic{
 				Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 				PartitionConfig: &pb.Topic_PartitionConfig{
@@ -54,10 +53,7 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 				},
 			},
 			wantConfig: &TopicConfig{
-				Name: TopicPath{
-					Project: "my-proj",
-					Zone:    "us-central1-c",
-					TopicID: "my-topic"},
+				Name:                       "projects/my-proj/locations/us-central1-c/topics/my-topic",
 				PartitionCount:             2,
 				PublishCapacityMiBPerSec:   6,
 				SubscribeCapacityMiBPerSec: 16,
@@ -66,7 +62,7 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 			},
 		},
 		{
-			desc: "valid: retention duration unset",
+			desc: "retention duration unset",
 			topicpb: &pb.Topic{
 				Name: "projects/my-proj/locations/europe-west1-b/topics/my-topic",
 				PartitionConfig: &pb.Topic_PartitionConfig{
@@ -83,11 +79,7 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 				},
 			},
 			wantConfig: &TopicConfig{
-				Name: TopicPath{
-					Project: "my-proj",
-					Zone:    "europe-west1-b",
-					TopicID: "my-topic",
-				},
+				Name:                       "projects/my-proj/locations/europe-west1-b/topics/my-topic",
 				PartitionCount:             3,
 				PublishCapacityMiBPerSec:   4,
 				SubscribeCapacityMiBPerSec: 8,
@@ -95,25 +87,16 @@ func TestTopicConfigToProtoConversion(t *testing.T) {
 				RetentionDuration:          InfiniteRetention,
 			},
 		},
-		{
-			desc: "invalid: topic desc",
-			topicpb: &pb.Topic{
-				Name: "invalid_topic_desc",
-			},
-			wantErr: true,
-		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			gotConfig, gotErr := protoToTopicConfig(tc.topicpb)
-			if !testutil.Equal(gotConfig, tc.wantConfig) || (gotErr != nil) != tc.wantErr {
-				t.Errorf("protoToTopicConfig(%v)\ngot (%v, %v)\nwant (%v, err=%v)", tc.topicpb, gotConfig, gotErr, tc.wantConfig, tc.wantErr)
+			if !testutil.Equal(gotConfig, tc.wantConfig) || gotErr != nil {
+				t.Errorf("protoToTopicConfig(%v)\ngot (%v, %v)\nwant (%v, nil)", tc.topicpb, gotConfig, gotErr, tc.wantConfig)
 			}
 
 			// Check that the config converts back to an identical proto.
-			if tc.wantConfig != nil {
-				if gotProto := tc.wantConfig.toProto(); !proto.Equal(gotProto, tc.topicpb) {
-					t.Errorf("TopicConfig: %v toProto():\ngot: %v\nwant: %v", tc.wantConfig, gotProto, tc.topicpb)
-				}
+			if gotProto := tc.wantConfig.toProto(); !proto.Equal(gotProto, tc.topicpb) {
+				t.Errorf("TopicConfig: %v toProto():\ngot: %v\nwant: %v", tc.wantConfig, gotProto, tc.topicpb)
 			}
 		})
 	}
@@ -128,11 +111,8 @@ func TestTopicUpdateRequest(t *testing.T) {
 		{
 			desc: "all fields set",
 			config: &TopicConfigToUpdate{
-				Name: TopicPath{
-					Project: "my-proj",
-					Zone:    "us-central1-c",
-					TopicID: "my-topic",
-				},
+				Name:                       "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				PartitionCount:             2,
 				PublishCapacityMiBPerSec:   4,
 				SubscribeCapacityMiBPerSec: 12,
 				PerPartitionBytes:          500000,
@@ -142,6 +122,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 				Topic: &pb.Topic{
 					Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 					PartitionConfig: &pb.Topic_PartitionConfig{
+						Count: 2,
 						Dimension: &pb.Topic_PartitionConfig_Capacity_{
 							Capacity: &pb.Topic_PartitionConfig_Capacity{
 								PublishMibPerSec:   4,
@@ -156,6 +137,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 				},
 				UpdateMask: &fmpb.FieldMask{
 					Paths: []string{
+						"partition_config.count",
 						"partition_config.capacity.publish_mib_per_sec",
 						"partition_config.capacity.subscribe_mib_per_sec",
 						"retention_config.per_partition_bytes",
@@ -167,11 +149,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 		{
 			desc: "clear retention duration",
 			config: &TopicConfigToUpdate{
-				Name: TopicPath{
-					Project: "my-proj",
-					Zone:    "us-central1-c",
-					TopicID: "my-topic",
-				},
+				Name:              "projects/my-proj/locations/us-central1-c/topics/my-topic",
 				RetentionDuration: InfiniteRetention,
 			},
 			want: &pb.UpdateTopicRequest{
@@ -194,11 +172,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 		{
 			desc: "no fields set",
 			config: &TopicConfigToUpdate{
-				Name: TopicPath{
-					Project: "my-proj",
-					Zone:    "us-central1-c",
-					TopicID: "my-topic",
-				},
+				Name: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 			},
 			want: &pb.UpdateTopicRequest{
 				Topic: &pb.Topic{
@@ -216,7 +190,7 @@ func TestTopicUpdateRequest(t *testing.T) {
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
 			if got := tc.config.toUpdateRequest(); !proto.Equal(got, tc.want) {
-				t.Errorf("TopicConfigToUpdate: %v toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
+				t.Errorf("TopicConfigToUpdate(%v).toUpdateRequest():\ngot: %v\nwant: %v", tc.config, got, tc.want)
 			}
 		})
 	}
@@ -227,10 +201,9 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 		desc       string
 		subspb     *pb.Subscription
 		wantConfig *SubscriptionConfig
-		wantErr    bool
 	}{
 		{
-			desc: "valid",
+			desc: "with delivery config",
 			subspb: &pb.Subscription{
 				Name:  "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
 				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
@@ -239,47 +212,33 @@ func TestSubscriptionConfigToProtoConversion(t *testing.T) {
 				},
 			},
 			wantConfig: &SubscriptionConfig{
-				Name: SubscriptionPath{
-					Project:        "my-proj",
-					Zone:           "us-central1-c",
-					SubscriptionID: "my-subs",
-				},
-				Topic: TopicPath{
-					Project: "my-proj",
-					Zone:    "us-central1-c",
-					TopicID: "my-topic",
-				},
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic:               "projects/my-proj/locations/us-central1-c/topics/my-topic",
 				DeliveryRequirement: DeliverAfterStored,
 			},
 		},
 		{
-			desc: "invalid: subscription desc",
-			subspb: &pb.Subscription{
-				Name:  "invalid_subscription_desc",
-				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
-			},
-			wantErr: true,
-		},
-		{
-			desc: "invalid: topic desc",
+			desc: "missing delivery config",
 			subspb: &pb.Subscription{
 				Name:  "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
-				Topic: "invalid_topic_desc",
+				Topic: "projects/my-proj/locations/us-central1-c/topics/my-topic",
 			},
-			wantErr: true,
+			wantConfig: &SubscriptionConfig{
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
+				Topic:               "projects/my-proj/locations/us-central1-c/topics/my-topic",
+				DeliveryRequirement: UnspecifiedDeliveryRequirement,
+			},
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			gotConfig, gotErr := protoToSubscriptionConfig(tc.subspb)
-			if !testutil.Equal(gotConfig, tc.wantConfig) || (gotErr != nil) != tc.wantErr {
-				t.Errorf("protoToSubscriptionConfig(%v)\ngot (%v, %v)\nwant (%v, err=%v)", tc.subspb, gotConfig, gotErr, tc.wantConfig, tc.wantErr)
+			gotConfig := protoToSubscriptionConfig(tc.subspb)
+			if !testutil.Equal(gotConfig, tc.wantConfig) {
+				t.Errorf("protoToSubscriptionConfig(%v)\ngot: %v\nwant: %v", tc.subspb, gotConfig, tc.wantConfig)
 			}
 
 			// Check that the config converts back to an identical proto.
-			if tc.wantConfig != nil {
-				if gotProto := tc.wantConfig.toProto(); !proto.Equal(gotProto, tc.subspb) {
-					t.Errorf("SubscriptionConfig: %v toProto():\ngot: %v\nwant: %v", tc.wantConfig, gotProto, tc.subspb)
-				}
+			if gotProto := tc.wantConfig.toProto(); !proto.Equal(gotProto, tc.subspb) {
+				t.Errorf("SubscriptionConfig: %v toProto():\ngot: %v\nwant: %v", tc.wantConfig, gotProto, tc.subspb)
 			}
 		})
 	}
@@ -294,11 +253,7 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 		{
 			desc: "all fields set",
 			config: &SubscriptionConfigToUpdate{
-				Name: SubscriptionPath{
-					Project:        "my-proj",
-					Zone:           "us-central1-c",
-					SubscriptionID: "my-subs",
-				},
+				Name:                "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
 				DeliveryRequirement: DeliverImmediately,
 			},
 			want: &pb.UpdateSubscriptionRequest{
@@ -318,11 +273,7 @@ func TestSubscriptionUpdateRequest(t *testing.T) {
 		{
 			desc: "no fields set",
 			config: &SubscriptionConfigToUpdate{
-				Name: SubscriptionPath{
-					Project:        "my-proj",
-					Zone:           "us-central1-c",
-					SubscriptionID: "my-subs",
-				},
+				Name: "projects/my-proj/locations/us-central1-c/subscriptions/my-subs",
 			},
 			want: &pb.UpdateSubscriptionRequest{
 				Subscription: &pb.Subscription{
