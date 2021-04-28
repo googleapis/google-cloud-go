@@ -1557,7 +1557,7 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	}
 
 	// Validate Encryption Info under getTable
-	table2, err := adminClient.getTable(ctx, table)
+	table2, err := adminClient.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
 	if err != nil {
 		t.Fatalf("Getting Table: %v", err)
 	}

@@ -168,7 +168,7 @@ type EncryptionInfoByCluster map[string][]*EncryptionInfo
 func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (EncryptionInfoByCluster, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
-	res, err := ac.getTable(ctx, table)
+	res, err := ac.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
 	if err != nil {
 		return nil, err
 	}
@@ -314,12 +314,12 @@ type FamilyInfo struct {
 	GCPolicy string
 }
 
-func (ac *AdminClient) getTable(ctx context.Context, table string) (*btapb.Table, error) {
+func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Table_View) (*btapb.Table, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
 	req := &btapb.GetTableRequest{
 		Name: prefix + "/tables/" + table,
-		View: btapb.Table_FULL,
+		View: view,
 	}
 
 	var res *btapb.Table
@@ -339,7 +339,7 @@ func (ac *AdminClient) getTable(ctx context.Context, table string) (*btapb.Table
 func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
-	res, err := ac.getTable(ctx, table)
+	res, err := ac.getTable(ctx, table, btapb.Table_SCHEMA_VIEW)
 	if err != nil {
 		return nil, err
 	}
