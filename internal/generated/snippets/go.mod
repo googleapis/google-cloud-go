@@ -37,6 +37,6 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.45.0
-	google.golang.org/genproto v0.0.0-20210422153429-2279cbceda62
+	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b
 	google.golang.org/grpc v1.37.0
 )
