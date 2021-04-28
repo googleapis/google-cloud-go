@@ -122,16 +122,16 @@ func (ac *AdminClient) backupPath(cluster, backup string) string {
 
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
-	EncryptionStatus *Status
-	EncryptionType   EncryptionType
-	KMSKeyVersion    string
+	Status        *Status
+	Type          EncryptionType
+	KMSKeyVersion string
 }
 
 func newEncryptionInfo(pbInfo *btapb.EncryptionInfo) *EncryptionInfo {
 	return &EncryptionInfo{
-		EncryptionStatus: pbInfo.EncryptionStatus,
-		EncryptionType:   EncryptionType(pbInfo.EncryptionType.Number()),
-		KMSKeyVersion:    pbInfo.KmsKeyVersion,
+		Status:        pbInfo.EncryptionStatus,
+		Type:          EncryptionType(pbInfo.EncryptionType.Number()),
+		KMSKeyVersion: pbInfo.KmsKeyVersion,
 	}
 }
 
@@ -176,8 +176,8 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (Encryp
 	for key, cs := range res.ClusterStates {
 		for _, pbInfo := range cs.EncryptionInfo {
 			info := EncryptionInfo{}
-			info.EncryptionStatus = pbInfo.EncryptionStatus
-			info.EncryptionType = EncryptionType(pbInfo.EncryptionType.Number())
+			info.Status = pbInfo.EncryptionStatus
+			info.Type = EncryptionType(pbInfo.EncryptionType.Number())
 			info.KMSKeyVersion = pbInfo.KmsKeyVersion
 			encryptionInfo[key] = append(encryptionInfo[key], &info)
 		}
