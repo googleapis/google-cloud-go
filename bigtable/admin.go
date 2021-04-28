@@ -115,8 +115,8 @@ func (ac *AdminClient) instancePrefix() string {
 	return fmt.Sprintf("projects/%s/instances/%s", ac.project, ac.instance)
 }
 
-func (ac *AdminClient) backupPath(cluster, backup string) string {
-	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, ac.instance, cluster, backup)
+func (ac *AdminClient) backupPath(cluster, instance, backup string) string {
+	return fmt.Sprintf("projects/%s/instances/%s/clusters/%s/backups/%s", ac.project, instance, cluster, backup)
 }
 
 // Tables returns a list of the tables in the instance.
@@ -609,7 +609,7 @@ func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 
 // BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
 func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
-	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, backup))
+	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, ac.instance, backup))
 }
 
 const instanceAdminAddr = "bigtableadmin.googleapis.com:443"
@@ -1457,21 +1457,21 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
-	return ac.RestoreTableTo(ctx, ac.instance, table, cluster, backup)
+	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
 }
 
-// RestoreTableTo creates a new table by restoring from this completed backup.
+// RestoreTableFrom creates a new table to a different instance by restoring from this completed backup.
 //
-// diffInstance is an instance in which the new table will be restored to.
+// targetInstance is an instance in which the new table will be restored to.
 // Instance must be in the same project as the project containing backup.
-func (ac *AdminClient) RestoreTableTo(ctx context.Context, diffInstance, table, cluster, backup string) error {
+func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	prefix := "projects/" + ac.project + "/instances/" + diffInstance
-	backupPath := ac.backupPath(cluster, backup)
+	parent := "projects/" + ac.project + "/instances/" + ac.instance
+	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backup)
 	req := &btapb.RestoreTableRequest{
-		Parent:  prefix,
+		Parent:  parent,
 		TableId: table,
-		Source:  &btapb.RestoreTableRequest_Backup{backupPath},
+		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
 	if err != nil {
@@ -1626,7 +1626,7 @@ type BackupInfo struct {
 // BackupInfo gets backup metadata.
 func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	req := &btapb.GetBackupRequest{
 		Name: backupPath,
@@ -1648,7 +1648,7 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 // DeleteBackup deletes a backup in a cluster.
 func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	req := &btapb.DeleteBackupRequest{
 		Name: backupPath,
@@ -1660,7 +1660,7 @@ func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string)
 // UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
 func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	backupPath := ac.backupPath(cluster, backup)
+	backupPath := ac.backupPath(cluster, ac.instance, backup)
 
 	expireTimestamp, err := ptypes.TimestampProto(expireTime)
 	if err != nil {
