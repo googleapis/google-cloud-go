@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START speech_generated_speech_apiv1_Client_StreamingRecognize]
+// [START speech_v1_generated_Speech_StreamingRecognize_sync]
 
 package main
 
@@ -60,4 +60,4 @@ func main() {
 	}
 }
 
-// [END speech_generated_speech_apiv1_Client_StreamingRecognize]
+// [END speech_v1_generated_Speech_StreamingRecognize_sync]

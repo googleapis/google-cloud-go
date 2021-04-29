@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START domains_generated_domains_apiv1beta1_Client_ListRegistrations]
+// [START domains_v1beta1_generated_Domains_ListRegistrations_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END domains_generated_domains_apiv1beta1_Client_ListRegistrations]
+// [END domains_v1beta1_generated_Domains_ListRegistrations_sync]

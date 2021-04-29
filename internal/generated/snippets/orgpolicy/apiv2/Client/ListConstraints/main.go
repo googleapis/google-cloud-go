@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START orgpolicy_generated_orgpolicy_apiv2_Client_ListConstraints]
+// [START orgpolicy_v2_generated_OrgPolicy_ListConstraints_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END orgpolicy_generated_orgpolicy_apiv2_Client_ListConstraints]
+// [END orgpolicy_v2_generated_OrgPolicy_ListConstraints_sync]

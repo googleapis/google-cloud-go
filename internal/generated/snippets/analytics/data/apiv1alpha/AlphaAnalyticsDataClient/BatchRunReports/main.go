@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START analyticsdata_generated_analytics_data_apiv1alpha_AlphaAnalyticsDataClient_BatchRunReports]
+// [START analyticsdata_v1alpha_generated_AlphaAnalyticsData_BatchRunReports_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END analyticsdata_generated_analytics_data_apiv1alpha_AlphaAnalyticsDataClient_BatchRunReports]
+// [END analyticsdata_v1alpha_generated_AlphaAnalyticsData_BatchRunReports_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START firestore_generated_firestore_apiv1_Client_PartitionQuery]
+// [START firestore_v1_generated_Firestore_PartitionQuery_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END firestore_generated_firestore_apiv1_Client_PartitionQuery]
+// [END firestore_v1_generated_Firestore_PartitionQuery_sync]

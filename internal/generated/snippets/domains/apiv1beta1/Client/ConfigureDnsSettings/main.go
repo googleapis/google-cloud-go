@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START domains_generated_domains_apiv1beta1_Client_ConfigureDnsSettings]
+// [START domains_v1beta1_generated_Domains_ConfigureDnsSettings_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END domains_generated_domains_apiv1beta1_Client_ConfigureDnsSettings]
+// [END domains_v1beta1_generated_Domains_ConfigureDnsSettings_sync]

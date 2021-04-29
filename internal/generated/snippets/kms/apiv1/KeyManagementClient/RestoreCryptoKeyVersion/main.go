@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudkms_generated_kms_apiv1_KeyManagementClient_RestoreCryptoKeyVersion]
+// [START cloudkms_v1_generated_KeyManagementService_RestoreCryptoKeyVersion_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudkms_generated_kms_apiv1_KeyManagementClient_RestoreCryptoKeyVersion]
+// [END cloudkms_v1_generated_KeyManagementService_RestoreCryptoKeyVersion_sync]

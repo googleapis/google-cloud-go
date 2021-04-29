@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START websecurityscanner_generated_websecurityscanner_apiv1_Client_GetScanRun]
+// [START websecurityscanner_v1_generated_WebSecurityScanner_GetScanRun_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END websecurityscanner_generated_websecurityscanner_apiv1_Client_GetScanRun]
+// [END websecurityscanner_v1_generated_WebSecurityScanner_GetScanRun_sync]

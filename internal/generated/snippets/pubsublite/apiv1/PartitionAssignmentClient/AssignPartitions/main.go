@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_PartitionAssignmentClient_AssignPartitions]
+// [START pubsublite_v1_generated_PartitionAssignmentService_AssignPartitions_sync]
 
 package main
 
@@ -60,4 +60,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_PartitionAssignmentClient_AssignPartitions]
+// [END pubsublite_v1_generated_PartitionAssignmentService_AssignPartitions_sync]

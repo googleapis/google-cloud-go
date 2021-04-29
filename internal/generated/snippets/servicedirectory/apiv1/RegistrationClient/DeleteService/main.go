@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicedirectory_generated_servicedirectory_apiv1_RegistrationClient_DeleteService]
+// [START servicedirectory_v1_generated_RegistrationService_DeleteService_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END servicedirectory_generated_servicedirectory_apiv1_RegistrationClient_DeleteService]
+// [END servicedirectory_v1_generated_RegistrationService_DeleteService_sync]

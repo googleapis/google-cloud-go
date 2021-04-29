@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_AlertPolicyClient_ListAlertPolicies]
+// [START monitoring_v3_generated_AlertPolicyService_ListAlertPolicies_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_AlertPolicyClient_ListAlertPolicies]
+// [END monitoring_v3_generated_AlertPolicyService_ListAlertPolicies_sync]

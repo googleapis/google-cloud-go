@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_generated_retail_apiv2_CatalogClient_ListCatalogs]
+// [START retail_v2_generated_CatalogService_ListCatalogs_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END retail_generated_retail_apiv2_CatalogClient_ListCatalogs]
+// [END retail_v2_generated_CatalogService_ListCatalogs_sync]

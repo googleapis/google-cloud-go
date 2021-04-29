@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerystorage_generated_bigquery_storage_apiv1alpha2_BigQueryWriteClient_GetWriteStream]
+// [START bigquerystorage_v1alpha2_generated_BigQueryWrite_GetWriteStream_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerystorage_generated_bigquery_storage_apiv1alpha2_BigQueryWriteClient_GetWriteStream]
+// [END bigquerystorage_v1alpha2_generated_BigQueryWrite_GetWriteStream_sync]

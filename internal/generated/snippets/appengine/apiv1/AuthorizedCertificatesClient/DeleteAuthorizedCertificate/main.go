@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START appengine_generated_appengine_apiv1_AuthorizedCertificatesClient_DeleteAuthorizedCertificate]
+// [START appengine_v1_generated_AuthorizedCertificates_DeleteAuthorizedCertificate_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END appengine_generated_appengine_apiv1_AuthorizedCertificatesClient_DeleteAuthorizedCertificate]
+// [END appengine_v1_generated_AuthorizedCertificates_DeleteAuthorizedCertificate_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_apiv1_Client_ListSessions]
+// [START spanner_v1_generated_Spanner_ListSessions_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END spanner_generated_spanner_apiv1_Client_ListSessions]
+// [END spanner_v1_generated_Spanner_ListSessions_sync]

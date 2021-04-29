@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudscheduler_generated_scheduler_apiv1_CloudSchedulerClient_DeleteJob]
+// [START cloudscheduler_v1_generated_CloudScheduler_DeleteJob_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END cloudscheduler_generated_scheduler_apiv1_CloudSchedulerClient_DeleteJob]
+// [END cloudscheduler_v1_generated_CloudScheduler_DeleteJob_sync]

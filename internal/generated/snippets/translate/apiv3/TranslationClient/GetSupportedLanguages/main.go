@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START translate_generated_translate_apiv3_TranslationClient_GetSupportedLanguages]
+// [START translate_v3_generated_TranslationService_GetSupportedLanguages_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END translate_generated_translate_apiv3_TranslationClient_GetSupportedLanguages]
+// [END translate_v3_generated_TranslationService_GetSupportedLanguages_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4beta1_ApplicationClient_ListApplications]
+// [START jobs_v4beta1_generated_ApplicationService_ListApplications_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END jobs_generated_talent_apiv4beta1_ApplicationClient_ListApplications]
+// [END jobs_v4beta1_generated_ApplicationService_ListApplications_sync]
