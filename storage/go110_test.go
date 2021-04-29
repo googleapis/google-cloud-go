@@ -19,10 +19,11 @@ package storage
 import (
 	"context"
 	"errors"
-	"golang.org/x/xerrors"
 	"io"
 	"net/url"
 	"testing"
+
+	"golang.org/x/xerrors"
 
 	"google.golang.org/api/googleapi"
 )
