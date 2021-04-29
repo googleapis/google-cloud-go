@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_AutoscalingPolicyClient_GetAutoscalingPolicy]
+// [START dataproc_v1_generated_AutoscalingPolicyService_GetAutoscalingPolicy_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END dataproc_generated_dataproc_apiv1_AutoscalingPolicyClient_GetAutoscalingPolicy]
+// [END dataproc_v1_generated_AutoscalingPolicyService_GetAutoscalingPolicy_sync]

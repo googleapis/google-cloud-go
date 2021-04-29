@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1beta_Client_DeleteGuestPolicy]
+// [START osconfig_v1beta_generated_OsConfigService_DeleteGuestPolicy_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END osconfig_generated_osconfig_apiv1beta_Client_DeleteGuestPolicy]
+// [END osconfig_v1beta_generated_OsConfigService_DeleteGuestPolicy_sync]

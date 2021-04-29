@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_generated_pubsub_apiv1_SchemaClient_ValidateSchema]
+// [START pubsub_v1_generated_SchemaService_ValidateSchema_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END pubsub_generated_pubsub_apiv1_SchemaClient_ValidateSchema]
+// [END pubsub_v1_generated_SchemaService_ValidateSchema_sync]

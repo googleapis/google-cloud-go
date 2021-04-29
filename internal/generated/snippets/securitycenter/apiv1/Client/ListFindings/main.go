@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_apiv1_Client_ListFindings]
+// [START securitycenter_v1_generated_SecurityCenter_ListFindings_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END securitycenter_generated_securitycenter_apiv1_Client_ListFindings]
+// [END securitycenter_v1_generated_SecurityCenter_ListFindings_sync]

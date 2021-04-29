@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4_JobClient_SearchJobs]
+// [START jobs_v4_generated_JobService_SearchJobs_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END jobs_generated_talent_apiv4_JobClient_SearchJobs]
+// [END jobs_v4_generated_JobService_SearchJobs_sync]

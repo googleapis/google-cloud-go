@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START texttospeech_generated_texttospeech_apiv1_Client_SynthesizeSpeech]
+// [START texttospeech_v1_generated_TextToSpeech_SynthesizeSpeech_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END texttospeech_generated_texttospeech_apiv1_Client_SynthesizeSpeech]
+// [END texttospeech_v1_generated_TextToSpeech_SynthesizeSpeech_sync]

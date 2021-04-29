@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_IntentsClient_DeleteIntent]
+// [START dialogflow_v3_generated_Intents_DeleteIntent_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_IntentsClient_DeleteIntent]
+// [END dialogflow_v3_generated_Intents_DeleteIntent_sync]

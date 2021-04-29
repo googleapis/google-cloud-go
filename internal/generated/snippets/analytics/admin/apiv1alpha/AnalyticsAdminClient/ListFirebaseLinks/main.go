@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_ListFirebaseLinks]
+// [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListFirebaseLinks_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_ListFirebaseLinks]
+// [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListFirebaseLinks_sync]

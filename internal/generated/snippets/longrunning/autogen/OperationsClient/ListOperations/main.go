@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START longrunning_generated_longrunning_autogen_OperationsClient_ListOperations]
+// [START longrunning_longrunning_generated_Operations_ListOperations_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END longrunning_generated_longrunning_autogen_OperationsClient_ListOperations]
+// [END longrunning_longrunning_generated_Operations_ListOperations_sync]

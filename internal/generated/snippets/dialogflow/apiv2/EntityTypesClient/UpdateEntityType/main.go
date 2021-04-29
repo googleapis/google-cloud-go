@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_EntityTypesClient_UpdateEntityType]
+// [START dialogflow_v2_generated_EntityTypes_UpdateEntityType_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_EntityTypesClient_UpdateEntityType]
+// [END dialogflow_v2_generated_EntityTypes_UpdateEntityType_sync]

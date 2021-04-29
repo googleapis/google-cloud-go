@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START orgpolicy_generated_orgpolicy_apiv2_Client_DeletePolicy]
+// [START orgpolicy_v2_generated_OrgPolicy_DeletePolicy_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END orgpolicy_generated_orgpolicy_apiv2_Client_DeletePolicy]
+// [END orgpolicy_v2_generated_OrgPolicy_DeletePolicy_sync]

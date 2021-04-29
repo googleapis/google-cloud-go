@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START apigateway_generated_apigateway_apiv1_Client_ListApiConfigs]
+// [START apigateway_v1_generated_ApiGatewayService_ListApiConfigs_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END apigateway_generated_apigateway_apiv1_Client_ListApiConfigs]
+// [END apigateway_v1_generated_ApiGatewayService_ListApiConfigs_sync]

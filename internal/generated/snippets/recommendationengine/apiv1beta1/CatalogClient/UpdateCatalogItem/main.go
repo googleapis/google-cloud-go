@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_CatalogClient_UpdateCatalogItem]
+// [START recommendationengine_v1beta1_generated_CatalogService_UpdateCatalogItem_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_CatalogClient_UpdateCatalogItem]
+// [END recommendationengine_v1beta1_generated_CatalogService_UpdateCatalogItem_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_CreateWorkload]
+// [START assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_CreateWorkload]
+// [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync]

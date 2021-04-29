@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START container_generated_container_apiv1_ClusterManagerClient_CompleteIPRotation]
+// [START container_v1_generated_ClusterManager_CompleteIPRotation_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END container_generated_container_apiv1_ClusterManagerClient_CompleteIPRotation]
+// [END container_v1_generated_ClusterManager_CompleteIPRotation_sync]

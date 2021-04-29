@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicemanagement_generated_servicemanagement_apiv1_ServiceManagerClient_ListServiceRollouts]
+// [START servicemanagement_v1_generated_ServiceManager_ListServiceRollouts_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END servicemanagement_generated_servicemanagement_apiv1_ServiceManagerClient_ListServiceRollouts]
+// [END servicemanagement_v1_generated_ServiceManager_ListServiceRollouts_sync]

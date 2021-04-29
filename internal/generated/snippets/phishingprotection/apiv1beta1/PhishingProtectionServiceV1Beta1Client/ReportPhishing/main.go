@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START phishingprotection_generated_phishingprotection_apiv1beta1_PhishingProtectionServiceV1Beta1Client_ReportPhishing]
+// [START phishingprotection_v1beta1_generated_PhishingProtectionServiceV1Beta1_ReportPhishing_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END phishingprotection_generated_phishingprotection_apiv1beta1_PhishingProtectionServiceV1Beta1Client_ReportPhishing]
+// [END phishingprotection_v1beta1_generated_PhishingProtectionServiceV1Beta1_ReportPhishing_sync]

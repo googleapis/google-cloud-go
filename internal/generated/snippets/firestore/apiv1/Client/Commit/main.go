@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START firestore_generated_firestore_apiv1_Client_Commit]
+// [START firestore_v1_generated_Firestore_Commit_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END firestore_generated_firestore_apiv1_Client_Commit]
+// [END firestore_v1_generated_Firestore_Commit_sync]

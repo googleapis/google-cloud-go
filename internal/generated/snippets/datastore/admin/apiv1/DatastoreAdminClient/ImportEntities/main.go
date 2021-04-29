@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datastore_generated_datastore_admin_apiv1_DatastoreAdminClient_ImportEntities]
+// [START datastore_v1_generated_DatastoreAdmin_ImportEntities_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END datastore_generated_datastore_admin_apiv1_DatastoreAdminClient_ImportEntities]
+// [END datastore_v1_generated_DatastoreAdmin_ImportEntities_sync]

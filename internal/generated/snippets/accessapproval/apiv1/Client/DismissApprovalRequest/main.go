@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START accessapproval_generated_accessapproval_apiv1_Client_DismissApprovalRequest]
+// [START accessapproval_v1_generated_AccessApproval_DismissApprovalRequest_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END accessapproval_generated_accessapproval_apiv1_Client_DismissApprovalRequest]
+// [END accessapproval_v1_generated_AccessApproval_DismissApprovalRequest_sync]

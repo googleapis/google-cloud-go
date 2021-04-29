@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_ClusterControllerClient_StopCluster]
+// [START dataproc_v1_generated_ClusterController_StopCluster_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END dataproc_generated_dataproc_apiv1_ClusterControllerClient_StopCluster]
+// [END dataproc_v1_generated_ClusterController_StopCluster_sync]

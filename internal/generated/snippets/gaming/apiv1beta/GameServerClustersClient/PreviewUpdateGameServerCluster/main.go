@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1beta_GameServerClustersClient_PreviewUpdateGameServerCluster]
+// [START gameservices_v1beta_generated_GameServerClustersService_PreviewUpdateGameServerCluster_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END gameservices_generated_gaming_apiv1beta_GameServerClustersClient_PreviewUpdateGameServerCluster]
+// [END gameservices_v1beta_generated_GameServerClustersService_PreviewUpdateGameServerCluster_sync]

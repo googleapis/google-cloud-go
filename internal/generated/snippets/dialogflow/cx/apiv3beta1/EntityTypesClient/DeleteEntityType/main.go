@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3beta1_EntityTypesClient_DeleteEntityType]
+// [START dialogflow_v3beta1_generated_EntityTypes_DeleteEntityType_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3beta1_EntityTypesClient_DeleteEntityType]
+// [END dialogflow_v3beta1_generated_EntityTypes_DeleteEntityType_sync]
