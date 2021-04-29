@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_WebhooksClient_ListWebhooks]
+// [START dialogflow_v3_generated_Webhooks_ListWebhooks_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_WebhooksClient_ListWebhooks]
+// [END dialogflow_v3_generated_Webhooks_ListWebhooks_sync]

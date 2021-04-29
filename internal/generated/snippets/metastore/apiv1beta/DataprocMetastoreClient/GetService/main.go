@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START metastore_generated_metastore_apiv1beta_DataprocMetastoreClient_GetService]
+// [START metastore_v1beta_generated_DataprocMetastore_GetService_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END metastore_generated_metastore_apiv1beta_DataprocMetastoreClient_GetService]
+// [END metastore_v1beta_generated_DataprocMetastore_GetService_sync]

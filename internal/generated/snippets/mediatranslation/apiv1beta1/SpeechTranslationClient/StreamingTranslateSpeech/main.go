@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START mediatranslation_generated_mediatranslation_apiv1beta1_SpeechTranslationClient_StreamingTranslateSpeech]
+// [START mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync]
 
 package main
 
@@ -60,4 +60,4 @@ func main() {
 	}
 }
 
-// [END mediatranslation_generated_mediatranslation_apiv1beta1_SpeechTranslationClient_StreamingTranslateSpeech]
+// [END mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync]

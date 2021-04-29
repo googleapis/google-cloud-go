@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_apiv1_Client_Read]
+// [START spanner_v1_generated_Spanner_Read_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END spanner_generated_spanner_apiv1_Client_Read]
+// [END spanner_v1_generated_Spanner_Read_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START webrisk_generated_webrisk_apiv1beta1_WebRiskServiceV1Beta1Client_SearchHashes]
+// [START webrisk_v1beta1_generated_WebRiskServiceV1Beta1_SearchHashes_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END webrisk_generated_webrisk_apiv1beta1_WebRiskServiceV1Beta1Client_SearchHashes]
+// [END webrisk_v1beta1_generated_WebRiskServiceV1Beta1_SearchHashes_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudasset_generated_asset_apiv1_Client_ExportAssets]
+// [START cloudasset_v1_generated_AssetService_ExportAssets_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudasset_generated_asset_apiv1_Client_ExportAssets]
+// [END cloudasset_v1_generated_AssetService_ExportAssets_sync]

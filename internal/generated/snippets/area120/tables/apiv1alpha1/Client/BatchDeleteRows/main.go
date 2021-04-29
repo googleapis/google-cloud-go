@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START area120tables_generated_area120_tables_apiv1alpha1_Client_BatchDeleteRows]
+// [START area120tables_v1alpha1_generated_TablesService_BatchDeleteRows_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END area120tables_generated_area120_tables_apiv1alpha1_Client_BatchDeleteRows]
+// [END area120tables_v1alpha1_generated_TablesService_BatchDeleteRows_sync]

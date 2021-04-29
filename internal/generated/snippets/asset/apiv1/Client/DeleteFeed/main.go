@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudasset_generated_asset_apiv1_Client_DeleteFeed]
+// [START cloudasset_v1_generated_AssetService_DeleteFeed_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END cloudasset_generated_asset_apiv1_Client_DeleteFeed]
+// [END cloudasset_v1_generated_AssetService_DeleteFeed_sync]

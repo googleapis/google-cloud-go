@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datastore_generated_datastore_admin_apiv1_DatastoreAdminClient_DeleteIndex]
+// [START datastore_v1_generated_DatastoreAdmin_DeleteIndex_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END datastore_generated_datastore_admin_apiv1_DatastoreAdminClient_DeleteIndex]
+// [END datastore_v1_generated_DatastoreAdmin_DeleteIndex_sync]

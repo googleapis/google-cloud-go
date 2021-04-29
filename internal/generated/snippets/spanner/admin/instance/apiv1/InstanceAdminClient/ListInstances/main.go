@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_ListInstances]
+// [START spanner_v1_generated_InstanceAdmin_ListInstances_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_ListInstances]
+// [END spanner_v1_generated_InstanceAdmin_ListInstances_sync]

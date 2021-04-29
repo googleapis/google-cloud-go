@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dlp_generated_dlp_apiv2_Client_DeleteInspectTemplate]
+// [START dlp_v2_generated_DlpService_DeleteInspectTemplate_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END dlp_generated_dlp_apiv2_Client_DeleteInspectTemplate]
+// [END dlp_v2_generated_DlpService_DeleteInspectTemplate_sync]

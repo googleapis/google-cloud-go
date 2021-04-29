@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START billingbudgets_generated_billing_budgets_apiv1beta1_BudgetClient_CreateBudget]
+// [START billingbudgets_v1beta1_generated_BudgetService_CreateBudget_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END billingbudgets_generated_billing_budgets_apiv1beta1_BudgetClient_CreateBudget]
+// [END billingbudgets_v1beta1_generated_BudgetService_CreateBudget_sync]

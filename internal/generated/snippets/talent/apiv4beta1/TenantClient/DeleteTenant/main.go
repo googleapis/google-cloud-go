@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4beta1_TenantClient_DeleteTenant]
+// [START jobs_v4beta1_generated_TenantService_DeleteTenant_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END jobs_generated_talent_apiv4beta1_TenantClient_DeleteTenant]
+// [END jobs_v4beta1_generated_TenantService_DeleteTenant_sync]

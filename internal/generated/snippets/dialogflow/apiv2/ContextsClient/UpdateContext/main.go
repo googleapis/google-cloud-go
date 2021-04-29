@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_ContextsClient_UpdateContext]
+// [START dialogflow_v2_generated_Contexts_UpdateContext_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_ContextsClient_UpdateContext]
+// [END dialogflow_v2_generated_Contexts_UpdateContext_sync]

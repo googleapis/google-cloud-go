@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudresourcemanager_generated_resourcemanager_apiv2_FoldersClient_CreateFolder]
+// [START cloudresourcemanager_v2_generated_Folders_CreateFolder_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudresourcemanager_generated_resourcemanager_apiv2_FoldersClient_CreateFolder]
+// [END cloudresourcemanager_v2_generated_Folders_CreateFolder_sync]

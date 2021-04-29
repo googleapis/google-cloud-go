@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_GetConnection]
+// [START bigqueryconnection_v1beta1_generated_ConnectionService_GetConnection_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_GetConnection]
+// [END bigqueryconnection_v1beta1_generated_ConnectionService_GetConnection_sync]

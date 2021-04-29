@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_ConfigClient_UpdateCmekSettings]
+// [START logging_v2_generated_ConfigServiceV2_UpdateCmekSettings_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END logging_generated_logging_apiv2_ConfigClient_UpdateCmekSettings]
+// [END logging_v2_generated_ConfigServiceV2_UpdateCmekSettings_sync]

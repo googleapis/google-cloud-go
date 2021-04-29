@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START longrunning_generated_longrunning_autogen_OperationsClient_GetOperation]
+// [START longrunning_longrunning_generated_Operations_GetOperation_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END longrunning_generated_longrunning_autogen_OperationsClient_GetOperation]
+// [END longrunning_longrunning_generated_Operations_GetOperation_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_database_apiv1_DatabaseAdminClient_RestoreDatabase]
+// [START spanner_v1_generated_DatabaseAdmin_RestoreDatabase_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END spanner_generated_spanner_admin_database_apiv1_DatabaseAdminClient_RestoreDatabase]
+// [END spanner_v1_generated_DatabaseAdmin_RestoreDatabase_sync]

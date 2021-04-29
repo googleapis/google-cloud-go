@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START container_generated_container_apiv1_ClusterManagerClient_UpdateMaster]
+// [START container_v1_generated_ClusterManager_UpdateMaster_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END container_generated_container_apiv1_ClusterManagerClient_UpdateMaster]
+// [END container_v1_generated_ClusterManager_UpdateMaster_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START notebooks_generated_notebooks_apiv1beta1_NotebookClient_ListInstances]
+// [START notebooks_v1beta1_generated_NotebookService_ListInstances_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END notebooks_generated_notebooks_apiv1beta1_NotebookClient_ListInstances]
+// [END notebooks_v1beta1_generated_NotebookService_ListInstances_sync]
