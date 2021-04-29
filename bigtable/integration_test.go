@@ -2237,7 +2237,7 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 func TestIntegration_AdminBackup(t *testing.T) {
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
-		t.Errorf("IntegrationEnv: %v", err)
+		t.Fatalf("IntegrationEnv: %v", err)
 	}
 	defer testEnv.Close()
 
@@ -2250,7 +2250,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	adminClient, err := testEnv.NewAdminClient()
 	if err != nil {
-		t.Errorf("NewAdminClient: %v", err)
+		t.Fatalf("NewAdminClient: %v", err)
 	}
 	defer adminClient.Close()
 
@@ -2312,10 +2312,10 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	// Precondition: no backups
 	backups, err := list(sourceCluster)
 	if err != nil {
-		t.Errorf("Initial backup list: %v", err)
+		t.Fatalf("Initial backup list: %v", err)
 	}
 	if got, want := len(backups), 0; got != want {
-		t.Errorf("Initial backup list len: %d, want: %d", got, want)
+		t.Fatalf("Initial backup list len: %d, want: %d", got, want)
 	}
 
 	// Create backup
