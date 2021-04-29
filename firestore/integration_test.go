@@ -472,7 +472,6 @@ func TestIntegration_Update(t *testing.T) {
 	got = ds.Data()
 	want = copyMap(want)
 	want["*"] = map[string]interface{}{}
-	delete(want, "null")
 	if !testEqual(got, want) {
 		t.Errorf("got\n%#v\nwant\n%#v", got, want)
 	}
