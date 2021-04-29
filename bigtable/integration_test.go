@@ -2255,7 +2255,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	defer adminClient.Close()
 
 	tblConf := TableConf{
-		TableID: "tableconf-backup",
+		TableID: testEnv.Config().Table,
 		Families: map[string]GCPolicy{
 			"fam1": MaxVersionsPolicy(1),
 			"fam2": MaxVersionsPolicy(2),

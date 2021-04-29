@@ -1468,7 +1468,7 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 // Instance must be in the same project as the project containing the backup.
 func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, sourceCluster, tableName, backupName string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
-	parent := "projects/" + ac.project + "/instances/" + ac.instance
+	parent := ac.instancePrefix()
 	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backupName)
 	req := &btapb.RestoreTableRequest{
 		Parent:  parent,
