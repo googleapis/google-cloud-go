@@ -44,10 +44,10 @@ func shouldRetry(err error) bool {
 			}
 		}
 		return false
-	case interface{ Temporary() bool }:
-		return e.Temporary()
 	case interface{ Unwrap() error }:
 		return shouldRetry(e.Unwrap())
+	case interface{ Temporary() bool }:
+		return e.Temporary()
 	default:
 		return false
 	}
