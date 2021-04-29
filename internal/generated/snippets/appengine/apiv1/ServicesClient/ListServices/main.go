@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	appengine "cloud.google.com/go/appengine/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END appengine_v1_generated_Services_ListServices_sync]

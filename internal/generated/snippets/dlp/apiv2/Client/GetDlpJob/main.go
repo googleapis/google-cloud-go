@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dlp "cloud.google.com/go/dlp/apiv2"
+	"context"
 	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dlp_v2_generated_DlpService_GetDlpJob_sync]

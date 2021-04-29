@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	securitycenter "cloud.google.com/go/securitycenter/apiv1"
+	"context"
 	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END securitycenter_v1_generated_SecurityCenter_CreateFinding_sync]

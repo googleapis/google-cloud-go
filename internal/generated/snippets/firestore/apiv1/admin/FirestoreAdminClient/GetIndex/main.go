@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
+	"context"
 	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END firestore_v1_generated_FirestoreAdmin_GetIndex_sync]

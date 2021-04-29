@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	oslogin "cloud.google.com/go/oslogin/apiv1"
+	"context"
 	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END oslogin_v1_generated_OsLoginService_DeleteSshPublicKey_sync]

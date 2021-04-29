@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	vision "cloud.google.com/go/vision/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END vision_v1_generated_ProductSearch_ListProductSets_sync]

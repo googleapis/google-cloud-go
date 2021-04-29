@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	logging "cloud.google.com/go/logging/apiv2"
+	"context"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END logging_v2_generated_ConfigServiceV2_DeleteSink_sync]

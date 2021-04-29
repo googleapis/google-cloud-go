@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	firestore "cloud.google.com/go/firestore/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END firestore_v1_generated_Firestore_PartitionQuery_sync]

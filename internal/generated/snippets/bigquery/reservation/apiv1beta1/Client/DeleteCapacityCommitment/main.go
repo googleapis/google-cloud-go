@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1beta1"
+	"context"
 	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END bigqueryreservation_v1beta1_generated_ReservationService_DeleteCapacityCommitment_sync]

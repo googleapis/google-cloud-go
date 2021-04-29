@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	retail "cloud.google.com/go/retail/apiv2"
+	"context"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END retail_v2_generated_UserEventService_CollectUserEvent_sync]

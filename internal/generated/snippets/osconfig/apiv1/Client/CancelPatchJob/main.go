@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	osconfig "cloud.google.com/go/osconfig/apiv1"
+	"context"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END osconfig_v1_generated_OsConfigService_CancelPatchJob_sync]

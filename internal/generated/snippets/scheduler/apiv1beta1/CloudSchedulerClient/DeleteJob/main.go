@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	scheduler "cloud.google.com/go/scheduler/apiv1beta1"
+	"context"
 	schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END cloudscheduler_v1beta1_generated_CloudScheduler_DeleteJob_sync]

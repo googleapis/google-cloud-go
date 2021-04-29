@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync]

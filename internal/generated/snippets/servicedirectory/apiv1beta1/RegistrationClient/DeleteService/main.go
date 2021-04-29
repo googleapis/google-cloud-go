@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicedirectory "cloud.google.com/go/servicedirectory/apiv1beta1"
+	"context"
 	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END servicedirectory_v1beta1_generated_RegistrationService_DeleteService_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	webrisk "cloud.google.com/go/webrisk/apiv1"
+	"context"
 	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END webrisk_v1_generated_WebRiskService_CreateSubmission_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
+	"context"
 	secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END secretmanager_v1beta1_generated_SecretManagerService_AddSecretVersion_sync]

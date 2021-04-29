@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	redis "cloud.google.com/go/redis/apiv1beta1"
+	"context"
 	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END redis_v1beta1_generated_CloudRedis_DeleteInstance_sync]

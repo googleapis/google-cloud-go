@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	container "cloud.google.com/go/container/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END container_v1_generated_ClusterManager_ListUsableSubnetworks_sync]

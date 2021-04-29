@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
+	"context"
 	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END documentai_v1beta3_generated_DocumentProcessorService_ReviewDocument_sync]

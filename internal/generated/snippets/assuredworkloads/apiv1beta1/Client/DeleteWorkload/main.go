@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
+	"context"
 	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync]

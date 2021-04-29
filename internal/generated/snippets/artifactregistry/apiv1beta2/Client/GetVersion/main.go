@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1beta2"
+	"context"
 	artifactregistrypb "google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END artifactregistry_v1beta2_generated_ArtifactRegistry_GetVersion_sync]

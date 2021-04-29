@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
+	"context"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteOccurrence_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	notebooks "cloud.google.com/go/notebooks/apiv1beta1"
+	"context"
 	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END notebooks_v1beta1_generated_NotebookService_UpgradeInstanceInternal_sync]

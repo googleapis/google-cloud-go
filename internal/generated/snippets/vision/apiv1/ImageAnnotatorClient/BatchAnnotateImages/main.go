@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	vision "cloud.google.com/go/vision/apiv1"
+	"context"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END vision_v1_generated_ImageAnnotator_BatchAnnotateImages_sync]

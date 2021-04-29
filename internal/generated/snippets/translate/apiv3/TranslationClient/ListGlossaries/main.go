@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	translate "cloud.google.com/go/translate/apiv3"
+	"context"
 	"google.golang.org/api/iterator"
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END translate_v3_generated_TranslationService_ListGlossaries_sync]

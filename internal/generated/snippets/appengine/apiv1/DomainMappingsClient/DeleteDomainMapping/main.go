@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	appengine "cloud.google.com/go/appengine/apiv1"
+	"context"
 	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END appengine_v1_generated_DomainMappings_DeleteDomainMapping_sync]

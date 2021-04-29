@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicecontrol "cloud.google.com/go/servicecontrol/apiv1"
+	"context"
 	servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END servicecontrol_v1_generated_QuotaController_AllocateQuota_sync]

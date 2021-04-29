@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	connection "cloud.google.com/go/bigquery/connection/apiv1beta1"
+	"context"
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END bigqueryconnection_v1beta1_generated_ConnectionService_UpdateConnectionCredential_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	channel "cloud.google.com/go/channel/apiv1"
+	"context"
 	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudchannel_v1_generated_CloudChannelService_TransferEntitlements_sync]

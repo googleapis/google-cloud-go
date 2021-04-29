@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	longrunning "cloud.google.com/go/longrunning/autogen"
+	"context"
 	"google.golang.org/api/iterator"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END longrunning_longrunning_generated_Operations_ListOperations_sync]

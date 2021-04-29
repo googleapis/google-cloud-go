@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	speech "cloud.google.com/go/speech/apiv1p1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END speech_v1p1beta1_generated_Adaptation_ListCustomClasses_sync]

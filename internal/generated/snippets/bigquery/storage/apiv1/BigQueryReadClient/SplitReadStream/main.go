@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	storage "cloud.google.com/go/bigquery/storage/apiv1"
+	"context"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END bigquerystorage_v1_generated_BigQueryRead_SplitReadStream_sync]

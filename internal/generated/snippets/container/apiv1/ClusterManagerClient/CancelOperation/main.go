@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	container "cloud.google.com/go/container/apiv1"
+	"context"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END container_v1_generated_ClusterManager_CancelOperation_sync]

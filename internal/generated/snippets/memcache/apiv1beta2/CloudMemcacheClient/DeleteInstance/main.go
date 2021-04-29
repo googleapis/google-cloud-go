@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	memcache "cloud.google.com/go/memcache/apiv1beta2"
+	"context"
 	memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1beta2"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END memcache_v1beta2_generated_CloudMemcache_DeleteInstance_sync]

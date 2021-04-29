@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	talent "cloud.google.com/go/talent/apiv4beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END jobs_v4beta1_generated_JobService_SearchJobsForAlert_sync]

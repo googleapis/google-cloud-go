@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	storage "cloud.google.com/go/bigquery/storage/apiv1alpha2"
+	"context"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END bigquerystorage_v1alpha2_generated_BigQueryWrite_BatchCommitWriteStreams_sync]

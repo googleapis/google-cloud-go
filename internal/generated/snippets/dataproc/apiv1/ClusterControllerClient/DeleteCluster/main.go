@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	"context"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END dataproc_v1_generated_ClusterController_DeleteCluster_sync]

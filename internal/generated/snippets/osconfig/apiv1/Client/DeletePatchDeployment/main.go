@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	osconfig "cloud.google.com/go/osconfig/apiv1"
+	"context"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END osconfig_v1_generated_OsConfigService_DeletePatchDeployment_sync]

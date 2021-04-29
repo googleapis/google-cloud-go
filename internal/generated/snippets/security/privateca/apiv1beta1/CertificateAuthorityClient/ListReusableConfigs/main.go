@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	privateca "cloud.google.com/go/security/privateca/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END privateca_v1beta1_generated_CertificateAuthorityService_ListReusableConfigs_sync]

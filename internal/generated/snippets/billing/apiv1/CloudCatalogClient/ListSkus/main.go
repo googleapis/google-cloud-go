@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	billing "cloud.google.com/go/billing/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudbilling_v1_generated_CloudCatalog_ListSkus_sync]

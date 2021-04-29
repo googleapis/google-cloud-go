@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	accessapproval "cloud.google.com/go/accessapproval/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync]

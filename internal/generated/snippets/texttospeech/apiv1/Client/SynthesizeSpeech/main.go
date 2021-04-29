@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	texttospeech "cloud.google.com/go/texttospeech/apiv1"
+	"context"
 	texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END texttospeech_v1_generated_TextToSpeech_SynthesizeSpeech_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2beta3"
+	"context"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta3"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudtasks_v2beta3_generated_CloudTasks_GetTask_sync]

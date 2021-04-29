@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	pubsub "cloud.google.com/go/pubsub/apiv1"
+	"context"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END pubsub_v1_generated_Subscriber_StreamingPull_sync]

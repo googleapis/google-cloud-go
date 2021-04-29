@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	osconfig "cloud.google.com/go/osconfig/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END osconfig_v1_generated_OsConfigService_ListPatchJobs_sync]

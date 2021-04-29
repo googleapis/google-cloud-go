@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
+	"context"
 	databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END spanner_v1_generated_DatabaseAdmin_UpdateDatabaseDdl_sync]

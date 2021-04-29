@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicedirectory "cloud.google.com/go/servicedirectory/apiv1"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END servicedirectory_v1_generated_RegistrationService_TestIamPermissions_sync]

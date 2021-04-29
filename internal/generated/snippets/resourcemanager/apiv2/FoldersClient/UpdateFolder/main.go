@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv2"
+	"context"
 	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudresourcemanager_v2_generated_Folders_UpdateFolder_sync]

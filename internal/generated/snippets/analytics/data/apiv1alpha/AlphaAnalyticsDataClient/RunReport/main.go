@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	data "cloud.google.com/go/analytics/data/apiv1alpha"
+	"context"
 	datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END analyticsdata_v1alpha_generated_AlphaAnalyticsData_RunReport_sync]

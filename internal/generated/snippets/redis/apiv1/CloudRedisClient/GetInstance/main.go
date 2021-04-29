@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	redis "cloud.google.com/go/redis/apiv1"
+	"context"
 	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END redis_v1_generated_CloudRedis_GetInstance_sync]

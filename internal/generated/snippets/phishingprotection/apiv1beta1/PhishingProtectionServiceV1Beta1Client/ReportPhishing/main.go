@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	phishingprotection "cloud.google.com/go/phishingprotection/apiv1beta1"
+	"context"
 	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END phishingprotection_v1beta1_generated_PhishingProtectionServiceV1Beta1_ReportPhishing_sync]

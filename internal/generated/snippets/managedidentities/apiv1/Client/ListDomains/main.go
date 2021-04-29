@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	managedidentities "cloud.google.com/go/managedidentities/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END managedidentities_v1_generated_ManagedIdentitiesService_ListDomains_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	managedidentities "cloud.google.com/go/managedidentities/apiv1"
+	"context"
 	managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END managedidentities_v1_generated_ManagedIdentitiesService_CreateMicrosoftAdDomain_sync]

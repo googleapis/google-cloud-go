@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	agentendpoint "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
+	"context"
 	agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END osconfig_v1beta_generated_AgentEndpointService_RegisterAgent_sync]

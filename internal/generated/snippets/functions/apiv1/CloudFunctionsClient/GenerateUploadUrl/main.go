@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	functions "cloud.google.com/go/functions/apiv1"
+	"context"
 	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudfunctions_v1_generated_CloudFunctionsService_GenerateUploadUrl_sync]

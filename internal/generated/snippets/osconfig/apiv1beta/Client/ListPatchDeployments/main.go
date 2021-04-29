@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	osconfig "cloud.google.com/go/osconfig/apiv1beta"
+	"context"
 	"google.golang.org/api/iterator"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END osconfig_v1beta_generated_OsConfigService_ListPatchDeployments_sync]

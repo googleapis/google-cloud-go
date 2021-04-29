@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	longrunning "cloud.google.com/go/longrunning/autogen"
+	"context"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END longrunning_longrunning_generated_Operations_DeleteOperation_sync]

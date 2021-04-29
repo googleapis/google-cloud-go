@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	iot "cloud.google.com/go/iot/apiv1"
+	"context"
 	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END cloudiot_v1_generated_DeviceManager_DeleteDeviceRegistry_sync]

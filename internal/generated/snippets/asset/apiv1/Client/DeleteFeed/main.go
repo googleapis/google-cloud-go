@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	asset "cloud.google.com/go/asset/apiv1"
+	"context"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END cloudasset_v1_generated_AssetService_DeleteFeed_sync]

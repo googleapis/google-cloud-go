@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	artifactregistry "cloud.google.com/go/artifactregistry/apiv1beta2"
+	"context"
 	"google.golang.org/api/iterator"
 	artifactregistrypb "google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END artifactregistry_v1beta2_generated_ArtifactRegistry_ListTags_sync]

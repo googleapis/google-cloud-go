@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_ListPredictionApiKeyRegistrations_sync]

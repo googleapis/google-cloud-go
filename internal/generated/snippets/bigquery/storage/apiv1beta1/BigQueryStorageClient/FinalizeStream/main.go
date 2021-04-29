@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta1"
+	"context"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END bigquerystorage_v1beta1_generated_BigQueryStorage_FinalizeStream_sync]

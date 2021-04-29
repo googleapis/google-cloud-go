@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	"context"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dialogflow_v3_generated_TestCases_BatchRunTestCases_sync]

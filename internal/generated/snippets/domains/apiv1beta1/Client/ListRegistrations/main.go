@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	domains "cloud.google.com/go/domains/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END domains_v1beta1_generated_Domains_ListRegistrations_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	settings "cloud.google.com/go/securitycenter/settings/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END securitycenter_v1beta1_generated_SecurityCenterSettingsService_ListDetectors_sync]

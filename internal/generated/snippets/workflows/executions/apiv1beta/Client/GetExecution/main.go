@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	executions "cloud.google.com/go/workflows/executions/apiv1beta"
+	"context"
 	executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END workflowexecutions_v1beta_generated_Executions_GetExecution_sync]

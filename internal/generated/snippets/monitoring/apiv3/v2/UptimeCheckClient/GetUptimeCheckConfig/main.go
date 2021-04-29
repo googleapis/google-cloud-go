@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"context"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END monitoring_v3_generated_UptimeCheckService_GetUptimeCheckConfig_sync]

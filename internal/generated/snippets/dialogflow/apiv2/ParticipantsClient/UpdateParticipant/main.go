@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	"context"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dialogflow_v2_generated_Participants_UpdateParticipant_sync]

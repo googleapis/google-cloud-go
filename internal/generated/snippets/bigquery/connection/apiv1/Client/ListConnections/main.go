@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END bigqueryconnection_v1_generated_ConnectionService_ListConnections_sync]

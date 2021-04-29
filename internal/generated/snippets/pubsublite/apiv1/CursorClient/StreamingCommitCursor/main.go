@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	"context"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END pubsublite_v1_generated_CursorService_StreamingCommitCursor_sync]

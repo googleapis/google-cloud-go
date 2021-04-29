@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	"context"
 	"google.golang.org/api/iterator"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END dialogflow_v3_generated_Intents_ListIntents_sync]

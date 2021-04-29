@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END secretmanager_v1_generated_SecretManagerService_SetIamPolicy_sync]

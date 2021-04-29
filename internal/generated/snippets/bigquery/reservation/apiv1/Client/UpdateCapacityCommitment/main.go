@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	reservation "cloud.google.com/go/bigquery/reservation/apiv1"
+	"context"
 	reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END bigqueryreservation_v1_generated_ReservationService_UpdateCapacityCommitment_sync]

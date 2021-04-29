@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
+	"context"
 	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateEnhancedMeasurementSettings_sync]

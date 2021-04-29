@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	speech "cloud.google.com/go/speech/apiv1"
+	"context"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END speech_v1_generated_Speech_StreamingRecognize_sync]

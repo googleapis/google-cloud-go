@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
+	"context"
 	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dataqna_v1alpha_generated_QuestionService_GetQuestion_sync]

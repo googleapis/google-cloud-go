@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	credentials "cloud.google.com/go/iam/credentials/apiv1"
+	"context"
 	credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END iamcredentials_v1_generated_IAMCredentials_GenerateIdToken_sync]

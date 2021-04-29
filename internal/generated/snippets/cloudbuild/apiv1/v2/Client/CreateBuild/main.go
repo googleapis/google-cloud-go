@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
+	"context"
 	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudbuild_v1_generated_CloudBuild_CreateBuild_sync]

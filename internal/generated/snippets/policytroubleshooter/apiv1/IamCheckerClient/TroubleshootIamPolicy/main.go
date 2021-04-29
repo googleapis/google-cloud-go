@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	policytroubleshooter "cloud.google.com/go/policytroubleshooter/apiv1"
+	"context"
 	policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync]

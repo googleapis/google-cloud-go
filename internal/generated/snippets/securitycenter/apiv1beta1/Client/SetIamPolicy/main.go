@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	securitycenter "cloud.google.com/go/securitycenter/apiv1beta1"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END securitycenter_v1beta1_generated_SecurityCenter_SetIamPolicy_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	speech "cloud.google.com/go/speech/apiv1"
+	"context"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END speech_v1_generated_Speech_LongRunningRecognize_sync]

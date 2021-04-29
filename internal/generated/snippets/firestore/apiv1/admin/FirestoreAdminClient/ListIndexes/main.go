@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
+	"context"
 	"google.golang.org/api/iterator"
 	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END firestore_v1_generated_FirestoreAdmin_ListIndexes_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	"context"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END dialogflow_v3_generated_SecuritySettingsService_DeleteSecuritySettings_sync]

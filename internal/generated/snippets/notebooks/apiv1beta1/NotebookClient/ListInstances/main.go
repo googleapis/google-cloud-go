@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	notebooks "cloud.google.com/go/notebooks/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END notebooks_v1beta1_generated_NotebookService_ListInstances_sync]

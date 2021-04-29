@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	pubsub "cloud.google.com/go/pubsub/apiv1"
+	"context"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END pubsub_v1_generated_Subscriber_DeleteSubscription_sync]

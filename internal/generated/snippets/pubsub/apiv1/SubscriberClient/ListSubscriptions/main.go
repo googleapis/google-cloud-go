@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	pubsub "cloud.google.com/go/pubsub/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END pubsub_v1_generated_Subscriber_ListSubscriptions_sync]

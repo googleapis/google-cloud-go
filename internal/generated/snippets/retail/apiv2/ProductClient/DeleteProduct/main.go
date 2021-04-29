@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	retail "cloud.google.com/go/retail/apiv2"
+	"context"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END retail_v2_generated_ProductService_DeleteProduct_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	gaming "cloud.google.com/go/gaming/apiv1beta"
+	"context"
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END gameservices_v1beta_generated_RealmsService_DeleteRealm_sync]

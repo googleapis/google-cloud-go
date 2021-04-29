@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dlp "cloud.google.com/go/dlp/apiv2"
+	"context"
 	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END dlp_v2_generated_DlpService_DeleteDeidentifyTemplate_sync]

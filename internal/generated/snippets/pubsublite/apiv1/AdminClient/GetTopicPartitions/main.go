@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	"context"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END pubsublite_v1_generated_AdminService_GetTopicPartitions_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END dialogflow_v3beta1_generated_Pages_ListPages_sync]

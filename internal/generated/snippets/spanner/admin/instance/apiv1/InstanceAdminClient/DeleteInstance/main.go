@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"context"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END spanner_v1_generated_InstanceAdmin_DeleteInstance_sync]

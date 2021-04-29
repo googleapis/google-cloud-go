@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	language "cloud.google.com/go/language/apiv1"
+	"context"
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END language_v1_generated_LanguageService_AnnotateText_sync]

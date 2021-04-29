@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dataproc "cloud.google.com/go/dataproc/apiv1beta2"
+	"context"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END dataproc_v1beta2_generated_ClusterController_DiagnoseCluster_sync]

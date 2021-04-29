@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	iot "cloud.google.com/go/iot/apiv1"
+	"context"
 	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudiot_v1_generated_DeviceManager_CreateDevice_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	resourcemanager "cloud.google.com/go/resourcemanager/apiv2"
+	"context"
 	"google.golang.org/api/iterator"
 	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudresourcemanager_v2_generated_Folders_SearchFolders_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	translate "cloud.google.com/go/translate/apiv3"
+	"context"
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END translate_v3_generated_TranslationService_CreateGlossary_sync]

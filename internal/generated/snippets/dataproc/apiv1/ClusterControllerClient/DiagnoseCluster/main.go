@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	"context"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dataproc_v1_generated_ClusterController_DiagnoseCluster_sync]

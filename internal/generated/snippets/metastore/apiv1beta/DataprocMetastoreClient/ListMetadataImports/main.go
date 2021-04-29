@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	metastore "cloud.google.com/go/metastore/apiv1beta"
+	"context"
 	"google.golang.org/api/iterator"
 	metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1beta"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END metastore_v1beta_generated_DataprocMetastore_ListMetadataImports_sync]

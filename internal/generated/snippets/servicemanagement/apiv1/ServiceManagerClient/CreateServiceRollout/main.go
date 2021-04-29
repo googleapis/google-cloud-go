@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicemanagement "cloud.google.com/go/servicemanagement/apiv1"
+	"context"
 	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END servicemanagement_v1_generated_ServiceManager_CreateServiceRollout_sync]

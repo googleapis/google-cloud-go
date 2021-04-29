@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	storage "cloud.google.com/go/bigquery/storage/apiv1alpha2"
+	"context"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END bigquerystorage_v1alpha2_generated_BigQueryWrite_AppendRows_sync]

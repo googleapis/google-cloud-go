@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	billing "cloud.google.com/go/billing/apiv1"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudbilling_v1_generated_CloudBilling_TestIamPermissions_sync]

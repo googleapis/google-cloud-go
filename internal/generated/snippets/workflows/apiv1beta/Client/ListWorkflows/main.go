@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	workflows "cloud.google.com/go/workflows/apiv1beta"
+	"context"
 	"google.golang.org/api/iterator"
 	workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END workflows_v1beta_generated_Workflows_ListWorkflows_sync]

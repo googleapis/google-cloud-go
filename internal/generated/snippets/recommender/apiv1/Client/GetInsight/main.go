@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	recommender "cloud.google.com/go/recommender/apiv1"
+	"context"
 	recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END recommender_v1_generated_Recommender_GetInsight_sync]

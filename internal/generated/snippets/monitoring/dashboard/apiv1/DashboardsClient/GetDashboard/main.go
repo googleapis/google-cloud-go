@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dashboard "cloud.google.com/go/monitoring/dashboard/apiv1"
+	"context"
 	dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END monitoring_v1_generated_DashboardsService_GetDashboard_sync]

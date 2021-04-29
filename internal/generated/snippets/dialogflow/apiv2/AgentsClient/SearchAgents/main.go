@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	"context"
 	"google.golang.org/api/iterator"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END dialogflow_v2_generated_Agents_SearchAgents_sync]

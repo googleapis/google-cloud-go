@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	automl "cloud.google.com/go/automl/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END automl_v1beta1_generated_AutoMl_ListDatasets_sync]

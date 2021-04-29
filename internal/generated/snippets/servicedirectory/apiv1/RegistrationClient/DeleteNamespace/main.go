@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicedirectory "cloud.google.com/go/servicedirectory/apiv1"
+	"context"
 	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END servicedirectory_v1_generated_RegistrationService_DeleteNamespace_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	firestore "cloud.google.com/go/firestore/apiv1"
+	"context"
 	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END firestore_v1_generated_Firestore_Rollback_sync]

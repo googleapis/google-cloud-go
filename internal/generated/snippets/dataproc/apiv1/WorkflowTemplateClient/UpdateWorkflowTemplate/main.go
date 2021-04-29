@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	"context"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dataproc_v1_generated_WorkflowTemplateService_UpdateWorkflowTemplate_sync]

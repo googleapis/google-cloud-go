@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	gaming "cloud.google.com/go/gaming/apiv1"
+	"context"
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END gameservices_v1_generated_GameServerConfigsService_DeleteGameServerConfig_sync]

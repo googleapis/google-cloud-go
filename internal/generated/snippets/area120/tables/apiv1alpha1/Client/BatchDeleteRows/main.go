@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	tables "cloud.google.com/go/area120/tables/apiv1alpha1"
+	"context"
 	tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END area120tables_v1alpha1_generated_TablesService_BatchDeleteRows_sync]

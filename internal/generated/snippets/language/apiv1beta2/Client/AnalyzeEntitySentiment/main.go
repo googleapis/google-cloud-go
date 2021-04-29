@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	language "cloud.google.com/go/language/apiv1beta2"
+	"context"
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END language_v1beta2_generated_LanguageService_AnalyzeEntitySentiment_sync]

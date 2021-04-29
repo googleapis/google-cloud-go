@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
+	"context"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync]

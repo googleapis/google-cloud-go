@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudtasks_v2_generated_CloudTasks_GetIamPolicy_sync]

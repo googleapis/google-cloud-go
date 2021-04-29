@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	websecurityscanner "cloud.google.com/go/websecurityscanner/apiv1"
+	"context"
 	websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END websecurityscanner_v1_generated_WebSecurityScanner_GetFinding_sync]

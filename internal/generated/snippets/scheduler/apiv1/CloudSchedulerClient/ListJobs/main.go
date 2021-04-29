@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	scheduler "cloud.google.com/go/scheduler/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudscheduler_v1_generated_CloudScheduler_ListJobs_sync]

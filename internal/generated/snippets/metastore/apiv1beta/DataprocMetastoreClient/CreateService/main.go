@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	metastore "cloud.google.com/go/metastore/apiv1beta"
+	"context"
 	metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1beta"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END metastore_v1beta_generated_DataprocMetastore_CreateService_sync]

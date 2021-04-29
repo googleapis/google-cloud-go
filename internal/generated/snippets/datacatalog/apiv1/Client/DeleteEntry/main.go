@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	datacatalog "cloud.google.com/go/datacatalog/apiv1"
+	"context"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END datacatalog_v1_generated_DataCatalog_DeleteEntry_sync]

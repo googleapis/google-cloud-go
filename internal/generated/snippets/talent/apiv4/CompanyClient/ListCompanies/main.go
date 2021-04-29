@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	talent "cloud.google.com/go/talent/apiv4"
+	"context"
 	"google.golang.org/api/iterator"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END jobs_v4_generated_CompanyService_ListCompanies_sync]

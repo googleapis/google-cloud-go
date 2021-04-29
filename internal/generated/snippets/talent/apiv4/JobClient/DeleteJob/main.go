@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	talent "cloud.google.com/go/talent/apiv4"
+	"context"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END jobs_v4_generated_JobService_DeleteJob_sync]

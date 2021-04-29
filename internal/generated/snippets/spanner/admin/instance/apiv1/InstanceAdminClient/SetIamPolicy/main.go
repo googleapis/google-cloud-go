@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END spanner_v1_generated_InstanceAdmin_SetIamPolicy_sync]

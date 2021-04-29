@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	asset "cloud.google.com/go/asset/apiv1p5beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudasset_v1p5beta1_generated_AssetService_ListAssets_sync]

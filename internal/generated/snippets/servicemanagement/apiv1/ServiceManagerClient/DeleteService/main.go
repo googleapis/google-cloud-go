@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicemanagement "cloud.google.com/go/servicemanagement/apiv1"
+	"context"
 	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END servicemanagement_v1_generated_ServiceManager_DeleteService_sync]

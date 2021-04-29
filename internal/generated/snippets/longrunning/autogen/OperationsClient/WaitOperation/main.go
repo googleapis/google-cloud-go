@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	longrunning "cloud.google.com/go/longrunning/autogen"
+	"context"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END longrunning_longrunning_generated_Operations_WaitOperation_sync]

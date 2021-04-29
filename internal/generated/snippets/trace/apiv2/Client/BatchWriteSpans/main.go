@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	trace "cloud.google.com/go/trace/apiv2"
+	"context"
 	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END cloudtrace_v2_generated_TraceService_BatchWriteSpans_sync]

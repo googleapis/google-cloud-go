@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	kms "cloud.google.com/go/kms/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudkms_v1_generated_KeyManagementService_ListCryptoKeys_sync]

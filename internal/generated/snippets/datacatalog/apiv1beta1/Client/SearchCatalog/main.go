@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END datacatalog_v1beta1_generated_DataCatalog_SearchCatalog_sync]

@@ -12,14 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START resourcesettings_generated_resourcesettings_apiv1_Client_UpdateSetting]
+// [START resourcesettings_v1_generated_ResourceSettingsService_UpdateSetting_sync]
 
 package main
 
 import (
-	"context"
-
 	resourcesettings "cloud.google.com/go/resourcesettings/apiv1"
+	"context"
 	resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
-// [END resourcesettings_generated_resourcesettings_apiv1_Client_UpdateSetting]
+// [END resourcesettings_v1_generated_ResourceSettingsService_UpdateSetting_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicemanagement "cloud.google.com/go/servicemanagement/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END servicemanagement_v1_generated_ServiceManager_ListServices_sync]

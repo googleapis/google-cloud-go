@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
+	"context"
 	"google.golang.org/api/iterator"
 	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudbuild_v1_generated_CloudBuild_ListBuilds_sync]

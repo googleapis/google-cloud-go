@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	securitycenter "cloud.google.com/go/securitycenter/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END securitycenter_v1_generated_SecurityCenter_GroupFindings_sync]

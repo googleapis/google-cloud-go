@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
+	"context"
 	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_DeletePredictionApiKeyRegistration_sync]

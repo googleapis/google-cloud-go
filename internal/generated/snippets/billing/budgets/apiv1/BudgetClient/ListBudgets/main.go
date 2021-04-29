@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	budgets "cloud.google.com/go/billing/budgets/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END billingbudgets_v1_generated_BudgetService_ListBudgets_sync]

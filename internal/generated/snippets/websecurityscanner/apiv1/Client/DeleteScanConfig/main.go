@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	websecurityscanner "cloud.google.com/go/websecurityscanner/apiv1"
+	"context"
 	websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END websecurityscanner_v1_generated_WebSecurityScanner_DeleteScanConfig_sync]

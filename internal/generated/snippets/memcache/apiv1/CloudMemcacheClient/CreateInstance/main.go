@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	memcache "cloud.google.com/go/memcache/apiv1"
+	"context"
 	memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END memcache_v1_generated_CloudMemcache_CreateInstance_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
+	"context"
 	"google.golang.org/api/iterator"
 	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListIosAppDataStreams_sync]

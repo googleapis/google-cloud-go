@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	"context"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END dialogflow_v2_generated_Sessions_StreamingDetectIntent_sync]

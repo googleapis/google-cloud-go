@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1"
+	"context"
 	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_AnnotateAssessment_sync]

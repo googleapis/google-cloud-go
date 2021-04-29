@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	videointelligence "cloud.google.com/go/videointelligence/apiv1"
+	"context"
 	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END videointelligence_v1_generated_VideoIntelligenceService_AnnotateVideo_sync]

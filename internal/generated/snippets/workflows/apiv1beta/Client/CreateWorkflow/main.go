@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	workflows "cloud.google.com/go/workflows/apiv1beta"
+	"context"
 	workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END workflows_v1beta_generated_Workflows_CreateWorkflow_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cloudtasks "cloud.google.com/go/cloudtasks/apiv2"
+	"context"
 	taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END cloudtasks_v2_generated_CloudTasks_DeleteTask_sync]

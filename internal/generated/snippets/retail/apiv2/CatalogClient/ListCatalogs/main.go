@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	retail "cloud.google.com/go/retail/apiv2"
+	"context"
 	"google.golang.org/api/iterator"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END retail_v2_generated_CatalogService_ListCatalogs_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1alpha1"
+	"context"
 	"google.golang.org/api/iterator"
 	networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END networkconnectivity_v1alpha1_generated_HubService_ListHubs_sync]

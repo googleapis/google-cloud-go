@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	kms "cloud.google.com/go/kms/apiv1"
+	"context"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudkms_v1_generated_KeyManagementService_GetPublicKey_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	admin "cloud.google.com/go/datastore/admin/apiv1"
+	"context"
 	adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END datastore_v1_generated_DatastoreAdmin_GetIndex_sync]

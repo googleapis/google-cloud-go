@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
+	"context"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END dialogflow_v3beta1_generated_Environments_UpdateEnvironment_sync]

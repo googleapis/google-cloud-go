@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	securitycenter "cloud.google.com/go/securitycenter/apiv1p1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END securitycenter_v1p1beta1_generated_SecurityCenter_ListAssets_sync]

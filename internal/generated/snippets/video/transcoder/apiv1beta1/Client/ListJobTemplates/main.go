@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	transcoder "cloud.google.com/go/video/transcoder/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END transcoder_v1beta1_generated_TranscoderService_ListJobTemplates_sync]

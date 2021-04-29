@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	gaming "cloud.google.com/go/gaming/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END gameservices_v1_generated_GameServerConfigsService_ListGameServerConfigs_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	automl "cloud.google.com/go/automl/apiv1beta1"
+	"context"
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END automl_v1beta1_generated_AutoMl_GetColumnSpec_sync]

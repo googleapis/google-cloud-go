@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	automl "cloud.google.com/go/automl/apiv1"
+	"context"
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END automl_v1_generated_AutoMl_DeleteDataset_sync]

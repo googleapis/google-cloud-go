@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	oslogin "cloud.google.com/go/oslogin/apiv1beta"
+	"context"
 	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1beta"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END oslogin_v1beta_generated_OsLoginService_UpdateSshPublicKey_sync]

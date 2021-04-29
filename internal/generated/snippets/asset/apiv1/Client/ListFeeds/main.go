@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	asset "cloud.google.com/go/asset/apiv1"
+	"context"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudasset_v1_generated_AssetService_ListFeeds_sync]

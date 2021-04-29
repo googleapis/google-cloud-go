@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END spanner_v1_generated_InstanceAdmin_ListInstances_sync]

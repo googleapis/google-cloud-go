@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	settings "cloud.google.com/go/securitycenter/settings/apiv1beta1"
+	"context"
 	settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END securitycenter_v1beta1_generated_SecurityCenterSettingsService_ResetSettings_sync]

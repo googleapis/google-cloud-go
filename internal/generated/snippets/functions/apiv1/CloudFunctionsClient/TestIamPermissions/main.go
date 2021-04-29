@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	functions "cloud.google.com/go/functions/apiv1"
+	"context"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END cloudfunctions_v1_generated_CloudFunctionsService_TestIamPermissions_sync]

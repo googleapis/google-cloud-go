@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	appengine "cloud.google.com/go/appengine/apiv1"
+	"context"
 	appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END appengine_v1_generated_Firewall_CreateIngressRule_sync]

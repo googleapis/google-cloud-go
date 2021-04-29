@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	domains "cloud.google.com/go/domains/apiv1beta1"
+	"context"
 	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END domains_v1beta1_generated_Domains_DeleteRegistration_sync]

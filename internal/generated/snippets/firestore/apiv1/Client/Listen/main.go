@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	firestore "cloud.google.com/go/firestore/apiv1"
+	"context"
 	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END firestore_v1_generated_Firestore_Listen_sync]

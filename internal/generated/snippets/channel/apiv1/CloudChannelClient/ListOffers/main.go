@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	channel "cloud.google.com/go/channel/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END cloudchannel_v1_generated_CloudChannelService_ListOffers_sync]

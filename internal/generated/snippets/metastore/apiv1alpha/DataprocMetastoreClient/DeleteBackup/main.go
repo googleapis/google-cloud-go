@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	metastore "cloud.google.com/go/metastore/apiv1alpha"
+	"context"
 	metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1alpha"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END metastore_v1alpha_generated_DataprocMetastore_DeleteBackup_sync]

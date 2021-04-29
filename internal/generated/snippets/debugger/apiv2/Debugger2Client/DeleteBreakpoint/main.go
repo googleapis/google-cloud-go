@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	debugger "cloud.google.com/go/debugger/apiv2"
+	"context"
 	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END clouddebugger_v2_generated_Debugger2_DeleteBreakpoint_sync]

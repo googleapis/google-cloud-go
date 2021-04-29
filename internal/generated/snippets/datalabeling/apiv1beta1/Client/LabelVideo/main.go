@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
+	"context"
 	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END datalabeling_v1beta1_generated_DataLabelingService_LabelVideo_sync]

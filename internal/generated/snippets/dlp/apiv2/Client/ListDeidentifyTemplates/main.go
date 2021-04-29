@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dlp "cloud.google.com/go/dlp/apiv2"
+	"context"
 	"google.golang.org/api/iterator"
 	dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END dlp_v2_generated_DlpService_ListDeidentifyTemplates_sync]

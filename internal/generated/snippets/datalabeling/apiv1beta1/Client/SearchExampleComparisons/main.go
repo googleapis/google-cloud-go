@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END datalabeling_v1beta1_generated_DataLabelingService_SearchExampleComparisons_sync]

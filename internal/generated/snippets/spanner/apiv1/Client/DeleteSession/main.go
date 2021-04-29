@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	spanner "cloud.google.com/go/spanner/apiv1"
+	"context"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END spanner_v1_generated_Spanner_DeleteSession_sync]

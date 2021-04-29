@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	"context"
 	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END dialogflow_v2_generated_Intents_DeleteIntent_sync]

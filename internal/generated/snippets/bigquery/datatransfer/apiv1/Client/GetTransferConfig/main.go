@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
+	"context"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END bigquerydatatransfer_v1_generated_DataTransferService_GetTransferConfig_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	orgpolicy "cloud.google.com/go/orgpolicy/apiv2"
+	"context"
 	"google.golang.org/api/iterator"
 	orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END orgpolicy_v2_generated_OrgPolicy_ListConstraints_sync]

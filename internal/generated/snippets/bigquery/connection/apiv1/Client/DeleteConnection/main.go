@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	connection "cloud.google.com/go/bigquery/connection/apiv1"
+	"context"
 	connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END bigqueryconnection_v1_generated_ConnectionService_DeleteConnection_sync]

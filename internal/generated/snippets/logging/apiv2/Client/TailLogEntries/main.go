@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	logging "cloud.google.com/go/logging/apiv2"
+	"context"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END logging_v2_generated_LoggingServiceV2_TailLogEntries_sync]

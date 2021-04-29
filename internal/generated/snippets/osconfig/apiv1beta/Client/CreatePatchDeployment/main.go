@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	osconfig "cloud.google.com/go/osconfig/apiv1beta"
+	"context"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END osconfig_v1beta_generated_OsConfigService_CreatePatchDeployment_sync]

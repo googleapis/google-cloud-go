@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	privateca "cloud.google.com/go/security/privateca/apiv1beta1"
+	"context"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END privateca_v1beta1_generated_CertificateAuthorityService_ScheduleDeleteCertificateAuthority_sync]

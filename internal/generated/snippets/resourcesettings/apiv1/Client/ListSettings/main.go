@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	resourcesettings "cloud.google.com/go/resourcesettings/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END resourcesettings_v1_generated_ResourceSettingsService_ListSettings_sync]

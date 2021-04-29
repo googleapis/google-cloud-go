@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	spanner "cloud.google.com/go/spanner/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END spanner_v1_generated_Spanner_ListSessions_sync]

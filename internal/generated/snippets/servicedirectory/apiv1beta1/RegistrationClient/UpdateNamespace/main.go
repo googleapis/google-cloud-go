@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	servicedirectory "cloud.google.com/go/servicedirectory/apiv1beta1"
+	"context"
 	servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END servicedirectory_v1beta1_generated_RegistrationService_UpdateNamespace_sync]

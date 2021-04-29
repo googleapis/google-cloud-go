@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1"
+	"context"
 	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_DeleteKey_sync]

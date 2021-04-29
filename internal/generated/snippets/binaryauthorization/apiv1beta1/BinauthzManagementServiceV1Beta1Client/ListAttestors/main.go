@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_ListAttestors_sync]

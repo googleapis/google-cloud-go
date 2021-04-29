@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
+	"context"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 
@@ -38,5 +37,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END monitoring_v3_generated_AlertPolicyService_DeleteAlertPolicy_sync]

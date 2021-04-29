@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	apigateway "cloud.google.com/go/apigateway/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END apigateway_v1_generated_ApiGatewayService_ListApis_sync]

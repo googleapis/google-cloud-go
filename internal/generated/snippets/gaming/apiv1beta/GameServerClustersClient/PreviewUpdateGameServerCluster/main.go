@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	gaming "cloud.google.com/go/gaming/apiv1beta"
+	"context"
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END gameservices_v1beta_generated_GameServerClustersService_PreviewUpdateGameServerCluster_sync]

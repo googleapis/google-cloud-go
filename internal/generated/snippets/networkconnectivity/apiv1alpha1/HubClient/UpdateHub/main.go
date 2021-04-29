@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1alpha1"
+	"context"
 	networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END networkconnectivity_v1alpha1_generated_HubService_UpdateHub_sync]

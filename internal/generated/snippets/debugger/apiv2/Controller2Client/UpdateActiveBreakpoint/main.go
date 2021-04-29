@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	debugger "cloud.google.com/go/debugger/apiv2"
+	"context"
 	clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
 )
 
@@ -42,5 +41,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END clouddebugger_v2_generated_Controller2_UpdateActiveBreakpoint_sync]

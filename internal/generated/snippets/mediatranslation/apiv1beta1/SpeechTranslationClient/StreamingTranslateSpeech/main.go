@@ -17,11 +17,10 @@
 package main
 
 import (
-	"context"
-	"io"
-
 	mediatranslation "cloud.google.com/go/mediatranslation/apiv1beta1"
+	"context"
 	mediatranslationpb "google.golang.org/genproto/googleapis/cloud/mediatranslation/v1beta1"
+	"io"
 )
 
 func main() {
@@ -59,5 +58,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync]

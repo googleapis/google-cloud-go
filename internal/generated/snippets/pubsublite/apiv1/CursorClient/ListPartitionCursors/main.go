@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	pubsublite "cloud.google.com/go/pubsublite/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END pubsublite_v1_generated_CursorService_ListPartitionCursors_sync]

@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
+	"context"
 	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
 )
 
@@ -47,5 +46,4 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
-
 // [END gkehub_v1beta1_generated_GkeHubMembershipService_CreateMembership_sync]

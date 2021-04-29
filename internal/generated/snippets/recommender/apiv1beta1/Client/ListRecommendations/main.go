@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	recommender "cloud.google.com/go/recommender/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END recommender_v1beta1_generated_Recommender_ListRecommendations_sync]

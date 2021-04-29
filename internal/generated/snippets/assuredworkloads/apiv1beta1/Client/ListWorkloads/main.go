@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync]

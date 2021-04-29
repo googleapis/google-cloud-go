@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	apigateway "cloud.google.com/go/apigateway/apiv1"
+	"context"
 	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END apigateway_v1_generated_ApiGatewayService_DeleteGateway_sync]

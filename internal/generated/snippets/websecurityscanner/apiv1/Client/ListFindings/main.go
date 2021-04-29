@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	websecurityscanner "cloud.google.com/go/websecurityscanner/apiv1"
+	"context"
 	"google.golang.org/api/iterator"
 	websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END websecurityscanner_v1_generated_WebSecurityScanner_ListFindings_sync]

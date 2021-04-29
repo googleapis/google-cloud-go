@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
+	"context"
 	"google.golang.org/api/iterator"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListNoteOccurrences_sync]

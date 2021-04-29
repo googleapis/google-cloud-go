@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	logging "cloud.google.com/go/logging/apiv2"
+	"context"
 	"google.golang.org/api/iterator"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
@@ -50,5 +49,4 @@ func main() {
 		_ = resp
 	}
 }
-
 // [END logging_v2_generated_MetricsServiceV2_ListLogMetrics_sync]

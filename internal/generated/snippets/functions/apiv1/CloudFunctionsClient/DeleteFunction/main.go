@@ -17,9 +17,8 @@
 package main
 
 import (
-	"context"
-
 	functions "cloud.google.com/go/functions/apiv1"
+	"context"
 	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
 )
 
@@ -45,5 +44,4 @@ func main() {
 		// TODO: Handle error.
 	}
 }
-
 // [END cloudfunctions_v1_generated_CloudFunctionsService_DeleteFunction_sync]
