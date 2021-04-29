@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerystorage_generated_bigquery_storage_apiv1beta2_BigQueryWriteClient_AppendRows]
+// [START bigquerystorage_v1beta2_generated_BigQueryWrite_AppendRows_sync]
 
 package main
 
@@ -60,4 +60,4 @@ func main() {
 	}
 }
 
-// [END bigquerystorage_generated_bigquery_storage_apiv1beta2_BigQueryWriteClient_AppendRows]
+// [END bigquerystorage_v1beta2_generated_BigQueryWrite_AppendRows_sync]

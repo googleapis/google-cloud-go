@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1beta_Client_CreatePatchDeployment]
+// [START osconfig_v1beta_generated_OsConfigService_CreatePatchDeployment_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_apiv1beta_Client_CreatePatchDeployment]
+// [END osconfig_v1beta_generated_OsConfigService_CreatePatchDeployment_sync]

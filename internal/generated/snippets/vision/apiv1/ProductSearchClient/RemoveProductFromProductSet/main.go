@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START vision_generated_vision_apiv1_ProductSearchClient_RemoveProductFromProductSet]
+// [START vision_v1_generated_ProductSearch_RemoveProductFromProductSet_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END vision_generated_vision_apiv1_ProductSearchClient_RemoveProductFromProductSet]
+// [END vision_v1_generated_ProductSearch_RemoveProductFromProductSet_sync]

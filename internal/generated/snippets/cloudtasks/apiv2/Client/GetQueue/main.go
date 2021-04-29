@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtasks_generated_cloudtasks_apiv2_Client_GetQueue]
+// [START cloudtasks_v2_generated_CloudTasks_GetQueue_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudtasks_generated_cloudtasks_apiv2_Client_GetQueue]
+// [END cloudtasks_v2_generated_CloudTasks_GetQueue_sync]

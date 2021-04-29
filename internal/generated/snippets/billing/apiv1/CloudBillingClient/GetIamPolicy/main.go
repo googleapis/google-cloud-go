@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbilling_generated_billing_apiv1_CloudBillingClient_GetIamPolicy]
+// [START cloudbilling_v1_generated_CloudBilling_GetIamPolicy_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudbilling_generated_billing_apiv1_CloudBillingClient_GetIamPolicy]
+// [END cloudbilling_v1_generated_CloudBilling_GetIamPolicy_sync]

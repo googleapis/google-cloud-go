@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START accessapproval_generated_accessapproval_apiv1_Client_ListApprovalRequests]
+// [START accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END accessapproval_generated_accessapproval_apiv1_Client_ListApprovalRequests]
+// [END accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync]

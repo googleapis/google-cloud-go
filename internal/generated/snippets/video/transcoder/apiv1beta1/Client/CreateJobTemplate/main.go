@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START transcoder_generated_video_transcoder_apiv1beta1_Client_CreateJobTemplate]
+// [START transcoder_v1beta1_generated_TranscoderService_CreateJobTemplate_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END transcoder_generated_video_transcoder_apiv1beta1_Client_CreateJobTemplate]
+// [END transcoder_v1beta1_generated_TranscoderService_CreateJobTemplate_sync]

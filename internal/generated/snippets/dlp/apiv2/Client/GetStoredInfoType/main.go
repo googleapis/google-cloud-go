@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dlp_generated_dlp_apiv2_Client_GetStoredInfoType]
+// [START dlp_v2_generated_DlpService_GetStoredInfoType_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END dlp_generated_dlp_apiv2_Client_GetStoredInfoType]
+// [END dlp_v2_generated_DlpService_GetStoredInfoType_sync]
