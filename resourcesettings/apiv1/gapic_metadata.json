@@ -10,19 +10,9 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
-            "CreateSettingValue": {
+            "GetSetting": {
               "methods": [
-                "CreateSettingValue"
-              ]
-            },
-            "DeleteSettingValue": {
-              "methods": [
-                "DeleteSettingValue"
-              ]
-            },
-            "GetSettingValue": {
-              "methods": [
-                "GetSettingValue"
+                "GetSetting"
               ]
             },
             "ListSettings": {
@@ -30,19 +20,9 @@
                 "ListSettings"
               ]
             },
-            "LookupEffectiveSettingValue": {
+            "UpdateSetting": {
               "methods": [
-                "LookupEffectiveSettingValue"
-              ]
-            },
-            "SearchSettingValues": {
-              "methods": [
-                "SearchSettingValues"
-              ]
-            },
-            "UpdateSettingValue": {
-              "methods": [
-                "UpdateSettingValue"
+                "UpdateSetting"
               ]
             }
           }
