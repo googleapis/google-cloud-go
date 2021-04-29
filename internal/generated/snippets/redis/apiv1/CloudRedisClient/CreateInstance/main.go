@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START redis_generated_redis_apiv1_CloudRedisClient_CreateInstance]
+// [START redis_v1_generated_CloudRedis_CreateInstance_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END redis_generated_redis_apiv1_CloudRedisClient_CreateInstance]
+// [END redis_v1_generated_CloudRedis_CreateInstance_sync]

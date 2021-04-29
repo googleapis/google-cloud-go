@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbuild_generated_cloudbuild_apiv1_v2_Client_DeleteWorkerPool]
+// [START cloudbuild_v1_generated_CloudBuild_DeleteWorkerPool_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END cloudbuild_generated_cloudbuild_apiv1_v2_Client_DeleteWorkerPool]
+// [END cloudbuild_v1_generated_CloudBuild_DeleteWorkerPool_sync]

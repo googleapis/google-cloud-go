@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_agentendpoint_apiv1beta_Client_ReportTaskComplete]
+// [START osconfig_v1beta_generated_AgentEndpointService_ReportTaskComplete_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_agentendpoint_apiv1beta_Client_ReportTaskComplete]
+// [END osconfig_v1beta_generated_AgentEndpointService_ReportTaskComplete_sync]

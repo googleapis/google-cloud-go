@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataqna_generated_dataqna_apiv1alpha_QuestionClient_GetUserFeedback]
+// [START dataqna_v1alpha_generated_QuestionService_GetUserFeedback_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END dataqna_generated_dataqna_apiv1alpha_QuestionClient_GetUserFeedback]
+// [END dataqna_v1alpha_generated_QuestionService_GetUserFeedback_sync]

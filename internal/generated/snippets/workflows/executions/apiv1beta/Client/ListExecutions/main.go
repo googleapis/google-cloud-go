@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START workflowexecutions_generated_workflows_executions_apiv1beta_Client_ListExecutions]
+// [START workflowexecutions_v1beta_generated_Executions_ListExecutions_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END workflowexecutions_generated_workflows_executions_apiv1beta_Client_ListExecutions]
+// [END workflowexecutions_v1beta_generated_Executions_ListExecutions_sync]

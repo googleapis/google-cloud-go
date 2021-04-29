@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START firestore_generated_firestore_apiv1_admin_FirestoreAdminClient_ImportDocuments]
+// [START firestore_v1_generated_FirestoreAdmin_ImportDocuments_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END firestore_generated_firestore_apiv1_admin_FirestoreAdminClient_ImportDocuments]
+// [END firestore_v1_generated_FirestoreAdmin_ImportDocuments_sync]

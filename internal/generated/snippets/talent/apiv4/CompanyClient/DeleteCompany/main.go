@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4_CompanyClient_DeleteCompany]
+// [START jobs_v4_generated_CompanyService_DeleteCompany_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END jobs_generated_talent_apiv4_CompanyClient_DeleteCompany]
+// [END jobs_v4_generated_CompanyService_DeleteCompany_sync]

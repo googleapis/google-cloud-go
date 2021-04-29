@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recaptchaenterprise_generated_recaptchaenterprise_apiv1_Client_CreateKey]
+// [START recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateKey_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END recaptchaenterprise_generated_recaptchaenterprise_apiv1_Client_CreateKey]
+// [END recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateKey_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_Client_ListLogs]
+// [START logging_v2_generated_LoggingServiceV2_ListLogs_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END logging_generated_logging_apiv2_Client_ListLogs]
+// [END logging_v2_generated_LoggingServiceV2_ListLogs_sync]

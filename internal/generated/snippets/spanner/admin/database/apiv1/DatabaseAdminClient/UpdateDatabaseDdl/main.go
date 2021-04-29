@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_database_apiv1_DatabaseAdminClient_UpdateDatabaseDdl]
+// [START spanner_v1_generated_DatabaseAdmin_UpdateDatabaseDdl_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END spanner_generated_spanner_admin_database_apiv1_DatabaseAdminClient_UpdateDatabaseDdl]
+// [END spanner_v1_generated_DatabaseAdmin_UpdateDatabaseDdl_sync]

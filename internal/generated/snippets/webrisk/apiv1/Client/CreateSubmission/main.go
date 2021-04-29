@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START webrisk_generated_webrisk_apiv1_Client_CreateSubmission]
+// [START webrisk_v1_generated_WebRiskService_CreateSubmission_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END webrisk_generated_webrisk_apiv1_Client_CreateSubmission]
+// [END webrisk_v1_generated_WebRiskService_CreateSubmission_sync]

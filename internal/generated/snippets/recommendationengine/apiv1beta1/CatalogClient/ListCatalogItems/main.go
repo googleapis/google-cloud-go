@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_CatalogClient_ListCatalogItems]
+// [START recommendationengine_v1beta1_generated_CatalogService_ListCatalogItems_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_CatalogClient_ListCatalogItems]
+// [END recommendationengine_v1beta1_generated_CatalogService_ListCatalogItems_sync]

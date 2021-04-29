@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryreservation_generated_bigquery_reservation_apiv1_Client_DeleteReservation]
+// [START bigqueryreservation_v1_generated_ReservationService_DeleteReservation_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END bigqueryreservation_generated_bigquery_reservation_apiv1_Client_DeleteReservation]
+// [END bigqueryreservation_v1_generated_ReservationService_DeleteReservation_sync]

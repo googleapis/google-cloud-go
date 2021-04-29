@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START domains_generated_domains_apiv1beta1_Client_GetRegistration]
+// [START domains_v1beta1_generated_Domains_GetRegistration_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END domains_generated_domains_apiv1beta1_Client_GetRegistration]
+// [END domains_v1beta1_generated_Domains_GetRegistration_sync]

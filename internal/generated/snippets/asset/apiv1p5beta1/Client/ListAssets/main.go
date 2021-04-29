@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudasset_generated_asset_apiv1p5beta1_Client_ListAssets]
+// [START cloudasset_v1p5beta1_generated_AssetService_ListAssets_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END cloudasset_generated_asset_apiv1p5beta1_Client_ListAssets]
+// [END cloudasset_v1p5beta1_generated_AssetService_ListAssets_sync]

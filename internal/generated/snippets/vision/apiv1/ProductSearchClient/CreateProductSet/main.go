@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START vision_generated_vision_apiv1_ProductSearchClient_CreateProductSet]
+// [START vision_v1_generated_ProductSearch_CreateProductSet_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END vision_generated_vision_apiv1_ProductSearchClient_CreateProductSet]
+// [END vision_v1_generated_ProductSearch_CreateProductSet_sync]

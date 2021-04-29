@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START artifactregistry_generated_artifactregistry_apiv1beta2_Client_GetIamPolicy]
+// [START artifactregistry_v1beta2_generated_ArtifactRegistry_GetIamPolicy_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END artifactregistry_generated_artifactregistry_apiv1beta2_Client_GetIamPolicy]
+// [END artifactregistry_v1beta2_generated_ArtifactRegistry_GetIamPolicy_sync]
