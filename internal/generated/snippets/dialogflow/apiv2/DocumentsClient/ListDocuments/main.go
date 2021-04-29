@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_DocumentsClient_ListDocuments]
+// [START dialogflow_v2_generated_Documents_ListDocuments_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_DocumentsClient_ListDocuments]
+// [END dialogflow_v2_generated_Documents_ListDocuments_sync]

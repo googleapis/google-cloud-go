@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START managedidentities_generated_managedidentities_apiv1_Client_ListDomains]
+// [START managedidentities_v1_generated_ManagedIdentitiesService_ListDomains_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END managedidentities_generated_managedidentities_apiv1_Client_ListDomains]
+// [END managedidentities_v1_generated_ManagedIdentitiesService_ListDomains_sync]

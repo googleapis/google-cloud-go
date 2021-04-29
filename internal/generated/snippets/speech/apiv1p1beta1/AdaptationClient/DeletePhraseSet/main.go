@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START speech_generated_speech_apiv1p1beta1_AdaptationClient_DeletePhraseSet]
+// [START speech_v1p1beta1_generated_Adaptation_DeletePhraseSet_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END speech_generated_speech_apiv1p1beta1_AdaptationClient_DeletePhraseSet]
+// [END speech_v1p1beta1_generated_Adaptation_DeletePhraseSet_sync]

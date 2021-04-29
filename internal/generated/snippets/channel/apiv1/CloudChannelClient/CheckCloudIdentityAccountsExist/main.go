@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudchannel_generated_channel_apiv1_CloudChannelClient_CheckCloudIdentityAccountsExist]
+// [START cloudchannel_v1_generated_CloudChannelService_CheckCloudIdentityAccountsExist_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudchannel_generated_channel_apiv1_CloudChannelClient_CheckCloudIdentityAccountsExist]
+// [END cloudchannel_v1_generated_CloudChannelService_CheckCloudIdentityAccountsExist_sync]

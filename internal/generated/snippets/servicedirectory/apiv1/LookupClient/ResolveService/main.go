@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicedirectory_generated_servicedirectory_apiv1_LookupClient_ResolveService]
+// [START servicedirectory_v1_generated_LookupService_ResolveService_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END servicedirectory_generated_servicedirectory_apiv1_LookupClient_ResolveService]
+// [END servicedirectory_v1_generated_LookupService_ResolveService_sync]

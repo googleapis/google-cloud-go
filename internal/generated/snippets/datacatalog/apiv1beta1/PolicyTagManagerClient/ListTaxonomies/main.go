@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerClient_ListTaxonomies]
+// [START datacatalog_v1beta1_generated_PolicyTagManager_ListTaxonomies_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerClient_ListTaxonomies]
+// [END datacatalog_v1beta1_generated_PolicyTagManager_ListTaxonomies_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_ServiceMonitoringClient_CreateService]
+// [START monitoring_v3_generated_ServiceMonitoringService_CreateService_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_ServiceMonitoringClient_CreateService]
+// [END monitoring_v3_generated_ServiceMonitoringService_CreateService_sync]
