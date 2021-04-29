@@ -17,6 +17,7 @@
 package storage
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 
@@ -41,7 +42,10 @@ func shouldRetry(err error) bool {
 		}
 		return false
 	case interface{ Temporary() bool }:
+		fmt.Printf("TEMPORARY %v", e)
 		return e.Temporary()
+	case interface{ Unwrap() error }:
+		return shouldRetry(e.Unwrap())
 	default:
 		return false
 	}
