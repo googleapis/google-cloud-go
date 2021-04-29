@@ -17,7 +17,6 @@
 package storage
 
 import (
-	"fmt"
 	"io"
 	"net/url"
 	"strings"
