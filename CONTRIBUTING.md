@@ -183,11 +183,11 @@ $ export GCLOUD_TESTS_GOLANG_KEYRING=projects/$GCLOUD_TESTS_GOLANG_PROJECT_ID/lo
 # Authorizes Google Cloud Storage to encrypt and decrypt using key1.
 $ gsutil kms authorize -p $GCLOUD_TESTS_GOLANG_PROJECT_ID -k $GCLOUD_TESTS_GOLANG_KEYRING/cryptoKeys/key1
 # Authorizes Google Cloud Bigtable to encrypt and decrypt using key1
-gcloud kms keys add-iam-policy-binding key1 \
+$ gcloud kms keys add-iam-policy-binding key1 \
     --keyring $MY_KEYRING \
     --location $MY_LOCATION \
     --role roles/cloudkms.cryptoKeyEncrypterDecrypter \
-    --member allAuthenticatedUsers \
+    --member "${GCLOUD_TESTS_GOLANG_PROJECT_ID}@${GCLOUD_TESTS_GOLANG_PROJECT_ID}.iam.gserviceaccount.com" \
     --project $GCLOUD_TESTS_GOLANG_PROJECT_ID
 ```
 
