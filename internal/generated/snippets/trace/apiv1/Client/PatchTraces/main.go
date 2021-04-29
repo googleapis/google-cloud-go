@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtrace_generated_trace_apiv1_Client_PatchTraces]
+// [START cloudtrace_v1_generated_TraceService_PatchTraces_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END cloudtrace_generated_trace_apiv1_Client_PatchTraces]
+// [END cloudtrace_v1_generated_TraceService_PatchTraces_sync]

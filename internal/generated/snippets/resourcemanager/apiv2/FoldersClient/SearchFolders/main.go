@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudresourcemanager_generated_resourcemanager_apiv2_FoldersClient_SearchFolders]
+// [START cloudresourcemanager_v2_generated_Folders_SearchFolders_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END cloudresourcemanager_generated_resourcemanager_apiv2_FoldersClient_SearchFolders]
+// [END cloudresourcemanager_v2_generated_Folders_SearchFolders_sync]

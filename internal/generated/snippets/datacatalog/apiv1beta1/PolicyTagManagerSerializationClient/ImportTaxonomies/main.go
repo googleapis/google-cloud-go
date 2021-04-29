@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerSerializationClient_ImportTaxonomies]
+// [START datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerSerializationClient_ImportTaxonomies]
+// [END datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync]

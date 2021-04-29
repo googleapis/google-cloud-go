@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3beta1_FlowsClient_TrainFlow]
+// [START dialogflow_v3beta1_generated_Flows_TrainFlow_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3beta1_FlowsClient_TrainFlow]
+// [END dialogflow_v3beta1_generated_Flows_TrainFlow_sync]

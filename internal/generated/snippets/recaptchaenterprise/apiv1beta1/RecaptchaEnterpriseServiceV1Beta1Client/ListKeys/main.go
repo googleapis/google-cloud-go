@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recaptchaenterprise_generated_recaptchaenterprise_apiv1beta1_RecaptchaEnterpriseServiceV1Beta1Client_ListKeys]
+// [START recaptchaenterprise_v1beta1_generated_RecaptchaEnterpriseServiceV1Beta1_ListKeys_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END recaptchaenterprise_generated_recaptchaenterprise_apiv1beta1_RecaptchaEnterpriseServiceV1Beta1Client_ListKeys]
+// [END recaptchaenterprise_v1beta1_generated_RecaptchaEnterpriseServiceV1Beta1_ListKeys_sync]

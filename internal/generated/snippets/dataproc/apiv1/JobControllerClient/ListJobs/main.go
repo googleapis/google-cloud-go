@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_JobControllerClient_ListJobs]
+// [START dataproc_v1_generated_JobController_ListJobs_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1_JobControllerClient_ListJobs]
+// [END dataproc_v1_generated_JobController_ListJobs_sync]

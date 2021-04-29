@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_GameServerConfigsClient_DeleteGameServerConfig]
+// [START gameservices_v1_generated_GameServerConfigsService_DeleteGameServerConfig_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1_GameServerConfigsClient_DeleteGameServerConfig]
+// [END gameservices_v1_generated_GameServerConfigsService_DeleteGameServerConfig_sync]

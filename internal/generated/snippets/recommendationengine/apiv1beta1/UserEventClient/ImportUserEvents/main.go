@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_UserEventClient_ImportUserEvents]
+// [START recommendationengine_v1beta1_generated_UserEventService_ImportUserEvents_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_UserEventClient_ImportUserEvents]
+// [END recommendationengine_v1beta1_generated_UserEventService_ImportUserEvents_sync]

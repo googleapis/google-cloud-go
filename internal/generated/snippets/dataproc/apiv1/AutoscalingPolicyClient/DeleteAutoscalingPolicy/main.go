@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_AutoscalingPolicyClient_DeleteAutoscalingPolicy]
+// [START dataproc_v1_generated_AutoscalingPolicyService_DeleteAutoscalingPolicy_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1_AutoscalingPolicyClient_DeleteAutoscalingPolicy]
+// [END dataproc_v1_generated_AutoscalingPolicyService_DeleteAutoscalingPolicy_sync]

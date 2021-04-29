@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_MetricsClient_GetLogMetric]
+// [START logging_v2_generated_MetricsServiceV2_GetLogMetric_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END logging_generated_logging_apiv2_MetricsClient_GetLogMetric]
+// [END logging_v2_generated_MetricsServiceV2_GetLogMetric_sync]

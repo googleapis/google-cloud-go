@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_PublisherClient_Publish]
+// [START pubsublite_v1_generated_PublisherService_Publish_sync]
 
 package main
 
@@ -60,4 +60,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_PublisherClient_Publish]
+// [END pubsublite_v1_generated_PublisherService_Publish_sync]

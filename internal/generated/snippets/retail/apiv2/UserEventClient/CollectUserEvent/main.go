@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_generated_retail_apiv2_UserEventClient_CollectUserEvent]
+// [START retail_v2_generated_UserEventService_CollectUserEvent_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END retail_generated_retail_apiv2_UserEventClient_CollectUserEvent]
+// [END retail_v2_generated_UserEventService_CollectUserEvent_sync]

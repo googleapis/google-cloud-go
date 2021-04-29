@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START clouddebugger_generated_debugger_apiv2_Debugger2Client_ListDebuggees]
+// [START clouddebugger_v2_generated_Debugger2_ListDebuggees_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END clouddebugger_generated_debugger_apiv2_Debugger2Client_ListDebuggees]
+// [END clouddebugger_v2_generated_Debugger2_ListDebuggees_sync]
