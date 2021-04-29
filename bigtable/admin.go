@@ -1457,20 +1457,22 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
-	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
+	return ac.RestoreTableFrom(ctx, ac.instance, cluster, table, backup)
 }
 
-// RestoreTableFrom creates a new table to a different instance by restoring from this completed backup.
+// RestoreTableFrom creates a new table in the admin's instance by restoring from the specified backup in a different instance.
 //
-// targetInstance is an instance in which the new table will be restored to.
-// Instance must be in the same project as the project containing backup.
-func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
+// sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
+// tableName (ex. "my-restored-table) will be the name of the newly created table
+// backupName (ex. "my-backup") is the name of the backup to restore
+// Instance must be in the same project as the project containing the backup.
+func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, sourceCluster, tableName, backupName string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := "projects/" + ac.project + "/instances/" + ac.instance
-	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backup)
+	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backupName)
 	req := &btapb.RestoreTableRequest{
 		Parent:  parent,
-		TableId: table,
+		TableId: tableName,
 		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
