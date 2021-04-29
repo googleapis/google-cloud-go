@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END videointelligence_v1beta2_generated_VideoIntelligenceService_AnnotateVideo_sync]

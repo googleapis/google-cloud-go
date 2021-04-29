@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END firestore_v1_generated_Firestore_DeleteDocument_sync]

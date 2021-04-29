@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END spanner_v1_generated_InstanceAdmin_ListInstances_sync]

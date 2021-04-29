@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END logging_v2_generated_LoggingServiceV2_WriteLogEntries_sync]

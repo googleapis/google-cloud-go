@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListUserLinks_sync]

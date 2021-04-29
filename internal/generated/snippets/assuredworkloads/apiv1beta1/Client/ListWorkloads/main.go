@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync]

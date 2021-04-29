@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END servicedirectory_v1beta1_generated_RegistrationService_DeleteEndpoint_sync]

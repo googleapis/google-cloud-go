@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END websecurityscanner_v1_generated_WebSecurityScanner_GetScanRun_sync]

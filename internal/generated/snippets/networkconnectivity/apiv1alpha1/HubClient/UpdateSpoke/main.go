@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END networkconnectivity_v1alpha1_generated_HubService_UpdateSpoke_sync]

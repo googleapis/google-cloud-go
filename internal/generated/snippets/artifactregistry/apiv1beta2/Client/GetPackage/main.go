@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END artifactregistry_v1beta2_generated_ArtifactRegistry_GetPackage_sync]

@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END pubsub_v1_generated_SchemaService_ListSchemas_sync]

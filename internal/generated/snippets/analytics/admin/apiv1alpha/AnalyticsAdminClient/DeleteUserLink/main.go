@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteUserLink_sync]

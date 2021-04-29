@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END automl_v1_generated_PredictionService_Predict_sync]

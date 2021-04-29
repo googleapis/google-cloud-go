@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END managedidentities_v1_generated_ManagedIdentitiesService_ListDomains_sync]

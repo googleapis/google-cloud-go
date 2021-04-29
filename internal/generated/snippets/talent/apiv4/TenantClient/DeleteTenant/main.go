@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END jobs_v4_generated_TenantService_DeleteTenant_sync]

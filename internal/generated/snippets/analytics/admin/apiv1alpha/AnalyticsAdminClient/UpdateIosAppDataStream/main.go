@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_UpdateIosAppDataStream_sync]

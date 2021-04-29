@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END memcache_v1_generated_CloudMemcache_GetInstance_sync]

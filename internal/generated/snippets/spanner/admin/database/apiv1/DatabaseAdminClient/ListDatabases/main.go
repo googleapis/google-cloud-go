@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END spanner_v1_generated_DatabaseAdmin_ListDatabases_sync]

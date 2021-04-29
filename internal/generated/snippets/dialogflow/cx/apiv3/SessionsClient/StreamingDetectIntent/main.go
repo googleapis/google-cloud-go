@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END dialogflow_v3_generated_Sessions_StreamingDetectIntent_sync]

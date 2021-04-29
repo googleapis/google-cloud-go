@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END oslogin_v1beta_generated_OsLoginService_ImportSshPublicKey_sync]

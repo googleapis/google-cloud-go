@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END resourcesettings_v1_generated_ResourceSettingsService_ListSettings_sync]

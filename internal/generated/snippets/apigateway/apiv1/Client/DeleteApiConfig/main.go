@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END apigateway_v1_generated_ApiGatewayService_DeleteApiConfig_sync]

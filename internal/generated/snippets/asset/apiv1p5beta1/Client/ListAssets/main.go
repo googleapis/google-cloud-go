@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudasset_v1p5beta1_generated_AssetService_ListAssets_sync]

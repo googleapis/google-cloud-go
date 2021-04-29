@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END dataproc_v1_generated_ClusterController_StopCluster_sync]

@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END datacatalog_v1beta1_generated_DataCatalog_DeleteEntry_sync]

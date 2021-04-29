@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END bigqueryreservation_v1beta1_generated_ReservationService_DeleteReservation_sync]

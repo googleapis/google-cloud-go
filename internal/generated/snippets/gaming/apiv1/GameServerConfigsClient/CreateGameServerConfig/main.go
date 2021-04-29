@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END gameservices_v1_generated_GameServerConfigsService_CreateGameServerConfig_sync]

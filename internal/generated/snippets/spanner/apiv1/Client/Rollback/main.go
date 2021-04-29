@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END spanner_v1_generated_Spanner_Rollback_sync]

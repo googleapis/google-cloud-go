@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudtrace_v1_generated_TraceService_ListTraces_sync]

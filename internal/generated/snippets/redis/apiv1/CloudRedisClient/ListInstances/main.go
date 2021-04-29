@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END redis_v1_generated_CloudRedis_ListInstances_sync]

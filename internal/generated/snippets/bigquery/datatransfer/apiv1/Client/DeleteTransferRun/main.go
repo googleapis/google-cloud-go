@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END bigquerydatatransfer_v1_generated_DataTransferService_DeleteTransferRun_sync]

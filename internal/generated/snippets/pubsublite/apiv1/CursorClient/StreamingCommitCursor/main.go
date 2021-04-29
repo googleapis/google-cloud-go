@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END pubsublite_v1_generated_CursorService_StreamingCommitCursor_sync]

@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudchannel_v1_generated_CloudChannelService_ListEntitlements_sync]

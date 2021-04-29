@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END securitycenter_v1beta1_generated_SecurityCenter_RunAssetDiscovery_sync]

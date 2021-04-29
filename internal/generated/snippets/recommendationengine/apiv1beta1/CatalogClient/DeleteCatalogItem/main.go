@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END recommendationengine_v1beta1_generated_CatalogService_DeleteCatalogItem_sync]

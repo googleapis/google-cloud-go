@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END analyticsdata_v1alpha_generated_AlphaAnalyticsData_GetMetadata_sync]

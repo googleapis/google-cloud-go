@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END managedidentities_v1_generated_ManagedIdentitiesService_GetDomain_sync]

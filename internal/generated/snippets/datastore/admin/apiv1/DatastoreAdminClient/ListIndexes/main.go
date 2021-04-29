@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END datastore_v1_generated_DatastoreAdmin_ListIndexes_sync]

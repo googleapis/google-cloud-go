@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync]

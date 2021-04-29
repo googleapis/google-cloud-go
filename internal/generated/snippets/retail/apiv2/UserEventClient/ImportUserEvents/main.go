@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END retail_v2_generated_UserEventService_ImportUserEvents_sync]

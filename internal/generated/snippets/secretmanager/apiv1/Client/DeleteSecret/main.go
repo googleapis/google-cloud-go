@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END secretmanager_v1_generated_SecretManagerService_DeleteSecret_sync]

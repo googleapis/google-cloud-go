@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END servicedirectory_v1_generated_RegistrationService_GetIamPolicy_sync]

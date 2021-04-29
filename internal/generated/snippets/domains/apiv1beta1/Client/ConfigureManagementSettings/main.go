@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END domains_v1beta1_generated_Domains_ConfigureManagementSettings_sync]

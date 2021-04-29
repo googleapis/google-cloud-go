@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END logging_v2_generated_LoggingServiceV2_TailLogEntries_sync]

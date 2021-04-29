@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END pubsublite_v1_generated_AdminService_DeleteTopic_sync]

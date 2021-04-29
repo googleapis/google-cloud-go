@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END servicedirectory_v1beta1_generated_RegistrationService_ListNamespaces_sync]

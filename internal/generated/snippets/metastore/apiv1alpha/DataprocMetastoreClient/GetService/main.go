@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END metastore_v1alpha_generated_DataprocMetastore_GetService_sync]

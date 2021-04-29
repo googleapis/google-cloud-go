@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END apigateway_v1_generated_ApiGatewayService_UpdateApiConfig_sync]

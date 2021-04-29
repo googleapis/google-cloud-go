@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudkms_v1_generated_KeyManagementService_GetKeyRing_sync]

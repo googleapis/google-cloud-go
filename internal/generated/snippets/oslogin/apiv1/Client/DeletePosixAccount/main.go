@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END oslogin_v1_generated_OsLoginService_DeletePosixAccount_sync]

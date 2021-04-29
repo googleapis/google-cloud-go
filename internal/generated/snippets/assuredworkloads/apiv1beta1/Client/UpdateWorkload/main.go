@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_UpdateWorkload_sync]

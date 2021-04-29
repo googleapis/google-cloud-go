@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudbilling_v1_generated_CloudCatalog_ListSkus_sync]

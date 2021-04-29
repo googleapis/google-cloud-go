@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END longrunning_longrunning_generated_Operations_ListOperations_sync]

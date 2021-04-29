@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END cloudchannel_v1_generated_CloudChannelService_TransferEntitlementsToGoogle_sync]

@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync]

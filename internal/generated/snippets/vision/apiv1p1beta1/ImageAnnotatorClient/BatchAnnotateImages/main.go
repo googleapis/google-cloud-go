@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END vision_v1p1beta1_generated_ImageAnnotator_BatchAnnotateImages_sync]

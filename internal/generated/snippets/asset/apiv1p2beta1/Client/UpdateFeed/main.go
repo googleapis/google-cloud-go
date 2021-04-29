@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudasset_v1p2beta1_generated_AssetService_UpdateFeed_sync]

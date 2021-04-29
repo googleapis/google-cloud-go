@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END websecurityscanner_v1_generated_WebSecurityScanner_ListScanConfigs_sync]

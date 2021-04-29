@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudtrace_v1_generated_TraceService_GetTrace_sync]

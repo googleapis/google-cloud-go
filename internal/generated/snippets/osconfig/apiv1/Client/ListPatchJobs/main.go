@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END osconfig_v1_generated_OsConfigService_ListPatchJobs_sync]

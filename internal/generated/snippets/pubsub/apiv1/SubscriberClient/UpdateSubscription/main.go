@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END pubsub_v1_generated_Subscriber_UpdateSubscription_sync]

@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END notebooks_v1beta1_generated_NotebookService_ListEnvironments_sync]

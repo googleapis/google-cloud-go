@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteOccurrence_sync]

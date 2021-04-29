@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudfunctions_v1_generated_CloudFunctionsService_UpdateFunction_sync]

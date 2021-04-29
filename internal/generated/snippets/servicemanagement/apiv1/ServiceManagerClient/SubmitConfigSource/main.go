@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END servicemanagement_v1_generated_ServiceManager_SubmitConfigSource_sync]

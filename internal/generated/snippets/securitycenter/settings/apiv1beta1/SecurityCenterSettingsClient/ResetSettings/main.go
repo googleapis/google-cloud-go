@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END securitycenter_v1beta1_generated_SecurityCenterSettingsService_ResetSettings_sync]

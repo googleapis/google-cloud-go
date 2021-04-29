@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END speech_v1p1beta1_generated_Adaptation_ListPhraseSet_sync]

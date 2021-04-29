@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END recommender_v1beta1_generated_Recommender_GetInsight_sync]

@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END vision_v1_generated_ProductSearch_ListProductsInProductSet_sync]

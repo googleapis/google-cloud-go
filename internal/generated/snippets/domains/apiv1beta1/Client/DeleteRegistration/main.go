@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END domains_v1beta1_generated_Domains_DeleteRegistration_sync]

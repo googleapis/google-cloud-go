@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END cloudasset_v1p2beta1_generated_AssetService_DeleteFeed_sync]

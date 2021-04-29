@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END cloudbuild_v1_generated_CloudBuild_DeleteBuildTrigger_sync]

@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END gameservices_v1beta_generated_GameServerDeploymentsService_GetGameServerDeployment_sync]

@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END cloudtasks_v2beta2_generated_CloudTasks_AcknowledgeTask_sync]

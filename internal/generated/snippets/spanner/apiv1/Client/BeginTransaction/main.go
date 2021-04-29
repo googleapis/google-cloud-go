@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END spanner_v1_generated_Spanner_BeginTransaction_sync]

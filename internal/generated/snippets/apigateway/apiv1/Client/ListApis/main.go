@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END apigateway_v1_generated_ApiGatewayService_ListApis_sync]

@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END networkconnectivity_v1alpha1_generated_HubService_DeleteSpoke_sync]

@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END vision_v1_generated_ProductSearch_PurgeProducts_sync]

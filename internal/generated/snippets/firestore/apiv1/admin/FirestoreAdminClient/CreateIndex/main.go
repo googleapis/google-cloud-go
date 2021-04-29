@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END firestore_v1_generated_FirestoreAdmin_CreateIndex_sync]

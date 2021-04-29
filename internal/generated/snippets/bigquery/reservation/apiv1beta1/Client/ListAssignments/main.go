@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END bigqueryreservation_v1beta1_generated_ReservationService_ListAssignments_sync]

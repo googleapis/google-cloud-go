@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END cloudtrace_v1_generated_TraceService_PatchTraces_sync]

@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END container_v1_generated_ClusterManager_UpdateCluster_sync]

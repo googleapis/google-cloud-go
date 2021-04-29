@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END logging_v2_generated_MetricsServiceV2_ListLogMetrics_sync]

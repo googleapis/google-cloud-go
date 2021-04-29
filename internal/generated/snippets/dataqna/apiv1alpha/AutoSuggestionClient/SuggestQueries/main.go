@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END dataqna_v1alpha_generated_AutoSuggestionService_SuggestQueries_sync]

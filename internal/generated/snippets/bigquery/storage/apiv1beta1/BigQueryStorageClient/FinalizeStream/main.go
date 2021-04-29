@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END bigquerystorage_v1beta1_generated_BigQueryStorage_FinalizeStream_sync]

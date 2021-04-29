@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END dlp_v2_generated_DlpService_ListStoredInfoTypes_sync]

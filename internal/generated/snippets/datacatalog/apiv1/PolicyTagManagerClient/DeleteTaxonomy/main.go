@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END datacatalog_v1_generated_PolicyTagManager_DeleteTaxonomy_sync]

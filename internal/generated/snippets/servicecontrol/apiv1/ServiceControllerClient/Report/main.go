@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END servicecontrol_v1_generated_ServiceController_Report_sync]

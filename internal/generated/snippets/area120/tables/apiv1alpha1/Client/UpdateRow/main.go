@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END area120tables_v1alpha1_generated_TablesService_UpdateRow_sync]

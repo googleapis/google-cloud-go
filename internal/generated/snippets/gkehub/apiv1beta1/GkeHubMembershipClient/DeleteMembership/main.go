@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END gkehub_v1beta1_generated_GkeHubMembershipService_DeleteMembership_sync]

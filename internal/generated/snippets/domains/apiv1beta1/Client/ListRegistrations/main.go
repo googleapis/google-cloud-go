@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END domains_v1beta1_generated_Domains_ListRegistrations_sync]

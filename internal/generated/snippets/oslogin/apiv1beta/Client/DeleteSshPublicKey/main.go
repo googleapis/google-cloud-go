@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END oslogin_v1beta_generated_OsLoginService_DeleteSshPublicKey_sync]

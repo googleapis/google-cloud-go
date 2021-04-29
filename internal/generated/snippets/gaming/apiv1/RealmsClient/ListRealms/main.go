@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END gameservices_v1_generated_RealmsService_ListRealms_sync]

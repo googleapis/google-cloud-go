@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END bigquerystorage_v1alpha2_generated_BigQueryWrite_AppendRows_sync]

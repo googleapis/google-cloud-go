@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END logging_v2_generated_ConfigServiceV2_DeleteBucket_sync]

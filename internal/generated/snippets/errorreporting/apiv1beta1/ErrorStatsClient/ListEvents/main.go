@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync]

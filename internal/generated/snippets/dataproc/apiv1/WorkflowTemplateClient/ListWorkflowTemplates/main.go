@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END dataproc_v1_generated_WorkflowTemplateService_ListWorkflowTemplates_sync]

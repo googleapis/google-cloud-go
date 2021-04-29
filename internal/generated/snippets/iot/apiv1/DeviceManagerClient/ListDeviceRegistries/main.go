@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudiot_v1_generated_DeviceManager_ListDeviceRegistries_sync]

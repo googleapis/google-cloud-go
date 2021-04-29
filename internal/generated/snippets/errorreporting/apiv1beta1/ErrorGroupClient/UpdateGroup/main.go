@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END clouderrorreporting_v1beta1_generated_ErrorGroupService_UpdateGroup_sync]

@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END pubsub_v1_generated_SchemaService_DeleteSchema_sync]

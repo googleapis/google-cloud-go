@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END datastore_v1_generated_DatastoreAdmin_CreateIndex_sync]

@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudresourcemanager_v2_generated_Folders_MoveFolder_sync]

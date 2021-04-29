@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END dialogflow_v2_generated_EntityTypes_BatchCreateEntities_sync]

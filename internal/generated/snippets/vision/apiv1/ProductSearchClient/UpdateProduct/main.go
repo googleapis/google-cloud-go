@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END vision_v1_generated_ProductSearch_UpdateProduct_sync]

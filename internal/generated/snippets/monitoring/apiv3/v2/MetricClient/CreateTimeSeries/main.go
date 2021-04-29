@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END monitoring_v3_generated_MetricService_CreateTimeSeries_sync]

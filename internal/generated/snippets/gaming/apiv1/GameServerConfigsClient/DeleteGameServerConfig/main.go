@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END gameservices_v1_generated_GameServerConfigsService_DeleteGameServerConfig_sync]

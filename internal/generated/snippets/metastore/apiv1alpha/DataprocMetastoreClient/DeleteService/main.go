@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END metastore_v1alpha_generated_DataprocMetastore_DeleteService_sync]

@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END redis_v1_generated_CloudRedis_DeleteInstance_sync]

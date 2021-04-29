@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END dataproc_v1_generated_WorkflowTemplateService_InstantiateInlineWorkflowTemplate_sync]

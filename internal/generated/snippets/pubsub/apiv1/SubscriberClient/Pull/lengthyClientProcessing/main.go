@@ -105,4 +105,5 @@ func main() {
 		close(done)
 	}
 }
+
 // [END pubsub_v1_generated_Subscriber_Pull_sync_lengthyClientProcessing]

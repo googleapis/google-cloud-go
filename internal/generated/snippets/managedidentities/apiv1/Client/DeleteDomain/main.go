@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END managedidentities_v1_generated_ManagedIdentitiesService_DeleteDomain_sync]

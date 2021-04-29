@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END orgpolicy_v2_generated_OrgPolicy_GetPolicy_sync]

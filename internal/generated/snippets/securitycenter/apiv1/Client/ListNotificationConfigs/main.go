@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END securitycenter_v1_generated_SecurityCenter_ListNotificationConfigs_sync]

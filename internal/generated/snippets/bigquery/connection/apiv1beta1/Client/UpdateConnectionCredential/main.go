@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END bigqueryconnection_v1beta1_generated_ConnectionService_UpdateConnectionCredential_sync]

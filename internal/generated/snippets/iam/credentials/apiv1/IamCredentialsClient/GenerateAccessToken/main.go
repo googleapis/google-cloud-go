@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END iamcredentials_v1_generated_IAMCredentials_GenerateAccessToken_sync]

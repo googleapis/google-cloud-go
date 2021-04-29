@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END resourcesettings_v1_generated_ResourceSettingsService_GetSetting_sync]

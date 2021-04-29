@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END artifactregistry_v1beta2_generated_ArtifactRegistry_ListPackages_sync]

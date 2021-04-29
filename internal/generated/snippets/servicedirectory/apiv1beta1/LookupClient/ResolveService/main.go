@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END servicedirectory_v1beta1_generated_LookupService_ResolveService_sync]

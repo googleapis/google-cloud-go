@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END speech_v1_generated_Speech_StreamingRecognize_sync]

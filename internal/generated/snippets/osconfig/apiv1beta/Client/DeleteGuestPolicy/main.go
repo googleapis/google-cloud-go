@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END osconfig_v1beta_generated_OsConfigService_DeleteGuestPolicy_sync]

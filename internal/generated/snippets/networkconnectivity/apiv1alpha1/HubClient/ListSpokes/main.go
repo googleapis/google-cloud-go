@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END networkconnectivity_v1alpha1_generated_HubService_ListSpokes_sync]

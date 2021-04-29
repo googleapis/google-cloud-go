@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END osconfig_v1_generated_AgentEndpointService_RegisterAgent_sync]

@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END cloudiot_v1_generated_DeviceManager_DeleteDevice_sync]

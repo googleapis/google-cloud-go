@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END securitycenter_v1p1beta1_generated_SecurityCenter_RunAssetDiscovery_sync]

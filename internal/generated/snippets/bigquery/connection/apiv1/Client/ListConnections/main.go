@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END bigqueryconnection_v1_generated_ConnectionService_ListConnections_sync]

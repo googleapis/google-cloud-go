@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END logging_v2_generated_ConfigServiceV2_GetCmekSettings_sync]

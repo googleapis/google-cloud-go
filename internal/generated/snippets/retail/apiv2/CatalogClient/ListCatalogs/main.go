@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END retail_v2_generated_CatalogService_ListCatalogs_sync]

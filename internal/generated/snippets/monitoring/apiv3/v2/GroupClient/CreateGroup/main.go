@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END monitoring_v3_generated_GroupService_CreateGroup_sync]

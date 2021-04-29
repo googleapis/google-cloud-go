@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END gkehub_v1beta1_generated_GkeHubMembershipService_GetMembership_sync]

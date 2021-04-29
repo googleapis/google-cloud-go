@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudchannel_v1_generated_CloudChannelService_CheckCloudIdentityAccountsExist_sync]

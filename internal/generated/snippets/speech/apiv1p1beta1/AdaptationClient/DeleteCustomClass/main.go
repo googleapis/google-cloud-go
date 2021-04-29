@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END speech_v1p1beta1_generated_Adaptation_DeleteCustomClass_sync]

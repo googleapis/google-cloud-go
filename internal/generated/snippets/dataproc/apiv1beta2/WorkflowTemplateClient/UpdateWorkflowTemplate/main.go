@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END dataproc_v1beta2_generated_WorkflowTemplateService_UpdateWorkflowTemplate_sync]

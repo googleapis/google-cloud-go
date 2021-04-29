@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END longrunning_longrunning_generated_Operations_GetOperation_sync]

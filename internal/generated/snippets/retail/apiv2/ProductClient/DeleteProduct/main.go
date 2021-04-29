@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END retail_v2_generated_ProductService_DeleteProduct_sync]

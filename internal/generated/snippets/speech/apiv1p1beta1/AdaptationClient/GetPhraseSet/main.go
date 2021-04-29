@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END speech_v1p1beta1_generated_Adaptation_GetPhraseSet_sync]

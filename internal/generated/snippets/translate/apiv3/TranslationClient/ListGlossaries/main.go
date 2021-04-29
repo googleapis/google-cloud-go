@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END translate_v3_generated_TranslationService_ListGlossaries_sync]

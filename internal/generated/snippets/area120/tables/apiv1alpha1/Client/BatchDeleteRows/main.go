@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END area120tables_v1alpha1_generated_TablesService_BatchDeleteRows_sync]

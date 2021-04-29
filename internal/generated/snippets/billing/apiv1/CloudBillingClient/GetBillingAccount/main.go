@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudbilling_v1_generated_CloudBilling_GetBillingAccount_sync]

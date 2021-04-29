@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END jobs_v4_generated_CompanyService_DeleteCompany_sync]

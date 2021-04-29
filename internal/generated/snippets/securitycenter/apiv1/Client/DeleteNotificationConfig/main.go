@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END securitycenter_v1_generated_SecurityCenter_DeleteNotificationConfig_sync]

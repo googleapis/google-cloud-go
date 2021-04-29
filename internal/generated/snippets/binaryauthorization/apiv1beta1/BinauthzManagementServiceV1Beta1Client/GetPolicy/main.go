@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetPolicy_sync]

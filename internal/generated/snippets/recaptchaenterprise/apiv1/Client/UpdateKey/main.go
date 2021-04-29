@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_UpdateKey_sync]

@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END dataproc_v1beta2_generated_ClusterController_DiagnoseCluster_sync]

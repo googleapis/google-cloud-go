@@ -58,4 +58,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END firestore_v1_generated_Firestore_Write_sync]

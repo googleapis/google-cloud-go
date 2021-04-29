@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END bigqueryconnection_v1_generated_ConnectionService_DeleteConnection_sync]

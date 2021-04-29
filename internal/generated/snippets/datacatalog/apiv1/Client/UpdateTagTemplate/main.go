@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END datacatalog_v1_generated_DataCatalog_UpdateTagTemplate_sync]

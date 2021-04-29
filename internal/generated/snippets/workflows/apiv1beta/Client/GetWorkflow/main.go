@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END workflows_v1beta_generated_Workflows_GetWorkflow_sync]

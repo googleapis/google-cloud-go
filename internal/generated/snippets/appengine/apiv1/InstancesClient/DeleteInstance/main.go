@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END appengine_v1_generated_Instances_DeleteInstance_sync]

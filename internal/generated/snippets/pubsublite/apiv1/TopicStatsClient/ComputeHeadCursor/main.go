@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END pubsublite_v1_generated_TopicStatsService_ComputeHeadCursor_sync]

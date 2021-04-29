@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END dialogflow_v3_generated_SessionEntityTypes_DeleteSessionEntityType_sync]

@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END clouddebugger_v2_generated_Controller2_RegisterDebuggee_sync]

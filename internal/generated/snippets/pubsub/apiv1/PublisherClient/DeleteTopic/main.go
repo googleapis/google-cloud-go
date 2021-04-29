@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END pubsub_v1_generated_Publisher_DeleteTopic_sync]

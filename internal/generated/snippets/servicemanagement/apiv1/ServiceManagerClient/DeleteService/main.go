@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END servicemanagement_v1_generated_ServiceManager_DeleteService_sync]

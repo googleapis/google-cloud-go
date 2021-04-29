@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END securitycenter_v1beta1_generated_SecurityCenter_SetFindingState_sync]

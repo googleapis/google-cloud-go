@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END osconfig_v1beta_generated_AgentEndpointService_ReportTaskComplete_sync]

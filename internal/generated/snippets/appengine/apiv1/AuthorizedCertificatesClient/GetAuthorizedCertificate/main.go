@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END appengine_v1_generated_AuthorizedCertificates_GetAuthorizedCertificate_sync]

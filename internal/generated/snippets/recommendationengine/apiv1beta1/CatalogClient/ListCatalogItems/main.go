@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END recommendationengine_v1beta1_generated_CatalogService_ListCatalogItems_sync]

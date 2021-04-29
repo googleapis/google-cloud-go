@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END recommender_v1beta1_generated_Recommender_ListInsights_sync]

@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END dialogflow_v2_generated_EntityTypes_BatchUpdateEntityTypes_sync]

@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END bigquerystorage_v1alpha2_generated_BigQueryWrite_BatchCommitWriteStreams_sync]

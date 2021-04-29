@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END jobs_v4beta1_generated_ApplicationService_DeleteApplication_sync]

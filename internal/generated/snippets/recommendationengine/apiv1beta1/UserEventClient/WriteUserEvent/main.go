@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END recommendationengine_v1beta1_generated_UserEventService_WriteUserEvent_sync]

@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END pubsub_v1_generated_Publisher_ListTopics_sync]

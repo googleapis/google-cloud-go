@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END securitycenter_v1beta1_generated_SecurityCenter_ListAssets_sync]

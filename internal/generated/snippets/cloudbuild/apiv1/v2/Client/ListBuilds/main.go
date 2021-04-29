@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudbuild_v1_generated_CloudBuild_ListBuilds_sync]

@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END accessapproval_v1_generated_AccessApproval_ApproveApprovalRequest_sync]

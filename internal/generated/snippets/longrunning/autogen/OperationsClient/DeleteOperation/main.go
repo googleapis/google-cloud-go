@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END longrunning_longrunning_generated_Operations_DeleteOperation_sync]

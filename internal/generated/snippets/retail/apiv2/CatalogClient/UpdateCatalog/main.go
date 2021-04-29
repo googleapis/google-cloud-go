@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END retail_v2_generated_CatalogService_UpdateCatalog_sync]

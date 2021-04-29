@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudbuild_v1_generated_CloudBuild_RunBuildTrigger_sync]

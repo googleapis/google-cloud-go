@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END bigquerystorage_v1beta1_generated_BigQueryStorage_CreateReadSession_sync]

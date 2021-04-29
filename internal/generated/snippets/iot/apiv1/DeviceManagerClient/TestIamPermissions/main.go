@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudiot_v1_generated_DeviceManager_TestIamPermissions_sync]

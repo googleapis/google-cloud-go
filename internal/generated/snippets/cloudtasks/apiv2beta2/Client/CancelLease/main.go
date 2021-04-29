@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END cloudtasks_v2beta2_generated_CloudTasks_CancelLease_sync]

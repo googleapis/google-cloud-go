@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END bigqueryconnection_v1beta1_generated_ConnectionService_ListConnections_sync]

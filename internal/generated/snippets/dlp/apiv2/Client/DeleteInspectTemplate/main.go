@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END dlp_v2_generated_DlpService_DeleteInspectTemplate_sync]

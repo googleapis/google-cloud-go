@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END redis_v1beta1_generated_CloudRedis_GetInstance_sync]

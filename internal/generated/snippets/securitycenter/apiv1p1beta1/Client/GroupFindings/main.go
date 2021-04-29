@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END securitycenter_v1p1beta1_generated_SecurityCenter_GroupFindings_sync]

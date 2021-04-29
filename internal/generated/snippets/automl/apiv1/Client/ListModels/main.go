@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END automl_v1_generated_AutoMl_ListModels_sync]

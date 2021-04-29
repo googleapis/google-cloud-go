@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END memcache_v1beta2_generated_CloudMemcache_ListInstances_sync]

@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END cloudfunctions_v1_generated_CloudFunctionsService_ListFunctions_sync]

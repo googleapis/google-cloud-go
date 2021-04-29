@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END recommendationengine_v1beta1_generated_PredictionService_Predict_sync]

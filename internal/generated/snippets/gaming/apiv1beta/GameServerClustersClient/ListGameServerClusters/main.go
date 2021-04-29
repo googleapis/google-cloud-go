@@ -49,4 +49,5 @@ func main() {
 		_ = resp
 	}
 }
+
 // [END gameservices_v1beta_generated_GameServerClustersService_ListGameServerClusters_sync]

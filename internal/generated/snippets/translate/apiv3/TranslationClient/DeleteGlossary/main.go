@@ -46,4 +46,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END translate_v3_generated_TranslationService_DeleteGlossary_sync]

@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END recaptchaenterprise_v1beta1_generated_RecaptchaEnterpriseServiceV1Beta1_DeleteKey_sync]

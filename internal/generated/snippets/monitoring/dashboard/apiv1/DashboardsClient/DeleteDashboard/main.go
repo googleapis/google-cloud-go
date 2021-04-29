@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END monitoring_v1_generated_DashboardsService_DeleteDashboard_sync]

@@ -44,4 +44,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END memcache_v1beta2_generated_CloudMemcache_DeleteInstance_sync]

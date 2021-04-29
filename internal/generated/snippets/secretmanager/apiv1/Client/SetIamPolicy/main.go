@@ -41,4 +41,5 @@ func main() {
 	// TODO: Use resp.
 	_ = resp
 }
+
 // [END secretmanager_v1_generated_SecretManagerService_SetIamPolicy_sync]

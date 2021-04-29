@@ -37,4 +37,5 @@ func main() {
 		// TODO: Handle error.
 	}
 }
+
 // [END artifactregistry_v1beta2_generated_ArtifactRegistry_DeleteTag_sync]
