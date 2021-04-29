@@ -48,8 +48,6 @@ func shouldRetry(err error) bool {
 		if e.Temporary() {
 			return true
 		}
-	default:
-		return false
 	}
 	if e, ok := err.(interface{ Unwrap() error }); ok {
 		return shouldRetry(e.Unwrap())
