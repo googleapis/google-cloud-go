@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START documentai_generated_documentai_apiv1beta3_DocumentProcessorClient_ReviewDocument]
+// [START documentai_v1beta3_generated_DocumentProcessorService_ReviewDocument_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END documentai_generated_documentai_apiv1beta3_DocumentProcessorClient_ReviewDocument]
+// [END documentai_v1beta3_generated_DocumentProcessorService_ReviewDocument_sync]

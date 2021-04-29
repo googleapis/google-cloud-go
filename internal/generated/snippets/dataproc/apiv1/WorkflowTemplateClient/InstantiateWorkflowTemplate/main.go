@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_WorkflowTemplateClient_InstantiateWorkflowTemplate]
+// [START dataproc_v1_generated_WorkflowTemplateService_InstantiateWorkflowTemplate_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1_WorkflowTemplateClient_InstantiateWorkflowTemplate]
+// [END dataproc_v1_generated_WorkflowTemplateService_InstantiateWorkflowTemplate_sync]

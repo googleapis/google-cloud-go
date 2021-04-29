@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_DeleteInstance]
+// [START spanner_v1_generated_InstanceAdmin_DeleteInstance_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_DeleteInstance]
+// [END spanner_v1_generated_InstanceAdmin_DeleteInstance_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_DeleteNote]
+// [START containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteNote_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_DeleteNote]
+// [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteNote_sync]

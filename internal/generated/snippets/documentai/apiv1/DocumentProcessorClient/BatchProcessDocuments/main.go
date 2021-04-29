@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START documentai_generated_documentai_apiv1_DocumentProcessorClient_BatchProcessDocuments]
+// [START documentai_v1_generated_DocumentProcessorService_BatchProcessDocuments_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END documentai_generated_documentai_apiv1_DocumentProcessorClient_BatchProcessDocuments]
+// [END documentai_v1_generated_DocumentProcessorService_BatchProcessDocuments_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START memcache_generated_memcache_apiv1_CloudMemcacheClient_GetInstance]
+// [START memcache_v1_generated_CloudMemcache_GetInstance_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END memcache_generated_memcache_apiv1_CloudMemcacheClient_GetInstance]
+// [END memcache_v1_generated_CloudMemcache_GetInstance_sync]

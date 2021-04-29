@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START privateca_generated_security_privateca_apiv1beta1_CertificateAuthorityClient_ListCertificateRevocationLists]
+// [START privateca_v1beta1_generated_CertificateAuthorityService_ListCertificateRevocationLists_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END privateca_generated_security_privateca_apiv1beta1_CertificateAuthorityClient_ListCertificateRevocationLists]
+// [END privateca_v1beta1_generated_CertificateAuthorityService_ListCertificateRevocationLists_sync]

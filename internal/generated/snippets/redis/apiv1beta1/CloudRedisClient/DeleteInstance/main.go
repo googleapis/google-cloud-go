@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START redis_generated_redis_apiv1beta1_CloudRedisClient_DeleteInstance]
+// [START redis_v1beta1_generated_CloudRedis_DeleteInstance_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END redis_generated_redis_apiv1beta1_CloudRedisClient_DeleteInstance]
+// [END redis_v1beta1_generated_CloudRedis_DeleteInstance_sync]

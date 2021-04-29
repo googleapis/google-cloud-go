@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3beta1_ExperimentsClient_ListExperiments]
+// [START dialogflow_v3beta1_generated_Experiments_ListExperiments_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3beta1_ExperimentsClient_ListExperiments]
+// [END dialogflow_v3beta1_generated_Experiments_ListExperiments_sync]

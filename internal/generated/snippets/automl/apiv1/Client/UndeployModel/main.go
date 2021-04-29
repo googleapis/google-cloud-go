@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START automl_generated_automl_apiv1_Client_UndeployModel]
+// [START automl_v1_generated_AutoMl_UndeployModel_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END automl_generated_automl_apiv1_Client_UndeployModel]
+// [END automl_v1_generated_AutoMl_UndeployModel_sync]

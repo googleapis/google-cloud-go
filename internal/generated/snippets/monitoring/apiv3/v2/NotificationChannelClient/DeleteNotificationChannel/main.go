@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_NotificationChannelClient_DeleteNotificationChannel]
+// [START monitoring_v3_generated_NotificationChannelService_DeleteNotificationChannel_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_NotificationChannelClient_DeleteNotificationChannel]
+// [END monitoring_v3_generated_NotificationChannelService_DeleteNotificationChannel_sync]

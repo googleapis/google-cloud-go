@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START orgpolicy_generated_orgpolicy_apiv2_Client_UpdatePolicy]
+// [START orgpolicy_v2_generated_OrgPolicy_UpdatePolicy_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END orgpolicy_generated_orgpolicy_apiv2_Client_UpdatePolicy]
+// [END orgpolicy_v2_generated_OrgPolicy_UpdatePolicy_sync]

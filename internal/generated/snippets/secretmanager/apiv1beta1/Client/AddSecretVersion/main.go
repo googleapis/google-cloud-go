@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START secretmanager_generated_secretmanager_apiv1beta1_Client_AddSecretVersion]
+// [START secretmanager_v1beta1_generated_SecretManagerService_AddSecretVersion_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END secretmanager_generated_secretmanager_apiv1beta1_Client_AddSecretVersion]
+// [END secretmanager_v1beta1_generated_SecretManagerService_AddSecretVersion_sync]

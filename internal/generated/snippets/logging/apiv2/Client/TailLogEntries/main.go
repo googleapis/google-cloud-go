@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_Client_TailLogEntries]
+// [START logging_v2_generated_LoggingServiceV2_TailLogEntries_sync]
 
 package main
 
@@ -60,4 +60,4 @@ func main() {
 	}
 }
 
-// [END logging_generated_logging_apiv2_Client_TailLogEntries]
+// [END logging_v2_generated_LoggingServiceV2_TailLogEntries_sync]

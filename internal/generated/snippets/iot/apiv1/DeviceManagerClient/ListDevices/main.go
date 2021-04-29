@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudiot_generated_iot_apiv1_DeviceManagerClient_ListDevices]
+// [START cloudiot_v1_generated_DeviceManager_ListDevices_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END cloudiot_generated_iot_apiv1_DeviceManagerClient_ListDevices]
+// [END cloudiot_v1_generated_DeviceManager_ListDevices_sync]

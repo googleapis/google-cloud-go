@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtasks_generated_cloudtasks_apiv2beta2_Client_DeleteQueue]
+// [START cloudtasks_v2beta2_generated_CloudTasks_DeleteQueue_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END cloudtasks_generated_cloudtasks_apiv2beta2_Client_DeleteQueue]
+// [END cloudtasks_v2beta2_generated_CloudTasks_DeleteQueue_sync]
