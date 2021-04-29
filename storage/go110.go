@@ -18,6 +18,7 @@ package storage
 
 import (
 	"fmt"
+	"io"
 	"net/url"
 	"strings"
 
@@ -25,6 +26,9 @@ import (
 )
 
 func shouldRetry(err error) bool {
+	if err == io.ErrUnexpectedEOF {
+		return true
+	}
 	switch e := err.(type) {
 	case *googleapi.Error:
 		// Retry on 429 and 5xx, according to
@@ -42,7 +46,6 @@ func shouldRetry(err error) bool {
 		}
 		return false
 	case interface{ Temporary() bool }:
-		fmt.Printf("TEMPORARY %v", e)
 		return e.Temporary()
 	case interface{ Unwrap() error }:
 		return shouldRetry(e.Unwrap())

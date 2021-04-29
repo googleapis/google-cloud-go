@@ -35,9 +35,8 @@ require (
 	cloud.google.com/go/storage v1.10.0
 	go.opencensus.io v0.23.0
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
-	golang.org/x/text v0.3.6
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
-	google.golang.org/api v0.44.0
-	google.golang.org/genproto v0.0.0-20210415145412-64678f1ae2d5
+	google.golang.org/api v0.45.0
+	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b
 	google.golang.org/grpc v1.37.0
 )

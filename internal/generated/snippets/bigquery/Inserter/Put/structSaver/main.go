@@ -1,0 +1,51 @@
+// Copyright 2021 Google LLC
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
+// [START bigquery_generated_bigquery_Inserter_Put_structSaver]
+
+package main
+
+import (
+	"context"
+
+	"cloud.google.com/go/bigquery"
+)
+
+var schema bigquery.Schema
+
+func main() {
+	ctx := context.Background()
+	client, err := bigquery.NewClient(ctx, "project-id")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	ins := client.Dataset("my_dataset").Table("my_table").Inserter()
+
+	type score struct {
+		Name string
+		Num  int
+	}
+
+	// Assume schema holds the table's schema.
+	savers := []*bigquery.StructSaver{
+		{Struct: score{Name: "n1", Num: 12}, Schema: schema, InsertID: "id1"},
+		{Struct: score{Name: "n2", Num: 31}, Schema: schema, InsertID: "id2"},
+		{Struct: score{Name: "n3", Num: 7}, Schema: schema, InsertID: "id3"},
+	}
+	if err := ins.Put(ctx, savers); err != nil {
+		// TODO: Handle error.
+	}
+}
+
+// [END bigquery_generated_bigquery_Inserter_Put_structSaver]

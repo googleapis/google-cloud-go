@@ -318,11 +318,11 @@ func (c *PolicyTagManagerClient) CreatePolicyTag(ctx context.Context, req *datac
 	return resp, nil
 }
 
-// DeletePolicyTag deletes a policy tag. This method also deletes
+// DeletePolicyTag deletes a policy tag. This method also deletes:
 //
-//   all of its descendant policy tags, if any,
+//   all of its descendant policy tags, if any
 //
-//   the policies associated with the policy tag and its descendants, and
+//   the policies associated with the policy tag and its descendants
 //
 //   references from BigQuery table schema of the policy tag and its
 //   descendants.
