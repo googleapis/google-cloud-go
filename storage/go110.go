@@ -28,27 +28,31 @@ func shouldRetry(err error) bool {
 	if err == io.ErrUnexpectedEOF {
 		return true
 	}
-	switch e := err.(type) {
-	case *googleapi.Error:
-		// Retry on 429 and 5xx, according to
-		// https://cloud.google.com/storage/docs/exponential-backoff.
+	// Retry on 429 and 5xx, according to
+	// https://cloud.google.com/storage/docs/exponential-backoff.
+	if e, ok := err.(*googleapi.Error); ok {
 		return e.Code == 429 || (e.Code >= 500 && e.Code < 600)
-	case *url.Error:
-		// Retry socket-level errors ECONNREFUSED and ENETUNREACH (from syscall).
-		// Unfortunately the error type is unexported, so we resort to string
-		// matching.
+	}
+	// Retry socket-level errors ECONNREFUSED and ENETUNREACH (from syscall).
+	// Unfortunately the error type is unexported, so we resort to string
+	// matching.
+	if e, ok := err.(*url.Error); ok {
 		retriable := []string{"connection refused", "connection reset"}
 		for _, s := range retriable {
 			if strings.Contains(e.Error(), s) {
 				return true
 			}
 		}
-		return false
-	case interface{ Unwrap() error }:
-		return shouldRetry(e.Unwrap())
-	case interface{ Temporary() bool }:
-		return e.Temporary()
-	default:
-		return false
 	}
+	if e, ok := err.(interface{ Temporary() bool }); ok {
+		if e.Temporary() {
+			return true
+		}
+	}
+	// If Go 1.13 error unwrapping is available, use this to examine wrapped
+	// errors.
+	if e, ok := err.(interface{ Unwrap() error }); ok {
+		return shouldRetry(e.Unwrap())
+	}
+	return false
 }
