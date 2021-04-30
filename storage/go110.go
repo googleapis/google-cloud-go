@@ -43,7 +43,6 @@ func shouldRetry(err error) bool {
 				return true
 			}
 		}
-		return false
 	case interface{ Temporary() bool }:
 		if e.Temporary() {
 			return true
