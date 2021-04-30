@@ -11,7 +11,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210413134643-5e61552d6c78
 	golang.org/x/sys v0.0.0-20210412220455-f1c623a9e750
 	google.golang.org/api v0.45.0
-	google.golang.org/genproto v0.0.0-20210423144448-3a41ef94ed2b
+	google.golang.org/genproto v0.0.0-20210427215850-f767ed18ee4d
 	google.golang.org/grpc v1.37.0
 	google.golang.org/protobuf v1.26.0
 	rsc.io/binaryregexp v0.2.0

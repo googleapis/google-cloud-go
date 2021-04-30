@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -1113,7 +1114,6 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 	if iAdminClient != nil {
 		defer iAdminClient.Close()
-
 		iInfo, err := iAdminClient.InstanceInfo(ctx, adminClient.instance)
 		if err != nil {
 			t.Errorf("InstanceInfo: %v", err)
@@ -1196,6 +1196,14 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Column family mismatch, got %v, want %v", tblInfo.Families, wantFams)
 	}
 
+	encInfo, err := adminClient.EncryptionInfo(ctx, tblConf.TableID)
+	if err != nil {
+		t.Errorf("Encryption Info does not expect err: %v", err)
+	}
+	if !testutil.Equal(len(encInfo), 0) {
+		t.Errorf("Encryption Info mismatch, got %v, want %v", len(encInfo), 0)
+	}
+
 	// Populate mytable and drop row ranges
 	if err = adminClient.CreateColumnFamily(ctx, "mytable", "cf"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
@@ -1253,6 +1261,15 @@ func TestIntegration_Admin(t *testing.T) {
 	}))
 	if gotRowCount != 0 {
 		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
+	}
+
+	// Validate Encyrption Info not configured
+	encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
+	if err != nil {
+		t.Fatalf("EncryptionInfo: %v", err)
+	}
+	if got, want := len(encryptionInfo), 0; !cmp.Equal(got, want) {
+		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 	}
 }
 
@@ -1397,6 +1414,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
+
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
@@ -1449,6 +1467,175 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
+	}
+
+	if cInfo.KMSKeyName != "" {
+		t.Fatalf("KMSKeyName: %v, want: %v", cInfo.KMSKeyName, "")
+	}
+}
+
+func TestIntegration_AdminEncryptionInfo(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := testEnv.Config().Table
+	clusterID := testEnv.Config().Cluster
+
+	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+	if keyRingName == "" {
+		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+	}
+	kmsKeyName := keyRingName + "/cryptoKeys/key1"
+
+	conf := &InstanceWithClustersConfig{
+		InstanceID:  instanceToCreate,
+		DisplayName: "test instance",
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:  clusterID,
+				KMSKeyName: kmsKeyName,
+				Zone:       instanceToCreateZone,
+				NumNodes:   1,
+			},
+		},
+	}
+	if err := iAdminClient.CreateInstanceWithClusters(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	encryptionKeyVersion := kmsKeyName + "/cryptoKeyVersions/1"
+
+	// The encryption info can take 30-300s (currently about 120-190s) to
+	// become ready.
+	for i := 0; i < 30; i++ {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+
+		kmsKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
+		if kmsKeyVersion != "" {
+			break
+		}
+
+		time.Sleep(time.Second * 10)
+	}
+
+	// Validate Encryption Info under getTable
+	table2, err := adminClient.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
+	if err != nil {
+		t.Fatalf("Getting Table: %v", err)
+	}
+	if got, want := len(table2.ClusterStates), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Cluster States %v, want: %v", got, want)
+	}
+	clusterState := table2.ClusterStates[clusterID]
+	if got, want := len(clusterState.EncryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Encryption Info Length: %v, want: %v", got, want)
+	}
+	tableEncInfo := clusterState.EncryptionInfo[0]
+	if got, want := int(tableEncInfo.EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is btapb.EncryptionInfo_EncryptionType
+	if got, want := tableEncInfo.EncryptionType, btapb.EncryptionInfo_CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := tableEncInfo.KmsKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate Encyrption Info retrieved via EncryptionInfo
+	encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+	if err != nil {
+		t.Fatalf("EncryptionInfo: %v", err)
+	}
+	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+	}
+	encryptionInfos := encryptionInfo[clusterID]
+	if got, want := len(encryptionInfos), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Encryption Info Length: %v, want: %v", got, want)
+	}
+	if len(encryptionInfos) != 1 {
+		t.Fatalf("Expected Single EncryptionInfo")
+	}
+	v := encryptionInfos[0]
+	if got, want := int(v.Status.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is EncryptionType
+	if got, want := v.Type, CustomerManagedEncryption; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := v.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate CMEK on Cluster Info
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	if got, want := cInfo.KMSKeyName, kmsKeyName; !cmp.Equal(got, want) {
+		t.Fatalf("KMSKeyName: %v, want: %v", got, want)
+	}
+
+	// Create a backup with CMEK enabled, verify backup encryption info
+	backupName := "backupCMEK"
+	defer adminClient.DeleteBackup(ctx, clusterID, backupName)
+	if err = adminClient.CreateBackup(ctx, table, clusterID, backupName, time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	backup, err := adminClient.BackupInfo(ctx, clusterID, backupName)
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", backup)
+	}
+
+	if got, want := backup.EncryptionInfo.Type, CustomerManagedEncryption; !cmp.Equal(got, want) {
+		t.Fatalf("Backup Encryption EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := backup.EncryptionInfo.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("Backup Encryption KMSKeyVersion: %v, want: %v", got, want)
+	}
+	if got, want := int(backup.EncryptionInfo.Status.Code), 2; !cmp.Equal(got, want) {
+		t.Fatalf("Backup EncryptionStatus: %v, want: %v", got, want)
 	}
 }
 
