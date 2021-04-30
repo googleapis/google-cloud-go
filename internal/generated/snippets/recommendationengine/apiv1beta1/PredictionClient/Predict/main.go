@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_PredictionClient_Predict]
+// [START recommendationengine_v1beta1_generated_PredictionService_Predict_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_PredictionClient_Predict]
+// [END recommendationengine_v1beta1_generated_PredictionService_Predict_sync]

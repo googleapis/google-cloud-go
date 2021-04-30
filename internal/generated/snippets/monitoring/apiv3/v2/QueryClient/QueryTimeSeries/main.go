@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_QueryClient_QueryTimeSeries]
+// [START monitoring_v3_generated_QueryService_QueryTimeSeries_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_QueryClient_QueryTimeSeries]
+// [END monitoring_v3_generated_QueryService_QueryTimeSeries_sync]

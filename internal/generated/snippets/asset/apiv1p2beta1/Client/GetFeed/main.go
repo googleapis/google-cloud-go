@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudasset_generated_asset_apiv1p2beta1_Client_GetFeed]
+// [START cloudasset_v1p2beta1_generated_AssetService_GetFeed_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudasset_generated_asset_apiv1p2beta1_Client_GetFeed]
+// [END cloudasset_v1p2beta1_generated_AssetService_GetFeed_sync]

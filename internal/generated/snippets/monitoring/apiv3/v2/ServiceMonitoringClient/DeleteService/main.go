@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_ServiceMonitoringClient_DeleteService]
+// [START monitoring_v3_generated_ServiceMonitoringService_DeleteService_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_ServiceMonitoringClient_DeleteService]
+// [END monitoring_v3_generated_ServiceMonitoringService_DeleteService_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_TestIamPermissions]
+// [START spanner_v1_generated_InstanceAdmin_TestIamPermissions_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_TestIamPermissions]
+// [END spanner_v1_generated_InstanceAdmin_TestIamPermissions_sync]

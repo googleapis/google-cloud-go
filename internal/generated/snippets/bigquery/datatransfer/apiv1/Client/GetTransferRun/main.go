@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_GetTransferRun]
+// [START bigquerydatatransfer_v1_generated_DataTransferService_GetTransferRun_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_GetTransferRun]
+// [END bigquerydatatransfer_v1_generated_DataTransferService_GetTransferRun_sync]

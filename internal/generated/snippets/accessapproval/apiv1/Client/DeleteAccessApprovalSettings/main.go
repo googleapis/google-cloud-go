@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START accessapproval_generated_accessapproval_apiv1_Client_DeleteAccessApprovalSettings]
+// [START accessapproval_v1_generated_AccessApproval_DeleteAccessApprovalSettings_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END accessapproval_generated_accessapproval_apiv1_Client_DeleteAccessApprovalSettings]
+// [END accessapproval_v1_generated_AccessApproval_DeleteAccessApprovalSettings_sync]

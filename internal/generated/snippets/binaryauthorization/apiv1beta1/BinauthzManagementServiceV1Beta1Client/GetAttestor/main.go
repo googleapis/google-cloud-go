@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START binaryauthorization_generated_binaryauthorization_apiv1beta1_BinauthzManagementServiceV1Beta1Client_GetAttestor]
+// [START binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetAttestor_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END binaryauthorization_generated_binaryauthorization_apiv1beta1_BinauthzManagementServiceV1Beta1Client_GetAttestor]
+// [END binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetAttestor_sync]

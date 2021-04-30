@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START speech_generated_speech_apiv1p1beta1_AdaptationClient_GetCustomClass]
+// [START speech_v1p1beta1_generated_Adaptation_GetCustomClass_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END speech_generated_speech_apiv1p1beta1_AdaptationClient_GetCustomClass]
+// [END speech_v1p1beta1_generated_Adaptation_GetCustomClass_sync]

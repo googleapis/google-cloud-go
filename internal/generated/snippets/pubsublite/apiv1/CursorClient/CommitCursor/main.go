@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_CursorClient_CommitCursor]
+// [START pubsublite_v1_generated_CursorService_CommitCursor_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_CursorClient_CommitCursor]
+// [END pubsublite_v1_generated_CursorService_CommitCursor_sync]

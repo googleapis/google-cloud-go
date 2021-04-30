@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_agentendpoint_apiv1_Client_ReportTaskProgress]
+// [START osconfig_v1_generated_AgentEndpointService_ReportTaskProgress_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_agentendpoint_apiv1_Client_ReportTaskProgress]
+// [END osconfig_v1_generated_AgentEndpointService_ReportTaskProgress_sync]

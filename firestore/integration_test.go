@@ -462,6 +462,19 @@ func TestIntegration_Update(t *testing.T) {
 		er(doc.Update(ctx, fpus, LastUpdateTime(wr.UpdateTime.Add(-time.Millisecond)))))
 	codeEq(t, "Update with right LastUpdateTime", codes.OK,
 		er(doc.Update(ctx, fpus, LastUpdateTime(wr.UpdateTime))))
+
+	// Verify that map value deletion is respected
+	fpus = []Update{
+		{FieldPath: []string{"*", "`"}, Value: Delete},
+	}
+	_ = h.mustUpdate(doc, fpus)
+	ds = h.mustGet(doc)
+	got = ds.Data()
+	want = copyMap(want)
+	want["*"] = map[string]interface{}{}
+	if !testEqual(got, want) {
+		t.Errorf("got\n%#v\nwant\n%#v", got, want)
+	}
 }
 
 func TestIntegration_Collections(t *testing.T) {
