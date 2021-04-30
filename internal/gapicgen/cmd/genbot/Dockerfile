@@ -5,16 +5,11 @@ ENV GO111MODULE on
 RUN apk update && \
     apk add ca-certificates wget git unzip
 # Install bash and ssh tools (needed to run regen.sh etc).
-RUN apk add bash openssh openssh-client
+RUN apk add bash openssh openssh-client build-base
 RUN which bash
 
 # Install libc compatibility (required by protoc and go)
 RUN apk add libc6-compat
-
-# Use edge for protoc 3.12.x
-# Remove when main upgrades from 3.11.x
-RUN sed -i -e 's/v[[:digit:]]\..*\//edge\//g' /etc/apk/repositories
-RUN apk update
 
 # Install protoc and protobuf-dev (common protos).
 RUN apk add protoc protobuf-dev

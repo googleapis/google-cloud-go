@@ -21,6 +21,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"github.com/google/go-cmp/cmp"
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -187,8 +188,8 @@ func TestPublishBatcherAddMessage(t *testing.T) {
 
 	t.Run("oversized message", func(t *testing.T) {
 		msg := &pb.PubSubMessage{Data: bytes.Repeat([]byte{'0'}, MaxPublishRequestBytes)}
-		if gotErr, wantMsg := batcher.AddMessage(msg, nil), "MaxPublishRequestBytes"; !test.ErrorHasMsg(gotErr, wantMsg) {
-			t.Errorf("AddMessage(%v) got err: %v, want err msg: %q", msg, gotErr, wantMsg)
+		if gotErr := batcher.AddMessage(msg, nil); !xerrors.Is(gotErr, ErrOversizedMessage) {
+			t.Errorf("AddMessage(%v) got err: %v, want err: %q", msg, gotErr, ErrOversizedMessage)
 		}
 	})
 

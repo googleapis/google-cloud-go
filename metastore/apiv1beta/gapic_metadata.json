@@ -1,0 +1,93 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.metastore.v1beta",
+  "libraryPackage": "cloud.google.com/go/metastore/apiv1beta",
+  "services": {
+    "DataprocMetastore": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataprocMetastoreClient",
+          "rpcs": {
+            "CreateBackup": {
+              "methods": [
+                "CreateBackup"
+              ]
+            },
+            "CreateMetadataImport": {
+              "methods": [
+                "CreateMetadataImport"
+              ]
+            },
+            "CreateService": {
+              "methods": [
+                "CreateService"
+              ]
+            },
+            "DeleteBackup": {
+              "methods": [
+                "DeleteBackup"
+              ]
+            },
+            "DeleteService": {
+              "methods": [
+                "DeleteService"
+              ]
+            },
+            "ExportMetadata": {
+              "methods": [
+                "ExportMetadata"
+              ]
+            },
+            "GetBackup": {
+              "methods": [
+                "GetBackup"
+              ]
+            },
+            "GetMetadataImport": {
+              "methods": [
+                "GetMetadataImport"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListBackups": {
+              "methods": [
+                "ListBackups"
+              ]
+            },
+            "ListMetadataImports": {
+              "methods": [
+                "ListMetadataImports"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            },
+            "RestoreService": {
+              "methods": [
+                "RestoreService"
+              ]
+            },
+            "UpdateMetadataImport": {
+              "methods": [
+                "UpdateMetadataImport"
+              ]
+            },
+            "UpdateService": {
+              "methods": [
+                "UpdateService"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

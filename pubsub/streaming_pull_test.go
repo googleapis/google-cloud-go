@@ -28,7 +28,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"google.golang.org/api/option"
@@ -36,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
 var (

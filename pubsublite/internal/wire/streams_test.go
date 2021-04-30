@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -308,8 +309,8 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	if pub.Stream.currentStream() != nil {
 		t.Error("Client stream should be nil")
 	}
-	if gotErr := pub.Stream.Error(); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, wantErr)
+	if gotErr := pub.Stream.Error(); !xerrors.Is(gotErr, ErrBackendUnavailable) {
+		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, ErrBackendUnavailable)
 	}
 }
 
