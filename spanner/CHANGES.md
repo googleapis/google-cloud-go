@@ -3,24 +3,9 @@
 ## [1.18.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.17.0...spanner/v1.18.0) (2021-04-29)
 
 
-### ⚠ BREAKING CHANGES
-
-* **spanner:** 
-* **spanner:** Removes
-    - BatchReadOnlyTransaction.PartitionReadUsingIndexWithOptions
-    - BatchReadOnlyTransaction.PartitionReadWithOptions
-
 ### Features
 
 * **spanner/admin/database:** add `progress` field to `UpdateDatabaseDdlMetadata` ([9029071](https://www.github.com/googleapis/google-cloud-go/commit/90290710158cf63de918c2d790df48f55a23adc5))
-* **spanner:** enable request options for batch read ([#3905](https://www.github.com/googleapis/google-cloud-go/issues/3905)) ([0c73db2](https://www.github.com/googleapis/google-cloud-go/commit/0c73db2e351ed222260cbbf77570c623c2d2164e)), refs [#3904](https://www.github.com/googleapis/google-cloud-go/issues/3904)
-* **spanner:** support request and transaction tags ([#3233](https://www.github.com/googleapis/google-cloud-go/issues/3233)) ([2b416e8](https://www.github.com/googleapis/google-cloud-go/commit/2b416e84cf1d15fb1a014a0bac6ca2c1cc01b2c3))
-
-
-### Reverts
-
-* **spanner:** Revert enable request options for batch read ([#3905](https://www.github.com/googleapis/google-cloud-go/issues/3905))" ([#3987](https://www.github.com/googleapis/google-cloud-go/issues/3987)) ([9928131](https://www.github.com/googleapis/google-cloud-go/commit/99281310cfccd1c4423fc3880400f4ad7f62f7d1))
-* **spanner:** support request and transaction tags ([#3233](https://www.github.com/googleapis/google-cloud-go/issues/3233)) ([#3989](https://www.github.com/googleapis/google-cloud-go/issues/3989)) ([a18f1bc](https://www.github.com/googleapis/google-cloud-go/commit/a18f1bc60135beddaaceb3723de5aa350f7f9e54))
 
 ## [1.17.0](https://www.github.com/googleapis/google-cloud-go/compare/spanner/v1.16.0...spanner/v1.17.0) (2021-03-31)
 
