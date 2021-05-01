@@ -50,7 +50,8 @@ const (
 	NumericScaleDigits = 9
 )
 
-// NumericLossHandlingMode describes the way how to deal with invalid numeric values.
+// NumericLossHandlingMode describes the mode of how to deal with loss of
+// precision on numeric values.
 type NumericLossHandlingMode int
 
 const (
@@ -61,6 +62,8 @@ const (
 	NumericError
 )
 
+// NumericPrecisionLossHandling is the configuration for hanlding loss of
+// precission on numeric values.
 var NumericPrecisionLossHandling NumericLossHandlingMode
 
 // NumericString returns a string representing a *big.Rat in a format compatible
