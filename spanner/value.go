@@ -50,6 +50,19 @@ const (
 	NumericScaleDigits = 9
 )
 
+// NumericLossHandlingMode describes the way how to deal with invalid numeric values.
+type NumericLossHandlingMode int
+
+const (
+	// NumericRound rounds an invalid numeric value, e.g., 0.1234567895 rounds
+	// to 0.123456790.
+	NumericRound NumericLossHandlingMode = iota
+	// NumericError throws an error when meeting invalid numeric value.
+	NumericError
+)
+
+var NumericPrecisionLossHandling NumericLossHandlingMode
+
 // NumericString returns a string representing a *big.Rat in a format compatible
 // with Spanner SQL. It returns a floating-point literal with 9 digits after the
 // decimal point.
@@ -2680,11 +2693,16 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		pt = listType(floatType())
 	case big.Rat:
-		pb.Kind = stringKind(NumericString(&v))
-		err = validateNumeric(&v)
-		if err != nil {
-			return nil, nil, err
+		switch NumericPrecisionLossHandling {
+		case NumericError:
+			err = validateNumeric(&v)
+			if err != nil {
+				return nil, nil, err
+			}
+		case NumericRound:
+			// pass
 		}
+		pb.Kind = stringKind(NumericString(&v))
 		pt = numericType()
 	case []big.Rat:
 		if v != nil {
@@ -2708,12 +2726,17 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		pt = listType(numericType())
 	case *big.Rat:
+		switch NumericPrecisionLossHandling {
+		case NumericError:
+			err = validateNumeric(v)
+			if err != nil {
+				return nil, nil, err
+			}
+		case NumericRound:
+			// pass
+		}
 		if v != nil {
 			pb.Kind = stringKind(NumericString(v))
-		}
-		err = validateNumeric(v)
-		if err != nil {
-			return nil, nil, err
 		}
 		pt = numericType()
 	case []*big.Rat:

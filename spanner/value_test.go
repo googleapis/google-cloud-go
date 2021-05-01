@@ -417,6 +417,9 @@ func TestEncodeInvalidValues(t *testing.T) {
 	invalidNumPtr1 := big.NewRat(11234567891, 1e10)
 	invalidNumPtr2, _ := (&big.Rat{}).SetString("199999999999999999999999999999.999999999")
 
+	// Enable error mode.
+	NumericPrecisionLossHandling = NumericError
+
 	for i, test := range []struct {
 		desc   string
 		in     interface{}
