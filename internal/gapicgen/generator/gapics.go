@@ -39,14 +39,14 @@ type GapicGenerator struct {
 }
 
 // NewGapicGenerator creates a GapicGenerator.
-func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string, regenOnly bool) *GapicGenerator {
+func NewGapicGenerator(c *Config) *GapicGenerator {
 	return &GapicGenerator{
-		googleapisDir:   googleapisDir,
-		protoDir:        protoDir,
-		googleCloudDir:  googleCloudDir,
-		genprotoDir:     genprotoDir,
-		gapicToGenerate: gapicToGenerate,
-		regenOnly:       regenOnly,
+		googleapisDir:   c.GoogleapisDir,
+		protoDir:        c.ProtoDir,
+		googleCloudDir:  c.GapicDir,
+		genprotoDir:     c.GenprotoDir,
+		gapicToGenerate: c.GapicToGenerate,
+		regenOnly:       c.RegenOnly,
 	}
 }
 
