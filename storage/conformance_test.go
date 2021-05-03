@@ -149,7 +149,6 @@ var methods = map[string][]retryFunc{
 		}},
 }
 
-
 func TestRetryConformance(t *testing.T) {
 	host := os.Getenv("STORAGE_EMULATOR_HOST")
 	if host == "" {
@@ -212,7 +211,6 @@ func TestRetryConformance(t *testing.T) {
 								t.Errorf("want failure, got success")
 							}
 
-
 						})
 					}
 
@@ -226,7 +224,7 @@ func TestRetryConformance(t *testing.T) {
 func createRetryTest(host string, instructions map[string][]string) (string, error) {
 	endpoint := "http://" + host + "/retry_test"
 	c := http.DefaultClient
-	data := struct{
+	data := struct {
 		Instructions map[string][]string `json:"test_instructions"`
 	}{
 		Instructions: instructions,
@@ -241,7 +239,7 @@ func createRetryTest(host string, instructions map[string][]string) (string, err
 		return "", fmt.Errorf("creating retry test: %v", err)
 	}
 	defer res.Body.Close()
-	testRes := struct{
+	testRes := struct {
 		TestID string `json:"id"`
 	}{}
 	if err := json.NewDecoder(res.Body).Decode(&testRes); err != nil {
@@ -268,7 +266,7 @@ func deleteRetryTest(host, testID string) error {
 }
 
 type withTestID struct {
-	rt           http.RoundTripper
+	rt     http.RoundTripper
 	testID string
 }
 
