@@ -356,7 +356,7 @@ func (rpr *RangePartitioningRange) toBQ() *bq.RangePartitioningRange {
 	}
 }
 
-// Clustering governs the organization of data within a partitioned table.
+// Clustering governs the organization of data within a managed table.
 // For more information, see https://cloud.google.com/bigquery/docs/clustered-tables
 type Clustering struct {
 	Fields []string
@@ -681,6 +681,10 @@ func (tm *TableMetadataToUpdate) toBQ() (*bq.Table, error) {
 		t.EncryptionConfiguration = tm.EncryptionConfig.toBQ()
 	}
 
+	if tm.Clustering != nil {
+		t.Clustering = tm.Clustering.toBQ()
+	}
+
 	if !validExpiration(tm.ExpirationTime) {
 		return nil, invalidTimeError(tm.ExpirationTime)
 	}
@@ -749,6 +753,11 @@ type TableMetadataToUpdate struct {
 	// The table's schema.
 	// When updating a schema, you can add columns but not remove them.
 	Schema Schema
+
+	// The table's clustering configuration.
+	// For more information on how modifying clustering affects the table, see:
+	// https://cloud.google.com/bigquery/docs/creating-clustered-tables#modifying-cluster-spec
+	Clustering *Clustering
 
 	// The table's encryption configuration.
 	EncryptionConfig *EncryptionConfig

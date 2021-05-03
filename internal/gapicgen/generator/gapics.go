@@ -18,7 +18,6 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
@@ -36,16 +35,18 @@ type GapicGenerator struct {
 	googleCloudDir  string
 	genprotoDir     string
 	gapicToGenerate string
+	regenOnly       bool
 }
 
 // NewGapicGenerator creates a GapicGenerator.
-func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string) *GapicGenerator {
+func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string, regenOnly bool) *GapicGenerator {
 	return &GapicGenerator{
 		googleapisDir:   googleapisDir,
 		protoDir:        protoDir,
 		googleCloudDir:  googleCloudDir,
 		genprotoDir:     genprotoDir,
 		gapicToGenerate: gapicToGenerate,
+		regenOnly:       regenOnly,
 	}
 }
 
@@ -69,6 +70,10 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
+	if g.regenOnly {
+		return nil
+	}
+
 	if err := g.manifest(microgenGapicConfigs); err != nil {
 		return err
 	}
@@ -77,22 +82,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := forEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
-		return err
-	}
-
-	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
-	apiShortnames, err := g.parseAPIShortnames(microgenGapicConfigs, manualEntries)
-	if err != nil {
-		return err
-	}
-	if err := gensnippets.Generate(g.googleCloudDir, snippetDir, apiShortnames); err != nil {
-		return fmt.Errorf("error generating snippets: %v", err)
-	}
-	if err := replaceAllForSnippets(g.googleCloudDir, snippetDir); err != nil {
-		return err
-	}
-	if err := goModTidy(snippetDir); err != nil {
+	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
 		return err
 	}
 
@@ -104,30 +94,32 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := forEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
+	if err := execv.ForEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-// forEachMod runs the given function with the directory of
-// every non-internal module.
-func forEachMod(rootDir string, fn func(dir string) error) error {
-	return filepath.WalkDir(rootDir, func(path string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return err
-		}
-		if strings.Contains(path, "internal") {
-			return filepath.SkipDir
-		}
-		if d.Name() == "go.mod" {
-			if err := fn(filepath.Dir(path)); err != nil {
-				return err
-			}
-		}
-		return nil
-	})
+// RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
+func (g *GapicGenerator) RegenSnippets(ctx context.Context) error {
+	log.Println("regenerating snippets")
+
+	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
+	apiShortnames, err := g.parseAPIShortnames(microgenGapicConfigs, manualEntries)
+	if err != nil {
+		return err
+	}
+	if err := gensnippets.Generate(g.googleCloudDir, snippetDir, apiShortnames); err != nil {
+		log.Printf("warning: got the following non-fatal errors generating snippets: %v", err)
+	}
+	if err := replaceAllForSnippets(g.googleCloudDir, snippetDir); err != nil {
+		return err
+	}
+	if err := goModTidy(snippetDir); err != nil {
+		return err
+	}
+	return nil
 }
 
 func goModTidy(dir string) error {
@@ -142,7 +134,7 @@ func goModTidy(dir string) error {
 }
 
 func replaceAllForSnippets(googleCloudDir, snippetDir string) error {
-	return forEachMod(googleCloudDir, func(dir string) error {
+	return execv.ForEachMod(googleCloudDir, func(dir string) error {
 		if dir == snippetDir {
 			return nil
 		}
@@ -249,9 +241,11 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
 		"--go_gapic_opt", fmt.Sprintf("go-gapic-package=%s;%s", conf.importPath, conf.pkg),
-		"--go_gapic_opt", fmt.Sprintf("gapic-service-config=%s", conf.apiServiceConfigPath),
-		"--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel)}
+		"--go_gapic_opt", fmt.Sprintf("api-service-config=%s", conf.apiServiceConfigPath)}
 
+	if conf.releaseLevel != "" {
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel))
+	}
 	if conf.gRPCServiceConfigPath != "" {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", conf.gRPCServiceConfigPath))
 	}
@@ -439,7 +433,7 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 			Title string `yaml:"title"` // We only need the title field.
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&yamlConfig); err != nil {
-			return fmt.Errorf("Decode: %v", err)
+			return fmt.Errorf("decode: %v", err)
 		}
 		entry := manifestEntry{
 			DistributionName:  conf.importPath,
@@ -483,7 +477,7 @@ func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntri
 			Name string `yaml:"name"`
 		}{}
 		if err := yaml.NewDecoder(yamlFile).Decode(&config); err != nil {
-			return nil, fmt.Errorf("Decode: %v", err)
+			return nil, fmt.Errorf("decode: %v", err)
 		}
 		shortname := strings.TrimSuffix(config.Name, ".googleapis.com")
 		shortnames[conf.importPath] = shortname

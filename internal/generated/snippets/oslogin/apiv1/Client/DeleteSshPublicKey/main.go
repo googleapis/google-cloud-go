@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START oslogin_generated_oslogin_apiv1_Client_DeleteSshPublicKey]
+// [START oslogin_v1_generated_OsLoginService_DeleteSshPublicKey_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END oslogin_generated_oslogin_apiv1_Client_DeleteSshPublicKey]
+// [END oslogin_v1_generated_OsLoginService_DeleteSshPublicKey_sync]

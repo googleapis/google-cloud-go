@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START oslogin_generated_oslogin_apiv1_Client_GetSshPublicKey]
+// [START oslogin_v1_generated_OsLoginService_GetSshPublicKey_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END oslogin_generated_oslogin_apiv1_Client_GetSshPublicKey]
+// [END oslogin_v1_generated_OsLoginService_GetSshPublicKey_sync]

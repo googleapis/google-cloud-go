@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1beta_Client_GetPatchJob]
+// [START osconfig_v1beta_generated_OsConfigService_GetPatchJob_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_apiv1beta_Client_GetPatchJob]
+// [END osconfig_v1beta_generated_OsConfigService_GetPatchJob_sync]

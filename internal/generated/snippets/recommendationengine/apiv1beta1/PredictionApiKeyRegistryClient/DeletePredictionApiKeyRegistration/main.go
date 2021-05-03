@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_PredictionApiKeyRegistryClient_DeletePredictionApiKeyRegistration]
+// [START recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_DeletePredictionApiKeyRegistration_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_PredictionApiKeyRegistryClient_DeletePredictionApiKeyRegistration]
+// [END recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_DeletePredictionApiKeyRegistration_sync]

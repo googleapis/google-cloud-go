@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START memcache_generated_memcache_apiv1_CloudMemcacheClient_ApplyParameters]
+// [START memcache_v1_generated_CloudMemcache_ApplyParameters_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END memcache_generated_memcache_apiv1_CloudMemcacheClient_ApplyParameters]
+// [END memcache_v1_generated_CloudMemcache_ApplyParameters_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START language_generated_language_apiv1_Client_AnalyzeEntities]
+// [START language_v1_generated_LanguageService_AnalyzeEntities_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END language_generated_language_apiv1_Client_AnalyzeEntities]
+// [END language_v1_generated_LanguageService_AnalyzeEntities_sync]
