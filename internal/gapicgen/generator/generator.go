@@ -44,19 +44,14 @@ type Config struct {
 // Generate generates genproto and gapics.
 func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 	if !conf.OnlyGenerateGapic {
-		protoGenerator := NewGenprotoGenerator(conf.GenprotoDir, conf.GoogleapisDir, conf.ProtoDir)
+		protoGenerator := NewGenprotoGenerator(conf)
 		if err := protoGenerator.Regen(ctx); err != nil {
 			return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
 		}
 	}
-	gapicGenerator := NewGapicGenerator(conf.GoogleapisDir, conf.ProtoDir, conf.GapicDir, conf.GenprotoDir, conf.GapicToGenerate, conf.RegenOnly)
+	gapicGenerator := NewGapicGenerator(conf)
 	if err := gapicGenerator.Regen(ctx); err != nil {
 		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
-	}
-	if !conf.OnlyGenerateGapic {
-		if err := gapicGenerator.RegenSnippets(ctx); err != nil {
-			return nil, fmt.Errorf("error generating snippets (may need to check logs for more errors): %v", err)
-		}
 	}
 
 	var changes []*git.ChangeInfo
