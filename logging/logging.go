@@ -404,7 +404,11 @@ func monitoredResource(parent string) *mrpb.MonitoredResource {
 }
 
 func regionFromZone(zone string) string {
-	return zone[:strings.LastIndex(zone, "-")]
+	cutoff := strings.LastIndex(zone, "-")
+	if cutoff > 0 {
+		return zone[:cutoff]
+	}
+	return zone
 }
 
 func globalResource(projectID string) *mrpb.MonitoredResource {
