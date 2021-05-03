@@ -171,6 +171,9 @@ func retryableError(err error) bool {
 	if err == nil {
 		return false
 	}
+	if err == io.ErrUnexpectedEOF {
+		return true
+	}
 	// Special case due to http2: https://github.com/googleapis/google-cloud-go/issues/1793
 	// Due to Go's default being higher for streams-per-connection than is accepted by the
 	// BQ backend, it's possible to get streams refused immediately after a connection is

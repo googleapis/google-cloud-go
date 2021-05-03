@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"errors"
+	"io"
 	"net/http"
 	"net/url"
 	"testing"
@@ -38,6 +39,11 @@ func TestRetryableErrors(t *testing.T) {
 		{
 			"http stream closed",
 			errors.New("http2: stream closed"),
+			true,
+		},
+		{
+			"io ErrUnexpectedEOF",
+			io.ErrUnexpectedEOF,
 			true,
 		},
 		{
