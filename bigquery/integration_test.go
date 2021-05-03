@@ -1177,7 +1177,6 @@ func TestIntegration_RoutineUserTVF(t *testing.T) {
 	}
 	ctx := context.Background()
 
-	// Define a simple stored procedure via DDL.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
 	inMeta := &RoutineMetadata{
