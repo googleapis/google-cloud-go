@@ -30,23 +30,25 @@ import (
 
 // GapicGenerator is used to regenerate gapic libraries.
 type GapicGenerator struct {
-	googleapisDir   string
-	protoDir        string
-	googleCloudDir  string
-	genprotoDir     string
-	gapicToGenerate string
-	regenOnly       bool
+	googleapisDir     string
+	protoDir          string
+	googleCloudDir    string
+	genprotoDir       string
+	gapicToGenerate   string
+	regenOnly         bool
+	onlyGenerateGapic bool
 }
 
 // NewGapicGenerator creates a GapicGenerator.
-func NewGapicGenerator(googleapisDir, protoDir, googleCloudDir, genprotoDir string, gapicToGenerate string, regenOnly bool) *GapicGenerator {
+func NewGapicGenerator(c *Config) *GapicGenerator {
 	return &GapicGenerator{
-		googleapisDir:   googleapisDir,
-		protoDir:        protoDir,
-		googleCloudDir:  googleCloudDir,
-		genprotoDir:     genprotoDir,
-		gapicToGenerate: gapicToGenerate,
-		regenOnly:       regenOnly,
+		googleapisDir:     c.GoogleapisDir,
+		protoDir:          c.ProtoDir,
+		googleCloudDir:    c.GapicDir,
+		genprotoDir:       c.GenprotoDir,
+		gapicToGenerate:   c.GapicToGenerate,
+		regenOnly:         c.RegenOnly,
+		onlyGenerateGapic: c.OnlyGenerateGapic,
 	}
 }
 
@@ -82,6 +84,12 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
+	if !g.onlyGenerateGapic {
+		if err := g.regenSnippets(ctx); err != nil {
+			return err
+		}
+	}
+
 	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
 		return err
 	}
@@ -102,7 +110,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 }
 
 // RegenSnippets regenerates the snippets for all GAPICs configured to be generated.
-func (g *GapicGenerator) RegenSnippets(ctx context.Context) error {
+func (g *GapicGenerator) regenSnippets(ctx context.Context) error {
 	log.Println("regenerating snippets")
 
 	snippetDir := filepath.Join(g.googleCloudDir, "internal", "generated", "snippets")
