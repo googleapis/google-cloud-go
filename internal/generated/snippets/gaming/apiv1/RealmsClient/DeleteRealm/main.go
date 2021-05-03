@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_RealmsClient_DeleteRealm]
+// [START gameservices_v1_generated_RealmsService_DeleteRealm_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1_RealmsClient_DeleteRealm]
+// [END gameservices_v1_generated_RealmsService_DeleteRealm_sync]

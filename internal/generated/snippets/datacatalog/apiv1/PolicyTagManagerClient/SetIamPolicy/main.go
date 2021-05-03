@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1_PolicyTagManagerClient_SetIamPolicy]
+// [START datacatalog_v1_generated_PolicyTagManager_SetIamPolicy_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END datacatalog_generated_datacatalog_apiv1_PolicyTagManagerClient_SetIamPolicy]
+// [END datacatalog_v1_generated_PolicyTagManager_SetIamPolicy_sync]

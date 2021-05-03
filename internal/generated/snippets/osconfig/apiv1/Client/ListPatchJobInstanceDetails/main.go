@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1_Client_ListPatchJobInstanceDetails]
+// [START osconfig_v1_generated_OsConfigService_ListPatchJobInstanceDetails_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END osconfig_generated_osconfig_apiv1_Client_ListPatchJobInstanceDetails]
+// [END osconfig_v1_generated_OsConfigService_ListPatchJobInstanceDetails_sync]

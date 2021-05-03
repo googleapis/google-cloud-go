@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START apigateway_generated_apigateway_apiv1_Client_GetGateway]
+// [START apigateway_v1_generated_ApiGatewayService_GetGateway_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END apigateway_generated_apigateway_apiv1_Client_GetGateway]
+// [END apigateway_v1_generated_ApiGatewayService_GetGateway_sync]

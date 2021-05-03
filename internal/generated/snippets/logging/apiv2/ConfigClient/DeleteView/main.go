@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_ConfigClient_DeleteView]
+// [START logging_v2_generated_ConfigServiceV2_DeleteView_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END logging_generated_logging_apiv2_ConfigClient_DeleteView]
+// [END logging_v2_generated_ConfigServiceV2_DeleteView_sync]

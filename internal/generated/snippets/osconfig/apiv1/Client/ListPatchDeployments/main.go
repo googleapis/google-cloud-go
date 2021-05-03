@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1_Client_ListPatchDeployments]
+// [START osconfig_v1_generated_OsConfigService_ListPatchDeployments_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END osconfig_generated_osconfig_apiv1_Client_ListPatchDeployments]
+// [END osconfig_v1_generated_OsConfigService_ListPatchDeployments_sync]

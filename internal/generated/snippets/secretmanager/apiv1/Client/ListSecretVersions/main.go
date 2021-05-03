@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START secretmanager_generated_secretmanager_apiv1_Client_ListSecretVersions]
+// [START secretmanager_v1_generated_SecretManagerService_ListSecretVersions_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END secretmanager_generated_secretmanager_apiv1_Client_ListSecretVersions]
+// [END secretmanager_v1_generated_SecretManagerService_ListSecretVersions_sync]

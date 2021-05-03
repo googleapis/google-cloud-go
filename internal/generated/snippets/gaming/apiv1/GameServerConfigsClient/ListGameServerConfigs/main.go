@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_GameServerConfigsClient_ListGameServerConfigs]
+// [START gameservices_v1_generated_GameServerConfigsService_ListGameServerConfigs_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1_GameServerConfigsClient_ListGameServerConfigs]
+// [END gameservices_v1_generated_GameServerConfigsService_ListGameServerConfigs_sync]

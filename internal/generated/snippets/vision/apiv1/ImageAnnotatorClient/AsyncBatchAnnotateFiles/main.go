@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START vision_generated_vision_apiv1_ImageAnnotatorClient_AsyncBatchAnnotateFiles]
+// [START vision_v1_generated_ImageAnnotator_AsyncBatchAnnotateFiles_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END vision_generated_vision_apiv1_ImageAnnotatorClient_AsyncBatchAnnotateFiles]
+// [END vision_v1_generated_ImageAnnotator_AsyncBatchAnnotateFiles_sync]

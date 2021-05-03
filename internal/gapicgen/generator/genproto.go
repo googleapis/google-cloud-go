@@ -51,11 +51,11 @@ type GenprotoGenerator struct {
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
-func NewGenprotoGenerator(genprotoDir, googleapisDir, protoDir string) *GenprotoGenerator {
+func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	return &GenprotoGenerator{
-		genprotoDir:   genprotoDir,
-		googleapisDir: googleapisDir,
-		protoSrcDir:   filepath.Join(protoDir, "/src"),
+		genprotoDir:   c.GenprotoDir,
+		googleapisDir: c.GoogleapisDir,
+		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
 	}
 }
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudchannel_generated_channel_apiv1_CloudChannelClient_ListEntitlements]
+// [START cloudchannel_v1_generated_CloudChannelService_ListEntitlements_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END cloudchannel_generated_channel_apiv1_CloudChannelClient_ListEntitlements]
+// [END cloudchannel_v1_generated_CloudChannelService_ListEntitlements_sync]

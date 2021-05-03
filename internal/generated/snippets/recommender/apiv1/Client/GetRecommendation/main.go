@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommender_generated_recommender_apiv1_Client_GetRecommendation]
+// [START recommender_v1_generated_Recommender_GetRecommendation_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END recommender_generated_recommender_apiv1_Client_GetRecommendation]
+// [END recommender_v1_generated_Recommender_GetRecommendation_sync]

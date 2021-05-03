@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datalabeling_generated_datalabeling_apiv1beta1_Client_ListExamples]
+// [START datalabeling_v1beta1_generated_DataLabelingService_ListExamples_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END datalabeling_generated_datalabeling_apiv1beta1_Client_ListExamples]
+// [END datalabeling_v1beta1_generated_DataLabelingService_ListExamples_sync]

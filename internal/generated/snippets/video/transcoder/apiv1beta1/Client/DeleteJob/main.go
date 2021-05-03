@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START transcoder_generated_video_transcoder_apiv1beta1_Client_DeleteJob]
+// [START transcoder_v1beta1_generated_TranscoderService_DeleteJob_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END transcoder_generated_video_transcoder_apiv1beta1_Client_DeleteJob]
+// [END transcoder_v1beta1_generated_TranscoderService_DeleteJob_sync]

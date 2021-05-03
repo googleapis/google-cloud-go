@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerystorage_generated_bigquery_storage_apiv1beta1_BigQueryStorageClient_SplitReadStream]
+// [START bigquerystorage_v1beta1_generated_BigQueryStorage_SplitReadStream_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerystorage_generated_bigquery_storage_apiv1beta1_BigQueryStorageClient_SplitReadStream]
+// [END bigquerystorage_v1beta1_generated_BigQueryStorage_SplitReadStream_sync]

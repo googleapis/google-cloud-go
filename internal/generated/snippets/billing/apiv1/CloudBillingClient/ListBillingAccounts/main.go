@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbilling_generated_billing_apiv1_CloudBillingClient_ListBillingAccounts]
+// [START cloudbilling_v1_generated_CloudBilling_ListBillingAccounts_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END cloudbilling_generated_billing_apiv1_CloudBillingClient_ListBillingAccounts]
+// [END cloudbilling_v1_generated_CloudBilling_ListBillingAccounts_sync]
