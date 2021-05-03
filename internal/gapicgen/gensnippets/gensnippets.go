@@ -243,7 +243,7 @@ func writeExamples(outDir string, exs []*doc.Example, fset *token.FileSet, regio
 		if _, err := f.WriteString(s); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(f, "// [END %v]\n", tag); err != nil {
+		if _, err := fmt.Fprintf(f, "\n// [END %v]\n", tag); err != nil {
 			return err
 		}
 	}
