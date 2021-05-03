@@ -1769,35 +1769,6 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 	return newBackupInfo(resp)
 }
 
-func (info *BackupInfo) Equal(info2 *BackupInfo) bool {
-	if info.Name != info2.Name {
-		return false
-	}
-	if info.SourceTable != info2.SourceTable {
-		return false
-	}
-	if info.SizeBytes != info2.SizeBytes {
-		return false
-	}
-	if info.StartTime != info2.StartTime {
-		return false
-	}
-	if info.EndTime != info2.EndTime {
-		return false
-	}
-	if info.ExpireTime != info2.ExpireTime {
-		return false
-	}
-	if info.State != info2.State {
-		return false
-	}
-	if info.EncryptionInfo != info2.EncryptionInfo {
-		return false
-	}
-
-	return true
-}
-
 // DeleteBackup deletes a backup in a cluster.
 func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)

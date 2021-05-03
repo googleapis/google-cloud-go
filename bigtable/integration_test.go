@@ -2509,7 +2509,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
-	if got, want := *backup, *backups[0]; got.Equal(&want) {
+	if got, want := *backup, *backups[0]; cmp.Equal(got, &want) {
 		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
