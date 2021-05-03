@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4beta1_ProfileClient_GetProfile]
+// [START jobs_v4beta1_generated_ProfileService_GetProfile_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END jobs_generated_talent_apiv4beta1_ProfileClient_GetProfile]
+// [END jobs_v4beta1_generated_ProfileService_GetProfile_sync]

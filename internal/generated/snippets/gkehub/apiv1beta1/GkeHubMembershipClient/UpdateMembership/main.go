@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gkehub_generated_gkehub_apiv1beta1_GkeHubMembershipClient_UpdateMembership]
+// [START gkehub_v1beta1_generated_GkeHubMembershipService_UpdateMembership_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END gkehub_generated_gkehub_apiv1beta1_GkeHubMembershipClient_UpdateMembership]
+// [END gkehub_v1beta1_generated_GkeHubMembershipService_UpdateMembership_sync]

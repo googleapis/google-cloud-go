@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START binaryauthorization_generated_binaryauthorization_apiv1beta1_BinauthzManagementServiceV1Beta1Client_DeleteAttestor]
+// [START binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_DeleteAttestor_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END binaryauthorization_generated_binaryauthorization_apiv1beta1_BinauthzManagementServiceV1Beta1Client_DeleteAttestor]
+// [END binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_DeleteAttestor_sync]

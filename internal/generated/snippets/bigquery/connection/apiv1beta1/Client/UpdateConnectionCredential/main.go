@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_UpdateConnectionCredential]
+// [START bigqueryconnection_v1beta1_generated_ConnectionService_UpdateConnectionCredential_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_UpdateConnectionCredential]
+// [END bigqueryconnection_v1beta1_generated_ConnectionService_UpdateConnectionCredential_sync]

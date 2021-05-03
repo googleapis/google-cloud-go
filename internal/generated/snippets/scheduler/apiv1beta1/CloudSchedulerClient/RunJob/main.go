@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudscheduler_generated_scheduler_apiv1beta1_CloudSchedulerClient_RunJob]
+// [START cloudscheduler_v1beta1_generated_CloudScheduler_RunJob_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudscheduler_generated_scheduler_apiv1beta1_CloudSchedulerClient_RunJob]
+// [END cloudscheduler_v1beta1_generated_CloudScheduler_RunJob_sync]

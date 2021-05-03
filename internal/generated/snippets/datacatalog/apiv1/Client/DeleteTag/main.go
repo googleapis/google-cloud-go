@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1_Client_DeleteTag]
+// [START datacatalog_v1_generated_DataCatalog_DeleteTag_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END datacatalog_generated_datacatalog_apiv1_Client_DeleteTag]
+// [END datacatalog_v1_generated_DataCatalog_DeleteTag_sync]

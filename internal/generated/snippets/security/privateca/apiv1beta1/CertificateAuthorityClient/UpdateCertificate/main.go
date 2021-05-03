@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START privateca_generated_security_privateca_apiv1beta1_CertificateAuthorityClient_UpdateCertificate]
+// [START privateca_v1beta1_generated_CertificateAuthorityService_UpdateCertificate_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END privateca_generated_security_privateca_apiv1beta1_CertificateAuthorityClient_UpdateCertificate]
+// [END privateca_v1beta1_generated_CertificateAuthorityService_UpdateCertificate_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START workflows_generated_workflows_apiv1beta_Client_DeleteWorkflow]
+// [START workflows_v1beta_generated_Workflows_DeleteWorkflow_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END workflows_generated_workflows_apiv1beta_Client_DeleteWorkflow]
+// [END workflows_v1beta_generated_Workflows_DeleteWorkflow_sync]

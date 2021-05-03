@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_ListWorkloads]
+// [START assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_ListWorkloads]
+// [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_ListWorkloads_sync]

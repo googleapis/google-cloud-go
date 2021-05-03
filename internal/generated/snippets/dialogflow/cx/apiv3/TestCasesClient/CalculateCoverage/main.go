@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_TestCasesClient_CalculateCoverage]
+// [START dialogflow_v3_generated_TestCases_CalculateCoverage_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_TestCasesClient_CalculateCoverage]
+// [END dialogflow_v3_generated_TestCases_CalculateCoverage_sync]

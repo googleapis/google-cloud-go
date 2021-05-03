@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START clouderrorreporting_generated_errorreporting_apiv1beta1_ReportErrorsClient_ReportErrorEvent]
+// [START clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END clouderrorreporting_generated_errorreporting_apiv1beta1_ReportErrorsClient_ReportErrorEvent]
+// [END clouderrorreporting_v1beta1_generated_ReportErrorsService_ReportErrorEvent_sync]

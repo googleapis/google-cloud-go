@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryreservation_generated_bigquery_reservation_apiv1beta1_Client_GetReservation]
+// [START bigqueryreservation_v1beta1_generated_ReservationService_GetReservation_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigqueryreservation_generated_bigquery_reservation_apiv1beta1_Client_GetReservation]
+// [END bigqueryreservation_v1beta1_generated_ReservationService_GetReservation_sync]

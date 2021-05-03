@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START iamcredentials_generated_iam_credentials_apiv1_IamCredentialsClient_SignBlob]
+// [START iamcredentials_v1_generated_IAMCredentials_SignBlob_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END iamcredentials_generated_iam_credentials_apiv1_IamCredentialsClient_SignBlob]
+// [END iamcredentials_v1_generated_IAMCredentials_SignBlob_sync]

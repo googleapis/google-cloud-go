@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicecontrol_generated_servicecontrol_apiv1_QuotaControllerClient_AllocateQuota]
+// [START servicecontrol_v1_generated_QuotaController_AllocateQuota_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END servicecontrol_generated_servicecontrol_apiv1_QuotaControllerClient_AllocateQuota]
+// [END servicecontrol_v1_generated_QuotaController_AllocateQuota_sync]

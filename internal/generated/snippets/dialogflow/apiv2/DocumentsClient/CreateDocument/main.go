@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_DocumentsClient_CreateDocument]
+// [START dialogflow_v2_generated_Documents_CreateDocument_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_DocumentsClient_CreateDocument]
+// [END dialogflow_v2_generated_Documents_CreateDocument_sync]

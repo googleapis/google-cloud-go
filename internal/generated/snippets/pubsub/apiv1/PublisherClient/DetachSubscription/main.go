@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_generated_pubsub_apiv1_PublisherClient_DetachSubscription]
+// [START pubsub_v1_generated_Publisher_DetachSubscription_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END pubsub_generated_pubsub_apiv1_PublisherClient_DetachSubscription]
+// [END pubsub_v1_generated_Publisher_DetachSubscription_sync]
