@@ -1180,12 +1180,22 @@ func TestIntegration_RoutineUserTVF(t *testing.T) {
 	// Define a simple stored procedure via DDL.
 	routineID := routineIDs.New()
 	routine := dataset.Routine(routineID)
-	sql := fmt.Sprintf(`
-	    CREATE OR REPLACE TABLE FUNCTION `+"`%s`"+`(a INT64)
-		AS (SELECT x FROM UNNEST([1,2,3]) x WHERE x = a);`,
-		routine.FullyQualifiedName())
-	if err := runQueryJob(ctx, sql); err != nil {
-		t.Fatal(err)
+	inMeta := &RoutineMetadata{
+		Type:     "TABLE_VALUED_FUNCTION",
+		Language: "SQL",
+		Arguments: []*RoutineArgument{
+			{Name: "filter",
+				DataType: &StandardSQLDataType{TypeKind: "INT64"},
+			}},
+		ReturnTableType: &StandardSQLTableType{
+			Columns: []*StandardSQLField{
+				{Name: "x", Type: &StandardSQLDataType{TypeKind: "INT64"}},
+			},
+		},
+		Body: "SELECT x FROM UNNEST([1,2,3]) x WHERE x = filter",
+	}
+	if err := routine.Create(ctx, inMeta); err != nil {
+		t.Fatalf("routine create: %v", err)
 	}
 	defer routine.Delete(ctx)
 
@@ -1193,13 +1203,17 @@ func TestIntegration_RoutineUserTVF(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	wantType := "TABLE_VALUED_FUNCTION"
-	if meta.Type != wantType {
-		t.Errorf("wanted routine type to be %s, got %s", wantType, meta.Type)
+	want := inMeta.Type
+	if meta.Type != want {
+		t.Errorf("wanted routine type to be %s, got %s", want, meta.Type)
 	}
-	wantBody := "SELECT x FROM UNNEST([1,2,3]) x"
-	if meta.Body != wantBody {
-		t.Errorf("wanted routine body to be %s, got %s", wantBody, meta.Body)
+	want = inMeta.Body
+	if meta.Body != want {
+		t.Errorf("wanted routine body to be %s, got %s", want, meta.Body)
+	}
+
+	if diff := testutil.Diff(inMeta, meta, cmpopts.IgnoreFields(RoutineMetadata{}, "CreationTime", "LastModifiedTime", "ETag")); diff != "" {
+		t.Errorf("got=-, want=+\n%s", diff)
 	}
 }
 
