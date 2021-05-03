@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START websecurityscanner_generated_websecurityscanner_apiv1_Client_DeleteScanConfig]
+// [START websecurityscanner_v1_generated_WebSecurityScanner_DeleteScanConfig_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END websecurityscanner_generated_websecurityscanner_apiv1_Client_DeleteScanConfig]
+// [END websecurityscanner_v1_generated_WebSecurityScanner_DeleteScanConfig_sync]

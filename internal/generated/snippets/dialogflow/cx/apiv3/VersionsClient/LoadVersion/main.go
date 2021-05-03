@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_VersionsClient_LoadVersion]
+// [START dialogflow_v3_generated_Versions_LoadVersion_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_VersionsClient_LoadVersion]
+// [END dialogflow_v3_generated_Versions_LoadVersion_sync]

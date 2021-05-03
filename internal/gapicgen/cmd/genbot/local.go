@@ -35,6 +35,7 @@ type localConfig struct {
 	protoDir        string
 	gapicToGenerate string
 	onlyGapics      bool
+	regenOnly       bool
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
@@ -68,6 +69,7 @@ func genLocal(ctx context.Context, c localConfig) error {
 		GapicToGenerate:   c.gapicToGenerate,
 		OnlyGenerateGapic: c.onlyGapics,
 		LocalMode:         true,
+		RegenOnly:         c.regenOnly,
 	}
 	if _, err := generator.Generate(ctx, conf); err != nil {
 		log.Printf("Generator ran (and failed) in %s\n", tmpDir)

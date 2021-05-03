@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_AdminClient_ListTopics]
+// [START pubsublite_v1_generated_AdminService_ListTopics_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_AdminClient_ListTopics]
+// [END pubsublite_v1_generated_AdminService_ListTopics_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_ListHubs]
+// [START networkconnectivity_v1alpha1_generated_HubService_ListHubs_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_ListHubs]
+// [END networkconnectivity_v1alpha1_generated_HubService_ListHubs_sync]

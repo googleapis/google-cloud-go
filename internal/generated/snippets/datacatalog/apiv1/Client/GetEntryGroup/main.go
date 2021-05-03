@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1_Client_GetEntryGroup]
+// [START datacatalog_v1_generated_DataCatalog_GetEntryGroup_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END datacatalog_generated_datacatalog_apiv1_Client_GetEntryGroup]
+// [END datacatalog_v1_generated_DataCatalog_GetEntryGroup_sync]

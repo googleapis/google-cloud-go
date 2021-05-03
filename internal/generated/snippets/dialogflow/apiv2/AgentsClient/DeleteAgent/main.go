@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_AgentsClient_DeleteAgent]
+// [START dialogflow_v2_generated_Agents_DeleteAgent_sync]
 
 package main
 
@@ -39,4 +39,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_AgentsClient_DeleteAgent]
+// [END dialogflow_v2_generated_Agents_DeleteAgent_sync]

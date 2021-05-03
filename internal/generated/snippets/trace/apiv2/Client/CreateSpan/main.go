@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtrace_generated_trace_apiv2_Client_CreateSpan]
+// [START cloudtrace_v2_generated_TraceService_CreateSpan_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudtrace_generated_trace_apiv2_Client_CreateSpan]
+// [END cloudtrace_v2_generated_TraceService_CreateSpan_sync]

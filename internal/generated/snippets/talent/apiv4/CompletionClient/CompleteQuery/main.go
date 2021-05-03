@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4_CompletionClient_CompleteQuery]
+// [START jobs_v4_generated_Completion_CompleteQuery_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END jobs_generated_talent_apiv4_CompletionClient_CompleteQuery]
+// [END jobs_v4_generated_Completion_CompleteQuery_sync]

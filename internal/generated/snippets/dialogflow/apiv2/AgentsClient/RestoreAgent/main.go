@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_AgentsClient_RestoreAgent]
+// [START dialogflow_v2_generated_Agents_RestoreAgent_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_AgentsClient_RestoreAgent]
+// [END dialogflow_v2_generated_Agents_RestoreAgent_sync]

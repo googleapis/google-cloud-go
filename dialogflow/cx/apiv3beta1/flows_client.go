@@ -51,6 +51,8 @@ type FlowsCallOptions struct {
 	TrainFlow               []gax.CallOption
 	ValidateFlow            []gax.CallOption
 	GetFlowValidationResult []gax.CallOption
+	ImportFlow              []gax.CallOption
+	ExportFlow              []gax.CallOption
 }
 
 func defaultFlowsClientOptions() []option.ClientOption {
@@ -145,6 +147,28 @@ func defaultFlowsCallOptions() *FlowsCallOptions {
 			}),
 		},
 		GetFlowValidationResult: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ImportFlow: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ExportFlow: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -445,6 +469,195 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 		return nil, err
 	}
 	return resp, nil
+}
+
+// ImportFlow imports the specified flow to the specified agent from a binary file.
+func (c *FlowsClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRequest, opts ...gax.CallOption) (*ImportFlowOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ImportFlow[0:len(c.CallOptions.ImportFlow):len(c.CallOptions.ImportFlow)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.flowsClient.ImportFlow(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ImportFlowOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// ExportFlow exports the specified flow to a binary file.
+//
+// Note that resources (e.g. intents, entities, webhooks) that the flow
+// references will also be exported.
+func (c *FlowsClient) ExportFlow(ctx context.Context, req *cxpb.ExportFlowRequest, opts ...gax.CallOption) (*ExportFlowOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ExportFlow[0:len(c.CallOptions.ExportFlow):len(c.CallOptions.ExportFlow)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.flowsClient.ExportFlow(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &ExportFlowOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+	}, nil
+}
+
+// ExportFlowOperation manages a long-running operation from ExportFlow.
+type ExportFlowOperation struct {
+	lro *longrunning.Operation
+}
+
+// ExportFlowOperation returns a new ExportFlowOperation from a given name.
+// The name must be that of a previously created ExportFlowOperation, possibly from a different process.
+func (c *FlowsClient) ExportFlowOperation(name string) *ExportFlowOperation {
+	return &ExportFlowOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ExportFlowOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.ExportFlowResponse, error) {
+	var resp cxpb.ExportFlowResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ExportFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.ExportFlowResponse, error) {
+	var resp cxpb.ExportFlowResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ExportFlowOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ExportFlowOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ExportFlowOperation) Name() string {
+	return op.lro.Name()
+}
+
+// ImportFlowOperation manages a long-running operation from ImportFlow.
+type ImportFlowOperation struct {
+	lro *longrunning.Operation
+}
+
+// ImportFlowOperation returns a new ImportFlowOperation from a given name.
+// The name must be that of a previously created ImportFlowOperation, possibly from a different process.
+func (c *FlowsClient) ImportFlowOperation(name string) *ImportFlowOperation {
+	return &ImportFlowOperation{
+		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *ImportFlowOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.ImportFlowResponse, error) {
+	var resp cxpb.ImportFlowResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *ImportFlowOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.ImportFlowResponse, error) {
+	var resp cxpb.ImportFlowResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *ImportFlowOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *ImportFlowOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *ImportFlowOperation) Name() string {
+	return op.lro.Name()
 }
 
 // TrainFlowOperation manages a long-running operation from TrainFlow.

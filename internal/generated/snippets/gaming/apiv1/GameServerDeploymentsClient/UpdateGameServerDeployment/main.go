@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_GameServerDeploymentsClient_UpdateGameServerDeployment]
+// [START gameservices_v1_generated_GameServerDeploymentsService_UpdateGameServerDeployment_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END gameservices_generated_gaming_apiv1_GameServerDeploymentsClient_UpdateGameServerDeployment]
+// [END gameservices_v1_generated_GameServerDeploymentsService_UpdateGameServerDeployment_sync]
