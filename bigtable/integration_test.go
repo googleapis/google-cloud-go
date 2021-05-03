@@ -2519,7 +2519,7 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Listing backups: %v", err)
 	}
 	if got, want := len(backups), 1; got != want {
-		t.Errorf("Listing backup count: %d, want: %d", got, want)
+		t.Fatalf("Listing backup count: %d, want: %d", got, want)
 	}
 	if got, want := backups[0].Name, backupName; got != want {
 		t.Errorf("Backup name: %s, want: %s", got, want)
