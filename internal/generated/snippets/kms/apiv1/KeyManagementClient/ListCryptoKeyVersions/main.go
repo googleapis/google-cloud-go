@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudkms_generated_kms_apiv1_KeyManagementClient_ListCryptoKeyVersions]
+// [START cloudkms_v1_generated_KeyManagementService_ListCryptoKeyVersions_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END cloudkms_generated_kms_apiv1_KeyManagementClient_ListCryptoKeyVersions]
+// [END cloudkms_v1_generated_KeyManagementService_ListCryptoKeyVersions_sync]

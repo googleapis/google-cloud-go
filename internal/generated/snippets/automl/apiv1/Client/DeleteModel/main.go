@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START automl_generated_automl_apiv1_Client_DeleteModel]
+// [START automl_v1_generated_AutoMl_DeleteModel_sync]
 
 package main
 
@@ -46,4 +46,4 @@ func main() {
 	}
 }
 
-// [END automl_generated_automl_apiv1_Client_DeleteModel]
+// [END automl_v1_generated_AutoMl_DeleteModel_sync]

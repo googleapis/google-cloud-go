@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicemanagement_generated_servicemanagement_apiv1_ServiceManagerClient_UndeleteService]
+// [START servicemanagement_v1_generated_ServiceManager_UndeleteService_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END servicemanagement_generated_servicemanagement_apiv1_ServiceManagerClient_UndeleteService]
+// [END servicemanagement_v1_generated_ServiceManager_UndeleteService_sync]

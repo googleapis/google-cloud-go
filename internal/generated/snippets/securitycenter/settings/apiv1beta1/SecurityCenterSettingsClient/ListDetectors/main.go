@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_settings_apiv1beta1_SecurityCenterSettingsClient_ListDetectors]
+// [START securitycenter_v1beta1_generated_SecurityCenterSettingsService_ListDetectors_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END securitycenter_generated_securitycenter_settings_apiv1beta1_SecurityCenterSettingsClient_ListDetectors]
+// [END securitycenter_v1beta1_generated_SecurityCenterSettingsService_ListDetectors_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbilling_generated_billing_apiv1_CloudBillingClient_TestIamPermissions]
+// [START cloudbilling_v1_generated_CloudBilling_TestIamPermissions_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudbilling_generated_billing_apiv1_CloudBillingClient_TestIamPermissions]
+// [END cloudbilling_v1_generated_CloudBilling_TestIamPermissions_sync]

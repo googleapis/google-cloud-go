@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START memcache_generated_memcache_apiv1beta2_CloudMemcacheClient_ApplySoftwareUpdate]
+// [START memcache_v1beta2_generated_CloudMemcache_ApplySoftwareUpdate_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END memcache_generated_memcache_apiv1beta2_CloudMemcacheClient_ApplySoftwareUpdate]
+// [END memcache_v1beta2_generated_CloudMemcache_ApplySoftwareUpdate_sync]

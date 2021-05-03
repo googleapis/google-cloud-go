@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START area120tables_generated_area120_tables_apiv1alpha1_Client_ListTables]
+// [START area120tables_v1alpha1_generated_TablesService_ListTables_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END area120tables_generated_area120_tables_apiv1alpha1_Client_ListTables]
+// [END area120tables_v1alpha1_generated_TablesService_ListTables_sync]

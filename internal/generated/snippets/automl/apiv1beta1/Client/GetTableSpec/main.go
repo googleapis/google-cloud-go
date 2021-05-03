@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START automl_generated_automl_apiv1beta1_Client_GetTableSpec]
+// [START automl_v1beta1_generated_AutoMl_GetTableSpec_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END automl_generated_automl_apiv1beta1_Client_GetTableSpec]
+// [END automl_v1beta1_generated_AutoMl_GetTableSpec_sync]

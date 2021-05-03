@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START policytroubleshooter_generated_policytroubleshooter_apiv1_IamCheckerClient_TroubleshootIamPolicy]
+// [START policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END policytroubleshooter_generated_policytroubleshooter_apiv1_IamCheckerClient_TroubleshootIamPolicy]
+// [END policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync]

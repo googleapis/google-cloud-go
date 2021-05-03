@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_UpdateSpoke]
+// [START networkconnectivity_v1alpha1_generated_HubService_UpdateSpoke_sync]
 
 package main
 
@@ -48,4 +48,4 @@ func main() {
 	_ = resp
 }
 
-// [END networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_UpdateSpoke]
+// [END networkconnectivity_v1alpha1_generated_HubService_UpdateSpoke_sync]

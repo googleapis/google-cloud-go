@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START webrisk_generated_webrisk_apiv1_Client_SearchUris]
+// [START webrisk_v1_generated_WebRiskService_SearchUris_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END webrisk_generated_webrisk_apiv1_Client_SearchUris]
+// [END webrisk_v1_generated_WebRiskService_SearchUris_sync]

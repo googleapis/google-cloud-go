@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_ListDataSources]
+// [START bigquerydatatransfer_v1_generated_DataTransferService_ListDataSources_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_ListDataSources]
+// [END bigquerydatatransfer_v1_generated_DataTransferService_ListDataSources_sync]

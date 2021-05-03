@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_dashboard_apiv1_DashboardsClient_ListDashboards]
+// [START monitoring_v1_generated_DashboardsService_ListDashboards_sync]
 
 package main
 
@@ -51,4 +51,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_dashboard_apiv1_DashboardsClient_ListDashboards]
+// [END monitoring_v1_generated_DashboardsService_ListDashboards_sync]

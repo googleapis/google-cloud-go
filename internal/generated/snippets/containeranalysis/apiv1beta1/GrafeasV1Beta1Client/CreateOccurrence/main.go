@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_CreateOccurrence]
+// [START containeranalysis_v1beta1_generated_GrafeasV1Beta1_CreateOccurrence_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_CreateOccurrence]
+// [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_CreateOccurrence_sync]

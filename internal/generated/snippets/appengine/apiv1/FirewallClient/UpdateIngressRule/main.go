@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START appengine_generated_appengine_apiv1_FirewallClient_UpdateIngressRule]
+// [START appengine_v1_generated_Firewall_UpdateIngressRule_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END appengine_generated_appengine_apiv1_FirewallClient_UpdateIngressRule]
+// [END appengine_v1_generated_Firewall_UpdateIngressRule_sync]
