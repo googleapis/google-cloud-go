@@ -2441,12 +2441,43 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	table := testEnv.Config().Table
-	cluster := testEnv.Config().Cluster
-
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
-	defer deleteTable(ctx, t, adminClient, table)
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	sourceInstance := testEnv.Config().Instance
+	sourceCluster := testEnv.Config().Cluster
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+	diffInstance := testEnv.Config().Instance + "-diff"
+	diffCluster := sourceCluster + "-diff"
+	conf := &InstanceConf{
+		InstanceId:   diffInstance,
+		ClusterId:    diffCluster,
+		DisplayName:  "different test sourceInstance",
+		Zone:         instanceToCreateZone2,
+		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
+	}
+	defer iAdminClient.DeleteInstance(ctx, diffInstance)
+	// Create different instance to restore table.
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Errorf("CreateInstance: %v", err)
+	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {
 		infos := []*BackupInfo(nil)
@@ -2465,12 +2496,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		return infos, err
 	}
 
-	if err := adminClient.CreateTable(ctx, table); err != nil {
-		t.Fatalf("Creating table: %v", err)
-	}
-
 	// Precondition: no backups
-	backups, err := list(cluster)
+	backups, err := list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Initial backup list: %v", err)
 	}
@@ -2480,14 +2507,14 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Create backup
 	backupName := "mybackup"
-	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
+	defer adminClient.DeleteBackup(ctx, sourceCluster, "mybackup")
 
-	if err = adminClient.CreateBackup(ctx, table, cluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
+	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
 	// List backup
-	backups, err = list(cluster)
+	backups, err = list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Listing backups: %v", err)
 	}
@@ -2495,17 +2522,17 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Listing backup count: %d, want: %d", got, want)
 	}
 	if got, want := backups[0].Name, backupName; got != want {
-		t.Fatalf("Backup name: %s, want: %s", got, want)
+		t.Errorf("Backup name: %s, want: %s", got, want)
 	}
-	if got, want := backups[0].SourceTable, table; got != want {
-		t.Fatalf("Backup SourceTable: %s, want: %s", got, want)
+	if got, want := backups[0].SourceTable, tblConf.TableID; got != want {
+		t.Errorf("Backup SourceTable: %s, want: %s", got, want)
 	}
 	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Fatalf("Backup ExpireTime: %s, want: %s", got, want)
+		t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
 	}
 
 	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, cluster, backupName)
+	backup, err := adminClient.BackupInfo(ctx, sourceCluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
@@ -2515,42 +2542,73 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Update backup
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
+	err = adminClient.UpdateBackup(ctx, sourceCluster, backupName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, backupName)
+	updatedBackup, err := adminClient.BackupInfo(ctx, sourceCluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
 	backup.ExpireTime = newExpireTime
 	// Server clock and local clock may not be perfectly sync'ed.
 	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
-		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Restore backup
-	restoredTable := table + "-restored"
+	restoredTable := tblConf.TableID + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, backupName); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, sourceCluster, backupName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
 	}
+	// Restore backup to different instance
+	restoreTableName := tblConf.TableID + "-diff-restored"
+	diffConf := IntegrationTestConfig{
+		Project:  testEnv.Config().Project,
+		Instance: diffInstance,
+		Cluster:  diffCluster,
+		Table:    restoreTableName,
+	}
+	env := &ProdEnv{
+		config: diffConf,
+	}
+	dAdminClient, err := env.NewAdminClient()
+	if err != nil {
+		t.Errorf("NewAdminClient: %v", err)
+	}
+	defer dAdminClient.Close()
+
+	defer deleteTable(ctx, t, dAdminClient, restoreTableName)
+	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, "mybackup"); err != nil {
+		t.Fatalf("RestoreTableFrom: %v", err)
+	}
+	tblInfo, err := dAdminClient.TableInfo(ctx, restoreTableName)
+	if err != nil {
+		t.Fatalf("Restored to different sourceInstance failed, TableInfo: %v", err)
+	}
+	families := tblInfo.Families
+	sort.Strings(tblInfo.Families)
+	wantFams := []string{"fam1", "fam2"}
+	if !testutil.Equal(families, wantFams) {
+		t.Errorf("Column family mismatch, got %v, want %v", tblInfo.Families, wantFams)
+	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, cluster, backupName); err != nil {
+	if err = adminClient.DeleteBackup(ctx, sourceCluster, backupName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
-	backups, err = list(cluster)
+	backups, err = list(sourceCluster)
 	if err != nil {
 		t.Fatalf("List after Delete: %v", err)
 	}
 	if got, want := len(backups), 0; got != want {
-		t.Fatalf("List after delete len: %d, want: %d", got, want)
+		t.Errorf("List after delete len: %d, want: %d", got, want)
 	}
 }
 
