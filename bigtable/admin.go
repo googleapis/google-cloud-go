@@ -1583,15 +1583,17 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 }
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
+// To restore a table to a different instance, see RestoreTableFrom.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
-	return ac.RestoreTableFrom(ctx, ac.instance, cluster, table, backup)
+	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
 }
 
 // RestoreTableFrom creates a new table in the admin's instance by restoring from the specified backup in a different instance.
+// To restore within the same instance, see RestoreTable.
 // sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
 // tableName (ex. "my-restored-table") will be the name of the newly created table
 // backupName (ex. "my-backup") is the name of the backup to restore
-func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, sourceCluster, tableName, backupName string) error {
+func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tableName, sourceCluster, backupName string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := ac.instancePrefix()
 	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backupName)
