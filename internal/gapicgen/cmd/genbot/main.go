@@ -41,6 +41,7 @@ func main() {
 	githubName := flag.String("githubName", os.Getenv("GITHUB_NAME"), "The name of the author for git commits.")
 	githubEmail := flag.String("githubEmail", os.Getenv("GITHUB_EMAIL"), "The email address of the author.")
 	localMode := flag.Bool("local", strToBool(os.Getenv("GENBOT_LOCAL_MODE")), "Enables generating sources locally. This mode will not open any pull requests.")
+	updateAll := flag.Bool("updateAll", strToBool(os.Getenv("UPDATE_ALL")), "Enables updating all code with no filtering. Useful to force update code and genproto dependencies.")
 
 	// flags for local mode
 	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
@@ -67,7 +68,7 @@ func main() {
 		}
 		return
 	}
-	if err := genBot(ctx, *githubAccessToken, *githubUsername, *githubName, *githubEmail); err != nil {
+	if err := genBot(ctx, *githubAccessToken, *githubUsername, *githubName, *githubEmail, *updateAll); err != nil {
 		log.Fatal(err)
 	}
 }

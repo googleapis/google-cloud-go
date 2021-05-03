@@ -15,11 +15,13 @@
 package generator
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"log"
 	"os"
+	"os/exec"
 	"path/filepath"
 	"strings"
 
@@ -37,6 +39,7 @@ type GapicGenerator struct {
 	gapicToGenerate   string
 	regenOnly         bool
 	onlyGenerateGapic bool
+	updateAll         bool
 }
 
 // NewGapicGenerator creates a GapicGenerator.
@@ -49,6 +52,7 @@ func NewGapicGenerator(c *Config) *GapicGenerator {
 		gapicToGenerate:   c.GapicToGenerate,
 		regenOnly:         c.RegenOnly,
 		onlyGenerateGapic: c.OnlyGenerateGapic,
+		updateAll:         c.UpdateAll,
 	}
 }
 
@@ -80,6 +84,13 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
+	// TODO(codyoss): Might want a flag to ignore this and run on everything.
+	modDirs, err := g.findModifiedModuleDirs()
+	if err != nil {
+		return err
+	}
+	_ = modDirs
+
 	if err := g.setVersion(); err != nil {
 		return err
 	}
@@ -89,7 +100,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 			return err
 		}
 	}
-
+	//if err := g.addModReplaceGenproto(modDirs); err != nil {
 	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
 		return err
 	}
@@ -102,6 +113,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
+	//if err := g.dropModReplaceGenproto(modDirs); err != nil {
 	if err := execv.ForEachMod(g.googleCloudDir, g.dropModReplaceGenproto); err != nil {
 		return err
 	}
@@ -193,6 +205,7 @@ go mod edit -replace "google.golang.org/genproto=$GENPROTO_DIR"
 
 // dropModReplaceGenproto drops the genproto replace statement. It is intended
 // to be run after addModReplaceGenproto.
+// func (g *GapicGenerator) dropModReplaceGenproto(mods []string) error {
 func (g *GapicGenerator) dropModReplaceGenproto(dir string) error {
 	log.Printf("[%s] removing genproto replace statement", dir)
 	c := execv.Command("bash", "-c", `
@@ -211,6 +224,7 @@ go mod edit -dropreplace "google.golang.org/genproto"
 // setVersion updates the versionClient constant in all .go files. It may create
 // .backup files on certain systems (darwin), and so should be followed by a
 // clean-up of .backup files.
+// TODO: take mod dir
 func (g *GapicGenerator) setVersion() error {
 	log.Println("updating client version")
 	// TODO(deklerk): Migrate this all to Go instead of using bash.
@@ -225,6 +239,26 @@ find . -name '*.backup' -delete
 `)
 	c.Dir = g.googleCloudDir
 	return c.Run()
+}
+
+func (g *GapicGenerator) findModifiedModuleDirs() ([]string, error) {
+	var modDirs []string
+	out := bytes.NewBuffer(nil)
+	if g.updateAll {
+		c := exec.Command("find", ".", "-name", "go.mod")
+		c.Dir = g.googleCloudDir
+		c.Stdout = out
+		err := c.Run()
+		if err != nil {
+			return nil, err
+		}
+		for _, v := range strings.Split(out.String(), "\n") {
+			v = filepath.Dir(filepath.Join(g.googleCloudDir, v))
+			modDirs = append(modDirs, v)
+		}
+		return modDirs, nil
+	}
+	return nil, nil
 }
 
 // microgen runs the microgenerator on a single microgen config.

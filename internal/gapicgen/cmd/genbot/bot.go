@@ -19,14 +19,13 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"log"
 	"time"
 
 	"cloud.google.com/go/internal/gapicgen/git"
 )
 
-func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, githubEmail string) error {
+func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, githubEmail string, updateAll bool) error {
 	for k, v := range map[string]string{
 		"githubAccessToken": githubAccessToken,
 		"githubUsername":    githubUsername,
@@ -49,12 +48,13 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		return err
 	} else if pr != nil {
-		return fmt.Errorf("there is already a re-generation in progress")
+		log.Println("there is already a re-generation in progress")
+		return nil
 	}
 	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
 		return err
 	} else if pr != nil {
-		if err := updateGocloudPR(ctx, githubClient, pr); err != nil {
+		if err := updateGocloudPR(ctx, githubClient, pr, updateAll); err != nil {
 			return err
 		}
 		return nil
@@ -73,7 +73,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 		return nil
 	}
 
-	return generate(ctx, githubClient)
+	return generate(ctx, githubClient, updateAll)
 }
 
 // hasCreatedPRToday checks if the created time of a PR is from today.

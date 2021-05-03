@@ -15,6 +15,7 @@
 package git
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -22,6 +23,7 @@ import (
 	"os"
 	"os/user"
 	"path"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -105,7 +107,7 @@ func NewGithubClient(ctx context.Context, username, name, email, accessToken str
 	return &GithubClient{cV3: github.NewClient(tc), cV4: githubv4.NewClient(tc), Username: username}, nil
 }
 
-// SetGitCreds sets credentials for gerrit.
+// SetGitCreds sets credentials for GitHub.
 func setGitCreds(githubName, githubEmail, githubUsername, accessToken string) error {
 	u, err := user.Current()
 	if err != nil {
@@ -352,13 +354,31 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 
 // UpdateGocloudGoMod updates the go.mod to include latest version of genproto
 // for the given gocloud ref.
-func (gc *GithubClient) UpdateGocloudGoMod(pr *PullRequest) error {
-	tmpDir, err := ioutil.TempDir("", "finalize-gerrit-cl")
+func (gc *GithubClient) UpdateGocloudGoMod(pr *PullRequest, updateAll bool) error {
+	tmpDir, err := ioutil.TempDir("", "finalize-github-pr")
 	if err != nil {
 		return err
 	}
 	defer os.RemoveAll(tmpDir)
 
+	//TODO be smart based on edited files which directories to run these commands in.
+
+	if err := checkoutCode(tmpDir); err != nil {
+		return err
+	}
+
+	if err := updateDeps(tmpDir, updateAll); err != nil {
+		return err
+	}
+
+	if err := addAndPushCode(tmpDir); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func checkoutCode(tmpDir string) error {
 	c := execv.Command("/bin/bash", "-c", `
 set -ex
 
@@ -366,8 +386,83 @@ git init
 git remote add origin https://github.com/googleapis/google-cloud-go
 git fetch --all
 git checkout $BRANCH_NAME
+`)
+	c.Env = []string{
+		fmt.Sprintf("BRANCH_NAME=%s", "regen_gocloud"),
+	}
+	c.Dir = tmpDir
+	return c.Run()
+}
 
-# tidyall
+func updateDeps(tmpDir string, updateAll bool) error {
+	if updateAll {
+		return execv.ForEachMod(tmpDir, func(dir string) error {
+			c := execv.Command("/bin/bash", "-c", `
+set -ex
+
+# Update genproto and api to latest for every module (latest version is
+# always correct version). tidy will remove the dependencies if they're not
+# actually used by the client.
+go get -d google.golang.org/api | true # We don't care that there's no files at root.
+go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
+go mod tidy;
+			`)
+			c.Dir = dir
+			return c.Run()
+		})
+	}
+	out := bytes.NewBuffer(nil)
+	c := execv.Command("git", "diff", "--name-only", "HEAD", "HEAD~1")
+	c.Stdout = out
+	c.Dir = tmpDir
+	if err := c.Run(); err != nil {
+		return err
+	}
+	files := strings.Split(out.String(), "\n")
+	dirs := map[string]bool{}
+	for _, file := range files {
+		dir := filepath.Dir(file)
+		dirs[filepath.Join(tmpDir, dir)] = true
+	}
+	updatedModDirs := map[string]bool{}
+	errWriter := bytes.NewBuffer(nil)
+	for dir := range dirs {
+		out.Reset()
+		errWriter.Reset()
+		c := execv.Command("go", "list", "-f", "'{{.Module.Dir}}'")
+		c.Dir = dir
+		c.Stdout = out
+		c.Stderr = errWriter
+		if err := c.Run(); err != nil {
+			if strings.Contains(errWriter.String(), "build constraints exclude all Go files") {
+				continue
+			}
+			return err
+		}
+		modDir := strings.Trim(strings.TrimSpace(out.String()), "'")
+		updatedModDirs[modDir] = true
+	}
+	for modDir := range updatedModDirs {
+		log.Printf("Updating module dir %q", modDir)
+		c := execv.Command("/bin/bash", "-c", `
+set -ex
+
+go get -d google.golang.org/api | true # We don't care that there's no files at root.
+go get -d google.golang.org/genproto | true # We don't care that there's no files at root.
+go mod tidy
+`)
+		c.Dir = tmpDir
+		if err := c.Run(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func updateAllDeps(tmpDir string) error {
+	c := execv.Command("/bin/bash", "-c", `
+set -ex
+
 go mod tidy
 for i in $(find . -name go.mod); do
 	pushd $(dirname $i);
@@ -379,6 +474,16 @@ for i in $(find . -name go.mod); do
 		go mod tidy;
 	popd;
 done
+`)
+	c.Dir = tmpDir
+	return c.Run()
+}
+
+// TODO: comeback
+
+func addAndPushCode(tmpDir string) error {
+	c := execv.Command("/bin/bash", "-c", `
+set -ex
 
 git add -A
 filesUpdated=$( git status --short | wc -l )

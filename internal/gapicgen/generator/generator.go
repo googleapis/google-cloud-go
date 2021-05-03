@@ -39,6 +39,7 @@ type Config struct {
 	OnlyGenerateGapic bool
 	LocalMode         bool
 	RegenOnly         bool
+	UpdateAll         bool
 }
 
 // Generate generates genproto and gapics.
@@ -129,7 +130,6 @@ func vet(dir string) error {
 	if err := c.Run(); err != nil {
 		return err
 	}
-
 	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
 	c.Dir = dir
 	return c.Run()

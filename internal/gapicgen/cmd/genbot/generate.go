@@ -31,7 +31,7 @@ import (
 
 // generate downloads sources and generates pull requests for go-genproto and
 // google-cloud-go if needed.
-func generate(ctx context.Context, githubClient *git.GithubClient) error {
+func generate(ctx context.Context, githubClient *git.GithubClient, updateAll bool) error {
 	log.Println("creating temp dir")
 	tmpDir, err := ioutil.TempDir("", "update-genproto")
 	if err != nil {
@@ -71,6 +71,7 @@ func generate(ctx context.Context, githubClient *git.GithubClient) error {
 		GenprotoDir:   genprotoDir,
 		GapicDir:      gocloudDir,
 		ProtoDir:      protoDir,
+		UpdateAll:     updateAll,
 	}
 	changes, err := generator.Generate(ctx, conf)
 	if err != nil {

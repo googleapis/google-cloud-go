@@ -48,6 +48,7 @@ type GenprotoGenerator struct {
 	genprotoDir   string
 	googleapisDir string
 	protoSrcDir   string
+	updateAll     bool
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
@@ -56,6 +57,7 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 		genprotoDir:   c.GenprotoDir,
 		googleapisDir: c.GoogleapisDir,
 		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
+		updateAll:     c.UpdateAll,
 	}
 }
 

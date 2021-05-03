@@ -24,13 +24,13 @@ import (
 	"cloud.google.com/go/internal/gapicgen/git"
 )
 
-func updateGocloudPR(ctx context.Context, githubClient *git.GithubClient, pr *git.PullRequest) error {
+func updateGocloudPR(ctx context.Context, githubClient *git.GithubClient, pr *git.PullRequest, updateAll bool) error {
 	if pr.Author != githubClient.Username {
 		return fmt.Errorf("pull request author %q does not match authenticated user %q", pr.Author, githubClient.Username)
 	}
 
 	// Checkout PR and update go.mod
-	if err := githubClient.UpdateGocloudGoMod(pr); err != nil {
+	if err := githubClient.UpdateGocloudGoMod(pr, updateAll); err != nil {
 		return err
 	}
 
