@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START resourcesettings_generated_resourcesettings_apiv1_Client_GetSetting]
+// [START resourcesettings_v1_generated_ResourceSettingsService_GetSetting_sync]
 
 package main
 
@@ -43,4 +43,4 @@ func main() {
 	_ = resp
 }
 
-// [END resourcesettings_generated_resourcesettings_apiv1_Client_GetSetting]
+// [END resourcesettings_v1_generated_ResourceSettingsService_GetSetting_sync]

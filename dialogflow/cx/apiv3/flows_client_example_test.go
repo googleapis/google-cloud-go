@@ -199,3 +199,53 @@ func ExampleFlowsClient_GetFlowValidationResult() {
 	// TODO: Use resp.
 	_ = resp
 }
+
+func ExampleFlowsClient_ImportFlow() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
+
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ImportFlowRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ImportFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleFlowsClient_ExportFlow() {
+	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
+
+	ctx := context.Background()
+	c, err := cx.NewFlowsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &cxpb.ExportFlowRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.ExportFlow(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
