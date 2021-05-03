@@ -17,8 +17,10 @@ package bigquery
 import (
 	"errors"
 	"net/http"
+	"net/url"
 	"testing"
 
+	"golang.org/x/xerrors"
 	"google.golang.org/api/googleapi"
 )
 
@@ -45,6 +47,32 @@ func TestRetryableErrors(t *testing.T) {
 				Message: "foo",
 			},
 			true,
+		},
+		{
+			"url connection error",
+			&url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")},
+			true,
+		},
+		{
+			"url other error",
+			&url.Error{Op: "blah", URL: "blah", Err: errors.New("blah")},
+			false,
+		},
+		{
+			"wrapped retryable",
+			xerrors.Errorf("test of wrapped retryable: %w", &googleapi.Error{
+				Code:    http.StatusServiceUnavailable,
+				Message: "foo",
+				Errors: []googleapi.ErrorItem{
+					{Reason: "backendError", Message: "foo"},
+				},
+			}),
+			true,
+		},
+		{
+			"wrapped non-retryable",
+			xerrors.Errorf("test of wrapped retryable: %w", errors.New("blah")),
+			false,
 		},
 		{
 			// not retried per https://google.aip.dev/194
