@@ -1,6 +1,5 @@
 # Changes
 
-
 ## [0.81.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.80.0...v0.81.0) (2021-04-02)
 
 
