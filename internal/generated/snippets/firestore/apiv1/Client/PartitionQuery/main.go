@@ -17,8 +17,9 @@
 package main
 
 import (
-	firestore "cloud.google.com/go/firestore/apiv1"
 	"context"
+
+	firestore "cloud.google.com/go/firestore/apiv1"
 	"google.golang.org/api/iterator"
 	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )

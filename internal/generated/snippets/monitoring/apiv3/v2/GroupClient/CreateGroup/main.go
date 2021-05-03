@@ -17,8 +17,9 @@
 package main
 
 import (
-	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	"context"
+
+	monitoring "cloud.google.com/go/monitoring/apiv3/v2"
 	monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
 )
 

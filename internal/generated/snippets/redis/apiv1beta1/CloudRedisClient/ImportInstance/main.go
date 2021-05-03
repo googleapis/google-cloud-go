@@ -17,8 +17,9 @@
 package main
 
 import (
-	redis "cloud.google.com/go/redis/apiv1beta1"
 	"context"
+
+	redis "cloud.google.com/go/redis/apiv1beta1"
 	redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
 )
 

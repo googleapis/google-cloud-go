@@ -17,8 +17,9 @@
 package main
 
 import (
-	retail "cloud.google.com/go/retail/apiv2"
 	"context"
+
+	retail "cloud.google.com/go/retail/apiv2"
 	retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
 )
 

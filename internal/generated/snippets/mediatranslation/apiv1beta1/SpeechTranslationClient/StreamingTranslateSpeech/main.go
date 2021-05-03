@@ -17,10 +17,11 @@
 package main
 
 import (
-	mediatranslation "cloud.google.com/go/mediatranslation/apiv1beta1"
 	"context"
-	mediatranslationpb "google.golang.org/genproto/googleapis/cloud/mediatranslation/v1beta1"
 	"io"
+
+	mediatranslation "cloud.google.com/go/mediatranslation/apiv1beta1"
+	mediatranslationpb "google.golang.org/genproto/googleapis/cloud/mediatranslation/v1beta1"
 )
 
 func main() {

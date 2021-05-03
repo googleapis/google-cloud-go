@@ -17,8 +17,9 @@
 package main
 
 import (
-	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	"context"
+
+	storage "cloud.google.com/go/bigquery/storage/apiv1"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
 )
 

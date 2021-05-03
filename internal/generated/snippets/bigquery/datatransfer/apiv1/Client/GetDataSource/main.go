@@ -17,8 +17,9 @@
 package main
 
 import (
-	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
 	"context"
+
+	datatransfer "cloud.google.com/go/bigquery/datatransfer/apiv1"
 	datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
 )
 

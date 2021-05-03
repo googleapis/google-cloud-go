@@ -17,8 +17,9 @@
 package main
 
 import (
-	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"context"
+
+	pubsub "cloud.google.com/go/pubsub/apiv1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 

@@ -17,8 +17,9 @@
 package main
 
 import (
-	vision "cloud.google.com/go/vision/apiv1p1beta1"
 	"context"
+
+	vision "cloud.google.com/go/vision/apiv1p1beta1"
 	visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1p1beta1"
 )
 

@@ -17,8 +17,9 @@
 package main
 
 import (
-	memcache "cloud.google.com/go/memcache/apiv1"
 	"context"
+
+	memcache "cloud.google.com/go/memcache/apiv1"
 	"google.golang.org/api/iterator"
 	memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
 )

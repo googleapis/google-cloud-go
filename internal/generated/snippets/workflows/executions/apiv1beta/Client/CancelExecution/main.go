@@ -17,8 +17,9 @@
 package main
 
 import (
-	executions "cloud.google.com/go/workflows/executions/apiv1beta"
 	"context"
+
+	executions "cloud.google.com/go/workflows/executions/apiv1beta"
 	executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
 )
 

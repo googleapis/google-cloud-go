@@ -17,8 +17,9 @@
 package main
 
 import (
-	servicemanagement "cloud.google.com/go/servicemanagement/apiv1"
 	"context"
+
+	servicemanagement "cloud.google.com/go/servicemanagement/apiv1"
 	"google.golang.org/api/iterator"
 	servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
 )

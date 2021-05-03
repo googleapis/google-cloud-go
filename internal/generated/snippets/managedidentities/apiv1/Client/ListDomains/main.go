@@ -17,8 +17,9 @@
 package main
 
 import (
-	managedidentities "cloud.google.com/go/managedidentities/apiv1"
 	"context"
+
+	managedidentities "cloud.google.com/go/managedidentities/apiv1"
 	"google.golang.org/api/iterator"
 	managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
 )

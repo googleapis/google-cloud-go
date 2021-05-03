@@ -17,10 +17,11 @@
 package main
 
 import (
-	speech "cloud.google.com/go/speech/apiv1"
 	"context"
-	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 	"io"
+
+	speech "cloud.google.com/go/speech/apiv1"
+	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
 )
 
 func main() {

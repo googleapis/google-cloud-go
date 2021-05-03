@@ -17,8 +17,9 @@
 package main
 
 import (
-	osconfig "cloud.google.com/go/osconfig/apiv1"
 	"context"
+
+	osconfig "cloud.google.com/go/osconfig/apiv1"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
 )
 

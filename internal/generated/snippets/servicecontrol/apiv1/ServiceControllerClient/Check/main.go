@@ -17,8 +17,9 @@
 package main
 
 import (
-	servicecontrol "cloud.google.com/go/servicecontrol/apiv1"
 	"context"
+
+	servicecontrol "cloud.google.com/go/servicecontrol/apiv1"
 	servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
 )
 

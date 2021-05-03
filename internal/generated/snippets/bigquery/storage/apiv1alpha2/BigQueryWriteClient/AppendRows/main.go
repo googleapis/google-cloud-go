@@ -17,10 +17,11 @@
 package main
 
 import (
-	storage "cloud.google.com/go/bigquery/storage/apiv1alpha2"
 	"context"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2"
 	"io"
+
+	storage "cloud.google.com/go/bigquery/storage/apiv1alpha2"
+	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2"
 )
 
 func main() {

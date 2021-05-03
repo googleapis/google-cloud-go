@@ -17,8 +17,9 @@
 package main
 
 import (
-	dashboard "cloud.google.com/go/monitoring/dashboard/apiv1"
 	"context"
+
+	dashboard "cloud.google.com/go/monitoring/dashboard/apiv1"
 	"google.golang.org/api/iterator"
 	dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
 )

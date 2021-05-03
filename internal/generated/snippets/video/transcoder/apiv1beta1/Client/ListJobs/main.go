@@ -17,8 +17,9 @@
 package main
 
 import (
-	transcoder "cloud.google.com/go/video/transcoder/apiv1beta1"
 	"context"
+
+	transcoder "cloud.google.com/go/video/transcoder/apiv1beta1"
 	"google.golang.org/api/iterator"
 	transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
 )

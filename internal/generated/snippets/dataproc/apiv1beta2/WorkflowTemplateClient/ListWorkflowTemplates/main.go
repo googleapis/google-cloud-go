@@ -17,8 +17,9 @@
 package main
 
 import (
-	dataproc "cloud.google.com/go/dataproc/apiv1beta2"
 	"context"
+
+	dataproc "cloud.google.com/go/dataproc/apiv1beta2"
 	"google.golang.org/api/iterator"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
 )

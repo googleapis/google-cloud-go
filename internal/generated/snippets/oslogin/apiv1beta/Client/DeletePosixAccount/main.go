@@ -17,8 +17,9 @@
 package main
 
 import (
-	oslogin "cloud.google.com/go/oslogin/apiv1beta"
 	"context"
+
+	oslogin "cloud.google.com/go/oslogin/apiv1beta"
 	osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1beta"
 )
 

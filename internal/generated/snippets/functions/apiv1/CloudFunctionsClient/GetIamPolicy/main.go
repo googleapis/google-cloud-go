@@ -17,8 +17,9 @@
 package main
 
 import (
-	functions "cloud.google.com/go/functions/apiv1"
 	"context"
+
+	functions "cloud.google.com/go/functions/apiv1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 

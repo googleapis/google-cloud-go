@@ -17,8 +17,9 @@
 package main
 
 import (
-	container "cloud.google.com/go/container/apiv1"
 	"context"
+
+	container "cloud.google.com/go/container/apiv1"
 	"google.golang.org/api/iterator"
 	containerpb "google.golang.org/genproto/googleapis/container/v1"
 )

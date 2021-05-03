@@ -17,8 +17,9 @@
 package main
 
 import (
-	resourcemanager "cloud.google.com/go/resourcemanager/apiv2"
 	"context"
+
+	resourcemanager "cloud.google.com/go/resourcemanager/apiv2"
 	resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
 )
 

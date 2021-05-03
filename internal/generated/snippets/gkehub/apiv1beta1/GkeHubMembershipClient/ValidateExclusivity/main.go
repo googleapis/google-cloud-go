@@ -17,8 +17,9 @@
 package main
 
 import (
-	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
 	"context"
+
+	gkehub "cloud.google.com/go/gkehub/apiv1beta1"
 	gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
 )
 

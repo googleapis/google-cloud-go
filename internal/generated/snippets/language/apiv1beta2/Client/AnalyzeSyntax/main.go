@@ -17,8 +17,9 @@
 package main
 
 import (
-	language "cloud.google.com/go/language/apiv1beta2"
 	"context"
+
+	language "cloud.google.com/go/language/apiv1beta2"
 	languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
 )
 

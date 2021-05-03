@@ -17,10 +17,11 @@
 package main
 
 import (
-	firestore "cloud.google.com/go/firestore/apiv1"
 	"context"
-	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 	"io"
+
+	firestore "cloud.google.com/go/firestore/apiv1"
+	firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
 )
 
 func main() {

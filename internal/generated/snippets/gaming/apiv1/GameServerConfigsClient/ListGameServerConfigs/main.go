@@ -17,8 +17,9 @@
 package main
 
 import (
-	gaming "cloud.google.com/go/gaming/apiv1"
 	"context"
+
+	gaming "cloud.google.com/go/gaming/apiv1"
 	"google.golang.org/api/iterator"
 	gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
 )

@@ -17,8 +17,9 @@
 package main
 
 import (
-	pubsublite "cloud.google.com/go/pubsublite/apiv1"
 	"context"
+
+	pubsublite "cloud.google.com/go/pubsublite/apiv1"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
 )
 

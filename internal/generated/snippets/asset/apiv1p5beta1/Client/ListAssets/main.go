@@ -17,8 +17,9 @@
 package main
 
 import (
-	asset "cloud.google.com/go/asset/apiv1p5beta1"
 	"context"
+
+	asset "cloud.google.com/go/asset/apiv1p5beta1"
 	"google.golang.org/api/iterator"
 	assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p5beta1"
 )

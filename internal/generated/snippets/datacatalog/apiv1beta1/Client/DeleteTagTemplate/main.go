@@ -17,8 +17,9 @@
 package main
 
 import (
-	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
 	"context"
+
+	datacatalog "cloud.google.com/go/datacatalog/apiv1beta1"
 	datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
 )
 

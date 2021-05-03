@@ -17,8 +17,9 @@
 package main
 
 import (
-	recommender "cloud.google.com/go/recommender/apiv1beta1"
 	"context"
+
+	recommender "cloud.google.com/go/recommender/apiv1beta1"
 	recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
 )
 

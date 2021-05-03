@@ -17,8 +17,9 @@
 package main
 
 import (
-	webrisk "cloud.google.com/go/webrisk/apiv1"
 	"context"
+
+	webrisk "cloud.google.com/go/webrisk/apiv1"
 	webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
 )
 

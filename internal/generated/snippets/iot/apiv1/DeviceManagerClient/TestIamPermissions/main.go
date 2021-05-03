@@ -17,8 +17,9 @@
 package main
 
 import (
-	iot "cloud.google.com/go/iot/apiv1"
 	"context"
+
+	iot "cloud.google.com/go/iot/apiv1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 

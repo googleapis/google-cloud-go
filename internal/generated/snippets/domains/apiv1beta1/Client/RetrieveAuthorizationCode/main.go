@@ -17,8 +17,9 @@
 package main
 
 import (
-	domains "cloud.google.com/go/domains/apiv1beta1"
 	"context"
+
+	domains "cloud.google.com/go/domains/apiv1beta1"
 	domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
 )
 

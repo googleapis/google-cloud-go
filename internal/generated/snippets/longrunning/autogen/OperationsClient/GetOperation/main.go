@@ -17,8 +17,9 @@
 package main
 
 import (
-	longrunning "cloud.google.com/go/longrunning/autogen"
 	"context"
+
+	longrunning "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 )
 

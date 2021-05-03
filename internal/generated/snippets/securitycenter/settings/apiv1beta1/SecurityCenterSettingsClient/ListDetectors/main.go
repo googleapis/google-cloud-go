@@ -17,8 +17,9 @@
 package main
 
 import (
-	settings "cloud.google.com/go/securitycenter/settings/apiv1beta1"
 	"context"
+
+	settings "cloud.google.com/go/securitycenter/settings/apiv1beta1"
 	"google.golang.org/api/iterator"
 	settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
 )

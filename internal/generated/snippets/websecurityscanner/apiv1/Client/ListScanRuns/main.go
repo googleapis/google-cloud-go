@@ -17,8 +17,9 @@
 package main
 
 import (
-	websecurityscanner "cloud.google.com/go/websecurityscanner/apiv1"
 	"context"
+
+	websecurityscanner "cloud.google.com/go/websecurityscanner/apiv1"
 	"google.golang.org/api/iterator"
 	websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
 )

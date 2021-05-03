@@ -17,8 +17,9 @@
 package main
 
 import (
-	phishingprotection "cloud.google.com/go/phishingprotection/apiv1beta1"
 	"context"
+
+	phishingprotection "cloud.google.com/go/phishingprotection/apiv1beta1"
 	phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
 )
 

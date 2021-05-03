@@ -17,8 +17,9 @@
 package main
 
 import (
-	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
 	"context"
+
+	containeranalysis "cloud.google.com/go/containeranalysis/apiv1beta1"
 	"google.golang.org/api/iterator"
 	grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
 )

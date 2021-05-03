@@ -17,8 +17,9 @@
 package main
 
 import (
-	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
 	"context"
+
+	errorreporting "cloud.google.com/go/errorreporting/apiv1beta1"
 	clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
 )
 

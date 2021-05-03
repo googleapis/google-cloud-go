@@ -17,8 +17,9 @@
 package main
 
 import (
-	documentai "cloud.google.com/go/documentai/apiv1"
 	"context"
+
+	documentai "cloud.google.com/go/documentai/apiv1"
 	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
 )
 

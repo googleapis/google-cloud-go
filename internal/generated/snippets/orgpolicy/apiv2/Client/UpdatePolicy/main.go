@@ -17,8 +17,9 @@
 package main
 
 import (
-	orgpolicy "cloud.google.com/go/orgpolicy/apiv2"
 	"context"
+
+	orgpolicy "cloud.google.com/go/orgpolicy/apiv2"
 	orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
 )
 

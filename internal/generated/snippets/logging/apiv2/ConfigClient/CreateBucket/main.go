@@ -17,8 +17,9 @@
 package main
 
 import (
-	logging "cloud.google.com/go/logging/apiv2"
 	"context"
+
+	logging "cloud.google.com/go/logging/apiv2"
 	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 

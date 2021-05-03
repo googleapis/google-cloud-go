@@ -17,8 +17,9 @@
 package main
 
 import (
-	artifactregistry "cloud.google.com/go/artifactregistry/apiv1beta2"
 	"context"
+
+	artifactregistry "cloud.google.com/go/artifactregistry/apiv1beta2"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 

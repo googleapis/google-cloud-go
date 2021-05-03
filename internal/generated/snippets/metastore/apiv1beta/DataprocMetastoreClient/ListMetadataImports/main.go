@@ -17,8 +17,9 @@
 package main
 
 import (
-	metastore "cloud.google.com/go/metastore/apiv1beta"
 	"context"
+
+	metastore "cloud.google.com/go/metastore/apiv1beta"
 	"google.golang.org/api/iterator"
 	metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1beta"
 )

@@ -17,10 +17,11 @@
 package main
 
 import (
-	cx "cloud.google.com/go/dialogflow/cx/apiv3"
 	"context"
-	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 	"io"
+
+	cx "cloud.google.com/go/dialogflow/cx/apiv3"
+	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
 )
 
 func main() {

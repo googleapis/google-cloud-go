@@ -17,8 +17,9 @@
 package main
 
 import (
-	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
 	"context"
+
+	admin "cloud.google.com/go/analytics/admin/apiv1alpha"
 	adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 )
 

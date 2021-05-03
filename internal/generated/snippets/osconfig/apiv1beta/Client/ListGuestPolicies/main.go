@@ -17,8 +17,9 @@
 package main
 
 import (
-	osconfig "cloud.google.com/go/osconfig/apiv1beta"
 	"context"
+
+	osconfig "cloud.google.com/go/osconfig/apiv1beta"
 	"google.golang.org/api/iterator"
 	osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
 )

@@ -17,8 +17,9 @@
 package main
 
 import (
-	servicedirectory "cloud.google.com/go/servicedirectory/apiv1"
 	"context"
+
+	servicedirectory "cloud.google.com/go/servicedirectory/apiv1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 

@@ -17,8 +17,9 @@
 package main
 
 import (
-	admin "cloud.google.com/go/datastore/admin/apiv1"
 	"context"
+
+	admin "cloud.google.com/go/datastore/admin/apiv1"
 	adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
 )
 

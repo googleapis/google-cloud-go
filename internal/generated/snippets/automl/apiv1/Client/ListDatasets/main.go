@@ -17,8 +17,9 @@
 package main
 
 import (
-	automl "cloud.google.com/go/automl/apiv1"
 	"context"
+
+	automl "cloud.google.com/go/automl/apiv1"
 	"google.golang.org/api/iterator"
 	automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
 )

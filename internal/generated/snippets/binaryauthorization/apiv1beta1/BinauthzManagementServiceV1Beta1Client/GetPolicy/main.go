@@ -17,8 +17,9 @@
 package main
 
 import (
-	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1beta1"
 	"context"
+
+	binaryauthorization "cloud.google.com/go/binaryauthorization/apiv1beta1"
 	binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
 )
 

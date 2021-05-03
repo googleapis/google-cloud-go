@@ -17,8 +17,9 @@
 package main
 
 import (
-	kms "cloud.google.com/go/kms/apiv1"
 	"context"
+
+	kms "cloud.google.com/go/kms/apiv1"
 	"google.golang.org/api/iterator"
 	kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
 )

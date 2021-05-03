@@ -17,8 +17,9 @@
 package main
 
 import (
-	resourcesettings "cloud.google.com/go/resourcesettings/apiv1"
 	"context"
+
+	resourcesettings "cloud.google.com/go/resourcesettings/apiv1"
 	"google.golang.org/api/iterator"
 	resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
 )

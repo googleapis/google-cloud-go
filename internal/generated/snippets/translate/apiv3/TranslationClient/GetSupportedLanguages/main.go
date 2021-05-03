@@ -17,8 +17,9 @@
 package main
 
 import (
-	translate "cloud.google.com/go/translate/apiv3"
 	"context"
+
+	translate "cloud.google.com/go/translate/apiv3"
 	translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
 )
 

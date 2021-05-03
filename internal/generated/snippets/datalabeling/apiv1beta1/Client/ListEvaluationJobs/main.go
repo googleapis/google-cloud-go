@@ -17,8 +17,9 @@
 package main
 
 import (
-	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
 	"context"
+
+	datalabeling "cloud.google.com/go/datalabeling/apiv1beta1"
 	"google.golang.org/api/iterator"
 	datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
 )

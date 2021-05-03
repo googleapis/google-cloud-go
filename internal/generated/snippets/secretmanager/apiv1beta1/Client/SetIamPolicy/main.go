@@ -17,8 +17,9 @@
 package main
 
 import (
-	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
 	"context"
+
+	secretmanager "cloud.google.com/go/secretmanager/apiv1beta1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 

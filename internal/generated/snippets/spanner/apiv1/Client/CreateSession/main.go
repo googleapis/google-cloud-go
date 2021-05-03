@@ -17,8 +17,9 @@
 package main
 
 import (
-	spanner "cloud.google.com/go/spanner/apiv1"
 	"context"
+
+	spanner "cloud.google.com/go/spanner/apiv1"
 	spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
 )
 

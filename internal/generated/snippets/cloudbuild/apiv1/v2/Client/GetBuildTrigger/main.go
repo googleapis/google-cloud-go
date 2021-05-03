@@ -17,8 +17,9 @@
 package main
 
 import (
-	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
 	"context"
+
+	cloudbuild "cloud.google.com/go/cloudbuild/apiv1/v2"
 	cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
 )
 

@@ -17,8 +17,9 @@
 package main
 
 import (
-	scheduler "cloud.google.com/go/scheduler/apiv1beta1"
 	"context"
+
+	scheduler "cloud.google.com/go/scheduler/apiv1beta1"
 	schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1"
 )
 

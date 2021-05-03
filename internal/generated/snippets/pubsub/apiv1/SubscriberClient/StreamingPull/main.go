@@ -17,10 +17,11 @@
 package main
 
 import (
-	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"context"
-	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"io"
+
+	pubsub "cloud.google.com/go/pubsub/apiv1"
+	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
 func main() {

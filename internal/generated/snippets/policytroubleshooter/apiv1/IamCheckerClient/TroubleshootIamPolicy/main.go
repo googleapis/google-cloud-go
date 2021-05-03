@@ -17,8 +17,9 @@
 package main
 
 import (
-	policytroubleshooter "cloud.google.com/go/policytroubleshooter/apiv1"
 	"context"
+
+	policytroubleshooter "cloud.google.com/go/policytroubleshooter/apiv1"
 	policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
 )
 

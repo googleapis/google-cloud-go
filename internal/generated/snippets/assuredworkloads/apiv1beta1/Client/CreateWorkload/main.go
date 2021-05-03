@@ -17,8 +17,9 @@
 package main
 
 import (
-	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
 	"context"
+
+	assuredworkloads "cloud.google.com/go/assuredworkloads/apiv1beta1"
 	assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
 )
 

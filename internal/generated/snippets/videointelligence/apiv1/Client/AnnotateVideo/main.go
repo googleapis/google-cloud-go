@@ -17,8 +17,9 @@
 package main
 
 import (
-	videointelligence "cloud.google.com/go/videointelligence/apiv1"
 	"context"
+
+	videointelligence "cloud.google.com/go/videointelligence/apiv1"
 	videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
 )
 

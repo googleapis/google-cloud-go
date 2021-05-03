@@ -17,8 +17,9 @@
 package main
 
 import (
-	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1alpha1"
 	"context"
+
+	networkconnectivity "cloud.google.com/go/networkconnectivity/apiv1alpha1"
 	"google.golang.org/api/iterator"
 	networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
 )

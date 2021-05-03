@@ -17,10 +17,11 @@
 package main
 
 import (
-	logging "cloud.google.com/go/logging/apiv2"
 	"context"
-	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 	"io"
+
+	logging "cloud.google.com/go/logging/apiv2"
+	loggingpb "google.golang.org/genproto/googleapis/logging/v2"
 )
 
 func main() {

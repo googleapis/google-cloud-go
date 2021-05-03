@@ -17,8 +17,9 @@
 package main
 
 import (
-	privateca "cloud.google.com/go/security/privateca/apiv1beta1"
 	"context"
+
+	privateca "cloud.google.com/go/security/privateca/apiv1beta1"
 	"google.golang.org/api/iterator"
 	privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
 )

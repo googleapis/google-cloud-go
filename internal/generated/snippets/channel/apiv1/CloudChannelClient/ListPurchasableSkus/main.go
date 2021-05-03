@@ -17,8 +17,9 @@
 package main
 
 import (
-	channel "cloud.google.com/go/channel/apiv1"
 	"context"
+
+	channel "cloud.google.com/go/channel/apiv1"
 	"google.golang.org/api/iterator"
 	channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
 )

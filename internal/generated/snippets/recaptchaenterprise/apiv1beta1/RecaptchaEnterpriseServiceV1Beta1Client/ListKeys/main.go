@@ -17,8 +17,9 @@
 package main
 
 import (
-	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1beta1"
 	"context"
+
+	recaptchaenterprise "cloud.google.com/go/recaptchaenterprise/apiv1beta1"
 	"google.golang.org/api/iterator"
 	recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1beta1"
 )

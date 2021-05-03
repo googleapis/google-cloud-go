@@ -17,8 +17,9 @@
 package main
 
 import (
-	functions "cloud.google.com/go/functions/apiv1"
 	"context"
+
+	functions "cloud.google.com/go/functions/apiv1"
 	functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
 )
 

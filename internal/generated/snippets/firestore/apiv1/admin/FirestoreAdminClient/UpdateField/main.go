@@ -17,8 +17,9 @@
 package main
 
 import (
-	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 	"context"
+
+	apiv1 "cloud.google.com/go/firestore/apiv1/admin"
 	adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
 )
 

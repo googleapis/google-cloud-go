@@ -17,8 +17,9 @@
 package main
 
 import (
-	securitycenter "cloud.google.com/go/securitycenter/apiv1"
 	"context"
+
+	securitycenter "cloud.google.com/go/securitycenter/apiv1"
 	securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
 )
 

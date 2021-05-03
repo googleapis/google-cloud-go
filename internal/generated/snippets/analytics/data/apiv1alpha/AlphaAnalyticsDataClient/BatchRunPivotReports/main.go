@@ -17,8 +17,9 @@
 package main
 
 import (
-	data "cloud.google.com/go/analytics/data/apiv1alpha"
 	"context"
+
+	data "cloud.google.com/go/analytics/data/apiv1alpha"
 	datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
 )
 

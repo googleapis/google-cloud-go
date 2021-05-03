@@ -17,8 +17,9 @@
 package main
 
 import (
-	apigateway "cloud.google.com/go/apigateway/apiv1"
 	"context"
+
+	apigateway "cloud.google.com/go/apigateway/apiv1"
 	apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
 )
 

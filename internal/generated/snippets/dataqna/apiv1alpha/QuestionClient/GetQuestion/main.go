@@ -17,8 +17,9 @@
 package main
 
 import (
-	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
 	"context"
+
+	dataqna "cloud.google.com/go/dataqna/apiv1alpha"
 	dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
 )
 

@@ -17,10 +17,11 @@
 package main
 
 import (
-	dialogflow "cloud.google.com/go/dialogflow/apiv2"
 	"context"
-	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 	"io"
+
+	dialogflow "cloud.google.com/go/dialogflow/apiv2"
+	dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
 )
 
 func main() {

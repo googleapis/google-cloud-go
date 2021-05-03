@@ -17,8 +17,9 @@
 package main
 
 import (
-	speech "cloud.google.com/go/speech/apiv1p1beta1"
 	"context"
+
+	speech "cloud.google.com/go/speech/apiv1p1beta1"
 	speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
 )
 

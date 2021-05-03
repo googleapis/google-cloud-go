@@ -17,8 +17,9 @@
 package main
 
 import (
-	dataproc "cloud.google.com/go/dataproc/apiv1"
 	"context"
+
+	dataproc "cloud.google.com/go/dataproc/apiv1"
 	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 

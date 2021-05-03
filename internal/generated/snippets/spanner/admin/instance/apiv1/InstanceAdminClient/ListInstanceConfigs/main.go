@@ -17,8 +17,9 @@
 package main
 
 import (
-	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"context"
+
+	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 )

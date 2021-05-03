@@ -17,8 +17,9 @@
 package main
 
 import (
-	talent "cloud.google.com/go/talent/apiv4beta1"
 	"context"
+
+	talent "cloud.google.com/go/talent/apiv4beta1"
 	talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
 )
 

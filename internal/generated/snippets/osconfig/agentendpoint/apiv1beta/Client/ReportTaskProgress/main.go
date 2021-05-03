@@ -17,8 +17,9 @@
 package main
 
 import (
-	agentendpoint "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
 	"context"
+
+	agentendpoint "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
 	agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
 )
 

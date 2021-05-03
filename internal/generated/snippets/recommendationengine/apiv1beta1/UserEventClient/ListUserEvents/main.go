@@ -17,8 +17,9 @@
 package main
 
 import (
-	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
 	"context"
+
+	recommendationengine "cloud.google.com/go/recommendationengine/apiv1beta1"
 	"google.golang.org/api/iterator"
 	recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
 )

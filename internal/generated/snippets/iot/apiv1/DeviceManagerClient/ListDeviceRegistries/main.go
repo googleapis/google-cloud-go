@@ -17,8 +17,9 @@
 package main
 
 import (
-	iot "cloud.google.com/go/iot/apiv1"
 	"context"
+
+	iot "cloud.google.com/go/iot/apiv1"
 	"google.golang.org/api/iterator"
 	iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
 )

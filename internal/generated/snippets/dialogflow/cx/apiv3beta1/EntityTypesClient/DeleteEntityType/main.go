@@ -17,8 +17,9 @@
 package main
 
 import (
-	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
 	"context"
+
+	cx "cloud.google.com/go/dialogflow/cx/apiv3beta1"
 	cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
 )
 

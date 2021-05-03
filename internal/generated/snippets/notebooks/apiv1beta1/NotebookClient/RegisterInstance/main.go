@@ -17,8 +17,9 @@
 package main
 
 import (
-	notebooks "cloud.google.com/go/notebooks/apiv1beta1"
 	"context"
+
+	notebooks "cloud.google.com/go/notebooks/apiv1beta1"
 	notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
 )
 

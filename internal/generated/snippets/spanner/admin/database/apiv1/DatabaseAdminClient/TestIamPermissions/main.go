@@ -17,8 +17,9 @@
 package main
 
 import (
-	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	"context"
+
+	database "cloud.google.com/go/spanner/admin/database/apiv1"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
