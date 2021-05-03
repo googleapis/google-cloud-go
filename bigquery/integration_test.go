@@ -1203,15 +1203,8 @@ func TestIntegration_RoutineUserTVF(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	want := inMeta.Type
-	if meta.Type != want {
-		t.Errorf("wanted routine type to be %s, got %s", want, meta.Type)
-	}
-	want = inMeta.Body
-	if meta.Body != want {
-		t.Errorf("wanted routine body to be %s, got %s", want, meta.Body)
-	}
 
+	// Now, compare the input meta to the output meta
 	if diff := testutil.Diff(inMeta, meta, cmpopts.IgnoreFields(RoutineMetadata{}, "CreationTime", "LastModifiedTime", "ETag")); diff != "" {
 		t.Errorf("got=-, want=+\n%s", diff)
 	}
