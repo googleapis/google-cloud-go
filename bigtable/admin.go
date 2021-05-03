@@ -1591,8 +1591,8 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 // RestoreTableFrom creates a new table in the admin's instance by restoring from the given backup and instance.
 // To restore within the same instance, see RestoreTable.
 // sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
-// tableName (ex. "my-restored-table") will be the name of the newly created table
-// backupName (ex. "my-backup") is the name of the backup to restore
+// tableName (ex. "my-restored-table") will be the name of the newly created table.
+// backupName (ex. "my-backup") is the name of the backup to restore.
 func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := ac.instancePrefix()
