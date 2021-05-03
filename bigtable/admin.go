@@ -1593,13 +1593,13 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 // sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
 // tableName (ex. "my-restored-table") will be the name of the newly created table
 // backupName (ex. "my-backup") is the name of the backup to restore
-func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, tableName, sourceCluster, backupName string) error {
+func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := ac.instancePrefix()
-	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backupName)
+	sourceBackupPath := ac.backupPath(sourceCluster, sourceInstance, backup)
 	req := &btapb.RestoreTableRequest{
 		Parent:  parent,
-		TableId: tableName,
+		TableId: table,
 		Source:  &btapb.RestoreTableRequest_Backup{sourceBackupPath},
 	}
 	op, err := ac.tClient.RestoreTable(ctx, req)
