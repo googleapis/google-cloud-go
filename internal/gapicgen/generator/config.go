@@ -856,6 +856,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/security/privateca/v1",
+		pkg:                   "privateca",
+		importPath:            "cloud.google.com/go/security/privateca/apiv1",
+		gRPCServiceConfigPath: "google/cloud/security/privateca/v1/privateca_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/security/privateca/v1/privateca_v1.yaml",
+		// GA after 2021/05/29
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/assuredworkloads/v1beta1",
 		pkg:                   "assuredworkloads",
 		importPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",

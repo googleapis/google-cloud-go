@@ -1,47 +1,47 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.accessapproval.v1",
-  "libraryPackage":  "cloud.google.com/go/accessapproval/apiv1",
-  "services":  {
-    "AccessApproval":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "ApproveApprovalRequest":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.accessapproval.v1",
+  "libraryPackage": "cloud.google.com/go/accessapproval/apiv1",
+  "services": {
+    "AccessApproval": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ApproveApprovalRequest": {
+              "methods": [
                 "ApproveApprovalRequest"
               ]
             },
-            "DeleteAccessApprovalSettings":  {
-              "methods":  [
+            "DeleteAccessApprovalSettings": {
+              "methods": [
                 "DeleteAccessApprovalSettings"
               ]
             },
-            "DismissApprovalRequest":  {
-              "methods":  [
+            "DismissApprovalRequest": {
+              "methods": [
                 "DismissApprovalRequest"
               ]
             },
-            "GetAccessApprovalSettings":  {
-              "methods":  [
+            "GetAccessApprovalSettings": {
+              "methods": [
                 "GetAccessApprovalSettings"
               ]
             },
-            "GetApprovalRequest":  {
-              "methods":  [
+            "GetApprovalRequest": {
+              "methods": [
                 "GetApprovalRequest"
               ]
             },
-            "ListApprovalRequests":  {
-              "methods":  [
+            "ListApprovalRequests": {
+              "methods": [
                 "ListApprovalRequests"
               ]
             },
-            "UpdateAccessApprovalSettings":  {
-              "methods":  [
+            "UpdateAccessApprovalSettings": {
+              "methods": [
                 "UpdateAccessApprovalSettings"
               ]
             }

@@ -22,6 +22,8 @@ import (
 	"fmt"
 	"log"
 	"time"
+
+	"cloud.google.com/go/internal/gapicgen/git"
 )
 
 func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, githubEmail string) error {
@@ -38,7 +40,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 	}
 
 	// Setup the client and git environment.
-	githubClient, err := NewGithubClient(ctx, githubUsername, githubName, githubEmail, githubAccessToken)
+	githubClient, err := git.NewGithubClient(ctx, githubUsername, githubName, githubEmail, githubAccessToken)
 	if err != nil {
 		return err
 	}
@@ -47,7 +49,7 @@ func genBot(ctx context.Context, githubAccessToken, githubUsername, githubName, 
 	if pr, err := githubClient.GetRegenPR(ctx, "go-genproto", "open"); err != nil {
 		return err
 	} else if pr != nil {
-		return fmt.Errorf("There is already a re-generation in progress")
+		return fmt.Errorf("there is already a re-generation in progress")
 	}
 	if pr, err := githubClient.GetRegenPR(ctx, "google-cloud-go", "open"); err != nil {
 		return err

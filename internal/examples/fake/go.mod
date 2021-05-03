@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	cloud.google.com/go v0.81.0
-	google.golang.org/api v0.44.0
-	google.golang.org/genproto v0.0.0-20210413151531-c14fb6ef47c3
-	google.golang.org/grpc v1.36.1
+	google.golang.org/api v0.45.0
+	google.golang.org/genproto v0.0.0-20210429181445-86c259c2b4ab
+	google.golang.org/grpc v1.37.0
 )
