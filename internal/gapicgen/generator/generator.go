@@ -53,11 +53,6 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 	if err := gapicGenerator.Regen(ctx); err != nil {
 		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
 	}
-	if !conf.OnlyGenerateGapic {
-		if err := gapicGenerator.RegenSnippets(ctx); err != nil {
-			return nil, fmt.Errorf("error generating snippets (may need to check logs for more errors): %v", err)
-		}
-	}
 
 	var changes []*git.ChangeInfo
 	if !conf.LocalMode {
