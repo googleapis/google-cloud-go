@@ -14,7 +14,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/sys v0.0.0-20210503080704-8803ae5d1324
-	google.golang.org/genproto v0.0.0-20210503173045-b96a97608f20
+	google.golang.org/genproto v0.0.0-20210504143626-3b2ad6ccc450
 	google.golang.org/protobuf v1.26.0
 	gopkg.in/check.v1 v1.0.0-20200227125254-8fa46927fb4f // indirect
 	gopkg.in/src-d/go-git.v4 v4.13.1
