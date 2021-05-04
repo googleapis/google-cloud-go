@@ -154,11 +154,12 @@ func TestRetryConformance(t *testing.T) {
 	if host == "" {
 		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
 	}
+	host = "http://" + host
 
 	ctx := context.Background()
 
 	// Create non-wrapped client to use for setup steps.
-	client, err := NewClient(ctx, option.WithEndpoint("http://localhost:9000/storage/v1/"))
+	client, err := NewClient(ctx, option.WithEndpoint(host + "/storage/v1/"))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
 	}
@@ -183,14 +184,6 @@ func TestRetryConformance(t *testing.T) {
 								t.Fatalf("setting up retry test: %v", err)
 							}
 
-							defer func() {
-								// Close out test in emulator and verify that all instructions
-								// were used.
-								if err := deleteRetryTest(host, testID); err != nil {
-									t.Errorf("deleting retry test: %v", err)
-								}
-							}()
-
 							fs := &fixtures{}
 							for _, f := range m.Fixtures {
 								if err := fs.populate(ctx, client, f); err != nil {
@@ -199,7 +192,7 @@ func TestRetryConformance(t *testing.T) {
 							}
 
 							// Create wrapped client which will send emulator instructions.
-							wrapped, err := wrappedClient(testID)
+							wrapped, err := wrappedClient(host, testID)
 							if err != nil {
 								t.Errorf("error creating wrapped client: %v", err)
 							}
@@ -209,6 +202,17 @@ func TestRetryConformance(t *testing.T) {
 							}
 							if !tc.ExpectSuccess && err == nil {
 								t.Errorf("want failure, got success")
+							}
+
+							// Verify that all instructions were used up during the test
+							// (indicates that the client sent the correct requests).
+							if err := checkRetryTest(host, testID); err != nil {
+								t.Errorf("checking instructions: %v", err)
+							}
+
+							// Close out test in emulator.
+							if err := deleteRetryTest(host, testID); err != nil {
+								t.Errorf("deleting retry test: %v", err)
 							}
 
 						})
@@ -221,8 +225,10 @@ func TestRetryConformance(t *testing.T) {
 
 }
 
+// Create a retry test resource in the emulator. Returns the ID to pass as
+// a header in the test execution.
 func createRetryTest(host string, instructions map[string][]string) (string, error) {
-	endpoint := "http://" + host + "/retry_test"
+	endpoint := host + "/retry_test"
 	c := http.DefaultClient
 	data := struct {
 		Instructions map[string][]string `json:"test_instructions"`
@@ -234,33 +240,53 @@ func createRetryTest(host string, instructions map[string][]string) (string, err
 	if err := json.NewEncoder(buf).Encode(data); err != nil {
 		return "", fmt.Errorf("encoding request: %v", err)
 	}
-	res, err := c.Post(endpoint, "application/json", buf)
-	if err != nil {
-		return "", fmt.Errorf("creating retry test: %v", err)
+	resp, err := c.Post(endpoint, "application/json", buf)
+	if err != nil || resp.StatusCode != 200 {
+		return "", fmt.Errorf("creating retry test: err: %v, resp: %+v", err, resp)
 	}
-	defer res.Body.Close()
+	defer resp.Body.Close()
 	testRes := struct {
 		TestID string `json:"id"`
 	}{}
-	if err := json.NewDecoder(res.Body).Decode(&testRes); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
 		return "", fmt.Errorf("decoding test ID: %v", err)
 	}
 	return testRes.TestID, nil
 }
 
+// Verify that all instructions for a given retry testID have been used up.
+func checkRetryTest(host, testID string) error {
+	endpoint := strings.Join([]string{host, "retry_test", testID}, "/")
+	c := http.DefaultClient
+	resp, err := c.Get(endpoint)
+	if err != nil || resp.StatusCode != 200 {
+		return fmt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
+	}
+	defer resp.Body.Close()
+	testRes := struct {
+		Instructions map[string][]string
+		Completed bool
+	}{}
+	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
+		return fmt.Errorf("decoding response: %v", err)
+	}
+	if !testRes.Completed {
+		return fmt.Errorf("test not completed; unused instructions: %+v", testRes.Instructions)
+	}
+	return nil
+}
+
+// Delete a retry test resource.
 func deleteRetryTest(host, testID string) error {
-	endpoint := "http://" + strings.Join([]string{host, "retry_test", testID}, "/")
+	endpoint := strings.Join([]string{host, "retry_test", testID}, "/")
 	c := http.DefaultClient
 	req, err := http.NewRequest("DELETE", endpoint, nil)
 	if err != nil {
 		return fmt.Errorf("creating request: %v", err)
 	}
 	resp, err := c.Do(req)
-	if err != nil {
-		return fmt.Errorf("deleting test: %v", err)
-	}
-	if resp.StatusCode != 200 {
-		return fmt.Errorf("delete test failed, response: %+v", resp)
+	if err != nil || resp.StatusCode != 200 {
+		return fmt.Errorf("deleting test: err: %v, resp: %+v", err, resp)
 	}
 	return nil
 }
@@ -280,7 +306,7 @@ func (wt *withTestID) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 // Create custom client that sends instruction
-func wrappedClient(testID string) (*Client, error) {
+func wrappedClient(host, testID string) (*Client, error) {
 	ctx := context.Background()
 	base := http.DefaultTransport
 	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
@@ -295,7 +321,7 @@ func wrappedClient(testID string) (*Client, error) {
 	c.Transport = wrappedTrans
 
 	// Supply this client to storage.NewClient
-	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint("http://localhost:9000/storage/v1/"))
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host + "/storage/v1/"))
 	return client, err
 }
 
