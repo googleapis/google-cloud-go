@@ -24,6 +24,8 @@ import (
 )
 
 func main() {
+	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
@@ -33,10 +35,12 @@ func main() {
 	req := &adminpb.DeletePropertyRequest{
 		// TODO: Fill request struct fields.
 	}
-	err = c.DeleteProperty(ctx, req)
+	resp, err := c.DeleteProperty(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 // [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_DeleteProperty_sync]
