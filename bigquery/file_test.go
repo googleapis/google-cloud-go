@@ -17,7 +17,6 @@ package bigquery
 import (
 	"testing"
 
-	"cloud.google.com/go/internal/pretty"
 	"cloud.google.com/go/internal/testutil"
 	bq "google.golang.org/api/bigquery/v2"
 )
@@ -45,54 +44,130 @@ var (
 )
 
 func TestFileConfigPopulateLoadConfig(t *testing.T) {
-	want := &bq.JobConfigurationLoad{
-		SourceFormat:        "CSV",
-		FieldDelimiter:      "\t",
-		SkipLeadingRows:     8,
-		AllowJaggedRows:     true,
-		AllowQuotedNewlines: true,
-		Autodetect:          true,
-		Encoding:            "UTF-8",
-		MaxBadRecords:       7,
-		IgnoreUnknownValues: true,
-		Schema: &bq.TableSchema{
-			Fields: []*bq.TableFieldSchema{
-				bqStringFieldSchema(),
-				bqNestedFieldSchema(),
-			}},
-		Quote: &hyphen,
+	testcases := []struct {
+		description string
+		fileConfig  *FileConfig
+		want        *bq.JobConfigurationLoad
+	}{
+		{
+			description: "default json",
+			fileConfig: &FileConfig{
+				SourceFormat: JSON,
+			},
+			want: &bq.JobConfigurationLoad{
+				SourceFormat: "NEWLINE_DELIMITED_JSON",
+			},
+		},
+		{
+			description: "csv",
+			fileConfig:  &fc,
+			want: &bq.JobConfigurationLoad{
+				SourceFormat:        "CSV",
+				FieldDelimiter:      "\t",
+				SkipLeadingRows:     8,
+				AllowJaggedRows:     true,
+				AllowQuotedNewlines: true,
+				Autodetect:          true,
+				Encoding:            "UTF-8",
+				MaxBadRecords:       7,
+				IgnoreUnknownValues: true,
+				Schema: &bq.TableSchema{
+					Fields: []*bq.TableFieldSchema{
+						bqStringFieldSchema(),
+						bqNestedFieldSchema(),
+					}},
+				Quote: &hyphen,
+			},
+		},
+		{
+			description: "parquet",
+			fileConfig: &FileConfig{
+				SourceFormat: Parquet,
+				ParquetOptions: &ParquetOptions{
+					EnumAsString:        true,
+					EnableListInference: true,
+				},
+			},
+			want: &bq.JobConfigurationLoad{
+				SourceFormat: "PARQUET",
+				ParquetOptions: &bq.ParquetOptions{
+					EnumAsString:        true,
+					EnableListInference: true,
+				},
+			},
+		},
 	}
-	got := &bq.JobConfigurationLoad{}
-	fc.populateLoadConfig(got)
-	if !testutil.Equal(got, want) {
-		t.Errorf("got:\n%v\nwant:\n%v", pretty.Value(got), pretty.Value(want))
+	for _, tc := range testcases {
+		got := &bq.JobConfigurationLoad{}
+		tc.fileConfig.populateLoadConfig(got)
+		if diff := testutil.Diff(got, tc.want); diff != "" {
+			t.Errorf("case %s, got=-, want=+:\n%s", tc.description, diff)
+		}
 	}
 }
 
 func TestFileConfigPopulateExternalDataConfig(t *testing.T) {
-	got := &bq.ExternalDataConfiguration{}
-	fc.populateExternalDataConfig(got)
-
-	want := &bq.ExternalDataConfiguration{
-		SourceFormat:        "CSV",
-		Autodetect:          true,
-		MaxBadRecords:       7,
-		IgnoreUnknownValues: true,
-		Schema: &bq.TableSchema{
-			Fields: []*bq.TableFieldSchema{
-				bqStringFieldSchema(),
-				bqNestedFieldSchema(),
-			}},
-		CsvOptions: &bq.CsvOptions{
-			AllowJaggedRows:     true,
-			AllowQuotedNewlines: true,
-			Encoding:            "UTF-8",
-			FieldDelimiter:      "\t",
-			Quote:               &hyphen,
-			SkipLeadingRows:     8,
+	testcases := []struct {
+		description string
+		fileConfig  *FileConfig
+		want        *bq.ExternalDataConfiguration
+	}{
+		{
+			description: "json defaults",
+			fileConfig: &FileConfig{
+				SourceFormat: JSON,
+			},
+			want: &bq.ExternalDataConfiguration{
+				SourceFormat: "NEWLINE_DELIMITED_JSON",
+			},
+		},
+		{
+			description: "csv fileconfig",
+			fileConfig:  &fc,
+			want: &bq.ExternalDataConfiguration{
+				SourceFormat:        "CSV",
+				Autodetect:          true,
+				MaxBadRecords:       7,
+				IgnoreUnknownValues: true,
+				Schema: &bq.TableSchema{
+					Fields: []*bq.TableFieldSchema{
+						bqStringFieldSchema(),
+						bqNestedFieldSchema(),
+					}},
+				CsvOptions: &bq.CsvOptions{
+					AllowJaggedRows:     true,
+					AllowQuotedNewlines: true,
+					Encoding:            "UTF-8",
+					FieldDelimiter:      "\t",
+					Quote:               &hyphen,
+					SkipLeadingRows:     8,
+				},
+			},
+		},
+		{
+			description: "parquet",
+			fileConfig: &FileConfig{
+				SourceFormat: Parquet,
+				ParquetOptions: &ParquetOptions{
+					EnumAsString:        true,
+					EnableListInference: true,
+				},
+			},
+			want: &bq.ExternalDataConfiguration{
+				SourceFormat: "PARQUET",
+				ParquetOptions: &bq.ParquetOptions{
+					EnumAsString:        true,
+					EnableListInference: true,
+				},
+			},
 		},
 	}
-	if diff := testutil.Diff(got, want); diff != "" {
-		t.Errorf("got=-, want=+:\n%s", diff)
+	for _, tc := range testcases {
+		got := &bq.ExternalDataConfiguration{}
+		tc.fileConfig.populateExternalDataConfig(got)
+		if diff := testutil.Diff(got, tc.want); diff != "" {
+			t.Errorf("case %s, got=-, want=+:\n%s", tc.description, diff)
+		}
 	}
+
 }

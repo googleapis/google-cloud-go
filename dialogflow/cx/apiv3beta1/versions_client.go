@@ -353,7 +353,7 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 	return err
 }
 
-// LoadVersion loads a specified version to draft version.
+// LoadVersion loads resources in the specified version to the draft flow.
 func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
