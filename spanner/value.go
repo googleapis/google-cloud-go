@@ -56,8 +56,8 @@ type LossOfPrecisionHandlingOption int
 
 const (
 	// NumericRound automatically rounds a numeric value that has a higher
-	// than what is supported by Spanner, e.g., 0.1234567895 rounds to
-	// 0.123456790.
+	// precision than what is supported by Spanner, e.g., 0.1234567895 rounds
+	// to 0.123456790.
 	NumericRound LossOfPrecisionHandlingOption = iota
 	// NumericError returns an error for numeric values that have a higher
 	// precision than what is supported by Spanner. E.g. the client returns an
@@ -89,9 +89,6 @@ func validateNumeric(r *big.Rat) error {
 	strRep = strings.TrimRight(strRep, "0")
 	strRep = strings.TrimLeft(strRep, "-")
 	s := strings.Split(strRep, ".")
-	if len(s) != 2 {
-		return fmt.Errorf("invalid numeric float string: %s", strRep)
-	}
 	whole := s[0]
 	scale := s[1]
 	if len(scale) > NumericScaleDigits {
