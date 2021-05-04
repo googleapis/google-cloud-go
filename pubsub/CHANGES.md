@@ -1,5 +1,15 @@
 # Changes
 
+## [1.11.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub-v1.10.3...pubsub-v1.11.0) (2021-05-04)
+
+
+### Features
+
+* **dialogflow:** added more Environment RPCs feat: added Versions service feat: added Fulfillment service feat: added TextToSpeechSettings. feat: added location in some resource patterns. ([4f73dc1](https://www.github.com/googleapis/google-cloud-go/commit/4f73dc19c2e05ad6133a8eac3d62ddb522314540))
+* **documentai:** add confidence field to the PageAnchor.PageRef in document.proto. ([d089dda](https://www.github.com/googleapis/google-cloud-go/commit/d089dda0089acb9aaef9b3da40b219476af9fc06))
+* **pubsublite:** ComputeTimeCursor RPC for Pub/Sub Lite ([d089dda](https://www.github.com/googleapis/google-cloud-go/commit/d089dda0089acb9aaef9b3da40b219476af9fc06))
+* **speech:** add webm opus support. ([d089dda](https://www.github.com/googleapis/google-cloud-go/commit/d089dda0089acb9aaef9b3da40b219476af9fc06))
+
 ### [1.10.3](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.2...pubsub/v1.10.3) (2021-04-23)
 
 
