@@ -60,3 +60,106 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 		_ = resp
 	}
 }
+
+func ExampleEnvironmentsClient_GetEnvironment() {
+	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
+	ctx := context.Background()
+	c, err := dialogflow.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.GetEnvironmentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetEnvironment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_CreateEnvironment() {
+	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
+	ctx := context.Background()
+	c, err := dialogflow.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.CreateEnvironmentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateEnvironment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_UpdateEnvironment() {
+	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+
+	ctx := context.Background()
+	c, err := dialogflow.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.UpdateEnvironmentRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateEnvironment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_DeleteEnvironment() {
+	ctx := context.Background()
+	c, err := dialogflow.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.DeleteEnvironmentRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteEnvironment(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleEnvironmentsClient_GetEnvironmentHistory() {
+	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := dialogflow.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &dialogflowpb.GetEnvironmentHistoryRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.GetEnvironmentHistory(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
