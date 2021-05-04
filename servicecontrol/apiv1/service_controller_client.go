@@ -58,7 +58,7 @@ func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	}
 }
 
-// ServiceControllerClient is a client for interacting with .
+// ServiceControllerClient is a client for interacting with Service Control API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ServiceControllerClient struct {
@@ -80,7 +80,7 @@ type ServiceControllerClient struct {
 
 // NewServiceControllerClient creates a new service controller client.
 //
-// Google Service Control API (at /service-control/overview)
+// Google Service Control API (at https://cloud.google.com/service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).

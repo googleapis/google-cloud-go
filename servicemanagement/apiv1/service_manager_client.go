@@ -91,7 +91,7 @@ func defaultServiceManagerCallOptions() *ServiceManagerCallOptions {
 	}
 }
 
-// ServiceManagerClient is a client for interacting with .
+// ServiceManagerClient is a client for interacting with Service Management API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type ServiceManagerClient struct {
@@ -118,7 +118,7 @@ type ServiceManagerClient struct {
 
 // NewServiceManagerClient creates a new service manager client.
 //
-// Google Service Management API (at /service-management/overview)
+// Google Service Management API (at https://cloud.google.com/service-management/overview)
 func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceManagerClient, error) {
 	clientOpts := defaultServiceManagerClientOptions()
 

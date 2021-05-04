@@ -161,29 +161,14 @@
                 "CompleteConversation"
               ]
             },
-            "CreateCallMatcher": {
-              "methods": [
-                "CreateCallMatcher"
-              ]
-            },
             "CreateConversation": {
               "methods": [
                 "CreateConversation"
               ]
             },
-            "DeleteCallMatcher": {
-              "methods": [
-                "DeleteCallMatcher"
-              ]
-            },
             "GetConversation": {
               "methods": [
                 "GetConversation"
-              ]
-            },
-            "ListCallMatchers": {
-              "methods": [
-                "ListCallMatchers"
               ]
             },
             "ListConversations": {
@@ -303,9 +288,53 @@
         "grpc": {
           "libraryClient": "EnvironmentsClient",
           "rpcs": {
+            "CreateEnvironment": {
+              "methods": [
+                "CreateEnvironment"
+              ]
+            },
+            "DeleteEnvironment": {
+              "methods": [
+                "DeleteEnvironment"
+              ]
+            },
+            "GetEnvironment": {
+              "methods": [
+                "GetEnvironment"
+              ]
+            },
+            "GetEnvironmentHistory": {
+              "methods": [
+                "GetEnvironmentHistory"
+              ]
+            },
             "ListEnvironments": {
               "methods": [
                 "ListEnvironments"
+              ]
+            },
+            "UpdateEnvironment": {
+              "methods": [
+                "UpdateEnvironment"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Fulfillments": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FulfillmentsClient",
+          "rpcs": {
+            "GetFulfillment": {
+              "methods": [
+                "GetFulfillment"
+              ]
+            },
+            "UpdateFulfillment": {
+              "methods": [
+                "UpdateFulfillment"
               ]
             }
           }
@@ -415,11 +444,6 @@
                 "ListParticipants"
               ]
             },
-            "StreamingAnalyzeContent": {
-              "methods": [
-                "StreamingAnalyzeContent"
-              ]
-            },
             "SuggestArticles": {
               "methods": [
                 "SuggestArticles"
@@ -486,6 +510,40 @@
             "StreamingDetectIntent": {
               "methods": [
                 "StreamingDetectIntent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Versions": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "VersionsClient",
+          "rpcs": {
+            "CreateVersion": {
+              "methods": [
+                "CreateVersion"
+              ]
+            },
+            "DeleteVersion": {
+              "methods": [
+                "DeleteVersion"
+              ]
+            },
+            "GetVersion": {
+              "methods": [
+                "GetVersion"
+              ]
+            },
+            "ListVersions": {
+              "methods": [
+                "ListVersions"
+              ]
+            },
+            "UpdateVersion": {
+              "methods": [
+                "UpdateVersion"
               ]
             }
           }

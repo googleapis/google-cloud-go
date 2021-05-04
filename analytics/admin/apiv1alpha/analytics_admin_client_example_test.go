@@ -232,6 +232,8 @@ func ExampleAnalyticsAdminClient_CreateProperty() {
 }
 
 func ExampleAnalyticsAdminClient_DeleteProperty() {
+	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
@@ -241,10 +243,12 @@ func ExampleAnalyticsAdminClient_DeleteProperty() {
 	req := &adminpb.DeletePropertyRequest{
 		// TODO: Fill request struct fields.
 	}
-	err = c.DeleteProperty(ctx, req)
+	resp, err := c.DeleteProperty(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleAnalyticsAdminClient_UpdateProperty() {
@@ -632,26 +636,6 @@ func ExampleAnalyticsAdminClient_UpdateIosAppDataStream() {
 	_ = resp
 }
 
-func ExampleAnalyticsAdminClient_CreateIosAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &adminpb.CreateIosAppDataStreamRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateIosAppDataStream(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
 func ExampleAnalyticsAdminClient_ListIosAppDataStreams() {
 	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
 	// import "google.golang.org/api/iterator"
@@ -728,26 +712,6 @@ func ExampleAnalyticsAdminClient_UpdateAndroidAppDataStream() {
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.UpdateAndroidAppDataStream(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleAnalyticsAdminClient_CreateAndroidAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
-	ctx := context.Background()
-	c, err := admin.NewAnalyticsAdminClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &adminpb.CreateAndroidAppDataStreamRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateAndroidAppDataStream(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -1026,4 +990,31 @@ func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
 	}
 	// TODO: Use resp.
 	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
+	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
+	// import "google.golang.org/api/iterator"
+
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	req := &adminpb.SearchChangeHistoryEventsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.SearchChangeHistoryEvents(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
 }
