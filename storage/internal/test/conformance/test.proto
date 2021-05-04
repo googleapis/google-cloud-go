@@ -95,20 +95,20 @@ message InstructionList {
   repeated string instructions = 1;
 }
 
-// Test fixtures that are necessary for a method call. For example,
+// Test resources that are necessary for a method call. For example,
 // storage.objects.get would require BUCKET and OBJECT.
-enum Fixture {
+enum Resource {
   BUCKET = 0;
   OBJECT = 1;
   NOTIFICATION = 2;
   HMAC_KEY = 3;
 }
 
-// A particular storage API method and required fixtures in order to test it.
+// A particular storage API method and required resources in order to test it.
 // Methods must be implemented in tests for each language.
 message Method {
   string name = 1;  // e.g. storage.objects.get
-  repeated Fixture fixtures = 2;
+  repeated Resource resources = 2;
 }
 
 // Schema for a retry test, corresponding to a single scenario from the design

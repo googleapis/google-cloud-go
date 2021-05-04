@@ -47,18 +47,18 @@ var (
 	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
 )
 
-// Holds the fixtures for a particular test case. Only the necessary fields will
+// Holds the resources for a particular test case. Only the necessary fields will
 // be populated; others will be nil.
-type fixtures struct {
+type resources struct {
 	bucket       *BucketAttrs
 	object       *ObjectAttrs
 	notification *Notification
 	hmacKey      *HMACKey
 }
 
-func (fs *fixtures) populate(ctx context.Context, c *Client, fixture storage_v1_tests.Fixture) error {
-	switch fixture {
-	case storage_v1_tests.Fixture_BUCKET:
+func (fs *resources) populate(ctx context.Context, c *Client, resource storage_v1_tests.Resource) error {
+	switch resource {
+	case storage_v1_tests.Resource_BUCKET:
 		bkt := c.Bucket(bucketIDs.New())
 		if err := bkt.Create(ctx, projectID, &BucketAttrs{}); err != nil {
 			return fmt.Errorf("creating bucket: %v", err)
@@ -68,7 +68,7 @@ func (fs *fixtures) populate(ctx context.Context, c *Client, fixture storage_v1_
 			return fmt.Errorf("getting bucket attrs: %v", err)
 		}
 		fs.bucket = attrs
-	case storage_v1_tests.Fixture_OBJECT:
+	case storage_v1_tests.Resource_OBJECT:
 		// Assumes bucket has been populated first.
 		obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
 		w := obj.NewWriter(ctx)
@@ -83,7 +83,7 @@ func (fs *fixtures) populate(ctx context.Context, c *Client, fixture storage_v1_
 			return fmt.Errorf("getting object attrs: %v", err)
 		}
 		fs.object = attrs
-	case storage_v1_tests.Fixture_NOTIFICATION:
+	case storage_v1_tests.Resource_NOTIFICATION:
 		// Assumes bucket has been populated first.
 		n, err := c.Bucket(fs.bucket.Name).AddNotification(ctx, &Notification{
 			TopicProjectID: projectID,
@@ -94,7 +94,7 @@ func (fs *fixtures) populate(ctx context.Context, c *Client, fixture storage_v1_
 			return fmt.Errorf("adding notification: %v", err)
 		}
 		fs.notification = n
-	case storage_v1_tests.Fixture_HMAC_KEY:
+	case storage_v1_tests.Resource_HMAC_KEY:
 		key, err := c.CreateHMACKey(ctx, projectID, serviceAccountEmail)
 		if err != nil {
 			return fmt.Errorf("creating HMAC key: %v", err)
@@ -104,7 +104,7 @@ func (fs *fixtures) populate(ctx context.Context, c *Client, fixture storage_v1_
 	return nil
 }
 
-type retryFunc func(ctx context.Context, c *Client, fs *fixtures, preconditions bool) error
+type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
 
 // Methods to retry. This is a map whose keys are a string describing a standard
 // API call (e.g. storage.objects.get) and values are a list of functions which
@@ -113,11 +113,11 @@ type retryFunc func(ctx context.Context, c *Client, fs *fixtures, preconditions 
 // read or just a metadata get).
 var methods = map[string][]retryFunc{
 	"storage.objects.get": {
-		func(ctx context.Context, c *Client, fs *fixtures, _ bool) error {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
 			return err
 		},
-		func(ctx context.Context, c *Client, fs *fixtures, _ bool) error {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
 			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
 			if err != nil {
 				return err
@@ -127,7 +127,7 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.objects.update": {
-		func(ctx context.Context, c *Client, fs *fixtures, preconditions bool) error {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
 			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
 			if preconditions {
@@ -138,7 +138,7 @@ var methods = map[string][]retryFunc{
 		},
 	},
 	"storage.buckets.update": {
-		func(ctx context.Context, c *Client, fs *fixtures, preconditions bool) error {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
 			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
 			bkt := c.Bucket(fs.bucket.Name)
 			if preconditions {
@@ -184,10 +184,10 @@ func TestRetryConformance(t *testing.T) {
 								t.Fatalf("setting up retry test: %v", err)
 							}
 
-							fs := &fixtures{}
-							for _, f := range m.Fixtures {
+							fs := &resources{}
+							for _, f := range m.Resources {
 								if err := fs.populate(ctx, client, f); err != nil {
-									t.Fatalf("creating test fixtures: %v", err)
+									t.Fatalf("creating test resources: %v", err)
 								}
 							}
 
