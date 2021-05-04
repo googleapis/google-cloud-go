@@ -50,21 +50,25 @@ const (
 	NumericScaleDigits = 9
 )
 
-// NumericLossHandlingMode describes the mode of how to deal with loss of
+// LossOfPrecisionHandlingOption describes the option to deal with loss of
 // precision on numeric values.
-type NumericLossHandlingMode int
+type LossOfPrecisionHandlingOption int
 
 const (
-	// NumericRound rounds an invalid numeric value, e.g., 0.1234567895 rounds
-	// to 0.123456790.
-	NumericRound NumericLossHandlingMode = iota
-	// NumericError throws an error when meeting invalid numeric value.
+	// NumericRound automatically rounds a numeric value that has a higher
+	// than what is supported by Spanner, e.g., 0.1234567895 rounds to
+	// 0.123456790.
+	NumericRound LossOfPrecisionHandlingOption = iota
+	// NumericError returns an error for numeric values that have a higher
+	// precision than what is supported by Spanner. E.g. the client returns an
+	// error if the application tries to insert the value 0.1234567895.
 	NumericError
 )
 
-// NumericPrecisionLossHandling is the configuration for hanlding loss of
-// precission on numeric values.
-var NumericPrecisionLossHandling NumericLossHandlingMode
+// LossOfPrecisionHandling configures how to deal with loss of precision on
+// numeric values. The value of this configuration is global and will be used
+// for all Spanner clients.
+var LossOfPrecisionHandling LossOfPrecisionHandlingOption
 
 // NumericString returns a string representing a *big.Rat in a format compatible
 // with Spanner SQL. It returns a floating-point literal with 9 digits after the
@@ -2696,7 +2700,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		pt = listType(floatType())
 	case big.Rat:
-		switch NumericPrecisionLossHandling {
+		switch LossOfPrecisionHandling {
 		case NumericError:
 			err = validateNumeric(&v)
 			if err != nil {
@@ -2729,7 +2733,7 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		}
 		pt = listType(numericType())
 	case *big.Rat:
-		switch NumericPrecisionLossHandling {
+		switch LossOfPrecisionHandling {
 		case NumericError:
 			err = validateNumeric(v)
 			if err != nil {
