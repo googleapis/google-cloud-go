@@ -82,6 +82,9 @@ gimme_retrier() {
 }
 retry gimme_retrier
 
+# Use go modules
+export GO111MODULE="on"
+
 # Set $GOPATH
 export GOPATH="$HOME/go"
 
@@ -89,7 +92,7 @@ export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
 mkdir -p $GOCLOUD_HOME
 
 # Install agent
-retry git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME >/dev/null
+retry git clone https://github.com/googleapis/google-cloud-go.git $GOCLOUD_HOME >/dev/null
 cd $GOCLOUD_HOME
 retry git fetch origin {{.Commit}}
 git reset --hard {{.Commit}}
