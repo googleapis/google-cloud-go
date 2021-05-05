@@ -370,14 +370,14 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 	}
 
 	sub.Receiver.ValidateMsg(msg)
-	barrier.Release()
-
-	// While the stream is not connected, the pending flow control request should
-	// not be released and sent to the stream.
-	sub.sub.onAckAsync(msg.SizeBytes)
-	if sub.PendingFlowControlRequest() == nil {
-		t.Errorf("Pending flow control request should not be cleared")
-	}
+	barrier.ReleaseAfter(func() {
+		// While the stream is not connected, the pending flow control request
+		// should not be released and sent to the stream.
+		sub.sub.onAckAsync(msg.SizeBytes)
+		if sub.PendingFlowControlRequest() == nil {
+			t.Errorf("Pending flow control request should not be cleared")
+		}
+	})
 
 	if gotErr := sub.FinalError(); !test.ErrorEqual(gotErr, serverErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, serverErr)
