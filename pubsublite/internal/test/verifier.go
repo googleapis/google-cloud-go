@@ -48,8 +48,8 @@ func newBarrier() *Barrier {
 	}
 }
 
-// Release should be called by the test.
-func (b *Barrier) Release() {
+// ReleaseAfter releases the barrier, after invoking f provided by the test.
+func (b *Barrier) ReleaseAfter(f func()) {
 	// Wait for the server to reach the barrier.
 	select {
 	case <-time.After(blockWaitTimeout):
@@ -58,8 +58,18 @@ func (b *Barrier) Release() {
 	case <-b.serverBlock:
 	}
 
+	// Run any test-specific code.
+	if f != nil {
+		f()
+	}
+
 	// Then close the client block.
 	close(b.clientBlock)
+}
+
+// Release should be called by the test.
+func (b *Barrier) Release() {
+	b.ReleaseAfter(nil)
 }
 
 func (b *Barrier) serverWait() error {

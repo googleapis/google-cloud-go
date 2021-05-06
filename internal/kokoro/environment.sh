@@ -63,6 +63,11 @@ UUID=$(python  -c 'import uuid; print(uuid.uuid1())' | head -c 7)
 export ENVCTL_ID=ci-$UUID
 echo $ENVCTL_ID
 
+# If App Engine, install app-engine-go component
+if [[ $ENVIRONMENT == *"appengine"* ]]; then
+  gcloud components install app-engine-go -q
+fi
+
 # Run the environment test for the specified GCP service
 set +e
 python3.7 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
