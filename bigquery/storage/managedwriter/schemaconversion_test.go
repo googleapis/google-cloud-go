@@ -85,7 +85,7 @@ func TestFieldConversions(t *testing.T) {
 				Description: "description",
 				Mode:        storagepb.TableFieldSchema_REQUIRED,
 				Fields: []*storagepb.TableFieldSchema{
-					&storagepb.TableFieldSchema{
+					{
 						Name:        "inner1",
 						Mode:        storagepb.TableFieldSchema_REPEATED,
 						Description: "repeat",
