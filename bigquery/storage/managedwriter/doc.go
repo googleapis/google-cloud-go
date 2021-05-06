@@ -19,14 +19,19 @@ to the earlier tabledata.insertAll API, exposed in cloud.google.com/go/bigquery
 as the Inserter abstraction.
 
 
+Stability
+
+This package is EXPERIMENTAL and subject to change or removal without notice.
+
+
 Writer Types
 
 Streaming writers often desire different semantics based on their use case.  This
-library supports four distinct kinds of writers, explained in a bit more detail:
+library supports four distinct modes of writing, summarized as follows:
 
 DefaultStream
 
-BigQuery tables have a default stream, that doesn't require explicit creation.
+BigQuery tables support a default stream that doesn't require explicit creation.
 This type of writer most closely mimics the legacy insert API semantics,
 in which rows are committed and visible immediately.  The default stream is best
 used for high throughput cases where you're looking for uncoordinated appends to
@@ -55,7 +60,6 @@ This mode is best for more stringent exactly-once append use cases.
 
 
 Appending Data
-
 
 The managed writer uses protocol buffers for sending data rows to the
 BigQuery service.  As each table in BigQuery can potentially have a unique schema,

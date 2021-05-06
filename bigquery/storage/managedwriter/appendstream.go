@@ -21,157 +21,215 @@ import (
 	"sync"
 	"time"
 
-	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	gax "github.com/googleapis/gax-go/v2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	grpcstatus "google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
-	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // appendStream is an abstraction over the append stream that supports reconnection/retry.
 type appendStream struct {
-	// for debugging.
-	traceID       string
-	offset        int64
-	ctx           context.Context
-	client        *storage.BigQueryWriteClient
-	fc            *flowController
-	recvProcessor func(ctx context.Context)
-	cancelR       func()
+	ctx context.Context
+	// Aids debugging.
+	traceID string
 
-	schema *storagepb.ProtoSchema
-	arc    storagepb.BigQueryWrite_AppendRowsClient
+	open func() (storagepb.BigQueryWrite_AppendRowsClient, error)
 
-	// things we need for reopen
-	streamName  string
-	trackOffset bool // false for default
-	sentSchema  bool
-	pending     chan *pendingWrite
+	cancel context.CancelFunc
 
-	curOffset int64
+	mu  sync.Mutex
+	arc *storagepb.BigQueryWrite_AppendRowsClient
+	err error // terminal error.
+	fc  *flowController
 
-	progressMu sync.Mutex
-	progress   *streamProgress
+	sentFirstAppend bool
+	schema          *storagepb.ProtoSchema
+	streamName      string
+	pending         chan *pendingWrite
+
+	maxOffsetSent     int64
+	maxOffsetReceived int64
+	/*
+
+
+		client        *storage.BigQueryWriteClient
+		fc            *flowController
+		recvProcessor func(ctx context.Context)
+		cancelR       func()
+
+		schema *storagepb.ProtoSchema
+
+		// things we need for reopen
+		streamName  string
+		trackOffset bool // false for default
+		sentSchema  bool
+
+		progressMu sync.Mutex
+		progress   *streamProgress
+
+	*/
 }
 
-type streamProgress struct {
-	curOffset     int64
-	numErrors     int64
-	terminalErr   error
-	flushOffset   int64
-	finalizeCount int64
-}
+type appendStreamFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
-func newAppendStream(ctx context.Context, client *storage.BigQueryWriteClient, fc *flowController, streamName string, trackOffset bool, schema *storagepb.ProtoSchema, tracePrefix string) (*appendStream, error) {
+func newAppendStream(ctx context.Context, append appendStreamFunc, fc *flowController, streamName string, schema *storagepb.ProtoSchema, tracePrefix string) *appendStream {
+	ctx, cancel := context.WithCancel(ctx)
 	as := &appendStream{
-		ctx:         ctx,
-		fc:          fc,
-		client:      client,
-		streamName:  streamName,
-		trackOffset: trackOffset,
-		schema:      schema,
-		pending:     make(chan *pendingWrite, fc.maxInsertCount+1),
-		traceID:     fmt.Sprintf("%s-%d", tracePrefix, time.Now().UnixNano()),
-		progress:    &streamProgress{},
+		ctx:     ctx,
+		traceID: fmt.Sprintf("%s-%d", tracePrefix, time.Now().UnixNano()),
+		cancel:  cancel,
+		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			arc, err := append(ctx)
+			if err == nil {
+				// collect stats
+				// here's where I'd send an AppendRequest to init the stream with the stream ID and schema, if the service allowed it.
+			}
+			if err != nil {
+				return nil, err
+			}
+			return arc, nil
+		},
+		streamName: streamName,
+		schema:     schema,
+		pending:    make(chan *pendingWrite),
+		fc:         fc,
 	}
-	arc, err := client.AppendRows(ctx)
-	if err != nil {
-		return nil, err
-	}
-	as.arc = arc
-	procCtx, _ := context.WithCancel(ctx)
-	go defaultRecvProcessor(procCtx, as, as.pending)
-	return as, nil
+	// fire up the stream processor
+	go defaultRecvProcessor(ctx, as, as.pending)
+	return as
 }
 
-// Close signals user-level close of the stream.  If the stream already has a terminal error state, it is returned.
-func (as *appendStream) userClose() error {
-	as.progressMu.Lock()
-	defer as.progressMu.Unlock()
-	if as.progress.terminalErr != nil {
-		return as.progress.terminalErr
+func (as *appendStream) get(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, error) {
+	as.mu.Lock()
+	defer as.mu.Unlock()
+	if as.err != nil {
+		return nil, as.err
 	}
-	err := as.arc.CloseSend()
-	if err != nil {
-		log.Printf("CloseSend returned err: %v", err)
+	// if context is done, so are we.
+	as.err = as.ctx.Err()
+	if as.err != nil {
+		return nil, as.err
 	}
-	// mark stream done.
-	as.progress.terminalErr = io.EOF
-	return nil
+
+	// if current and arg AppendRowsClient differ, return the current one.
+	// 1. We have an SPC and the caller is getting the stream for the first time.
+	// 2. The caller wants to retry, but they have an older SPC; we've already retried.
+	if arc != as.arc {
+		// confirm: better we do this here or in openWithRetry()?
+		as.sentFirstAppend = false
+		// TODO: opportunity to drain the non-current client
+		return as.arc, nil
+	}
+
+	as.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
+	*as.arc, as.err = as.openWithRetry()
+	return as.arc, as.err
+}
+
+func (as *appendStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	r := defaultRetryer{}
+	for {
+		arc, err := as.open()
+		bo, shouldRetry := r.Retry(err)
+		if err != nil && shouldRetry {
+			if err := gax.Sleep(as.ctx, bo); err != nil {
+				return nil, err
+			}
+			continue
+		}
+		// we call this with the mutex lock in as.get(), so safe to toggle state here.
+		as.sentFirstAppend = false
+		return arc, err
+	}
+
+}
+
+func (as *appendStream) call(f func(storagepb.BigQueryWrite_AppendRowsClient) error, opts ...gax.CallOption) error {
+	var settings gax.CallSettings
+	for _, opt := range opts {
+		opt.Resolve(&settings)
+	}
+	var r gax.Retryer = &defaultRetryer{}
+	if settings.Retry != nil {
+		r = settings.Retry()
+	}
+
+	var (
+		arc *storagepb.BigQueryWrite_AppendRowsClient
+		err error
+	)
+	for {
+		arc, err = as.get(arc)
+		if err != nil {
+			return err
+		}
+		start := time.Now()
+		err = f(*arc)
+		if err != nil {
+			bo, shouldRetry := r.Retry(err)
+			if shouldRetry {
+				if time.Since(start) < 30*time.Second {
+					if err := gax.Sleep(as.ctx, bo); err != nil {
+						return err
+					}
+				}
+			}
+			as.mu.Lock()
+			as.err = err
+			as.mu.Unlock()
+		}
+		return err
+	}
+}
+
+func (as *appendStream) CloseSend() error {
+	err := as.call(func(arc storagepb.BigQueryWrite_AppendRowsClient) error {
+		return arc.CloseSend()
+	})
+	as.mu.Lock()
+	as.err = io.EOF
+	as.mu.Unlock()
+	return err
 }
 
 func (as *appendStream) append(pw *pendingWrite) error {
 
-	// TODO need a lock here on whether it's safe to append.
+	// TODO: rethink locking here, we lock in call()
+
+	// compute proto size pessimistically, assuming we may have to include schema and stream ID
+	pw.reqSize = proto.Size(pw.request) + proto.Size(as.schema) + len(as.streamName) + len(as.traceID)
+
+	// block on flow control
+	if err := as.fc.acquire(as.ctx, pw.reqSize); err != nil {
+		return fmt.Errorf("flow controller issue: %v", err)
+	}
 
 	pw.request.TraceId = as.traceID
-	if !as.sentSchema {
+	if !as.sentFirstAppend {
+		// we only need to send schema and stream ID on the first append for a channel
 		pw.request.WriteStream = as.streamName
 		pw.request.GetProtoRows().WriterSchema = as.schema
 	}
-	reqSize := proto.Size(pw.request)
-	if err := as.fc.acquire(as.ctx, reqSize); err != nil {
-		return fmt.Errorf("flow controller issue: %v", err)
-	}
-	// done prepping
-	as.progressMu.Lock()
-	prevOffset := as.progress.curOffset
-	if as.trackOffset {
-		pw.request.Offset = &wrapperspb.Int64Value{Value: as.progress.curOffset}
-		as.progress.curOffset = as.progress.curOffset + int64(len(pw.request.GetProtoRows().GetRows().GetSerializedRows()))
-	}
-	// Holding the lock for send to ensure we're correctly ordered.
-	if err := as.arc.Send(pw.request); err != nil {
 
+	err := as.call(func(arc storagepb.BigQueryWrite_AppendRowsClient) error {
+		return arc.Send(pw.request)
+	})
+	as.fc.release(pw.reqSize)
+	if err != nil {
 		log.Printf("failed Send(): %#v\nerr: %v", pw.request, err)
-		as.fc.release(reqSize)
-		// early fail, rewind offset progress otherwise we'll make no forward progress.
-		if as.trackOffset {
-			as.progress.curOffset = prevOffset
-		}
-		as.progressMu.Unlock()
+		// the insert itself failed; finalize the callback with the same error
+		// we got from the call and return.
+		pw.markDone(-1, err)
 		return err
 	}
-	as.fc.release(reqSize)
 	as.pending <- pw
-	as.progressMu.Unlock()
+	off := pw.request.GetOffset()
+	if off != nil {
+		if off.Value > as.maxOffsetSent {
+			as.maxOffsetSent = off.Value
+		}
+	}
 	return nil
-}
-
-func (as *appendStream) flush(offset int64) (int64, error) {
-	req := &storagepb.FlushRowsRequest{
-		WriteStream: as.streamName,
-		Offset: &wrapperspb.Int64Value{
-			Value: offset,
-		},
-	}
-	resp, err := as.client.FlushRows(as.ctx, req)
-	if err != nil {
-		return 0, err
-	}
-	as.progressMu.Lock()
-	as.progress.flushOffset = resp.GetOffset()
-	as.progressMu.Unlock()
-	return resp.GetOffset(), nil
-}
-
-// shouldn't be on appendStream? unary rpc
-func (as *appendStream) finalize(ctx context.Context) (int64, error) {
-	// do we block appends? do we allow finalization with writes in flight?
-	count := as.fc.count()
-	if count > 0 {
-		return 0, fmt.Errorf("cannot finalize with writes in flight. %d in flight", count)
-	}
-	req := &storagepb.FinalizeWriteStreamRequest{
-		Name: as.streamName,
-	}
-	resp, err := as.client.FinalizeWriteStream(ctx, req)
-	if err != nil {
-		return -1, err
-	}
-	as.progressMu.Lock()
-	as.progress.finalizeCount = resp.GetRowCount()
-	return resp.GetRowCount(), nil
 }
 
 // defaultRecvProcessor is responsible for processing the response stream from the service.
@@ -186,10 +244,17 @@ func defaultRecvProcessor(ctx context.Context, as *appendStream, pending chan *p
 				// Channel is closed.  We do all reconnection logic elsewhere, so here we simply return.
 				return
 			}
-			resp, err := as.arc.Recv()
+
+			var resp *storagepb.AppendRowsResponse
+			err := as.call(func(arc storagepb.BigQueryWrite_AppendRowsClient) error {
+				var err error
+				resp, err = arc.Recv()
+				return err
+			}, gax.WithRetry(func() gax.Retryer { return &streamRetryer{defaultRetryer: &defaultRetryer{}} }))
+
 			if err == io.EOF {
-				// do we need to signal reconnect elsewhere?
-				// how do we start a new receiver and stream?
+				// we're done
+				return
 			}
 			if err != nil {
 				// handle stream-level error.
@@ -212,7 +277,6 @@ func defaultRecvProcessor(ctx context.Context, as *appendStream, pending chan *p
 				continue
 			}
 			nextWrite.markDone(-1, nil)
-
 		}
 	}
 }

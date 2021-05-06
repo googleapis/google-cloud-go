@@ -296,7 +296,8 @@ func TestIntegration_ManagedWriter_Default(t *testing.T) {
 	for k, d := range testData {
 		log.Printf("appending element %d", k)
 		totalRows = totalRows + 1
-		ar, err := mw.AppendRows(d)
+		ar, err := mw.AppendRows(d, 0)
+		log.Println("appended")
 		if err != nil {
 			t.Errorf("error on append %d: %v", totalRows, err)
 			break
@@ -378,7 +379,7 @@ func TestIntegration_ManagedWriter_Pending(t *testing.T) {
 	for k, d := range testData {
 		log.Printf("appending element %d", k)
 		totalRows = totalRows + 1
-		ar, err := mw.AppendRows(d)
+		ar, err := mw.AppendRows(d, 0)
 		if err != nil {
 			t.Errorf("error on append %d: %v", totalRows, err)
 			break

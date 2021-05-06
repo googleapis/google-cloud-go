@@ -21,7 +21,9 @@ import (
 
 	"cloud.google.com/go/bigquery"
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	gax "github.com/googleapis/gax-go/v2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // ManagedWriter exposes the contract with no impl.
@@ -29,6 +31,7 @@ type ManagedWriter struct {
 	settings   *WriteSettings
 	streamType StreamType
 	as         *appendStream
+	client     *storage.BigQueryWriteClient
 }
 
 // Settings that the user controls.
@@ -73,6 +76,7 @@ func defaultSettings() *WriteSettings {
 func NewManagedWriter(ctx context.Context, client *storage.BigQueryWriteClient, table *bigquery.Table, opts ...WriterOption) (*ManagedWriter, error) {
 	mw := &ManagedWriter{
 		settings: defaultSettings(),
+		client:   client,
 	}
 
 	// apply writer options
@@ -88,7 +92,7 @@ func NewManagedWriter(ctx context.Context, client *storage.BigQueryWriteClient, 
 			WriteStream: &storagepb.WriteStream{
 				Type: streamTypeToEnum(mw.settings.StreamType),
 			}}
-		resp, err := client.CreateWriteStream(ctx, req)
+		resp, err := mw.client.CreateWriteStream(ctx, req)
 		if err != nil {
 			return nil, fmt.Errorf("couldn't create write stream: %v", err)
 		}
@@ -96,11 +100,8 @@ func NewManagedWriter(ctx context.Context, client *storage.BigQueryWriteClient, 
 	}
 	// ready an appendStream
 	fc := newFlowController(mw.settings.MaxInflightRequests, mw.settings.MaxInflightBytes)
-	appendStream, err := newAppendStream(ctx, client, fc, streamName, mw.settings.StreamType != DefaultStream, constructProtoSchema(mw.settings.Serializer), mw.settings.TracePrefix)
-	if err != nil {
-		return nil, fmt.Errorf("error constructing append stream: %v", err)
-	}
-	mw.as = appendStream
+	mw.as = newAppendStream(ctx, mw.Append, fc, streamName, constructProtoSchema(mw.settings.Serializer), mw.settings.TracePrefix)
+
 	return mw, nil
 }
 
@@ -115,6 +116,16 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 	default:
 		return storagepb.WriteStream_TYPE_UNSPECIFIED
 	}
+}
+
+func (mw *ManagedWriter) Append(ctx context.Context, opts ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	var resp storagepb.BigQueryWrite_AppendRowsClient
+	// TODO: add retries for calls
+	resp, err := mw.client.AppendRows(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func constructProtoSchema(rs RowSerializer) *storagepb.ProtoSchema {
@@ -140,6 +151,14 @@ func (mw *ManagedWriter) protoSchema() *storagepb.ProtoSchema {
 	}
 }
 
+// StreamID returns the corresponding write stream ID being managed by this writer.
+func (mw *ManagedWriter) StreamName() (string, error) {
+	if mw.as == nil {
+		return "", fmt.Errorf("writer has no corresponding stream")
+	}
+	return mw.as.streamName, nil
+}
+
 // Wait blocks until there are no outstanding writes, the context has expired,
 // or a non-transient error has occurred.
 //
@@ -151,22 +170,21 @@ func (mw *ManagedWriter) Wait(ctx context.Context) error {
 	return fmt.Errorf("unimplemented")
 }
 
-// Stop terminates processing of a stream.
-//
-// In the case of a buffered stream, it does not finalize.
-func (mw *ManagedWriter) Stop() {}
+func (mw *ManagedWriter) CloseSend(ctx context.Context) error {
+	return mw.as.CloseSend()
+}
 
 // AppendRows handles conversion of the input data using the registered serializer.
 // It returns an AppendResult for each row generated, or an error.
-func (mw *ManagedWriter) AppendRows(data interface{}) ([]*AppendResult, error) {
+func (mw *ManagedWriter) AppendRows(data interface{}, offset int64) ([]*AppendResult, error) {
 	bs, err := mw.settings.Serializer.Convert(data)
 	if err != nil {
 		return nil, fmt.Errorf("failed to convert data to rows: %v", err)
 	}
-	pw := newPendingWrite(bs)
+	pw := newPendingWrite(bs, offset)
+	log.Println("created pending")
 	if err := mw.as.append(pw); err != nil {
 		log.Printf("wtf no append: %v", err)
-		pw.markDone(-1, err)
 	}
 	return pw.results, nil
 }
@@ -175,8 +193,18 @@ func (mw *ManagedWriter) AppendRows(data interface{}) ([]*AppendResult, error) {
 // making them available for reading in BigQuery.
 //
 // TODO: testing: confirm if flushing non-buffered streams is an error.
-func (mw *ManagedWriter) FlushRows(toOffset int64) (int64, error) {
-	return mw.as.flush(toOffset)
+func (mw *ManagedWriter) FlushRows(ctx context.Context, offset int64) (int64, error) {
+	req := &storagepb.FlushRowsRequest{
+		WriteStream: mw.as.streamName,
+		Offset: &wrapperspb.Int64Value{
+			Value: offset,
+		},
+	}
+	resp, err := mw.client.FlushRows(ctx, req)
+	if err != nil {
+		return 0, err
+	}
+	return resp.GetOffset(), nil
 }
 
 // Finalize marks a write stream so that no new data can be appended.
@@ -191,7 +219,19 @@ func (mw *ManagedWriter) FlushRows(toOffset int64) (int64, error) {
 // e.g. finalize everything but default
 //
 func (mw *ManagedWriter) Finalize(ctx context.Context) (int64, error) {
-	return mw.as.finalize(ctx)
+	// do we block appends? do we allow finalization with writes in flight?
+	count := mw.as.fc.count()
+	if count > 0 {
+		return 0, fmt.Errorf("cannot finalize with writes in flight. %d in flight", count)
+	}
+	req := &storagepb.FinalizeWriteStreamRequest{
+		Name: mw.as.streamName,
+	}
+	resp, err := mw.client.FinalizeWriteStream(ctx, req)
+	if err != nil {
+		return -1, err
+	}
+	return resp.GetRowCount(), nil
 }
 
 // Commit signals that one or more Pending streams should be committed.  Streams must first be
@@ -210,7 +250,7 @@ func (mw *ManagedWriter) Commit(ctx context.Context, otherStreams ...string) (*s
 		req.WriteStreams = append(req.WriteStreams, other)
 	}
 	log.Printf("commit: %+v", req)
-	return mw.as.client.BatchCommitWriteStreams(ctx, req)
+	return mw.client.BatchCommitWriteStreams(ctx, req)
 }
 
 func tableParentFromStreamName(streamName string) string {
@@ -224,14 +264,3 @@ func tableParentFromStreamName(streamName string) string {
 	}
 	return strings.Join(parts[:6], "/")
 }
-
-// TODO: this is our chance to clear resources from the running writer.
-// Problems:  we can't signal we want to close a write stream with pending data, or a stream we want to discard.
-func (mw *ManagedWriter) CloseWriter() {
-
-}
-
-// OTHER
-//
-// BatchCommitWriteStreams() implies committing multiple writers at once.
-// Do we return a stream identifier from the writer, or provide a method that accepts a slice of writers and commits them all?

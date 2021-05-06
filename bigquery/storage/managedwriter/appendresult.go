@@ -17,6 +17,7 @@ import (
 	"context"
 
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 // AppendResult is used to retrieve the state of an individual row append.
@@ -54,19 +55,19 @@ func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
 
 type pendingWrite struct {
 	request *storagepb.AppendRowsRequest
-	reqSize int
 	results []*AppendResult
+	reqSize int
 }
 
 // newPendingWrite constructs the proto request and attaches references
 // to the pending results for later consumption.
-func newPendingWrite(appends [][]byte) *pendingWrite {
+func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 
 	results := make([]*AppendResult, len(appends))
 	for k, r := range appends {
 		results[k] = newAppendResult(r)
 	}
-	return &pendingWrite{
+	pw := &pendingWrite{
 		request: &storagepb.AppendRowsRequest{
 			Rows: &storagepb.AppendRowsRequest_ProtoRows{
 				ProtoRows: &storagepb.AppendRowsRequest_ProtoData{
@@ -78,6 +79,10 @@ func newPendingWrite(appends [][]byte) *pendingWrite {
 		},
 		results: results,
 	}
+	if offset > 0 {
+		pw.request.Offset = &wrapperspb.Int64Value{Value: offset}
+	}
+	return pw
 }
 
 func (pw *pendingWrite) markDone(startOffset int64, err error) {

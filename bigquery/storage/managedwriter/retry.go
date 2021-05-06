@@ -21,7 +21,7 @@ import (
 	"google.golang.org/grpc/status"
 )
 
-type Retryer struct {
+type defaultRetryer struct {
 	bo gax.Backoff
 }
 
@@ -40,7 +40,7 @@ type Retryer struct {
 //
 // INTERNAL: backend errors that aren't classified further.
 //
-func (r *Retryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+func (r defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
 	s, ok := status.FromError(err)
 	if !ok {
 		// things which aren't gRPC status
@@ -52,5 +52,22 @@ func (r *Retryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
 		return r.bo.Pause(), true
 	default:
 		return 0, false
+	}
+}
+
+type streamRetryer struct {
+	defaultRetryer gax.Retryer
+}
+
+func (r *streamRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	s, ok := status.FromError(err)
+	if !ok {
+		return r.defaultRetryer.Retry(err)
+	}
+	switch s.Code() {
+	case codes.ResourceExhausted:
+		return 0, false
+	default:
+		return r.defaultRetryer.Retry(err)
 	}
 }
