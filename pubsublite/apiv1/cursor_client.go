@@ -194,7 +194,8 @@ func (c *CursorClient) CommitCursor(ctx context.Context, req *pubsublitepb.Commi
 		defer cancel()
 		ctx = cctx
 	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription", url.QueryEscape(req.GetSubscription())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.CommitCursor[0:len(c.CallOptions.CommitCursor):len(c.CallOptions.CommitCursor)], opts...)
 	var resp *pubsublitepb.CommitCursorResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {

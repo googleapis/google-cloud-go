@@ -10,6 +10,6 @@ require (
 	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.46.0
-	google.golang.org/genproto v0.0.0-20210505142820-a42aa055cf76
+	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2
 	google.golang.org/grpc v1.37.0
 )
