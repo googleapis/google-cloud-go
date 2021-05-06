@@ -51,11 +51,6 @@ type WriteSettings struct {
 
 	Serializer RowSerializer
 
-	// ManagedRowBatching governs whether the writer will
-	// pack individual row writes into requests, or use
-	// the request batching of the Append
-	ManagedRowBatching bool
-
 	// TracePrefix sets a suitable prefix for the trace ID set on
 	// append requests.  Useful for diagnostic purposes.
 	TracePrefix string
@@ -67,7 +62,6 @@ func defaultSettings() *WriteSettings {
 		MaxInflightRequests: 1000,
 		MaxInflightBytes:    0,
 		Serializer:          nil,
-		ManagedRowBatching:  true,
 		TracePrefix:         "defaultManagedWriter",
 	}
 }
@@ -245,11 +239,7 @@ func (mw *ManagedWriter) Commit(ctx context.Context, otherStreams ...string) (*s
 		Parent:       tableParentFromStreamName(mw.as.streamName),
 		WriteStreams: []string{mw.as.streamName},
 	}
-	log.Printf("commit: %+v", req)
-	for _, other := range otherStreams {
-		req.WriteStreams = append(req.WriteStreams, other)
-	}
-	log.Printf("commit: %+v", req)
+	req.WriteStreams = append(req.WriteStreams, otherStreams...)
 	return mw.client.BatchCommitWriteStreams(ctx, req)
 }
 

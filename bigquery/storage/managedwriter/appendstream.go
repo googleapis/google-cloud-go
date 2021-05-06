@@ -47,27 +47,10 @@ type appendStream struct {
 	streamName      string
 	pending         chan *pendingWrite
 
+	// statistics
+	// TODO: determine the fate of opencensus vs opentelemtry before release.
 	maxOffsetSent     int64
 	maxOffsetReceived int64
-	/*
-
-
-		client        *storage.BigQueryWriteClient
-		fc            *flowController
-		recvProcessor func(ctx context.Context)
-		cancelR       func()
-
-		schema *storagepb.ProtoSchema
-
-		// things we need for reopen
-		streamName  string
-		trackOffset bool // false for default
-		sentSchema  bool
-
-		progressMu sync.Mutex
-		progress   *streamProgress
-
-	*/
 }
 
 type appendStreamFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
@@ -94,8 +77,6 @@ func newAppendStream(ctx context.Context, append appendStreamFunc, fc *flowContr
 		pending:    make(chan *pendingWrite),
 		fc:         fc,
 	}
-	// fire up the stream processor
-	go defaultRecvProcessor(ctx, as, as.pending)
 	return as
 }
 
@@ -139,6 +120,13 @@ func (as *appendStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClien
 		}
 		// we call this with the mutex lock in as.get(), so safe to toggle state here.
 		as.sentFirstAppend = false
+		// we're effectively starting a new stream here, so we establish a new channel and
+		// start a processor on it.
+
+		// This is called when we already have the lock, so it's okay to update the reference in appendstream.
+		pending := make(chan *pendingWrite)
+		go defaultRecvProcessor(as.ctx, as, arc, pending)
+		as.pending = pending
 		return arc, err
 	}
 
@@ -233,49 +221,65 @@ func (as *appendStream) append(pw *pendingWrite) error {
 }
 
 // defaultRecvProcessor is responsible for processing the response stream from the service.
-func defaultRecvProcessor(ctx context.Context, as *appendStream, pending chan *pendingWrite) {
+//
+// Need to also consider draining semantics when we do get a new stream; we need to process all the pending writes on the
+// channel,
+func defaultRecvProcessor(ctx context.Context, as *appendStream, arc storagepb.BigQueryWrite_AppendRowsClient, pending chan *pendingWrite) {
 	for {
-		// kill processing if context is done.
+
+		// if set, we'll mark all writes with the error.
+		var drainErr error
+
+		// processing loop.
 		select {
 		case <-ctx.Done():
 			return
 		case nextWrite, ok := <-pending:
 			if !ok {
-				// Channel is closed.  We do all reconnection logic elsewhere, so here we simply return.
+				// Channel is closed, all elements processed.  Simply return and end.
 				return
 			}
 
-			var resp *storagepb.AppendRowsResponse
-			err := as.call(func(arc storagepb.BigQueryWrite_AppendRowsClient) error {
-				var err error
-				resp, err = arc.Recv()
-				return err
-			}, gax.WithRetry(func() gax.Retryer { return &streamRetryer{defaultRetryer: &defaultRetryer{}} }))
+			if drainErr != nil {
+				// we've got a persistent error on the receiver, so mark any remaining pending writes with it.
+				nextWrite.markDone(-1, drainErr)
+				continue
+			}
 
+			// Normal operation, we get the next response from the stream and pair it with the write.
+			resp, err := arc.Recv()
 			if err == io.EOF {
-				// we're done
-				return
+				// In this case, we've reach EOF when we expected responses, so this is a bit unusual.
+				// We won't get any more responses, so set drainErr in case there's more pending writes.
+				drainErr = io.EOF
+				nextWrite.markDone(-1, drainErr)
+				continue
 			}
 			if err != nil {
-				// handle stream-level error.
-				// for now, just propagate the error.
+				// We got an error from the Recv(), so mark the pending write with it.
 				nextWrite.markDone(-1, err)
 				continue
 			}
+
+			// the response embedded an error, so mark the pending write with it.
 			if status := resp.GetError(); status != nil {
 				nextWrite.markDone(-1, grpcstatus.ErrorProto(status))
 				continue
 			}
 			success := resp.GetAppendResult()
 			off := success.GetOffset()
+			// stats thing.
 			if off != nil {
-				expected := nextWrite.request.GetOffset().GetValue() + int64(len(nextWrite.request.GetProtoRows().GetRows().GetSerializedRows())) - 1
-				if off.GetValue() != expected {
-					log.Printf("mismatched offsets.  got %d, expected %d", off.GetValue(), expected)
+				as.mu.Lock()
+				if off.GetValue() > as.maxOffsetReceived {
+					as.maxOffsetReceived = off.GetValue()
 				}
+				as.mu.Unlock()
+				// mark using the offsets.
 				nextWrite.markDone(nextWrite.request.GetOffset().GetValue(), nil)
 				continue
 			}
+			// last case; success without offset present.
 			nextWrite.markDone(-1, nil)
 		}
 	}

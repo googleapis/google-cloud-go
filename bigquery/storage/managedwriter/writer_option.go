@@ -45,12 +45,6 @@ func WithRowSerializer(rs RowSerializer) WriterOption {
 	}
 }
 
-func WithManagedRowBatching(b bool) WriterOption {
-	return func(mw *ManagedWriter) {
-		mw.settings.ManagedRowBatching = b
-	}
-}
-
 func WithTracePrefix(prefix string) WriterOption {
 	return func(mw *ManagedWriter) {
 		mw.settings.TracePrefix = prefix
