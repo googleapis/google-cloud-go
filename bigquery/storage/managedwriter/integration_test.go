@@ -17,10 +17,7 @@ package managedwriter
 import (
 	"context"
 	"fmt"
-	"io"
 	"log"
-	"runtime"
-	"sync"
 	"testing"
 	"time"
 
@@ -29,11 +26,9 @@ import (
 	"cloud.google.com/go/internal/uid"
 	"github.com/golang/protobuf/descriptor"
 	"google.golang.org/api/option"
-	"google.golang.org/protobuf/proto"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
-	"cloud.google.com/go/bigquery/storage/apiv1beta2/testdata"
-	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
 )
 
 var (
@@ -115,6 +110,7 @@ func queryRowCount(ctx context.Context, client *bigquery.Client, tbl *bigquery.T
 	return 0, fmt.Errorf("got unexpected value %v", rowdata[0])
 }
 
+/*
 func TestIntegration_BareMetalStreaming(t *testing.T) {
 	ctx := context.Background()
 	writeClient, bqClient := getClients(ctx, t)
@@ -242,6 +238,8 @@ func TestIntegration_BareMetalStreaming(t *testing.T) {
 	}
 
 }
+
+*/
 
 func TestIntegration_ManagedWriter_Default(t *testing.T) {
 	setupCtx := context.Background()
@@ -431,10 +429,4 @@ func TestIntegration_ManagedWriter_Pending(t *testing.T) {
 
 	log.Printf("got %d rows", gotRows)
 
-}
-
-func logMemUsage() {
-	var m runtime.MemStats
-	runtime.ReadMemStats(&m)
-	log.Printf("Alloc = %v MiB\tTotalAlloc = %v MiB\tSys = %v MiB\tNumGC = %v", m.Alloc/1e6, m.TotalAlloc/1e6, m.Sys/1e6, m.NumGC)
 }
