@@ -27,6 +27,7 @@ func TestPeriodicTask(t *testing.T) {
 		values <- atomic.AddInt32(&callCount, 1)
 	}
 	ptask := newPeriodicTask(pollInterval, task)
+	defer ptask.Stop()
 
 	t.Run("Start", func(t *testing.T) {
 		ptask.Start()
