@@ -145,13 +145,13 @@ func initSubReq(subscription subscriptionPartition) *pb.SubscribeRequest {
 	}
 }
 
-func initSubReqWithOffset(subscription subscriptionPartition, init_offset int64) *pb.SubscribeRequest {
+func initSubReqWithOffset(subscription subscriptionPartition, initOffset int64) *pb.SubscribeRequest {
 	return &pb.SubscribeRequest{
 		Request: &pb.SubscribeRequest_Initial{
 			Initial: &pb.InitialSubscribeRequest{
 				Subscription:  subscription.Path,
 				Partition:     int64(subscription.Partition),
-				InitialCursor: &pb.Cursor{Offset: init_offset},
+				InitialCursor: &pb.Cursor{Offset: initOffset},
 			},
 		},
 	}
