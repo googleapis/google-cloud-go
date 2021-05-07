@@ -27,6 +27,7 @@ import (
 )
 
 var (
+	// ErrBuildConstraint is returned when the Go command returns this error.
 	ErrBuildConstraint error = errors.New("build constraints exclude all Go files")
 )
 

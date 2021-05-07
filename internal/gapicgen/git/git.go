@@ -209,9 +209,13 @@ func DeepClone(repo, dir string) error {
 	return err
 }
 
+// FindModifiedFiles locates modified files in the git directory provided.
 func FindModifiedFiles(dir string) ([]string, error) {
 	return findModifiedFiles(dir, "-m")
 }
+
+// FindModifiedAndUntrackedFiles locates modified and untracked files in the git
+// directory provided.
 func FindModifiedAndUntrackedFiles(dir string) ([]string, error) {
 	return findModifiedFiles(dir, "-mo")
 }
@@ -226,12 +230,14 @@ func findModifiedFiles(dir string, filter string) ([]string, error) {
 	return strings.Split(string(bytes.TrimSpace(out)), "\n"), nil
 }
 
+// ResetFile reverts all changes made to a file in the provided directory.
 func ResetFile(dir, filename string) error {
 	c := exec.Command("git", "checkout", "HEAD", "--", filename)
 	c.Dir = dir
 	return c.Run()
 }
 
+// FileDiff returns the git diff for the specified file.
 func FileDiff(dir, filename string) (string, error) {
 	c := exec.Command("git", "diff", "--unified=0", filename)
 	c.Dir = dir
