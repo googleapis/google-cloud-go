@@ -24,8 +24,8 @@ import (
 	"cloud.google.com/go/bigquery"
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
-	"github.com/golang/protobuf/descriptor"
 	"google.golang.org/api/option"
+	"google.golang.org/protobuf/reflect/protodesc"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	"cloud.google.com/go/bigquery/storage/managedwriter/testdata"
@@ -273,10 +273,10 @@ func TestIntegration_ManagedWriter_Default(t *testing.T) {
 		{Name: "five", Value: 2},
 	}
 
-	// Construct a simple serializer
-	_, descriptor := descriptor.ForMessage(&testdata.SimpleMessage{})
+	// Construct a simple serializer via reflecting on the message.
+	m := &testdata.SimpleMessage{}
 	rs := &simpleRowSerializer{
-		DescFn:    staticDescFn(descriptor),
+		DescFn:    staticDescFn(protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())),
 		ConvertFn: marshalConvert,
 	}
 
@@ -356,10 +356,10 @@ func TestIntegration_ManagedWriter_Pending(t *testing.T) {
 		{Name: "five", Value: 2},
 	}
 
-	// Construct a simple serializer
-	_, descriptor := descriptor.ForMessage(&testdata.SimpleMessage{})
+	// construct a simple serializer via reflecting on the message.
+	m := &testdata.SimpleMessage{}
 	rs := &simpleRowSerializer{
-		DescFn:    staticDescFn(descriptor),
+		DescFn:    staticDescFn(protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())),
 		ConvertFn: marshalConvert,
 	}
 

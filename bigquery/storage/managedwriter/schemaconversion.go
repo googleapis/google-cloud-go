@@ -22,18 +22,19 @@ import (
 )
 
 var fieldTypeMap = map[bigquery.FieldType]storagepb.TableFieldSchema_Type{
-	bigquery.StringFieldType:    storagepb.TableFieldSchema_STRING,
-	bigquery.BytesFieldType:     storagepb.TableFieldSchema_BYTES,
-	bigquery.IntegerFieldType:   storagepb.TableFieldSchema_INT64,
-	bigquery.FloatFieldType:     storagepb.TableFieldSchema_DOUBLE,
-	bigquery.BooleanFieldType:   storagepb.TableFieldSchema_BOOL,
-	bigquery.TimestampFieldType: storagepb.TableFieldSchema_TIMESTAMP,
-	bigquery.RecordFieldType:    storagepb.TableFieldSchema_STRUCT,
-	bigquery.DateFieldType:      storagepb.TableFieldSchema_DATE,
-	bigquery.TimeFieldType:      storagepb.TableFieldSchema_TIME,
-	bigquery.DateTimeFieldType:  storagepb.TableFieldSchema_DATETIME,
-	bigquery.NumericFieldType:   storagepb.TableFieldSchema_NUMERIC,
-	bigquery.GeographyFieldType: storagepb.TableFieldSchema_GEOGRAPHY,
+	bigquery.StringFieldType:     storagepb.TableFieldSchema_STRING,
+	bigquery.BytesFieldType:      storagepb.TableFieldSchema_BYTES,
+	bigquery.IntegerFieldType:    storagepb.TableFieldSchema_INT64,
+	bigquery.FloatFieldType:      storagepb.TableFieldSchema_DOUBLE,
+	bigquery.BooleanFieldType:    storagepb.TableFieldSchema_BOOL,
+	bigquery.TimestampFieldType:  storagepb.TableFieldSchema_TIMESTAMP,
+	bigquery.RecordFieldType:     storagepb.TableFieldSchema_STRUCT,
+	bigquery.DateFieldType:       storagepb.TableFieldSchema_DATE,
+	bigquery.TimeFieldType:       storagepb.TableFieldSchema_TIME,
+	bigquery.DateTimeFieldType:   storagepb.TableFieldSchema_DATETIME,
+	bigquery.NumericFieldType:    storagepb.TableFieldSchema_NUMERIC,
+	bigquery.BigNumericFieldType: storagepb.TableFieldSchema_BIGNUMERIC,
+	bigquery.GeographyFieldType:  storagepb.TableFieldSchema_GEOGRAPHY,
 }
 
 func bqFieldToProto(in *bigquery.FieldSchema) (*storagepb.TableFieldSchema, error) {
