@@ -64,8 +64,9 @@ retry apt-get -y -q install git >/dev/null
 mkdir -p /tmp/gocache
 export GOCACHE=/tmp/gocache
 
-# Install gcc, needed to install go master
-if [ "{{.GoVersion}}" = "master" ]
+# Install gcc, needed to install go master and cgo depencencies when using
+# go1.11.
+if [ "{{.GoVersion}}" = "master" ] || [[ "{{.GoVersion}}" =~ 1.11.* ]]
 then
 retry apt-get -y -q install gcc >/dev/null
 fi
