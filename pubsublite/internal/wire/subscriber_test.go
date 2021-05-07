@@ -245,11 +245,10 @@ func TestSubscribeStreamReconnect(t *testing.T) {
 	stream1.Push(nil, nil, status.Error(codes.Unavailable, "server unavailable"))
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream1)
 
-	// When reconnected, the subscribeStream should seek to msg2 and have
-	// subtracted flow control tokens.
+	// When reconnected, the subscribeStream should set initial_cursor to msg2 and
+	// have subtracted flow control tokens.
 	stream2 := test.NewRPCVerifier(t)
-	stream2.Push(initSubReq(subscription), initSubResp(), nil)
-	stream2.Push(seekReq(68), seekResp(68), nil)
+	stream2.Push(initSubReqWithOffset(subscription, 68), initSubResp(), nil)
 	stream2.Push(flowControlSubReq(flowControlTokens{Bytes: 800, Messages: 9}), msgSubResp(msg2), nil)
 	// Subscriber should terminate on permanent error.
 	stream2.Push(nil, nil, permanentErr)
@@ -355,8 +354,7 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 
 	stream2 := test.NewRPCVerifier(t)
 	// The barrier is used to pause in the middle of stream reconnection.
-	barrier := stream2.PushWithBarrier(initSubReq(subscription), initSubResp(), nil)
-	stream2.Push(seekReq(68), seekResp(68), nil)
+	barrier := stream2.PushWithBarrier(initSubReqWithOffset(subscription, 68), initSubResp(), nil)
 	// Full flow control tokens should be sent after stream has connected.
 	stream2.Push(initFlowControlReq(), nil, serverErr)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream2)
@@ -428,14 +426,14 @@ func TestSubscribeStreamSpuriousSeekResponse(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
 	stream.Push(initSubReq(subscription), initSubResp(), nil)
-	stream.Push(initFlowControlReq(), seekResp(1), nil) // Seek response with no seek request
+	stream.Push(initFlowControlReq(), seekResp(1), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
 	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
-	if gotErr, wantErr := sub.FinalError(), errNoInFlightSeek; !test.ErrorEqual(gotErr, wantErr) {
+	if gotErr, wantErr := sub.FinalError(), errInvalidSubscribeResponse; !test.ErrorEqual(gotErr, wantErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 }
@@ -621,11 +619,10 @@ func TestSinglePartitionSubscriberMessageQueue(t *testing.T) {
 	subStream1.Push(nil, nil, retryableErr)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
 
-	// When reconnected, the subscribeStream should seek to msg3 and have
-	// subtracted flow control tokens for msg1 and msg2.
+	// When reconnected, the subscribeStream should set initial_cursor to msg3 and
+	// have subtracted flow control tokens for msg1 and msg2.
 	subStream2 := test.NewRPCVerifier(t)
-	subStream2.Push(initSubReq(subscription), initSubResp(), nil)
-	subStream2.Push(seekReq(3), nil, nil)
+	subStream2.Push(initSubReqWithOffset(subscription, 3), initSubResp(), nil)
 	subStream2.Push(flowControlSubReq(flowControlTokens{Bytes: 800, Messages: 8}), msgSubResp(msg3), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream2)
 

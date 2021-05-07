@@ -222,11 +222,11 @@ func TestFlowControlBatcher(t *testing.T) {
 	})
 }
 
-func TestOffsetTrackerRequestForRestart(t *testing.T) {
+func TestOffsetTrackerCursorForRestart(t *testing.T) {
 	for _, tc := range []struct {
 		desc    string
 		tracker subscriberOffsetTracker
-		want    *pb.SeekRequest
+		want    *pb.Cursor
 	}{
 		{
 			desc:    "Uninitialized tracker",
@@ -236,17 +236,13 @@ func TestOffsetTrackerRequestForRestart(t *testing.T) {
 		{
 			desc:    "Next offset positive",
 			tracker: subscriberOffsetTracker{minNextOffset: 1},
-			want: &pb.SeekRequest{
-				Target: &pb.SeekRequest_Cursor{
-					Cursor: &pb.Cursor{Offset: 1},
-				},
-			},
+			want:    &pb.Cursor{Offset: 1},
 		},
 	} {
 		t.Run(tc.desc, func(t *testing.T) {
-			got := tc.tracker.RequestForRestart()
+			got := tc.tracker.CursorForRestart()
 			if !proto.Equal(got, tc.want) {
-				t.Errorf("subscriberOffsetTracker(%v).RequestForRestart(): got %v, want %v", tc.tracker, got, tc.want)
+				t.Errorf("subscriberOffsetTracker(%v).CursorForRestart(): got %v, want %v", tc.tracker, got, tc.want)
 			}
 		})
 	}

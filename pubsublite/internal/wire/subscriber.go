@@ -30,8 +30,7 @@ import (
 var (
 	errServerNoMessages                = errors.New("pubsublite: server delivered no messages")
 	errInvalidInitialSubscribeResponse = errors.New("pubsublite: first response from server was not an initial response for subscribe")
-	errInvalidSubscribeResponse        = errors.New("pubsublite: received invalid subscribe response from server")
-	errNoInFlightSeek                  = errors.New("pubsublite: received seek response for no in-flight seek")
+	errInvalidSubscribeResponse        = errors.New("pubsublite: received unexpected subscribe response from server")
 )
 
 // ReceivedMessage stores a received Pub/Sub message and AckConsumer for
@@ -128,7 +127,6 @@ type subscribeStream struct {
 	offsetTracker          subscriberOffsetTracker
 	flowControl            flowControlBatcher
 	pollFlowControl        *periodicTask
-	seekInFlight           bool
 	enableBatchFlowControl bool
 
 	abstractService
@@ -141,14 +139,6 @@ func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, s
 		subClient:    subClient,
 		settings:     settings,
 		subscription: subscription,
-		initialReq: &pb.SubscribeRequest{
-			Request: &pb.SubscribeRequest_Initial{
-				Initial: &pb.InitialSubscribeRequest{
-					Subscription: subscription.Path,
-					Partition:    int64(subscription.Partition),
-				},
-			},
-		},
 		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
 		metadata:     newPubsubMetadata(),
 	}
@@ -193,8 +183,23 @@ func (s *subscribeStream) newStream(ctx context.Context) (grpc.ClientStream, err
 	return s.subClient.Subscribe(s.metadata.AddToContext(ctx))
 }
 
+func (s *subscribeStream) lockedInitCursor() *pb.Cursor {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.offsetTracker.CursorForRestart()
+}
+
 func (s *subscribeStream) initialRequest() (interface{}, initialResponseRequired) {
-	return s.initialReq, initialResponseRequired(true)
+	initReq := &pb.SubscribeRequest{
+		Request: &pb.SubscribeRequest_Initial{
+			Initial: &pb.InitialSubscribeRequest{
+				Subscription:  s.subscription.Path,
+				Partition:     int64(s.subscription.Partition),
+				InitialCursor: s.lockedInitCursor(),
+			},
+		},
+	}
+	return initReq, initialResponseRequired(true)
 }
 
 func (s *subscribeStream) validateInitialResponse(response interface{}) error {
@@ -212,23 +217,13 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 	switch status {
 	case streamConnected:
 		s.unsafeUpdateStatus(serviceActive, nil)
-
-		// Reinitialize the offset and flow control tokens when a new subscribe
-		// stream instance is connected.
-		if seekReq := s.offsetTracker.RequestForRestart(); seekReq != nil {
-			if !s.stream.Send(&pb.SubscribeRequest{
-				Request: &pb.SubscribeRequest_Seek{Seek: seekReq},
-			}) {
-				return
-			}
-			s.seekInFlight = true
-		}
+		// Reinitialize the flow control tokens when a new subscribe stream instance
+		// is connected.
 		s.unsafeSendFlowControl(s.flowControl.RequestForRestart())
 		s.enableBatchFlowControl = true
 		s.pollFlowControl.Start()
 
 	case streamReconnecting:
-		s.seekInFlight = false
 		// Ensure no batch flow control tokens are sent until the RequestForRestart
 		// is sent above when a new subscribe stream is initialized.
 		s.enableBatchFlowControl = false
@@ -252,22 +247,12 @@ func (s *subscribeStream) onResponse(response interface{}) {
 	switch {
 	case subscribeResponse.GetMessages() != nil:
 		err = s.unsafeOnMessageResponse(subscribeResponse.GetMessages())
-	case subscribeResponse.GetSeek() != nil:
-		err = s.unsafeOnSeekResponse(subscribeResponse.GetSeek())
 	default:
 		err = errInvalidSubscribeResponse
 	}
 	if err != nil {
 		s.unsafeInitiateShutdown(serviceTerminated, err)
 	}
-}
-
-func (s *subscribeStream) unsafeOnSeekResponse(response *pb.SeekResponse) error {
-	if !s.seekInFlight {
-		return errNoInFlightSeek
-	}
-	s.seekInFlight = false
-	return nil
 }
 
 func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) error {
