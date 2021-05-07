@@ -27,29 +27,26 @@ func TestPeriodicTask(t *testing.T) {
 		values <- atomic.AddInt32(&callCount, 1)
 	}
 	ptask := newPeriodicTask(pollInterval, task)
-	var lastValue int32
 
 	t.Run("Start", func(t *testing.T) {
 		ptask.Start()
 		ptask.Start() // Tests duplicate start
 
-		lastValue = <-values
-		if got, want := lastValue, int32(1); got != want {
+		got := <-values
+
+		// Attempt to immediately stop the task after the first run.
+		// Note: if this test is still flaky, pollInterval can be increased.
+		ptask.Stop()
+
+		if want := int32(1); got != want {
 			t.Errorf("got %d, want %d", got, want)
 		}
 	})
 
 	t.Run("Stop", func(t *testing.T) {
-		// Flushes last value immediately before stopping.
-		// Note: if this test is still flaky, pollInterval can be increased.
-		select {
-		case lastValue = <-values:
-		default:
-		}
+		ptask.Stop() // Tests duplicate stop (also called in Start above)
 
-		ptask.Stop()
-		ptask.Stop() // Tests duplicate stop
-
+		// Wait at least the poll interval to ensure the task did not run.
 		time.Sleep(2 * pollInterval)
 		select {
 		case got := <-values:
@@ -61,7 +58,7 @@ func TestPeriodicTask(t *testing.T) {
 	t.Run("Restart", func(t *testing.T) {
 		ptask.Start()
 
-		if got, want := <-values, lastValue+1; got != want {
+		if got, want := <-values, int32(2); got != want {
 			t.Errorf("got %d, want %d", got, want)
 		}
 	})
