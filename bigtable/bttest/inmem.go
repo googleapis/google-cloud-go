@@ -518,14 +518,27 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 				}
 			}
 		}
-		var count int
+		var found bool
 		for _, fam := range r.families {
-			for _, cs := range fam.cells {
+			for colName, cs := range fam.cells {
+				if len(cs) == 0 {
+					continue
+				}
+				found = true
 				sort.Sort(byDescTS(cs))
-				count += len(cs)
+
+				// Remove dups
+				wIdx := 1
+				for i := 1; i < len(cs); i++ {
+					if cs[i].ts != cs[wIdx-1].ts {
+						cs[wIdx] = cs[i]
+						wIdx++
+					}
+				}
+				fam.cells[colName] = cs[:wIdx]
 			}
 		}
-		return count > 0, nil
+		return found, nil
 	case *btpb.RowFilter_CellsPerColumnLimitFilter:
 		lim := int(f.CellsPerColumnLimitFilter)
 		for _, fam := range r.families {

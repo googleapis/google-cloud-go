@@ -509,6 +509,10 @@ func TestReadRows(t *testing.T) {
 		if got, want := len(mock.responses), 1; got != want {
 			t.Errorf("%+v: response count: got %d, want %d", rowset, got, want)
 		}
+		if got, want := len(mock.responses[0].Chunks), 1; got != want {
+			dbgChunks(t, mock.responses[0].Chunks)
+			t.Errorf("%+v: chunk count: got %d, want %d", rowset, got, want)
+		}
 	}
 }
 
@@ -656,8 +660,10 @@ func TestReadRowsOrder(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	if len(mock.responses[0].Chunks) != 27 {
-		t.Fatalf("Chunk count: got %d, want 27", len(mock.responses[0].Chunks))
+	// The entire dataset; 3 fam * 3 col * 3 timestamps
+	if got, want := len(mock.responses[0].Chunks), 3*3*3; got != want {
+		dbgChunks(t, mock.responses[0].Chunks)
+		t.Errorf("Chunk count: got %d, want %d", got, want)
 	}
 	testOrder := func(ms *MockReadRowsServer) {
 		var prevFam, prevCol string
@@ -707,8 +713,11 @@ func TestReadRowsOrder(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	if len(mock.responses[0].Chunks) != 18 {
-		t.Fatalf("Chunk count: got %d, want 18", len(mock.responses[0].Chunks))
+
+	// 3 each from cf0#col2, cf2#col2; all 9 rows from cf1
+	if got, want := len(mock.responses[0].Chunks), 3+9+3; got != want {
+		dbgChunks(t, mock.responses[0].Chunks)
+		t.Errorf("Chunk count: got %d, want %d", got, want)
 	}
 	testOrder(mock)
 
@@ -740,10 +749,20 @@ func TestReadRowsOrder(t *testing.T) {
 	if len(mock.responses) == 0 {
 		t.Fatal("Response count: got 0, want > 0")
 	}
-	if len(mock.responses[0].Chunks) != 30 {
-		t.Fatalf("Chunk count: got %d, want 30", len(mock.responses[0].Chunks))
+	// 27 cells from the original dataset, plus 3 new ones
+	if got, want := len(mock.responses[0].Chunks), 3*3*3+3; got != want {
+		dbgChunks(t, mock.responses[0].Chunks)
+		t.Errorf("Chunk count: got %d, want %d", got, want)
 	}
 	testOrder(mock)
+}
+
+// A helper functiong to debug log response chunks.
+func dbgChunks(t *testing.T, chunks []*btpb.ReadRowsResponse_CellChunk) {
+	t.Helper()
+	for _, c := range chunks {
+		t.Logf("%s#%s#%s", c.RowKey, c.FamilyName.Value, c.Qualifier.Value)
+	}
 }
 
 func TestReadRowsWithlabelTransformer(t *testing.T) {
