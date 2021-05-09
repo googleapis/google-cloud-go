@@ -82,6 +82,11 @@ func (c *Client) Close() error {
 	return nil
 }
 
+// ProjectID returns the client's ProjectID.
+func (c *Client) ProjectID() string {
+	return c.projectID
+}
+
 // Calls the Jobs.Insert RPC and returns a Job.
 func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader) (*Job, error) {
 	call := c.bqs.Jobs.Insert(c.projectID, job).Context(ctx)

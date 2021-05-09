@@ -68,6 +68,11 @@ func (j *Job) ID() string {
 	return j.jobID
 }
 
+// ProjectID returns the job's ProjectID.
+func (j *Job) ProjectID() string {
+	return j.projectID
+}
+
 // Location returns the job's location.
 func (j *Job) Location() string {
 	return j.location
