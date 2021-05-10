@@ -269,6 +269,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/clouddms/apiv1": {
+    "distribution_name": "cloud.google.com/go/clouddms/apiv1",
+    "description": "Database Migration API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/clouddms/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/cloudtasks/apiv2": {
     "distribution_name": "cloud.google.com/go/cloudtasks/apiv2",
     "description": "Cloud Tasks API",
