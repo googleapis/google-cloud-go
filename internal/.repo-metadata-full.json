@@ -683,6 +683,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/metastore/apiv1": {
+    "distribution_name": "cloud.google.com/go/metastore/apiv1",
+    "description": "Dataproc Metastore API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/metastore/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/metastore/apiv1alpha": {
     "distribution_name": "cloud.google.com/go/metastore/apiv1alpha",
     "description": "Dataproc Metastore API",
