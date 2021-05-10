@@ -21,6 +21,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
@@ -111,13 +112,10 @@ func ParseChangeInfo(googleapisDir string, hashes []string, gapicPkgs map[string
 		}
 		var pkg, pkgDir string
 		for _, file := range files {
-			ss := strings.Split(file, "/")
-			if len(ss) == 0 {
+			if file == "" {
 				continue
 			}
-			// remove filename from path
-			strings.Join(ss[:len(ss)-1], "/")
-			importPath := gapicPkgs[strings.Join(ss[:len(ss)-1], "/")]
+			importPath := gapicPkgs[filepath.Dir(file)]
 			if importPath != "" {
 				pkg = parseConventionalCommitPkg(importPath)
 				pkgDir = strings.TrimPrefix(importPath, "cloud.google.com/go/")
