@@ -28,7 +28,7 @@ func TestParseConventionalCommitPkg(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			if got := ParseConventionalCommitPkg(tc.importPath); got != tc.want {
+			if got := parseConventionalCommitPkg(tc.importPath); got != tc.want {
 				t.Errorf("parseConventionalCommitPkg(%q) = %q, want %q", tc.importPath, got, tc.want)
 			}
 		})

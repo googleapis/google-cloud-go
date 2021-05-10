@@ -26,6 +26,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
+	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gapicgen/git"
 	"golang.org/x/sync/errgroup"
 )
@@ -131,11 +132,11 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := vet(g.genprotoDir); err != nil {
+	if err := gocmd.Vet(g.genprotoDir); err != nil {
 		return err
 	}
 
-	if err := build(g.genprotoDir); err != nil {
+	if err := gocmd.Build(g.genprotoDir); err != nil {
 		return err
 	}
 
