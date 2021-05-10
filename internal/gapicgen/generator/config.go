@@ -1063,6 +1063,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/04/23
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/clouddms/v1",
+		pkg:                   "clouddms",
+		importPath:            "cloud.google.com/go/clouddms/apiv1",
+		gRPCServiceConfigPath: "google/cloud/clouddms/v1/library_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/clouddms/v1/datamigration_v1.yaml",
+		// GA after 2021/06/10
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
