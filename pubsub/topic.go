@@ -30,6 +30,8 @@ import (
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/support/bundler"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	fmpb "google.golang.org/genproto/protobuf/field_mask"
@@ -70,6 +72,8 @@ type Topic struct {
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
+
+	tracer trace.Tracer
 }
 
 // PublishSettings control the bundling of published messages.
@@ -180,6 +184,7 @@ func newTopic(c *Client, name string) *Topic {
 		c:               c,
 		name:            name,
 		PublishSettings: DefaultPublishSettings,
+		tracer:          otel.Tracer("instrumentation/package/name"),
 	}
 }
 
@@ -421,6 +426,9 @@ type PublishResult = ipubsub.PublishResult
 // need to be stopped by calling t.Stop(). Once stopped, future calls to Publish
 // will immediately return a PublishResult with an error.
 func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
+	var span trace.Span
+	_, span = t.tracer.Start(ctx, "publish")
+	defer span.End()
 	r := ipubsub.NewPublishResult()
 	if !t.EnableMessageOrdering && msg.OrderingKey != "" {
 		ipubsub.SetPublishResult(r, "", errors.New("Topic.EnableMessageOrdering=false, but an OrderingKey was set in Message. Please remove the OrderingKey or turn on Topic.EnableMessageOrdering"))
@@ -452,7 +460,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 
 	// TODO(jba) [from bcmills] consider using a shared channel per bundle
 	// (requires Bundler API changes; would reduce allocations)
-	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{msg, r}, msgSize)
+	err := t.scheduler.Add(msg.OrderingKey, &bundledMessage{ctx, msg, r}, msgSize)
 	if err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
@@ -475,6 +483,7 @@ func (t *Topic) Stop() {
 }
 
 type bundledMessage struct {
+	ctx context.Context
 	msg *Message
 	res *PublishResult
 }
@@ -544,6 +553,9 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		bm.msg = nil // release bm.msg for GC
+		var span trace.Span
+		ctx, span = t.tracer.Start(bm.ctx, "publish message bundle")
+		defer span.End()
 	}
 	var res *pb.PublishResponse
 	start := time.Now()
