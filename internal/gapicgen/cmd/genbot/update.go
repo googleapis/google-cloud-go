@@ -30,7 +30,7 @@ func updateGocloudPR(ctx context.Context, githubClient *git.GithubClient, pr *gi
 	}
 
 	// Checkout PR and update go.mod
-	if err := githubClient.UpdateGocloudGoMod(pr); err != nil {
+	if err := githubClient.UpdateGocloudGoMod(); err != nil {
 		return err
 	}
 
