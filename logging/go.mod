@@ -3,16 +3,14 @@ module cloud.google.com/go/logging
 go 1.11
 
 require (
-	cloud.google.com/go v0.75.0
+	cloud.google.com/go v0.81.0
 	cloud.google.com/go/storage v1.10.0
-	github.com/golang/protobuf v1.4.3
-	github.com/google/go-cmp v0.5.4
+	github.com/golang/protobuf v1.5.2
+	github.com/google/go-cmp v0.5.5
 	github.com/googleapis/gax-go/v2 v2.0.5
-	go.opencensus.io v0.22.5
-	golang.org/x/mod v0.4.1 // indirect
-	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423
-	golang.org/x/tools v0.1.0 // indirect
-	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210120162456-f5e8c5e2aaf2
-	google.golang.org/grpc v1.34.1
+	go.opencensus.io v0.23.0
+	golang.org/x/oauth2 v0.0.0-20210427180440-81ed05c6b58c
+	google.golang.org/api v0.46.0
+	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2
+	google.golang.org/grpc v1.37.0
 )

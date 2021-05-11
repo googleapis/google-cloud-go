@@ -158,6 +158,33 @@ func TestCommitterTerminateDiscardsOutstandingAcks(t *testing.T) {
 	}
 }
 
+func TestCommitterStopThenTerminateDiscardsOutstandingAcks(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack := newAckConsumer(33, 0, nil)
+	acks := newAckTracker()
+	acks.Push(ack)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	// No commits expected.
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	cmt.Stop()      // Stop waits for outstanding acks
+	cmt.Terminate() // Terminate should discard all outstanding acks
+	if gotErr := cmt.FinalError(); gotErr != nil {
+		t.Errorf("Final err: (%v), want: <nil>", gotErr)
+	}
+}
+
 func TestCommitterPermanentStreamError(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
 	acks := newAckTracker()

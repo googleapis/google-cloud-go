@@ -26,7 +26,7 @@ import (
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	"github.com/golang/protobuf/proto"
-	structpbpb "github.com/golang/protobuf/ptypes/struct"
+	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -353,7 +353,7 @@ func (c *VersionsClient) DeleteVersion(ctx context.Context, req *cxpb.DeleteVers
 	return err
 }
 
-// LoadVersion loads a specified version to draft version.
+// LoadVersion loads resources in the specified version to the draft flow.
 func (c *VersionsClient) LoadVersion(ctx context.Context, req *cxpb.LoadVersionRequest, opts ...gax.CallOption) (*LoadVersionOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -483,8 +483,8 @@ func (op *LoadVersionOperation) Poll(ctx context.Context, opts ...gax.CallOption
 // Metadata itself does not contact the server, but Poll does.
 // To get the latest metadata, call this method after a successful call to Poll.
 // If the metadata is not available, the returned metadata and error are both nil.
-func (op *LoadVersionOperation) Metadata() (*structpbpb.Struct, error) {
-	var meta structpbpb.Struct
+func (op *LoadVersionOperation) Metadata() (*structpb.Struct, error) {
+	var meta structpb.Struct
 	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
 		return nil, nil
 	} else if err != nil {

@@ -20,26 +20,35 @@ import (
 )
 
 func TestPeriodicTask(t *testing.T) {
+	const pollInterval = 10 * time.Millisecond
 	var callCount int32
 	values := make(chan int32)
 	task := func() {
 		values <- atomic.AddInt32(&callCount, 1)
 	}
-	ptask := newPeriodicTask(10*time.Millisecond, task)
+	ptask := newPeriodicTask(pollInterval, task)
+	defer ptask.Stop()
 
-	t.Run("Start1", func(t *testing.T) {
+	t.Run("Start", func(t *testing.T) {
 		ptask.Start()
 		ptask.Start() // Tests duplicate start
 
-		if got, want := <-values, int32(1); got != want {
+		got := <-values
+
+		// Attempt to immediately stop the task after the first run.
+		// Note: if this test is still flaky, pollInterval can be increased.
+		ptask.Stop()
+
+		if want := int32(1); got != want {
 			t.Errorf("got %d, want %d", got, want)
 		}
 	})
 
-	t.Run("Stop1", func(t *testing.T) {
-		ptask.Stop()
-		ptask.Stop() // Tests duplicate stop
+	t.Run("Stop", func(t *testing.T) {
+		ptask.Stop() // Tests duplicate stop (also called in Start above)
 
+		// Wait at least the poll interval to ensure the task did not run.
+		time.Sleep(2 * pollInterval)
 		select {
 		case got := <-values:
 			t.Errorf("got unexpected value %d", got)
@@ -47,21 +56,11 @@ func TestPeriodicTask(t *testing.T) {
 		}
 	})
 
-	t.Run("Start2", func(t *testing.T) {
+	t.Run("Restart", func(t *testing.T) {
 		ptask.Start()
 
 		if got, want := <-values, int32(2); got != want {
 			t.Errorf("got %d, want %d", got, want)
-		}
-	})
-
-	t.Run("Stop2", func(t *testing.T) {
-		ptask.Stop()
-
-		select {
-		case got := <-values:
-			t.Errorf("got unexpected value %d", got)
-		default:
 		}
 	})
 }

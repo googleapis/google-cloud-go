@@ -3,15 +3,12 @@ module cloud.google.com/go/datastore
 go 1.11
 
 require (
-	cloud.google.com/go v0.75.0
-	github.com/golang/protobuf v1.4.3
-	github.com/google/go-cmp v0.5.4
+	cloud.google.com/go v0.81.0
+	github.com/golang/protobuf v1.5.2
+	github.com/google/go-cmp v0.5.5
 	github.com/googleapis/gax-go/v2 v2.0.5
-	golang.org/x/mod v0.4.1 // indirect
-	golang.org/x/oauth2 v0.0.0-20210113160501-8b1d76fa0423 // indirect
-	golang.org/x/tools v0.1.0 // indirect
-	google.golang.org/api v0.36.0
-	google.golang.org/genproto v0.0.0-20210120162456-f5e8c5e2aaf2
-	google.golang.org/grpc v1.34.1
-	google.golang.org/protobuf v1.25.0
+	google.golang.org/api v0.46.0
+	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2
+	google.golang.org/grpc v1.37.0
+	google.golang.org/protobuf v1.26.0
 )

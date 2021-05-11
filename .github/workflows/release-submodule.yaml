@@ -71,7 +71,8 @@ jobs:
            path: ${{ matrix.package }}
            token: ${{ secrets.FORKING_TOKEN }}
            fork: true
-           release-type: go
+           release-type: go-yoshi
+           bump-minor-pre-major: true
            package-name: ${{ matrix.package }}
            monorepo-tags: true
            command: release-pr
@@ -103,7 +104,7 @@ jobs:
           path: ${{ matrix.package }}
           changelog-path: CHANGES.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: go
+          release-type: go-yoshi
           monorepo-tags: true
           package-name: ${{ matrix.package }}
           command: github-release

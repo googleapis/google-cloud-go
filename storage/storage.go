@@ -829,8 +829,8 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 	return newObject(obj), nil
 }
 
-// Update updates an object with the provided attributes.
-// All zero-value attributes are ignored.
+// Update updates an object with the provided attributes. See
+// ObjectAttrsToUpdate docs for details on treatment of zero values.
 // ErrObjectNotExist will be returned if the object is not found.
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (oa *ObjectAttrs, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.Update")
@@ -941,7 +941,8 @@ func (o *ObjectHandle) ObjectName() string {
 
 // ObjectAttrsToUpdate is used to update the attributes of an object.
 // Only fields set to non-nil values will be updated.
-// Set a field to its zero value to delete it.
+// For all fields except CustomTime, set the field to its zero value to delete
+// it. CustomTime cannot be deleted or changed to an earlier time once set.
 //
 // For example, to change ContentType and delete ContentEncoding and
 // Metadata, use
@@ -958,8 +959,8 @@ type ObjectAttrsToUpdate struct {
 	ContentEncoding    optional.String
 	ContentDisposition optional.String
 	CacheControl       optional.String
-	CustomTime         time.Time
-	Metadata           map[string]string // set to map[string]string{} to delete
+	CustomTime         time.Time         // Cannot be deleted or backdated from its current value.
+	Metadata           map[string]string // Set to map[string]string{} to delete.
 	ACL                []ACLRule
 
 	// If not empty, applies a predefined set of access controls. ACL must be nil.
@@ -1229,7 +1230,8 @@ type ObjectAttrs struct {
 	// LifecycleConditions to manage object lifecycles.
 	//
 	// CustomTime cannot be removed once set on an object. It can be updated to a
-	// later value but not to an earlier one.
+	// later value but not to an earlier one. For more information see
+	// https://cloud.google.com/storage/docs/metadata#custom-time .
 	CustomTime time.Time
 }
 
@@ -1306,6 +1308,31 @@ func encodeUint32(u uint32) string {
 	return base64.StdEncoding.EncodeToString(b)
 }
 
+// Projection is enumerated type for Query.Projection.
+type Projection int
+
+const (
+	// ProjectionDefault returns all fields of objects.
+	ProjectionDefault Projection = iota
+
+	// ProjectionFull returns all fields of objects.
+	ProjectionFull
+
+	// ProjectionNoACL returns all fields of objects except for Owner and ACL.
+	ProjectionNoACL
+)
+
+func (p Projection) String() string {
+	switch p {
+	case ProjectionFull:
+		return "full"
+	case ProjectionNoACL:
+		return "noAcl"
+	default:
+		return ""
+	}
+}
+
 // Query represents a query to filter objects from a bucket.
 type Query struct {
 	// Delimiter returns results in a directory-like fashion.
@@ -1341,6 +1368,11 @@ type Query struct {
 	// lexicographically before endOffset. If startOffset is also set, the objects
 	// listed will have names between startOffset (inclusive) and endOffset (exclusive).
 	EndOffset string
+
+	// Projection defines the set of properties to return. It will default to ProjectionFull,
+	// which returns all properties. Passing ProjectionNoACL will omit Owner and ACL,
+	// which may improve performance when listing many objects.
+	Projection Projection
 }
 
 // attrToFieldMap maps the field names of ObjectAttrs to the underlying field

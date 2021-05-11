@@ -18,13 +18,14 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 // ErrorEqual compares two errors for equivalence.
 func ErrorEqual(got, want error) bool {
-	if got == want {
+	if xerrors.Is(got, want) {
 		return true
 	}
 	return cmp.Equal(got, want, cmpopts.EquateErrors())

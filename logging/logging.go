@@ -137,9 +137,7 @@ type Client struct {
 // By default NewClient uses WriteScope. To use a different scope, call
 // NewClient using a WithScopes option (see https://godoc.org/google.golang.org/api/option#WithScopes).
 func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) (*Client, error) {
-	if !strings.ContainsRune(parent, '/') {
-		parent = "projects/" + parent
-	}
+	parent = makeParent(parent)
 	opts = append([]option.ClientOption{
 		option.WithScopes(WriteScope),
 	}, opts...)
@@ -170,6 +168,13 @@ func NewClient(ctx context.Context, parent string, opts ...option.ClientOption) 
 		}
 	}()
 	return client, nil
+}
+
+func makeParent(parent string) string {
+	if !strings.ContainsRune(parent, '/') {
+		return "projects/" + parent
+	}
+	return parent
 }
 
 // Ping reports whether the client's connection to the logging service and the
@@ -239,7 +244,7 @@ type LoggerOption interface {
 
 // CommonResource sets the monitored resource associated with all log entries
 // written from a Logger. If not provided, the resource is automatically
-// detected based on the running environment (on GCE and GAE Standard only).
+// detected based on the running environment (on GCE, GCR, GCF and GAE Standard only).
 // This value can be overridden per-entry by setting an Entry's Resource field.
 func CommonResource(r *mrpb.MonitoredResource) LoggerOption { return commonResource{r} }
 
@@ -280,15 +285,102 @@ func detectGCEResource() *mrpb.MonitoredResource {
 	}
 }
 
-func detectGAEResource() *mrpb.MonitoredResource {
+func isCloudRun() bool {
+	_, config := os.LookupEnv("K_CONFIGURATION")
+	_, service := os.LookupEnv("K_SERVICE")
+	_, revision := os.LookupEnv("K_REVISION")
+	return config && service && revision
+}
+
+func detectCloudRunResource() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_run_revision",
+		Labels: map[string]string{
+			"project_id":         projectID,
+			"location":           regionFromZone(zone),
+			"service_name":       os.Getenv("K_SERVICE"),
+			"revision_name":      os.Getenv("K_REVISION"),
+			"configuration_name": os.Getenv("K_CONFIGURATION"),
+		},
+	}
+}
+
+func isCloudFunction() bool {
+	// Reserved envvars in older function runtimes, e.g. Node.js 8, Python 3.7 and Go 1.11.
+	_, name := os.LookupEnv("FUNCTION_NAME")
+	_, region := os.LookupEnv("FUNCTION_REGION")
+	_, entry := os.LookupEnv("ENTRY_POINT")
+
+	// Reserved envvars in newer function runtimes.
+	_, target := os.LookupEnv("FUNCTION_TARGET")
+	_, signature := os.LookupEnv("FUNCTION_SIGNATURE_TYPE")
+	_, service := os.LookupEnv("K_SERVICE")
+	return (name && region && entry) || (target && signature && service)
+}
+
+func detectCloudFunction() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+	// Newer functions runtimes store name in K_SERVICE.
+	functionName, exists := os.LookupEnv("K_SERVICE")
+	if !exists {
+		functionName, _ = os.LookupEnv("FUNCTION_NAME")
+	}
+	return &mrpb.MonitoredResource{
+		Type: "cloud_function",
+		Labels: map[string]string{
+			"project_id":    projectID,
+			"region":        regionFromZone(zone),
+			"function_name": functionName,
+		},
+	}
+}
+
+// isAppEngine returns true for both standard and flex
+func isAppEngine() bool {
+	_, service := os.LookupEnv("GAE_SERVICE")
+	_, version := os.LookupEnv("GAE_VERSION")
+	_, instance := os.LookupEnv("GAE_INSTANCE")
+
+	return service && version && instance
+}
+
+func detectAppEngineResource() *mrpb.MonitoredResource {
+	projectID, err := metadata.ProjectID()
+	if err != nil {
+		return nil
+	}
+	if projectID == "" {
+		projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	}
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
+	}
+
 	return &mrpb.MonitoredResource{
 		Type: "gae_app",
 		Labels: map[string]string{
-			"project_id":  os.Getenv("GOOGLE_CLOUD_PROJECT"),
+			"project_id":  projectID,
 			"module_id":   os.Getenv("GAE_SERVICE"),
 			"version_id":  os.Getenv("GAE_VERSION"),
 			"instance_id": os.Getenv("GAE_INSTANCE"),
 			"runtime":     os.Getenv("GAE_RUNTIME"),
+			"zone":        zone,
 		},
 	}
 }
@@ -296,10 +388,14 @@ func detectGAEResource() *mrpb.MonitoredResource {
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// GAE needs to come first, as metadata.OnGCE() is actually true on GAE
-		// Second Gen runtimes.
-		case os.Getenv("GAE_ENV") == "standard":
-			detectedResource.pb = detectGAEResource()
+		// AppEngine, Functions, CloudRun are detected first, as metadata.OnGCE()
+		// erroneously returns true on these runtimes.
+		case isAppEngine():
+			detectedResource.pb = detectAppEngineResource()
+		case isCloudFunction():
+			detectedResource.pb = detectCloudFunction()
+		case isCloudRun():
+			detectedResource.pb = detectCloudRunResource()
 		case metadata.OnGCE():
 			detectedResource.pb = detectGCEResource()
 		}
@@ -327,6 +423,14 @@ func monitoredResource(parent string) *mrpb.MonitoredResource {
 		Type:   info.rtype,
 		Labels: map[string]string{info.label: parts[1]},
 	}
+}
+
+func regionFromZone(zone string) string {
+	cutoff := strings.LastIndex(zone, "-")
+	if cutoff > 0 {
+		return zone[:cutoff]
+	}
+	return zone
 }
 
 func globalResource(projectID string) *mrpb.MonitoredResource {
@@ -803,7 +907,7 @@ func jsonValueToStructValue(v interface{}) *structpb.Value {
 // and will block, it is intended primarily for debugging or critical errors.
 // Prefer Log for most uses.
 func (l *Logger) LogSync(ctx context.Context, e Entry) error {
-	ent, err := l.toLogEntry(e)
+	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
 	if err != nil {
 		return err
 	}
@@ -818,7 +922,7 @@ func (l *Logger) LogSync(ctx context.Context, e Entry) error {
 
 // Log buffers the Entry for output to the logging service. It never blocks.
 func (l *Logger) Log(e Entry) {
-	ent, err := l.toLogEntry(e)
+	ent, err := toLogEntryInternal(e, l.client, l.client.parent)
 	if err != nil {
 		l.client.error(err)
 		return
@@ -894,7 +998,26 @@ func deconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampl
 	return
 }
 
-func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
+// ToLogEntry takes an Entry structure and converts it to the LogEntry proto.
+// A parent can take any of the following forms:
+//    projects/PROJECT_ID
+//    folders/FOLDER_ID
+//    billingAccounts/ACCOUNT_ID
+//    organizations/ORG_ID
+// for backwards compatibility, a string with no '/' is also allowed and is interpreted
+// as a project ID.
+//
+// ToLogEntry is implied when users invoke Logger.Log or Logger.LogSync,
+// but its exported as a pub function here to give users additional flexibility
+// when using the library. Don't call this method manually if Logger.Log or
+// Logger.LogSync are used, it is intended to be used together with direct call
+// to WriteLogEntries method.
+func ToLogEntry(e Entry, parent string) (*logpb.LogEntry, error) {
+	// We have this method to support logging agents that need a bigger flexibility.
+	return toLogEntryInternal(e, nil, makeParent(parent))
+}
+
+func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry, error) {
 	if e.LogName != "" {
 		return nil, errors.New("logging: Entry.LogName should be not be set when writing")
 	}
@@ -913,7 +1036,7 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 			// https://cloud.google.com/appengine/docs/flexible/go/writing-application-logs.
 			traceID, spanID, traceSampled := deconstructXCloudTraceContext(traceHeader)
 			if traceID != "" {
-				e.Trace = fmt.Sprintf("%s/traces/%s", l.client.parent, traceID)
+				e.Trace = fmt.Sprintf("%s/traces/%s", parent, traceID)
 			}
 			if e.SpanID == "" {
 				e.SpanID = spanID
@@ -927,7 +1050,11 @@ func (l *Logger) toLogEntry(e Entry) (*logpb.LogEntry, error) {
 	}
 	req, err := fromHTTPRequest(e.HTTPRequest)
 	if err != nil {
-		l.client.error(err)
+		if client != nil {
+			client.error(err)
+		} else {
+			return nil, err
+		}
 	}
 	ent := &logpb.LogEntry{
 		Timestamp:      ts,

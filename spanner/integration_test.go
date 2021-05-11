@@ -1021,8 +1021,79 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	verifyDirectPathRemoteAddress(t)
 }
 
+// Test ReadWriteTransactionWithOptions.
+func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
+	t.Parallel()
+	skipEmulatorTest(t)
+
+	// Give a longer deadline because of transaction backoffs.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	readBalance := func(iter *RowIterator) (int64, error) {
+		defer iter.Stop()
+		var bal int64
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				return bal, nil
+			}
+			if err != nil {
+				return 0, err
+			}
+			if err := row.Column(0, &bal); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
+	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Query Foo's balance and Bar's balance.
+		bf, e := readBalance(tx.Query(ctx,
+			Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
+		if e != nil {
+			return e
+		}
+		bb, e := readBalance(tx.Read(ctx, "Accounts", KeySets(Key{int64(2)}), []string{"Balance"}))
+		if e != nil {
+			return e
+		}
+		if bf <= 0 {
+			return nil
+		}
+		bf--
+		bb++
+		return tx.BufferWrite([]*Mutation{
+			Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), bf}),
+			Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(2), bb}),
+		})
+	}, txOpts)
+	if err != nil {
+		t.Fatalf("Failed to execute transaction: %v", err)
+	}
+	if resp.CommitStats == nil {
+		t.Fatal("Missing commit stats in commit response")
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
+	}
+}
+
 func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	t.Parallel()
+	skipEmulatorTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -1110,6 +1181,92 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot %v\nwant%v", got, want)
+	}
+}
+
+func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T) {
+	t.Parallel()
+	skipEmulatorTest(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
+		outBalance, err := getBalance(txn, Key{1})
+		if err != nil {
+			return err
+		}
+		const transferAmt = 20
+		if outBalance >= transferAmt {
+			inBalance, err := getBalance(txn, Key{2})
+			if err != nil {
+				return err
+			}
+			inBalance += transferAmt
+			outBalance -= transferAmt
+			cols := []string{"AccountId", "Balance"}
+			txn.BufferWrite([]*Mutation{
+				Update("Accounts", cols, []interface{}{1, outBalance}),
+				Update("Accounts", cols, []interface{}{2, inBalance}),
+			})
+		}
+		return nil
+	}
+
+	var resp CommitResponse
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
+	for {
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, txOpts)
+		if err != nil {
+			t.Fatalf("failed to begin a transaction: %v", err)
+		}
+		err = statements(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			t.Fatalf("failed to execute statements: %v", err)
+		} else if err == nil {
+			resp, err = tx.CommitWithReturnResp(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				t.Fatalf("failed to commit a transaction: %v", err)
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+	if resp.CommitStats == nil {
+		t.Fatal("Missing commit stats in commit response")
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
 	}
 }
 
@@ -1386,22 +1543,21 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	stmts := singerDBStatements
-	if !isEmulatorEnvSet() {
-		stmts = []string{
-			`CREATE TABLE Singers (
+	stmts = []string{
+		`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
 					FirstName	STRING(1024),
 					LastName	STRING(1024),
 					SingerInfo	BYTES(MAX)
 				) PRIMARY KEY (SingerId)`,
-			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-			`CREATE TABLE Accounts (
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
 					AccountId	INT64 NOT NULL,
 					Nickname	STRING(100),
 					Balance		INT64 NOT NULL,
 				) PRIMARY KEY (AccountId)`,
-			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-			`CREATE TABLE Types (
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
 					String		STRING(MAX),
 					StringArray	ARRAY<STRING(MAX)>,
@@ -1420,7 +1576,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Numeric		NUMERIC,
 					NumericArray	ARRAY<NUMERIC>
 				) PRIMARY KEY (RowID)`,
-		}
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -1528,31 +1683,20 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
-	}
-
-	if !isEmulatorEnvSet() {
-		for _, tc := range []struct {
-			col  string
-			val  interface{}
-			want interface{}
-		}{
-			{col: "Numeric", val: n1},
-			{col: "Numeric", val: n2},
-			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: NullNumeric{n0, false}},
-			{col: "Numeric", val: nil, want: NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
-			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
-			{col: "NumericArray", val: []NullNumeric(nil)},
-			{col: "NumericArray", val: []NullNumeric{}},
-			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		} {
-			tests = append(tests, tc)
-		}
+		{col: "Numeric", val: n1},
+		{col: "Numeric", val: n2},
+		{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: NullNumeric{n0, false}},
+		{col: "Numeric", val: nil, want: NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []NullNumeric(nil)},
+		{col: "NumericArray", val: []NullNumeric{}},
+		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
 	}
 
 	// Write rows into table first.

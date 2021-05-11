@@ -14,7 +14,8 @@ jobs:
         with:
           # token: ${{ secrets.FORKING_TOKEN }}
           token: ${{ secrets.FORKING_TOKEN }}
-          release-type: go
+          release-type: go-yoshi
+          bump-minor-pre-major: true
           fork: true
           package-name: google-cloud-go
           command: release-pr
@@ -39,7 +40,7 @@ jobs:
         id: tag-release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: go
+          release-type: go-yoshi
           package-name: google-cloud-go
           command: github-release
           changelog-path: CHANGES.md

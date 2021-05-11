@@ -36,6 +36,7 @@ import (
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner"
 	dbadmin "cloud.google.com/go/spanner/admin/database/apiv1"
+	v1 "cloud.google.com/go/spanner/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -56,7 +57,7 @@ func dbName() string {
 	return "projects/fake-proj/instances/fake-instance/databases/fake-db"
 }
 
-func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, func()) {
+func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, *v1.Client, func()) {
 	// Despite the docs, this context is also used for auth,
 	// so it needs to be long-lived.
 	ctx := context.Background()
@@ -73,7 +74,13 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, fu
 			client.Close()
 			t.Fatalf("Connecting DB admin client: %v", err)
 		}
-		return client, adminClient, func() { client.Close(); adminClient.Close() }
+		gapicClient, err := v1.NewClient(ctx, dialOpt)
+		if err != nil {
+			client.Close()
+			adminClient.Close()
+			t.Fatalf("Connecting Spanner generated client: %v", err)
+		}
+		return client, adminClient, gapicClient, func() { client.Close(); adminClient.Close(); gapicClient.Close() }
 	}
 
 	// Don't use SPANNER_EMULATOR_HOST because we need the raw connection for
@@ -102,16 +109,23 @@ func makeClient(t *testing.T) (*spanner.Client, *dbadmin.DatabaseAdminClient, fu
 		srv.Close()
 		t.Fatalf("Connecting to in-memory fake DB admin: %v", err)
 	}
-	return client, adminClient, func() {
+	gapicClient, err := v1.NewClient(ctx, option.WithGRPCConn(conn))
+	if err != nil {
+		srv.Close()
+		t.Fatalf("Connecting to in-memory fake generated Spanner client: %v", err)
+	}
+
+	return client, adminClient, gapicClient, func() {
 		client.Close()
 		adminClient.Close()
+		gapicClient.Close()
 		conn.Close()
 		srv.Close()
 	}
 }
 
 func TestIntegration_SpannerBasics(t *testing.T) {
-	client, adminClient, cleanup := makeClient(t)
+	client, adminClient, generatedClient, cleanup := makeClient(t)
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -136,6 +150,34 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 		t.Errorf("Reading second row of trivial query gave %v, want iterator.Done", err)
 	}
 	it.Stop()
+
+	// Try to execute the equivalent of a session pool ping.
+	// This used to cause a panic as ExecuteSql did not expect any requests
+	// that would execute a query without a transaction selector.
+	// https://github.com/googleapis/google-cloud-go/issues/3639
+	s, err := generatedClient.CreateSession(ctx, &spannerpb.CreateSessionRequest{Database: dbName()})
+	if err != nil {
+		t.Fatalf("Creating session: %v", err)
+	}
+	rs, err := generatedClient.ExecuteSql(ctx, &spannerpb.ExecuteSqlRequest{
+		Session: s.Name,
+		Sql:     "SELECT 1",
+	})
+	if err != nil {
+		t.Fatalf("Executing ping: %v", err)
+	}
+	if len(rs.Rows) != 1 {
+		t.Fatalf("Ping gave %v rows, want 1", len(rs.Rows))
+	}
+	if len(rs.Rows[0].Values) != 1 {
+		t.Fatalf("Ping gave %v cols, want 1", len(rs.Rows[0].Values))
+	}
+	if rs.Rows[0].Values[0].GetStringValue() != "1" {
+		t.Fatalf("Ping gave value %v, want '1'", rs.Rows[0].Values[0].GetStringValue())
+	}
+	if err = generatedClient.DeleteSession(ctx, &spannerpb.DeleteSessionRequest{Name: s.Name}); err != nil {
+		t.Fatalf("Deleting session: %v", err)
+	}
 
 	// Drop any previous test table/index, and make a fresh one in a few stages.
 	const tableName = "Characters"
@@ -400,7 +442,7 @@ func TestIntegration_SpannerBasics(t *testing.T) {
 }
 
 func TestIntegration_ReadsAndQueries(t *testing.T) {
-	client, adminClient, cleanup := makeClient(t)
+	client, adminClient, _, cleanup := makeClient(t)
 	defer cleanup()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
@@ -1101,6 +1143,62 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 			[][]interface{}{
 				{"Jack"},
 				{"Daniel"},
+			},
+		},
+		{
+			`SELECT MIN(Name), MAX(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel", "Teal'c"},
+			},
+		},
+		{
+			`SELECT Cool, MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			nil,
+			[][]interface{}{
+				{nil, "George", "Jack", int64(2)},
+				{false, "Daniel", "Sam", int64(2)},
+				{true, "Teal'c", "Teal'c", int64(1)},
+			},
+		},
+		{
+			`SELECT Tenure/2, Cool, Name FROM Staff WHERE Tenure/2 > 5`,
+			nil,
+			[][]interface{}{
+				{float64(5.5), false, "Daniel"},
+			},
+		},
+		{
+			`SELECT Tenure/2, MAX(Cool) FROM Staff WHERE Tenure/2 > 5 GROUP BY Tenure/2`,
+			nil,
+			[][]interface{}{
+				{float64(5.5), false},
+			},
+		},
+		{
+			`SELECT Tenure/2, Cool, MIN(Name) FROM Staff WHERE Tenure/2 >= 4 GROUP BY Tenure/2, Cool ORDER BY Cool DESC, Tenure/2`,
+			nil,
+			[][]interface{}{
+				{float64(4), true, "Teal'c"},
+				{float64(4.5), false, "Sam"},
+				{float64(5.5), false, "Daniel"},
+				{float64(5), nil, "Jack"},
+			},
+		},
+		{
+			`SELECT MIN(Cool), MAX(Cool), MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{false, true, int64(6), int64(11), 1.73, 1.91, "Daniel", "Teal'c", int64(5)},
+			},
+		},
+		{
+			`SELECT Cool, MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			nil,
+			[][]interface{}{
+				{nil, int64(6), int64(10), 1.73, 1.85, "George", "Jack", int64(2)},
+				{false, int64(9), int64(11), 1.75, 1.83, "Daniel", "Sam", int64(2)},
+				{true, int64(8), int64(8), 1.91, 1.91, "Teal'c", "Teal'c", int64(1)},
 			},
 		},
 	}

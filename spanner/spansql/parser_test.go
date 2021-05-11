@@ -32,7 +32,7 @@ func TestParseQuery(t *testing.T) {
 		want Query
 	}{
 		{`SELECT 17`, Query{Select: Select{List: []Expr{IntegerLiteral(17)}}}},
-		{`SELECT Alias AS aka FROM Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
+		{`SELECT Alias AS aka From Characters WHERE Age < @ageLimit AND Alias IS NOT NULL ORDER BY Age DESC LIMIT @limit OFFSET 3` + "\n\t",
 			Query{
 				Select: Select{
 					List: []Expr{ID("Alias")},
@@ -255,6 +255,7 @@ func TestParseExpr(t *testing.T) {
 		{`A AND NOT B`, LogicalOp{LHS: ID("A"), Op: And, RHS: LogicalOp{Op: Not, RHS: ID("B")}}},
 		{`X BETWEEN Y AND Z`, ComparisonOp{LHS: ID("X"), Op: Between, RHS: ID("Y"), RHS2: ID("Z")}},
 		{`@needle IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), RHS: []Expr{Param("haystack")}, Unnest: true}},
+		{`@needle NOT IN UNNEST(@haystack)`, InOp{LHS: Param("needle"), Neg: true, RHS: []Expr{Param("haystack")}, Unnest: true}},
 
 		// String literal:
 		// Accept double quote and single quote.
@@ -409,7 +410,7 @@ func TestParseDDL(t *testing.T) {
 		-- Table with generated column.
 		CREATE TABLE GenCol (
 			Name STRING(MAX) NOT NULL,
-			NameLen INT64 AS (CHAR_LENGTH(Name)) STORED,
+			NameLen INT64 AS (char_length(Name)) STORED,
 		) PRIMARY KEY (Name);
 
 		-- Trailing comment at end of file.

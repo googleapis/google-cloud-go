@@ -39,6 +39,7 @@ var newTopicStatsClientHook clientHook
 type TopicStatsCallOptions struct {
 	ComputeMessageStats []gax.CallOption
 	ComputeHeadCursor   []gax.CallOption
+	ComputeTimeCursor   []gax.CallOption
 }
 
 func defaultTopicStatsClientOptions() []option.ClientOption {
@@ -70,11 +71,40 @@ func defaultTopicStatsCallOptions() *TopicStatsCallOptions {
 				})
 			}),
 		},
-		ComputeHeadCursor: []gax.CallOption{},
+		ComputeHeadCursor: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ComputeTimeCursor: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
-// TopicStatsClient is a client for interacting with .
+// TopicStatsClient is a client for interacting with Pub/Sub Lite API.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type TopicStatsClient struct {
@@ -175,12 +205,17 @@ func (c *TopicStatsClient) ComputeMessageStats(ctx context.Context, req *pubsubl
 }
 
 // ComputeHeadCursor compute the head cursor for the partition.
-// The head cursor’s offset is guaranteed to be before or equal to all
-// messages which have not yet been acknowledged to be published, and
+// The head cursor’s offset is guaranteed to be less than or equal to all
+// messages which have not yet been acknowledged as published, and
 // greater than the offset of any message whose publish has already
-// been acknowledged. It is 0 if there have never been messages on the
+// been acknowledged. It is zero if there have never been messages in the
 // partition.
 func (c *TopicStatsClient) ComputeHeadCursor(ctx context.Context, req *pubsublitepb.ComputeHeadCursorRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeHeadCursorResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
 	opts = append(c.CallOptions.ComputeHeadCursor[0:len(c.CallOptions.ComputeHeadCursor):len(c.CallOptions.ComputeHeadCursor)], opts...)
@@ -188,6 +223,29 @@ func (c *TopicStatsClient) ComputeHeadCursor(ctx context.Context, req *pubsublit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.topicStatsClient.ComputeHeadCursor(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// ComputeTimeCursor compute the corresponding cursor for a publish or event time in a topic
+// partition.
+func (c *TopicStatsClient) ComputeTimeCursor(ctx context.Context, req *pubsublitepb.ComputeTimeCursorRequest, opts ...gax.CallOption) (*pubsublitepb.ComputeTimeCursorResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic", url.QueryEscape(req.GetTopic())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.ComputeTimeCursor[0:len(c.CallOptions.ComputeTimeCursor):len(c.CallOptions.ComputeTimeCursor)], opts...)
+	var resp *pubsublitepb.ComputeTimeCursorResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.topicStatsClient.ComputeTimeCursor(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {

@@ -39,7 +39,12 @@ var newEnvironmentsClientHook clientHook
 
 // EnvironmentsCallOptions contains the retry settings for each method of EnvironmentsClient.
 type EnvironmentsCallOptions struct {
-	ListEnvironments []gax.CallOption
+	ListEnvironments      []gax.CallOption
+	GetEnvironment        []gax.CallOption
+	CreateEnvironment     []gax.CallOption
+	UpdateEnvironment     []gax.CallOption
+	DeleteEnvironment     []gax.CallOption
+	GetEnvironmentHistory []gax.CallOption
 }
 
 func defaultEnvironmentsClientOptions() []option.ClientOption {
@@ -57,6 +62,61 @@ func defaultEnvironmentsClientOptions() []option.ClientOption {
 func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	return &EnvironmentsCallOptions{
 		ListEnvironments: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteEnvironment: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetEnvironmentHistory: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -186,6 +246,189 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *dialogfl
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// GetEnvironment retrieves the specified agent environment.
+func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *dialogflowpb.GetEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetEnvironment[0:len(c.CallOptions.GetEnvironment):len(c.CallOptions.GetEnvironment)], opts...)
+	var resp *dialogflowpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.GetEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// CreateEnvironment creates an agent environment.
+func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *dialogflowpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.CreateEnvironment[0:len(c.CallOptions.CreateEnvironment):len(c.CallOptions.CreateEnvironment)], opts...)
+	var resp *dialogflowpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.CreateEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// UpdateEnvironment updates the specified agent environment.
+//
+// This method allows you to deploy new agent versions into the environment.
+// When an environment is pointed to a new agent version by setting
+// environment.agent_version, the environment is temporarily set to the
+// LOADING state. During that time, the environment keeps on serving the
+// previous version of the agent. After the new agent version is done loading,
+// the environment is set back to the RUNNING state.
+// You can use “-” as Environment ID in environment name to update version
+// in “draft” environment. WARNING: this will negate all recent changes to
+// draft and can’t be undone. You may want to save the draft to a version
+// before calling this function.
+func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *dialogflowpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*dialogflowpb.Environment, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.UpdateEnvironment[0:len(c.CallOptions.UpdateEnvironment):len(c.CallOptions.UpdateEnvironment)], opts...)
+	var resp *dialogflowpb.Environment
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.UpdateEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+// DeleteEnvironment deletes the specified agent environment.
+func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *dialogflowpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.DeleteEnvironment[0:len(c.CallOptions.DeleteEnvironment):len(c.CallOptions.DeleteEnvironment)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.environmentsClient.DeleteEnvironment(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+// GetEnvironmentHistory gets the history of the specified environment.
+func (c *EnvironmentsClient) GetEnvironmentHistory(ctx context.Context, req *dialogflowpb.GetEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentHistory_EntryIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append(c.CallOptions.GetEnvironmentHistory[0:len(c.CallOptions.GetEnvironmentHistory):len(c.CallOptions.GetEnvironmentHistory)], opts...)
+	it := &EnvironmentHistory_EntryIterator{}
+	req = proto.Clone(req).(*dialogflowpb.GetEnvironmentHistoryRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.EnvironmentHistory_Entry, string, error) {
+		var resp *dialogflowpb.EnvironmentHistory
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.GetEnvironmentHistory(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// EnvironmentHistory_EntryIterator manages a stream of *dialogflowpb.EnvironmentHistory_Entry.
+type EnvironmentHistory_EntryIterator struct {
+	items    []*dialogflowpb.EnvironmentHistory_Entry
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*dialogflowpb.EnvironmentHistory_Entry, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *EnvironmentHistory_EntryIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *EnvironmentHistory_EntryIterator) Next() (*dialogflowpb.EnvironmentHistory_Entry, error) {
+	var item *dialogflowpb.EnvironmentHistory_Entry
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *EnvironmentHistory_EntryIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *EnvironmentHistory_EntryIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // EnvironmentIterator manages a stream of *dialogflowpb.Environment.

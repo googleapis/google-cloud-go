@@ -37,8 +37,9 @@ var (
 // ReceivedMessage stores a received Pub/Sub message and AckConsumer for
 // acknowledging the message.
 type ReceivedMessage struct {
-	Msg *pb.SequencedMessage
-	Ack AckConsumer
+	Msg       *pb.SequencedMessage
+	Ack       AckConsumer
+	Partition int
 }
 
 // MessageReceiverFunc receives a Pub/Sub message from a topic partition.
@@ -122,12 +123,13 @@ type subscribeStream struct {
 	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mu.
-	messageQueue    *messageDeliveryQueue
-	stream          *retryableStream
-	offsetTracker   subscriberOffsetTracker
-	flowControl     flowControlBatcher
-	pollFlowControl *periodicTask
-	seekInFlight    bool
+	messageQueue           *messageDeliveryQueue
+	stream                 *retryableStream
+	offsetTracker          subscriberOffsetTracker
+	flowControl            flowControlBatcher
+	pollFlowControl        *periodicTask
+	seekInFlight           bool
+	enableBatchFlowControl bool
 
 	abstractService
 }
@@ -222,10 +224,14 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 			s.seekInFlight = true
 		}
 		s.unsafeSendFlowControl(s.flowControl.RequestForRestart())
+		s.enableBatchFlowControl = true
 		s.pollFlowControl.Start()
 
 	case streamReconnecting:
 		s.seekInFlight = false
+		// Ensure no batch flow control tokens are sent until the RequestForRestart
+		// is sent above when a new subscribe stream is initialized.
+		s.enableBatchFlowControl = false
 		s.pollFlowControl.Stop()
 
 	case streamTerminated:
@@ -277,7 +283,7 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 
 	for _, msg := range response.Messages {
 		ack := newAckConsumer(msg.GetCursor().GetOffset(), msg.GetSizeBytes(), s.onAck)
-		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack})
+		s.messageQueue.Add(&ReceivedMessage{Msg: msg, Ack: ack, Partition: s.subscription.Partition})
 	}
 	return nil
 }
@@ -300,12 +306,15 @@ func (s *subscribeStream) onAckAsync(msgBytes int64) {
 func (s *subscribeStream) sendBatchFlowControl() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.unsafeSendFlowControl(s.flowControl.ReleasePendingRequest())
+
+	if s.enableBatchFlowControl {
+		s.unsafeSendFlowControl(s.flowControl.ReleasePendingRequest())
+	}
 }
 
 func (s *subscribeStream) unsafeAllowFlow(allow flowControlTokens) {
 	s.flowControl.OnClientFlow(allow)
-	if s.flowControl.ShouldExpediteBatchRequest() {
+	if s.flowControl.ShouldExpediteBatchRequest() && s.enableBatchFlowControl {
 		s.unsafeSendFlowControl(s.flowControl.ReleasePendingRequest())
 	}
 }
@@ -324,7 +333,7 @@ func (s *subscribeStream) unsafeSendFlowControl(req *pb.FlowControlRequest) {
 }
 
 func (s *subscribeStream) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
-	if !s.unsafeUpdateStatus(targetStatus, err) {
+	if !s.unsafeUpdateStatus(targetStatus, wrapError("subscriber", s.subscription.String(), err)) {
 		return
 	}
 
@@ -469,6 +478,10 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 	// Handle removed partitions.
 	for partition, subscriber := range as.subscribers {
 		if !partitions.Contains(partition) {
+			// Ignore unacked messages from this point on to avoid conflicting with
+			// the commits of the new subscriber that will be assigned this partition.
+			subscriber.Terminate()
+
 			as.unsafeRemoveService(subscriber)
 			// Safe to delete map entry during range loop:
 			// https://golang.org/ref/spec#For_statements
