@@ -105,6 +105,11 @@ func (c *Client) Close() error {
 	return c.connPool.Close()
 }
 
+// Expose the internal connection pool (GRPC channel) used by the client. 
+func (c *Client) ClientConnPool() gtransport.ConnPool {
+	return c.connPool
+}
+
 var (
 	idempotentRetryCodes  = []codes.Code{codes.DeadlineExceeded, codes.Unavailable, codes.Aborted}
 	isIdempotentRetryCode = make(map[codes.Code]bool)
