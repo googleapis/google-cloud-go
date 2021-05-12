@@ -106,6 +106,7 @@ func (c *Client) Close() error {
 }
 
 // Expose the internal connection pool (GRPC channel) used by the client. 
+// It is EXPERIMENTAL and subject to change or removal without notice.
 func (c *Client) ClientConnPool() gtransport.ConnPool {
 	return c.connPool
 }
