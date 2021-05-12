@@ -201,6 +201,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_v1alpha2.yaml",
 		releaseLevel:          "alpha",
+		stopGeneration:        true,
 	},
 	{
 		inputDirectoryPath:    "google/cloud/bigquery/storage/v1beta1",
@@ -1039,6 +1040,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/metastore/v1",
+		pkg:                   "metastore",
+		importPath:            "cloud.google.com/go/metastore/apiv1",
+		gRPCServiceConfigPath: "google/cloud/metastore/v1/metastore_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/metastore/v1/metastore_v1.yaml",
+		// GA after 2021/06/10
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/metastore/v1alpha",
 		pkg:                   "metastore",
 		importPath:            "cloud.google.com/go/metastore/apiv1alpha",
@@ -1061,6 +1071,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/resourcesettings/v1/resourcesettings_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/resourcesettings/v1/resourcesettings_v1.yaml",
 		// GA after 2021/04/23
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/clouddms/v1",
+		pkg:                   "clouddms",
+		importPath:            "cloud.google.com/go/clouddms/apiv1",
+		gRPCServiceConfigPath: "google/cloud/clouddms/v1/library_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/clouddms/v1/datamigration_v1.yaml",
+		// GA after 2021/06/10
 		releaseLevel: "beta",
 	},
 

@@ -21,11 +21,9 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"path/filepath"
 
-	"cloud.google.com/go/internal/gapicgen/execv"
 	"cloud.google.com/go/internal/gapicgen/git"
 )
 
@@ -49,10 +47,6 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 			return nil, fmt.Errorf("error generating genproto (may need to check logs for more errors): %v", err)
 		}
 	}
-	gapicGenerator := NewGapicGenerator(conf)
-	if err := gapicGenerator.Regen(ctx); err != nil {
-		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
-	}
 
 	var changes []*git.ChangeInfo
 	if !conf.LocalMode {
@@ -64,6 +58,17 @@ func Generate(ctx context.Context, conf *Config) ([]*git.ChangeInfo, error) {
 		if err := recordGoogleapisHash(conf.GoogleapisDir, conf.GenprotoDir); err != nil {
 			return nil, err
 		}
+	}
+	var modifiedPkgs []string
+	for _, v := range changes {
+		if v.Package != "" {
+			modifiedPkgs = append(modifiedPkgs, v.PackageDir)
+		}
+	}
+
+	gapicGenerator := NewGapicGenerator(conf, modifiedPkgs)
+	if err := gapicGenerator.Regen(ctx); err != nil {
+		return nil, fmt.Errorf("error generating gapics (may need to check logs for more errors): %v", err)
 	}
 
 	return changes, nil
@@ -81,7 +86,7 @@ func gatherChanges(googleapisDir, genprotoDir string) ([]*git.ChangeInfo, error)
 	}
 	gapicPkgs := make(map[string]string)
 	for _, v := range microgenGapicConfigs {
-		gapicPkgs[v.inputDirectoryPath] = git.ParseConventionalCommitPkg(v.importPath)
+		gapicPkgs[v.inputDirectoryPath] = v.importPath
 	}
 	changes, err := git.ParseChangeInfo(googleapisDir, commits, gapicPkgs)
 	if err != nil {
@@ -111,26 +116,4 @@ func recordGoogleapisHash(googleapisDir, genprotoDir string) error {
 		return err
 	}
 	return nil
-}
-
-// build attempts to build all packages recursively from the given directory.
-func build(dir string) error {
-	log.Println("building generated code")
-	c := execv.Command("go", "build", "./...")
-	c.Dir = dir
-	return c.Run()
-}
-
-// vet runs linters on all .go files recursively from the given directory.
-func vet(dir string) error {
-	log.Println("vetting generated code")
-	c := execv.Command("goimports", "-w", ".")
-	c.Dir = dir
-	if err := c.Run(); err != nil {
-		return err
-	}
-
-	c = execv.Command("gofmt", "-s", "-d", "-w", "-l", ".")
-	c.Dir = dir
-	return c.Run()
 }
