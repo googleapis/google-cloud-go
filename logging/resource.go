@@ -138,31 +138,36 @@ func detectCloudRunResource() *mrpb.MonitoredResource {
 	}
 }
 
-// func isKubernetesEngine() bool {
-// 	// _, service := os.LookupEnv("GAE_SERVICE")
-
-// 	return false
-// }
+func isKubernetesEngine() bool {
+	clusterName, err := metadata.InstanceAttributeValue("cluster-name")
+	// Note: InstanceAttributeValue can return "", nil
+	if err != nil || clusterName == "" {
+		return false
+	}
+	return true
+}
 
 func detectKubernetesResource() *mrpb.MonitoredResource {
+	clusterName, err := metadata.InstanceAttributeValue("cluster-name")
+	if err != nil {
+		return nil
+	}
 	projectID, err := metadata.ProjectID()
 	if err != nil {
 		return nil
 	}
-	if projectID == "" {
-		projectID = os.Getenv("GOOGLE_CLOUD_PROJECT")
+	zone, err := metadata.Zone()
+	if err != nil {
+		return nil
 	}
-	// zone, err := metadata.Zone()
-	// if err != nil {
-	// 	return nil
-	// }
 
 	return &mrpb.MonitoredResource{
 		Type: "k8s_container",
 		Labels: map[string]string{
-			"cluster_name":   "",
+			"cluster_name":   clusterName,
 			"container_name": "",
-			"location":       "",
+			"location":       zone,
+			// TODO: where can I get this info?
 			"namespace_name": "",
 			"pod_name":       "",
 			"project_id":     projectID,
@@ -209,8 +214,8 @@ func detectResource() *mrpb.MonitoredResource {
 			detectedResource.pb = detectCloudFunction()
 		case isCloudRun():
 			detectedResource.pb = detectCloudRunResource()
-		// case isKubernetesEngine():
-		// 	detectedResource.pb = detectKubernetesResource()
+		case isKubernetesEngine():
+			detectedResource.pb = detectKubernetesResource()
 		case metadata.OnGCE():
 			detectedResource.pb = detectGCEResource()
 		}
