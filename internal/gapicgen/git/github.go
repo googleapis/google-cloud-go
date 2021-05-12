@@ -15,7 +15,6 @@
 package git
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -336,7 +335,7 @@ func (gc *GithubClient) MarkPRReadyForReview(ctx context.Context, repo string, n
 
 // UpdateGocloudGoMod updates the go.mod to include latest version of genproto
 // for the given gocloud ref.
-func (gc *GithubClient) UpdateGocloudGoMod(pr *PullRequest) error {
+func (gc *GithubClient) UpdateGocloudGoMod() error {
 	tmpDir, err := ioutil.TempDir("", "finalize-github-pr")
 	if err != nil {
 		return err
@@ -374,26 +373,25 @@ git checkout $BRANCH_NAME
 
 func updateDeps(tmpDir string) error {
 	// Find directories that had code changes.
-	out := bytes.NewBuffer(nil)
 	c := execv.Command("git", "diff", "--name-only", "HEAD", "HEAD~1")
-	c.Stdout = out
 	c.Dir = tmpDir
-	if err := c.Run(); err != nil {
+	out, err := c.Output()
+	if err != nil {
 		return err
 	}
-	files := strings.Split(out.String(), "\n")
+	files := strings.Split(string(out), "\n")
 	dirs := map[string]bool{}
 	for _, file := range files {
+		if strings.HasPrefix(file, "internal") {
+			continue
+		}
 		dir := filepath.Dir(file)
 		dirs[filepath.Join(tmpDir, dir)] = true
 	}
 
 	// Find which modules had code changes.
 	updatedModDirs := map[string]bool{}
-	errWriter := bytes.NewBuffer(nil)
 	for dir := range dirs {
-		out.Reset()
-		errWriter.Reset()
 		modDir, err := gocmd.ListModDirName(dir)
 		if err != nil {
 			if errors.Is(err, gocmd.ErrBuildConstraint) {

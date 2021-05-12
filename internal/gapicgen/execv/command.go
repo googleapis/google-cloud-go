@@ -41,8 +41,26 @@ func Command(name string, arg ...string) *CmdWrapper {
 
 // Run a command.
 func (c *CmdWrapper) Run() error {
-	log.Printf("[%s] >>>> %v <<<<", c.Dir, strings.Join(c.Args, " ")) // NOTE: we have some multi-line commands, make it clear where the command starts and ends
-	return c.Cmd.Run()
+	log.Printf("[%s] >>>> %v <<<<", c.Dir, strings.Join(c.Args, " "))
+	err := c.Cmd.Run()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			log.Println(string(ee.Stderr))
+		}
+	}
+	return err
+}
+
+// Output a command.
+func (c *CmdWrapper) Output() ([]byte, error) {
+	log.Printf("[%s] >>>> %v <<<<", c.Dir, strings.Join(c.Args, " "))
+	b, err := c.Cmd.Output()
+	if err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			log.Println(string(ee.Stderr))
+		}
+	}
+	return b, err
 }
 
 // ForEachMod runs the given function with the directory of
