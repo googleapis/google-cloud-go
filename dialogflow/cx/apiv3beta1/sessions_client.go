@@ -117,9 +117,8 @@ type SessionsClient struct {
 // NewSessionsClient creates a new sessions client.
 //
 // A session represents an interaction with a user. You retrieve user input
-// and pass it to the
-// DetectIntent
-// method to determine user intent and respond.
+// and pass it to the DetectIntent method to determine
+// user intent and respond.
 func NewSessionsClient(ctx context.Context, opts ...option.ClientOption) (*SessionsClient, error) {
 	clientOpts := defaultSessionsClientOptions()
 
@@ -248,13 +247,9 @@ func (c *SessionsClient) MatchIntent(ctx context.Context, req *cxpb.MatchIntentR
 	return resp, nil
 }
 
-// FulfillIntent fulfills a matched intent returned by
-// MatchIntent.
-// Must be called after
-// MatchIntent,
-// with input from
-// MatchIntentResponse.
-// Otherwise, the behavior is undefined.
+// FulfillIntent fulfills a matched intent returned by MatchIntent.
+// Must be called after MatchIntent, with input from
+// MatchIntentResponse. Otherwise, the behavior is undefined.
 func (c *SessionsClient) FulfillIntent(ctx context.Context, req *cxpb.FulfillIntentRequest, opts ...gax.CallOption) (*cxpb.FulfillIntentResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
