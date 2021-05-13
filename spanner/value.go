@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
@@ -1327,6 +1328,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 	case *GenericColumnValue:
 		*p = GenericColumnValue{Type: t, Value: v}
 	default:
+		fmt.Println("coming here!!!")
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
 		if decodedVal, ok := ptr.(Decoder); ok {
@@ -1346,6 +1348,21 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return decodableType.decodeValueToCustomType(v, t, acode, ptr)
 		}
 
+		fmt.Println("coming here!!! - 1")
+
+		if code == sppb.TypeCode_JSON {
+			x, err := getStringValue(v)
+			if err != nil {
+				return fmt.Errorf("failed to read json string: %s", err)
+			}
+			// Check if it can be unmarshaled to the given type.
+			err = json.Unmarshal([]byte(x), ptr)
+			if err != nil {
+				return fmt.Errorf("failed to unmarshal the json string: %s", err)
+			}
+			break
+		}
+
 		// Check if the proto encoding is for an array of structs.
 		if !(code == sppb.TypeCode_ARRAY && acode == sppb.TypeCode_STRUCT) {
 			return errTypeMismatch(code, acode, ptr)
@@ -1358,6 +1375,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			// The container is not a slice of struct pointers.
 			return fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(code, acode, ptr))
 		}
+		fmt.Println("coming here!!! - 2")
 		// Only use reflection for nil detection on slow path.
 		// Also, IsNil panics on many types, so check it after the type check.
 		if vp.IsNil() {
@@ -1369,6 +1387,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			vp.Elem().Set(reflect.Zero(vp.Elem().Type()))
 			break
 		}
+		fmt.Println("coming here!!! - 3")
 		x, err := getListValue(v)
 		if err != nil {
 			return err
@@ -2811,6 +2830,14 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 				return nil, nil, err
 			}
 			return encodeValue(converted)
+		}
+
+		// Check if it can be marshaled to a json string.
+		b, err := json.Marshal(v)
+		if err == nil {
+			pb.Kind = stringKind(string(b))
+			pt = jsonType()
+			return pb, pt, nil
 		}
 
 		if !isStructOrArrayOfStructValue(v) {

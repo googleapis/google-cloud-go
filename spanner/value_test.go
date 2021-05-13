@@ -213,6 +213,14 @@ func TestEncodeValue(t *testing.T) {
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
 
+	type Message struct {
+		Name string
+		Body string
+		Time int64
+	}
+	msg := Message{"Alice", "Hello", 1294706395881547000}
+	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+
 	sValue := "abc"
 	var sNilPtr *string
 	iValue := int64(7)
@@ -238,6 +246,7 @@ func TestEncodeValue(t *testing.T) {
 		tTime    = timeType()
 		tDate    = dateType()
 		tNumeric = numericType()
+		tJSON    = jsonType()
 	)
 	for i, test := range []struct {
 		in       interface{}
@@ -304,6 +313,8 @@ func TestEncodeValue(t *testing.T) {
 		{[]NullNumeric{{*numValuePtr, true}, {*numValuePtr, false}}, listProto(numericProto(numValuePtr), nullProto()), listType(tNumeric), "[]NullNumeric"},
 		{[]*big.Rat{nil, numValuePtr}, listProto(nullProto(), numericProto(numValuePtr)), listType(tNumeric), "[]*big.Rat"},
 		{[]*big.Rat(nil), nullProto(), listType(tNumeric), "null []*big.Rat"},
+		// JSON
+		{msg, stringProto(jsonStr), tJSON, "json"},
 		// TIMESTAMP / TIMESTAMP ARRAY
 		{t1, timeProto(t1), tTime, "time"},
 		{NullTime{t1, true}, timeProto(t1), tTime, "NullTime with value"},
@@ -1264,6 +1275,15 @@ func TestDecodeValue(t *testing.T) {
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
 
+	type Message struct {
+		Name string
+		Body string
+		Time int64
+	}
+	msg := Message{"Alice", "Hello", 1294706395881547000}
+	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+	invalidJsonStr := `{wrong_json_string}`
+
 	// Pointer values.
 	sValue := "abc"
 	var sNilPtr *string
@@ -1381,6 +1401,9 @@ func TestDecodeValue(t *testing.T) {
 		// NUMERIC ARRAY with []*big.Rat
 		{desc: "decode ARRAY<NUMERIC> to []*big.Rat", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []*big.Rat{numValuePtr, nil, num2ValuePtr}},
 		{desc: "decode NULL to []*big.Rat", proto: nullProto(), protoType: listType(numericType()), want: []*big.Rat(nil)},
+		// JSON
+		{desc: "decode json to a struct", proto: stringProto(jsonStr), protoType: jsonType(), want: msg},
+		{desc: "decode an invalid json string", proto: stringProto(invalidJsonStr), protoType: jsonType(), want: msg, wantErr: true},
 		// TIMESTAMP
 		{desc: "decode TIMESTAMP to time.Time", proto: timeProto(t1), protoType: timeType(), want: t1},
 		{desc: "decode TIMESTAMP to NullTime", proto: timeProto(t1), protoType: timeType(), want: NullTime{t1, true}},
