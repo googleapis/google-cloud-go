@@ -315,6 +315,8 @@ func TestEncodeValue(t *testing.T) {
 		{[]*big.Rat(nil), nullProto(), listType(tNumeric), "null []*big.Rat"},
 		// JSON
 		{msg, stringProto(jsonStr), tJSON, "json"},
+		{NullJSON{msg, true}, stringProto(jsonStr), tJSON, "NullJSON with value"},
+		{NullJSON{msg, false}, nullProto(), tJSON, "NullJSON with null"},
 		// TIMESTAMP / TIMESTAMP ARRAY
 		{t1, timeProto(t1), tTime, "time"},
 		{NullTime{t1, true}, timeProto(t1), tTime, "NullTime with value"},
@@ -1282,6 +1284,8 @@ func TestDecodeValue(t *testing.T) {
 	}
 	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
+	var unmarshaledJSONstruct interface{}
+	json.Unmarshal([]byte(jsonStr), &unmarshaledJSONstruct)
 	invalidJsonStr := `{wrong_json_string}`
 
 	// Pointer values.
@@ -1402,7 +1406,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<NUMERIC> to []*big.Rat", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []*big.Rat{numValuePtr, nil, num2ValuePtr}},
 		{desc: "decode NULL to []*big.Rat", proto: nullProto(), protoType: listType(numericType()), want: []*big.Rat(nil)},
 		// JSON
-		{desc: "decode json to a struct", proto: stringProto(jsonStr), protoType: jsonType(), want: msg},
+		{desc: "decode json to struct", proto: stringProto(jsonStr), protoType: jsonType(), want: msg},
+		{desc: "decode json to NullJSON", proto: stringProto(jsonStr), protoType: jsonType(), want: NullJSON{unmarshaledJSONstruct, true}},
+		{desc: "decode NULL to NullJSON", proto: nullProto(), protoType: jsonType(), want: NullJSON{}},
 		{desc: "decode an invalid json string", proto: stringProto(invalidJsonStr), protoType: jsonType(), want: msg, wantErr: true},
 		// TIMESTAMP
 		{desc: "decode TIMESTAMP to time.Time", proto: timeProto(t1), protoType: timeType(), want: t1},

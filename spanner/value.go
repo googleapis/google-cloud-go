@@ -457,6 +457,60 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 	return nil
 }
 
+// NullJSON represents a Cloud Spanner JSON that may be NULL.
+type NullJSON struct {
+	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
+	Valid bool        // Valid is true if Numeric is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullJSON.
+func (n NullJSON) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullJSON
+func (n NullJSON) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	b, err := json.Marshal(n.Value)
+	if err != nil {
+		return nullString
+	}
+	return fmt.Sprintf("%v", string(b))
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullJSON.
+func (n NullJSON) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return json.Marshal(n.Value)
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullJSON.
+func (n *NullJSON) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Valid = false
+		return nil
+	}
+	payload, err := trimDoubleQuotes(payload)
+	if err != nil {
+		return err
+	}
+	var v interface{}
+	err = json.Unmarshal(payload, &v)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %s", string(payload), err)
+	}
+	n.Value = v
+	n.Valid = true
+	return nil
+}
+
 // NullRow represents a Cloud Spanner STRUCT that may be NULL.
 // See also the document for Row.
 // Note that NullRow is not a valid Cloud Spanner column Type.
@@ -1033,6 +1087,24 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return errUnexpectedNumericStr(x)
 		}
 		*p = *y
+	case *NullJSON:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code != sppb.TypeCode_JSON {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = NullJSON{}
+			break
+		}
+		x := v.GetStringValue()
+		var y interface{}
+		err := json.Unmarshal([]byte(x), &y)
+		if err != nil {
+			return err
+		}
+		*p = NullJSON{y, true}
 	case *NullNumeric:
 		if p == nil {
 			return errNilDst(p)
@@ -1328,7 +1400,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 	case *GenericColumnValue:
 		*p = GenericColumnValue{Type: t, Value: v}
 	default:
-		fmt.Println("coming here!!!")
 		// Check if the pointer is a custom type that implements spanner.Decoder
 		// interface.
 		if decodedVal, ok := ptr.(Decoder); ok {
@@ -1347,8 +1418,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			}
 			return decodableType.decodeValueToCustomType(v, t, acode, ptr)
 		}
-
-		fmt.Println("coming here!!! - 1")
 
 		if code == sppb.TypeCode_JSON {
 			x, err := getStringValue(v)
@@ -1375,7 +1444,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			// The container is not a slice of struct pointers.
 			return fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(code, acode, ptr))
 		}
-		fmt.Println("coming here!!! - 2")
 		// Only use reflection for nil detection on slow path.
 		// Also, IsNil panics on many types, so check it after the type check.
 		if vp.IsNil() {
@@ -1387,7 +1455,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			vp.Elem().Set(reflect.Zero(vp.Elem().Type()))
 			break
 		}
-		fmt.Println("coming here!!! - 3")
 		x, err := getListValue(v)
 		if err != nil {
 			return err
@@ -2713,6 +2780,11 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(numericType())
+	case NullJSON:
+		if v.Valid {
+			return encodeValue(v.Value)
+		}
+		pt = jsonType()
 	case *big.Rat:
 		if v != nil {
 			pb.Kind = stringKind(NumericString(v))
