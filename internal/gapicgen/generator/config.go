@@ -201,6 +201,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_v1alpha2.yaml",
 		releaseLevel:          "alpha",
+		stopGeneration:        true,
 	},
 	{
 		inputDirectoryPath:    "google/cloud/bigquery/storage/v1beta1",

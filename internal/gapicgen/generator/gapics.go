@@ -454,6 +454,15 @@ var manualEntries = []manifestEntry{
 		ReleaseLevel:      "ga",
 		LibraryType:       GapicManualLibraryType,
 	},
+	{
+		DistributionName:  "cloud.google.com/go/pubsublite",
+		Description:       "Cloud PubSub Lite",
+		Language:          "Go",
+		ClientLibraryType: "manual",
+		DocsURL:           "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
+		ReleaseLevel:      "beta",
+		LibraryType:       GapicManualLibraryType,
+	},
 }
 
 // manifest writes a manifest file with info about all of the confs.
