@@ -166,6 +166,7 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 			"cluster_name": clusterName,
 			"location":     zone,
 			"project_id":   projectID,
+			"pod_name":     os.Getenv("HOSTNAME"),
 		},
 	}
 }
