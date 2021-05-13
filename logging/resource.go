@@ -15,6 +15,7 @@
 package logging
 
 import (
+	"io/ioutil"
 	"os"
 	"strings"
 	"sync"
@@ -160,13 +161,19 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
+	namespaceBytes, err := ioutil.ReadFile("/var/run/secrets/kubernetes.io/serviceaccount/namespace")
+	namespaceName := ""
+	if err == nil {
+		namespaceName = string(namespaceBytes)
+	}
 	return &mrpb.MonitoredResource{
 		Type: "k8s_container",
 		Labels: map[string]string{
-			"cluster_name": clusterName,
-			"location":     zone,
-			"project_id":   projectID,
-			"pod_name":     os.Getenv("HOSTNAME"),
+			"cluster_name":   clusterName,
+			"location":       zone,
+			"project_id":     projectID,
+			"pod_name":       os.Getenv("HOSTNAME"),
+			"namespace_name": namespaceName,
 		},
 	}
 }
