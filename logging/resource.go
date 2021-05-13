@@ -148,10 +148,6 @@ func isKubernetesEngine() bool {
 }
 
 func detectKubernetesResource() *mrpb.MonitoredResource {
-	clusterName, err := metadata.InstanceAttributeValue("cluster-name")
-	if err != nil {
-		return nil
-	}
 	projectID, err := metadata.ProjectID()
 	if err != nil {
 		return nil
@@ -160,17 +156,16 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 	if err != nil {
 		return nil
 	}
-
+	clusterName, err := metadata.InstanceAttributeValue("cluster-name")
+	if err != nil {
+		return nil
+	}
 	return &mrpb.MonitoredResource{
 		Type: "k8s_container",
 		Labels: map[string]string{
-			"cluster_name":   clusterName,
-			"container_name": "",
-			"location":       zone,
-			// TODO: where can I get this info?
-			"namespace_name": "",
-			"pod_name":       "",
-			"project_id":     projectID,
+			"cluster_name": clusterName,
+			"location":     zone,
+			"project_id":   projectID,
 		},
 	}
 }
