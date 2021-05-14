@@ -76,7 +76,7 @@ type FieldSchema struct {
 	// It is invalid to set value for types other than STRING or BYTES.
 	//
 	// For STRING type, this represents the maximum UTF-8 length of strings
-	// allowed in the field.  For BYTES type, this represents the maximum
+	// allowed in the field. For BYTES type, this represents the maximum
 	// number of bytes in the field.
 	MaxLength int64
 
