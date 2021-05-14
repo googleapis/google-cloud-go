@@ -174,6 +174,8 @@ func detectKubernetesResource() *mrpb.MonitoredResource {
 			"project_id":     projectID,
 			"pod_name":       os.Getenv("HOSTNAME"),
 			"namespace_name": namespaceName,
+			// To get the `container_name` label, users need to explicitly provide it.
+			"container_name": os.Getenv("CONTAINER_NAME"),
 		},
 	}
 }
@@ -209,8 +211,8 @@ func detectGCEResource() *mrpb.MonitoredResource {
 func detectResource() *mrpb.MonitoredResource {
 	detectedResource.once.Do(func() {
 		switch {
-		// AppEngine, Functions, CloudRun are detected first, as metadata.OnGCE()
-		// erroneously returns true on these runtimes.
+		// AppEngine, Functions, CloudRun, Kubernetes are detected first,
+		// as metadata.OnGCE() erroneously returns true on these runtimes.
 		case isAppEngine():
 			detectedResource.pb = detectAppEngineResource()
 		case isCloudFunction():
