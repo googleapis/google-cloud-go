@@ -212,6 +212,7 @@ func TestEncodeValue(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
+	type CustomNullJSON NullJSON
 
 	type Message struct {
 		Name string
@@ -317,6 +318,8 @@ func TestEncodeValue(t *testing.T) {
 		{msg, stringProto(jsonStr), tJSON, "json"},
 		{NullJSON{msg, true}, stringProto(jsonStr), tJSON, "NullJSON with value"},
 		{NullJSON{msg, false}, nullProto(), tJSON, "NullJSON with null"},
+		{[]NullJSON(nil), nullProto(), listType(tJSON), "null []NullJSON"},
+		{[]NullJSON{{msg, true}, {msg, false}}, listProto(stringProto(jsonStr), nullProto()), listType(tJSON), "[]NullJSON"},
 		// TIMESTAMP / TIMESTAMP ARRAY
 		{t1, timeProto(t1), tTime, "time"},
 		{NullTime{t1, true}, timeProto(t1), tTime, "NullTime with value"},
@@ -428,6 +431,11 @@ func TestEncodeValue(t *testing.T) {
 		{[]CustomNumeric{CustomNumeric(*numValuePtr), CustomNumeric(*num2ValuePtr)}, listProto(numericProto(numValuePtr), numericProto(num2ValuePtr)), listType(tNumeric), "[]CustomNumeric"},
 		{[]CustomNullNumeric(nil), nullProto(), listType(tNumeric), "null []CustomNullNumeric"},
 		{[]CustomNullNumeric{{*numValuePtr, true}, {*num2ValuePtr, false}}, listProto(numericProto(numValuePtr), nullProto()), listType(tNumeric), "[]CustomNullNumeric"},
+		// CUSTOM JSON
+		{CustomNullJSON{msg, true}, stringProto(jsonStr), tJSON, "CustomNullJSON with value"},
+		{CustomNullJSON{msg, false}, nullProto(), tJSON, "CustomNullJSON with null"},
+		{[]CustomNullJSON(nil), nullProto(), listType(tJSON), "null []CustomNullJSON"},
+		{[]CustomNullJSON{{msg, true}, {msg, false}}, listProto(stringProto(jsonStr), nullProto()), listType(tJSON), "[]CustomNullJSON"},
 	} {
 		got, gotType, err := encodeValue(test.in)
 		if err != nil {
@@ -1276,6 +1284,7 @@ func TestDecodeValue(t *testing.T) {
 	type CustomNullTime NullTime
 	type CustomNullDate NullDate
 	type CustomNullNumeric NullNumeric
+	type CustomNullJSON NullJSON
 
 	type Message struct {
 		Name string
@@ -1410,6 +1419,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode json to NullJSON", proto: stringProto(jsonStr), protoType: jsonType(), want: NullJSON{unmarshaledJSONstruct, true}},
 		{desc: "decode NULL to NullJSON", proto: nullProto(), protoType: jsonType(), want: NullJSON{}},
 		{desc: "decode an invalid json string", proto: stringProto(invalidJsonStr), protoType: jsonType(), want: msg, wantErr: true},
+		// JSON ARRAY with []NullJSON
+		{desc: "decode ARRAY<JSON> to []NullJSON", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(jsonType()), want: []NullJSON{{unmarshaledJSONstruct, true}, {unmarshaledJSONstruct, true}, {}}},
+		{desc: "decode NULL to []NullJSON", proto: nullProto(), protoType: listType(jsonType()), want: []NullJSON(nil)},
 		// TIMESTAMP
 		{desc: "decode TIMESTAMP to time.Time", proto: timeProto(t1), protoType: timeType(), want: t1},
 		{desc: "decode TIMESTAMP to NullTime", proto: timeProto(t1), protoType: timeType(), want: NullTime{t1, true}},
@@ -1620,6 +1632,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode BOOL to CustomNullBool", proto: boolProto(true), protoType: boolType(), want: CustomNullBool{true, true}},
 		{desc: "decode FLOAT64 to CustomNullFloat64", proto: floatProto(6.626), protoType: floatType(), want: CustomNullFloat64{6.626, true}},
 		{desc: "decode NUMERIC to CustomNullNumeric", proto: numericProto(numValuePtr), protoType: numericType(), want: CustomNullNumeric{*numValuePtr, true}},
+		{desc: "decode JSON to CustomNullJSON", proto: stringProto(jsonStr), protoType: jsonType(), want: CustomNullJSON{unmarshaledJSONstruct, true}},
 		{desc: "decode TIMESTAMP to CustomNullTime", proto: timeProto(t1), protoType: timeType(), want: CustomNullTime{t1, true}},
 		{desc: "decode DATE to CustomNullDate", proto: dateProto(d1), protoType: dateType(), want: CustomNullDate{d1, true}},
 
@@ -1628,6 +1641,7 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode NULL to CustomNullBool", proto: nullProto(), protoType: boolType(), want: CustomNullBool{}},
 		{desc: "decode NULL to CustomNullFloat64", proto: nullProto(), protoType: floatType(), want: CustomNullFloat64{}},
 		{desc: "decode NULL to CustomNullNumeric", proto: nullProto(), protoType: numericType(), want: CustomNullNumeric{}},
+		{desc: "decode NULL to CustomNullJSON", proto: nullProto(), protoType: jsonType(), want: CustomNullJSON{}},
 		{desc: "decode NULL to CustomNullTime", proto: nullProto(), protoType: timeType(), want: CustomNullTime{}},
 		{desc: "decode NULL to CustomNullDate", proto: nullProto(), protoType: dateType(), want: CustomNullDate{}},
 
@@ -1664,6 +1678,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<NUMERIC> to []CustomNumeric", proto: listProto(numericProto(numValuePtr), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNumeric{CustomNumeric(*numValuePtr), CustomNumeric(*num2ValuePtr)}},
 		{desc: "decode NULL to []CustomNullNumeric", proto: nullProto(), protoType: listType(numericType()), want: []CustomNullNumeric(nil)},
 		{desc: "decode ARRAY<NUMERIC> to []CustomNullNumeric", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []CustomNullNumeric{{*numValuePtr, true}, {}, {*num2ValuePtr, true}}},
+		// JSON ARRAY
+		{desc: "decode NULL to []CustomNullJSON", proto: nullProto(), protoType: listType(jsonType()), want: []CustomNullJSON(nil)},
+		{desc: "decode ARRAY<JSON> to []CustomNullJSON", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(jsonType()), want: []CustomNullJSON{{unmarshaledJSONstruct, true}, {unmarshaledJSONstruct, true}, {}}},
 		// TIME ARRAY
 		{desc: "decode NULL to []CustomTime", proto: nullProto(), protoType: listType(timeType()), want: []CustomTime(nil)},
 		{desc: "decode ARRAY<TIMESTAMP> with NULL values to []CustomTime", proto: listProto(timeProto(t1), nullProto(), timeProto(t2)), protoType: listType(timeType()), want: []CustomTime{}, wantErr: true},
