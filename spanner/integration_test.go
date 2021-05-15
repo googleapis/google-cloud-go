@@ -1629,8 +1629,8 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	}
 	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
-	var unmarshaledJSONstruct interface{}
-	json.Unmarshal([]byte(jsonStr), &unmarshaledJSONstruct)
+	var unmarshalledJSONstruct interface{}
+	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
 
 	tests := []struct {
 		col  string
@@ -1797,9 +1797,9 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			want interface{}
 		}{
 			{col: "JSON", val: msg, want: msg},
-			{col: "JSON", val: msg, want: NullJSON{unmarshaledJSONstruct, true}},
+			{col: "JSON", val: msg, want: NullJSON{unmarshalledJSONstruct, true}},
 			{col: "JSON", val: NullJSON{msg, true}, want: msg},
-			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshaledJSONstruct, true}},
+			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
 			{col: "JSON", val: NullJSON{msg, false}},
 			{col: "JSON", val: nil, want: NullJSON{}},
 			{col: "JSONArray", val: []NullJSON(nil)},

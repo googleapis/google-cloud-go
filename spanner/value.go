@@ -460,7 +460,7 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 // NullJSON represents a Cloud Spanner JSON that may be NULL.
 type NullJSON struct {
 	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
-	Valid bool        // Valid is true if Numeric is not NULL.
+	Valid bool        // Valid is true if Json is not NULL.
 }
 
 // IsNull implements NullableValue.IsNull for NullJSON.
@@ -475,7 +475,7 @@ func (n NullJSON) String() string {
 	}
 	b, err := json.Marshal(n.Value)
 	if err != nil {
-		return nullString
+		return fmt.Sprintf("error: %v", err)
 	}
 	return fmt.Sprintf("%v", string(b))
 }
@@ -1420,7 +1420,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			if err != nil {
 				return fmt.Errorf("failed to read json string: %s", err)
 			}
-			// Check if it can be unmarshaled to the given type.
+			// Check if it can be unmarshalled to the given type.
 			err = json.Unmarshal([]byte(x), ptr)
 			if err != nil {
 				return fmt.Errorf("failed to unmarshal the json string: %s", err)
@@ -2942,10 +2942,8 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			return encodeValue(nv)
 		}
 
-		fmt.Println("coming here - 1")
 		// Check if the value is a variant of a base type.
 		decodableType := getDecodableSpannerType(v, false)
-		fmt.Printf("%T %v\n", v, decodableType)
 		if decodableType != spannerTypeUnknown && decodableType != spannerTypeInvalid {
 			converted, err := convertCustomTypeValue(decodableType, v)
 			if err != nil {
@@ -2953,16 +2951,14 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 			return encodeValue(converted)
 		}
-		fmt.Println("coming here - 2")
 
-		// Check if it can be marshaled to a json string.
+		// Check if it can be marshalled to a json string.
 		b, err := json.Marshal(v)
 		if err == nil {
 			pb.Kind = stringKind(string(b))
 			pt = jsonType()
 			return pb, pt, nil
 		}
-		fmt.Println("coming here - 3")
 
 		if !isStructOrArrayOfStructValue(v) {
 			return nil, nil, errEncoderUnsupportedType(v)
