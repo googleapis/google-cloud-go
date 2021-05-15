@@ -497,12 +497,8 @@ func (n *NullJSON) UnmarshalJSON(payload []byte) error {
 		n.Valid = false
 		return nil
 	}
-	payload, err := trimDoubleQuotes(payload)
-	if err != nil {
-		return err
-	}
 	var v interface{}
-	err = json.Unmarshal(payload, &v)
+	err := json.Unmarshal(payload, &v)
 	if err != nil {
 		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %s", string(payload), err)
 	}
