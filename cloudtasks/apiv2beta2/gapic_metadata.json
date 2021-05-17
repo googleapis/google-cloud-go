@@ -1,112 +1,112 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.tasks.v2beta2",
-  "libraryPackage": "cloud.google.com/go/cloudtasks/apiv2beta2",
-  "services": {
-    "CloudTasks": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "Client",
-          "rpcs": {
-            "AcknowledgeTask": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.tasks.v2beta2",
+  "libraryPackage":  "cloud.google.com/go/cloudtasks/apiv2beta2",
+  "services":  {
+    "CloudTasks":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "Client",
+          "rpcs":  {
+            "AcknowledgeTask":  {
+              "methods":  [
                 "AcknowledgeTask"
               ]
             },
-            "CancelLease": {
-              "methods": [
+            "CancelLease":  {
+              "methods":  [
                 "CancelLease"
               ]
             },
-            "CreateQueue": {
-              "methods": [
+            "CreateQueue":  {
+              "methods":  [
                 "CreateQueue"
               ]
             },
-            "CreateTask": {
-              "methods": [
+            "CreateTask":  {
+              "methods":  [
                 "CreateTask"
               ]
             },
-            "DeleteQueue": {
-              "methods": [
+            "DeleteQueue":  {
+              "methods":  [
                 "DeleteQueue"
               ]
             },
-            "DeleteTask": {
-              "methods": [
+            "DeleteTask":  {
+              "methods":  [
                 "DeleteTask"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
+            "GetIamPolicy":  {
+              "methods":  [
                 "GetIamPolicy"
               ]
             },
-            "GetQueue": {
-              "methods": [
+            "GetQueue":  {
+              "methods":  [
                 "GetQueue"
               ]
             },
-            "GetTask": {
-              "methods": [
+            "GetTask":  {
+              "methods":  [
                 "GetTask"
               ]
             },
-            "LeaseTasks": {
-              "methods": [
+            "LeaseTasks":  {
+              "methods":  [
                 "LeaseTasks"
               ]
             },
-            "ListQueues": {
-              "methods": [
+            "ListQueues":  {
+              "methods":  [
                 "ListQueues"
               ]
             },
-            "ListTasks": {
-              "methods": [
+            "ListTasks":  {
+              "methods":  [
                 "ListTasks"
               ]
             },
-            "PauseQueue": {
-              "methods": [
+            "PauseQueue":  {
+              "methods":  [
                 "PauseQueue"
               ]
             },
-            "PurgeQueue": {
-              "methods": [
+            "PurgeQueue":  {
+              "methods":  [
                 "PurgeQueue"
               ]
             },
-            "RenewLease": {
-              "methods": [
+            "RenewLease":  {
+              "methods":  [
                 "RenewLease"
               ]
             },
-            "ResumeQueue": {
-              "methods": [
+            "ResumeQueue":  {
+              "methods":  [
                 "ResumeQueue"
               ]
             },
-            "RunTask": {
-              "methods": [
+            "RunTask":  {
+              "methods":  [
                 "RunTask"
               ]
             },
-            "SetIamPolicy": {
-              "methods": [
+            "SetIamPolicy":  {
+              "methods":  [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions": {
-              "methods": [
+            "TestIamPermissions":  {
+              "methods":  [
                 "TestIamPermissions"
               ]
             },
-            "UpdateQueue": {
-              "methods": [
+            "UpdateQueue":  {
+              "methods":  [
                 "UpdateQueue"
               ]
             }
