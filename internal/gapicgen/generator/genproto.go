@@ -26,6 +26,7 @@ import (
 	"strings"
 
 	"cloud.google.com/go/internal/gapicgen/execv"
+	"cloud.google.com/go/internal/gapicgen/execv/gocmd"
 	"cloud.google.com/go/internal/gapicgen/git"
 	"golang.org/x/sync/errgroup"
 )
@@ -41,6 +42,10 @@ var denylist = map[string]bool{
 	// due to manual layer built on top of them.
 	"google.golang.org/genproto/googleapis/grafeas/v1":                    true,
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1": true,
+
+	// Temporarily stop generation of removed protos. Will be manually cleaned
+	// up with: https://github.com/googleapis/google-cloud-go/issues/4098
+	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2": true,
 }
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
@@ -131,11 +136,11 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if err := vet(g.genprotoDir); err != nil {
+	if err := gocmd.Vet(g.genprotoDir); err != nil {
 		return err
 	}
 
-	if err := build(g.genprotoDir); err != nil {
+	if err := gocmd.Build(g.genprotoDir); err != nil {
 		return err
 	}
 
