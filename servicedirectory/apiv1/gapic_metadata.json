@@ -1,17 +1,17 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.servicedirectory.v1",
-  "libraryPackage": "cloud.google.com/go/servicedirectory/apiv1",
-  "services": {
-    "LookupService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "LookupClient",
-          "rpcs": {
-            "ResolveService": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.servicedirectory.v1",
+  "libraryPackage":  "cloud.google.com/go/servicedirectory/apiv1",
+  "services":  {
+    "LookupService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "LookupClient",
+          "rpcs":  {
+            "ResolveService":  {
+              "methods":  [
                 "ResolveService"
               ]
             }
@@ -19,98 +19,98 @@
         }
       }
     },
-    "RegistrationService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "RegistrationClient",
-          "rpcs": {
-            "CreateEndpoint": {
-              "methods": [
+    "RegistrationService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "RegistrationClient",
+          "rpcs":  {
+            "CreateEndpoint":  {
+              "methods":  [
                 "CreateEndpoint"
               ]
             },
-            "CreateNamespace": {
-              "methods": [
+            "CreateNamespace":  {
+              "methods":  [
                 "CreateNamespace"
               ]
             },
-            "CreateService": {
-              "methods": [
+            "CreateService":  {
+              "methods":  [
                 "CreateService"
               ]
             },
-            "DeleteEndpoint": {
-              "methods": [
+            "DeleteEndpoint":  {
+              "methods":  [
                 "DeleteEndpoint"
               ]
             },
-            "DeleteNamespace": {
-              "methods": [
+            "DeleteNamespace":  {
+              "methods":  [
                 "DeleteNamespace"
               ]
             },
-            "DeleteService": {
-              "methods": [
+            "DeleteService":  {
+              "methods":  [
                 "DeleteService"
               ]
             },
-            "GetEndpoint": {
-              "methods": [
+            "GetEndpoint":  {
+              "methods":  [
                 "GetEndpoint"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
+            "GetIamPolicy":  {
+              "methods":  [
                 "GetIamPolicy"
               ]
             },
-            "GetNamespace": {
-              "methods": [
+            "GetNamespace":  {
+              "methods":  [
                 "GetNamespace"
               ]
             },
-            "GetService": {
-              "methods": [
+            "GetService":  {
+              "methods":  [
                 "GetService"
               ]
             },
-            "ListEndpoints": {
-              "methods": [
+            "ListEndpoints":  {
+              "methods":  [
                 "ListEndpoints"
               ]
             },
-            "ListNamespaces": {
-              "methods": [
+            "ListNamespaces":  {
+              "methods":  [
                 "ListNamespaces"
               ]
             },
-            "ListServices": {
-              "methods": [
+            "ListServices":  {
+              "methods":  [
                 "ListServices"
               ]
             },
-            "SetIamPolicy": {
-              "methods": [
+            "SetIamPolicy":  {
+              "methods":  [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions": {
-              "methods": [
+            "TestIamPermissions":  {
+              "methods":  [
                 "TestIamPermissions"
               ]
             },
-            "UpdateEndpoint": {
-              "methods": [
+            "UpdateEndpoint":  {
+              "methods":  [
                 "UpdateEndpoint"
               ]
             },
-            "UpdateNamespace": {
-              "methods": [
+            "UpdateNamespace":  {
+              "methods":  [
                 "UpdateNamespace"
               ]
             },
-            "UpdateService": {
-              "methods": [
+            "UpdateService":  {
+              "methods":  [
                 "UpdateService"
               ]
             }

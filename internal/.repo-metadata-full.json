@@ -179,15 +179,6 @@
     "release_level": "ga",
     "library_type": ""
   },
-  "cloud.google.com/go/bigquery/storage/apiv1alpha2": {
-    "distribution_name": "cloud.google.com/go/bigquery/storage/apiv1alpha2",
-    "description": "BigQuery Storage API",
-    "language": "Go",
-    "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/bigquery/storage/apiv1alpha2",
-    "release_level": "alpha",
-    "library_type": ""
-  },
   "cloud.google.com/go/bigquery/storage/apiv1beta1": {
     "distribution_name": "cloud.google.com/go/bigquery/storage/apiv1beta1",
     "description": "BigQuery Storage API",
@@ -688,7 +679,7 @@
     "description": "Dataproc Metastore API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://pkg.go.dev/cloud.google.com/go/metastore/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/metastore/apiv1",
     "release_level": "beta",
     "library_type": ""
   },
@@ -853,6 +844,15 @@
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/pubsub/apiv1",
     "release_level": "ga",
     "library_type": ""
+  },
+  "cloud.google.com/go/pubsublite": {
+    "distribution_name": "cloud.google.com/go/pubsublite",
+    "description": "Cloud PubSub Lite",
+    "language": "Go",
+    "client_library_type": "manual",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
+    "release_level": "beta",
+    "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/pubsublite/apiv1": {
     "distribution_name": "cloud.google.com/go/pubsublite/apiv1",
