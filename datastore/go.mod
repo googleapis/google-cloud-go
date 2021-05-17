@@ -9,6 +9,6 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	google.golang.org/api v0.46.0
 	google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384
-	google.golang.org/grpc v1.37.0
+	google.golang.org/grpc v1.37.1
 	google.golang.org/protobuf v1.26.0
 )
