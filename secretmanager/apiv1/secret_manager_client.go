@@ -376,8 +376,8 @@ func (c *Client) ListSecretVersions(ctx context.Context, req *secretmanagerpb.Li
 
 // GetSecretVersion gets metadata for a SecretVersion.
 //
-// projects/*/secrets/*/versions/latest is an alias to the latest
-// SecretVersion.
+// projects/*/secrets/*/versions/latest is an alias to the most recently
+// created SecretVersion.
 func (c *Client) GetSecretVersion(ctx context.Context, req *secretmanagerpb.GetSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.SecretVersion, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
@@ -401,8 +401,8 @@ func (c *Client) GetSecretVersion(ctx context.Context, req *secretmanagerpb.GetS
 
 // AccessSecretVersion accesses a SecretVersion. This call returns the secret data.
 //
-// projects/*/secrets/*/versions/latest is an alias to the latest
-// SecretVersion.
+// projects/*/secrets/*/versions/latest is an alias to the most recently
+// created SecretVersion.
 func (c *Client) AccessSecretVersion(ctx context.Context, req *secretmanagerpb.AccessSecretVersionRequest, opts ...gax.CallOption) (*secretmanagerpb.AccessSecretVersionResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
