@@ -409,7 +409,8 @@ type SessionPoolConfig struct {
 	// Defaults to 0.
 	MaxIdle uint64
 
-	// MaxBurst is the maximum number of concurrent session creation requests.
+	// (Deprecated) MaxBurst is the maximum number of concurrent session
+	// creation requests.
 	//
 	// Defaults to 10.
 	MaxBurst uint64
