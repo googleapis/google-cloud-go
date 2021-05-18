@@ -1,112 +1,112 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.security.privateca.v1beta1",
-  "libraryPackage": "cloud.google.com/go/security/privateca/apiv1beta1",
-  "services": {
-    "CertificateAuthorityService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "CertificateAuthorityClient",
-          "rpcs": {
-            "ActivateCertificateAuthority": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.security.privateca.v1beta1",
+  "libraryPackage":  "cloud.google.com/go/security/privateca/apiv1beta1",
+  "services":  {
+    "CertificateAuthorityService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "CertificateAuthorityClient",
+          "rpcs":  {
+            "ActivateCertificateAuthority":  {
+              "methods":  [
                 "ActivateCertificateAuthority"
               ]
             },
-            "CreateCertificate": {
-              "methods": [
+            "CreateCertificate":  {
+              "methods":  [
                 "CreateCertificate"
               ]
             },
-            "CreateCertificateAuthority": {
-              "methods": [
+            "CreateCertificateAuthority":  {
+              "methods":  [
                 "CreateCertificateAuthority"
               ]
             },
-            "DisableCertificateAuthority": {
-              "methods": [
+            "DisableCertificateAuthority":  {
+              "methods":  [
                 "DisableCertificateAuthority"
               ]
             },
-            "EnableCertificateAuthority": {
-              "methods": [
+            "EnableCertificateAuthority":  {
+              "methods":  [
                 "EnableCertificateAuthority"
               ]
             },
-            "FetchCertificateAuthorityCsr": {
-              "methods": [
+            "FetchCertificateAuthorityCsr":  {
+              "methods":  [
                 "FetchCertificateAuthorityCsr"
               ]
             },
-            "GetCertificate": {
-              "methods": [
+            "GetCertificate":  {
+              "methods":  [
                 "GetCertificate"
               ]
             },
-            "GetCertificateAuthority": {
-              "methods": [
+            "GetCertificateAuthority":  {
+              "methods":  [
                 "GetCertificateAuthority"
               ]
             },
-            "GetCertificateRevocationList": {
-              "methods": [
+            "GetCertificateRevocationList":  {
+              "methods":  [
                 "GetCertificateRevocationList"
               ]
             },
-            "GetReusableConfig": {
-              "methods": [
+            "GetReusableConfig":  {
+              "methods":  [
                 "GetReusableConfig"
               ]
             },
-            "ListCertificateAuthorities": {
-              "methods": [
+            "ListCertificateAuthorities":  {
+              "methods":  [
                 "ListCertificateAuthorities"
               ]
             },
-            "ListCertificateRevocationLists": {
-              "methods": [
+            "ListCertificateRevocationLists":  {
+              "methods":  [
                 "ListCertificateRevocationLists"
               ]
             },
-            "ListCertificates": {
-              "methods": [
+            "ListCertificates":  {
+              "methods":  [
                 "ListCertificates"
               ]
             },
-            "ListReusableConfigs": {
-              "methods": [
+            "ListReusableConfigs":  {
+              "methods":  [
                 "ListReusableConfigs"
               ]
             },
-            "RestoreCertificateAuthority": {
-              "methods": [
+            "RestoreCertificateAuthority":  {
+              "methods":  [
                 "RestoreCertificateAuthority"
               ]
             },
-            "RevokeCertificate": {
-              "methods": [
+            "RevokeCertificate":  {
+              "methods":  [
                 "RevokeCertificate"
               ]
             },
-            "ScheduleDeleteCertificateAuthority": {
-              "methods": [
+            "ScheduleDeleteCertificateAuthority":  {
+              "methods":  [
                 "ScheduleDeleteCertificateAuthority"
               ]
             },
-            "UpdateCertificate": {
-              "methods": [
+            "UpdateCertificate":  {
+              "methods":  [
                 "UpdateCertificate"
               ]
             },
-            "UpdateCertificateAuthority": {
-              "methods": [
+            "UpdateCertificateAuthority":  {
+              "methods":  [
                 "UpdateCertificateAuthority"
               ]
             },
-            "UpdateCertificateRevocationList": {
-              "methods": [
+            "UpdateCertificateRevocationList":  {
+              "methods":  [
                 "UpdateCertificateRevocationList"
               ]
             }
