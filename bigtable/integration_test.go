@@ -2396,7 +2396,6 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	if err != nil {
 		t.Errorf("InstanceInfo: %v", err)
 	}
-
 	if iInfo.Name != adminClient.instance {
 		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
 	}

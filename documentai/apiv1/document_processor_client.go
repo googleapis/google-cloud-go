@@ -47,9 +47,9 @@ type DocumentProcessorCallOptions struct {
 
 func defaultDocumentProcessorClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("us-documentai.googleapis.com:443"),
-		internaloption.WithDefaultMTLSEndpoint("us-documentai.mtls.googleapis.com:443"),
-		internaloption.WithDefaultAudience("https://us-documentai.googleapis.com/"),
+		internaloption.WithDefaultEndpoint("documentai.googleapis.com:443"),
+		internaloption.WithDefaultMTLSEndpoint("documentai.mtls.googleapis.com:443"),
+		internaloption.WithDefaultAudience("https://documentai.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(

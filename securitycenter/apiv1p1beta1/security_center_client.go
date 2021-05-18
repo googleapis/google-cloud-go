@@ -541,7 +541,9 @@ func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAss
 // specified properties.
 //
 // To group across all sources provide a - as the source id.
-// Example: /v1p1beta1/organizations/{organization_id}/sources/-/findings
+// Example: /v1/organizations/{organization_id}/sources/-/findings,
+// /v1/folders/{folder_id}/sources/-/findings,
+// /v1/projects/{project_id}/sources/-/findings
 func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
