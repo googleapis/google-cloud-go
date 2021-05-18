@@ -315,6 +315,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/osconfig/v1alpha",
+		pkg:                   "osconfig",
+		importPath:            "cloud.google.com/go/osconfig/apiv1alpha",
+		gRPCServiceConfigPath: "google/cloud/osconfig/v1alpha/osconfig_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/osconfig/v1alpha/osconfig_v1alpha.yaml",
+		releaseLevel:          "alpha",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/osconfig/v1beta",
 		pkg:                   "osconfig",
 		importPath:            "cloud.google.com/go/osconfig/apiv1beta",
