@@ -11,6 +11,6 @@ require (
 	go.opencensus.io v0.23.0
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	google.golang.org/api v0.46.0
-	google.golang.org/genproto v0.0.0-20210513213006-bf773b8c8384
+	google.golang.org/genproto v0.0.0-20210517163617-5e0236093d7a
 	google.golang.org/grpc v1.37.1
 )
