@@ -409,8 +409,12 @@ type SessionPoolConfig struct {
 	// Defaults to 0.
 	MaxIdle uint64
 
-	// (Deprecated) MaxBurst is the maximum number of concurrent session
+	// MaxBurst is the maximum number of concurrent session
 	// creation requests.
+	//
+	// Deprecated: MaxBurst exists for historical compatibility
+	// and should not be used. Sessions will be created in a batch and the size
+	// of a batch is decided by SessionPoolConfig.incStep.
 	//
 	// Defaults to 10.
 	MaxBurst uint64
