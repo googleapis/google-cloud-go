@@ -68,6 +68,11 @@ if [[ $ENVIRONMENT == *"appengine"* ]]; then
   gcloud components install app-engine-go -q
 fi
 
+# If Kubernetes, install kubectl component
+if [[ $ENVIRONMENT == *"kubernetes"* ]]; then
+  gcloud components install kubectl -q
+fi
+
 # Run the environment test for the specified GCP service
 set +e
 python3.7 -m nox --session "tests(language='go', platform='$ENVIRONMENT')"
