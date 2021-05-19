@@ -773,6 +773,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/osconfig/apiv1alpha": {
+    "distribution_name": "cloud.google.com/go/osconfig/apiv1alpha",
+    "description": "OS Config API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/osconfig/apiv1alpha",
+    "release_level": "alpha",
+    "library_type": ""
+  },
   "cloud.google.com/go/osconfig/apiv1beta": {
     "distribution_name": "cloud.google.com/go/osconfig/apiv1beta",
     "description": "Cloud OS Config API",
