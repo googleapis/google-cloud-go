@@ -1097,6 +1097,15 @@
     "release_level": "ga",
     "library_type": ""
   },
+  "cloud.google.com/go/serviceusage/apiv1": {
+    "distribution_name": "cloud.google.com/go/serviceusage/apiv1",
+    "description": "Service Usage API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/serviceusage/apiv1",
+    "release_level": "beta",
+    "library_type": ""
+  },
   "cloud.google.com/go/spanner": {
     "distribution_name": "cloud.google.com/go/spanner",
     "description": "Cloud Spanner",
