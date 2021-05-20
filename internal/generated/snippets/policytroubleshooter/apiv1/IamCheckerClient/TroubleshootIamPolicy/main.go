@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
-
 	ctx := context.Background()
 	c, err := policytroubleshooter.NewIamCheckerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &policytroubleshooterpb.TroubleshootIamPolicyRequest{
 		// TODO: Fill request struct fields.

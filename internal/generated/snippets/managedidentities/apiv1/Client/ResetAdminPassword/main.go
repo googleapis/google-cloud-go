@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ResetAdminPasswordRequest{
 		// TODO: Fill request struct fields.

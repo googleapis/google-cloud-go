@@ -46,7 +46,7 @@ type MetricsCallOptions struct {
 	DeleteLogMetric []gax.CallOption
 }
 
-func defaultMetricsClientOptions() []option.ClientOption {
+func defaultMetricsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("logging.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
@@ -116,32 +116,103 @@ func defaultMetricsCallOptions() *MetricsCallOptions {
 	}
 }
 
+// internalMetricsClient is an interface that defines the methods availaible from Cloud Logging API.
+type internalMetricsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListLogMetrics(context.Context, *loggingpb.ListLogMetricsRequest, ...gax.CallOption) *LogMetricIterator
+	GetLogMetric(context.Context, *loggingpb.GetLogMetricRequest, ...gax.CallOption) (*loggingpb.LogMetric, error)
+	CreateLogMetric(context.Context, *loggingpb.CreateLogMetricRequest, ...gax.CallOption) (*loggingpb.LogMetric, error)
+	UpdateLogMetric(context.Context, *loggingpb.UpdateLogMetricRequest, ...gax.CallOption) (*loggingpb.LogMetric, error)
+	DeleteLogMetric(context.Context, *loggingpb.DeleteLogMetricRequest, ...gax.CallOption) error
+}
+
 // MetricsClient is a client for interacting with Cloud Logging API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for configuring logs-based metrics.
+type MetricsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalMetricsClient
+
+	// The call options for this service.
+	CallOptions *MetricsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *MetricsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *MetricsClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *MetricsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListLogMetrics lists logs-based metrics.
+func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListLogMetricsRequest, opts ...gax.CallOption) *LogMetricIterator {
+	return c.internalClient.ListLogMetrics(ctx, req, opts...)
+}
+
+// GetLogMetric gets a logs-based metric.
+func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+	return c.internalClient.GetLogMetric(ctx, req, opts...)
+}
+
+// CreateLogMetric creates a logs-based metric.
+func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.CreateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+	return c.internalClient.CreateLogMetric(ctx, req, opts...)
+}
+
+// UpdateLogMetric creates or updates a logs-based metric.
+func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.UpdateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+	return c.internalClient.UpdateLogMetric(ctx, req, opts...)
+}
+
+// DeleteLogMetric deletes a logs-based metric.
+func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *loggingpb.DeleteLogMetricRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteLogMetric(ctx, req, opts...)
+}
+
+// metricsGRPCClient is a client for interacting with Cloud Logging API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type MetricsClient struct {
+type metricsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing MetricsClient
+	CallOptions **MetricsCallOptions
+
 	// The gRPC API client.
 	metricsClient loggingpb.MetricsServiceV2Client
-
-	// The call options for this service.
-	CallOptions *MetricsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewMetricsClient creates a new metrics service v2 client.
+// NewMetricsClient creates a new metrics service v2 client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for configuring logs-based metrics.
 func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*MetricsClient, error) {
-	clientOpts := defaultMetricsClientOptions()
-
+	clientOpts := defaultMetricsGRPCClientOptions()
 	if newMetricsClientHook != nil {
 		hookOpts, err := newMetricsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -159,45 +230,47 @@ func NewMetricsClient(ctx context.Context, opts ...option.ClientOption) (*Metric
 	if err != nil {
 		return nil, err
 	}
-	c := &MetricsClient{
+	client := MetricsClient{CallOptions: defaultMetricsCallOptions()}
+
+	c := &metricsGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultMetricsCallOptions(),
-
-		metricsClient: loggingpb.NewMetricsServiceV2Client(connPool),
+		metricsClient:    loggingpb.NewMetricsServiceV2Client(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *MetricsClient) Connection() *grpc.ClientConn {
+func (c *metricsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *MetricsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *MetricsClient) setGoogleClientInfo(keyval ...string) {
+func (c *metricsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListLogMetrics lists logs-based metrics.
-func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListLogMetricsRequest, opts ...gax.CallOption) *LogMetricIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *metricsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *metricsGRPCClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListLogMetricsRequest, opts ...gax.CallOption) *LogMetricIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListLogMetrics[0:len(c.CallOptions.ListLogMetrics):len(c.CallOptions.ListLogMetrics)], opts...)
+	opts = append((*c.CallOptions).ListLogMetrics[0:len((*c.CallOptions).ListLogMetrics):len((*c.CallOptions).ListLogMetrics)], opts...)
 	it := &LogMetricIterator{}
 	req = proto.Clone(req).(*loggingpb.ListLogMetricsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*loggingpb.LogMetric, string, error) {
@@ -234,8 +307,7 @@ func (c *MetricsClient) ListLogMetrics(ctx context.Context, req *loggingpb.ListL
 	return it
 }
 
-// GetLogMetric gets a logs-based metric.
-func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+func (c *metricsGRPCClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -243,7 +315,7 @@ func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogM
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metric_name", url.QueryEscape(req.GetMetricName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetLogMetric[0:len(c.CallOptions.GetLogMetric):len(c.CallOptions.GetLogMetric)], opts...)
+	opts = append((*c.CallOptions).GetLogMetric[0:len((*c.CallOptions).GetLogMetric):len((*c.CallOptions).GetLogMetric)], opts...)
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -256,8 +328,7 @@ func (c *MetricsClient) GetLogMetric(ctx context.Context, req *loggingpb.GetLogM
 	return resp, nil
 }
 
-// CreateLogMetric creates a logs-based metric.
-func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.CreateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+func (c *metricsGRPCClient) CreateLogMetric(ctx context.Context, req *loggingpb.CreateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -265,7 +336,7 @@ func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.Crea
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateLogMetric[0:len(c.CallOptions.CreateLogMetric):len(c.CallOptions.CreateLogMetric)], opts...)
+	opts = append((*c.CallOptions).CreateLogMetric[0:len((*c.CallOptions).CreateLogMetric):len((*c.CallOptions).CreateLogMetric)], opts...)
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -278,8 +349,7 @@ func (c *MetricsClient) CreateLogMetric(ctx context.Context, req *loggingpb.Crea
 	return resp, nil
 }
 
-// UpdateLogMetric creates or updates a logs-based metric.
-func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.UpdateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
+func (c *metricsGRPCClient) UpdateLogMetric(ctx context.Context, req *loggingpb.UpdateLogMetricRequest, opts ...gax.CallOption) (*loggingpb.LogMetric, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -287,7 +357,7 @@ func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.Upda
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metric_name", url.QueryEscape(req.GetMetricName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateLogMetric[0:len(c.CallOptions.UpdateLogMetric):len(c.CallOptions.UpdateLogMetric)], opts...)
+	opts = append((*c.CallOptions).UpdateLogMetric[0:len((*c.CallOptions).UpdateLogMetric):len((*c.CallOptions).UpdateLogMetric)], opts...)
 	var resp *loggingpb.LogMetric
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -300,8 +370,7 @@ func (c *MetricsClient) UpdateLogMetric(ctx context.Context, req *loggingpb.Upda
 	return resp, nil
 }
 
-// DeleteLogMetric deletes a logs-based metric.
-func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *loggingpb.DeleteLogMetricRequest, opts ...gax.CallOption) error {
+func (c *metricsGRPCClient) DeleteLogMetric(ctx context.Context, req *loggingpb.DeleteLogMetricRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -309,7 +378,7 @@ func (c *MetricsClient) DeleteLogMetric(ctx context.Context, req *loggingpb.Dele
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "metric_name", url.QueryEscape(req.GetMetricName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteLogMetric[0:len(c.CallOptions.DeleteLogMetric):len(c.CallOptions.DeleteLogMetric)], opts...)
+	opts = append((*c.CallOptions).DeleteLogMetric[0:len((*c.CallOptions).DeleteLogMetric):len((*c.CallOptions).DeleteLogMetric)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.metricsClient.DeleteLogMetric(ctx, req, settings.GRPC...)

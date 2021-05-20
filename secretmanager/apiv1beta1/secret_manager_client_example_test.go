@@ -31,19 +31,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListSecrets() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.ListSecretsRequest{
 		// TODO: Fill request struct fields.
@@ -63,13 +63,12 @@ func ExampleClient_ListSecrets() {
 }
 
 func ExampleClient_CreateSecret() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.CreateSecretRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleClient_CreateSecret() {
 }
 
 func ExampleClient_AddSecretVersion() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.AddSecretVersionRequest{
 		// TODO: Fill request struct fields.
@@ -103,13 +101,12 @@ func ExampleClient_AddSecretVersion() {
 }
 
 func ExampleClient_GetSecret() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.GetSecretRequest{
 		// TODO: Fill request struct fields.
@@ -123,13 +120,12 @@ func ExampleClient_GetSecret() {
 }
 
 func ExampleClient_UpdateSecret() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.UpdateSecretRequest{
 		// TODO: Fill request struct fields.
@@ -148,6 +144,7 @@ func ExampleClient_DeleteSecret() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.DeleteSecretRequest{
 		// TODO: Fill request struct fields.
@@ -159,14 +156,12 @@ func ExampleClient_DeleteSecret() {
 }
 
 func ExampleClient_ListSecretVersions() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.ListSecretVersionsRequest{
 		// TODO: Fill request struct fields.
@@ -186,13 +181,12 @@ func ExampleClient_ListSecretVersions() {
 }
 
 func ExampleClient_GetSecretVersion() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.GetSecretVersionRequest{
 		// TODO: Fill request struct fields.
@@ -206,13 +200,12 @@ func ExampleClient_GetSecretVersion() {
 }
 
 func ExampleClient_AccessSecretVersion() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.AccessSecretVersionRequest{
 		// TODO: Fill request struct fields.
@@ -226,13 +219,12 @@ func ExampleClient_AccessSecretVersion() {
 }
 
 func ExampleClient_DisableSecretVersion() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.DisableSecretVersionRequest{
 		// TODO: Fill request struct fields.
@@ -246,13 +238,12 @@ func ExampleClient_DisableSecretVersion() {
 }
 
 func ExampleClient_EnableSecretVersion() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.EnableSecretVersionRequest{
 		// TODO: Fill request struct fields.
@@ -266,13 +257,12 @@ func ExampleClient_EnableSecretVersion() {
 }
 
 func ExampleClient_DestroySecretVersion() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1beta1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.DestroySecretVersionRequest{
 		// TODO: Fill request struct fields.
@@ -286,13 +276,12 @@ func ExampleClient_DestroySecretVersion() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -306,13 +295,12 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -326,13 +314,12 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

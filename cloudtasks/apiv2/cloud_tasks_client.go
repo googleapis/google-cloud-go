@@ -58,7 +58,7 @@ type CallOptions struct {
 	RunTask            []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("cloudtasks.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("cloudtasks.mtls.googleapis.com:443"),
@@ -179,33 +179,296 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Cloud Tasks API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListQueues(context.Context, *taskspb.ListQueuesRequest, ...gax.CallOption) *QueueIterator
+	GetQueue(context.Context, *taskspb.GetQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	CreateQueue(context.Context, *taskspb.CreateQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	UpdateQueue(context.Context, *taskspb.UpdateQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	DeleteQueue(context.Context, *taskspb.DeleteQueueRequest, ...gax.CallOption) error
+	PurgeQueue(context.Context, *taskspb.PurgeQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	PauseQueue(context.Context, *taskspb.PauseQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	ResumeQueue(context.Context, *taskspb.ResumeQueueRequest, ...gax.CallOption) (*taskspb.Queue, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	ListTasks(context.Context, *taskspb.ListTasksRequest, ...gax.CallOption) *TaskIterator
+	GetTask(context.Context, *taskspb.GetTaskRequest, ...gax.CallOption) (*taskspb.Task, error)
+	CreateTask(context.Context, *taskspb.CreateTaskRequest, ...gax.CallOption) (*taskspb.Task, error)
+	DeleteTask(context.Context, *taskspb.DeleteTaskRequest, ...gax.CallOption) error
+	RunTask(context.Context, *taskspb.RunTaskRequest, ...gax.CallOption) (*taskspb.Task, error)
+}
+
 // Client is a client for interacting with Cloud Tasks API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Cloud Tasks allows developers to manage the execution of background
+// work in their applications.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListQueues lists queues.
+//
+// Queues are returned in lexicographical order.
+func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
+	return c.internalClient.ListQueues(ctx, req, opts...)
+}
+
+// GetQueue gets a queue.
+func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	return c.internalClient.GetQueue(ctx, req, opts...)
+}
+
+// CreateQueue creates a queue.
+//
+// Queues created with this method allow tasks to live for a maximum of 31
+// days. After a task is 31 days old, the task will be deleted regardless of whether
+// it was dispatched or not.
+//
+// WARNING: Using this method may have unintended side effects if you are
+// using an App Engine queue.yaml or queue.xml file to manage your queues.
+// Read
+// Overview of Queue Management and
+// queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
+// this method.
+func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	return c.internalClient.CreateQueue(ctx, req, opts...)
+}
+
+// UpdateQueue updates a queue.
+//
+// This method creates the queue if it does not exist and updates
+// the queue if it does exist.
+//
+// Queues created with this method allow tasks to live for a maximum of 31
+// days. After a task is 31 days old, the task will be deleted regardless of whether
+// it was dispatched or not.
+//
+// WARNING: Using this method may have unintended side effects if you are
+// using an App Engine queue.yaml or queue.xml file to manage your queues.
+// Read
+// Overview of Queue Management and
+// queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
+// this method.
+func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	return c.internalClient.UpdateQueue(ctx, req, opts...)
+}
+
+// DeleteQueue deletes a queue.
+//
+// This command will delete the queue even if it has tasks in it.
+//
+// Note: If you delete a queue, a queue with the same name can’t be created
+// for 7 days.
+//
+// WARNING: Using this method may have unintended side effects if you are
+// using an App Engine queue.yaml or queue.xml file to manage your queues.
+// Read
+// Overview of Queue Management and
+// queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
+// this method.
+func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteQueue(ctx, req, opts...)
+}
+
+// PurgeQueue purges a queue by deleting all of its tasks.
+//
+// All tasks created before this method is called are permanently deleted.
+//
+// Purge operations can take up to one minute to take effect. Tasks
+// might be dispatched before the purge takes effect. A purge is irreversible.
+func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	return c.internalClient.PurgeQueue(ctx, req, opts...)
+}
+
+// PauseQueue pauses the queue.
+//
+// If a queue is paused then the system will stop dispatching tasks
+// until the queue is resumed via
+// ResumeQueue. Tasks can still be added
+// when the queue is paused. A queue is paused if its
+// state is PAUSED.
+func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	return c.internalClient.PauseQueue(ctx, req, opts...)
+}
+
+// ResumeQueue resume a queue.
+//
+// This method resumes a queue after it has been
+// PAUSED or
+// DISABLED. The state of a queue is stored
+// in the queue’s state; after calling this method it
+// will be set to RUNNING.
+//
+// WARNING: Resuming many high-QPS queues at the same time can
+// lead to target overloading. If you are resuming high-QPS
+// queues, follow the 500/50/5 pattern described in
+// Managing Cloud Tasks Scaling
+// Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
+func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+	return c.internalClient.ResumeQueue(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy for a Queue.
+// Returns an empty policy if the resource exists and does not have a policy
+// set.
+//
+// Authorization requires the following
+// Google IAM (at https://cloud.google.com/iam) permission on the specified
+// resource parent:
+//
+//   cloudtasks.queues.getIamPolicy
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
+// policy.
+//
+// Note: The Cloud Console does not check queue-level IAM permissions yet.
+// Project-level permissions are required to use the Cloud Console.
+//
+// Authorization requires the following
+// Google IAM (at https://cloud.google.com/iam) permission on the specified
+// resource parent:
+//
+//   cloudtasks.queues.setIamPolicy
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on a Queue.
+// If the resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building permission-aware
+// UIs and command-line tools, not for authorization checking. This operation
+// may “fail open” without warning.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// ListTasks lists the tasks in a queue.
+//
+// By default, only the BASIC view is retrieved
+// due to performance considerations;
+// response_view controls the
+// subset of information which is returned.
+//
+// The tasks may be returned in any order. The ordering may change at any
+// time.
+func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
+	return c.internalClient.ListTasks(ctx, req, opts...)
+}
+
+// GetTask gets a task.
+func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+	return c.internalClient.GetTask(ctx, req, opts...)
+}
+
+// CreateTask creates a task and adds it to a queue.
+//
+// Tasks cannot be updated after creation; there is no UpdateTask command.
+//
+//   The maximum task size is 100KB.
+func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+	return c.internalClient.CreateTask(ctx, req, opts...)
+}
+
+// DeleteTask deletes a task.
+//
+// A task can be deleted if it is scheduled or dispatched. A task
+// cannot be deleted if it has executed successfully or permanently
+// failed.
+func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTask(ctx, req, opts...)
+}
+
+// RunTask forces a task to run now.
+//
+// When this method is called, Cloud Tasks will dispatch the task, even if
+// the task is already running, the queue has reached its RateLimits or
+// is PAUSED.
+//
+// This command is meant to be used for manual debugging. For
+// example, RunTask can be used to retry a failed
+// task after a fix has been made or to manually force a task to be
+// dispatched now.
+//
+// The dispatched task is returned. That is, the task that is returned
+// contains the status after the task is dispatched but
+// before the task is received by its target.
+//
+// If Cloud Tasks receives a successful response from the task’s
+// target, then the task will be deleted; otherwise the task’s
+// schedule_time will be reset to the time that
+// RunTask was called plus the retry delay specified
+// in the queue’s RetryConfig.
+//
+// RunTask returns
+// NOT_FOUND when it is called on a
+// task that has already succeeded or permanently failed.
+func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+	return c.internalClient.RunTask(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Cloud Tasks API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client taskspb.CloudTasksClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new cloud tasks client.
+// NewClient creates a new cloud tasks client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Cloud Tasks allows developers to manage the execution of background
 // work in their applications.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -223,47 +486,47 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: taskspb.NewCloudTasksClient(connPool),
+		client:           taskspb.NewCloudTasksClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListQueues lists queues.
-//
-// Queues are returned in lexicographical order.
-func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest, opts ...gax.CallOption) *QueueIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListQueues[0:len(c.CallOptions.ListQueues):len(c.CallOptions.ListQueues)], opts...)
+	opts = append((*c.CallOptions).ListQueues[0:len((*c.CallOptions).ListQueues):len((*c.CallOptions).ListQueues)], opts...)
 	it := &QueueIterator{}
 	req = proto.Clone(req).(*taskspb.ListQueuesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Queue, string, error) {
@@ -300,8 +563,7 @@ func (c *Client) ListQueues(ctx context.Context, req *taskspb.ListQueuesRequest,
 	return it
 }
 
-// GetQueue gets a queue.
-func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -309,7 +571,7 @@ func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opt
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetQueue[0:len(c.CallOptions.GetQueue):len(c.CallOptions.GetQueue)], opts...)
+	opts = append((*c.CallOptions).GetQueue[0:len((*c.CallOptions).GetQueue):len((*c.CallOptions).GetQueue)], opts...)
 	var resp *taskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -322,19 +584,7 @@ func (c *Client) GetQueue(ctx context.Context, req *taskspb.GetQueueRequest, opt
 	return resp, nil
 }
 
-// CreateQueue creates a queue.
-//
-// Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
-//
-// WARNING: Using this method may have unintended side effects if you are
-// using an App Engine queue.yaml or queue.xml file to manage your queues.
-// Read
-// Overview of Queue Management and
-// queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
-// this method.
-func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) CreateQueue(ctx context.Context, req *taskspb.CreateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -342,7 +592,7 @@ func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateQueue[0:len(c.CallOptions.CreateQueue):len(c.CallOptions.CreateQueue)], opts...)
+	opts = append((*c.CallOptions).CreateQueue[0:len((*c.CallOptions).CreateQueue):len((*c.CallOptions).CreateQueue)], opts...)
 	var resp *taskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -355,22 +605,7 @@ func (c *Client) CreateQueue(ctx context.Context, req *taskspb.CreateQueueReques
 	return resp, nil
 }
 
-// UpdateQueue updates a queue.
-//
-// This method creates the queue if it does not exist and updates
-// the queue if it does exist.
-//
-// Queues created with this method allow tasks to live for a maximum of 31
-// days. After a task is 31 days old, the task will be deleted regardless of whether
-// it was dispatched or not.
-//
-// WARNING: Using this method may have unintended side effects if you are
-// using an App Engine queue.yaml or queue.xml file to manage your queues.
-// Read
-// Overview of Queue Management and
-// queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
-// this method.
-func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -378,7 +613,7 @@ func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "queue.name", url.QueryEscape(req.GetQueue().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateQueue[0:len(c.CallOptions.UpdateQueue):len(c.CallOptions.UpdateQueue)], opts...)
+	opts = append((*c.CallOptions).UpdateQueue[0:len((*c.CallOptions).UpdateQueue):len((*c.CallOptions).UpdateQueue)], opts...)
 	var resp *taskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -391,20 +626,7 @@ func (c *Client) UpdateQueue(ctx context.Context, req *taskspb.UpdateQueueReques
 	return resp, nil
 }
 
-// DeleteQueue deletes a queue.
-//
-// This command will delete the queue even if it has tasks in it.
-//
-// Note: If you delete a queue, a queue with the same name can’t be created
-// for 7 days.
-//
-// WARNING: Using this method may have unintended side effects if you are
-// using an App Engine queue.yaml or queue.xml file to manage your queues.
-// Read
-// Overview of Queue Management and
-// queue.yaml (at https://cloud.google.com/tasks/docs/queue-yaml) before using
-// this method.
-func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -412,7 +634,7 @@ func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteQueue[0:len(c.CallOptions.DeleteQueue):len(c.CallOptions.DeleteQueue)], opts...)
+	opts = append((*c.CallOptions).DeleteQueue[0:len((*c.CallOptions).DeleteQueue):len((*c.CallOptions).DeleteQueue)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteQueue(ctx, req, settings.GRPC...)
@@ -421,13 +643,7 @@ func (c *Client) DeleteQueue(ctx context.Context, req *taskspb.DeleteQueueReques
 	return err
 }
 
-// PurgeQueue purges a queue by deleting all of its tasks.
-//
-// All tasks created before this method is called are permanently deleted.
-//
-// Purge operations can take up to one minute to take effect. Tasks
-// might be dispatched before the purge takes effect. A purge is irreversible.
-func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -435,7 +651,7 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PurgeQueue[0:len(c.CallOptions.PurgeQueue):len(c.CallOptions.PurgeQueue)], opts...)
+	opts = append((*c.CallOptions).PurgeQueue[0:len((*c.CallOptions).PurgeQueue):len((*c.CallOptions).PurgeQueue)], opts...)
 	var resp *taskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -448,14 +664,7 @@ func (c *Client) PurgeQueue(ctx context.Context, req *taskspb.PurgeQueueRequest,
 	return resp, nil
 }
 
-// PauseQueue pauses the queue.
-//
-// If a queue is paused then the system will stop dispatching tasks
-// until the queue is resumed via
-// ResumeQueue. Tasks can still be added
-// when the queue is paused. A queue is paused if its
-// state is PAUSED.
-func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -463,7 +672,7 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PauseQueue[0:len(c.CallOptions.PauseQueue):len(c.CallOptions.PauseQueue)], opts...)
+	opts = append((*c.CallOptions).PauseQueue[0:len((*c.CallOptions).PauseQueue):len((*c.CallOptions).PauseQueue)], opts...)
 	var resp *taskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -476,20 +685,7 @@ func (c *Client) PauseQueue(ctx context.Context, req *taskspb.PauseQueueRequest,
 	return resp, nil
 }
 
-// ResumeQueue resume a queue.
-//
-// This method resumes a queue after it has been
-// PAUSED or
-// DISABLED. The state of a queue is stored
-// in the queue’s state; after calling this method it
-// will be set to RUNNING.
-//
-// WARNING: Resuming many high-QPS queues at the same time can
-// lead to target overloading. If you are resuming high-QPS
-// queues, follow the 500/50/5 pattern described in
-// Managing Cloud Tasks Scaling
-// Risks (at https://cloud.google.com/tasks/docs/manage-cloud-task-scaling).
-func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
+func (c *gRPCClient) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueRequest, opts ...gax.CallOption) (*taskspb.Queue, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -497,7 +693,7 @@ func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ResumeQueue[0:len(c.CallOptions.ResumeQueue):len(c.CallOptions.ResumeQueue)], opts...)
+	opts = append((*c.CallOptions).ResumeQueue[0:len((*c.CallOptions).ResumeQueue):len((*c.CallOptions).ResumeQueue)], opts...)
 	var resp *taskspb.Queue
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -510,16 +706,7 @@ func (c *Client) ResumeQueue(ctx context.Context, req *taskspb.ResumeQueueReques
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy for a Queue.
-// Returns an empty policy if the resource exists and does not have a policy
-// set.
-//
-// Authorization requires the following
-// Google IAM (at https://cloud.google.com/iam) permission on the specified
-// resource parent:
-//
-//   cloudtasks.queues.getIamPolicy
-func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -527,7 +714,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -540,18 +727,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy for a Queue. Replaces any existing
-// policy.
-//
-// Note: The Cloud Console does not check queue-level IAM permissions yet.
-// Project-level permissions are required to use the Cloud Console.
-//
-// Authorization requires the following
-// Google IAM (at https://cloud.google.com/iam) permission on the specified
-// resource parent:
-//
-//   cloudtasks.queues.setIamPolicy
-func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -559,7 +735,7 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -572,14 +748,7 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	return resp, nil
 }
 
-// TestIamPermissions returns permissions that a caller has on a Queue.
-// If the resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
-//
-// Note: This operation is designed to be used for building permission-aware
-// UIs and command-line tools, not for authorization checking. This operation
-// may “fail open” without warning.
-func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -587,7 +756,7 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -600,19 +769,10 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	return resp, nil
 }
 
-// ListTasks lists the tasks in a queue.
-//
-// By default, only the BASIC view is retrieved
-// due to performance considerations;
-// response_view controls the
-// subset of information which is returned.
-//
-// The tasks may be returned in any order. The ordering may change at any
-// time.
-func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
+func (c *gRPCClient) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, opts ...gax.CallOption) *TaskIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTasks[0:len(c.CallOptions.ListTasks):len(c.CallOptions.ListTasks)], opts...)
+	opts = append((*c.CallOptions).ListTasks[0:len((*c.CallOptions).ListTasks):len((*c.CallOptions).ListTasks)], opts...)
 	it := &TaskIterator{}
 	req = proto.Clone(req).(*taskspb.ListTasksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*taskspb.Task, string, error) {
@@ -649,8 +809,7 @@ func (c *Client) ListTasks(ctx context.Context, req *taskspb.ListTasksRequest, o
 	return it
 }
 
-// GetTask gets a task.
-func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -658,7 +817,7 @@ func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTask[0:len(c.CallOptions.GetTask):len(c.CallOptions.GetTask)], opts...)
+	opts = append((*c.CallOptions).GetTask[0:len((*c.CallOptions).GetTask):len((*c.CallOptions).GetTask)], opts...)
 	var resp *taskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -671,12 +830,7 @@ func (c *Client) GetTask(ctx context.Context, req *taskspb.GetTaskRequest, opts 
 	return resp, nil
 }
 
-// CreateTask creates a task and adds it to a queue.
-//
-// Tasks cannot be updated after creation; there is no UpdateTask command.
-//
-//   The maximum task size is 100KB.
-func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -684,7 +838,7 @@ func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTask[0:len(c.CallOptions.CreateTask):len(c.CallOptions.CreateTask)], opts...)
+	opts = append((*c.CallOptions).CreateTask[0:len((*c.CallOptions).CreateTask):len((*c.CallOptions).CreateTask)], opts...)
 	var resp *taskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -697,12 +851,7 @@ func (c *Client) CreateTask(ctx context.Context, req *taskspb.CreateTaskRequest,
 	return resp, nil
 }
 
-// DeleteTask deletes a task.
-//
-// A task can be deleted if it is scheduled or dispatched. A task
-// cannot be deleted if it has executed successfully or permanently
-// failed.
-func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -710,7 +859,7 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteTask[0:len(c.CallOptions.DeleteTask):len(c.CallOptions.DeleteTask)], opts...)
+	opts = append((*c.CallOptions).DeleteTask[0:len((*c.CallOptions).DeleteTask):len((*c.CallOptions).DeleteTask)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteTask(ctx, req, settings.GRPC...)
@@ -719,31 +868,7 @@ func (c *Client) DeleteTask(ctx context.Context, req *taskspb.DeleteTaskRequest,
 	return err
 }
 
-// RunTask forces a task to run now.
-//
-// When this method is called, Cloud Tasks will dispatch the task, even if
-// the task is already running, the queue has reached its RateLimits or
-// is PAUSED.
-//
-// This command is meant to be used for manual debugging. For
-// example, RunTask can be used to retry a failed
-// task after a fix has been made or to manually force a task to be
-// dispatched now.
-//
-// The dispatched task is returned. That is, the task that is returned
-// contains the status after the task is dispatched but
-// before the task is received by its target.
-//
-// If Cloud Tasks receives a successful response from the task’s
-// target, then the task will be deleted; otherwise the task’s
-// schedule_time will be reset to the time that
-// RunTask was called plus the retry delay specified
-// in the queue’s RetryConfig.
-//
-// RunTask returns
-// NOT_FOUND when it is called on a
-// task that has already succeeded or permanently failed.
-func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
+func (c *gRPCClient) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts ...gax.CallOption) (*taskspb.Task, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 10000*time.Millisecond)
 		defer cancel()
@@ -751,7 +876,7 @@ func (c *Client) RunTask(ctx context.Context, req *taskspb.RunTaskRequest, opts 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RunTask[0:len(c.CallOptions.RunTask):len(c.CallOptions.RunTask)], opts...)
+	opts = append((*c.CallOptions).RunTask[0:len((*c.CallOptions).RunTask):len((*c.CallOptions).RunTask)], opts...)
 	var resp *taskspb.Task
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

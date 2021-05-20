@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1"
-
 	ctx := context.Background()
 	c, err := videointelligence.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &videointelligencepb.AnnotateVideoRequest{
 		// TODO: Fill request struct fields.

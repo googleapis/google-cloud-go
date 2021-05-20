@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.DeleteNoteRequest{
 		// TODO: Fill request struct fields.

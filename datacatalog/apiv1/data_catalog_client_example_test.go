@@ -31,19 +31,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_SearchCatalog() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.SearchCatalogRequest{
 		// TODO: Fill request struct fields.
@@ -63,13 +63,12 @@ func ExampleClient_SearchCatalog() {
 }
 
 func ExampleClient_CreateEntryGroup() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreateEntryGroupRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleClient_CreateEntryGroup() {
 }
 
 func ExampleClient_GetEntryGroup() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.GetEntryGroupRequest{
 		// TODO: Fill request struct fields.
@@ -103,13 +101,12 @@ func ExampleClient_GetEntryGroup() {
 }
 
 func ExampleClient_UpdateEntryGroup() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdateEntryGroupRequest{
 		// TODO: Fill request struct fields.
@@ -128,6 +125,7 @@ func ExampleClient_DeleteEntryGroup() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteEntryGroupRequest{
 		// TODO: Fill request struct fields.
@@ -139,14 +137,12 @@ func ExampleClient_DeleteEntryGroup() {
 }
 
 func ExampleClient_ListEntryGroups() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ListEntryGroupsRequest{
 		// TODO: Fill request struct fields.
@@ -166,13 +162,12 @@ func ExampleClient_ListEntryGroups() {
 }
 
 func ExampleClient_CreateEntry() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreateEntryRequest{
 		// TODO: Fill request struct fields.
@@ -186,13 +181,12 @@ func ExampleClient_CreateEntry() {
 }
 
 func ExampleClient_UpdateEntry() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdateEntryRequest{
 		// TODO: Fill request struct fields.
@@ -211,6 +205,7 @@ func ExampleClient_DeleteEntry() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteEntryRequest{
 		// TODO: Fill request struct fields.
@@ -222,13 +217,12 @@ func ExampleClient_DeleteEntry() {
 }
 
 func ExampleClient_GetEntry() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.GetEntryRequest{
 		// TODO: Fill request struct fields.
@@ -242,13 +236,12 @@ func ExampleClient_GetEntry() {
 }
 
 func ExampleClient_LookupEntry() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.LookupEntryRequest{
 		// TODO: Fill request struct fields.
@@ -262,14 +255,12 @@ func ExampleClient_LookupEntry() {
 }
 
 func ExampleClient_ListEntries() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ListEntriesRequest{
 		// TODO: Fill request struct fields.
@@ -289,13 +280,12 @@ func ExampleClient_ListEntries() {
 }
 
 func ExampleClient_CreateTagTemplate() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreateTagTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -309,13 +299,12 @@ func ExampleClient_CreateTagTemplate() {
 }
 
 func ExampleClient_GetTagTemplate() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.GetTagTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -329,13 +318,12 @@ func ExampleClient_GetTagTemplate() {
 }
 
 func ExampleClient_UpdateTagTemplate() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdateTagTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -354,6 +342,7 @@ func ExampleClient_DeleteTagTemplate() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteTagTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -365,13 +354,12 @@ func ExampleClient_DeleteTagTemplate() {
 }
 
 func ExampleClient_CreateTagTemplateField() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreateTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
@@ -385,13 +373,12 @@ func ExampleClient_CreateTagTemplateField() {
 }
 
 func ExampleClient_UpdateTagTemplateField() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdateTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
@@ -405,13 +392,12 @@ func ExampleClient_UpdateTagTemplateField() {
 }
 
 func ExampleClient_RenameTagTemplateField() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.RenameTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
@@ -425,13 +411,12 @@ func ExampleClient_RenameTagTemplateField() {
 }
 
 func ExampleClient_RenameTagTemplateFieldEnumValue() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.RenameTagTemplateFieldEnumValueRequest{
 		// TODO: Fill request struct fields.
@@ -450,6 +435,7 @@ func ExampleClient_DeleteTagTemplateField() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteTagTemplateFieldRequest{
 		// TODO: Fill request struct fields.
@@ -461,13 +447,12 @@ func ExampleClient_DeleteTagTemplateField() {
 }
 
 func ExampleClient_CreateTag() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreateTagRequest{
 		// TODO: Fill request struct fields.
@@ -481,13 +466,12 @@ func ExampleClient_CreateTag() {
 }
 
 func ExampleClient_UpdateTag() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdateTagRequest{
 		// TODO: Fill request struct fields.
@@ -506,6 +490,7 @@ func ExampleClient_DeleteTag() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteTagRequest{
 		// TODO: Fill request struct fields.
@@ -517,14 +502,12 @@ func ExampleClient_DeleteTag() {
 }
 
 func ExampleClient_ListTags() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ListTagsRequest{
 		// TODO: Fill request struct fields.
@@ -544,13 +527,12 @@ func ExampleClient_ListTags() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -564,13 +546,12 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -584,13 +565,12 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

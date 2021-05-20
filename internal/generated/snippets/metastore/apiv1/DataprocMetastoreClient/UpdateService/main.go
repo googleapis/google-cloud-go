@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1"
-
 	ctx := context.Background()
 	c, err := metastore.NewDataprocMetastoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &metastorepb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetIndexRequest{
 		// TODO: Fill request struct fields.

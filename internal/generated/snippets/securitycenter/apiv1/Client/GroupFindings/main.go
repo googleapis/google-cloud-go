@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupFindingsRequest{
 		// TODO: Fill request struct fields.

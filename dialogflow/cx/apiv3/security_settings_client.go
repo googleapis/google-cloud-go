@@ -46,7 +46,7 @@ type SecuritySettingsCallOptions struct {
 	DeleteSecuritySettings []gax.CallOption
 }
 
-func defaultSecuritySettingsClientOptions() []option.ClientOption {
+func defaultSecuritySettingsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
@@ -118,32 +118,104 @@ func defaultSecuritySettingsCallOptions() *SecuritySettingsCallOptions {
 	}
 }
 
+// internalSecuritySettingsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalSecuritySettingsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateSecuritySettings(context.Context, *cxpb.CreateSecuritySettingsRequest, ...gax.CallOption) (*cxpb.SecuritySettings, error)
+	GetSecuritySettings(context.Context, *cxpb.GetSecuritySettingsRequest, ...gax.CallOption) (*cxpb.SecuritySettings, error)
+	UpdateSecuritySettings(context.Context, *cxpb.UpdateSecuritySettingsRequest, ...gax.CallOption) (*cxpb.SecuritySettings, error)
+	ListSecuritySettings(context.Context, *cxpb.ListSecuritySettingsRequest, ...gax.CallOption) *SecuritySettingsIterator
+	DeleteSecuritySettings(context.Context, *cxpb.DeleteSecuritySettingsRequest, ...gax.CallOption) error
+}
+
 // SecuritySettingsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing security settings for Dialogflow.
+type SecuritySettingsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalSecuritySettingsClient
+
+	// The call options for this service.
+	CallOptions *SecuritySettingsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *SecuritySettingsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *SecuritySettingsClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *SecuritySettingsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateSecuritySettings create security settings in the specified location.
+func (c *SecuritySettingsClient) CreateSecuritySettings(ctx context.Context, req *cxpb.CreateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
+	return c.internalClient.CreateSecuritySettings(ctx, req, opts...)
+}
+
+// GetSecuritySettings retrieves the specified SecuritySettings.
+// The returned settings may be stale by up to 1 minute.
+func (c *SecuritySettingsClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
+	return c.internalClient.GetSecuritySettings(ctx, req, opts...)
+}
+
+// UpdateSecuritySettings updates the specified SecuritySettings.
+func (c *SecuritySettingsClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
+	return c.internalClient.UpdateSecuritySettings(ctx, req, opts...)
+}
+
+// ListSecuritySettings returns the list of all security settings in the specified location.
+func (c *SecuritySettingsClient) ListSecuritySettings(ctx context.Context, req *cxpb.ListSecuritySettingsRequest, opts ...gax.CallOption) *SecuritySettingsIterator {
+	return c.internalClient.ListSecuritySettings(ctx, req, opts...)
+}
+
+// DeleteSecuritySettings deletes the specified SecuritySettings.
+func (c *SecuritySettingsClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSecuritySettings(ctx, req, opts...)
+}
+
+// securitySettingsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type SecuritySettingsClient struct {
+type securitySettingsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing SecuritySettingsClient
+	CallOptions **SecuritySettingsCallOptions
+
 	// The gRPC API client.
 	securitySettingsClient cxpb.SecuritySettingsServiceClient
-
-	// The call options for this service.
-	CallOptions *SecuritySettingsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewSecuritySettingsClient creates a new security settings service client.
+// NewSecuritySettingsClient creates a new security settings service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing security settings for Dialogflow.
 func NewSecuritySettingsClient(ctx context.Context, opts ...option.ClientOption) (*SecuritySettingsClient, error) {
-	clientOpts := defaultSecuritySettingsClientOptions()
-
+	clientOpts := defaultSecuritySettingsGRPCClientOptions()
 	if newSecuritySettingsClientHook != nil {
 		hookOpts, err := newSecuritySettingsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -161,42 +233,44 @@ func NewSecuritySettingsClient(ctx context.Context, opts ...option.ClientOption)
 	if err != nil {
 		return nil, err
 	}
-	c := &SecuritySettingsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultSecuritySettingsCallOptions(),
+	client := SecuritySettingsClient{CallOptions: defaultSecuritySettingsCallOptions()}
 
+	c := &securitySettingsGRPCClient{
+		connPool:               connPool,
+		disableDeadlines:       disableDeadlines,
 		securitySettingsClient: cxpb.NewSecuritySettingsServiceClient(connPool),
+		CallOptions:            &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *SecuritySettingsClient) Connection() *grpc.ClientConn {
+func (c *securitySettingsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *SecuritySettingsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *SecuritySettingsClient) setGoogleClientInfo(keyval ...string) {
+func (c *securitySettingsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateSecuritySettings create security settings in the specified location.
-func (c *SecuritySettingsClient) CreateSecuritySettings(ctx context.Context, req *cxpb.CreateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *securitySettingsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *securitySettingsGRPCClient) CreateSecuritySettings(ctx context.Context, req *cxpb.CreateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -204,7 +278,7 @@ func (c *SecuritySettingsClient) CreateSecuritySettings(ctx context.Context, req
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateSecuritySettings[0:len(c.CallOptions.CreateSecuritySettings):len(c.CallOptions.CreateSecuritySettings)], opts...)
+	opts = append((*c.CallOptions).CreateSecuritySettings[0:len((*c.CallOptions).CreateSecuritySettings):len((*c.CallOptions).CreateSecuritySettings)], opts...)
 	var resp *cxpb.SecuritySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -217,9 +291,7 @@ func (c *SecuritySettingsClient) CreateSecuritySettings(ctx context.Context, req
 	return resp, nil
 }
 
-// GetSecuritySettings retrieves the specified SecuritySettings.
-// The returned settings may be stale by up to 1 minute.
-func (c *SecuritySettingsClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
+func (c *securitySettingsGRPCClient) GetSecuritySettings(ctx context.Context, req *cxpb.GetSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -227,7 +299,7 @@ func (c *SecuritySettingsClient) GetSecuritySettings(ctx context.Context, req *c
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetSecuritySettings[0:len(c.CallOptions.GetSecuritySettings):len(c.CallOptions.GetSecuritySettings)], opts...)
+	opts = append((*c.CallOptions).GetSecuritySettings[0:len((*c.CallOptions).GetSecuritySettings):len((*c.CallOptions).GetSecuritySettings)], opts...)
 	var resp *cxpb.SecuritySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -240,8 +312,7 @@ func (c *SecuritySettingsClient) GetSecuritySettings(ctx context.Context, req *c
 	return resp, nil
 }
 
-// UpdateSecuritySettings updates the specified SecuritySettings.
-func (c *SecuritySettingsClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
+func (c *securitySettingsGRPCClient) UpdateSecuritySettings(ctx context.Context, req *cxpb.UpdateSecuritySettingsRequest, opts ...gax.CallOption) (*cxpb.SecuritySettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -249,7 +320,7 @@ func (c *SecuritySettingsClient) UpdateSecuritySettings(ctx context.Context, req
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "security_settings.name", url.QueryEscape(req.GetSecuritySettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateSecuritySettings[0:len(c.CallOptions.UpdateSecuritySettings):len(c.CallOptions.UpdateSecuritySettings)], opts...)
+	opts = append((*c.CallOptions).UpdateSecuritySettings[0:len((*c.CallOptions).UpdateSecuritySettings):len((*c.CallOptions).UpdateSecuritySettings)], opts...)
 	var resp *cxpb.SecuritySettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -262,11 +333,10 @@ func (c *SecuritySettingsClient) UpdateSecuritySettings(ctx context.Context, req
 	return resp, nil
 }
 
-// ListSecuritySettings returns the list of all security settings in the specified location.
-func (c *SecuritySettingsClient) ListSecuritySettings(ctx context.Context, req *cxpb.ListSecuritySettingsRequest, opts ...gax.CallOption) *SecuritySettingsIterator {
+func (c *securitySettingsGRPCClient) ListSecuritySettings(ctx context.Context, req *cxpb.ListSecuritySettingsRequest, opts ...gax.CallOption) *SecuritySettingsIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListSecuritySettings[0:len(c.CallOptions.ListSecuritySettings):len(c.CallOptions.ListSecuritySettings)], opts...)
+	opts = append((*c.CallOptions).ListSecuritySettings[0:len((*c.CallOptions).ListSecuritySettings):len((*c.CallOptions).ListSecuritySettings)], opts...)
 	it := &SecuritySettingsIterator{}
 	req = proto.Clone(req).(*cxpb.ListSecuritySettingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.SecuritySettings, string, error) {
@@ -303,8 +373,7 @@ func (c *SecuritySettingsClient) ListSecuritySettings(ctx context.Context, req *
 	return it
 }
 
-// DeleteSecuritySettings deletes the specified SecuritySettings.
-func (c *SecuritySettingsClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
+func (c *securitySettingsGRPCClient) DeleteSecuritySettings(ctx context.Context, req *cxpb.DeleteSecuritySettingsRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -312,7 +381,7 @@ func (c *SecuritySettingsClient) DeleteSecuritySettings(ctx context.Context, req
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteSecuritySettings[0:len(c.CallOptions.DeleteSecuritySettings):len(c.CallOptions.DeleteSecuritySettings)], opts...)
+	opts = append((*c.CallOptions).DeleteSecuritySettings[0:len((*c.CallOptions).DeleteSecuritySettings):len((*c.CallOptions).DeleteSecuritySettings)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.securitySettingsClient.DeleteSecuritySettings(ctx, req, settings.GRPC...)

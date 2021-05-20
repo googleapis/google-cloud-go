@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.ListTracesRequest{
 		// TODO: Fill request struct fields.

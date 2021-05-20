@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateNotificationConfigRequest{
 		// TODO: Fill request struct fields.

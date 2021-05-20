@@ -51,7 +51,7 @@ type NotificationChannelCallOptions struct {
 	VerifyNotificationChannel               []gax.CallOption
 }
 
-func defaultNotificationChannelClientOptions() []option.ClientOption {
+func defaultNotificationChannelGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("monitoring.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("monitoring.mtls.googleapis.com:443"),
@@ -155,33 +155,166 @@ func defaultNotificationChannelCallOptions() *NotificationChannelCallOptions {
 	}
 }
 
+// internalNotificationChannelClient is an interface that defines the methods availaible from Cloud Monitoring API.
+type internalNotificationChannelClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListNotificationChannelDescriptors(context.Context, *monitoringpb.ListNotificationChannelDescriptorsRequest, ...gax.CallOption) *NotificationChannelDescriptorIterator
+	GetNotificationChannelDescriptor(context.Context, *monitoringpb.GetNotificationChannelDescriptorRequest, ...gax.CallOption) (*monitoringpb.NotificationChannelDescriptor, error)
+	ListNotificationChannels(context.Context, *monitoringpb.ListNotificationChannelsRequest, ...gax.CallOption) *NotificationChannelIterator
+	GetNotificationChannel(context.Context, *monitoringpb.GetNotificationChannelRequest, ...gax.CallOption) (*monitoringpb.NotificationChannel, error)
+	CreateNotificationChannel(context.Context, *monitoringpb.CreateNotificationChannelRequest, ...gax.CallOption) (*monitoringpb.NotificationChannel, error)
+	UpdateNotificationChannel(context.Context, *monitoringpb.UpdateNotificationChannelRequest, ...gax.CallOption) (*monitoringpb.NotificationChannel, error)
+	DeleteNotificationChannel(context.Context, *monitoringpb.DeleteNotificationChannelRequest, ...gax.CallOption) error
+	SendNotificationChannelVerificationCode(context.Context, *monitoringpb.SendNotificationChannelVerificationCodeRequest, ...gax.CallOption) error
+	GetNotificationChannelVerificationCode(context.Context, *monitoringpb.GetNotificationChannelVerificationCodeRequest, ...gax.CallOption) (*monitoringpb.GetNotificationChannelVerificationCodeResponse, error)
+	VerifyNotificationChannel(context.Context, *monitoringpb.VerifyNotificationChannelRequest, ...gax.CallOption) (*monitoringpb.NotificationChannel, error)
+}
+
 // NotificationChannelClient is a client for interacting with Cloud Monitoring API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The Notification Channel API provides access to configuration that
+// controls how messages related to incidents are sent.
+type NotificationChannelClient struct {
+	// The internal transport-dependent client.
+	internalClient internalNotificationChannelClient
+
+	// The call options for this service.
+	CallOptions *NotificationChannelCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *NotificationChannelClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *NotificationChannelClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *NotificationChannelClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListNotificationChannelDescriptors lists the descriptors for supported channel types. The use of descriptors
+// makes it possible for new channel types to be dynamically added.
+func (c *NotificationChannelClient) ListNotificationChannelDescriptors(ctx context.Context, req *monitoringpb.ListNotificationChannelDescriptorsRequest, opts ...gax.CallOption) *NotificationChannelDescriptorIterator {
+	return c.internalClient.ListNotificationChannelDescriptors(ctx, req, opts...)
+}
+
+// GetNotificationChannelDescriptor gets a single channel descriptor. The descriptor indicates which fields
+// are expected / permitted for a notification channel of the given type.
+func (c *NotificationChannelClient) GetNotificationChannelDescriptor(ctx context.Context, req *monitoringpb.GetNotificationChannelDescriptorRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannelDescriptor, error) {
+	return c.internalClient.GetNotificationChannelDescriptor(ctx, req, opts...)
+}
+
+// ListNotificationChannels lists the notification channels that have been created for the project.
+func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context, req *monitoringpb.ListNotificationChannelsRequest, opts ...gax.CallOption) *NotificationChannelIterator {
+	return c.internalClient.ListNotificationChannels(ctx, req, opts...)
+}
+
+// GetNotificationChannel gets a single notification channel. The channel includes the relevant
+// configuration details with which the channel was created. However, the
+// response may truncate or omit passwords, API keys, or other private key
+// matter and thus the response may not be 100% identical to the information
+// that was supplied in the call to the create method.
+func (c *NotificationChannelClient) GetNotificationChannel(ctx context.Context, req *monitoringpb.GetNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+	return c.internalClient.GetNotificationChannel(ctx, req, opts...)
+}
+
+// CreateNotificationChannel creates a new notification channel, representing a single notification
+// endpoint such as an email address, SMS number, or PagerDuty service.
+func (c *NotificationChannelClient) CreateNotificationChannel(ctx context.Context, req *monitoringpb.CreateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+	return c.internalClient.CreateNotificationChannel(ctx, req, opts...)
+}
+
+// UpdateNotificationChannel updates a notification channel. Fields not specified in the field mask
+// remain unchanged.
+func (c *NotificationChannelClient) UpdateNotificationChannel(ctx context.Context, req *monitoringpb.UpdateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+	return c.internalClient.UpdateNotificationChannel(ctx, req, opts...)
+}
+
+// DeleteNotificationChannel deletes a notification channel.
+func (c *NotificationChannelClient) DeleteNotificationChannel(ctx context.Context, req *monitoringpb.DeleteNotificationChannelRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteNotificationChannel(ctx, req, opts...)
+}
+
+// SendNotificationChannelVerificationCode causes a verification code to be delivered to the channel. The code
+// can then be supplied in VerifyNotificationChannel to verify the channel.
+func (c *NotificationChannelClient) SendNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.SendNotificationChannelVerificationCodeRequest, opts ...gax.CallOption) error {
+	return c.internalClient.SendNotificationChannelVerificationCode(ctx, req, opts...)
+}
+
+// GetNotificationChannelVerificationCode requests a verification code for an already verified channel that can then
+// be used in a call to VerifyNotificationChannel() on a different channel
+// with an equivalent identity in the same or in a different project. This
+// makes it possible to copy a channel between projects without requiring
+// manual reverification of the channel. If the channel is not in the
+// verified state, this method will fail (in other words, this may only be
+// used if the SendNotificationChannelVerificationCode and
+// VerifyNotificationChannel paths have already been used to put the given
+// channel into the verified state).
+//
+// There is no guarantee that the verification codes returned by this method
+// will be of a similar structure or form as the ones that are delivered
+// to the channel via SendNotificationChannelVerificationCode; while
+// VerifyNotificationChannel() will recognize both the codes delivered via
+// SendNotificationChannelVerificationCode() and returned from
+// GetNotificationChannelVerificationCode(), it is typically the case that
+// the verification codes delivered via
+// SendNotificationChannelVerificationCode() will be shorter and also
+// have a shorter expiration (e.g. codes such as “G-123456”) whereas
+// GetVerificationCode() will typically return a much longer, websafe base
+// 64 encoded string that has a longer expiration time.
+func (c *NotificationChannelClient) GetNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.GetNotificationChannelVerificationCodeRequest, opts ...gax.CallOption) (*monitoringpb.GetNotificationChannelVerificationCodeResponse, error) {
+	return c.internalClient.GetNotificationChannelVerificationCode(ctx, req, opts...)
+}
+
+// VerifyNotificationChannel verifies a NotificationChannel by proving receipt of the code
+// delivered to the channel as a result of calling
+// SendNotificationChannelVerificationCode.
+func (c *NotificationChannelClient) VerifyNotificationChannel(ctx context.Context, req *monitoringpb.VerifyNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+	return c.internalClient.VerifyNotificationChannel(ctx, req, opts...)
+}
+
+// notificationChannelGRPCClient is a client for interacting with Cloud Monitoring API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type NotificationChannelClient struct {
+type notificationChannelGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing NotificationChannelClient
+	CallOptions **NotificationChannelCallOptions
+
 	// The gRPC API client.
 	notificationChannelClient monitoringpb.NotificationChannelServiceClient
-
-	// The call options for this service.
-	CallOptions *NotificationChannelCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewNotificationChannelClient creates a new notification channel service client.
+// NewNotificationChannelClient creates a new notification channel service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The Notification Channel API provides access to configuration that
 // controls how messages related to incidents are sent.
 func NewNotificationChannelClient(ctx context.Context, opts ...option.ClientOption) (*NotificationChannelClient, error) {
-	clientOpts := defaultNotificationChannelClientOptions()
-
+	clientOpts := defaultNotificationChannelGRPCClientOptions()
 	if newNotificationChannelClientHook != nil {
 		hookOpts, err := newNotificationChannelClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -199,46 +332,47 @@ func NewNotificationChannelClient(ctx context.Context, opts ...option.ClientOpti
 	if err != nil {
 		return nil, err
 	}
-	c := &NotificationChannelClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultNotificationChannelCallOptions(),
+	client := NotificationChannelClient{CallOptions: defaultNotificationChannelCallOptions()}
 
+	c := &notificationChannelGRPCClient{
+		connPool:                  connPool,
+		disableDeadlines:          disableDeadlines,
 		notificationChannelClient: monitoringpb.NewNotificationChannelServiceClient(connPool),
+		CallOptions:               &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *NotificationChannelClient) Connection() *grpc.ClientConn {
+func (c *notificationChannelGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *NotificationChannelClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *NotificationChannelClient) setGoogleClientInfo(keyval ...string) {
+func (c *notificationChannelGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListNotificationChannelDescriptors lists the descriptors for supported channel types. The use of descriptors
-// makes it possible for new channel types to be dynamically added.
-func (c *NotificationChannelClient) ListNotificationChannelDescriptors(ctx context.Context, req *monitoringpb.ListNotificationChannelDescriptorsRequest, opts ...gax.CallOption) *NotificationChannelDescriptorIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *notificationChannelGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *notificationChannelGRPCClient) ListNotificationChannelDescriptors(ctx context.Context, req *monitoringpb.ListNotificationChannelDescriptorsRequest, opts ...gax.CallOption) *NotificationChannelDescriptorIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListNotificationChannelDescriptors[0:len(c.CallOptions.ListNotificationChannelDescriptors):len(c.CallOptions.ListNotificationChannelDescriptors)], opts...)
+	opts = append((*c.CallOptions).ListNotificationChannelDescriptors[0:len((*c.CallOptions).ListNotificationChannelDescriptors):len((*c.CallOptions).ListNotificationChannelDescriptors)], opts...)
 	it := &NotificationChannelDescriptorIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListNotificationChannelDescriptorsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.NotificationChannelDescriptor, string, error) {
@@ -275,9 +409,7 @@ func (c *NotificationChannelClient) ListNotificationChannelDescriptors(ctx conte
 	return it
 }
 
-// GetNotificationChannelDescriptor gets a single channel descriptor. The descriptor indicates which fields
-// are expected / permitted for a notification channel of the given type.
-func (c *NotificationChannelClient) GetNotificationChannelDescriptor(ctx context.Context, req *monitoringpb.GetNotificationChannelDescriptorRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannelDescriptor, error) {
+func (c *notificationChannelGRPCClient) GetNotificationChannelDescriptor(ctx context.Context, req *monitoringpb.GetNotificationChannelDescriptorRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannelDescriptor, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -285,7 +417,7 @@ func (c *NotificationChannelClient) GetNotificationChannelDescriptor(ctx context
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetNotificationChannelDescriptor[0:len(c.CallOptions.GetNotificationChannelDescriptor):len(c.CallOptions.GetNotificationChannelDescriptor)], opts...)
+	opts = append((*c.CallOptions).GetNotificationChannelDescriptor[0:len((*c.CallOptions).GetNotificationChannelDescriptor):len((*c.CallOptions).GetNotificationChannelDescriptor)], opts...)
 	var resp *monitoringpb.NotificationChannelDescriptor
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -298,11 +430,10 @@ func (c *NotificationChannelClient) GetNotificationChannelDescriptor(ctx context
 	return resp, nil
 }
 
-// ListNotificationChannels lists the notification channels that have been created for the project.
-func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context, req *monitoringpb.ListNotificationChannelsRequest, opts ...gax.CallOption) *NotificationChannelIterator {
+func (c *notificationChannelGRPCClient) ListNotificationChannels(ctx context.Context, req *monitoringpb.ListNotificationChannelsRequest, opts ...gax.CallOption) *NotificationChannelIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListNotificationChannels[0:len(c.CallOptions.ListNotificationChannels):len(c.CallOptions.ListNotificationChannels)], opts...)
+	opts = append((*c.CallOptions).ListNotificationChannels[0:len((*c.CallOptions).ListNotificationChannels):len((*c.CallOptions).ListNotificationChannels)], opts...)
 	it := &NotificationChannelIterator{}
 	req = proto.Clone(req).(*monitoringpb.ListNotificationChannelsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*monitoringpb.NotificationChannel, string, error) {
@@ -339,12 +470,7 @@ func (c *NotificationChannelClient) ListNotificationChannels(ctx context.Context
 	return it
 }
 
-// GetNotificationChannel gets a single notification channel. The channel includes the relevant
-// configuration details with which the channel was created. However, the
-// response may truncate or omit passwords, API keys, or other private key
-// matter and thus the response may not be 100% identical to the information
-// that was supplied in the call to the create method.
-func (c *NotificationChannelClient) GetNotificationChannel(ctx context.Context, req *monitoringpb.GetNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+func (c *notificationChannelGRPCClient) GetNotificationChannel(ctx context.Context, req *monitoringpb.GetNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -352,7 +478,7 @@ func (c *NotificationChannelClient) GetNotificationChannel(ctx context.Context, 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetNotificationChannel[0:len(c.CallOptions.GetNotificationChannel):len(c.CallOptions.GetNotificationChannel)], opts...)
+	opts = append((*c.CallOptions).GetNotificationChannel[0:len((*c.CallOptions).GetNotificationChannel):len((*c.CallOptions).GetNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -365,9 +491,7 @@ func (c *NotificationChannelClient) GetNotificationChannel(ctx context.Context, 
 	return resp, nil
 }
 
-// CreateNotificationChannel creates a new notification channel, representing a single notification
-// endpoint such as an email address, SMS number, or PagerDuty service.
-func (c *NotificationChannelClient) CreateNotificationChannel(ctx context.Context, req *monitoringpb.CreateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+func (c *notificationChannelGRPCClient) CreateNotificationChannel(ctx context.Context, req *monitoringpb.CreateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -375,7 +499,7 @@ func (c *NotificationChannelClient) CreateNotificationChannel(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateNotificationChannel[0:len(c.CallOptions.CreateNotificationChannel):len(c.CallOptions.CreateNotificationChannel)], opts...)
+	opts = append((*c.CallOptions).CreateNotificationChannel[0:len((*c.CallOptions).CreateNotificationChannel):len((*c.CallOptions).CreateNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -388,9 +512,7 @@ func (c *NotificationChannelClient) CreateNotificationChannel(ctx context.Contex
 	return resp, nil
 }
 
-// UpdateNotificationChannel updates a notification channel. Fields not specified in the field mask
-// remain unchanged.
-func (c *NotificationChannelClient) UpdateNotificationChannel(ctx context.Context, req *monitoringpb.UpdateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+func (c *notificationChannelGRPCClient) UpdateNotificationChannel(ctx context.Context, req *monitoringpb.UpdateNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -398,7 +520,7 @@ func (c *NotificationChannelClient) UpdateNotificationChannel(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "notification_channel.name", url.QueryEscape(req.GetNotificationChannel().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateNotificationChannel[0:len(c.CallOptions.UpdateNotificationChannel):len(c.CallOptions.UpdateNotificationChannel)], opts...)
+	opts = append((*c.CallOptions).UpdateNotificationChannel[0:len((*c.CallOptions).UpdateNotificationChannel):len((*c.CallOptions).UpdateNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -411,8 +533,7 @@ func (c *NotificationChannelClient) UpdateNotificationChannel(ctx context.Contex
 	return resp, nil
 }
 
-// DeleteNotificationChannel deletes a notification channel.
-func (c *NotificationChannelClient) DeleteNotificationChannel(ctx context.Context, req *monitoringpb.DeleteNotificationChannelRequest, opts ...gax.CallOption) error {
+func (c *notificationChannelGRPCClient) DeleteNotificationChannel(ctx context.Context, req *monitoringpb.DeleteNotificationChannelRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -420,7 +541,7 @@ func (c *NotificationChannelClient) DeleteNotificationChannel(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteNotificationChannel[0:len(c.CallOptions.DeleteNotificationChannel):len(c.CallOptions.DeleteNotificationChannel)], opts...)
+	opts = append((*c.CallOptions).DeleteNotificationChannel[0:len((*c.CallOptions).DeleteNotificationChannel):len((*c.CallOptions).DeleteNotificationChannel)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.notificationChannelClient.DeleteNotificationChannel(ctx, req, settings.GRPC...)
@@ -429,9 +550,7 @@ func (c *NotificationChannelClient) DeleteNotificationChannel(ctx context.Contex
 	return err
 }
 
-// SendNotificationChannelVerificationCode causes a verification code to be delivered to the channel. The code
-// can then be supplied in VerifyNotificationChannel to verify the channel.
-func (c *NotificationChannelClient) SendNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.SendNotificationChannelVerificationCodeRequest, opts ...gax.CallOption) error {
+func (c *notificationChannelGRPCClient) SendNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.SendNotificationChannelVerificationCodeRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -439,7 +558,7 @@ func (c *NotificationChannelClient) SendNotificationChannelVerificationCode(ctx 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SendNotificationChannelVerificationCode[0:len(c.CallOptions.SendNotificationChannelVerificationCode):len(c.CallOptions.SendNotificationChannelVerificationCode)], opts...)
+	opts = append((*c.CallOptions).SendNotificationChannelVerificationCode[0:len((*c.CallOptions).SendNotificationChannelVerificationCode):len((*c.CallOptions).SendNotificationChannelVerificationCode)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.notificationChannelClient.SendNotificationChannelVerificationCode(ctx, req, settings.GRPC...)
@@ -448,28 +567,7 @@ func (c *NotificationChannelClient) SendNotificationChannelVerificationCode(ctx 
 	return err
 }
 
-// GetNotificationChannelVerificationCode requests a verification code for an already verified channel that can then
-// be used in a call to VerifyNotificationChannel() on a different channel
-// with an equivalent identity in the same or in a different project. This
-// makes it possible to copy a channel between projects without requiring
-// manual reverification of the channel. If the channel is not in the
-// verified state, this method will fail (in other words, this may only be
-// used if the SendNotificationChannelVerificationCode and
-// VerifyNotificationChannel paths have already been used to put the given
-// channel into the verified state).
-//
-// There is no guarantee that the verification codes returned by this method
-// will be of a similar structure or form as the ones that are delivered
-// to the channel via SendNotificationChannelVerificationCode; while
-// VerifyNotificationChannel() will recognize both the codes delivered via
-// SendNotificationChannelVerificationCode() and returned from
-// GetNotificationChannelVerificationCode(), it is typically the case that
-// the verification codes delivered via
-// SendNotificationChannelVerificationCode() will be shorter and also
-// have a shorter expiration (e.g. codes such as “G-123456”) whereas
-// GetVerificationCode() will typically return a much longer, websafe base
-// 64 encoded string that has a longer expiration time.
-func (c *NotificationChannelClient) GetNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.GetNotificationChannelVerificationCodeRequest, opts ...gax.CallOption) (*monitoringpb.GetNotificationChannelVerificationCodeResponse, error) {
+func (c *notificationChannelGRPCClient) GetNotificationChannelVerificationCode(ctx context.Context, req *monitoringpb.GetNotificationChannelVerificationCodeRequest, opts ...gax.CallOption) (*monitoringpb.GetNotificationChannelVerificationCodeResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -477,7 +575,7 @@ func (c *NotificationChannelClient) GetNotificationChannelVerificationCode(ctx c
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetNotificationChannelVerificationCode[0:len(c.CallOptions.GetNotificationChannelVerificationCode):len(c.CallOptions.GetNotificationChannelVerificationCode)], opts...)
+	opts = append((*c.CallOptions).GetNotificationChannelVerificationCode[0:len((*c.CallOptions).GetNotificationChannelVerificationCode):len((*c.CallOptions).GetNotificationChannelVerificationCode)], opts...)
 	var resp *monitoringpb.GetNotificationChannelVerificationCodeResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -490,10 +588,7 @@ func (c *NotificationChannelClient) GetNotificationChannelVerificationCode(ctx c
 	return resp, nil
 }
 
-// VerifyNotificationChannel verifies a NotificationChannel by proving receipt of the code
-// delivered to the channel as a result of calling
-// SendNotificationChannelVerificationCode.
-func (c *NotificationChannelClient) VerifyNotificationChannel(ctx context.Context, req *monitoringpb.VerifyNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
+func (c *notificationChannelGRPCClient) VerifyNotificationChannel(ctx context.Context, req *monitoringpb.VerifyNotificationChannelRequest, opts ...gax.CallOption) (*monitoringpb.NotificationChannel, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -501,7 +596,7 @@ func (c *NotificationChannelClient) VerifyNotificationChannel(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.VerifyNotificationChannel[0:len(c.CallOptions.VerifyNotificationChannel):len(c.CallOptions.VerifyNotificationChannel)], opts...)
+	opts = append((*c.CallOptions).VerifyNotificationChannel[0:len((*c.CallOptions).VerifyNotificationChannel):len((*c.CallOptions).VerifyNotificationChannel)], opts...)
 	var resp *monitoringpb.NotificationChannel
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

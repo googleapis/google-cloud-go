@@ -88,7 +88,7 @@ type AnalyticsAdminCallOptions struct {
 	SearchChangeHistoryEvents         []gax.CallOption
 }
 
-func defaultAnalyticsAdminClientOptions() []option.ClientOption {
+func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("analyticsadmin.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
@@ -196,32 +196,418 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 	}
 }
 
+// internalAnalyticsAdminClient is an interface that defines the methods availaible from Google Analytics Admin API.
+type internalAnalyticsAdminClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	GetAccount(context.Context, *adminpb.GetAccountRequest, ...gax.CallOption) (*adminpb.Account, error)
+	ListAccounts(context.Context, *adminpb.ListAccountsRequest, ...gax.CallOption) *AccountIterator
+	DeleteAccount(context.Context, *adminpb.DeleteAccountRequest, ...gax.CallOption) error
+	UpdateAccount(context.Context, *adminpb.UpdateAccountRequest, ...gax.CallOption) (*adminpb.Account, error)
+	ProvisionAccountTicket(context.Context, *adminpb.ProvisionAccountTicketRequest, ...gax.CallOption) (*adminpb.ProvisionAccountTicketResponse, error)
+	ListAccountSummaries(context.Context, *adminpb.ListAccountSummariesRequest, ...gax.CallOption) *AccountSummaryIterator
+	GetProperty(context.Context, *adminpb.GetPropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
+	ListProperties(context.Context, *adminpb.ListPropertiesRequest, ...gax.CallOption) *PropertyIterator
+	CreateProperty(context.Context, *adminpb.CreatePropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
+	DeleteProperty(context.Context, *adminpb.DeletePropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
+	UpdateProperty(context.Context, *adminpb.UpdatePropertyRequest, ...gax.CallOption) (*adminpb.Property, error)
+	GetUserLink(context.Context, *adminpb.GetUserLinkRequest, ...gax.CallOption) (*adminpb.UserLink, error)
+	BatchGetUserLinks(context.Context, *adminpb.BatchGetUserLinksRequest, ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error)
+	ListUserLinks(context.Context, *adminpb.ListUserLinksRequest, ...gax.CallOption) *UserLinkIterator
+	AuditUserLinks(context.Context, *adminpb.AuditUserLinksRequest, ...gax.CallOption) *AuditUserLinkIterator
+	CreateUserLink(context.Context, *adminpb.CreateUserLinkRequest, ...gax.CallOption) (*adminpb.UserLink, error)
+	BatchCreateUserLinks(context.Context, *adminpb.BatchCreateUserLinksRequest, ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error)
+	UpdateUserLink(context.Context, *adminpb.UpdateUserLinkRequest, ...gax.CallOption) (*adminpb.UserLink, error)
+	BatchUpdateUserLinks(context.Context, *adminpb.BatchUpdateUserLinksRequest, ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error)
+	DeleteUserLink(context.Context, *adminpb.DeleteUserLinkRequest, ...gax.CallOption) error
+	BatchDeleteUserLinks(context.Context, *adminpb.BatchDeleteUserLinksRequest, ...gax.CallOption) error
+	GetWebDataStream(context.Context, *adminpb.GetWebDataStreamRequest, ...gax.CallOption) (*adminpb.WebDataStream, error)
+	DeleteWebDataStream(context.Context, *adminpb.DeleteWebDataStreamRequest, ...gax.CallOption) error
+	UpdateWebDataStream(context.Context, *adminpb.UpdateWebDataStreamRequest, ...gax.CallOption) (*adminpb.WebDataStream, error)
+	CreateWebDataStream(context.Context, *adminpb.CreateWebDataStreamRequest, ...gax.CallOption) (*adminpb.WebDataStream, error)
+	ListWebDataStreams(context.Context, *adminpb.ListWebDataStreamsRequest, ...gax.CallOption) *WebDataStreamIterator
+	GetIosAppDataStream(context.Context, *adminpb.GetIosAppDataStreamRequest, ...gax.CallOption) (*adminpb.IosAppDataStream, error)
+	DeleteIosAppDataStream(context.Context, *adminpb.DeleteIosAppDataStreamRequest, ...gax.CallOption) error
+	UpdateIosAppDataStream(context.Context, *adminpb.UpdateIosAppDataStreamRequest, ...gax.CallOption) (*adminpb.IosAppDataStream, error)
+	ListIosAppDataStreams(context.Context, *adminpb.ListIosAppDataStreamsRequest, ...gax.CallOption) *IosAppDataStreamIterator
+	GetAndroidAppDataStream(context.Context, *adminpb.GetAndroidAppDataStreamRequest, ...gax.CallOption) (*adminpb.AndroidAppDataStream, error)
+	DeleteAndroidAppDataStream(context.Context, *adminpb.DeleteAndroidAppDataStreamRequest, ...gax.CallOption) error
+	UpdateAndroidAppDataStream(context.Context, *adminpb.UpdateAndroidAppDataStreamRequest, ...gax.CallOption) (*adminpb.AndroidAppDataStream, error)
+	ListAndroidAppDataStreams(context.Context, *adminpb.ListAndroidAppDataStreamsRequest, ...gax.CallOption) *AndroidAppDataStreamIterator
+	GetEnhancedMeasurementSettings(context.Context, *adminpb.GetEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
+	UpdateEnhancedMeasurementSettings(context.Context, *adminpb.UpdateEnhancedMeasurementSettingsRequest, ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error)
+	CreateFirebaseLink(context.Context, *adminpb.CreateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
+	UpdateFirebaseLink(context.Context, *adminpb.UpdateFirebaseLinkRequest, ...gax.CallOption) (*adminpb.FirebaseLink, error)
+	DeleteFirebaseLink(context.Context, *adminpb.DeleteFirebaseLinkRequest, ...gax.CallOption) error
+	ListFirebaseLinks(context.Context, *adminpb.ListFirebaseLinksRequest, ...gax.CallOption) *FirebaseLinkIterator
+	GetGlobalSiteTag(context.Context, *adminpb.GetGlobalSiteTagRequest, ...gax.CallOption) (*adminpb.GlobalSiteTag, error)
+	CreateGoogleAdsLink(context.Context, *adminpb.CreateGoogleAdsLinkRequest, ...gax.CallOption) (*adminpb.GoogleAdsLink, error)
+	UpdateGoogleAdsLink(context.Context, *adminpb.UpdateGoogleAdsLinkRequest, ...gax.CallOption) (*adminpb.GoogleAdsLink, error)
+	DeleteGoogleAdsLink(context.Context, *adminpb.DeleteGoogleAdsLinkRequest, ...gax.CallOption) error
+	ListGoogleAdsLinks(context.Context, *adminpb.ListGoogleAdsLinksRequest, ...gax.CallOption) *GoogleAdsLinkIterator
+	GetDataSharingSettings(context.Context, *adminpb.GetDataSharingSettingsRequest, ...gax.CallOption) (*adminpb.DataSharingSettings, error)
+	SearchChangeHistoryEvents(context.Context, *adminpb.SearchChangeHistoryEventsRequest, ...gax.CallOption) *ChangeHistoryEventIterator
+}
+
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service Interface for the Analytics Admin API (GA4).
+type AnalyticsAdminClient struct {
+	// The internal transport-dependent client.
+	internalClient internalAnalyticsAdminClient
+
+	// The call options for this service.
+	CallOptions *AnalyticsAdminCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *AnalyticsAdminClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *AnalyticsAdminClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *AnalyticsAdminClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// GetAccount lookup for a single Account.
+func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
+	return c.internalClient.GetAccount(ctx, req, opts...)
+}
+
+// ListAccounts returns all accounts accessible by the caller.
+//
+// Note that these accounts might not currently have GA4 properties.
+// Soft-deleted (ie: “trashed”) accounts are excluded by default.
+// Returns an empty list if no relevant accounts are found.
+func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
+	return c.internalClient.ListAccounts(ctx, req, opts...)
+}
+
+// DeleteAccount marks target Account as soft-deleted (ie: “trashed”) and returns it.
+//
+// This API does not have a method to restore soft-deleted accounts.
+// However, they can be restored using the Trash Can UI.
+//
+// If the accounts are not restored before the expiration time, the account
+// and all child resources (eg: Properties, GoogleAdsLinks, Streams,
+// UserLinks) will be permanently purged.
+// https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
+//
+// Returns an error if the target is not found.
+func (c *AnalyticsAdminClient) DeleteAccount(ctx context.Context, req *adminpb.DeleteAccountRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAccount(ctx, req, opts...)
+}
+
+// UpdateAccount updates an account.
+func (c *AnalyticsAdminClient) UpdateAccount(ctx context.Context, req *adminpb.UpdateAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
+	return c.internalClient.UpdateAccount(ctx, req, opts...)
+}
+
+// ProvisionAccountTicket requests a ticket for creating an account.
+func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *adminpb.ProvisionAccountTicketRequest, opts ...gax.CallOption) (*adminpb.ProvisionAccountTicketResponse, error) {
+	return c.internalClient.ProvisionAccountTicket(ctx, req, opts...)
+}
+
+// ListAccountSummaries returns summaries of all accounts accessible by the caller.
+func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
+	return c.internalClient.ListAccountSummaries(ctx, req, opts...)
+}
+
+// GetProperty lookup for a single “GA4” Property.
+func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	return c.internalClient.GetProperty(ctx, req, opts...)
+}
+
+// ListProperties returns child Properties under the specified parent Account.
+//
+// Only “GA4” properties will be returned.
+// Properties will be excluded if the caller does not have access.
+// Soft-deleted (ie: “trashed”) properties are excluded by default.
+// Returns an empty list if no relevant properties are found.
+func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.ListPropertiesRequest, opts ...gax.CallOption) *PropertyIterator {
+	return c.internalClient.ListProperties(ctx, req, opts...)
+}
+
+// CreateProperty creates an “GA4” property with the specified location and attributes.
+func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	return c.internalClient.CreateProperty(ctx, req, opts...)
+}
+
+// DeleteProperty marks target Property as soft-deleted (ie: “trashed”) and returns it.
+//
+// This API does not have a method to restore soft-deleted properties.
+// However, they can be restored using the Trash Can UI.
+//
+// If the properties are not restored before the expiration time, the Property
+// and all child resources (eg: GoogleAdsLinks, Streams, UserLinks)
+// will be permanently purged.
+// https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
+//
+// Returns an error if the target is not found, or is not an GA4 Property.
+func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	return c.internalClient.DeleteProperty(ctx, req, opts...)
+}
+
+// UpdateProperty updates a property.
+func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.UpdatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+	return c.internalClient.UpdateProperty(ctx, req, opts...)
+}
+
+// GetUserLink gets information about a user’s link to an account or property.
+func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+	return c.internalClient.GetUserLink(ctx, req, opts...)
+}
+
+// BatchGetUserLinks gets information about multiple users’ links to an account or property.
+func (c *AnalyticsAdminClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
+	return c.internalClient.BatchGetUserLinks(ctx, req, opts...)
+}
+
+// ListUserLinks lists all user links on an account or property.
+func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.ListUserLinksRequest, opts ...gax.CallOption) *UserLinkIterator {
+	return c.internalClient.ListUserLinks(ctx, req, opts...)
+}
+
+// AuditUserLinks lists all user links on an account or property, including implicit ones
+// that come from effective permissions granted by groups or organization
+// admin roles.
+//
+// If a returned user link does not have direct permissions, they cannot
+// be removed from the account or property directly with the DeleteUserLink
+// command. They have to be removed from the group/etc that gives them
+// permissions, which is currently only usable/discoverable in the GA or GMP
+// UIs.
+func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.AuditUserLinksRequest, opts ...gax.CallOption) *AuditUserLinkIterator {
+	return c.internalClient.AuditUserLinks(ctx, req, opts...)
+}
+
+// CreateUserLink creates a user link on an account or property.
+//
+// If the user with the specified email already has permissions on the
+// account or property, then the user’s existing permissions will be unioned
+// with the permissions specified in the new UserLink.
+func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+	return c.internalClient.CreateUserLink(ctx, req, opts...)
+}
+
+// BatchCreateUserLinks creates information about multiple users’ links to an account or property.
+//
+// This method is transactional. If any UserLink cannot be created, none of
+// the UserLinks will be created.
+func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
+	return c.internalClient.BatchCreateUserLinks(ctx, req, opts...)
+}
+
+// UpdateUserLink updates a user link on an account or property.
+func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+	return c.internalClient.UpdateUserLink(ctx, req, opts...)
+}
+
+// BatchUpdateUserLinks updates information about multiple users’ links to an account or property.
+func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
+	return c.internalClient.BatchUpdateUserLinks(ctx, req, opts...)
+}
+
+// DeleteUserLink deletes a user link on an account or property.
+func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteUserLink(ctx, req, opts...)
+}
+
+// BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.
+func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
+	return c.internalClient.BatchDeleteUserLinks(ctx, req, opts...)
+}
+
+// GetWebDataStream lookup for a single WebDataStream
+func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+	return c.internalClient.GetWebDataStream(ctx, req, opts...)
+}
+
+// DeleteWebDataStream deletes a web stream on a property.
+func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adminpb.DeleteWebDataStreamRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteWebDataStream(ctx, req, opts...)
+}
+
+// UpdateWebDataStream updates a web stream on a property.
+func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adminpb.UpdateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+	return c.internalClient.UpdateWebDataStream(ctx, req, opts...)
+}
+
+// CreateWebDataStream creates a web stream with the specified location and attributes.
+func (c *AnalyticsAdminClient) CreateWebDataStream(ctx context.Context, req *adminpb.CreateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+	return c.internalClient.CreateWebDataStream(ctx, req, opts...)
+}
+
+// ListWebDataStreams returns child web data streams under the specified parent property.
+//
+// Web data streams will be excluded if the caller does not have access.
+// Returns an empty list if no relevant web data streams are found.
+func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *adminpb.ListWebDataStreamsRequest, opts ...gax.CallOption) *WebDataStreamIterator {
+	return c.internalClient.ListWebDataStreams(ctx, req, opts...)
+}
+
+// GetIosAppDataStream lookup for a single IosAppDataStream
+func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+	return c.internalClient.GetIosAppDataStream(ctx, req, opts...)
+}
+
+// DeleteIosAppDataStream deletes an iOS app stream on a property.
+func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *adminpb.DeleteIosAppDataStreamRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteIosAppDataStream(ctx, req, opts...)
+}
+
+// UpdateIosAppDataStream updates an iOS app stream on a property.
+func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *adminpb.UpdateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+	return c.internalClient.UpdateIosAppDataStream(ctx, req, opts...)
+}
+
+// ListIosAppDataStreams returns child iOS app data streams under the specified parent property.
+//
+// iOS app data streams will be excluded if the caller does not have access.
+// Returns an empty list if no relevant iOS app data streams are found.
+func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *adminpb.ListIosAppDataStreamsRequest, opts ...gax.CallOption) *IosAppDataStreamIterator {
+	return c.internalClient.ListIosAppDataStreams(ctx, req, opts...)
+}
+
+// GetAndroidAppDataStream lookup for a single AndroidAppDataStream
+func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+	return c.internalClient.GetAndroidAppDataStream(ctx, req, opts...)
+}
+
+// DeleteAndroidAppDataStream deletes an android app stream on a property.
+func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, req *adminpb.DeleteAndroidAppDataStreamRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteAndroidAppDataStream(ctx, req, opts...)
+}
+
+// UpdateAndroidAppDataStream updates an android app stream on a property.
+func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, req *adminpb.UpdateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+	return c.internalClient.UpdateAndroidAppDataStream(ctx, req, opts...)
+}
+
+// ListAndroidAppDataStreams returns child android app streams under the specified parent property.
+//
+// Android app streams will be excluded if the caller does not have access.
+// Returns an empty list if no relevant android app streams are found.
+func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, req *adminpb.ListAndroidAppDataStreamsRequest, opts ...gax.CallOption) *AndroidAppDataStreamIterator {
+	return c.internalClient.ListAndroidAppDataStreams(ctx, req, opts...)
+}
+
+// GetEnhancedMeasurementSettings returns the singleton enhanced measurement settings for this web stream.
+// Note that the stream must enable enhanced measurement for these settings to
+// take effect.
+func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	return c.internalClient.GetEnhancedMeasurementSettings(ctx, req, opts...)
+}
+
+// UpdateEnhancedMeasurementSettings updates the singleton enhanced measurement settings for this web stream.
+// Note that the stream must enable enhanced measurement for these settings to
+// take effect.
+func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+	return c.internalClient.UpdateEnhancedMeasurementSettings(ctx, req, opts...)
+}
+
+// CreateFirebaseLink creates a FirebaseLink.
+//
+// Properties can have at most one FirebaseLink.
+func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
+	return c.internalClient.CreateFirebaseLink(ctx, req, opts...)
+}
+
+// UpdateFirebaseLink updates a FirebaseLink on a property
+func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *adminpb.UpdateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
+	return c.internalClient.UpdateFirebaseLink(ctx, req, opts...)
+}
+
+// DeleteFirebaseLink deletes a FirebaseLink on a property
+func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *adminpb.DeleteFirebaseLinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteFirebaseLink(ctx, req, opts...)
+}
+
+// ListFirebaseLinks lists FirebaseLinks on a property.
+// Properties can have at most one FirebaseLink.
+func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) *FirebaseLinkIterator {
+	return c.internalClient.ListFirebaseLinks(ctx, req, opts...)
+}
+
+// GetGlobalSiteTag returns the Site Tag for the specified web stream.
+// Site Tags are immutable singletons.
+func (c *AnalyticsAdminClient) GetGlobalSiteTag(ctx context.Context, req *adminpb.GetGlobalSiteTagRequest, opts ...gax.CallOption) (*adminpb.GlobalSiteTag, error) {
+	return c.internalClient.GetGlobalSiteTag(ctx, req, opts...)
+}
+
+// CreateGoogleAdsLink creates a GoogleAdsLink.
+func (c *AnalyticsAdminClient) CreateGoogleAdsLink(ctx context.Context, req *adminpb.CreateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
+	return c.internalClient.CreateGoogleAdsLink(ctx, req, opts...)
+}
+
+// UpdateGoogleAdsLink updates a GoogleAdsLink on a property
+func (c *AnalyticsAdminClient) UpdateGoogleAdsLink(ctx context.Context, req *adminpb.UpdateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
+	return c.internalClient.UpdateGoogleAdsLink(ctx, req, opts...)
+}
+
+// DeleteGoogleAdsLink deletes a GoogleAdsLink on a property
+func (c *AnalyticsAdminClient) DeleteGoogleAdsLink(ctx context.Context, req *adminpb.DeleteGoogleAdsLinkRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteGoogleAdsLink(ctx, req, opts...)
+}
+
+// ListGoogleAdsLinks lists GoogleAdsLinks on a property.
+func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *adminpb.ListGoogleAdsLinksRequest, opts ...gax.CallOption) *GoogleAdsLinkIterator {
+	return c.internalClient.ListGoogleAdsLinks(ctx, req, opts...)
+}
+
+// GetDataSharingSettings get data sharing settings on an account.
+// Data sharing settings are singletons.
+func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *adminpb.GetDataSharingSettingsRequest, opts ...gax.CallOption) (*adminpb.DataSharingSettings, error) {
+	return c.internalClient.GetDataSharingSettings(ctx, req, opts...)
+}
+
+// SearchChangeHistoryEvents searches through all changes to an account or its children given the
+// specified set of filters.
+func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
+	return c.internalClient.SearchChangeHistoryEvents(ctx, req, opts...)
+}
+
+// analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type AnalyticsAdminClient struct {
+type analyticsAdminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing AnalyticsAdminClient
+	CallOptions **AnalyticsAdminCallOptions
+
 	// The gRPC API client.
 	analyticsAdminClient adminpb.AnalyticsAdminServiceClient
-
-	// The call options for this service.
-	CallOptions *AnalyticsAdminCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewAnalyticsAdminClient creates a new analytics admin service client.
+// NewAnalyticsAdminClient creates a new analytics admin service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service Interface for the Analytics Admin API (GA4).
 func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (*AnalyticsAdminClient, error) {
-	clientOpts := defaultAnalyticsAdminClientOptions()
-
+	clientOpts := defaultAnalyticsAdminGRPCClientOptions()
 	if newAnalyticsAdminClientHook != nil {
 		hookOpts, err := newAnalyticsAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -239,42 +625,44 @@ func NewAnalyticsAdminClient(ctx context.Context, opts ...option.ClientOption) (
 	if err != nil {
 		return nil, err
 	}
-	c := &AnalyticsAdminClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultAnalyticsAdminCallOptions(),
+	client := AnalyticsAdminClient{CallOptions: defaultAnalyticsAdminCallOptions()}
 
+	c := &analyticsAdminGRPCClient{
+		connPool:             connPool,
+		disableDeadlines:     disableDeadlines,
 		analyticsAdminClient: adminpb.NewAnalyticsAdminServiceClient(connPool),
+		CallOptions:          &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *AnalyticsAdminClient) Connection() *grpc.ClientConn {
+func (c *analyticsAdminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *AnalyticsAdminClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AnalyticsAdminClient) setGoogleClientInfo(keyval ...string) {
+func (c *analyticsAdminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// GetAccount lookup for a single Account.
-func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *analyticsAdminGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *analyticsAdminGRPCClient) GetAccount(ctx context.Context, req *adminpb.GetAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -282,7 +670,7 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAccount[0:len(c.CallOptions.GetAccount):len(c.CallOptions.GetAccount)], opts...)
+	opts = append((*c.CallOptions).GetAccount[0:len((*c.CallOptions).GetAccount):len((*c.CallOptions).GetAccount)], opts...)
 	var resp *adminpb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -295,14 +683,9 @@ func (c *AnalyticsAdminClient) GetAccount(ctx context.Context, req *adminpb.GetA
 	return resp, nil
 }
 
-// ListAccounts returns all accounts accessible by the caller.
-//
-// Note that these accounts might not currently have GA4 properties.
-// Soft-deleted (ie: “trashed”) accounts are excluded by default.
-// Returns an empty list if no relevant accounts are found.
-func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
+func (c *analyticsAdminGRPCClient) ListAccounts(ctx context.Context, req *adminpb.ListAccountsRequest, opts ...gax.CallOption) *AccountIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListAccounts[0:len(c.CallOptions.ListAccounts):len(c.CallOptions.ListAccounts)], opts...)
+	opts = append((*c.CallOptions).ListAccounts[0:len((*c.CallOptions).ListAccounts):len((*c.CallOptions).ListAccounts)], opts...)
 	it := &AccountIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Account, string, error) {
@@ -339,18 +722,7 @@ func (c *AnalyticsAdminClient) ListAccounts(ctx context.Context, req *adminpb.Li
 	return it
 }
 
-// DeleteAccount marks target Account as soft-deleted (ie: “trashed”) and returns it.
-//
-// This API does not have a method to restore soft-deleted accounts.
-// However, they can be restored using the Trash Can UI.
-//
-// If the accounts are not restored before the expiration time, the account
-// and all child resources (eg: Properties, GoogleAdsLinks, Streams,
-// UserLinks) will be permanently purged.
-// https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
-//
-// Returns an error if the target is not found.
-func (c *AnalyticsAdminClient) DeleteAccount(ctx context.Context, req *adminpb.DeleteAccountRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteAccount(ctx context.Context, req *adminpb.DeleteAccountRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -358,7 +730,7 @@ func (c *AnalyticsAdminClient) DeleteAccount(ctx context.Context, req *adminpb.D
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAccount[0:len(c.CallOptions.DeleteAccount):len(c.CallOptions.DeleteAccount)], opts...)
+	opts = append((*c.CallOptions).DeleteAccount[0:len((*c.CallOptions).DeleteAccount):len((*c.CallOptions).DeleteAccount)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteAccount(ctx, req, settings.GRPC...)
@@ -367,8 +739,7 @@ func (c *AnalyticsAdminClient) DeleteAccount(ctx context.Context, req *adminpb.D
 	return err
 }
 
-// UpdateAccount updates an account.
-func (c *AnalyticsAdminClient) UpdateAccount(ctx context.Context, req *adminpb.UpdateAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
+func (c *analyticsAdminGRPCClient) UpdateAccount(ctx context.Context, req *adminpb.UpdateAccountRequest, opts ...gax.CallOption) (*adminpb.Account, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -376,7 +747,7 @@ func (c *AnalyticsAdminClient) UpdateAccount(ctx context.Context, req *adminpb.U
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account.name", url.QueryEscape(req.GetAccount().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateAccount[0:len(c.CallOptions.UpdateAccount):len(c.CallOptions.UpdateAccount)], opts...)
+	opts = append((*c.CallOptions).UpdateAccount[0:len((*c.CallOptions).UpdateAccount):len((*c.CallOptions).UpdateAccount)], opts...)
 	var resp *adminpb.Account
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -389,15 +760,14 @@ func (c *AnalyticsAdminClient) UpdateAccount(ctx context.Context, req *adminpb.U
 	return resp, nil
 }
 
-// ProvisionAccountTicket requests a ticket for creating an account.
-func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *adminpb.ProvisionAccountTicketRequest, opts ...gax.CallOption) (*adminpb.ProvisionAccountTicketResponse, error) {
+func (c *analyticsAdminGRPCClient) ProvisionAccountTicket(ctx context.Context, req *adminpb.ProvisionAccountTicketRequest, opts ...gax.CallOption) (*adminpb.ProvisionAccountTicketResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ProvisionAccountTicket[0:len(c.CallOptions.ProvisionAccountTicket):len(c.CallOptions.ProvisionAccountTicket)], opts...)
+	opts = append((*c.CallOptions).ProvisionAccountTicket[0:len((*c.CallOptions).ProvisionAccountTicket):len((*c.CallOptions).ProvisionAccountTicket)], opts...)
 	var resp *adminpb.ProvisionAccountTicketResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -410,10 +780,9 @@ func (c *AnalyticsAdminClient) ProvisionAccountTicket(ctx context.Context, req *
 	return resp, nil
 }
 
-// ListAccountSummaries returns summaries of all accounts accessible by the caller.
-func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
+func (c *analyticsAdminGRPCClient) ListAccountSummaries(ctx context.Context, req *adminpb.ListAccountSummariesRequest, opts ...gax.CallOption) *AccountSummaryIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListAccountSummaries[0:len(c.CallOptions.ListAccountSummaries):len(c.CallOptions.ListAccountSummaries)], opts...)
+	opts = append((*c.CallOptions).ListAccountSummaries[0:len((*c.CallOptions).ListAccountSummaries):len((*c.CallOptions).ListAccountSummaries)], opts...)
 	it := &AccountSummaryIterator{}
 	req = proto.Clone(req).(*adminpb.ListAccountSummariesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AccountSummary, string, error) {
@@ -450,8 +819,7 @@ func (c *AnalyticsAdminClient) ListAccountSummaries(ctx context.Context, req *ad
 	return it
 }
 
-// GetProperty lookup for a single “GA4” Property.
-func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+func (c *analyticsAdminGRPCClient) GetProperty(ctx context.Context, req *adminpb.GetPropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -459,7 +827,7 @@ func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.Get
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetProperty[0:len(c.CallOptions.GetProperty):len(c.CallOptions.GetProperty)], opts...)
+	opts = append((*c.CallOptions).GetProperty[0:len((*c.CallOptions).GetProperty):len((*c.CallOptions).GetProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -472,15 +840,9 @@ func (c *AnalyticsAdminClient) GetProperty(ctx context.Context, req *adminpb.Get
 	return resp, nil
 }
 
-// ListProperties returns child Properties under the specified parent Account.
-//
-// Only “GA4” properties will be returned.
-// Properties will be excluded if the caller does not have access.
-// Soft-deleted (ie: “trashed”) properties are excluded by default.
-// Returns an empty list if no relevant properties are found.
-func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.ListPropertiesRequest, opts ...gax.CallOption) *PropertyIterator {
+func (c *analyticsAdminGRPCClient) ListProperties(ctx context.Context, req *adminpb.ListPropertiesRequest, opts ...gax.CallOption) *PropertyIterator {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.ListProperties[0:len(c.CallOptions.ListProperties):len(c.CallOptions.ListProperties)], opts...)
+	opts = append((*c.CallOptions).ListProperties[0:len((*c.CallOptions).ListProperties):len((*c.CallOptions).ListProperties)], opts...)
 	it := &PropertyIterator{}
 	req = proto.Clone(req).(*adminpb.ListPropertiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.Property, string, error) {
@@ -517,15 +879,14 @@ func (c *AnalyticsAdminClient) ListProperties(ctx context.Context, req *adminpb.
 	return it
 }
 
-// CreateProperty creates an “GA4” property with the specified location and attributes.
-func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+func (c *analyticsAdminGRPCClient) CreateProperty(ctx context.Context, req *adminpb.CreatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append(c.CallOptions.CreateProperty[0:len(c.CallOptions.CreateProperty):len(c.CallOptions.CreateProperty)], opts...)
+	opts = append((*c.CallOptions).CreateProperty[0:len((*c.CallOptions).CreateProperty):len((*c.CallOptions).CreateProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -538,18 +899,7 @@ func (c *AnalyticsAdminClient) CreateProperty(ctx context.Context, req *adminpb.
 	return resp, nil
 }
 
-// DeleteProperty marks target Property as soft-deleted (ie: “trashed”) and returns it.
-//
-// This API does not have a method to restore soft-deleted properties.
-// However, they can be restored using the Trash Can UI.
-//
-// If the properties are not restored before the expiration time, the Property
-// and all child resources (eg: GoogleAdsLinks, Streams, UserLinks)
-// will be permanently purged.
-// https://support.google.com/analytics/answer/6154772 (at https://support.google.com/analytics/answer/6154772)
-//
-// Returns an error if the target is not found, or is not an GA4 Property.
-func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+func (c *analyticsAdminGRPCClient) DeleteProperty(ctx context.Context, req *adminpb.DeletePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -557,7 +907,7 @@ func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteProperty[0:len(c.CallOptions.DeleteProperty):len(c.CallOptions.DeleteProperty)], opts...)
+	opts = append((*c.CallOptions).DeleteProperty[0:len((*c.CallOptions).DeleteProperty):len((*c.CallOptions).DeleteProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -570,8 +920,7 @@ func (c *AnalyticsAdminClient) DeleteProperty(ctx context.Context, req *adminpb.
 	return resp, nil
 }
 
-// UpdateProperty updates a property.
-func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.UpdatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
+func (c *analyticsAdminGRPCClient) UpdateProperty(ctx context.Context, req *adminpb.UpdatePropertyRequest, opts ...gax.CallOption) (*adminpb.Property, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -579,7 +928,7 @@ func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "property.name", url.QueryEscape(req.GetProperty().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateProperty[0:len(c.CallOptions.UpdateProperty):len(c.CallOptions.UpdateProperty)], opts...)
+	opts = append((*c.CallOptions).UpdateProperty[0:len((*c.CallOptions).UpdateProperty):len((*c.CallOptions).UpdateProperty)], opts...)
 	var resp *adminpb.Property
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -592,8 +941,7 @@ func (c *AnalyticsAdminClient) UpdateProperty(ctx context.Context, req *adminpb.
 	return resp, nil
 }
 
-// GetUserLink gets information about a user’s link to an account or property.
-func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+func (c *analyticsAdminGRPCClient) GetUserLink(ctx context.Context, req *adminpb.GetUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -601,7 +949,7 @@ func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.Get
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetUserLink[0:len(c.CallOptions.GetUserLink):len(c.CallOptions.GetUserLink)], opts...)
+	opts = append((*c.CallOptions).GetUserLink[0:len((*c.CallOptions).GetUserLink):len((*c.CallOptions).GetUserLink)], opts...)
 	var resp *adminpb.UserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -614,8 +962,7 @@ func (c *AnalyticsAdminClient) GetUserLink(ctx context.Context, req *adminpb.Get
 	return resp, nil
 }
 
-// BatchGetUserLinks gets information about multiple users’ links to an account or property.
-func (c *AnalyticsAdminClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
+func (c *analyticsAdminGRPCClient) BatchGetUserLinks(ctx context.Context, req *adminpb.BatchGetUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchGetUserLinksResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -623,7 +970,7 @@ func (c *AnalyticsAdminClient) BatchGetUserLinks(ctx context.Context, req *admin
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchGetUserLinks[0:len(c.CallOptions.BatchGetUserLinks):len(c.CallOptions.BatchGetUserLinks)], opts...)
+	opts = append((*c.CallOptions).BatchGetUserLinks[0:len((*c.CallOptions).BatchGetUserLinks):len((*c.CallOptions).BatchGetUserLinks)], opts...)
 	var resp *adminpb.BatchGetUserLinksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -636,11 +983,10 @@ func (c *AnalyticsAdminClient) BatchGetUserLinks(ctx context.Context, req *admin
 	return resp, nil
 }
 
-// ListUserLinks lists all user links on an account or property.
-func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.ListUserLinksRequest, opts ...gax.CallOption) *UserLinkIterator {
+func (c *analyticsAdminGRPCClient) ListUserLinks(ctx context.Context, req *adminpb.ListUserLinksRequest, opts ...gax.CallOption) *UserLinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListUserLinks[0:len(c.CallOptions.ListUserLinks):len(c.CallOptions.ListUserLinks)], opts...)
+	opts = append((*c.CallOptions).ListUserLinks[0:len((*c.CallOptions).ListUserLinks):len((*c.CallOptions).ListUserLinks)], opts...)
 	it := &UserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListUserLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.UserLink, string, error) {
@@ -677,19 +1023,10 @@ func (c *AnalyticsAdminClient) ListUserLinks(ctx context.Context, req *adminpb.L
 	return it
 }
 
-// AuditUserLinks lists all user links on an account or property, including implicit ones
-// that come from effective permissions granted by groups or organization
-// admin roles.
-//
-// If a returned user link does not have direct permissions, they cannot
-// be removed from the account or property directly with the DeleteUserLink
-// command. They have to be removed from the group/etc that gives them
-// permissions, which is currently only usable/discoverable in the GA or GMP
-// UIs.
-func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.AuditUserLinksRequest, opts ...gax.CallOption) *AuditUserLinkIterator {
+func (c *analyticsAdminGRPCClient) AuditUserLinks(ctx context.Context, req *adminpb.AuditUserLinksRequest, opts ...gax.CallOption) *AuditUserLinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.AuditUserLinks[0:len(c.CallOptions.AuditUserLinks):len(c.CallOptions.AuditUserLinks)], opts...)
+	opts = append((*c.CallOptions).AuditUserLinks[0:len((*c.CallOptions).AuditUserLinks):len((*c.CallOptions).AuditUserLinks)], opts...)
 	it := &AuditUserLinkIterator{}
 	req = proto.Clone(req).(*adminpb.AuditUserLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AuditUserLink, string, error) {
@@ -726,12 +1063,7 @@ func (c *AnalyticsAdminClient) AuditUserLinks(ctx context.Context, req *adminpb.
 	return it
 }
 
-// CreateUserLink creates a user link on an account or property.
-//
-// If the user with the specified email already has permissions on the
-// account or property, then the user’s existing permissions will be unioned
-// with the permissions specified in the new UserLink.
-func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+func (c *analyticsAdminGRPCClient) CreateUserLink(ctx context.Context, req *adminpb.CreateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -739,7 +1071,7 @@ func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateUserLink[0:len(c.CallOptions.CreateUserLink):len(c.CallOptions.CreateUserLink)], opts...)
+	opts = append((*c.CallOptions).CreateUserLink[0:len((*c.CallOptions).CreateUserLink):len((*c.CallOptions).CreateUserLink)], opts...)
 	var resp *adminpb.UserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -752,11 +1084,7 @@ func (c *AnalyticsAdminClient) CreateUserLink(ctx context.Context, req *adminpb.
 	return resp, nil
 }
 
-// BatchCreateUserLinks creates information about multiple users’ links to an account or property.
-//
-// This method is transactional. If any UserLink cannot be created, none of
-// the UserLinks will be created.
-func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
+func (c *analyticsAdminGRPCClient) BatchCreateUserLinks(ctx context.Context, req *adminpb.BatchCreateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchCreateUserLinksResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -764,7 +1092,7 @@ func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *ad
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchCreateUserLinks[0:len(c.CallOptions.BatchCreateUserLinks):len(c.CallOptions.BatchCreateUserLinks)], opts...)
+	opts = append((*c.CallOptions).BatchCreateUserLinks[0:len((*c.CallOptions).BatchCreateUserLinks):len((*c.CallOptions).BatchCreateUserLinks)], opts...)
 	var resp *adminpb.BatchCreateUserLinksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -777,8 +1105,7 @@ func (c *AnalyticsAdminClient) BatchCreateUserLinks(ctx context.Context, req *ad
 	return resp, nil
 }
 
-// UpdateUserLink updates a user link on an account or property.
-func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
+func (c *analyticsAdminGRPCClient) UpdateUserLink(ctx context.Context, req *adminpb.UpdateUserLinkRequest, opts ...gax.CallOption) (*adminpb.UserLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -786,7 +1113,7 @@ func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "user_link.name", url.QueryEscape(req.GetUserLink().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateUserLink[0:len(c.CallOptions.UpdateUserLink):len(c.CallOptions.UpdateUserLink)], opts...)
+	opts = append((*c.CallOptions).UpdateUserLink[0:len((*c.CallOptions).UpdateUserLink):len((*c.CallOptions).UpdateUserLink)], opts...)
 	var resp *adminpb.UserLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -799,8 +1126,7 @@ func (c *AnalyticsAdminClient) UpdateUserLink(ctx context.Context, req *adminpb.
 	return resp, nil
 }
 
-// BatchUpdateUserLinks updates information about multiple users’ links to an account or property.
-func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
+func (c *analyticsAdminGRPCClient) BatchUpdateUserLinks(ctx context.Context, req *adminpb.BatchUpdateUserLinksRequest, opts ...gax.CallOption) (*adminpb.BatchUpdateUserLinksResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -808,7 +1134,7 @@ func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *ad
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchUpdateUserLinks[0:len(c.CallOptions.BatchUpdateUserLinks):len(c.CallOptions.BatchUpdateUserLinks)], opts...)
+	opts = append((*c.CallOptions).BatchUpdateUserLinks[0:len((*c.CallOptions).BatchUpdateUserLinks):len((*c.CallOptions).BatchUpdateUserLinks)], opts...)
 	var resp *adminpb.BatchUpdateUserLinksResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -821,8 +1147,7 @@ func (c *AnalyticsAdminClient) BatchUpdateUserLinks(ctx context.Context, req *ad
 	return resp, nil
 }
 
-// DeleteUserLink deletes a user link on an account or property.
-func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteUserLink(ctx context.Context, req *adminpb.DeleteUserLinkRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -830,7 +1155,7 @@ func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteUserLink[0:len(c.CallOptions.DeleteUserLink):len(c.CallOptions.DeleteUserLink)], opts...)
+	opts = append((*c.CallOptions).DeleteUserLink[0:len((*c.CallOptions).DeleteUserLink):len((*c.CallOptions).DeleteUserLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteUserLink(ctx, req, settings.GRPC...)
@@ -839,8 +1164,7 @@ func (c *AnalyticsAdminClient) DeleteUserLink(ctx context.Context, req *adminpb.
 	return err
 }
 
-// BatchDeleteUserLinks deletes information about multiple users’ links to an account or property.
-func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) BatchDeleteUserLinks(ctx context.Context, req *adminpb.BatchDeleteUserLinksRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -848,7 +1172,7 @@ func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *ad
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchDeleteUserLinks[0:len(c.CallOptions.BatchDeleteUserLinks):len(c.CallOptions.BatchDeleteUserLinks)], opts...)
+	opts = append((*c.CallOptions).BatchDeleteUserLinks[0:len((*c.CallOptions).BatchDeleteUserLinks):len((*c.CallOptions).BatchDeleteUserLinks)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.BatchDeleteUserLinks(ctx, req, settings.GRPC...)
@@ -857,8 +1181,7 @@ func (c *AnalyticsAdminClient) BatchDeleteUserLinks(ctx context.Context, req *ad
 	return err
 }
 
-// GetWebDataStream lookup for a single WebDataStream
-func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+func (c *analyticsAdminGRPCClient) GetWebDataStream(ctx context.Context, req *adminpb.GetWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -866,7 +1189,7 @@ func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetWebDataStream[0:len(c.CallOptions.GetWebDataStream):len(c.CallOptions.GetWebDataStream)], opts...)
+	opts = append((*c.CallOptions).GetWebDataStream[0:len((*c.CallOptions).GetWebDataStream):len((*c.CallOptions).GetWebDataStream)], opts...)
 	var resp *adminpb.WebDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -879,8 +1202,7 @@ func (c *AnalyticsAdminClient) GetWebDataStream(ctx context.Context, req *adminp
 	return resp, nil
 }
 
-// DeleteWebDataStream deletes a web stream on a property.
-func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adminpb.DeleteWebDataStreamRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteWebDataStream(ctx context.Context, req *adminpb.DeleteWebDataStreamRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -888,7 +1210,7 @@ func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteWebDataStream[0:len(c.CallOptions.DeleteWebDataStream):len(c.CallOptions.DeleteWebDataStream)], opts...)
+	opts = append((*c.CallOptions).DeleteWebDataStream[0:len((*c.CallOptions).DeleteWebDataStream):len((*c.CallOptions).DeleteWebDataStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteWebDataStream(ctx, req, settings.GRPC...)
@@ -897,8 +1219,7 @@ func (c *AnalyticsAdminClient) DeleteWebDataStream(ctx context.Context, req *adm
 	return err
 }
 
-// UpdateWebDataStream updates a web stream on a property.
-func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adminpb.UpdateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+func (c *analyticsAdminGRPCClient) UpdateWebDataStream(ctx context.Context, req *adminpb.UpdateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -906,7 +1227,7 @@ func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "web_data_stream.name", url.QueryEscape(req.GetWebDataStream().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateWebDataStream[0:len(c.CallOptions.UpdateWebDataStream):len(c.CallOptions.UpdateWebDataStream)], opts...)
+	opts = append((*c.CallOptions).UpdateWebDataStream[0:len((*c.CallOptions).UpdateWebDataStream):len((*c.CallOptions).UpdateWebDataStream)], opts...)
 	var resp *adminpb.WebDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -919,8 +1240,7 @@ func (c *AnalyticsAdminClient) UpdateWebDataStream(ctx context.Context, req *adm
 	return resp, nil
 }
 
-// CreateWebDataStream creates a web stream with the specified location and attributes.
-func (c *AnalyticsAdminClient) CreateWebDataStream(ctx context.Context, req *adminpb.CreateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
+func (c *analyticsAdminGRPCClient) CreateWebDataStream(ctx context.Context, req *adminpb.CreateWebDataStreamRequest, opts ...gax.CallOption) (*adminpb.WebDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -928,7 +1248,7 @@ func (c *AnalyticsAdminClient) CreateWebDataStream(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateWebDataStream[0:len(c.CallOptions.CreateWebDataStream):len(c.CallOptions.CreateWebDataStream)], opts...)
+	opts = append((*c.CallOptions).CreateWebDataStream[0:len((*c.CallOptions).CreateWebDataStream):len((*c.CallOptions).CreateWebDataStream)], opts...)
 	var resp *adminpb.WebDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -941,14 +1261,10 @@ func (c *AnalyticsAdminClient) CreateWebDataStream(ctx context.Context, req *adm
 	return resp, nil
 }
 
-// ListWebDataStreams returns child web data streams under the specified parent property.
-//
-// Web data streams will be excluded if the caller does not have access.
-// Returns an empty list if no relevant web data streams are found.
-func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *adminpb.ListWebDataStreamsRequest, opts ...gax.CallOption) *WebDataStreamIterator {
+func (c *analyticsAdminGRPCClient) ListWebDataStreams(ctx context.Context, req *adminpb.ListWebDataStreamsRequest, opts ...gax.CallOption) *WebDataStreamIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListWebDataStreams[0:len(c.CallOptions.ListWebDataStreams):len(c.CallOptions.ListWebDataStreams)], opts...)
+	opts = append((*c.CallOptions).ListWebDataStreams[0:len((*c.CallOptions).ListWebDataStreams):len((*c.CallOptions).ListWebDataStreams)], opts...)
 	it := &WebDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListWebDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.WebDataStream, string, error) {
@@ -985,8 +1301,7 @@ func (c *AnalyticsAdminClient) ListWebDataStreams(ctx context.Context, req *admi
 	return it
 }
 
-// GetIosAppDataStream lookup for a single IosAppDataStream
-func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+func (c *analyticsAdminGRPCClient) GetIosAppDataStream(ctx context.Context, req *adminpb.GetIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -994,7 +1309,7 @@ func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIosAppDataStream[0:len(c.CallOptions.GetIosAppDataStream):len(c.CallOptions.GetIosAppDataStream)], opts...)
+	opts = append((*c.CallOptions).GetIosAppDataStream[0:len((*c.CallOptions).GetIosAppDataStream):len((*c.CallOptions).GetIosAppDataStream)], opts...)
 	var resp *adminpb.IosAppDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1007,8 +1322,7 @@ func (c *AnalyticsAdminClient) GetIosAppDataStream(ctx context.Context, req *adm
 	return resp, nil
 }
 
-// DeleteIosAppDataStream deletes an iOS app stream on a property.
-func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *adminpb.DeleteIosAppDataStreamRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteIosAppDataStream(ctx context.Context, req *adminpb.DeleteIosAppDataStreamRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1016,7 +1330,7 @@ func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteIosAppDataStream[0:len(c.CallOptions.DeleteIosAppDataStream):len(c.CallOptions.DeleteIosAppDataStream)], opts...)
+	opts = append((*c.CallOptions).DeleteIosAppDataStream[0:len((*c.CallOptions).DeleteIosAppDataStream):len((*c.CallOptions).DeleteIosAppDataStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteIosAppDataStream(ctx, req, settings.GRPC...)
@@ -1025,8 +1339,7 @@ func (c *AnalyticsAdminClient) DeleteIosAppDataStream(ctx context.Context, req *
 	return err
 }
 
-// UpdateIosAppDataStream updates an iOS app stream on a property.
-func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *adminpb.UpdateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
+func (c *analyticsAdminGRPCClient) UpdateIosAppDataStream(ctx context.Context, req *adminpb.UpdateIosAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.IosAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1034,7 +1347,7 @@ func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ios_app_data_stream.name", url.QueryEscape(req.GetIosAppDataStream().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateIosAppDataStream[0:len(c.CallOptions.UpdateIosAppDataStream):len(c.CallOptions.UpdateIosAppDataStream)], opts...)
+	opts = append((*c.CallOptions).UpdateIosAppDataStream[0:len((*c.CallOptions).UpdateIosAppDataStream):len((*c.CallOptions).UpdateIosAppDataStream)], opts...)
 	var resp *adminpb.IosAppDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1047,14 +1360,10 @@ func (c *AnalyticsAdminClient) UpdateIosAppDataStream(ctx context.Context, req *
 	return resp, nil
 }
 
-// ListIosAppDataStreams returns child iOS app data streams under the specified parent property.
-//
-// iOS app data streams will be excluded if the caller does not have access.
-// Returns an empty list if no relevant iOS app data streams are found.
-func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *adminpb.ListIosAppDataStreamsRequest, opts ...gax.CallOption) *IosAppDataStreamIterator {
+func (c *analyticsAdminGRPCClient) ListIosAppDataStreams(ctx context.Context, req *adminpb.ListIosAppDataStreamsRequest, opts ...gax.CallOption) *IosAppDataStreamIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListIosAppDataStreams[0:len(c.CallOptions.ListIosAppDataStreams):len(c.CallOptions.ListIosAppDataStreams)], opts...)
+	opts = append((*c.CallOptions).ListIosAppDataStreams[0:len((*c.CallOptions).ListIosAppDataStreams):len((*c.CallOptions).ListIosAppDataStreams)], opts...)
 	it := &IosAppDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListIosAppDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.IosAppDataStream, string, error) {
@@ -1091,8 +1400,7 @@ func (c *AnalyticsAdminClient) ListIosAppDataStreams(ctx context.Context, req *a
 	return it
 }
 
-// GetAndroidAppDataStream lookup for a single AndroidAppDataStream
-func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+func (c *analyticsAdminGRPCClient) GetAndroidAppDataStream(ctx context.Context, req *adminpb.GetAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1100,7 +1408,7 @@ func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetAndroidAppDataStream[0:len(c.CallOptions.GetAndroidAppDataStream):len(c.CallOptions.GetAndroidAppDataStream)], opts...)
+	opts = append((*c.CallOptions).GetAndroidAppDataStream[0:len((*c.CallOptions).GetAndroidAppDataStream):len((*c.CallOptions).GetAndroidAppDataStream)], opts...)
 	var resp *adminpb.AndroidAppDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1113,8 +1421,7 @@ func (c *AnalyticsAdminClient) GetAndroidAppDataStream(ctx context.Context, req 
 	return resp, nil
 }
 
-// DeleteAndroidAppDataStream deletes an android app stream on a property.
-func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, req *adminpb.DeleteAndroidAppDataStreamRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteAndroidAppDataStream(ctx context.Context, req *adminpb.DeleteAndroidAppDataStreamRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1122,7 +1429,7 @@ func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, r
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteAndroidAppDataStream[0:len(c.CallOptions.DeleteAndroidAppDataStream):len(c.CallOptions.DeleteAndroidAppDataStream)], opts...)
+	opts = append((*c.CallOptions).DeleteAndroidAppDataStream[0:len((*c.CallOptions).DeleteAndroidAppDataStream):len((*c.CallOptions).DeleteAndroidAppDataStream)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteAndroidAppDataStream(ctx, req, settings.GRPC...)
@@ -1131,8 +1438,7 @@ func (c *AnalyticsAdminClient) DeleteAndroidAppDataStream(ctx context.Context, r
 	return err
 }
 
-// UpdateAndroidAppDataStream updates an android app stream on a property.
-func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, req *adminpb.UpdateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
+func (c *analyticsAdminGRPCClient) UpdateAndroidAppDataStream(ctx context.Context, req *adminpb.UpdateAndroidAppDataStreamRequest, opts ...gax.CallOption) (*adminpb.AndroidAppDataStream, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1140,7 +1446,7 @@ func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, r
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "android_app_data_stream.name", url.QueryEscape(req.GetAndroidAppDataStream().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateAndroidAppDataStream[0:len(c.CallOptions.UpdateAndroidAppDataStream):len(c.CallOptions.UpdateAndroidAppDataStream)], opts...)
+	opts = append((*c.CallOptions).UpdateAndroidAppDataStream[0:len((*c.CallOptions).UpdateAndroidAppDataStream):len((*c.CallOptions).UpdateAndroidAppDataStream)], opts...)
 	var resp *adminpb.AndroidAppDataStream
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1153,14 +1459,10 @@ func (c *AnalyticsAdminClient) UpdateAndroidAppDataStream(ctx context.Context, r
 	return resp, nil
 }
 
-// ListAndroidAppDataStreams returns child android app streams under the specified parent property.
-//
-// Android app streams will be excluded if the caller does not have access.
-// Returns an empty list if no relevant android app streams are found.
-func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, req *adminpb.ListAndroidAppDataStreamsRequest, opts ...gax.CallOption) *AndroidAppDataStreamIterator {
+func (c *analyticsAdminGRPCClient) ListAndroidAppDataStreams(ctx context.Context, req *adminpb.ListAndroidAppDataStreamsRequest, opts ...gax.CallOption) *AndroidAppDataStreamIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAndroidAppDataStreams[0:len(c.CallOptions.ListAndroidAppDataStreams):len(c.CallOptions.ListAndroidAppDataStreams)], opts...)
+	opts = append((*c.CallOptions).ListAndroidAppDataStreams[0:len((*c.CallOptions).ListAndroidAppDataStreams):len((*c.CallOptions).ListAndroidAppDataStreams)], opts...)
 	it := &AndroidAppDataStreamIterator{}
 	req = proto.Clone(req).(*adminpb.ListAndroidAppDataStreamsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.AndroidAppDataStream, string, error) {
@@ -1197,10 +1499,7 @@ func (c *AnalyticsAdminClient) ListAndroidAppDataStreams(ctx context.Context, re
 	return it
 }
 
-// GetEnhancedMeasurementSettings returns the singleton enhanced measurement settings for this web stream.
-// Note that the stream must enable enhanced measurement for these settings to
-// take effect.
-func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+func (c *analyticsAdminGRPCClient) GetEnhancedMeasurementSettings(ctx context.Context, req *adminpb.GetEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1208,7 +1507,7 @@ func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEnhancedMeasurementSettings[0:len(c.CallOptions.GetEnhancedMeasurementSettings):len(c.CallOptions.GetEnhancedMeasurementSettings)], opts...)
+	opts = append((*c.CallOptions).GetEnhancedMeasurementSettings[0:len((*c.CallOptions).GetEnhancedMeasurementSettings):len((*c.CallOptions).GetEnhancedMeasurementSettings)], opts...)
 	var resp *adminpb.EnhancedMeasurementSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1221,10 +1520,7 @@ func (c *AnalyticsAdminClient) GetEnhancedMeasurementSettings(ctx context.Contex
 	return resp, nil
 }
 
-// UpdateEnhancedMeasurementSettings updates the singleton enhanced measurement settings for this web stream.
-// Note that the stream must enable enhanced measurement for these settings to
-// take effect.
-func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
+func (c *analyticsAdminGRPCClient) UpdateEnhancedMeasurementSettings(ctx context.Context, req *adminpb.UpdateEnhancedMeasurementSettingsRequest, opts ...gax.CallOption) (*adminpb.EnhancedMeasurementSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1232,7 +1528,7 @@ func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Con
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "enhanced_measurement_settings.name", url.QueryEscape(req.GetEnhancedMeasurementSettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateEnhancedMeasurementSettings[0:len(c.CallOptions.UpdateEnhancedMeasurementSettings):len(c.CallOptions.UpdateEnhancedMeasurementSettings)], opts...)
+	opts = append((*c.CallOptions).UpdateEnhancedMeasurementSettings[0:len((*c.CallOptions).UpdateEnhancedMeasurementSettings):len((*c.CallOptions).UpdateEnhancedMeasurementSettings)], opts...)
 	var resp *adminpb.EnhancedMeasurementSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1245,10 +1541,7 @@ func (c *AnalyticsAdminClient) UpdateEnhancedMeasurementSettings(ctx context.Con
 	return resp, nil
 }
 
-// CreateFirebaseLink creates a FirebaseLink.
-//
-// Properties can have at most one FirebaseLink.
-func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
+func (c *analyticsAdminGRPCClient) CreateFirebaseLink(ctx context.Context, req *adminpb.CreateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1256,7 +1549,7 @@ func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *admi
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateFirebaseLink[0:len(c.CallOptions.CreateFirebaseLink):len(c.CallOptions.CreateFirebaseLink)], opts...)
+	opts = append((*c.CallOptions).CreateFirebaseLink[0:len((*c.CallOptions).CreateFirebaseLink):len((*c.CallOptions).CreateFirebaseLink)], opts...)
 	var resp *adminpb.FirebaseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1269,8 +1562,7 @@ func (c *AnalyticsAdminClient) CreateFirebaseLink(ctx context.Context, req *admi
 	return resp, nil
 }
 
-// UpdateFirebaseLink updates a FirebaseLink on a property
-func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *adminpb.UpdateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
+func (c *analyticsAdminGRPCClient) UpdateFirebaseLink(ctx context.Context, req *adminpb.UpdateFirebaseLinkRequest, opts ...gax.CallOption) (*adminpb.FirebaseLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1278,7 +1570,7 @@ func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *admi
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "firebase_link.name", url.QueryEscape(req.GetFirebaseLink().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateFirebaseLink[0:len(c.CallOptions.UpdateFirebaseLink):len(c.CallOptions.UpdateFirebaseLink)], opts...)
+	opts = append((*c.CallOptions).UpdateFirebaseLink[0:len((*c.CallOptions).UpdateFirebaseLink):len((*c.CallOptions).UpdateFirebaseLink)], opts...)
 	var resp *adminpb.FirebaseLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1291,8 +1583,7 @@ func (c *AnalyticsAdminClient) UpdateFirebaseLink(ctx context.Context, req *admi
 	return resp, nil
 }
 
-// DeleteFirebaseLink deletes a FirebaseLink on a property
-func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *adminpb.DeleteFirebaseLinkRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteFirebaseLink(ctx context.Context, req *adminpb.DeleteFirebaseLinkRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1300,7 +1591,7 @@ func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *admi
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteFirebaseLink[0:len(c.CallOptions.DeleteFirebaseLink):len(c.CallOptions.DeleteFirebaseLink)], opts...)
+	opts = append((*c.CallOptions).DeleteFirebaseLink[0:len((*c.CallOptions).DeleteFirebaseLink):len((*c.CallOptions).DeleteFirebaseLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteFirebaseLink(ctx, req, settings.GRPC...)
@@ -1309,12 +1600,10 @@ func (c *AnalyticsAdminClient) DeleteFirebaseLink(ctx context.Context, req *admi
 	return err
 }
 
-// ListFirebaseLinks lists FirebaseLinks on a property.
-// Properties can have at most one FirebaseLink.
-func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) *FirebaseLinkIterator {
+func (c *analyticsAdminGRPCClient) ListFirebaseLinks(ctx context.Context, req *adminpb.ListFirebaseLinksRequest, opts ...gax.CallOption) *FirebaseLinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListFirebaseLinks[0:len(c.CallOptions.ListFirebaseLinks):len(c.CallOptions.ListFirebaseLinks)], opts...)
+	opts = append((*c.CallOptions).ListFirebaseLinks[0:len((*c.CallOptions).ListFirebaseLinks):len((*c.CallOptions).ListFirebaseLinks)], opts...)
 	it := &FirebaseLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListFirebaseLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.FirebaseLink, string, error) {
@@ -1351,9 +1640,7 @@ func (c *AnalyticsAdminClient) ListFirebaseLinks(ctx context.Context, req *admin
 	return it
 }
 
-// GetGlobalSiteTag returns the Site Tag for the specified web stream.
-// Site Tags are immutable singletons.
-func (c *AnalyticsAdminClient) GetGlobalSiteTag(ctx context.Context, req *adminpb.GetGlobalSiteTagRequest, opts ...gax.CallOption) (*adminpb.GlobalSiteTag, error) {
+func (c *analyticsAdminGRPCClient) GetGlobalSiteTag(ctx context.Context, req *adminpb.GetGlobalSiteTagRequest, opts ...gax.CallOption) (*adminpb.GlobalSiteTag, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1361,7 +1648,7 @@ func (c *AnalyticsAdminClient) GetGlobalSiteTag(ctx context.Context, req *adminp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetGlobalSiteTag[0:len(c.CallOptions.GetGlobalSiteTag):len(c.CallOptions.GetGlobalSiteTag)], opts...)
+	opts = append((*c.CallOptions).GetGlobalSiteTag[0:len((*c.CallOptions).GetGlobalSiteTag):len((*c.CallOptions).GetGlobalSiteTag)], opts...)
 	var resp *adminpb.GlobalSiteTag
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1374,8 +1661,7 @@ func (c *AnalyticsAdminClient) GetGlobalSiteTag(ctx context.Context, req *adminp
 	return resp, nil
 }
 
-// CreateGoogleAdsLink creates a GoogleAdsLink.
-func (c *AnalyticsAdminClient) CreateGoogleAdsLink(ctx context.Context, req *adminpb.CreateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
+func (c *analyticsAdminGRPCClient) CreateGoogleAdsLink(ctx context.Context, req *adminpb.CreateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1383,7 +1669,7 @@ func (c *AnalyticsAdminClient) CreateGoogleAdsLink(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateGoogleAdsLink[0:len(c.CallOptions.CreateGoogleAdsLink):len(c.CallOptions.CreateGoogleAdsLink)], opts...)
+	opts = append((*c.CallOptions).CreateGoogleAdsLink[0:len((*c.CallOptions).CreateGoogleAdsLink):len((*c.CallOptions).CreateGoogleAdsLink)], opts...)
 	var resp *adminpb.GoogleAdsLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1396,8 +1682,7 @@ func (c *AnalyticsAdminClient) CreateGoogleAdsLink(ctx context.Context, req *adm
 	return resp, nil
 }
 
-// UpdateGoogleAdsLink updates a GoogleAdsLink on a property
-func (c *AnalyticsAdminClient) UpdateGoogleAdsLink(ctx context.Context, req *adminpb.UpdateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
+func (c *analyticsAdminGRPCClient) UpdateGoogleAdsLink(ctx context.Context, req *adminpb.UpdateGoogleAdsLinkRequest, opts ...gax.CallOption) (*adminpb.GoogleAdsLink, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1405,7 +1690,7 @@ func (c *AnalyticsAdminClient) UpdateGoogleAdsLink(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "google_ads_link.name", url.QueryEscape(req.GetGoogleAdsLink().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateGoogleAdsLink[0:len(c.CallOptions.UpdateGoogleAdsLink):len(c.CallOptions.UpdateGoogleAdsLink)], opts...)
+	opts = append((*c.CallOptions).UpdateGoogleAdsLink[0:len((*c.CallOptions).UpdateGoogleAdsLink):len((*c.CallOptions).UpdateGoogleAdsLink)], opts...)
 	var resp *adminpb.GoogleAdsLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1418,8 +1703,7 @@ func (c *AnalyticsAdminClient) UpdateGoogleAdsLink(ctx context.Context, req *adm
 	return resp, nil
 }
 
-// DeleteGoogleAdsLink deletes a GoogleAdsLink on a property
-func (c *AnalyticsAdminClient) DeleteGoogleAdsLink(ctx context.Context, req *adminpb.DeleteGoogleAdsLinkRequest, opts ...gax.CallOption) error {
+func (c *analyticsAdminGRPCClient) DeleteGoogleAdsLink(ctx context.Context, req *adminpb.DeleteGoogleAdsLinkRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1427,7 +1711,7 @@ func (c *AnalyticsAdminClient) DeleteGoogleAdsLink(ctx context.Context, req *adm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteGoogleAdsLink[0:len(c.CallOptions.DeleteGoogleAdsLink):len(c.CallOptions.DeleteGoogleAdsLink)], opts...)
+	opts = append((*c.CallOptions).DeleteGoogleAdsLink[0:len((*c.CallOptions).DeleteGoogleAdsLink):len((*c.CallOptions).DeleteGoogleAdsLink)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.analyticsAdminClient.DeleteGoogleAdsLink(ctx, req, settings.GRPC...)
@@ -1436,11 +1720,10 @@ func (c *AnalyticsAdminClient) DeleteGoogleAdsLink(ctx context.Context, req *adm
 	return err
 }
 
-// ListGoogleAdsLinks lists GoogleAdsLinks on a property.
-func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *adminpb.ListGoogleAdsLinksRequest, opts ...gax.CallOption) *GoogleAdsLinkIterator {
+func (c *analyticsAdminGRPCClient) ListGoogleAdsLinks(ctx context.Context, req *adminpb.ListGoogleAdsLinksRequest, opts ...gax.CallOption) *GoogleAdsLinkIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListGoogleAdsLinks[0:len(c.CallOptions.ListGoogleAdsLinks):len(c.CallOptions.ListGoogleAdsLinks)], opts...)
+	opts = append((*c.CallOptions).ListGoogleAdsLinks[0:len((*c.CallOptions).ListGoogleAdsLinks):len((*c.CallOptions).ListGoogleAdsLinks)], opts...)
 	it := &GoogleAdsLinkIterator{}
 	req = proto.Clone(req).(*adminpb.ListGoogleAdsLinksRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.GoogleAdsLink, string, error) {
@@ -1477,9 +1760,7 @@ func (c *AnalyticsAdminClient) ListGoogleAdsLinks(ctx context.Context, req *admi
 	return it
 }
 
-// GetDataSharingSettings get data sharing settings on an account.
-// Data sharing settings are singletons.
-func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *adminpb.GetDataSharingSettingsRequest, opts ...gax.CallOption) (*adminpb.DataSharingSettings, error) {
+func (c *analyticsAdminGRPCClient) GetDataSharingSettings(ctx context.Context, req *adminpb.GetDataSharingSettingsRequest, opts ...gax.CallOption) (*adminpb.DataSharingSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1487,7 +1768,7 @@ func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetDataSharingSettings[0:len(c.CallOptions.GetDataSharingSettings):len(c.CallOptions.GetDataSharingSettings)], opts...)
+	opts = append((*c.CallOptions).GetDataSharingSettings[0:len((*c.CallOptions).GetDataSharingSettings):len((*c.CallOptions).GetDataSharingSettings)], opts...)
 	var resp *adminpb.DataSharingSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1500,12 +1781,10 @@ func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *
 	return resp, nil
 }
 
-// SearchChangeHistoryEvents searches through all changes to an account or its children given the
-// specified set of filters.
-func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
+func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SearchChangeHistoryEvents[0:len(c.CallOptions.SearchChangeHistoryEvents):len(c.CallOptions.SearchChangeHistoryEvents)], opts...)
+	opts = append((*c.CallOptions).SearchChangeHistoryEvents[0:len((*c.CallOptions).SearchChangeHistoryEvents):len((*c.CallOptions).SearchChangeHistoryEvents)], opts...)
 	it := &ChangeHistoryEventIterator{}
 	req = proto.Clone(req).(*adminpb.SearchChangeHistoryEventsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ChangeHistoryEvent, string, error) {

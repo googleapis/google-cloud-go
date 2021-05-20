@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-
 	ctx := context.Background()
 	c, err := longrunning.NewOperationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &longrunningpb.WaitOperationRequest{
 		// TODO: Fill request struct fields.

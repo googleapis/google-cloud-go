@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.

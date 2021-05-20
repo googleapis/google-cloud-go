@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.

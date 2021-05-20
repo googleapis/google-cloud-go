@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
-
 	ctx := context.Background()
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcemanagerpb.GetFolderRequest{
 		// TODO: Fill request struct fields.

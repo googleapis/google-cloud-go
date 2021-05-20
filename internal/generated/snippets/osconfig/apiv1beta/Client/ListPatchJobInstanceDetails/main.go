@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchJobInstanceDetailsRequest{
 		// TODO: Fill request struct fields.
