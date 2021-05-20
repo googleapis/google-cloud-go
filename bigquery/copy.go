@@ -20,12 +20,17 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 )
 
+// TableCopyOperationType is used to indicate the type of operation performed by a BigQuery
+// copy job.
 type TableCopyOperationType string
 
 var (
-	CopyOperation     TableCopyOperationType = "COPY"
+	// CopyOperation indicates normal table to table copying.
+	CopyOperation TableCopyOperationType = "COPY"
+	// SnapshotOperation indicates creating a snapshot from a regular table.
 	SnapshotOperation TableCopyOperationType = "SNAPSHOT"
-	RestoreOperation  TableCopyOperationType = "RESTORE"
+	// RestoreOperation indicates creating/restoring a table from a snapshot.
+	RestoreOperation TableCopyOperationType = "RESTORE"
 )
 
 // CopyConfig holds the configuration for a copy job.
