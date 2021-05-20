@@ -50,7 +50,7 @@ type ClusterControllerCallOptions struct {
 	DiagnoseCluster []gax.CallOption
 }
 
-func defaultClusterControllerClientOptions() []option.ClientOption {
+func defaultClusterControllerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dataproc.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dataproc.mtls.googleapis.com:443"),
@@ -137,38 +137,161 @@ func defaultClusterControllerCallOptions() *ClusterControllerCallOptions {
 	}
 }
 
+// internalClusterControllerClient is an interface that defines the methods availaible from Cloud Dataproc API.
+type internalClusterControllerClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateCluster(context.Context, *dataprocpb.CreateClusterRequest, ...gax.CallOption) (*CreateClusterOperation, error)
+	CreateClusterOperation(name string) *CreateClusterOperation
+	UpdateCluster(context.Context, *dataprocpb.UpdateClusterRequest, ...gax.CallOption) (*UpdateClusterOperation, error)
+	UpdateClusterOperation(name string) *UpdateClusterOperation
+	DeleteCluster(context.Context, *dataprocpb.DeleteClusterRequest, ...gax.CallOption) (*DeleteClusterOperation, error)
+	DeleteClusterOperation(name string) *DeleteClusterOperation
+	GetCluster(context.Context, *dataprocpb.GetClusterRequest, ...gax.CallOption) (*dataprocpb.Cluster, error)
+	ListClusters(context.Context, *dataprocpb.ListClustersRequest, ...gax.CallOption) *ClusterIterator
+	DiagnoseCluster(context.Context, *dataprocpb.DiagnoseClusterRequest, ...gax.CallOption) (*DiagnoseClusterOperation, error)
+	DiagnoseClusterOperation(name string) *DiagnoseClusterOperation
+}
+
 // ClusterControllerClient is a client for interacting with Cloud Dataproc API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The ClusterControllerService provides methods to manage clusters
+// of Compute Engine instances.
+type ClusterControllerClient struct {
+	// The internal transport-dependent client.
+	internalClient internalClusterControllerClient
+
+	// The call options for this service.
+	CallOptions *ClusterControllerCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ClusterControllerClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ClusterControllerClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ClusterControllerClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateCluster creates a cluster in a project. The returned
+// Operation.metadata will be
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
+	return c.internalClient.CreateCluster(ctx, req, opts...)
+}
+
+// CreateClusterOperation returns a new CreateClusterOperation from a given name.
+// The name must be that of a previously created CreateClusterOperation, possibly from a different process.
+func (c *ClusterControllerClient) CreateClusterOperation(name string) *CreateClusterOperation {
+	return c.internalClient.CreateClusterOperation(name)
+}
+
+// UpdateCluster updates a cluster in a project. The returned
+// Operation.metadata will be
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
+	return c.internalClient.UpdateCluster(ctx, req, opts...)
+}
+
+// UpdateClusterOperation returns a new UpdateClusterOperation from a given name.
+// The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
+func (c *ClusterControllerClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
+	return c.internalClient.UpdateClusterOperation(name)
+}
+
+// DeleteCluster deletes a cluster in a project. The returned
+// Operation.metadata will be
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
+	return c.internalClient.DeleteCluster(ctx, req, opts...)
+}
+
+// DeleteClusterOperation returns a new DeleteClusterOperation from a given name.
+// The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
+func (c *ClusterControllerClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
+	return c.internalClient.DeleteClusterOperation(name)
+}
+
+// GetCluster gets the resource representation for a cluster in a project.
+func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocpb.GetClusterRequest, opts ...gax.CallOption) (*dataprocpb.Cluster, error) {
+	return c.internalClient.GetCluster(ctx, req, opts...)
+}
+
+// ListClusters lists all regions/{region}/clusters in a project alphabetically.
+func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
+	return c.internalClient.ListClusters(ctx, req, opts...)
+}
+
+// DiagnoseCluster gets cluster diagnostic information. The returned
+// Operation.metadata will be
+// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
+// After the operation completes,
+// Operation.response
+// contains
+// Empty.
+func (c *ClusterControllerClient) DiagnoseCluster(ctx context.Context, req *dataprocpb.DiagnoseClusterRequest, opts ...gax.CallOption) (*DiagnoseClusterOperation, error) {
+	return c.internalClient.DiagnoseCluster(ctx, req, opts...)
+}
+
+// DiagnoseClusterOperation returns a new DiagnoseClusterOperation from a given name.
+// The name must be that of a previously created DiagnoseClusterOperation, possibly from a different process.
+func (c *ClusterControllerClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
+	return c.internalClient.DiagnoseClusterOperation(name)
+}
+
+// clusterControllerGRPCClient is a client for interacting with Cloud Dataproc API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ClusterControllerClient struct {
+type clusterControllerGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ClusterControllerClient
+	CallOptions **ClusterControllerCallOptions
+
 	// The gRPC API client.
 	clusterControllerClient dataprocpb.ClusterControllerClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *ClusterControllerCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClusterControllerClient creates a new cluster controller client.
+// NewClusterControllerClient creates a new cluster controller client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The ClusterControllerService provides methods to manage clusters
 // of Compute Engine instances.
 func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption) (*ClusterControllerClient, error) {
-	clientOpts := defaultClusterControllerClientOptions()
-
+	clientOpts := defaultClusterControllerGRPCClientOptions()
 	if newClusterControllerClientHook != nil {
 		hookOpts, err := newClusterControllerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -186,16 +309,19 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &ClusterControllerClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultClusterControllerCallOptions(),
+	client := ClusterControllerClient{CallOptions: defaultClusterControllerCallOptions()}
 
+	c := &clusterControllerGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		clusterControllerClient: dataprocpb.NewClusterControllerClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -205,35 +331,33 @@ func NewClusterControllerClient(ctx context.Context, opts ...option.ClientOption
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ClusterControllerClient) Connection() *grpc.ClientConn {
+func (c *clusterControllerGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ClusterControllerClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ClusterControllerClient) setGoogleClientInfo(keyval ...string) {
+func (c *clusterControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateCluster creates a cluster in a project. The returned
-// Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
-func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *clusterControllerGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *clusterControllerGRPCClient) CreateCluster(ctx context.Context, req *dataprocpb.CreateClusterRequest, opts ...gax.CallOption) (*CreateClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -241,7 +365,7 @@ func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *datapr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCluster[0:len(c.CallOptions.CreateCluster):len(c.CallOptions.CreateCluster)], opts...)
+	opts = append((*c.CallOptions).CreateCluster[0:len((*c.CallOptions).CreateCluster):len((*c.CallOptions).CreateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -252,14 +376,11 @@ func (c *ClusterControllerClient) CreateCluster(ctx context.Context, req *datapr
 		return nil, err
 	}
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateCluster updates a cluster in a project. The returned
-// Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
-func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
+func (c *clusterControllerGRPCClient) UpdateCluster(ctx context.Context, req *dataprocpb.UpdateClusterRequest, opts ...gax.CallOption) (*UpdateClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -267,7 +388,7 @@ func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *datapr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCluster[0:len(c.CallOptions.UpdateCluster):len(c.CallOptions.UpdateCluster)], opts...)
+	opts = append((*c.CallOptions).UpdateCluster[0:len((*c.CallOptions).UpdateCluster):len((*c.CallOptions).UpdateCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -278,14 +399,11 @@ func (c *ClusterControllerClient) UpdateCluster(ctx context.Context, req *datapr
 		return nil, err
 	}
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteCluster deletes a cluster in a project. The returned
-// Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
-func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
+func (c *clusterControllerGRPCClient) DeleteCluster(ctx context.Context, req *dataprocpb.DeleteClusterRequest, opts ...gax.CallOption) (*DeleteClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -293,7 +411,7 @@ func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *datapr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCluster[0:len(c.CallOptions.DeleteCluster):len(c.CallOptions.DeleteCluster)], opts...)
+	opts = append((*c.CallOptions).DeleteCluster[0:len((*c.CallOptions).DeleteCluster):len((*c.CallOptions).DeleteCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -304,12 +422,11 @@ func (c *ClusterControllerClient) DeleteCluster(ctx context.Context, req *datapr
 		return nil, err
 	}
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetCluster gets the resource representation for a cluster in a project.
-func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocpb.GetClusterRequest, opts ...gax.CallOption) (*dataprocpb.Cluster, error) {
+func (c *clusterControllerGRPCClient) GetCluster(ctx context.Context, req *dataprocpb.GetClusterRequest, opts ...gax.CallOption) (*dataprocpb.Cluster, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -317,7 +434,7 @@ func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocp
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCluster[0:len(c.CallOptions.GetCluster):len(c.CallOptions.GetCluster)], opts...)
+	opts = append((*c.CallOptions).GetCluster[0:len((*c.CallOptions).GetCluster):len((*c.CallOptions).GetCluster)], opts...)
 	var resp *dataprocpb.Cluster
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -330,11 +447,10 @@ func (c *ClusterControllerClient) GetCluster(ctx context.Context, req *dataprocp
 	return resp, nil
 }
 
-// ListClusters lists all regions/{region}/clusters in a project alphabetically.
-func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
+func (c *clusterControllerGRPCClient) ListClusters(ctx context.Context, req *dataprocpb.ListClustersRequest, opts ...gax.CallOption) *ClusterIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListClusters[0:len(c.CallOptions.ListClusters):len(c.CallOptions.ListClusters)], opts...)
+	opts = append((*c.CallOptions).ListClusters[0:len((*c.CallOptions).ListClusters):len((*c.CallOptions).ListClusters)], opts...)
 	it := &ClusterIterator{}
 	req = proto.Clone(req).(*dataprocpb.ListClustersRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataprocpb.Cluster, string, error) {
@@ -371,14 +487,7 @@ func (c *ClusterControllerClient) ListClusters(ctx context.Context, req *datapro
 	return it
 }
 
-// DiagnoseCluster gets cluster diagnostic information. The returned
-// Operation.metadata will be
-// ClusterOperationMetadata (at https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1beta2#clusteroperationmetadata).
-// After the operation completes,
-// Operation.response
-// contains
-// Empty.
-func (c *ClusterControllerClient) DiagnoseCluster(ctx context.Context, req *dataprocpb.DiagnoseClusterRequest, opts ...gax.CallOption) (*DiagnoseClusterOperation, error) {
+func (c *clusterControllerGRPCClient) DiagnoseCluster(ctx context.Context, req *dataprocpb.DiagnoseClusterRequest, opts ...gax.CallOption) (*DiagnoseClusterOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 300000*time.Millisecond)
 		defer cancel()
@@ -386,7 +495,7 @@ func (c *ClusterControllerClient) DiagnoseCluster(ctx context.Context, req *data
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v", "project_id", url.QueryEscape(req.GetProjectId()), "region", url.QueryEscape(req.GetRegion()), "cluster_name", url.QueryEscape(req.GetClusterName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DiagnoseCluster[0:len(c.CallOptions.DiagnoseCluster):len(c.CallOptions.DiagnoseCluster)], opts...)
+	opts = append((*c.CallOptions).DiagnoseCluster[0:len((*c.CallOptions).DiagnoseCluster):len((*c.CallOptions).DiagnoseCluster)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -397,7 +506,7 @@ func (c *ClusterControllerClient) DiagnoseCluster(ctx context.Context, req *data
 		return nil, err
 	}
 	return &DiagnoseClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -408,9 +517,9 @@ type CreateClusterOperation struct {
 
 // CreateClusterOperation returns a new CreateClusterOperation from a given name.
 // The name must be that of a previously created CreateClusterOperation, possibly from a different process.
-func (c *ClusterControllerClient) CreateClusterOperation(name string) *CreateClusterOperation {
+func (c *clusterControllerGRPCClient) CreateClusterOperation(name string) *CreateClusterOperation {
 	return &CreateClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -477,9 +586,9 @@ type DeleteClusterOperation struct {
 
 // DeleteClusterOperation returns a new DeleteClusterOperation from a given name.
 // The name must be that of a previously created DeleteClusterOperation, possibly from a different process.
-func (c *ClusterControllerClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
+func (c *clusterControllerGRPCClient) DeleteClusterOperation(name string) *DeleteClusterOperation {
 	return &DeleteClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -535,9 +644,9 @@ type DiagnoseClusterOperation struct {
 
 // DiagnoseClusterOperation returns a new DiagnoseClusterOperation from a given name.
 // The name must be that of a previously created DiagnoseClusterOperation, possibly from a different process.
-func (c *ClusterControllerClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
+func (c *clusterControllerGRPCClient) DiagnoseClusterOperation(name string) *DiagnoseClusterOperation {
 	return &DiagnoseClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -593,9 +702,9 @@ type UpdateClusterOperation struct {
 
 // UpdateClusterOperation returns a new UpdateClusterOperation from a given name.
 // The name must be that of a previously created UpdateClusterOperation, possibly from a different process.
-func (c *ClusterControllerClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
+func (c *clusterControllerGRPCClient) UpdateClusterOperation(name string) *UpdateClusterOperation {
 	return &UpdateClusterOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.CreateCustomerRequest{
 		// TODO: Fill request struct fields.

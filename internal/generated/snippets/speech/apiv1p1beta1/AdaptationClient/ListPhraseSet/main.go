@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.ListPhraseSetRequest{
 		// TODO: Fill request struct fields.

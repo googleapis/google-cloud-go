@@ -30,19 +30,19 @@ func ExampleNewEnvironmentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleEnvironmentsClient_ListEnvironments() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 }
 
 func ExampleEnvironmentsClient_GetEnvironment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 }
 
 func ExampleEnvironmentsClient_CreateEnvironment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 }
 
 func ExampleEnvironmentsClient_UpdateEnvironment() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -137,6 +134,7 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -148,14 +146,12 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 }
 
 func ExampleEnvironmentsClient_LookupEnvironmentHistory() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.LookupEnvironmentHistoryRequest{
 		// TODO: Fill request struct fields.

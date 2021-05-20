@@ -31,6 +31,8 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
@@ -41,6 +43,7 @@ func ExampleClient_DeleteLog() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.DeleteLogRequest{
 		// TODO: Fill request struct fields.
@@ -52,13 +55,12 @@ func ExampleClient_DeleteLog() {
 }
 
 func ExampleClient_WriteLogEntries() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.WriteLogEntriesRequest{
 		// TODO: Fill request struct fields.
@@ -72,14 +74,12 @@ func ExampleClient_WriteLogEntries() {
 }
 
 func ExampleClient_ListLogEntries() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.ListLogEntriesRequest{
 		// TODO: Fill request struct fields.
@@ -99,14 +99,12 @@ func ExampleClient_ListLogEntries() {
 }
 
 func ExampleClient_ListMonitoredResourceDescriptors() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.ListMonitoredResourceDescriptorsRequest{
 		// TODO: Fill request struct fields.
@@ -126,14 +124,12 @@ func ExampleClient_ListMonitoredResourceDescriptors() {
 }
 
 func ExampleClient_ListLogs() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.ListLogsRequest{
 		// TODO: Fill request struct fields.
@@ -153,13 +149,12 @@ func ExampleClient_ListLogs() {
 }
 
 func ExampleClient_TailLogEntries() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.TailLogEntries(ctx)
 	if err != nil {
 		// TODO: Handle error.

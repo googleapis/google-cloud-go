@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingRecognize(ctx)
 	if err != nil {
 		// TODO: Handle error.
