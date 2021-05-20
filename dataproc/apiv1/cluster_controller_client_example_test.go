@@ -30,18 +30,19 @@ func ExampleNewClusterControllerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClusterControllerClient_CreateCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.CreateClusterRequest{
 		// TODO: Fill request struct fields.
@@ -60,13 +61,12 @@ func ExampleClusterControllerClient_CreateCluster() {
 }
 
 func ExampleClusterControllerClient_UpdateCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.UpdateClusterRequest{
 		// TODO: Fill request struct fields.
@@ -85,13 +85,12 @@ func ExampleClusterControllerClient_UpdateCluster() {
 }
 
 func ExampleClusterControllerClient_StopCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.StopClusterRequest{
 		// TODO: Fill request struct fields.
@@ -110,13 +109,12 @@ func ExampleClusterControllerClient_StopCluster() {
 }
 
 func ExampleClusterControllerClient_StartCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.StartClusterRequest{
 		// TODO: Fill request struct fields.
@@ -135,13 +133,12 @@ func ExampleClusterControllerClient_StartCluster() {
 }
 
 func ExampleClusterControllerClient_DeleteCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DeleteClusterRequest{
 		// TODO: Fill request struct fields.
@@ -158,13 +155,12 @@ func ExampleClusterControllerClient_DeleteCluster() {
 }
 
 func ExampleClusterControllerClient_GetCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.GetClusterRequest{
 		// TODO: Fill request struct fields.
@@ -178,14 +174,12 @@ func ExampleClusterControllerClient_GetCluster() {
 }
 
 func ExampleClusterControllerClient_ListClusters() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.ListClustersRequest{
 		// TODO: Fill request struct fields.
@@ -205,13 +199,12 @@ func ExampleClusterControllerClient_ListClusters() {
 }
 
 func ExampleClusterControllerClient_DiagnoseCluster() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DiagnoseClusterRequest{
 		// TODO: Fill request struct fields.

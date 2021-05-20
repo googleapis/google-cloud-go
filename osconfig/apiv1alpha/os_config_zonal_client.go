@@ -56,7 +56,7 @@ type OsConfigZonalCallOptions struct {
 	ListVulnerabilityReports          []gax.CallOption
 }
 
-func defaultOsConfigZonalClientOptions() []option.ClientOption {
+func defaultOsConfigZonalGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("osconfig.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("osconfig.mtls.googleapis.com:443"),
@@ -205,40 +205,219 @@ func defaultOsConfigZonalCallOptions() *OsConfigZonalCallOptions {
 	}
 }
 
+// internalOsConfigZonalClient is an interface that defines the methods availaible from OS Config API.
+type internalOsConfigZonalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateOSPolicyAssignment(context.Context, *osconfigpb.CreateOSPolicyAssignmentRequest, ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error)
+	CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation
+	UpdateOSPolicyAssignment(context.Context, *osconfigpb.UpdateOSPolicyAssignmentRequest, ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error)
+	UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation
+	GetOSPolicyAssignment(context.Context, *osconfigpb.GetOSPolicyAssignmentRequest, ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error)
+	ListOSPolicyAssignments(context.Context, *osconfigpb.ListOSPolicyAssignmentsRequest, ...gax.CallOption) *OSPolicyAssignmentIterator
+	ListOSPolicyAssignmentRevisions(context.Context, *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, ...gax.CallOption) *OSPolicyAssignmentIterator
+	DeleteOSPolicyAssignment(context.Context, *osconfigpb.DeleteOSPolicyAssignmentRequest, ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error)
+	DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation
+	GetInstanceOSPoliciesCompliance(context.Context, *osconfigpb.GetInstanceOSPoliciesComplianceRequest, ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error)
+	ListInstanceOSPoliciesCompliances(context.Context, *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, ...gax.CallOption) *InstanceOSPoliciesComplianceIterator
+	GetInventory(context.Context, *osconfigpb.GetInventoryRequest, ...gax.CallOption) (*osconfigpb.Inventory, error)
+	ListInventories(context.Context, *osconfigpb.ListInventoriesRequest, ...gax.CallOption) *InventoryIterator
+	GetVulnerabilityReport(context.Context, *osconfigpb.GetVulnerabilityReportRequest, ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error)
+	ListVulnerabilityReports(context.Context, *osconfigpb.ListVulnerabilityReportsRequest, ...gax.CallOption) *VulnerabilityReportIterator
+}
+
 // OsConfigZonalClient is a client for interacting with OS Config API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Zonal OS Config API
+//
+// The OS Config service is the server-side component that allows users to
+// manage package installations and patch jobs for Compute Engine VM instances.
+type OsConfigZonalClient struct {
+	// The internal transport-dependent client.
+	internalClient internalOsConfigZonalClient
+
+	// The call options for this service.
+	CallOptions *OsConfigZonalCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *OsConfigZonalClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *OsConfigZonalClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *OsConfigZonalClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateOSPolicyAssignment create an OS policy assignment.
+//
+// This method also creates the first revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *OsConfigZonalClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
+	return c.internalClient.CreateOSPolicyAssignment(ctx, req, opts...)
+}
+
+// CreateOSPolicyAssignmentOperation returns a new CreateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created CreateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *OsConfigZonalClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
+	return c.internalClient.CreateOSPolicyAssignmentOperation(name)
+}
+
+// UpdateOSPolicyAssignment update an existing OS policy assignment.
+//
+// This method creates a new revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *OsConfigZonalClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
+	return c.internalClient.UpdateOSPolicyAssignment(ctx, req, opts...)
+}
+
+// UpdateOSPolicyAssignmentOperation returns a new UpdateOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created UpdateOSPolicyAssignmentOperation, possibly from a different process.
+func (c *OsConfigZonalClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
+	return c.internalClient.UpdateOSPolicyAssignmentOperation(name)
+}
+
+// GetOSPolicyAssignment retrieve an existing OS policy assignment.
+//
+// This method always returns the latest revision. In order to retrieve a
+// previous revision of the assignment, also provide the revision ID in the
+// name parameter.
+func (c *OsConfigZonalClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+	return c.internalClient.GetOSPolicyAssignment(ctx, req, opts...)
+}
+
+// ListOSPolicyAssignments list the OS policy assignments under the parent resource.
+//
+// For each OS policy assignment, the latest revision is returned.
+func (c *OsConfigZonalClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	return c.internalClient.ListOSPolicyAssignments(ctx, req, opts...)
+}
+
+// ListOSPolicyAssignmentRevisions list the OS policy assignment revisions for a given OS policy assignment.
+func (c *OsConfigZonalClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+	return c.internalClient.ListOSPolicyAssignmentRevisions(ctx, req, opts...)
+}
+
+// DeleteOSPolicyAssignment delete the OS policy assignment.
+//
+// This method creates a new revision of the OS policy assignment.
+//
+// This method returns a long running operation (LRO) that contains the
+// rollout details. The rollout can be cancelled by cancelling the LRO.
+//
+// If the LRO completes and is not cancelled, all revisions associated with
+// the OS policy assignment are deleted.
+//
+// For more information, see Method:
+// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
+func (c *OsConfigZonalClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
+	return c.internalClient.DeleteOSPolicyAssignment(ctx, req, opts...)
+}
+
+// DeleteOSPolicyAssignmentOperation returns a new DeleteOSPolicyAssignmentOperation from a given name.
+// The name must be that of a previously created DeleteOSPolicyAssignmentOperation, possibly from a different process.
+func (c *OsConfigZonalClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
+	return c.internalClient.DeleteOSPolicyAssignmentOperation(name)
+}
+
+// GetInstanceOSPoliciesCompliance get OS policies compliance data for the specified Compute Engine VM
+// instance.
+func (c *OsConfigZonalClient) GetInstanceOSPoliciesCompliance(ctx context.Context, req *osconfigpb.GetInstanceOSPoliciesComplianceRequest, opts ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error) {
+	return c.internalClient.GetInstanceOSPoliciesCompliance(ctx, req, opts...)
+}
+
+// ListInstanceOSPoliciesCompliances list OS policies compliance data for all Compute Engine VM instances in the
+// specified zone.
+func (c *OsConfigZonalClient) ListInstanceOSPoliciesCompliances(ctx context.Context, req *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, opts ...gax.CallOption) *InstanceOSPoliciesComplianceIterator {
+	return c.internalClient.ListInstanceOSPoliciesCompliances(ctx, req, opts...)
+}
+
+// GetInventory get inventory data for the specified VM instance. If the VM has no
+// associated inventory, the message NOT_FOUND is returned.
+func (c *OsConfigZonalClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
+	return c.internalClient.GetInventory(ctx, req, opts...)
+}
+
+// ListInventories list inventory data for all VM instances in the specified zone.
+func (c *OsConfigZonalClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
+	return c.internalClient.ListInventories(ctx, req, opts...)
+}
+
+// GetVulnerabilityReport gets the vulnerability report for the specified VM instance. Only VMs with
+// inventory data have vulnerability reports associated with them.
+func (c *OsConfigZonalClient) GetVulnerabilityReport(ctx context.Context, req *osconfigpb.GetVulnerabilityReportRequest, opts ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error) {
+	return c.internalClient.GetVulnerabilityReport(ctx, req, opts...)
+}
+
+// ListVulnerabilityReports list vulnerability reports for all VM instances in the specified zone.
+func (c *OsConfigZonalClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
+	return c.internalClient.ListVulnerabilityReports(ctx, req, opts...)
+}
+
+// osConfigZonalGRPCClient is a client for interacting with OS Config API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type OsConfigZonalClient struct {
+type osConfigZonalGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing OsConfigZonalClient
+	CallOptions **OsConfigZonalCallOptions
+
 	// The gRPC API client.
 	osConfigZonalClient osconfigpb.OsConfigZonalServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *OsConfigZonalCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewOsConfigZonalClient creates a new os config zonal service client.
+// NewOsConfigZonalClient creates a new os config zonal service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Zonal OS Config API
 //
 // The OS Config service is the server-side component that allows users to
 // manage package installations and patch jobs for Compute Engine VM instances.
 func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*OsConfigZonalClient, error) {
-	clientOpts := defaultOsConfigZonalClientOptions()
-
+	clientOpts := defaultOsConfigZonalGRPCClientOptions()
 	if newOsConfigZonalClientHook != nil {
 		hookOpts, err := newOsConfigZonalClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -256,16 +435,19 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	c := &OsConfigZonalClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultOsConfigZonalCallOptions(),
+	client := OsConfigZonalClient{CallOptions: defaultOsConfigZonalCallOptions()}
 
+	c := &osConfigZonalGRPCClient{
+		connPool:            connPool,
+		disableDeadlines:    disableDeadlines,
 		osConfigZonalClient: osconfigpb.NewOsConfigZonalServiceClient(connPool),
+		CallOptions:         &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -275,41 +457,33 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *OsConfigZonalClient) Connection() *grpc.ClientConn {
+func (c *osConfigZonalGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *OsConfigZonalClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *OsConfigZonalClient) setGoogleClientInfo(keyval ...string) {
+func (c *osConfigZonalGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateOSPolicyAssignment create an OS policy assignment.
-//
-// This method also creates the first revision of the OS policy assignment.
-//
-// This method returns a long running operation (LRO) that contains the
-// rollout details. The rollout can be cancelled by cancelling the LRO.
-//
-// For more information, see Method:
-// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
-func (c *OsConfigZonalClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *osConfigZonalGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, req *osconfigpb.CreateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*CreateOSPolicyAssignmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -317,7 +491,7 @@ func (c *OsConfigZonalClient) CreateOSPolicyAssignment(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateOSPolicyAssignment[0:len(c.CallOptions.CreateOSPolicyAssignment):len(c.CallOptions.CreateOSPolicyAssignment)], opts...)
+	opts = append((*c.CallOptions).CreateOSPolicyAssignment[0:len((*c.CallOptions).CreateOSPolicyAssignment):len((*c.CallOptions).CreateOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -328,20 +502,11 @@ func (c *OsConfigZonalClient) CreateOSPolicyAssignment(ctx context.Context, req 
 		return nil, err
 	}
 	return &CreateOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateOSPolicyAssignment update an existing OS policy assignment.
-//
-// This method creates a new revision of the OS policy assignment.
-//
-// This method returns a long running operation (LRO) that contains the
-// rollout details. The rollout can be cancelled by cancelling the LRO.
-//
-// For more information, see Method:
-// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
-func (c *OsConfigZonalClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
+func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignment(ctx context.Context, req *osconfigpb.UpdateOSPolicyAssignmentRequest, opts ...gax.CallOption) (*UpdateOSPolicyAssignmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -349,7 +514,7 @@ func (c *OsConfigZonalClient) UpdateOSPolicyAssignment(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "os_policy_assignment.name", url.QueryEscape(req.GetOsPolicyAssignment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateOSPolicyAssignment[0:len(c.CallOptions.UpdateOSPolicyAssignment):len(c.CallOptions.UpdateOSPolicyAssignment)], opts...)
+	opts = append((*c.CallOptions).UpdateOSPolicyAssignment[0:len((*c.CallOptions).UpdateOSPolicyAssignment):len((*c.CallOptions).UpdateOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -360,16 +525,11 @@ func (c *OsConfigZonalClient) UpdateOSPolicyAssignment(ctx context.Context, req 
 		return nil, err
 	}
 	return &UpdateOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetOSPolicyAssignment retrieve an existing OS policy assignment.
-//
-// This method always returns the latest revision. In order to retrieve a
-// previous revision of the assignment, also provide the revision ID in the
-// name parameter.
-func (c *OsConfigZonalClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
+func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req *osconfigpb.GetOSPolicyAssignmentRequest, opts ...gax.CallOption) (*osconfigpb.OSPolicyAssignment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -377,7 +537,7 @@ func (c *OsConfigZonalClient) GetOSPolicyAssignment(ctx context.Context, req *os
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetOSPolicyAssignment[0:len(c.CallOptions.GetOSPolicyAssignment):len(c.CallOptions.GetOSPolicyAssignment)], opts...)
+	opts = append((*c.CallOptions).GetOSPolicyAssignment[0:len((*c.CallOptions).GetOSPolicyAssignment):len((*c.CallOptions).GetOSPolicyAssignment)], opts...)
 	var resp *osconfigpb.OSPolicyAssignment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -390,13 +550,10 @@ func (c *OsConfigZonalClient) GetOSPolicyAssignment(ctx context.Context, req *os
 	return resp, nil
 }
 
-// ListOSPolicyAssignments list the OS policy assignments under the parent resource.
-//
-// For each OS policy assignment, the latest revision is returned.
-func (c *OsConfigZonalClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListOSPolicyAssignments[0:len(c.CallOptions.ListOSPolicyAssignments):len(c.CallOptions.ListOSPolicyAssignments)], opts...)
+	opts = append((*c.CallOptions).ListOSPolicyAssignments[0:len((*c.CallOptions).ListOSPolicyAssignments):len((*c.CallOptions).ListOSPolicyAssignments)], opts...)
 	it := &OSPolicyAssignmentIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
@@ -433,11 +590,10 @@ func (c *OsConfigZonalClient) ListOSPolicyAssignments(ctx context.Context, req *
 	return it
 }
 
-// ListOSPolicyAssignmentRevisions list the OS policy assignment revisions for a given OS policy assignment.
-func (c *OsConfigZonalClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
+func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Context, req *osconfigpb.ListOSPolicyAssignmentRevisionsRequest, opts ...gax.CallOption) *OSPolicyAssignmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListOSPolicyAssignmentRevisions[0:len(c.CallOptions.ListOSPolicyAssignmentRevisions):len(c.CallOptions.ListOSPolicyAssignmentRevisions)], opts...)
+	opts = append((*c.CallOptions).ListOSPolicyAssignmentRevisions[0:len((*c.CallOptions).ListOSPolicyAssignmentRevisions):len((*c.CallOptions).ListOSPolicyAssignmentRevisions)], opts...)
 	it := &OSPolicyAssignmentIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListOSPolicyAssignmentRevisionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.OSPolicyAssignment, string, error) {
@@ -474,19 +630,7 @@ func (c *OsConfigZonalClient) ListOSPolicyAssignmentRevisions(ctx context.Contex
 	return it
 }
 
-// DeleteOSPolicyAssignment delete the OS policy assignment.
-//
-// This method creates a new revision of the OS policy assignment.
-//
-// This method returns a long running operation (LRO) that contains the
-// rollout details. The rollout can be cancelled by cancelling the LRO.
-//
-// If the LRO completes and is not cancelled, all revisions associated with
-// the OS policy assignment are deleted.
-//
-// For more information, see Method:
-// projects.locations.osPolicyAssignments.operations.cancel (at https://cloud.google.com/compute/docs/osconfig/rest/v1alpha/projects.locations.osPolicyAssignments.operations/cancel).
-func (c *OsConfigZonalClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
+func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, req *osconfigpb.DeleteOSPolicyAssignmentRequest, opts ...gax.CallOption) (*DeleteOSPolicyAssignmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -494,7 +638,7 @@ func (c *OsConfigZonalClient) DeleteOSPolicyAssignment(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteOSPolicyAssignment[0:len(c.CallOptions.DeleteOSPolicyAssignment):len(c.CallOptions.DeleteOSPolicyAssignment)], opts...)
+	opts = append((*c.CallOptions).DeleteOSPolicyAssignment[0:len((*c.CallOptions).DeleteOSPolicyAssignment):len((*c.CallOptions).DeleteOSPolicyAssignment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -505,13 +649,11 @@ func (c *OsConfigZonalClient) DeleteOSPolicyAssignment(ctx context.Context, req 
 		return nil, err
 	}
 	return &DeleteOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetInstanceOSPoliciesCompliance get OS policies compliance data for the specified Compute Engine VM
-// instance.
-func (c *OsConfigZonalClient) GetInstanceOSPoliciesCompliance(ctx context.Context, req *osconfigpb.GetInstanceOSPoliciesComplianceRequest, opts ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error) {
+func (c *osConfigZonalGRPCClient) GetInstanceOSPoliciesCompliance(ctx context.Context, req *osconfigpb.GetInstanceOSPoliciesComplianceRequest, opts ...gax.CallOption) (*osconfigpb.InstanceOSPoliciesCompliance, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -519,7 +661,7 @@ func (c *OsConfigZonalClient) GetInstanceOSPoliciesCompliance(ctx context.Contex
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInstanceOSPoliciesCompliance[0:len(c.CallOptions.GetInstanceOSPoliciesCompliance):len(c.CallOptions.GetInstanceOSPoliciesCompliance)], opts...)
+	opts = append((*c.CallOptions).GetInstanceOSPoliciesCompliance[0:len((*c.CallOptions).GetInstanceOSPoliciesCompliance):len((*c.CallOptions).GetInstanceOSPoliciesCompliance)], opts...)
 	var resp *osconfigpb.InstanceOSPoliciesCompliance
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -532,12 +674,10 @@ func (c *OsConfigZonalClient) GetInstanceOSPoliciesCompliance(ctx context.Contex
 	return resp, nil
 }
 
-// ListInstanceOSPoliciesCompliances list OS policies compliance data for all Compute Engine VM instances in the
-// specified zone.
-func (c *OsConfigZonalClient) ListInstanceOSPoliciesCompliances(ctx context.Context, req *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, opts ...gax.CallOption) *InstanceOSPoliciesComplianceIterator {
+func (c *osConfigZonalGRPCClient) ListInstanceOSPoliciesCompliances(ctx context.Context, req *osconfigpb.ListInstanceOSPoliciesCompliancesRequest, opts ...gax.CallOption) *InstanceOSPoliciesComplianceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInstanceOSPoliciesCompliances[0:len(c.CallOptions.ListInstanceOSPoliciesCompliances):len(c.CallOptions.ListInstanceOSPoliciesCompliances)], opts...)
+	opts = append((*c.CallOptions).ListInstanceOSPoliciesCompliances[0:len((*c.CallOptions).ListInstanceOSPoliciesCompliances):len((*c.CallOptions).ListInstanceOSPoliciesCompliances)], opts...)
 	it := &InstanceOSPoliciesComplianceIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListInstanceOSPoliciesCompliancesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.InstanceOSPoliciesCompliance, string, error) {
@@ -574,9 +714,7 @@ func (c *OsConfigZonalClient) ListInstanceOSPoliciesCompliances(ctx context.Cont
 	return it
 }
 
-// GetInventory get inventory data for the specified VM instance. If the VM has no
-// associated inventory, the message NOT_FOUND is returned.
-func (c *OsConfigZonalClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
+func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfigpb.GetInventoryRequest, opts ...gax.CallOption) (*osconfigpb.Inventory, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -584,7 +722,7 @@ func (c *OsConfigZonalClient) GetInventory(ctx context.Context, req *osconfigpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetInventory[0:len(c.CallOptions.GetInventory):len(c.CallOptions.GetInventory)], opts...)
+	opts = append((*c.CallOptions).GetInventory[0:len((*c.CallOptions).GetInventory):len((*c.CallOptions).GetInventory)], opts...)
 	var resp *osconfigpb.Inventory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -597,11 +735,10 @@ func (c *OsConfigZonalClient) GetInventory(ctx context.Context, req *osconfigpb.
 	return resp, nil
 }
 
-// ListInventories list inventory data for all VM instances in the specified zone.
-func (c *OsConfigZonalClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
+func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osconfigpb.ListInventoriesRequest, opts ...gax.CallOption) *InventoryIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListInventories[0:len(c.CallOptions.ListInventories):len(c.CallOptions.ListInventories)], opts...)
+	opts = append((*c.CallOptions).ListInventories[0:len((*c.CallOptions).ListInventories):len((*c.CallOptions).ListInventories)], opts...)
 	it := &InventoryIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListInventoriesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.Inventory, string, error) {
@@ -638,9 +775,7 @@ func (c *OsConfigZonalClient) ListInventories(ctx context.Context, req *osconfig
 	return it
 }
 
-// GetVulnerabilityReport gets the vulnerability report for the specified VM instance. Only VMs with
-// inventory data have vulnerability reports associated with them.
-func (c *OsConfigZonalClient) GetVulnerabilityReport(ctx context.Context, req *osconfigpb.GetVulnerabilityReportRequest, opts ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error) {
+func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, req *osconfigpb.GetVulnerabilityReportRequest, opts ...gax.CallOption) (*osconfigpb.VulnerabilityReport, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -648,7 +783,7 @@ func (c *OsConfigZonalClient) GetVulnerabilityReport(ctx context.Context, req *o
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetVulnerabilityReport[0:len(c.CallOptions.GetVulnerabilityReport):len(c.CallOptions.GetVulnerabilityReport)], opts...)
+	opts = append((*c.CallOptions).GetVulnerabilityReport[0:len((*c.CallOptions).GetVulnerabilityReport):len((*c.CallOptions).GetVulnerabilityReport)], opts...)
 	var resp *osconfigpb.VulnerabilityReport
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -661,11 +796,10 @@ func (c *OsConfigZonalClient) GetVulnerabilityReport(ctx context.Context, req *o
 	return resp, nil
 }
 
-// ListVulnerabilityReports list vulnerability reports for all VM instances in the specified zone.
-func (c *OsConfigZonalClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
+func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, req *osconfigpb.ListVulnerabilityReportsRequest, opts ...gax.CallOption) *VulnerabilityReportIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListVulnerabilityReports[0:len(c.CallOptions.ListVulnerabilityReports):len(c.CallOptions.ListVulnerabilityReports)], opts...)
+	opts = append((*c.CallOptions).ListVulnerabilityReports[0:len((*c.CallOptions).ListVulnerabilityReports):len((*c.CallOptions).ListVulnerabilityReports)], opts...)
 	it := &VulnerabilityReportIterator{}
 	req = proto.Clone(req).(*osconfigpb.ListVulnerabilityReportsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*osconfigpb.VulnerabilityReport, string, error) {
@@ -709,9 +843,9 @@ type CreateOSPolicyAssignmentOperation struct {
 
 // CreateOSPolicyAssignmentOperation returns a new CreateOSPolicyAssignmentOperation from a given name.
 // The name must be that of a previously created CreateOSPolicyAssignmentOperation, possibly from a different process.
-func (c *OsConfigZonalClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
+func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignmentOperation(name string) *CreateOSPolicyAssignmentOperation {
 	return &CreateOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -778,9 +912,9 @@ type DeleteOSPolicyAssignmentOperation struct {
 
 // DeleteOSPolicyAssignmentOperation returns a new DeleteOSPolicyAssignmentOperation from a given name.
 // The name must be that of a previously created DeleteOSPolicyAssignmentOperation, possibly from a different process.
-func (c *OsConfigZonalClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
+func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignmentOperation(name string) *DeleteOSPolicyAssignmentOperation {
 	return &DeleteOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -836,9 +970,9 @@ type UpdateOSPolicyAssignmentOperation struct {
 
 // UpdateOSPolicyAssignmentOperation returns a new UpdateOSPolicyAssignmentOperation from a given name.
 // The name must be that of a previously created UpdateOSPolicyAssignmentOperation, possibly from a different process.
-func (c *OsConfigZonalClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
+func (c *osConfigZonalGRPCClient) UpdateOSPolicyAssignmentOperation(name string) *UpdateOSPolicyAssignmentOperation {
 	return &UpdateOSPolicyAssignmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

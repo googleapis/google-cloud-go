@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.

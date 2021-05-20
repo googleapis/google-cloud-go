@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.ListPoliciesRequest{
 		// TODO: Fill request struct fields.

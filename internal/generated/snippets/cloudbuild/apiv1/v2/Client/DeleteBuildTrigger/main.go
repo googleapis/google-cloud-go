@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudbuildpb.DeleteBuildTriggerRequest{
 		// TODO: Fill request struct fields.

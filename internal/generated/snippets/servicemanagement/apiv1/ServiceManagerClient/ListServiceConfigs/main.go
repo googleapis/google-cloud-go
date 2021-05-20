@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.ListServiceConfigsRequest{
 		// TODO: Fill request struct fields.

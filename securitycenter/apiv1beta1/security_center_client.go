@@ -64,7 +64,7 @@ type CallOptions struct {
 	UpdateSecurityMarks        []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("securitycenter.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("securitycenter.mtls.googleapis.com:443"),
@@ -198,37 +198,213 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Security Command Center API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateSource(context.Context, *securitycenterpb.CreateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
+	CreateFinding(context.Context, *securitycenterpb.CreateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	GetOrganizationSettings(context.Context, *securitycenterpb.GetOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
+	GetSource(context.Context, *securitycenterpb.GetSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
+	GroupAssets(context.Context, *securitycenterpb.GroupAssetsRequest, ...gax.CallOption) *GroupResultIterator
+	GroupFindings(context.Context, *securitycenterpb.GroupFindingsRequest, ...gax.CallOption) *GroupResultIterator
+	ListAssets(context.Context, *securitycenterpb.ListAssetsRequest, ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator
+	ListFindings(context.Context, *securitycenterpb.ListFindingsRequest, ...gax.CallOption) *FindingIterator
+	ListSources(context.Context, *securitycenterpb.ListSourcesRequest, ...gax.CallOption) *SourceIterator
+	RunAssetDiscovery(context.Context, *securitycenterpb.RunAssetDiscoveryRequest, ...gax.CallOption) (*RunAssetDiscoveryOperation, error)
+	RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation
+	SetFindingState(context.Context, *securitycenterpb.SetFindingStateRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	UpdateFinding(context.Context, *securitycenterpb.UpdateFindingRequest, ...gax.CallOption) (*securitycenterpb.Finding, error)
+	UpdateOrganizationSettings(context.Context, *securitycenterpb.UpdateOrganizationSettingsRequest, ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error)
+	UpdateSource(context.Context, *securitycenterpb.UpdateSourceRequest, ...gax.CallOption) (*securitycenterpb.Source, error)
+	UpdateSecurityMarks(context.Context, *securitycenterpb.UpdateSecurityMarksRequest, ...gax.CallOption) (*securitycenterpb.SecurityMarks, error)
+}
+
 // Client is a client for interacting with Security Command Center API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// V1 Beta APIs for Security Center service.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateSource creates a source.
+func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	return c.internalClient.CreateSource(ctx, req, opts...)
+}
+
+// CreateFinding creates a finding. The corresponding source must exist for finding creation
+// to succeed.
+func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.CreateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	return c.internalClient.CreateFinding(ctx, req, opts...)
+}
+
+// GetIamPolicy gets the access control policy on the specified Source.
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// GetOrganizationSettings gets the settings for an organization.
+func (c *Client) GetOrganizationSettings(ctx context.Context, req *securitycenterpb.GetOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
+	return c.internalClient.GetOrganizationSettings(ctx, req, opts...)
+}
+
+// GetSource gets a source.
+func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	return c.internalClient.GetSource(ctx, req, opts...)
+}
+
+// GroupAssets filters an organization’s assets and  groups them by their specified
+// properties.
+func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
+	return c.internalClient.GroupAssets(ctx, req, opts...)
+}
+
+// GroupFindings filters an organization or source’s findings and  groups them by their
+// specified properties.
+//
+// To group across all sources provide a - as the source id.
+// Example: /v1beta1/organizations/{organization_id}/sources/-/findings
+func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
+	return c.internalClient.GroupFindings(ctx, req, opts...)
+}
+
+// ListAssets lists an organization’s assets.
+func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
+	return c.internalClient.ListAssets(ctx, req, opts...)
+}
+
+// ListFindings lists an organization or source’s findings.
+//
+// To list across all sources provide a - as the source id.
+// Example: /v1beta1/organizations/{organization_id}/sources/-/findings
+func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
+	return c.internalClient.ListFindings(ctx, req, opts...)
+}
+
+// ListSources lists all sources belonging to an organization.
+func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
+	return c.internalClient.ListSources(ctx, req, opts...)
+}
+
+// RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running
+// operation.
+//
+// This API can only be called with limited frequency for an organization. If
+// it is called too frequently the caller will receive a TOO_MANY_REQUESTS
+// error.
+func (c *Client) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
+	return c.internalClient.RunAssetDiscovery(ctx, req, opts...)
+}
+
+// RunAssetDiscoveryOperation returns a new RunAssetDiscoveryOperation from a given name.
+// The name must be that of a previously created RunAssetDiscoveryOperation, possibly from a different process.
+func (c *Client) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
+	return c.internalClient.RunAssetDiscoveryOperation(name)
+}
+
+// SetFindingState updates the state of a finding.
+func (c *Client) SetFindingState(ctx context.Context, req *securitycenterpb.SetFindingStateRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	return c.internalClient.SetFindingState(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified Source.
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns the permissions that a caller has on the specified source.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
+// UpdateFinding creates or updates a finding. The corresponding source must exist for a
+// finding creation to succeed.
+func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.UpdateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+	return c.internalClient.UpdateFinding(ctx, req, opts...)
+}
+
+// UpdateOrganizationSettings updates an organization’s settings.
+func (c *Client) UpdateOrganizationSettings(ctx context.Context, req *securitycenterpb.UpdateOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
+	return c.internalClient.UpdateOrganizationSettings(ctx, req, opts...)
+}
+
+// UpdateSource updates a source.
+func (c *Client) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+	return c.internalClient.UpdateSource(ctx, req, opts...)
+}
+
+// UpdateSecurityMarks updates security marks.
+func (c *Client) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.UpdateSecurityMarksRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityMarks, error) {
+	return c.internalClient.UpdateSecurityMarks(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Security Command Center API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client securitycenterpb.SecurityCenterClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new security center client.
+// NewClient creates a new security center client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // V1 Beta APIs for Security Center service.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -246,16 +422,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: securitycenterpb.NewSecurityCenterClient(connPool),
+		client:           securitycenterpb.NewSecurityCenterClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -265,33 +444,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateSource creates a source.
-func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateSource(ctx context.Context, req *securitycenterpb.CreateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -299,7 +478,7 @@ func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateS
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateSource[0:len(c.CallOptions.CreateSource):len(c.CallOptions.CreateSource)], opts...)
+	opts = append((*c.CallOptions).CreateSource[0:len((*c.CallOptions).CreateSource):len((*c.CallOptions).CreateSource)], opts...)
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -312,9 +491,7 @@ func (c *Client) CreateSource(ctx context.Context, req *securitycenterpb.CreateS
 	return resp, nil
 }
 
-// CreateFinding creates a finding. The corresponding source must exist for finding creation
-// to succeed.
-func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.CreateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+func (c *gRPCClient) CreateFinding(ctx context.Context, req *securitycenterpb.CreateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -322,7 +499,7 @@ func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.Create
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateFinding[0:len(c.CallOptions.CreateFinding):len(c.CallOptions.CreateFinding)], opts...)
+	opts = append((*c.CallOptions).CreateFinding[0:len((*c.CallOptions).CreateFinding):len((*c.CallOptions).CreateFinding)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -335,8 +512,7 @@ func (c *Client) CreateFinding(ctx context.Context, req *securitycenterpb.Create
 	return resp, nil
 }
 
-// GetIamPolicy gets the access control policy on the specified Source.
-func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -344,7 +520,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetIamPolicy[0:len(c.CallOptions.GetIamPolicy):len(c.CallOptions.GetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -357,8 +533,7 @@ func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyReques
 	return resp, nil
 }
 
-// GetOrganizationSettings gets the settings for an organization.
-func (c *Client) GetOrganizationSettings(ctx context.Context, req *securitycenterpb.GetOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
+func (c *gRPCClient) GetOrganizationSettings(ctx context.Context, req *securitycenterpb.GetOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -366,7 +541,7 @@ func (c *Client) GetOrganizationSettings(ctx context.Context, req *securitycente
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetOrganizationSettings[0:len(c.CallOptions.GetOrganizationSettings):len(c.CallOptions.GetOrganizationSettings)], opts...)
+	opts = append((*c.CallOptions).GetOrganizationSettings[0:len((*c.CallOptions).GetOrganizationSettings):len((*c.CallOptions).GetOrganizationSettings)], opts...)
 	var resp *securitycenterpb.OrganizationSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -379,8 +554,7 @@ func (c *Client) GetOrganizationSettings(ctx context.Context, req *securitycente
 	return resp, nil
 }
 
-// GetSource gets a source.
-func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+func (c *gRPCClient) GetSource(ctx context.Context, req *securitycenterpb.GetSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -388,7 +562,7 @@ func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetSource[0:len(c.CallOptions.GetSource):len(c.CallOptions.GetSource)], opts...)
+	opts = append((*c.CallOptions).GetSource[0:len((*c.CallOptions).GetSource):len((*c.CallOptions).GetSource)], opts...)
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -401,12 +575,10 @@ func (c *Client) GetSource(ctx context.Context, req *securitycenterpb.GetSourceR
 	return resp, nil
 }
 
-// GroupAssets filters an organization’s assets and  groups them by their specified
-// properties.
-func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
+func (c *gRPCClient) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAssetsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GroupAssets[0:len(c.CallOptions.GroupAssets):len(c.CallOptions.GroupAssets)], opts...)
+	opts = append((*c.CallOptions).GroupAssets[0:len((*c.CallOptions).GroupAssets):len((*c.CallOptions).GroupAssets)], opts...)
 	it := &GroupResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.GroupAssetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
@@ -443,15 +615,10 @@ func (c *Client) GroupAssets(ctx context.Context, req *securitycenterpb.GroupAss
 	return it
 }
 
-// GroupFindings filters an organization or source’s findings and  groups them by their
-// specified properties.
-//
-// To group across all sources provide a - as the source id.
-// Example: /v1beta1/organizations/{organization_id}/sources/-/findings
-func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
+func (c *gRPCClient) GroupFindings(ctx context.Context, req *securitycenterpb.GroupFindingsRequest, opts ...gax.CallOption) *GroupResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GroupFindings[0:len(c.CallOptions.GroupFindings):len(c.CallOptions.GroupFindings)], opts...)
+	opts = append((*c.CallOptions).GroupFindings[0:len((*c.CallOptions).GroupFindings):len((*c.CallOptions).GroupFindings)], opts...)
 	it := &GroupResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.GroupFindingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.GroupResult, string, error) {
@@ -488,11 +655,10 @@ func (c *Client) GroupFindings(ctx context.Context, req *securitycenterpb.GroupF
 	return it
 }
 
-// ListAssets lists an organization’s assets.
-func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
+func (c *gRPCClient) ListAssets(ctx context.Context, req *securitycenterpb.ListAssetsRequest, opts ...gax.CallOption) *ListAssetsResponse_ListAssetsResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAssets[0:len(c.CallOptions.ListAssets):len(c.CallOptions.ListAssets)], opts...)
+	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
 	it := &ListAssetsResponse_ListAssetsResultIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListAssetsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.ListAssetsResponse_ListAssetsResult, string, error) {
@@ -529,14 +695,10 @@ func (c *Client) ListAssets(ctx context.Context, req *securitycenterpb.ListAsset
 	return it
 }
 
-// ListFindings lists an organization or source’s findings.
-//
-// To list across all sources provide a - as the source id.
-// Example: /v1beta1/organizations/{organization_id}/sources/-/findings
-func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
+func (c *gRPCClient) ListFindings(ctx context.Context, req *securitycenterpb.ListFindingsRequest, opts ...gax.CallOption) *FindingIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListFindings[0:len(c.CallOptions.ListFindings):len(c.CallOptions.ListFindings)], opts...)
+	opts = append((*c.CallOptions).ListFindings[0:len((*c.CallOptions).ListFindings):len((*c.CallOptions).ListFindings)], opts...)
 	it := &FindingIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListFindingsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Finding, string, error) {
@@ -573,11 +735,10 @@ func (c *Client) ListFindings(ctx context.Context, req *securitycenterpb.ListFin
 	return it
 }
 
-// ListSources lists all sources belonging to an organization.
-func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
+func (c *gRPCClient) ListSources(ctx context.Context, req *securitycenterpb.ListSourcesRequest, opts ...gax.CallOption) *SourceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListSources[0:len(c.CallOptions.ListSources):len(c.CallOptions.ListSources)], opts...)
+	opts = append((*c.CallOptions).ListSources[0:len((*c.CallOptions).ListSources):len((*c.CallOptions).ListSources)], opts...)
 	it := &SourceIterator{}
 	req = proto.Clone(req).(*securitycenterpb.ListSourcesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*securitycenterpb.Source, string, error) {
@@ -614,13 +775,7 @@ func (c *Client) ListSources(ctx context.Context, req *securitycenterpb.ListSour
 	return it
 }
 
-// RunAssetDiscovery runs asset discovery. The discovery is tracked with a long-running
-// operation.
-//
-// This API can only be called with limited frequency for an organization. If
-// it is called too frequently the caller will receive a TOO_MANY_REQUESTS
-// error.
-func (c *Client) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
+func (c *gRPCClient) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.RunAssetDiscoveryRequest, opts ...gax.CallOption) (*RunAssetDiscoveryOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -628,7 +783,7 @@ func (c *Client) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.Ru
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RunAssetDiscovery[0:len(c.CallOptions.RunAssetDiscovery):len(c.CallOptions.RunAssetDiscovery)], opts...)
+	opts = append((*c.CallOptions).RunAssetDiscovery[0:len((*c.CallOptions).RunAssetDiscovery):len((*c.CallOptions).RunAssetDiscovery)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -639,12 +794,11 @@ func (c *Client) RunAssetDiscovery(ctx context.Context, req *securitycenterpb.Ru
 		return nil, err
 	}
 	return &RunAssetDiscoveryOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// SetFindingState updates the state of a finding.
-func (c *Client) SetFindingState(ctx context.Context, req *securitycenterpb.SetFindingStateRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+func (c *gRPCClient) SetFindingState(ctx context.Context, req *securitycenterpb.SetFindingStateRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -652,7 +806,7 @@ func (c *Client) SetFindingState(ctx context.Context, req *securitycenterpb.SetF
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetFindingState[0:len(c.CallOptions.SetFindingState):len(c.CallOptions.SetFindingState)], opts...)
+	opts = append((*c.CallOptions).SetFindingState[0:len((*c.CallOptions).SetFindingState):len((*c.CallOptions).SetFindingState)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -665,8 +819,7 @@ func (c *Client) SetFindingState(ctx context.Context, req *securitycenterpb.SetF
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified Source.
-func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -674,7 +827,7 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SetIamPolicy[0:len(c.CallOptions.SetIamPolicy):len(c.CallOptions.SetIamPolicy)], opts...)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -687,8 +840,7 @@ func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyReques
 	return resp, nil
 }
 
-// TestIamPermissions returns the permissions that a caller has on the specified source.
-func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -696,7 +848,7 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.TestIamPermissions[0:len(c.CallOptions.TestIamPermissions):len(c.CallOptions.TestIamPermissions)], opts...)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -709,9 +861,7 @@ func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermi
 	return resp, nil
 }
 
-// UpdateFinding creates or updates a finding. The corresponding source must exist for a
-// finding creation to succeed.
-func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.UpdateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
+func (c *gRPCClient) UpdateFinding(ctx context.Context, req *securitycenterpb.UpdateFindingRequest, opts ...gax.CallOption) (*securitycenterpb.Finding, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -719,7 +869,7 @@ func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.Update
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "finding.name", url.QueryEscape(req.GetFinding().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateFinding[0:len(c.CallOptions.UpdateFinding):len(c.CallOptions.UpdateFinding)], opts...)
+	opts = append((*c.CallOptions).UpdateFinding[0:len((*c.CallOptions).UpdateFinding):len((*c.CallOptions).UpdateFinding)], opts...)
 	var resp *securitycenterpb.Finding
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -732,8 +882,7 @@ func (c *Client) UpdateFinding(ctx context.Context, req *securitycenterpb.Update
 	return resp, nil
 }
 
-// UpdateOrganizationSettings updates an organization’s settings.
-func (c *Client) UpdateOrganizationSettings(ctx context.Context, req *securitycenterpb.UpdateOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
+func (c *gRPCClient) UpdateOrganizationSettings(ctx context.Context, req *securitycenterpb.UpdateOrganizationSettingsRequest, opts ...gax.CallOption) (*securitycenterpb.OrganizationSettings, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -741,7 +890,7 @@ func (c *Client) UpdateOrganizationSettings(ctx context.Context, req *securityce
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "organization_settings.name", url.QueryEscape(req.GetOrganizationSettings().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateOrganizationSettings[0:len(c.CallOptions.UpdateOrganizationSettings):len(c.CallOptions.UpdateOrganizationSettings)], opts...)
+	opts = append((*c.CallOptions).UpdateOrganizationSettings[0:len((*c.CallOptions).UpdateOrganizationSettings):len((*c.CallOptions).UpdateOrganizationSettings)], opts...)
 	var resp *securitycenterpb.OrganizationSettings
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -754,8 +903,7 @@ func (c *Client) UpdateOrganizationSettings(ctx context.Context, req *securityce
 	return resp, nil
 }
 
-// UpdateSource updates a source.
-func (c *Client) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
+func (c *gRPCClient) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateSourceRequest, opts ...gax.CallOption) (*securitycenterpb.Source, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -763,7 +911,7 @@ func (c *Client) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateS
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "source.name", url.QueryEscape(req.GetSource().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateSource[0:len(c.CallOptions.UpdateSource):len(c.CallOptions.UpdateSource)], opts...)
+	opts = append((*c.CallOptions).UpdateSource[0:len((*c.CallOptions).UpdateSource):len((*c.CallOptions).UpdateSource)], opts...)
 	var resp *securitycenterpb.Source
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -776,8 +924,7 @@ func (c *Client) UpdateSource(ctx context.Context, req *securitycenterpb.UpdateS
 	return resp, nil
 }
 
-// UpdateSecurityMarks updates security marks.
-func (c *Client) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.UpdateSecurityMarksRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityMarks, error) {
+func (c *gRPCClient) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.UpdateSecurityMarksRequest, opts ...gax.CallOption) (*securitycenterpb.SecurityMarks, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 480000*time.Millisecond)
 		defer cancel()
@@ -785,7 +932,7 @@ func (c *Client) UpdateSecurityMarks(ctx context.Context, req *securitycenterpb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "security_marks.name", url.QueryEscape(req.GetSecurityMarks().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateSecurityMarks[0:len(c.CallOptions.UpdateSecurityMarks):len(c.CallOptions.UpdateSecurityMarks)], opts...)
+	opts = append((*c.CallOptions).UpdateSecurityMarks[0:len((*c.CallOptions).UpdateSecurityMarks):len((*c.CallOptions).UpdateSecurityMarks)], opts...)
 	var resp *securitycenterpb.SecurityMarks
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -805,9 +952,9 @@ type RunAssetDiscoveryOperation struct {
 
 // RunAssetDiscoveryOperation returns a new RunAssetDiscoveryOperation from a given name.
 // The name must be that of a previously created RunAssetDiscoveryOperation, possibly from a different process.
-func (c *Client) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
+func (c *gRPCClient) RunAssetDiscoveryOperation(name string) *RunAssetDiscoveryOperation {
 	return &RunAssetDiscoveryOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

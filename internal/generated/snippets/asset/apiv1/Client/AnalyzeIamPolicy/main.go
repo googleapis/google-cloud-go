@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.AnalyzeIamPolicyRequest{
 		// TODO: Fill request struct fields.

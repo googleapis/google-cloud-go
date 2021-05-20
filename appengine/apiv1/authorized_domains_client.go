@@ -40,7 +40,7 @@ type AuthorizedDomainsCallOptions struct {
 	ListAuthorizedDomains []gax.CallOption
 }
 
-func defaultAuthorizedDomainsClientOptions() []option.ClientOption {
+func defaultAuthorizedDomainsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("appengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("appengine.mtls.googleapis.com:443"),
@@ -58,34 +58,83 @@ func defaultAuthorizedDomainsCallOptions() *AuthorizedDomainsCallOptions {
 	}
 }
 
+// internalAuthorizedDomainsClient is an interface that defines the methods availaible from App Engine Admin API.
+type internalAuthorizedDomainsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListAuthorizedDomains(context.Context, *appenginepb.ListAuthorizedDomainsRequest, ...gax.CallOption) *AuthorizedDomainIterator
+}
+
 // AuthorizedDomainsClient is a client for interacting with App Engine Admin API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages domains a user is authorized to administer. To authorize use of a
+// domain, verify ownership via
+// Webmaster Central (at https://www.google.com/webmasters/verification/home).
+type AuthorizedDomainsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalAuthorizedDomainsClient
+
+	// The call options for this service.
+	CallOptions *AuthorizedDomainsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *AuthorizedDomainsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *AuthorizedDomainsClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *AuthorizedDomainsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListAuthorizedDomains lists all domains the user is authorized to administer.
+func (c *AuthorizedDomainsClient) ListAuthorizedDomains(ctx context.Context, req *appenginepb.ListAuthorizedDomainsRequest, opts ...gax.CallOption) *AuthorizedDomainIterator {
+	return c.internalClient.ListAuthorizedDomains(ctx, req, opts...)
+}
+
+// authorizedDomainsGRPCClient is a client for interacting with App Engine Admin API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type AuthorizedDomainsClient struct {
+type authorizedDomainsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing AuthorizedDomainsClient
+	CallOptions **AuthorizedDomainsCallOptions
+
 	// The gRPC API client.
 	authorizedDomainsClient appenginepb.AuthorizedDomainsClient
-
-	// The call options for this service.
-	CallOptions *AuthorizedDomainsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewAuthorizedDomainsClient creates a new authorized domains client.
+// NewAuthorizedDomainsClient creates a new authorized domains client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Manages domains a user is authorized to administer. To authorize use of a
 // domain, verify ownership via
 // Webmaster Central (at https://www.google.com/webmasters/verification/home).
 func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption) (*AuthorizedDomainsClient, error) {
-	clientOpts := defaultAuthorizedDomainsClientOptions()
-
+	clientOpts := defaultAuthorizedDomainsGRPCClientOptions()
 	if newAuthorizedDomainsClientHook != nil {
 		hookOpts, err := newAuthorizedDomainsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -103,45 +152,47 @@ func NewAuthorizedDomainsClient(ctx context.Context, opts ...option.ClientOption
 	if err != nil {
 		return nil, err
 	}
-	c := &AuthorizedDomainsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultAuthorizedDomainsCallOptions(),
+	client := AuthorizedDomainsClient{CallOptions: defaultAuthorizedDomainsCallOptions()}
 
+	c := &authorizedDomainsGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
 		authorizedDomainsClient: appenginepb.NewAuthorizedDomainsClient(connPool),
+		CallOptions:             &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *AuthorizedDomainsClient) Connection() *grpc.ClientConn {
+func (c *authorizedDomainsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *AuthorizedDomainsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AuthorizedDomainsClient) setGoogleClientInfo(keyval ...string) {
+func (c *authorizedDomainsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListAuthorizedDomains lists all domains the user is authorized to administer.
-func (c *AuthorizedDomainsClient) ListAuthorizedDomains(ctx context.Context, req *appenginepb.ListAuthorizedDomainsRequest, opts ...gax.CallOption) *AuthorizedDomainIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *authorizedDomainsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *authorizedDomainsGRPCClient) ListAuthorizedDomains(ctx context.Context, req *appenginepb.ListAuthorizedDomainsRequest, opts ...gax.CallOption) *AuthorizedDomainIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListAuthorizedDomains[0:len(c.CallOptions.ListAuthorizedDomains):len(c.CallOptions.ListAuthorizedDomains)], opts...)
+	opts = append((*c.CallOptions).ListAuthorizedDomains[0:len((*c.CallOptions).ListAuthorizedDomains):len((*c.CallOptions).ListAuthorizedDomains)], opts...)
 	it := &AuthorizedDomainIterator{}
 	req = proto.Clone(req).(*appenginepb.ListAuthorizedDomainsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*appenginepb.AuthorizedDomain, string, error) {

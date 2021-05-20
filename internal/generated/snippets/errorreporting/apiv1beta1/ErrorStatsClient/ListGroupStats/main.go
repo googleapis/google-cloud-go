@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.ListGroupStatsRequest{
 		// TODO: Fill request struct fields.

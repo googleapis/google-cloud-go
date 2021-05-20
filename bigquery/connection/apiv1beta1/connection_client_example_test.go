@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateConnection() {
-	// import connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.CreateConnectionRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_CreateConnection() {
 }
 
 func ExampleClient_GetConnection() {
-	// import connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.GetConnectionRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClient_GetConnection() {
 }
 
 func ExampleClient_ListConnections() {
-	// import connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.
@@ -95,13 +94,12 @@ func ExampleClient_ListConnections() {
 }
 
 func ExampleClient_UpdateConnection() {
-	// import connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.UpdateConnectionRequest{
 		// TODO: Fill request struct fields.
@@ -120,6 +118,7 @@ func ExampleClient_UpdateConnectionCredential() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.UpdateConnectionCredentialRequest{
 		// TODO: Fill request struct fields.
@@ -136,6 +135,7 @@ func ExampleClient_DeleteConnection() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.DeleteConnectionRequest{
 		// TODO: Fill request struct fields.
@@ -147,13 +147,12 @@ func ExampleClient_DeleteConnection() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -167,13 +166,12 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -187,13 +185,12 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

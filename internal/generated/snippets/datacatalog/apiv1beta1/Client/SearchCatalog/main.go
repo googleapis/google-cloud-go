@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.SearchCatalogRequest{
 		// TODO: Fill request struct fields.

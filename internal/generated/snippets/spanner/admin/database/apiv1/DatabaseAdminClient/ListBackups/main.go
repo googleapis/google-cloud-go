@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.

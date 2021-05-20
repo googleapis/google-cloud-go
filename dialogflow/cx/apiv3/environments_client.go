@@ -51,7 +51,7 @@ type EnvironmentsCallOptions struct {
 	LookupEnvironmentHistory []gax.CallOption
 }
 
-func defaultEnvironmentsClientOptions() []option.ClientOption {
+func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
@@ -134,37 +134,133 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 	}
 }
 
+// internalEnvironmentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalEnvironmentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListEnvironments(context.Context, *cxpb.ListEnvironmentsRequest, ...gax.CallOption) *EnvironmentIterator
+	GetEnvironment(context.Context, *cxpb.GetEnvironmentRequest, ...gax.CallOption) (*cxpb.Environment, error)
+	CreateEnvironment(context.Context, *cxpb.CreateEnvironmentRequest, ...gax.CallOption) (*CreateEnvironmentOperation, error)
+	CreateEnvironmentOperation(name string) *CreateEnvironmentOperation
+	UpdateEnvironment(context.Context, *cxpb.UpdateEnvironmentRequest, ...gax.CallOption) (*UpdateEnvironmentOperation, error)
+	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
+	DeleteEnvironment(context.Context, *cxpb.DeleteEnvironmentRequest, ...gax.CallOption) error
+	LookupEnvironmentHistory(context.Context, *cxpb.LookupEnvironmentHistoryRequest, ...gax.CallOption) *EnvironmentIterator
+}
+
 // EnvironmentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Environments.
+type EnvironmentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalEnvironmentsClient
+
+	// The call options for this service.
+	CallOptions *EnvironmentsCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *EnvironmentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *EnvironmentsClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListEnvironments returns the list of all environments in the specified Agent.
+func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.ListEnvironments(ctx, req, opts...)
+}
+
+// GetEnvironment retrieves the specified Environment.
+func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
+	return c.internalClient.GetEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironment creates an Environment in the specified Agent.
+func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+	return c.internalClient.CreateEnvironment(ctx, req, opts...)
+}
+
+// CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
+// The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
+func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+	return c.internalClient.CreateEnvironmentOperation(name)
+}
+
+// UpdateEnvironment updates the specified Environment.
+func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+	return c.internalClient.UpdateEnvironment(ctx, req, opts...)
+}
+
+// UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
+// The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
+func (c *EnvironmentsClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
+	return c.internalClient.UpdateEnvironmentOperation(name)
+}
+
+// DeleteEnvironment deletes the specified Environment.
+func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteEnvironment(ctx, req, opts...)
+}
+
+// LookupEnvironmentHistory looks up the history of the specified Environment.
+func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
+	return c.internalClient.LookupEnvironmentHistory(ctx, req, opts...)
+}
+
+// environmentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type EnvironmentsClient struct {
+type environmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing EnvironmentsClient
+	CallOptions **EnvironmentsCallOptions
+
 	// The gRPC API client.
 	environmentsClient cxpb.EnvironmentsClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *EnvironmentsCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewEnvironmentsClient creates a new environments client.
+// NewEnvironmentsClient creates a new environments client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Environments.
 func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*EnvironmentsClient, error) {
-	clientOpts := defaultEnvironmentsClientOptions()
-
+	clientOpts := defaultEnvironmentsGRPCClientOptions()
 	if newEnvironmentsClientHook != nil {
 		hookOpts, err := newEnvironmentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -182,16 +278,19 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 	if err != nil {
 		return nil, err
 	}
-	c := &EnvironmentsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultEnvironmentsCallOptions(),
+	client := EnvironmentsClient{CallOptions: defaultEnvironmentsCallOptions()}
 
+	c := &environmentsGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
 		environmentsClient: cxpb.NewEnvironmentsClient(connPool),
+		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -201,36 +300,36 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *EnvironmentsClient) Connection() *grpc.ClientConn {
+func (c *environmentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *EnvironmentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *EnvironmentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *environmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListEnvironments returns the list of all environments in the specified Agent.
-func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *environmentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *environmentsGRPCClient) ListEnvironments(ctx context.Context, req *cxpb.ListEnvironmentsRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListEnvironments[0:len(c.CallOptions.ListEnvironments):len(c.CallOptions.ListEnvironments)], opts...)
+	opts = append((*c.CallOptions).ListEnvironments[0:len((*c.CallOptions).ListEnvironments):len((*c.CallOptions).ListEnvironments)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.ListEnvironmentsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
@@ -267,8 +366,7 @@ func (c *EnvironmentsClient) ListEnvironments(ctx context.Context, req *cxpb.Lis
 	return it
 }
 
-// GetEnvironment retrieves the specified Environment.
-func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
+func (c *environmentsGRPCClient) GetEnvironment(ctx context.Context, req *cxpb.GetEnvironmentRequest, opts ...gax.CallOption) (*cxpb.Environment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -276,7 +374,7 @@ func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEn
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetEnvironment[0:len(c.CallOptions.GetEnvironment):len(c.CallOptions.GetEnvironment)], opts...)
+	opts = append((*c.CallOptions).GetEnvironment[0:len((*c.CallOptions).GetEnvironment):len((*c.CallOptions).GetEnvironment)], opts...)
 	var resp *cxpb.Environment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -289,8 +387,7 @@ func (c *EnvironmentsClient) GetEnvironment(ctx context.Context, req *cxpb.GetEn
 	return resp, nil
 }
 
-// CreateEnvironment creates an Environment in the specified Agent.
-func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
+func (c *environmentsGRPCClient) CreateEnvironment(ctx context.Context, req *cxpb.CreateEnvironmentRequest, opts ...gax.CallOption) (*CreateEnvironmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -298,7 +395,7 @@ func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.Cr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateEnvironment[0:len(c.CallOptions.CreateEnvironment):len(c.CallOptions.CreateEnvironment)], opts...)
+	opts = append((*c.CallOptions).CreateEnvironment[0:len((*c.CallOptions).CreateEnvironment):len((*c.CallOptions).CreateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -309,12 +406,11 @@ func (c *EnvironmentsClient) CreateEnvironment(ctx context.Context, req *cxpb.Cr
 		return nil, err
 	}
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateEnvironment updates the specified Environment.
-func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
+func (c *environmentsGRPCClient) UpdateEnvironment(ctx context.Context, req *cxpb.UpdateEnvironmentRequest, opts ...gax.CallOption) (*UpdateEnvironmentOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -322,7 +418,7 @@ func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.Up
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment.name", url.QueryEscape(req.GetEnvironment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateEnvironment[0:len(c.CallOptions.UpdateEnvironment):len(c.CallOptions.UpdateEnvironment)], opts...)
+	opts = append((*c.CallOptions).UpdateEnvironment[0:len((*c.CallOptions).UpdateEnvironment):len((*c.CallOptions).UpdateEnvironment)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -333,12 +429,11 @@ func (c *EnvironmentsClient) UpdateEnvironment(ctx context.Context, req *cxpb.Up
 		return nil, err
 	}
 	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteEnvironment deletes the specified Environment.
-func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
+func (c *environmentsGRPCClient) DeleteEnvironment(ctx context.Context, req *cxpb.DeleteEnvironmentRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -346,7 +441,7 @@ func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.De
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteEnvironment[0:len(c.CallOptions.DeleteEnvironment):len(c.CallOptions.DeleteEnvironment)], opts...)
+	opts = append((*c.CallOptions).DeleteEnvironment[0:len((*c.CallOptions).DeleteEnvironment):len((*c.CallOptions).DeleteEnvironment)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.environmentsClient.DeleteEnvironment(ctx, req, settings.GRPC...)
@@ -355,11 +450,10 @@ func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.De
 	return err
 }
 
-// LookupEnvironmentHistory looks up the history of the specified Environment.
-func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
+func (c *environmentsGRPCClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.LookupEnvironmentHistory[0:len(c.CallOptions.LookupEnvironmentHistory):len(c.CallOptions.LookupEnvironmentHistory)], opts...)
+	opts = append((*c.CallOptions).LookupEnvironmentHistory[0:len((*c.CallOptions).LookupEnvironmentHistory):len((*c.CallOptions).LookupEnvironmentHistory)], opts...)
 	it := &EnvironmentIterator{}
 	req = proto.Clone(req).(*cxpb.LookupEnvironmentHistoryRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.Environment, string, error) {
@@ -403,9 +497,9 @@ type CreateEnvironmentOperation struct {
 
 // CreateEnvironmentOperation returns a new CreateEnvironmentOperation from a given name.
 // The name must be that of a previously created CreateEnvironmentOperation, possibly from a different process.
-func (c *EnvironmentsClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
+func (c *environmentsGRPCClient) CreateEnvironmentOperation(name string) *CreateEnvironmentOperation {
 	return &CreateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -472,9 +566,9 @@ type UpdateEnvironmentOperation struct {
 
 // UpdateEnvironmentOperation returns a new UpdateEnvironmentOperation from a given name.
 // The name must be that of a previously created UpdateEnvironmentOperation, possibly from a different process.
-func (c *EnvironmentsClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
+func (c *environmentsGRPCClient) UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation {
 	return &UpdateEnvironmentOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

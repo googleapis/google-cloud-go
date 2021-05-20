@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.GetProfileRequest{
 		// TODO: Fill request struct fields.
