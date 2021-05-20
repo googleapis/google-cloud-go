@@ -37,13 +37,13 @@ var legacyUseProd string
 var integrationConfig IntegrationTestConfig
 
 var (
-	instanceToCreate      string
-	instanceToCreateZone  string
-	instanceToCreateZone2 string
-	blackholeDpv6Cmd      string
-	blackholeDpv4Cmd      string
-	allowDpv6Cmd          string
-	allowDpv4Cmd          string
+	runCreateInstanceTests bool
+	instanceToCreateZone   string
+	instanceToCreateZone2  string
+	blackholeDpv6Cmd       string
+	blackholeDpv4Cmd       string
+	allowDpv6Cmd           string
+	allowDpv4Cmd           string
 )
 
 func init() {
@@ -63,8 +63,8 @@ func init() {
 	flag.StringVar(&legacyUseProd, "use_prod", "", `DEPRECATED: if set to "proj,instance,table", run integration test against production`)
 
 	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
-	flag.StringVar(&instanceToCreate, "it.instance-to-create", "",
-		"The id of an instance to create, update and delete. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
+	flag.BoolVar(&runCreateInstanceTests, "it.run-create-instance-tests", true,
+		"Run tests that create instances as part of executing. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
 	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
 		"The zone in which to create the new test instance.")
 	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",

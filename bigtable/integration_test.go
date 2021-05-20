@@ -75,8 +75,12 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
-func init() {
+var instanceToCreate string
 
+func init() {
+	if runCreateInstanceTests {
+		instanceToCreate = fmt.Sprintf("gcp-create-%d", time.Now().Unix())
+	}
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
