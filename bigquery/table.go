@@ -230,6 +230,7 @@ func bqToMaterializedViewDefinition(q *bq.MaterializedViewDefinition) *Materiali
 	}
 }
 
+// SnapshotDefinition provides metadata related to the origin of a snapshot.
 type SnapshotDefinition struct {
 
 	// BaseTableReference describes the ID of the table that this snapshot
