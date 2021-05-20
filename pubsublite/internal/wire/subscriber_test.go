@@ -1078,28 +1078,6 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 	}
 }
 
-func TestNewSubscriberCreatesCorrectImpl(t *testing.T) {
-	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
-	const region = "us-central1"
-	receiver := newTestMessageReceiver(t)
-
-	sub, err := NewSubscriber(context.Background(), DefaultReceiveSettings, receiver.onMessage, region, subscription)
-	if err != nil {
-		t.Errorf("NewSubscriber() got error: %v", err)
-	} else if _, ok := sub.(*assigningSubscriber); !ok {
-		t.Error("NewSubscriber() did not return a assigningSubscriber")
-	}
-
-	settings := DefaultReceiveSettings
-	settings.Partitions = []int{1, 2, 3}
-	sub, err = NewSubscriber(context.Background(), settings, receiver.onMessage, region, subscription)
-	if err != nil {
-		t.Errorf("NewSubscriber() got error: %v", err)
-	} else if _, ok := sub.(*multiPartitionSubscriber); !ok {
-		t.Error("NewSubscriber() did not return a multiPartitionSubscriber")
-	}
-}
-
 func TestNewSubscriberValidatesSettings(t *testing.T) {
 	const subscription = "projects/123456/locations/us-central1-b/subscriptions/my-sub"
 	const region = "us-central1"
