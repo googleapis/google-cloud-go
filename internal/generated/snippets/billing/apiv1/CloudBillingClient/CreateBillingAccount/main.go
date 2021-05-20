@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.CreateBillingAccountRequest{
 		// TODO: Fill request struct fields.

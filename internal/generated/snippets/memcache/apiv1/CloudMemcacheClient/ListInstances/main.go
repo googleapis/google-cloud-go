@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.

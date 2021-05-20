@@ -21,8 +21,8 @@
 // be associated with a Workspace, with a few exceptions as noted on the
 // individual method pages. The table entries below are presented in
 // alphabetical order, not in order of common use. For explanations of the
-// concepts found in the table entries, read the [Cloud Monitoring
-// documentation](/monitoring/docs).
+// concepts found in the table entries, read the Cloud Monitoring
+// documentation (at /monitoring/docs).
 //
 // Use of Context
 //
@@ -33,7 +33,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package dashboard // import "cloud.google.com/go/monitoring/dashboard/apiv1"
 
 import (
@@ -53,7 +53,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210518"
+const versionClient = "20210520"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

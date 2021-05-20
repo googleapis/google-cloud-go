@@ -46,7 +46,7 @@ type ConversationsCallOptions struct {
 	ListMessages         []gax.CallOption
 }
 
-func defaultConversationsClientOptions() []option.ClientOption {
+func defaultConversationsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
@@ -118,81 +118,50 @@ func defaultConversationsCallOptions() *ConversationsCallOptions {
 	}
 }
 
+// internalConversationsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalConversationsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateConversation(context.Context, *dialogflowpb.CreateConversationRequest, ...gax.CallOption) (*dialogflowpb.Conversation, error)
+	ListConversations(context.Context, *dialogflowpb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
+	GetConversation(context.Context, *dialogflowpb.GetConversationRequest, ...gax.CallOption) (*dialogflowpb.Conversation, error)
+	CompleteConversation(context.Context, *dialogflowpb.CompleteConversationRequest, ...gax.CallOption) (*dialogflowpb.Conversation, error)
+	ListMessages(context.Context, *dialogflowpb.ListMessagesRequest, ...gax.CallOption) *MessageIterator
+}
+
 // ConversationsClient is a client for interacting with Dialogflow API.
-//
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Conversations.
 type ConversationsClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	conversationsClient dialogflowpb.ConversationsClient
+	// The internal transport-dependent client.
+	internalClient internalConversationsClient
 
 	// The call options for this service.
 	CallOptions *ConversationsCallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
 }
 
-// NewConversationsClient creates a new conversations client.
-//
-// Service for managing Conversations.
-func NewConversationsClient(ctx context.Context, opts ...option.ClientOption) (*ConversationsClient, error) {
-	clientOpts := defaultConversationsClientOptions()
+// Wrapper methods routed to the internal client.
 
-	if newConversationsClientHook != nil {
-		hookOpts, err := newConversationsClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ConversationsClient) Close() error {
+	return c.internalClient.Close()
+}
 
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &ConversationsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultConversationsCallOptions(),
-
-		conversationsClient: dialogflowpb.NewConversationsClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	return c, nil
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ConversationsClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
 func (c *ConversationsClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ConversationsClient) Close() error {
-	return c.connPool.Close()
-}
-
-// setGoogleClientInfo sets the name and version of the application in
-// the `x-goog-api-client` header passed on each request. Intended for
-// use by Google-written clients.
-func (c *ConversationsClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	return c.internalClient.Connection()
 }
 
 // CreateConversation creates a new conversation. Conversations are auto-completed after 24
@@ -214,6 +183,114 @@ func (c *ConversationsClient) setGoogleClientInfo(keyval ...string) {
 // Intent with Intent.live_agent_handoff is triggered, conversation
 // will transfer to Assist Stage.
 func (c *ConversationsClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
+	return c.internalClient.CreateConversation(ctx, req, opts...)
+}
+
+// ListConversations returns the list of all conversations in the specified project.
+func (c *ConversationsClient) ListConversations(ctx context.Context, req *dialogflowpb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
+	return c.internalClient.ListConversations(ctx, req, opts...)
+}
+
+// GetConversation retrieves the specific conversation.
+func (c *ConversationsClient) GetConversation(ctx context.Context, req *dialogflowpb.GetConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
+	return c.internalClient.GetConversation(ctx, req, opts...)
+}
+
+// CompleteConversation completes the specified conversation. Finished conversations are purged
+// from the database after 30 days.
+func (c *ConversationsClient) CompleteConversation(ctx context.Context, req *dialogflowpb.CompleteConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
+	return c.internalClient.CompleteConversation(ctx, req, opts...)
+}
+
+// ListMessages lists messages that belong to a given conversation.
+// messages are ordered by create_time in descending order. To fetch
+// updates without duplication, send request with filter
+// create_time_epoch_microseconds > [first item's create_time of previous request] and empty page_token.
+func (c *ConversationsClient) ListMessages(ctx context.Context, req *dialogflowpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
+	return c.internalClient.ListMessages(ctx, req, opts...)
+}
+
+// conversationsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type conversationsGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing ConversationsClient
+	CallOptions **ConversationsCallOptions
+
+	// The gRPC API client.
+	conversationsClient dialogflowpb.ConversationsClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewConversationsClient creates a new conversations client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Service for managing Conversations.
+func NewConversationsClient(ctx context.Context, opts ...option.ClientOption) (*ConversationsClient, error) {
+	clientOpts := defaultConversationsGRPCClientOptions()
+	if newConversationsClientHook != nil {
+		hookOpts, err := newConversationsClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := ConversationsClient{CallOptions: defaultConversationsCallOptions()}
+
+	c := &conversationsGRPCClient{
+		connPool:            connPool,
+		disableDeadlines:    disableDeadlines,
+		conversationsClient: dialogflowpb.NewConversationsClient(connPool),
+		CallOptions:         &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *conversationsGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *conversationsGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *conversationsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *conversationsGRPCClient) CreateConversation(ctx context.Context, req *dialogflowpb.CreateConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -221,7 +298,7 @@ func (c *ConversationsClient) CreateConversation(ctx context.Context, req *dialo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateConversation[0:len(c.CallOptions.CreateConversation):len(c.CallOptions.CreateConversation)], opts...)
+	opts = append((*c.CallOptions).CreateConversation[0:len((*c.CallOptions).CreateConversation):len((*c.CallOptions).CreateConversation)], opts...)
 	var resp *dialogflowpb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -234,11 +311,10 @@ func (c *ConversationsClient) CreateConversation(ctx context.Context, req *dialo
 	return resp, nil
 }
 
-// ListConversations returns the list of all conversations in the specified project.
-func (c *ConversationsClient) ListConversations(ctx context.Context, req *dialogflowpb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
+func (c *conversationsGRPCClient) ListConversations(ctx context.Context, req *dialogflowpb.ListConversationsRequest, opts ...gax.CallOption) *ConversationIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListConversations[0:len(c.CallOptions.ListConversations):len(c.CallOptions.ListConversations)], opts...)
+	opts = append((*c.CallOptions).ListConversations[0:len((*c.CallOptions).ListConversations):len((*c.CallOptions).ListConversations)], opts...)
 	it := &ConversationIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListConversationsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Conversation, string, error) {
@@ -275,8 +351,7 @@ func (c *ConversationsClient) ListConversations(ctx context.Context, req *dialog
 	return it
 }
 
-// GetConversation retrieves the specific conversation.
-func (c *ConversationsClient) GetConversation(ctx context.Context, req *dialogflowpb.GetConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
+func (c *conversationsGRPCClient) GetConversation(ctx context.Context, req *dialogflowpb.GetConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -284,7 +359,7 @@ func (c *ConversationsClient) GetConversation(ctx context.Context, req *dialogfl
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetConversation[0:len(c.CallOptions.GetConversation):len(c.CallOptions.GetConversation)], opts...)
+	opts = append((*c.CallOptions).GetConversation[0:len((*c.CallOptions).GetConversation):len((*c.CallOptions).GetConversation)], opts...)
 	var resp *dialogflowpb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -297,9 +372,7 @@ func (c *ConversationsClient) GetConversation(ctx context.Context, req *dialogfl
 	return resp, nil
 }
 
-// CompleteConversation completes the specified conversation. Finished conversations are purged
-// from the database after 30 days.
-func (c *ConversationsClient) CompleteConversation(ctx context.Context, req *dialogflowpb.CompleteConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
+func (c *conversationsGRPCClient) CompleteConversation(ctx context.Context, req *dialogflowpb.CompleteConversationRequest, opts ...gax.CallOption) (*dialogflowpb.Conversation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -307,7 +380,7 @@ func (c *ConversationsClient) CompleteConversation(ctx context.Context, req *dia
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CompleteConversation[0:len(c.CallOptions.CompleteConversation):len(c.CallOptions.CompleteConversation)], opts...)
+	opts = append((*c.CallOptions).CompleteConversation[0:len((*c.CallOptions).CompleteConversation):len((*c.CallOptions).CompleteConversation)], opts...)
 	var resp *dialogflowpb.Conversation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -320,14 +393,10 @@ func (c *ConversationsClient) CompleteConversation(ctx context.Context, req *dia
 	return resp, nil
 }
 
-// ListMessages lists messages that belong to a given conversation.
-// messages are ordered by create_time in descending order. To fetch
-// updates without duplication, send request with filter
-// create_time_epoch_microseconds > [first item's create_time of previous request] and empty page_token.
-func (c *ConversationsClient) ListMessages(ctx context.Context, req *dialogflowpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
+func (c *conversationsGRPCClient) ListMessages(ctx context.Context, req *dialogflowpb.ListMessagesRequest, opts ...gax.CallOption) *MessageIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListMessages[0:len(c.CallOptions.ListMessages):len(c.CallOptions.ListMessages)], opts...)
+	opts = append((*c.CallOptions).ListMessages[0:len((*c.CallOptions).ListMessages):len((*c.CallOptions).ListMessages)], opts...)
 	it := &MessageIterator{}
 	req = proto.Clone(req).(*dialogflowpb.ListMessagesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dialogflowpb.Message, string, error) {

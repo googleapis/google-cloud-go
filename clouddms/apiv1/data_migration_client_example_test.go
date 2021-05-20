@@ -30,19 +30,19 @@ func ExampleNewDataMigrationClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDataMigrationClient_ListMigrationJobs() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.ListMigrationJobsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleDataMigrationClient_ListMigrationJobs() {
 }
 
 func ExampleDataMigrationClient_GetMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.GetMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleDataMigrationClient_GetMigrationJob() {
 }
 
 func ExampleDataMigrationClient_CreateMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.CreateMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleDataMigrationClient_CreateMigrationJob() {
 }
 
 func ExampleDataMigrationClient_UpdateMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.UpdateMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleDataMigrationClient_UpdateMigrationJob() {
 }
 
 func ExampleDataMigrationClient_DeleteMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.DeleteMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +151,12 @@ func ExampleDataMigrationClient_DeleteMigrationJob() {
 }
 
 func ExampleDataMigrationClient_StartMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.StartMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -180,13 +175,12 @@ func ExampleDataMigrationClient_StartMigrationJob() {
 }
 
 func ExampleDataMigrationClient_StopMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.StopMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -205,13 +199,12 @@ func ExampleDataMigrationClient_StopMigrationJob() {
 }
 
 func ExampleDataMigrationClient_ResumeMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.ResumeMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -230,13 +223,12 @@ func ExampleDataMigrationClient_ResumeMigrationJob() {
 }
 
 func ExampleDataMigrationClient_PromoteMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.PromoteMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -255,13 +247,12 @@ func ExampleDataMigrationClient_PromoteMigrationJob() {
 }
 
 func ExampleDataMigrationClient_VerifyMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.VerifyMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -280,13 +271,12 @@ func ExampleDataMigrationClient_VerifyMigrationJob() {
 }
 
 func ExampleDataMigrationClient_RestartMigrationJob() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.RestartMigrationJobRequest{
 		// TODO: Fill request struct fields.
@@ -305,13 +295,12 @@ func ExampleDataMigrationClient_RestartMigrationJob() {
 }
 
 func ExampleDataMigrationClient_GenerateSshScript() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.GenerateSshScriptRequest{
 		// TODO: Fill request struct fields.
@@ -325,14 +314,12 @@ func ExampleDataMigrationClient_GenerateSshScript() {
 }
 
 func ExampleDataMigrationClient_ListConnectionProfiles() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.ListConnectionProfilesRequest{
 		// TODO: Fill request struct fields.
@@ -352,13 +339,12 @@ func ExampleDataMigrationClient_ListConnectionProfiles() {
 }
 
 func ExampleDataMigrationClient_GetConnectionProfile() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.GetConnectionProfileRequest{
 		// TODO: Fill request struct fields.
@@ -372,13 +358,12 @@ func ExampleDataMigrationClient_GetConnectionProfile() {
 }
 
 func ExampleDataMigrationClient_CreateConnectionProfile() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.CreateConnectionProfileRequest{
 		// TODO: Fill request struct fields.
@@ -397,13 +382,12 @@ func ExampleDataMigrationClient_CreateConnectionProfile() {
 }
 
 func ExampleDataMigrationClient_UpdateConnectionProfile() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.UpdateConnectionProfileRequest{
 		// TODO: Fill request struct fields.
@@ -422,13 +406,12 @@ func ExampleDataMigrationClient_UpdateConnectionProfile() {
 }
 
 func ExampleDataMigrationClient_DeleteConnectionProfile() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.DeleteConnectionProfileRequest{
 		// TODO: Fill request struct fields.

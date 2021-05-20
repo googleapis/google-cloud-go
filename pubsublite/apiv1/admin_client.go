@@ -53,7 +53,7 @@ type AdminCallOptions struct {
 	DeleteSubscription     []gax.CallOption
 }
 
-func defaultAdminClientOptions() []option.ClientOption {
+func defaultAdminGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("pubsublite.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("pubsublite.mtls.googleapis.com:443"),
@@ -250,33 +250,147 @@ func defaultAdminCallOptions() *AdminCallOptions {
 	}
 }
 
+// internalAdminClient is an interface that defines the methods availaible from Pub/Sub Lite API.
+type internalAdminClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateTopic(context.Context, *pubsublitepb.CreateTopicRequest, ...gax.CallOption) (*pubsublitepb.Topic, error)
+	GetTopic(context.Context, *pubsublitepb.GetTopicRequest, ...gax.CallOption) (*pubsublitepb.Topic, error)
+	GetTopicPartitions(context.Context, *pubsublitepb.GetTopicPartitionsRequest, ...gax.CallOption) (*pubsublitepb.TopicPartitions, error)
+	ListTopics(context.Context, *pubsublitepb.ListTopicsRequest, ...gax.CallOption) *TopicIterator
+	UpdateTopic(context.Context, *pubsublitepb.UpdateTopicRequest, ...gax.CallOption) (*pubsublitepb.Topic, error)
+	DeleteTopic(context.Context, *pubsublitepb.DeleteTopicRequest, ...gax.CallOption) error
+	ListTopicSubscriptions(context.Context, *pubsublitepb.ListTopicSubscriptionsRequest, ...gax.CallOption) *StringIterator
+	CreateSubscription(context.Context, *pubsublitepb.CreateSubscriptionRequest, ...gax.CallOption) (*pubsublitepb.Subscription, error)
+	GetSubscription(context.Context, *pubsublitepb.GetSubscriptionRequest, ...gax.CallOption) (*pubsublitepb.Subscription, error)
+	ListSubscriptions(context.Context, *pubsublitepb.ListSubscriptionsRequest, ...gax.CallOption) *SubscriptionIterator
+	UpdateSubscription(context.Context, *pubsublitepb.UpdateSubscriptionRequest, ...gax.CallOption) (*pubsublitepb.Subscription, error)
+	DeleteSubscription(context.Context, *pubsublitepb.DeleteSubscriptionRequest, ...gax.CallOption) error
+}
+
 // AdminClient is a client for interacting with Pub/Sub Lite API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// The service that a client application uses to manage topics and
+// subscriptions, such creating, listing, and deleting topics and subscriptions.
+type AdminClient struct {
+	// The internal transport-dependent client.
+	internalClient internalAdminClient
+
+	// The call options for this service.
+	CallOptions *AdminCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *AdminClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *AdminClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *AdminClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateTopic creates a new topic.
+func (c *AdminClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
+	return c.internalClient.CreateTopic(ctx, req, opts...)
+}
+
+// GetTopic returns the topic configuration.
+func (c *AdminClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
+	return c.internalClient.GetTopic(ctx, req, opts...)
+}
+
+// GetTopicPartitions returns the partition information for the requested topic.
+func (c *AdminClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.GetTopicPartitionsRequest, opts ...gax.CallOption) (*pubsublitepb.TopicPartitions, error) {
+	return c.internalClient.GetTopicPartitions(ctx, req, opts...)
+}
+
+// ListTopics returns the list of topics for the given project.
+func (c *AdminClient) ListTopics(ctx context.Context, req *pubsublitepb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
+	return c.internalClient.ListTopics(ctx, req, opts...)
+}
+
+// UpdateTopic updates properties of the specified topic.
+func (c *AdminClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
+	return c.internalClient.UpdateTopic(ctx, req, opts...)
+}
+
+// DeleteTopic deletes the specified topic.
+func (c *AdminClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteTopicRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTopic(ctx, req, opts...)
+}
+
+// ListTopicSubscriptions lists the subscriptions attached to the specified topic.
+func (c *AdminClient) ListTopicSubscriptions(ctx context.Context, req *pubsublitepb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
+	return c.internalClient.ListTopicSubscriptions(ctx, req, opts...)
+}
+
+// CreateSubscription creates a new subscription.
+func (c *AdminClient) CreateSubscription(ctx context.Context, req *pubsublitepb.CreateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
+	return c.internalClient.CreateSubscription(ctx, req, opts...)
+}
+
+// GetSubscription returns the subscription configuration.
+func (c *AdminClient) GetSubscription(ctx context.Context, req *pubsublitepb.GetSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
+	return c.internalClient.GetSubscription(ctx, req, opts...)
+}
+
+// ListSubscriptions returns the list of subscriptions for the given project.
+func (c *AdminClient) ListSubscriptions(ctx context.Context, req *pubsublitepb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+	return c.internalClient.ListSubscriptions(ctx, req, opts...)
+}
+
+// UpdateSubscription updates properties of the specified subscription.
+func (c *AdminClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
+	return c.internalClient.UpdateSubscription(ctx, req, opts...)
+}
+
+// DeleteSubscription deletes the specified subscription.
+func (c *AdminClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.DeleteSubscriptionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteSubscription(ctx, req, opts...)
+}
+
+// adminGRPCClient is a client for interacting with Pub/Sub Lite API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type AdminClient struct {
+type adminGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing AdminClient
+	CallOptions **AdminCallOptions
+
 	// The gRPC API client.
 	adminClient pubsublitepb.AdminServiceClient
-
-	// The call options for this service.
-	CallOptions *AdminCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewAdminClient creates a new admin service client.
+// NewAdminClient creates a new admin service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // The service that a client application uses to manage topics and
 // subscriptions, such creating, listing, and deleting topics and subscriptions.
 func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminClient, error) {
-	clientOpts := defaultAdminClientOptions()
-
+	clientOpts := defaultAdminGRPCClientOptions()
 	if newAdminClientHook != nil {
 		hookOpts, err := newAdminClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -294,42 +408,44 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 	if err != nil {
 		return nil, err
 	}
-	c := &AdminClient{
+	client := AdminClient{CallOptions: defaultAdminCallOptions()}
+
+	c := &adminGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultAdminCallOptions(),
-
-		adminClient: pubsublitepb.NewAdminServiceClient(connPool),
+		adminClient:      pubsublitepb.NewAdminServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *AdminClient) Connection() *grpc.ClientConn {
+func (c *adminGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *AdminClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *AdminClient) setGoogleClientInfo(keyval ...string) {
+func (c *adminGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateTopic creates a new topic.
-func (c *AdminClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *adminGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *adminGRPCClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -337,7 +453,7 @@ func (c *AdminClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateT
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTopic[0:len(c.CallOptions.CreateTopic):len(c.CallOptions.CreateTopic)], opts...)
+	opts = append((*c.CallOptions).CreateTopic[0:len((*c.CallOptions).CreateTopic):len((*c.CallOptions).CreateTopic)], opts...)
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -350,8 +466,7 @@ func (c *AdminClient) CreateTopic(ctx context.Context, req *pubsublitepb.CreateT
 	return resp, nil
 }
 
-// GetTopic returns the topic configuration.
-func (c *AdminClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
+func (c *adminGRPCClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -359,7 +474,7 @@ func (c *AdminClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTopic[0:len(c.CallOptions.GetTopic):len(c.CallOptions.GetTopic)], opts...)
+	opts = append((*c.CallOptions).GetTopic[0:len((*c.CallOptions).GetTopic):len((*c.CallOptions).GetTopic)], opts...)
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -372,8 +487,7 @@ func (c *AdminClient) GetTopic(ctx context.Context, req *pubsublitepb.GetTopicRe
 	return resp, nil
 }
 
-// GetTopicPartitions returns the partition information for the requested topic.
-func (c *AdminClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.GetTopicPartitionsRequest, opts ...gax.CallOption) (*pubsublitepb.TopicPartitions, error) {
+func (c *adminGRPCClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.GetTopicPartitionsRequest, opts ...gax.CallOption) (*pubsublitepb.TopicPartitions, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -381,7 +495,7 @@ func (c *AdminClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTopicPartitions[0:len(c.CallOptions.GetTopicPartitions):len(c.CallOptions.GetTopicPartitions)], opts...)
+	opts = append((*c.CallOptions).GetTopicPartitions[0:len((*c.CallOptions).GetTopicPartitions):len((*c.CallOptions).GetTopicPartitions)], opts...)
 	var resp *pubsublitepb.TopicPartitions
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -394,11 +508,10 @@ func (c *AdminClient) GetTopicPartitions(ctx context.Context, req *pubsublitepb.
 	return resp, nil
 }
 
-// ListTopics returns the list of topics for the given project.
-func (c *AdminClient) ListTopics(ctx context.Context, req *pubsublitepb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
+func (c *adminGRPCClient) ListTopics(ctx context.Context, req *pubsublitepb.ListTopicsRequest, opts ...gax.CallOption) *TopicIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTopics[0:len(c.CallOptions.ListTopics):len(c.CallOptions.ListTopics)], opts...)
+	opts = append((*c.CallOptions).ListTopics[0:len((*c.CallOptions).ListTopics):len((*c.CallOptions).ListTopics)], opts...)
 	it := &TopicIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListTopicsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.Topic, string, error) {
@@ -435,8 +548,7 @@ func (c *AdminClient) ListTopics(ctx context.Context, req *pubsublitepb.ListTopi
 	return it
 }
 
-// UpdateTopic updates properties of the specified topic.
-func (c *AdminClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
+func (c *adminGRPCClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateTopicRequest, opts ...gax.CallOption) (*pubsublitepb.Topic, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -444,7 +556,7 @@ func (c *AdminClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateT
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "topic.name", url.QueryEscape(req.GetTopic().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateTopic[0:len(c.CallOptions.UpdateTopic):len(c.CallOptions.UpdateTopic)], opts...)
+	opts = append((*c.CallOptions).UpdateTopic[0:len((*c.CallOptions).UpdateTopic):len((*c.CallOptions).UpdateTopic)], opts...)
 	var resp *pubsublitepb.Topic
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -457,8 +569,7 @@ func (c *AdminClient) UpdateTopic(ctx context.Context, req *pubsublitepb.UpdateT
 	return resp, nil
 }
 
-// DeleteTopic deletes the specified topic.
-func (c *AdminClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteTopicRequest, opts ...gax.CallOption) error {
+func (c *adminGRPCClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteTopicRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -466,7 +577,7 @@ func (c *AdminClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteT
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteTopic[0:len(c.CallOptions.DeleteTopic):len(c.CallOptions.DeleteTopic)], opts...)
+	opts = append((*c.CallOptions).DeleteTopic[0:len((*c.CallOptions).DeleteTopic):len((*c.CallOptions).DeleteTopic)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.adminClient.DeleteTopic(ctx, req, settings.GRPC...)
@@ -475,11 +586,10 @@ func (c *AdminClient) DeleteTopic(ctx context.Context, req *pubsublitepb.DeleteT
 	return err
 }
 
-// ListTopicSubscriptions lists the subscriptions attached to the specified topic.
-func (c *AdminClient) ListTopicSubscriptions(ctx context.Context, req *pubsublitepb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
+func (c *adminGRPCClient) ListTopicSubscriptions(ctx context.Context, req *pubsublitepb.ListTopicSubscriptionsRequest, opts ...gax.CallOption) *StringIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTopicSubscriptions[0:len(c.CallOptions.ListTopicSubscriptions):len(c.CallOptions.ListTopicSubscriptions)], opts...)
+	opts = append((*c.CallOptions).ListTopicSubscriptions[0:len((*c.CallOptions).ListTopicSubscriptions):len((*c.CallOptions).ListTopicSubscriptions)], opts...)
 	it := &StringIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListTopicSubscriptionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
@@ -516,8 +626,7 @@ func (c *AdminClient) ListTopicSubscriptions(ctx context.Context, req *pubsublit
 	return it
 }
 
-// CreateSubscription creates a new subscription.
-func (c *AdminClient) CreateSubscription(ctx context.Context, req *pubsublitepb.CreateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
+func (c *adminGRPCClient) CreateSubscription(ctx context.Context, req *pubsublitepb.CreateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -525,7 +634,7 @@ func (c *AdminClient) CreateSubscription(ctx context.Context, req *pubsublitepb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateSubscription[0:len(c.CallOptions.CreateSubscription):len(c.CallOptions.CreateSubscription)], opts...)
+	opts = append((*c.CallOptions).CreateSubscription[0:len((*c.CallOptions).CreateSubscription):len((*c.CallOptions).CreateSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -538,8 +647,7 @@ func (c *AdminClient) CreateSubscription(ctx context.Context, req *pubsublitepb.
 	return resp, nil
 }
 
-// GetSubscription returns the subscription configuration.
-func (c *AdminClient) GetSubscription(ctx context.Context, req *pubsublitepb.GetSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
+func (c *adminGRPCClient) GetSubscription(ctx context.Context, req *pubsublitepb.GetSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -547,7 +655,7 @@ func (c *AdminClient) GetSubscription(ctx context.Context, req *pubsublitepb.Get
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetSubscription[0:len(c.CallOptions.GetSubscription):len(c.CallOptions.GetSubscription)], opts...)
+	opts = append((*c.CallOptions).GetSubscription[0:len((*c.CallOptions).GetSubscription):len((*c.CallOptions).GetSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -560,11 +668,10 @@ func (c *AdminClient) GetSubscription(ctx context.Context, req *pubsublitepb.Get
 	return resp, nil
 }
 
-// ListSubscriptions returns the list of subscriptions for the given project.
-func (c *AdminClient) ListSubscriptions(ctx context.Context, req *pubsublitepb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
+func (c *adminGRPCClient) ListSubscriptions(ctx context.Context, req *pubsublitepb.ListSubscriptionsRequest, opts ...gax.CallOption) *SubscriptionIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListSubscriptions[0:len(c.CallOptions.ListSubscriptions):len(c.CallOptions.ListSubscriptions)], opts...)
+	opts = append((*c.CallOptions).ListSubscriptions[0:len((*c.CallOptions).ListSubscriptions):len((*c.CallOptions).ListSubscriptions)], opts...)
 	it := &SubscriptionIterator{}
 	req = proto.Clone(req).(*pubsublitepb.ListSubscriptionsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.Subscription, string, error) {
@@ -601,8 +708,7 @@ func (c *AdminClient) ListSubscriptions(ctx context.Context, req *pubsublitepb.L
 	return it
 }
 
-// UpdateSubscription updates properties of the specified subscription.
-func (c *AdminClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
+func (c *adminGRPCClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.UpdateSubscriptionRequest, opts ...gax.CallOption) (*pubsublitepb.Subscription, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -610,7 +716,7 @@ func (c *AdminClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "subscription.name", url.QueryEscape(req.GetSubscription().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateSubscription[0:len(c.CallOptions.UpdateSubscription):len(c.CallOptions.UpdateSubscription)], opts...)
+	opts = append((*c.CallOptions).UpdateSubscription[0:len((*c.CallOptions).UpdateSubscription):len((*c.CallOptions).UpdateSubscription)], opts...)
 	var resp *pubsublitepb.Subscription
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -623,8 +729,7 @@ func (c *AdminClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.
 	return resp, nil
 }
 
-// DeleteSubscription deletes the specified subscription.
-func (c *AdminClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.DeleteSubscriptionRequest, opts ...gax.CallOption) error {
+func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.DeleteSubscriptionRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
 		defer cancel()
@@ -632,7 +737,7 @@ func (c *AdminClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteSubscription[0:len(c.CallOptions.DeleteSubscription):len(c.CallOptions.DeleteSubscription)], opts...)
+	opts = append((*c.CallOptions).DeleteSubscription[0:len((*c.CallOptions).DeleteSubscription):len((*c.CallOptions).DeleteSubscription)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.adminClient.DeleteSubscription(ctx, req, settings.GRPC...)

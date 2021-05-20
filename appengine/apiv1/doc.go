@@ -17,7 +17,7 @@
 // Package appengine is an auto-generated package for the
 // App Engine Admin API.
 //
-// Provisions and manages developers' App Engine applications.
+// Provisions and manages developers’ App Engine applications.
 //
 // Use of Context
 //
@@ -28,7 +28,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package appengine // import "cloud.google.com/go/appengine/apiv1"
 
 import (
@@ -48,7 +48,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210518"
+const versionClient = "20210520"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

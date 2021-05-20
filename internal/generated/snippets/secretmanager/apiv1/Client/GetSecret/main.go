@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.GetSecretRequest{
 		// TODO: Fill request struct fields.

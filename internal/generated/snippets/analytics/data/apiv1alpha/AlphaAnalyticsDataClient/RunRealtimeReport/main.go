@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import datapb "google.golang.org/genproto/googleapis/analytics/data/v1alpha"
-
 	ctx := context.Background()
 	c, err := data.NewAlphaAnalyticsDataClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datapb.RunRealtimeReportRequest{
 		// TODO: Fill request struct fields.

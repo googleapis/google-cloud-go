@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.DeleteQueueRequest{
 		// TODO: Fill request struct fields.

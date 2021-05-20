@@ -43,7 +43,7 @@ type CatalogCallOptions struct {
 	UpdateCatalog []gax.CallOption
 }
 
-func defaultCatalogClientOptions() []option.ClientOption {
+func defaultCatalogGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
@@ -84,32 +84,86 @@ func defaultCatalogCallOptions() *CatalogCallOptions {
 	}
 }
 
+// internalCatalogClient is an interface that defines the methods availaible from Retail API.
+type internalCatalogClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListCatalogs(context.Context, *retailpb.ListCatalogsRequest, ...gax.CallOption) *CatalogIterator
+	UpdateCatalog(context.Context, *retailpb.UpdateCatalogRequest, ...gax.CallOption) (*retailpb.Catalog, error)
+}
+
 // CatalogClient is a client for interacting with Retail API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing catalog configuration.
+type CatalogClient struct {
+	// The internal transport-dependent client.
+	internalClient internalCatalogClient
+
+	// The call options for this service.
+	CallOptions *CatalogCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *CatalogClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *CatalogClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *CatalogClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListCatalogs lists all the Catalogs associated with
+// the project.
+func (c *CatalogClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
+	return c.internalClient.ListCatalogs(ctx, req, opts...)
+}
+
+// UpdateCatalog updates the Catalogs.
+func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
+	return c.internalClient.UpdateCatalog(ctx, req, opts...)
+}
+
+// catalogGRPCClient is a client for interacting with Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CatalogClient struct {
+type catalogGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing CatalogClient
+	CallOptions **CatalogCallOptions
+
 	// The gRPC API client.
 	catalogClient retailpb.CatalogServiceClient
-
-	// The call options for this service.
-	CallOptions *CatalogCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCatalogClient creates a new catalog service client.
+// NewCatalogClient creates a new catalog service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing catalog configuration.
 func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*CatalogClient, error) {
-	clientOpts := defaultCatalogClientOptions()
-
+	clientOpts := defaultCatalogGRPCClientOptions()
 	if newCatalogClientHook != nil {
 		hookOpts, err := newCatalogClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -127,46 +181,47 @@ func NewCatalogClient(ctx context.Context, opts ...option.ClientOption) (*Catalo
 	if err != nil {
 		return nil, err
 	}
-	c := &CatalogClient{
+	client := CatalogClient{CallOptions: defaultCatalogCallOptions()}
+
+	c := &catalogGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCatalogCallOptions(),
-
-		catalogClient: retailpb.NewCatalogServiceClient(connPool),
+		catalogClient:    retailpb.NewCatalogServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *CatalogClient) Connection() *grpc.ClientConn {
+func (c *catalogGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *CatalogClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CatalogClient) setGoogleClientInfo(keyval ...string) {
+func (c *catalogGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListCatalogs lists all the Catalogs associated with
-// the project.
-func (c *CatalogClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *catalogGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *catalogGRPCClient) ListCatalogs(ctx context.Context, req *retailpb.ListCatalogsRequest, opts ...gax.CallOption) *CatalogIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCatalogs[0:len(c.CallOptions.ListCatalogs):len(c.CallOptions.ListCatalogs)], opts...)
+	opts = append((*c.CallOptions).ListCatalogs[0:len((*c.CallOptions).ListCatalogs):len((*c.CallOptions).ListCatalogs)], opts...)
 	it := &CatalogIterator{}
 	req = proto.Clone(req).(*retailpb.ListCatalogsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*retailpb.Catalog, string, error) {
@@ -203,8 +258,7 @@ func (c *CatalogClient) ListCatalogs(ctx context.Context, req *retailpb.ListCata
 	return it
 }
 
-// UpdateCatalog updates the Catalogs.
-func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
+func (c *catalogGRPCClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateCatalogRequest, opts ...gax.CallOption) (*retailpb.Catalog, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -212,7 +266,7 @@ func (c *CatalogClient) UpdateCatalog(ctx context.Context, req *retailpb.UpdateC
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "catalog.name", url.QueryEscape(req.GetCatalog().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCatalog[0:len(c.CallOptions.UpdateCatalog):len(c.CallOptions.UpdateCatalog)], opts...)
+	opts = append((*c.CallOptions).UpdateCatalog[0:len((*c.CallOptions).UpdateCatalog):len((*c.CallOptions).UpdateCatalog)], opts...)
 	var resp *retailpb.Catalog
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
