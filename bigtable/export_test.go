@@ -22,6 +22,7 @@ import (
 	"flag"
 	"fmt"
 	"strings"
+	"testing"
 	"time"
 
 	"cloud.google.com/go/bigtable/bttest"
@@ -47,6 +48,8 @@ var (
 )
 
 func init() {
+	testing.Init()
+
 	c := &integrationConfig
 
 	flag.BoolVar(&c.UseProd, "it.use-prod", false, "Use remote bigtable instead of local emulator")
@@ -75,6 +78,16 @@ func init() {
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
 	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 
+	flag.Parse()
+
+	if integrationConfig.UseProd {
+		fmt.Printf(
+			"Note: when using prod, you must first create an instance:\n"+
+				"cbt createinstance %s %s %s %s %s SSD\n",
+			c.Instance, c.Instance,
+			c.Cluster, "us-central1-b", "1",
+		)
+	}
 }
 
 // IntegrationTestConfig contains parameters to pick and setup a IntegrationEnv for testing

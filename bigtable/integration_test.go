@@ -79,7 +79,7 @@ var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("gcp-create-%d", time.Now().Unix())
+		instanceToCreate = fmt.Sprintf("create-%d", time.Now().Unix())
 	}
 }
 
@@ -1490,8 +1490,8 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	table := testEnv.Config().Table
-	clusterID := testEnv.Config().Cluster
+	table := instanceToCreate + "-table"
+	clusterID := instanceToCreate + "-cluster"
 
 	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
 	if keyRingName == "" {
