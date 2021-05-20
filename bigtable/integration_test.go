@@ -18,7 +18,6 @@ package bigtable
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"math"
 	"math/rand"
@@ -76,29 +75,8 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
-var (
-	instanceToCreate      string
-	instanceToCreateZone  string
-	instanceToCreateZone2 string
-	blackholeDpv6Cmd      string
-	blackholeDpv4Cmd      string
-	allowDpv6Cmd          string
-	allowDpv4Cmd          string
-)
-
 func init() {
-	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
-	flag.StringVar(&instanceToCreate, "it.instance-to-create", "",
-		"The id of an instance to create, update and delete. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
-	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
-		"The zone in which to create the new test instance.")
-	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
-		"The zone in which to create a second cluster in the test instance.")
-	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
-	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
-	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
-	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
-	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
+
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -1196,14 +1174,6 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Column family mismatch, got %v, want %v", tblInfo.Families, wantFams)
 	}
 
-	encInfo, err := adminClient.EncryptionInfo(ctx, tblConf.TableID)
-	if err != nil {
-		t.Errorf("Encryption Info does not expect err: %v", err)
-	}
-	if !testutil.Equal(len(encInfo), 0) {
-		t.Errorf("Encryption Info mismatch, got %v, want %v", len(encInfo), 0)
-	}
-
 	// Populate mytable and drop row ranges
 	if err = adminClient.CreateColumnFamily(ctx, "mytable", "cf"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
@@ -1263,14 +1233,25 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
 	}
 
-	// Validate Encyrption Info not configured
+	// Validate Encryption Info not configured
+
 	encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
 	if err != nil {
-		t.Fatalf("EncryptionInfo: %v", err)
+		t.Errorf("EncryptionInfo does not expect err: %v", err)
 	}
-	if got, want := len(encryptionInfo), 0; !cmp.Equal(got, want) {
+	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
 		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
 	}
+
+	clusterEncryptionInfo := encryptionInfo[testEnv.Config().Cluster][0]
+	if clusterEncryptionInfo.KMSKeyVersion != "" {
+		t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.KMSKeyVersion, 0)
+	}
+	if clusterEncryptionInfo.Type != GoogleDefaultEncryption {
+		t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.Type, GoogleDefaultEncryption)
+
+	}
+
 }
 
 func TestIntegration_TableIam(t *testing.T) {
@@ -1546,6 +1527,10 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
+		}
+
+		if len(encryptionInfo[clusterID]) != 1 {
+			t.Fatalf("Expected to find one EncryptionInfo: %v", encryptionInfo[clusterID])
 		}
 
 		kmsKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
