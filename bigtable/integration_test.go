@@ -1038,6 +1038,7 @@ func TestIntegration_Read(t *testing.T) {
 }
 
 func TestIntegration_SampleRowKeys(t *testing.T) {
+	// TODO(2021/05/21): Fails with integration_test.go:1070: SampleRowKeys length 0
 	ctx := context.Background()
 	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
@@ -1894,6 +1895,8 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 }
 
 func TestIntegration_AdminSnapshot(t *testing.T) {
+	// TODO(2021/05/21): Fails due to
+	// integration_test.go:1950: Initial snapshot list: rpc error: code = Unimplemented desc = Method not found.
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -2211,6 +2214,8 @@ func TestIntegration_Granularity(t *testing.T) {
 }
 
 func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
+	// TODO(2021/05/21): Fails with entity exists.
+	// integration_test.go:2256: Creating app profile: rpc error: code = AlreadyExists desc = Requested entity already exists
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
