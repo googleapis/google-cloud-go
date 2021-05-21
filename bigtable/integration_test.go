@@ -1038,13 +1038,24 @@ func TestIntegration_Read(t *testing.T) {
 }
 
 func TestIntegration_SampleRowKeys(t *testing.T) {
-	// TODO(2021/05/21): Fails with integration_test.go:1070: SampleRowKeys length 0
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, client, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
+
+	presplitTable := fmt.Sprintf("presplit-table-%d", time.Now().Unix())
+	if err := adminClient.CreatePresplitTable(ctx, presplitTable, []string{"follows"}); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteTable(ctx, presplitTable)
+
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "follows"); err != nil {
+		t.Fatal(err)
+	}
+
+	table := client.Open(presplitTable)
 
 	// Insert some data.
 	initialData := map[string][]string{
