@@ -58,7 +58,7 @@ func init() {
 	flag.StringVar(&c.Project, "it.project", "", "Project to use for integration test")
 	flag.StringVar(&c.Instance, "it.instance", "", "Bigtable instance to use")
 	flag.StringVar(&c.Cluster, "it.cluster", "", "Bigtable cluster to use")
-	flag.StringVar(&c.Table, "it.table", "", "Bigtable table to create")
+	flag.StringVar(&c.Table, "it.table", "it-table", "Bigtable table to create")
 	flag.BoolVar(&c.AttemptDirectPath, "it.attempt-directpath", false, "Attempt DirectPath")
 	flag.BoolVar(&c.DirectPathIPV4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a ipv4-only VM")
 
