@@ -73,7 +73,7 @@ type CertificateAuthorityCallOptions struct {
 	UpdateCertificateTemplate       []gax.CallOption
 }
 
-func defaultCertificateAuthorityClientOptions() []option.ClientOption {
+func defaultCertificateAuthorityGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("privateca.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("privateca.mtls.googleapis.com:443"),
@@ -467,38 +467,372 @@ func defaultCertificateAuthorityCallOptions() *CertificateAuthorityCallOptions {
 	}
 }
 
+// internalCertificateAuthorityClient is an interface that defines the methods availaible from Certificate Authority API.
+type internalCertificateAuthorityClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateCertificate(context.Context, *privatecapb.CreateCertificateRequest, ...gax.CallOption) (*privatecapb.Certificate, error)
+	GetCertificate(context.Context, *privatecapb.GetCertificateRequest, ...gax.CallOption) (*privatecapb.Certificate, error)
+	ListCertificates(context.Context, *privatecapb.ListCertificatesRequest, ...gax.CallOption) *CertificateIterator
+	RevokeCertificate(context.Context, *privatecapb.RevokeCertificateRequest, ...gax.CallOption) (*privatecapb.Certificate, error)
+	UpdateCertificate(context.Context, *privatecapb.UpdateCertificateRequest, ...gax.CallOption) (*privatecapb.Certificate, error)
+	ActivateCertificateAuthority(context.Context, *privatecapb.ActivateCertificateAuthorityRequest, ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error)
+	ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation
+	CreateCertificateAuthority(context.Context, *privatecapb.CreateCertificateAuthorityRequest, ...gax.CallOption) (*CreateCertificateAuthorityOperation, error)
+	CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation
+	DisableCertificateAuthority(context.Context, *privatecapb.DisableCertificateAuthorityRequest, ...gax.CallOption) (*DisableCertificateAuthorityOperation, error)
+	DisableCertificateAuthorityOperation(name string) *DisableCertificateAuthorityOperation
+	EnableCertificateAuthority(context.Context, *privatecapb.EnableCertificateAuthorityRequest, ...gax.CallOption) (*EnableCertificateAuthorityOperation, error)
+	EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation
+	FetchCertificateAuthorityCsr(context.Context, *privatecapb.FetchCertificateAuthorityCsrRequest, ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error)
+	GetCertificateAuthority(context.Context, *privatecapb.GetCertificateAuthorityRequest, ...gax.CallOption) (*privatecapb.CertificateAuthority, error)
+	ListCertificateAuthorities(context.Context, *privatecapb.ListCertificateAuthoritiesRequest, ...gax.CallOption) *CertificateAuthorityIterator
+	UndeleteCertificateAuthority(context.Context, *privatecapb.UndeleteCertificateAuthorityRequest, ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error)
+	UndeleteCertificateAuthorityOperation(name string) *UndeleteCertificateAuthorityOperation
+	DeleteCertificateAuthority(context.Context, *privatecapb.DeleteCertificateAuthorityRequest, ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error)
+	DeleteCertificateAuthorityOperation(name string) *DeleteCertificateAuthorityOperation
+	UpdateCertificateAuthority(context.Context, *privatecapb.UpdateCertificateAuthorityRequest, ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error)
+	UpdateCertificateAuthorityOperation(name string) *UpdateCertificateAuthorityOperation
+	CreateCaPool(context.Context, *privatecapb.CreateCaPoolRequest, ...gax.CallOption) (*CreateCaPoolOperation, error)
+	CreateCaPoolOperation(name string) *CreateCaPoolOperation
+	UpdateCaPool(context.Context, *privatecapb.UpdateCaPoolRequest, ...gax.CallOption) (*UpdateCaPoolOperation, error)
+	UpdateCaPoolOperation(name string) *UpdateCaPoolOperation
+	GetCaPool(context.Context, *privatecapb.GetCaPoolRequest, ...gax.CallOption) (*privatecapb.CaPool, error)
+	ListCaPools(context.Context, *privatecapb.ListCaPoolsRequest, ...gax.CallOption) *CaPoolIterator
+	DeleteCaPool(context.Context, *privatecapb.DeleteCaPoolRequest, ...gax.CallOption) (*DeleteCaPoolOperation, error)
+	DeleteCaPoolOperation(name string) *DeleteCaPoolOperation
+	FetchCaCerts(context.Context, *privatecapb.FetchCaCertsRequest, ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error)
+	GetCertificateRevocationList(context.Context, *privatecapb.GetCertificateRevocationListRequest, ...gax.CallOption) (*privatecapb.CertificateRevocationList, error)
+	ListCertificateRevocationLists(context.Context, *privatecapb.ListCertificateRevocationListsRequest, ...gax.CallOption) *CertificateRevocationListIterator
+	UpdateCertificateRevocationList(context.Context, *privatecapb.UpdateCertificateRevocationListRequest, ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error)
+	UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation
+	CreateCertificateTemplate(context.Context, *privatecapb.CreateCertificateTemplateRequest, ...gax.CallOption) (*CreateCertificateTemplateOperation, error)
+	CreateCertificateTemplateOperation(name string) *CreateCertificateTemplateOperation
+	DeleteCertificateTemplate(context.Context, *privatecapb.DeleteCertificateTemplateRequest, ...gax.CallOption) (*DeleteCertificateTemplateOperation, error)
+	DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation
+	GetCertificateTemplate(context.Context, *privatecapb.GetCertificateTemplateRequest, ...gax.CallOption) (*privatecapb.CertificateTemplate, error)
+	ListCertificateTemplates(context.Context, *privatecapb.ListCertificateTemplatesRequest, ...gax.CallOption) *CertificateTemplateIterator
+	UpdateCertificateTemplate(context.Context, *privatecapb.UpdateCertificateTemplateRequest, ...gax.CallOption) (*UpdateCertificateTemplateOperation, error)
+	UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation
+}
+
 // CertificateAuthorityClient is a client for interacting with Certificate Authority API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// [Certificate Authority Service][google.cloud.security.privateca.v1.CertificateAuthorityService] manages private
+// certificate authorities and issued certificates.
+type CertificateAuthorityClient struct {
+	// The internal transport-dependent client.
+	internalClient internalCertificateAuthorityClient
+
+	// The call options for this service.
+	CallOptions *CertificateAuthorityCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *CertificateAuthorityClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *CertificateAuthorityClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *CertificateAuthorityClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateCertificate create a new Certificate in a given Project, Location from a particular
+// CaPool.
+func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	return c.internalClient.CreateCertificate(ctx, req, opts...)
+}
+
+// GetCertificate returns a Certificate.
+func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	return c.internalClient.GetCertificate(ctx, req, opts...)
+}
+
+// ListCertificates lists Certificates.
+func (c *CertificateAuthorityClient) ListCertificates(ctx context.Context, req *privatecapb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
+	return c.internalClient.ListCertificates(ctx, req, opts...)
+}
+
+// RevokeCertificate revoke a Certificate.
+func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	return c.internalClient.RevokeCertificate(ctx, req, opts...)
+}
+
+// UpdateCertificate update a Certificate. Currently, the only field you can update is the
+// labels field.
+func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+	return c.internalClient.UpdateCertificate(ctx, req, opts...)
+}
+
+// ActivateCertificateAuthority activate a CertificateAuthority that is in state
+// AWAITING_USER_ACTIVATION
+// and is of type SUBORDINATE. After
+// the parent Certificate Authority signs a certificate signing request from
+// FetchCertificateAuthorityCsr, this method can complete the activation
+// process.
+func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
+	return c.internalClient.ActivateCertificateAuthority(ctx, req, opts...)
+}
+
+// ActivateCertificateAuthorityOperation returns a new ActivateCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created ActivateCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation {
+	return c.internalClient.ActivateCertificateAuthorityOperation(name)
+}
+
+// CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
+func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
+	return c.internalClient.CreateCertificateAuthority(ctx, req, opts...)
+}
+
+// CreateCertificateAuthorityOperation returns a new CreateCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created CreateCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation {
+	return c.internalClient.CreateCertificateAuthorityOperation(name)
+}
+
+// DisableCertificateAuthority disable a CertificateAuthority.
+func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
+	return c.internalClient.DisableCertificateAuthority(ctx, req, opts...)
+}
+
+// DisableCertificateAuthorityOperation returns a new DisableCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created DisableCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) DisableCertificateAuthorityOperation(name string) *DisableCertificateAuthorityOperation {
+	return c.internalClient.DisableCertificateAuthorityOperation(name)
+}
+
+// EnableCertificateAuthority enable a CertificateAuthority.
+func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
+	return c.internalClient.EnableCertificateAuthority(ctx, req, opts...)
+}
+
+// EnableCertificateAuthorityOperation returns a new EnableCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created EnableCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation {
+	return c.internalClient.EnableCertificateAuthorityOperation(name)
+}
+
+// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a CertificateAuthority
+// that is in state
+// AWAITING_USER_ACTIVATION
+// and is of type SUBORDINATE. The
+// CSR must then be signed by the desired parent Certificate Authority, which
+// could be another CertificateAuthority resource, or could be an on-prem
+// certificate authority. See also ActivateCertificateAuthority.
+func (c *CertificateAuthorityClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
+	return c.internalClient.FetchCertificateAuthorityCsr(ctx, req, opts...)
+}
+
+// GetCertificateAuthority returns a CertificateAuthority.
+func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
+	return c.internalClient.GetCertificateAuthority(ctx, req, opts...)
+}
+
+// ListCertificateAuthorities lists CertificateAuthorities.
+func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
+	return c.internalClient.ListCertificateAuthorities(ctx, req, opts...)
+}
+
+// UndeleteCertificateAuthority undelete a CertificateAuthority that has been deleted.
+func (c *CertificateAuthorityClient) UndeleteCertificateAuthority(ctx context.Context, req *privatecapb.UndeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error) {
+	return c.internalClient.UndeleteCertificateAuthority(ctx, req, opts...)
+}
+
+// UndeleteCertificateAuthorityOperation returns a new UndeleteCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created UndeleteCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) UndeleteCertificateAuthorityOperation(name string) *UndeleteCertificateAuthorityOperation {
+	return c.internalClient.UndeleteCertificateAuthorityOperation(name)
+}
+
+// DeleteCertificateAuthority delete a CertificateAuthority.
+func (c *CertificateAuthorityClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
+	return c.internalClient.DeleteCertificateAuthority(ctx, req, opts...)
+}
+
+// DeleteCertificateAuthorityOperation returns a new DeleteCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created DeleteCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) DeleteCertificateAuthorityOperation(name string) *DeleteCertificateAuthorityOperation {
+	return c.internalClient.DeleteCertificateAuthorityOperation(name)
+}
+
+// UpdateCertificateAuthority update a CertificateAuthority.
+func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
+	return c.internalClient.UpdateCertificateAuthority(ctx, req, opts...)
+}
+
+// UpdateCertificateAuthorityOperation returns a new UpdateCertificateAuthorityOperation from a given name.
+// The name must be that of a previously created UpdateCertificateAuthorityOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) UpdateCertificateAuthorityOperation(name string) *UpdateCertificateAuthorityOperation {
+	return c.internalClient.UpdateCertificateAuthorityOperation(name)
+}
+
+// CreateCaPool create a CaPool.
+func (c *CertificateAuthorityClient) CreateCaPool(ctx context.Context, req *privatecapb.CreateCaPoolRequest, opts ...gax.CallOption) (*CreateCaPoolOperation, error) {
+	return c.internalClient.CreateCaPool(ctx, req, opts...)
+}
+
+// CreateCaPoolOperation returns a new CreateCaPoolOperation from a given name.
+// The name must be that of a previously created CreateCaPoolOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) CreateCaPoolOperation(name string) *CreateCaPoolOperation {
+	return c.internalClient.CreateCaPoolOperation(name)
+}
+
+// UpdateCaPool update a CaPool.
+func (c *CertificateAuthorityClient) UpdateCaPool(ctx context.Context, req *privatecapb.UpdateCaPoolRequest, opts ...gax.CallOption) (*UpdateCaPoolOperation, error) {
+	return c.internalClient.UpdateCaPool(ctx, req, opts...)
+}
+
+// UpdateCaPoolOperation returns a new UpdateCaPoolOperation from a given name.
+// The name must be that of a previously created UpdateCaPoolOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) UpdateCaPoolOperation(name string) *UpdateCaPoolOperation {
+	return c.internalClient.UpdateCaPoolOperation(name)
+}
+
+// GetCaPool returns a CaPool.
+func (c *CertificateAuthorityClient) GetCaPool(ctx context.Context, req *privatecapb.GetCaPoolRequest, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
+	return c.internalClient.GetCaPool(ctx, req, opts...)
+}
+
+// ListCaPools lists CaPools.
+func (c *CertificateAuthorityClient) ListCaPools(ctx context.Context, req *privatecapb.ListCaPoolsRequest, opts ...gax.CallOption) *CaPoolIterator {
+	return c.internalClient.ListCaPools(ctx, req, opts...)
+}
+
+// DeleteCaPool delete a CaPool.
+func (c *CertificateAuthorityClient) DeleteCaPool(ctx context.Context, req *privatecapb.DeleteCaPoolRequest, opts ...gax.CallOption) (*DeleteCaPoolOperation, error) {
+	return c.internalClient.DeleteCaPool(ctx, req, opts...)
+}
+
+// DeleteCaPoolOperation returns a new DeleteCaPoolOperation from a given name.
+// The name must be that of a previously created DeleteCaPoolOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteCaPoolOperation {
+	return c.internalClient.DeleteCaPoolOperation(name)
+}
+
+// FetchCaCerts fetchCaCerts returns the current trust anchor for the CaPool. This will
+// include CA certificate chains for all ACTIVE CertificateAuthority
+// resources in the CaPool.
+func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
+	return c.internalClient.FetchCaCerts(ctx, req, opts...)
+}
+
+// GetCertificateRevocationList returns a CertificateRevocationList.
+func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
+	return c.internalClient.GetCertificateRevocationList(ctx, req, opts...)
+}
+
+// ListCertificateRevocationLists lists CertificateRevocationLists.
+func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
+	return c.internalClient.ListCertificateRevocationLists(ctx, req, opts...)
+}
+
+// UpdateCertificateRevocationList update a CertificateRevocationList.
+func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
+	return c.internalClient.UpdateCertificateRevocationList(ctx, req, opts...)
+}
+
+// UpdateCertificateRevocationListOperation returns a new UpdateCertificateRevocationListOperation from a given name.
+// The name must be that of a previously created UpdateCertificateRevocationListOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation {
+	return c.internalClient.UpdateCertificateRevocationListOperation(name)
+}
+
+// CreateCertificateTemplate create a new CertificateTemplate in a given Project and Location.
+func (c *CertificateAuthorityClient) CreateCertificateTemplate(ctx context.Context, req *privatecapb.CreateCertificateTemplateRequest, opts ...gax.CallOption) (*CreateCertificateTemplateOperation, error) {
+	return c.internalClient.CreateCertificateTemplate(ctx, req, opts...)
+}
+
+// CreateCertificateTemplateOperation returns a new CreateCertificateTemplateOperation from a given name.
+// The name must be that of a previously created CreateCertificateTemplateOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) CreateCertificateTemplateOperation(name string) *CreateCertificateTemplateOperation {
+	return c.internalClient.CreateCertificateTemplateOperation(name)
+}
+
+// DeleteCertificateTemplate deleteCertificateTemplate deletes a CertificateTemplate.
+func (c *CertificateAuthorityClient) DeleteCertificateTemplate(ctx context.Context, req *privatecapb.DeleteCertificateTemplateRequest, opts ...gax.CallOption) (*DeleteCertificateTemplateOperation, error) {
+	return c.internalClient.DeleteCertificateTemplate(ctx, req, opts...)
+}
+
+// DeleteCertificateTemplateOperation returns a new DeleteCertificateTemplateOperation from a given name.
+// The name must be that of a previously created DeleteCertificateTemplateOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation {
+	return c.internalClient.DeleteCertificateTemplateOperation(name)
+}
+
+// GetCertificateTemplate returns a CertificateTemplate.
+func (c *CertificateAuthorityClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
+	return c.internalClient.GetCertificateTemplate(ctx, req, opts...)
+}
+
+// ListCertificateTemplates lists CertificateTemplates.
+func (c *CertificateAuthorityClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
+	return c.internalClient.ListCertificateTemplates(ctx, req, opts...)
+}
+
+// UpdateCertificateTemplate update a CertificateTemplate.
+func (c *CertificateAuthorityClient) UpdateCertificateTemplate(ctx context.Context, req *privatecapb.UpdateCertificateTemplateRequest, opts ...gax.CallOption) (*UpdateCertificateTemplateOperation, error) {
+	return c.internalClient.UpdateCertificateTemplate(ctx, req, opts...)
+}
+
+// UpdateCertificateTemplateOperation returns a new UpdateCertificateTemplateOperation from a given name.
+// The name must be that of a previously created UpdateCertificateTemplateOperation, possibly from a different process.
+func (c *CertificateAuthorityClient) UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation {
+	return c.internalClient.UpdateCertificateTemplateOperation(name)
+}
+
+// certificateAuthorityGRPCClient is a client for interacting with Certificate Authority API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type CertificateAuthorityClient struct {
+type certificateAuthorityGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing CertificateAuthorityClient
+	CallOptions **CertificateAuthorityCallOptions
+
 	// The gRPC API client.
 	certificateAuthorityClient privatecapb.CertificateAuthorityServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CertificateAuthorityCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewCertificateAuthorityClient creates a new certificate authority service client.
+// NewCertificateAuthorityClient creates a new certificate authority service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // [Certificate Authority Service][google.cloud.security.privateca.v1.CertificateAuthorityService] manages private
 // certificate authorities and issued certificates.
 func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOption) (*CertificateAuthorityClient, error) {
-	clientOpts := defaultCertificateAuthorityClientOptions()
-
+	clientOpts := defaultCertificateAuthorityGRPCClientOptions()
 	if newCertificateAuthorityClientHook != nil {
 		hookOpts, err := newCertificateAuthorityClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -516,16 +850,19 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 	if err != nil {
 		return nil, err
 	}
-	c := &CertificateAuthorityClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCertificateAuthorityCallOptions(),
+	client := CertificateAuthorityClient{CallOptions: defaultCertificateAuthorityCallOptions()}
 
+	c := &certificateAuthorityGRPCClient{
+		connPool:                   connPool,
+		disableDeadlines:           disableDeadlines,
 		certificateAuthorityClient: privatecapb.NewCertificateAuthorityServiceClient(connPool),
+		CallOptions:                &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -535,34 +872,33 @@ func NewCertificateAuthorityClient(ctx context.Context, opts ...option.ClientOpt
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *CertificateAuthorityClient) Connection() *grpc.ClientConn {
+func (c *certificateAuthorityGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *CertificateAuthorityClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CertificateAuthorityClient) setGoogleClientInfo(keyval ...string) {
+func (c *certificateAuthorityGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateCertificate create a new Certificate in a given Project, Location from a particular
-// CaPool.
-func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *certificateAuthorityGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *certificateAuthorityGRPCClient) CreateCertificate(ctx context.Context, req *privatecapb.CreateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -570,7 +906,7 @@ func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificate[0:len(c.CallOptions.CreateCertificate):len(c.CallOptions.CreateCertificate)], opts...)
+	opts = append((*c.CallOptions).CreateCertificate[0:len((*c.CallOptions).CreateCertificate):len((*c.CallOptions).CreateCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -583,8 +919,7 @@ func (c *CertificateAuthorityClient) CreateCertificate(ctx context.Context, req 
 	return resp, nil
 }
 
-// GetCertificate returns a Certificate.
-func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+func (c *certificateAuthorityGRPCClient) GetCertificate(ctx context.Context, req *privatecapb.GetCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -592,7 +927,7 @@ func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *pr
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificate[0:len(c.CallOptions.GetCertificate):len(c.CallOptions.GetCertificate)], opts...)
+	opts = append((*c.CallOptions).GetCertificate[0:len((*c.CallOptions).GetCertificate):len((*c.CallOptions).GetCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -605,11 +940,10 @@ func (c *CertificateAuthorityClient) GetCertificate(ctx context.Context, req *pr
 	return resp, nil
 }
 
-// ListCertificates lists Certificates.
-func (c *CertificateAuthorityClient) ListCertificates(ctx context.Context, req *privatecapb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
+func (c *certificateAuthorityGRPCClient) ListCertificates(ctx context.Context, req *privatecapb.ListCertificatesRequest, opts ...gax.CallOption) *CertificateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCertificates[0:len(c.CallOptions.ListCertificates):len(c.CallOptions.ListCertificates)], opts...)
+	opts = append((*c.CallOptions).ListCertificates[0:len((*c.CallOptions).ListCertificates):len((*c.CallOptions).ListCertificates)], opts...)
 	it := &CertificateIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.Certificate, string, error) {
@@ -646,8 +980,7 @@ func (c *CertificateAuthorityClient) ListCertificates(ctx context.Context, req *
 	return it
 }
 
-// RevokeCertificate revoke a Certificate.
-func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+func (c *certificateAuthorityGRPCClient) RevokeCertificate(ctx context.Context, req *privatecapb.RevokeCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -655,7 +988,7 @@ func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RevokeCertificate[0:len(c.CallOptions.RevokeCertificate):len(c.CallOptions.RevokeCertificate)], opts...)
+	opts = append((*c.CallOptions).RevokeCertificate[0:len((*c.CallOptions).RevokeCertificate):len((*c.CallOptions).RevokeCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -668,9 +1001,7 @@ func (c *CertificateAuthorityClient) RevokeCertificate(ctx context.Context, req 
 	return resp, nil
 }
 
-// UpdateCertificate update a Certificate. Currently, the only field you can update is the
-// labels field.
-func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
+func (c *certificateAuthorityGRPCClient) UpdateCertificate(ctx context.Context, req *privatecapb.UpdateCertificateRequest, opts ...gax.CallOption) (*privatecapb.Certificate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -678,7 +1009,7 @@ func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req 
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate.name", url.QueryEscape(req.GetCertificate().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCertificate[0:len(c.CallOptions.UpdateCertificate):len(c.CallOptions.UpdateCertificate)], opts...)
+	opts = append((*c.CallOptions).UpdateCertificate[0:len((*c.CallOptions).UpdateCertificate):len((*c.CallOptions).UpdateCertificate)], opts...)
 	var resp *privatecapb.Certificate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -691,13 +1022,7 @@ func (c *CertificateAuthorityClient) UpdateCertificate(ctx context.Context, req 
 	return resp, nil
 }
 
-// ActivateCertificateAuthority activate a CertificateAuthority that is in state
-// AWAITING_USER_ACTIVATION
-// and is of type SUBORDINATE. After
-// the parent Certificate Authority signs a certificate signing request from
-// FetchCertificateAuthorityCsr, this method can complete the activation
-// process.
-func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthority(ctx context.Context, req *privatecapb.ActivateCertificateAuthorityRequest, opts ...gax.CallOption) (*ActivateCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -705,7 +1030,7 @@ func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ActivateCertificateAuthority[0:len(c.CallOptions.ActivateCertificateAuthority):len(c.CallOptions.ActivateCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).ActivateCertificateAuthority[0:len((*c.CallOptions).ActivateCertificateAuthority):len((*c.CallOptions).ActivateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -716,12 +1041,11 @@ func (c *CertificateAuthorityClient) ActivateCertificateAuthority(ctx context.Co
 		return nil, err
 	}
 	return &ActivateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// CreateCertificateAuthority create a new CertificateAuthority in a given Project and Location.
-func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) CreateCertificateAuthority(ctx context.Context, req *privatecapb.CreateCertificateAuthorityRequest, opts ...gax.CallOption) (*CreateCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -729,7 +1053,7 @@ func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificateAuthority[0:len(c.CallOptions.CreateCertificateAuthority):len(c.CallOptions.CreateCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).CreateCertificateAuthority[0:len((*c.CallOptions).CreateCertificateAuthority):len((*c.CallOptions).CreateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -740,12 +1064,11 @@ func (c *CertificateAuthorityClient) CreateCertificateAuthority(ctx context.Cont
 		return nil, err
 	}
 	return &CreateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DisableCertificateAuthority disable a CertificateAuthority.
-func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) DisableCertificateAuthority(ctx context.Context, req *privatecapb.DisableCertificateAuthorityRequest, opts ...gax.CallOption) (*DisableCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -753,7 +1076,7 @@ func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Con
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DisableCertificateAuthority[0:len(c.CallOptions.DisableCertificateAuthority):len(c.CallOptions.DisableCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).DisableCertificateAuthority[0:len((*c.CallOptions).DisableCertificateAuthority):len((*c.CallOptions).DisableCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -764,12 +1087,11 @@ func (c *CertificateAuthorityClient) DisableCertificateAuthority(ctx context.Con
 		return nil, err
 	}
 	return &DisableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// EnableCertificateAuthority enable a CertificateAuthority.
-func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) EnableCertificateAuthority(ctx context.Context, req *privatecapb.EnableCertificateAuthorityRequest, opts ...gax.CallOption) (*EnableCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -777,7 +1099,7 @@ func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.EnableCertificateAuthority[0:len(c.CallOptions.EnableCertificateAuthority):len(c.CallOptions.EnableCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).EnableCertificateAuthority[0:len((*c.CallOptions).EnableCertificateAuthority):len((*c.CallOptions).EnableCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -788,18 +1110,11 @@ func (c *CertificateAuthorityClient) EnableCertificateAuthority(ctx context.Cont
 		return nil, err
 	}
 	return &EnableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// FetchCertificateAuthorityCsr fetch a certificate signing request (CSR) from a CertificateAuthority
-// that is in state
-// AWAITING_USER_ACTIVATION
-// and is of type SUBORDINATE. The
-// CSR must then be signed by the desired parent Certificate Authority, which
-// could be another CertificateAuthority resource, or could be an on-prem
-// certificate authority. See also ActivateCertificateAuthority.
-func (c *CertificateAuthorityClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
+func (c *certificateAuthorityGRPCClient) FetchCertificateAuthorityCsr(ctx context.Context, req *privatecapb.FetchCertificateAuthorityCsrRequest, opts ...gax.CallOption) (*privatecapb.FetchCertificateAuthorityCsrResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -807,7 +1122,7 @@ func (c *CertificateAuthorityClient) FetchCertificateAuthorityCsr(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.FetchCertificateAuthorityCsr[0:len(c.CallOptions.FetchCertificateAuthorityCsr):len(c.CallOptions.FetchCertificateAuthorityCsr)], opts...)
+	opts = append((*c.CallOptions).FetchCertificateAuthorityCsr[0:len((*c.CallOptions).FetchCertificateAuthorityCsr):len((*c.CallOptions).FetchCertificateAuthorityCsr)], opts...)
 	var resp *privatecapb.FetchCertificateAuthorityCsrResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -820,8 +1135,7 @@ func (c *CertificateAuthorityClient) FetchCertificateAuthorityCsr(ctx context.Co
 	return resp, nil
 }
 
-// GetCertificateAuthority returns a CertificateAuthority.
-func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
+func (c *certificateAuthorityGRPCClient) GetCertificateAuthority(ctx context.Context, req *privatecapb.GetCertificateAuthorityRequest, opts ...gax.CallOption) (*privatecapb.CertificateAuthority, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -829,7 +1143,7 @@ func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificateAuthority[0:len(c.CallOptions.GetCertificateAuthority):len(c.CallOptions.GetCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).GetCertificateAuthority[0:len((*c.CallOptions).GetCertificateAuthority):len((*c.CallOptions).GetCertificateAuthority)], opts...)
 	var resp *privatecapb.CertificateAuthority
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -842,11 +1156,10 @@ func (c *CertificateAuthorityClient) GetCertificateAuthority(ctx context.Context
 	return resp, nil
 }
 
-// ListCertificateAuthorities lists CertificateAuthorities.
-func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
+func (c *certificateAuthorityGRPCClient) ListCertificateAuthorities(ctx context.Context, req *privatecapb.ListCertificateAuthoritiesRequest, opts ...gax.CallOption) *CertificateAuthorityIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCertificateAuthorities[0:len(c.CallOptions.ListCertificateAuthorities):len(c.CallOptions.ListCertificateAuthorities)], opts...)
+	opts = append((*c.CallOptions).ListCertificateAuthorities[0:len((*c.CallOptions).ListCertificateAuthorities):len((*c.CallOptions).ListCertificateAuthorities)], opts...)
 	it := &CertificateAuthorityIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateAuthoritiesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateAuthority, string, error) {
@@ -883,8 +1196,7 @@ func (c *CertificateAuthorityClient) ListCertificateAuthorities(ctx context.Cont
 	return it
 }
 
-// UndeleteCertificateAuthority undelete a CertificateAuthority that has been deleted.
-func (c *CertificateAuthorityClient) UndeleteCertificateAuthority(ctx context.Context, req *privatecapb.UndeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthority(ctx context.Context, req *privatecapb.UndeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*UndeleteCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -892,7 +1204,7 @@ func (c *CertificateAuthorityClient) UndeleteCertificateAuthority(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UndeleteCertificateAuthority[0:len(c.CallOptions.UndeleteCertificateAuthority):len(c.CallOptions.UndeleteCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).UndeleteCertificateAuthority[0:len((*c.CallOptions).UndeleteCertificateAuthority):len((*c.CallOptions).UndeleteCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -903,12 +1215,11 @@ func (c *CertificateAuthorityClient) UndeleteCertificateAuthority(ctx context.Co
 		return nil, err
 	}
 	return &UndeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteCertificateAuthority delete a CertificateAuthority.
-func (c *CertificateAuthorityClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthority(ctx context.Context, req *privatecapb.DeleteCertificateAuthorityRequest, opts ...gax.CallOption) (*DeleteCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -916,7 +1227,7 @@ func (c *CertificateAuthorityClient) DeleteCertificateAuthority(ctx context.Cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCertificateAuthority[0:len(c.CallOptions.DeleteCertificateAuthority):len(c.CallOptions.DeleteCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).DeleteCertificateAuthority[0:len((*c.CallOptions).DeleteCertificateAuthority):len((*c.CallOptions).DeleteCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -927,12 +1238,11 @@ func (c *CertificateAuthorityClient) DeleteCertificateAuthority(ctx context.Cont
 		return nil, err
 	}
 	return &DeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateCertificateAuthority update a CertificateAuthority.
-func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
+func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthority(ctx context.Context, req *privatecapb.UpdateCertificateAuthorityRequest, opts ...gax.CallOption) (*UpdateCertificateAuthorityOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -940,7 +1250,7 @@ func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Cont
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_authority.name", url.QueryEscape(req.GetCertificateAuthority().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCertificateAuthority[0:len(c.CallOptions.UpdateCertificateAuthority):len(c.CallOptions.UpdateCertificateAuthority)], opts...)
+	opts = append((*c.CallOptions).UpdateCertificateAuthority[0:len((*c.CallOptions).UpdateCertificateAuthority):len((*c.CallOptions).UpdateCertificateAuthority)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -951,12 +1261,11 @@ func (c *CertificateAuthorityClient) UpdateCertificateAuthority(ctx context.Cont
 		return nil, err
 	}
 	return &UpdateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// CreateCaPool create a CaPool.
-func (c *CertificateAuthorityClient) CreateCaPool(ctx context.Context, req *privatecapb.CreateCaPoolRequest, opts ...gax.CallOption) (*CreateCaPoolOperation, error) {
+func (c *certificateAuthorityGRPCClient) CreateCaPool(ctx context.Context, req *privatecapb.CreateCaPoolRequest, opts ...gax.CallOption) (*CreateCaPoolOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -964,7 +1273,7 @@ func (c *CertificateAuthorityClient) CreateCaPool(ctx context.Context, req *priv
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCaPool[0:len(c.CallOptions.CreateCaPool):len(c.CallOptions.CreateCaPool)], opts...)
+	opts = append((*c.CallOptions).CreateCaPool[0:len((*c.CallOptions).CreateCaPool):len((*c.CallOptions).CreateCaPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -975,12 +1284,11 @@ func (c *CertificateAuthorityClient) CreateCaPool(ctx context.Context, req *priv
 		return nil, err
 	}
 	return &CreateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateCaPool update a CaPool.
-func (c *CertificateAuthorityClient) UpdateCaPool(ctx context.Context, req *privatecapb.UpdateCaPoolRequest, opts ...gax.CallOption) (*UpdateCaPoolOperation, error) {
+func (c *certificateAuthorityGRPCClient) UpdateCaPool(ctx context.Context, req *privatecapb.UpdateCaPoolRequest, opts ...gax.CallOption) (*UpdateCaPoolOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -988,7 +1296,7 @@ func (c *CertificateAuthorityClient) UpdateCaPool(ctx context.Context, req *priv
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ca_pool.name", url.QueryEscape(req.GetCaPool().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCaPool[0:len(c.CallOptions.UpdateCaPool):len(c.CallOptions.UpdateCaPool)], opts...)
+	opts = append((*c.CallOptions).UpdateCaPool[0:len((*c.CallOptions).UpdateCaPool):len((*c.CallOptions).UpdateCaPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -999,12 +1307,11 @@ func (c *CertificateAuthorityClient) UpdateCaPool(ctx context.Context, req *priv
 		return nil, err
 	}
 	return &UpdateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetCaPool returns a CaPool.
-func (c *CertificateAuthorityClient) GetCaPool(ctx context.Context, req *privatecapb.GetCaPoolRequest, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
+func (c *certificateAuthorityGRPCClient) GetCaPool(ctx context.Context, req *privatecapb.GetCaPoolRequest, opts ...gax.CallOption) (*privatecapb.CaPool, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1012,7 +1319,7 @@ func (c *CertificateAuthorityClient) GetCaPool(ctx context.Context, req *private
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCaPool[0:len(c.CallOptions.GetCaPool):len(c.CallOptions.GetCaPool)], opts...)
+	opts = append((*c.CallOptions).GetCaPool[0:len((*c.CallOptions).GetCaPool):len((*c.CallOptions).GetCaPool)], opts...)
 	var resp *privatecapb.CaPool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1025,11 +1332,10 @@ func (c *CertificateAuthorityClient) GetCaPool(ctx context.Context, req *private
 	return resp, nil
 }
 
-// ListCaPools lists CaPools.
-func (c *CertificateAuthorityClient) ListCaPools(ctx context.Context, req *privatecapb.ListCaPoolsRequest, opts ...gax.CallOption) *CaPoolIterator {
+func (c *certificateAuthorityGRPCClient) ListCaPools(ctx context.Context, req *privatecapb.ListCaPoolsRequest, opts ...gax.CallOption) *CaPoolIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCaPools[0:len(c.CallOptions.ListCaPools):len(c.CallOptions.ListCaPools)], opts...)
+	opts = append((*c.CallOptions).ListCaPools[0:len((*c.CallOptions).ListCaPools):len((*c.CallOptions).ListCaPools)], opts...)
 	it := &CaPoolIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCaPoolsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CaPool, string, error) {
@@ -1066,8 +1372,7 @@ func (c *CertificateAuthorityClient) ListCaPools(ctx context.Context, req *priva
 	return it
 }
 
-// DeleteCaPool delete a CaPool.
-func (c *CertificateAuthorityClient) DeleteCaPool(ctx context.Context, req *privatecapb.DeleteCaPoolRequest, opts ...gax.CallOption) (*DeleteCaPoolOperation, error) {
+func (c *certificateAuthorityGRPCClient) DeleteCaPool(ctx context.Context, req *privatecapb.DeleteCaPoolRequest, opts ...gax.CallOption) (*DeleteCaPoolOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1075,7 +1380,7 @@ func (c *CertificateAuthorityClient) DeleteCaPool(ctx context.Context, req *priv
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCaPool[0:len(c.CallOptions.DeleteCaPool):len(c.CallOptions.DeleteCaPool)], opts...)
+	opts = append((*c.CallOptions).DeleteCaPool[0:len((*c.CallOptions).DeleteCaPool):len((*c.CallOptions).DeleteCaPool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1086,14 +1391,11 @@ func (c *CertificateAuthorityClient) DeleteCaPool(ctx context.Context, req *priv
 		return nil, err
 	}
 	return &DeleteCaPoolOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// FetchCaCerts fetchCaCerts returns the current trust anchor for the CaPool. This will
-// include CA certificate chains for all ACTIVE CertificateAuthority
-// resources in the CaPool.
-func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
+func (c *certificateAuthorityGRPCClient) FetchCaCerts(ctx context.Context, req *privatecapb.FetchCaCertsRequest, opts ...gax.CallOption) (*privatecapb.FetchCaCertsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1101,7 +1403,7 @@ func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *priv
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "ca_pool", url.QueryEscape(req.GetCaPool())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.FetchCaCerts[0:len(c.CallOptions.FetchCaCerts):len(c.CallOptions.FetchCaCerts)], opts...)
+	opts = append((*c.CallOptions).FetchCaCerts[0:len((*c.CallOptions).FetchCaCerts):len((*c.CallOptions).FetchCaCerts)], opts...)
 	var resp *privatecapb.FetchCaCertsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1114,8 +1416,7 @@ func (c *CertificateAuthorityClient) FetchCaCerts(ctx context.Context, req *priv
 	return resp, nil
 }
 
-// GetCertificateRevocationList returns a CertificateRevocationList.
-func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
+func (c *certificateAuthorityGRPCClient) GetCertificateRevocationList(ctx context.Context, req *privatecapb.GetCertificateRevocationListRequest, opts ...gax.CallOption) (*privatecapb.CertificateRevocationList, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1123,7 +1424,7 @@ func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Co
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificateRevocationList[0:len(c.CallOptions.GetCertificateRevocationList):len(c.CallOptions.GetCertificateRevocationList)], opts...)
+	opts = append((*c.CallOptions).GetCertificateRevocationList[0:len((*c.CallOptions).GetCertificateRevocationList):len((*c.CallOptions).GetCertificateRevocationList)], opts...)
 	var resp *privatecapb.CertificateRevocationList
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1136,11 +1437,10 @@ func (c *CertificateAuthorityClient) GetCertificateRevocationList(ctx context.Co
 	return resp, nil
 }
 
-// ListCertificateRevocationLists lists CertificateRevocationLists.
-func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
+func (c *certificateAuthorityGRPCClient) ListCertificateRevocationLists(ctx context.Context, req *privatecapb.ListCertificateRevocationListsRequest, opts ...gax.CallOption) *CertificateRevocationListIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCertificateRevocationLists[0:len(c.CallOptions.ListCertificateRevocationLists):len(c.CallOptions.ListCertificateRevocationLists)], opts...)
+	opts = append((*c.CallOptions).ListCertificateRevocationLists[0:len((*c.CallOptions).ListCertificateRevocationLists):len((*c.CallOptions).ListCertificateRevocationLists)], opts...)
 	it := &CertificateRevocationListIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateRevocationListsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateRevocationList, string, error) {
@@ -1177,8 +1477,7 @@ func (c *CertificateAuthorityClient) ListCertificateRevocationLists(ctx context.
 	return it
 }
 
-// UpdateCertificateRevocationList update a CertificateRevocationList.
-func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
+func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationList(ctx context.Context, req *privatecapb.UpdateCertificateRevocationListRequest, opts ...gax.CallOption) (*UpdateCertificateRevocationListOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1186,7 +1485,7 @@ func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_revocation_list.name", url.QueryEscape(req.GetCertificateRevocationList().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCertificateRevocationList[0:len(c.CallOptions.UpdateCertificateRevocationList):len(c.CallOptions.UpdateCertificateRevocationList)], opts...)
+	opts = append((*c.CallOptions).UpdateCertificateRevocationList[0:len((*c.CallOptions).UpdateCertificateRevocationList):len((*c.CallOptions).UpdateCertificateRevocationList)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1197,12 +1496,11 @@ func (c *CertificateAuthorityClient) UpdateCertificateRevocationList(ctx context
 		return nil, err
 	}
 	return &UpdateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// CreateCertificateTemplate create a new CertificateTemplate in a given Project and Location.
-func (c *CertificateAuthorityClient) CreateCertificateTemplate(ctx context.Context, req *privatecapb.CreateCertificateTemplateRequest, opts ...gax.CallOption) (*CreateCertificateTemplateOperation, error) {
+func (c *certificateAuthorityGRPCClient) CreateCertificateTemplate(ctx context.Context, req *privatecapb.CreateCertificateTemplateRequest, opts ...gax.CallOption) (*CreateCertificateTemplateOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1210,7 +1508,7 @@ func (c *CertificateAuthorityClient) CreateCertificateTemplate(ctx context.Conte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateCertificateTemplate[0:len(c.CallOptions.CreateCertificateTemplate):len(c.CallOptions.CreateCertificateTemplate)], opts...)
+	opts = append((*c.CallOptions).CreateCertificateTemplate[0:len((*c.CallOptions).CreateCertificateTemplate):len((*c.CallOptions).CreateCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1221,12 +1519,11 @@ func (c *CertificateAuthorityClient) CreateCertificateTemplate(ctx context.Conte
 		return nil, err
 	}
 	return &CreateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteCertificateTemplate deleteCertificateTemplate deletes a CertificateTemplate.
-func (c *CertificateAuthorityClient) DeleteCertificateTemplate(ctx context.Context, req *privatecapb.DeleteCertificateTemplateRequest, opts ...gax.CallOption) (*DeleteCertificateTemplateOperation, error) {
+func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplate(ctx context.Context, req *privatecapb.DeleteCertificateTemplateRequest, opts ...gax.CallOption) (*DeleteCertificateTemplateOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1234,7 +1531,7 @@ func (c *CertificateAuthorityClient) DeleteCertificateTemplate(ctx context.Conte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteCertificateTemplate[0:len(c.CallOptions.DeleteCertificateTemplate):len(c.CallOptions.DeleteCertificateTemplate)], opts...)
+	opts = append((*c.CallOptions).DeleteCertificateTemplate[0:len((*c.CallOptions).DeleteCertificateTemplate):len((*c.CallOptions).DeleteCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1245,12 +1542,11 @@ func (c *CertificateAuthorityClient) DeleteCertificateTemplate(ctx context.Conte
 		return nil, err
 	}
 	return &DeleteCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetCertificateTemplate returns a CertificateTemplate.
-func (c *CertificateAuthorityClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
+func (c *certificateAuthorityGRPCClient) GetCertificateTemplate(ctx context.Context, req *privatecapb.GetCertificateTemplateRequest, opts ...gax.CallOption) (*privatecapb.CertificateTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1258,7 +1554,7 @@ func (c *CertificateAuthorityClient) GetCertificateTemplate(ctx context.Context,
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetCertificateTemplate[0:len(c.CallOptions.GetCertificateTemplate):len(c.CallOptions.GetCertificateTemplate)], opts...)
+	opts = append((*c.CallOptions).GetCertificateTemplate[0:len((*c.CallOptions).GetCertificateTemplate):len((*c.CallOptions).GetCertificateTemplate)], opts...)
 	var resp *privatecapb.CertificateTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1271,11 +1567,10 @@ func (c *CertificateAuthorityClient) GetCertificateTemplate(ctx context.Context,
 	return resp, nil
 }
 
-// ListCertificateTemplates lists CertificateTemplates.
-func (c *CertificateAuthorityClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
+func (c *certificateAuthorityGRPCClient) ListCertificateTemplates(ctx context.Context, req *privatecapb.ListCertificateTemplatesRequest, opts ...gax.CallOption) *CertificateTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListCertificateTemplates[0:len(c.CallOptions.ListCertificateTemplates):len(c.CallOptions.ListCertificateTemplates)], opts...)
+	opts = append((*c.CallOptions).ListCertificateTemplates[0:len((*c.CallOptions).ListCertificateTemplates):len((*c.CallOptions).ListCertificateTemplates)], opts...)
 	it := &CertificateTemplateIterator{}
 	req = proto.Clone(req).(*privatecapb.ListCertificateTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*privatecapb.CertificateTemplate, string, error) {
@@ -1312,8 +1607,7 @@ func (c *CertificateAuthorityClient) ListCertificateTemplates(ctx context.Contex
 	return it
 }
 
-// UpdateCertificateTemplate update a CertificateTemplate.
-func (c *CertificateAuthorityClient) UpdateCertificateTemplate(ctx context.Context, req *privatecapb.UpdateCertificateTemplateRequest, opts ...gax.CallOption) (*UpdateCertificateTemplateOperation, error) {
+func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplate(ctx context.Context, req *privatecapb.UpdateCertificateTemplateRequest, opts ...gax.CallOption) (*UpdateCertificateTemplateOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1321,7 +1615,7 @@ func (c *CertificateAuthorityClient) UpdateCertificateTemplate(ctx context.Conte
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "certificate_template.name", url.QueryEscape(req.GetCertificateTemplate().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateCertificateTemplate[0:len(c.CallOptions.UpdateCertificateTemplate):len(c.CallOptions.UpdateCertificateTemplate)], opts...)
+	opts = append((*c.CallOptions).UpdateCertificateTemplate[0:len((*c.CallOptions).UpdateCertificateTemplate):len((*c.CallOptions).UpdateCertificateTemplate)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1332,7 +1626,7 @@ func (c *CertificateAuthorityClient) UpdateCertificateTemplate(ctx context.Conte
 		return nil, err
 	}
 	return &UpdateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -1343,9 +1637,9 @@ type ActivateCertificateAuthorityOperation struct {
 
 // ActivateCertificateAuthorityOperation returns a new ActivateCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created ActivateCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) ActivateCertificateAuthorityOperation(name string) *ActivateCertificateAuthorityOperation {
 	return &ActivateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1412,9 +1706,9 @@ type CreateCaPoolOperation struct {
 
 // CreateCaPoolOperation returns a new CreateCaPoolOperation from a given name.
 // The name must be that of a previously created CreateCaPoolOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) CreateCaPoolOperation(name string) *CreateCaPoolOperation {
+func (c *certificateAuthorityGRPCClient) CreateCaPoolOperation(name string) *CreateCaPoolOperation {
 	return &CreateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1481,9 +1775,9 @@ type CreateCertificateAuthorityOperation struct {
 
 // CreateCertificateAuthorityOperation returns a new CreateCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created CreateCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) CreateCertificateAuthorityOperation(name string) *CreateCertificateAuthorityOperation {
 	return &CreateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1550,9 +1844,9 @@ type CreateCertificateTemplateOperation struct {
 
 // CreateCertificateTemplateOperation returns a new CreateCertificateTemplateOperation from a given name.
 // The name must be that of a previously created CreateCertificateTemplateOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) CreateCertificateTemplateOperation(name string) *CreateCertificateTemplateOperation {
+func (c *certificateAuthorityGRPCClient) CreateCertificateTemplateOperation(name string) *CreateCertificateTemplateOperation {
 	return &CreateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1619,9 +1913,9 @@ type DeleteCaPoolOperation struct {
 
 // DeleteCaPoolOperation returns a new DeleteCaPoolOperation from a given name.
 // The name must be that of a previously created DeleteCaPoolOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) DeleteCaPoolOperation(name string) *DeleteCaPoolOperation {
+func (c *certificateAuthorityGRPCClient) DeleteCaPoolOperation(name string) *DeleteCaPoolOperation {
 	return &DeleteCaPoolOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1688,9 +1982,9 @@ type DeleteCertificateAuthorityOperation struct {
 
 // DeleteCertificateAuthorityOperation returns a new DeleteCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created DeleteCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) DeleteCertificateAuthorityOperation(name string) *DeleteCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) DeleteCertificateAuthorityOperation(name string) *DeleteCertificateAuthorityOperation {
 	return &DeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1757,9 +2051,9 @@ type DeleteCertificateTemplateOperation struct {
 
 // DeleteCertificateTemplateOperation returns a new DeleteCertificateTemplateOperation from a given name.
 // The name must be that of a previously created DeleteCertificateTemplateOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation {
+func (c *certificateAuthorityGRPCClient) DeleteCertificateTemplateOperation(name string) *DeleteCertificateTemplateOperation {
 	return &DeleteCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1815,9 +2109,9 @@ type DisableCertificateAuthorityOperation struct {
 
 // DisableCertificateAuthorityOperation returns a new DisableCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created DisableCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) DisableCertificateAuthorityOperation(name string) *DisableCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) DisableCertificateAuthorityOperation(name string) *DisableCertificateAuthorityOperation {
 	return &DisableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1884,9 +2178,9 @@ type EnableCertificateAuthorityOperation struct {
 
 // EnableCertificateAuthorityOperation returns a new EnableCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created EnableCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) EnableCertificateAuthorityOperation(name string) *EnableCertificateAuthorityOperation {
 	return &EnableCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1953,9 +2247,9 @@ type UndeleteCertificateAuthorityOperation struct {
 
 // UndeleteCertificateAuthorityOperation returns a new UndeleteCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created UndeleteCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) UndeleteCertificateAuthorityOperation(name string) *UndeleteCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) UndeleteCertificateAuthorityOperation(name string) *UndeleteCertificateAuthorityOperation {
 	return &UndeleteCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2022,9 +2316,9 @@ type UpdateCaPoolOperation struct {
 
 // UpdateCaPoolOperation returns a new UpdateCaPoolOperation from a given name.
 // The name must be that of a previously created UpdateCaPoolOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) UpdateCaPoolOperation(name string) *UpdateCaPoolOperation {
+func (c *certificateAuthorityGRPCClient) UpdateCaPoolOperation(name string) *UpdateCaPoolOperation {
 	return &UpdateCaPoolOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2091,9 +2385,9 @@ type UpdateCertificateAuthorityOperation struct {
 
 // UpdateCertificateAuthorityOperation returns a new UpdateCertificateAuthorityOperation from a given name.
 // The name must be that of a previously created UpdateCertificateAuthorityOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) UpdateCertificateAuthorityOperation(name string) *UpdateCertificateAuthorityOperation {
+func (c *certificateAuthorityGRPCClient) UpdateCertificateAuthorityOperation(name string) *UpdateCertificateAuthorityOperation {
 	return &UpdateCertificateAuthorityOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2160,9 +2454,9 @@ type UpdateCertificateRevocationListOperation struct {
 
 // UpdateCertificateRevocationListOperation returns a new UpdateCertificateRevocationListOperation from a given name.
 // The name must be that of a previously created UpdateCertificateRevocationListOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation {
+func (c *certificateAuthorityGRPCClient) UpdateCertificateRevocationListOperation(name string) *UpdateCertificateRevocationListOperation {
 	return &UpdateCertificateRevocationListOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -2229,9 +2523,9 @@ type UpdateCertificateTemplateOperation struct {
 
 // UpdateCertificateTemplateOperation returns a new UpdateCertificateTemplateOperation from a given name.
 // The name must be that of a previously created UpdateCertificateTemplateOperation, possibly from a different process.
-func (c *CertificateAuthorityClient) UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation {
+func (c *certificateAuthorityGRPCClient) UpdateCertificateTemplateOperation(name string) *UpdateCertificateTemplateOperation {
 	return &UpdateCertificateTemplateOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

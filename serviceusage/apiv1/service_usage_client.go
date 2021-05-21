@@ -49,7 +49,7 @@ type CallOptions struct {
 	BatchGetServices    []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("serviceusage.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("serviceusage.mtls.googleapis.com:443"),
@@ -72,37 +72,169 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Service Usage API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	EnableService(context.Context, *serviceusagepb.EnableServiceRequest, ...gax.CallOption) (*EnableServiceOperation, error)
+	EnableServiceOperation(name string) *EnableServiceOperation
+	DisableService(context.Context, *serviceusagepb.DisableServiceRequest, ...gax.CallOption) (*DisableServiceOperation, error)
+	DisableServiceOperation(name string) *DisableServiceOperation
+	GetService(context.Context, *serviceusagepb.GetServiceRequest, ...gax.CallOption) (*serviceusagepb.Service, error)
+	ListServices(context.Context, *serviceusagepb.ListServicesRequest, ...gax.CallOption) *ServiceIterator
+	BatchEnableServices(context.Context, *serviceusagepb.BatchEnableServicesRequest, ...gax.CallOption) (*BatchEnableServicesOperation, error)
+	BatchEnableServicesOperation(name string) *BatchEnableServicesOperation
+	BatchGetServices(context.Context, *serviceusagepb.BatchGetServicesRequest, ...gax.CallOption) (*serviceusagepb.BatchGetServicesResponse, error)
+}
+
 // Client is a client for interacting with Service Usage API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Enables services that service consumers want to use on Google Cloud Platform,
+// lists the available or enabled services, or disables services that service
+// consumers no longer use.
+//
+// See Service Usage API (at https://cloud.google.com/service-usage/docs/overview)
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// EnableService enable a service so that it can be used with a project.
+func (c *Client) EnableService(ctx context.Context, req *serviceusagepb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
+	return c.internalClient.EnableService(ctx, req, opts...)
+}
+
+// EnableServiceOperation returns a new EnableServiceOperation from a given name.
+// The name must be that of a previously created EnableServiceOperation, possibly from a different process.
+func (c *Client) EnableServiceOperation(name string) *EnableServiceOperation {
+	return c.internalClient.EnableServiceOperation(name)
+}
+
+// DisableService disable a service so that it can no longer be used with a project.
+// This prevents unintended usage that may cause unexpected billing
+// charges or security leaks.
+//
+// It is not valid to call the disable method on a service that is not
+// currently enabled. Callers will receive a FAILED_PRECONDITION status if
+// the target service is not currently enabled.
+func (c *Client) DisableService(ctx context.Context, req *serviceusagepb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
+	return c.internalClient.DisableService(ctx, req, opts...)
+}
+
+// DisableServiceOperation returns a new DisableServiceOperation from a given name.
+// The name must be that of a previously created DisableServiceOperation, possibly from a different process.
+func (c *Client) DisableServiceOperation(name string) *DisableServiceOperation {
+	return c.internalClient.DisableServiceOperation(name)
+}
+
+// GetService returns the service configuration and enabled state for a given service.
+func (c *Client) GetService(ctx context.Context, req *serviceusagepb.GetServiceRequest, opts ...gax.CallOption) (*serviceusagepb.Service, error) {
+	return c.internalClient.GetService(ctx, req, opts...)
+}
+
+// ListServices list all services available to the specified project, and the current
+// state of those services with respect to the project. The list includes
+// all public services, all services for which the calling user has the
+// servicemanagement.services.bind permission, and all services that have
+// already been enabled on the project. The list can be filtered to
+// only include services in a specific state, for example to only include
+// services enabled on the project.
+//
+// WARNING: If you need to query enabled services frequently or across
+// an organization, you should use
+// Cloud Asset Inventory
+// API (at https://cloud.google.com/asset-inventory/docs/apis), which provides
+// higher throughput and richer filtering capability.
+func (c *Client) ListServices(ctx context.Context, req *serviceusagepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+	return c.internalClient.ListServices(ctx, req, opts...)
+}
+
+// BatchEnableServices enable multiple services on a project. The operation is atomic: if enabling
+// any service fails, then the entire batch fails, and no state changes occur.
+// To enable a single service, use the EnableService method instead.
+func (c *Client) BatchEnableServices(ctx context.Context, req *serviceusagepb.BatchEnableServicesRequest, opts ...gax.CallOption) (*BatchEnableServicesOperation, error) {
+	return c.internalClient.BatchEnableServices(ctx, req, opts...)
+}
+
+// BatchEnableServicesOperation returns a new BatchEnableServicesOperation from a given name.
+// The name must be that of a previously created BatchEnableServicesOperation, possibly from a different process.
+func (c *Client) BatchEnableServicesOperation(name string) *BatchEnableServicesOperation {
+	return c.internalClient.BatchEnableServicesOperation(name)
+}
+
+// BatchGetServices returns the service configurations and enabled states for a given list of
+// services.
+func (c *Client) BatchGetServices(ctx context.Context, req *serviceusagepb.BatchGetServicesRequest, opts ...gax.CallOption) (*serviceusagepb.BatchGetServicesResponse, error) {
+	return c.internalClient.BatchGetServices(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Service Usage API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client serviceusagepb.ServiceUsageClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new service usage client.
+// NewClient creates a new service usage client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Service Usage API (at /service-usage/docs/overview)
+// Enables services that service consumers want to use on Google Cloud Platform,
+// lists the available or enabled services, or disables services that service
+// consumers no longer use.
+//
+// See Service Usage API (at https://cloud.google.com/service-usage/docs/overview)
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -120,16 +252,19 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: serviceusagepb.NewServiceUsageClient(connPool),
+		client:           serviceusagepb.NewServiceUsageClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -139,33 +274,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// EnableService enable a service so that it can be used with a project.
-func (c *Client) EnableService(ctx context.Context, req *serviceusagepb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) EnableService(ctx context.Context, req *serviceusagepb.EnableServiceRequest, opts ...gax.CallOption) (*EnableServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -173,7 +308,7 @@ func (c *Client) EnableService(ctx context.Context, req *serviceusagepb.EnableSe
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.EnableService[0:len(c.CallOptions.EnableService):len(c.CallOptions.EnableService)], opts...)
+	opts = append((*c.CallOptions).EnableService[0:len((*c.CallOptions).EnableService):len((*c.CallOptions).EnableService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -184,18 +319,11 @@ func (c *Client) EnableService(ctx context.Context, req *serviceusagepb.EnableSe
 		return nil, err
 	}
 	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DisableService disable a service so that it can no longer be used with a project.
-// This prevents unintended usage that may cause unexpected billing
-// charges or security leaks.
-//
-// It is not valid to call the disable method on a service that is not
-// currently enabled. Callers will receive a FAILED_PRECONDITION status if
-// the target service is not currently enabled.
-func (c *Client) DisableService(ctx context.Context, req *serviceusagepb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
+func (c *gRPCClient) DisableService(ctx context.Context, req *serviceusagepb.DisableServiceRequest, opts ...gax.CallOption) (*DisableServiceOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -203,7 +331,7 @@ func (c *Client) DisableService(ctx context.Context, req *serviceusagepb.Disable
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DisableService[0:len(c.CallOptions.DisableService):len(c.CallOptions.DisableService)], opts...)
+	opts = append((*c.CallOptions).DisableService[0:len((*c.CallOptions).DisableService):len((*c.CallOptions).DisableService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -214,12 +342,11 @@ func (c *Client) DisableService(ctx context.Context, req *serviceusagepb.Disable
 		return nil, err
 	}
 	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GetService returns the service configuration and enabled state for a given service.
-func (c *Client) GetService(ctx context.Context, req *serviceusagepb.GetServiceRequest, opts ...gax.CallOption) (*serviceusagepb.Service, error) {
+func (c *gRPCClient) GetService(ctx context.Context, req *serviceusagepb.GetServiceRequest, opts ...gax.CallOption) (*serviceusagepb.Service, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -227,7 +354,7 @@ func (c *Client) GetService(ctx context.Context, req *serviceusagepb.GetServiceR
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetService[0:len(c.CallOptions.GetService):len(c.CallOptions.GetService)], opts...)
+	opts = append((*c.CallOptions).GetService[0:len((*c.CallOptions).GetService):len((*c.CallOptions).GetService)], opts...)
 	var resp *serviceusagepb.Service
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -240,23 +367,10 @@ func (c *Client) GetService(ctx context.Context, req *serviceusagepb.GetServiceR
 	return resp, nil
 }
 
-// ListServices list all services available to the specified project, and the current
-// state of those services with respect to the project. The list includes
-// all public services, all services for which the calling user has the
-// servicemanagement.services.bind permission, and all services that have
-// already been enabled on the project. The list can be filtered to
-// only include services in a specific state, for example to only include
-// services enabled on the project.
-//
-// WARNING: If you need to query enabled services frequently or across
-// an organization, you should use
-// Cloud Asset Inventory
-// API (at https://cloud.google.com/asset-inventory/docs/apis), which provides
-// higher throughput and richer filtering capability.
-func (c *Client) ListServices(ctx context.Context, req *serviceusagepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
+func (c *gRPCClient) ListServices(ctx context.Context, req *serviceusagepb.ListServicesRequest, opts ...gax.CallOption) *ServiceIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListServices[0:len(c.CallOptions.ListServices):len(c.CallOptions.ListServices)], opts...)
+	opts = append((*c.CallOptions).ListServices[0:len((*c.CallOptions).ListServices):len((*c.CallOptions).ListServices)], opts...)
 	it := &ServiceIterator{}
 	req = proto.Clone(req).(*serviceusagepb.ListServicesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*serviceusagepb.Service, string, error) {
@@ -293,10 +407,7 @@ func (c *Client) ListServices(ctx context.Context, req *serviceusagepb.ListServi
 	return it
 }
 
-// BatchEnableServices enable multiple services on a project. The operation is atomic: if enabling
-// any service fails, then the entire batch fails, and no state changes occur.
-// To enable a single service, use the EnableService method instead.
-func (c *Client) BatchEnableServices(ctx context.Context, req *serviceusagepb.BatchEnableServicesRequest, opts ...gax.CallOption) (*BatchEnableServicesOperation, error) {
+func (c *gRPCClient) BatchEnableServices(ctx context.Context, req *serviceusagepb.BatchEnableServicesRequest, opts ...gax.CallOption) (*BatchEnableServicesOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -304,7 +415,7 @@ func (c *Client) BatchEnableServices(ctx context.Context, req *serviceusagepb.Ba
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchEnableServices[0:len(c.CallOptions.BatchEnableServices):len(c.CallOptions.BatchEnableServices)], opts...)
+	opts = append((*c.CallOptions).BatchEnableServices[0:len((*c.CallOptions).BatchEnableServices):len((*c.CallOptions).BatchEnableServices)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -315,13 +426,11 @@ func (c *Client) BatchEnableServices(ctx context.Context, req *serviceusagepb.Ba
 		return nil, err
 	}
 	return &BatchEnableServicesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// BatchGetServices returns the service configurations and enabled states for a given list of
-// services.
-func (c *Client) BatchGetServices(ctx context.Context, req *serviceusagepb.BatchGetServicesRequest, opts ...gax.CallOption) (*serviceusagepb.BatchGetServicesResponse, error) {
+func (c *gRPCClient) BatchGetServices(ctx context.Context, req *serviceusagepb.BatchGetServicesRequest, opts ...gax.CallOption) (*serviceusagepb.BatchGetServicesResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -329,7 +438,7 @@ func (c *Client) BatchGetServices(ctx context.Context, req *serviceusagepb.Batch
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.BatchGetServices[0:len(c.CallOptions.BatchGetServices):len(c.CallOptions.BatchGetServices)], opts...)
+	opts = append((*c.CallOptions).BatchGetServices[0:len((*c.CallOptions).BatchGetServices):len((*c.CallOptions).BatchGetServices)], opts...)
 	var resp *serviceusagepb.BatchGetServicesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -349,9 +458,9 @@ type BatchEnableServicesOperation struct {
 
 // BatchEnableServicesOperation returns a new BatchEnableServicesOperation from a given name.
 // The name must be that of a previously created BatchEnableServicesOperation, possibly from a different process.
-func (c *Client) BatchEnableServicesOperation(name string) *BatchEnableServicesOperation {
+func (c *gRPCClient) BatchEnableServicesOperation(name string) *BatchEnableServicesOperation {
 	return &BatchEnableServicesOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -418,9 +527,9 @@ type DisableServiceOperation struct {
 
 // DisableServiceOperation returns a new DisableServiceOperation from a given name.
 // The name must be that of a previously created DisableServiceOperation, possibly from a different process.
-func (c *Client) DisableServiceOperation(name string) *DisableServiceOperation {
+func (c *gRPCClient) DisableServiceOperation(name string) *DisableServiceOperation {
 	return &DisableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -487,9 +596,9 @@ type EnableServiceOperation struct {
 
 // EnableServiceOperation returns a new EnableServiceOperation from a given name.
 // The name must be that of a previously created EnableServiceOperation, possibly from a different process.
-func (c *Client) EnableServiceOperation(name string) *EnableServiceOperation {
+func (c *gRPCClient) EnableServiceOperation(name string) *EnableServiceOperation {
 	return &EnableServiceOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

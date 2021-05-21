@@ -30,18 +30,19 @@ func ExampleNewUserEventClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleUserEventClient_WriteUserEvent() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleUserEventClient_WriteUserEvent() {
 }
 
 func ExampleUserEventClient_CollectUserEvent() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
@@ -75,14 +75,12 @@ func ExampleUserEventClient_CollectUserEvent() {
 }
 
 func ExampleUserEventClient_ListUserEvents() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.ListUserEventsRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleUserEventClient_ListUserEvents() {
 }
 
 func ExampleUserEventClient_PurgeUserEvents() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
@@ -127,13 +124,12 @@ func ExampleUserEventClient_PurgeUserEvents() {
 }
 
 func ExampleUserEventClient_ImportUserEvents() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.ImportUserEventsRequest{
 		// TODO: Fill request struct fields.

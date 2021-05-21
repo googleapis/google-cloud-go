@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.

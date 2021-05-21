@@ -30,19 +30,19 @@ func ExampleNewNotificationChannelClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListNotificationChannelDescriptorsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleNotificationChannelClient_ListNotificationChannelDescriptors() {
 }
 
 func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetNotificationChannelDescriptorRequest{
 		// TODO: Fill request struct fields.
@@ -82,14 +81,12 @@ func ExampleNotificationChannelClient_GetNotificationChannelDescriptor() {
 }
 
 func ExampleNotificationChannelClient_ListNotificationChannels() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListNotificationChannelsRequest{
 		// TODO: Fill request struct fields.
@@ -109,13 +106,12 @@ func ExampleNotificationChannelClient_ListNotificationChannels() {
 }
 
 func ExampleNotificationChannelClient_GetNotificationChannel() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetNotificationChannelRequest{
 		// TODO: Fill request struct fields.
@@ -129,13 +125,12 @@ func ExampleNotificationChannelClient_GetNotificationChannel() {
 }
 
 func ExampleNotificationChannelClient_CreateNotificationChannel() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateNotificationChannelRequest{
 		// TODO: Fill request struct fields.
@@ -149,13 +144,12 @@ func ExampleNotificationChannelClient_CreateNotificationChannel() {
 }
 
 func ExampleNotificationChannelClient_UpdateNotificationChannel() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateNotificationChannelRequest{
 		// TODO: Fill request struct fields.
@@ -174,6 +168,7 @@ func ExampleNotificationChannelClient_DeleteNotificationChannel() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteNotificationChannelRequest{
 		// TODO: Fill request struct fields.
@@ -190,6 +185,7 @@ func ExampleNotificationChannelClient_SendNotificationChannelVerificationCode() 
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.SendNotificationChannelVerificationCodeRequest{
 		// TODO: Fill request struct fields.
@@ -201,13 +197,12 @@ func ExampleNotificationChannelClient_SendNotificationChannelVerificationCode() 
 }
 
 func ExampleNotificationChannelClient_GetNotificationChannelVerificationCode() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetNotificationChannelVerificationCodeRequest{
 		// TODO: Fill request struct fields.
@@ -221,13 +216,12 @@ func ExampleNotificationChannelClient_GetNotificationChannelVerificationCode() {
 }
 
 func ExampleNotificationChannelClient_VerifyNotificationChannel() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewNotificationChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.VerifyNotificationChannelRequest{
 		// TODO: Fill request struct fields.

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetIndexRequest{
 		// TODO: Fill request struct fields.

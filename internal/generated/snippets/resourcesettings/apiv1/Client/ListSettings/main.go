@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcesettingspb.ListSettingsRequest{
 		// TODO: Fill request struct fields.

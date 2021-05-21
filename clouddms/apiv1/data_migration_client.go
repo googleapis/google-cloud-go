@@ -60,7 +60,7 @@ type DataMigrationCallOptions struct {
 	DeleteConnectionProfile []gax.CallOption
 }
 
-func defaultDataMigrationClientOptions() []option.ClientOption {
+func defaultDataMigrationGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("datamigration.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("datamigration.mtls.googleapis.com:443"),
@@ -94,37 +94,277 @@ func defaultDataMigrationCallOptions() *DataMigrationCallOptions {
 	}
 }
 
+// internalDataMigrationClient is an interface that defines the methods availaible from Database Migration API.
+type internalDataMigrationClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	ListMigrationJobs(context.Context, *clouddmspb.ListMigrationJobsRequest, ...gax.CallOption) *MigrationJobIterator
+	GetMigrationJob(context.Context, *clouddmspb.GetMigrationJobRequest, ...gax.CallOption) (*clouddmspb.MigrationJob, error)
+	CreateMigrationJob(context.Context, *clouddmspb.CreateMigrationJobRequest, ...gax.CallOption) (*CreateMigrationJobOperation, error)
+	CreateMigrationJobOperation(name string) *CreateMigrationJobOperation
+	UpdateMigrationJob(context.Context, *clouddmspb.UpdateMigrationJobRequest, ...gax.CallOption) (*UpdateMigrationJobOperation, error)
+	UpdateMigrationJobOperation(name string) *UpdateMigrationJobOperation
+	DeleteMigrationJob(context.Context, *clouddmspb.DeleteMigrationJobRequest, ...gax.CallOption) (*DeleteMigrationJobOperation, error)
+	DeleteMigrationJobOperation(name string) *DeleteMigrationJobOperation
+	StartMigrationJob(context.Context, *clouddmspb.StartMigrationJobRequest, ...gax.CallOption) (*StartMigrationJobOperation, error)
+	StartMigrationJobOperation(name string) *StartMigrationJobOperation
+	StopMigrationJob(context.Context, *clouddmspb.StopMigrationJobRequest, ...gax.CallOption) (*StopMigrationJobOperation, error)
+	StopMigrationJobOperation(name string) *StopMigrationJobOperation
+	ResumeMigrationJob(context.Context, *clouddmspb.ResumeMigrationJobRequest, ...gax.CallOption) (*ResumeMigrationJobOperation, error)
+	ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation
+	PromoteMigrationJob(context.Context, *clouddmspb.PromoteMigrationJobRequest, ...gax.CallOption) (*PromoteMigrationJobOperation, error)
+	PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation
+	VerifyMigrationJob(context.Context, *clouddmspb.VerifyMigrationJobRequest, ...gax.CallOption) (*VerifyMigrationJobOperation, error)
+	VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation
+	RestartMigrationJob(context.Context, *clouddmspb.RestartMigrationJobRequest, ...gax.CallOption) (*RestartMigrationJobOperation, error)
+	RestartMigrationJobOperation(name string) *RestartMigrationJobOperation
+	GenerateSshScript(context.Context, *clouddmspb.GenerateSshScriptRequest, ...gax.CallOption) (*clouddmspb.SshScript, error)
+	ListConnectionProfiles(context.Context, *clouddmspb.ListConnectionProfilesRequest, ...gax.CallOption) *ConnectionProfileIterator
+	GetConnectionProfile(context.Context, *clouddmspb.GetConnectionProfileRequest, ...gax.CallOption) (*clouddmspb.ConnectionProfile, error)
+	CreateConnectionProfile(context.Context, *clouddmspb.CreateConnectionProfileRequest, ...gax.CallOption) (*CreateConnectionProfileOperation, error)
+	CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation
+	UpdateConnectionProfile(context.Context, *clouddmspb.UpdateConnectionProfileRequest, ...gax.CallOption) (*UpdateConnectionProfileOperation, error)
+	UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation
+	DeleteConnectionProfile(context.Context, *clouddmspb.DeleteConnectionProfileRequest, ...gax.CallOption) (*DeleteConnectionProfileOperation, error)
+	DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation
+}
+
 // DataMigrationClient is a client for interacting with Database Migration API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Database Migration service
+type DataMigrationClient struct {
+	// The internal transport-dependent client.
+	internalClient internalDataMigrationClient
+
+	// The call options for this service.
+	CallOptions *DataMigrationCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *DataMigrationClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *DataMigrationClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *DataMigrationClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// ListMigrationJobs lists migration jobs in a given project and location.
+func (c *DataMigrationClient) ListMigrationJobs(ctx context.Context, req *clouddmspb.ListMigrationJobsRequest, opts ...gax.CallOption) *MigrationJobIterator {
+	return c.internalClient.ListMigrationJobs(ctx, req, opts...)
+}
+
+// GetMigrationJob gets details of a single migration job.
+func (c *DataMigrationClient) GetMigrationJob(ctx context.Context, req *clouddmspb.GetMigrationJobRequest, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
+	return c.internalClient.GetMigrationJob(ctx, req, opts...)
+}
+
+// CreateMigrationJob creates a new migration job in a given project and location.
+func (c *DataMigrationClient) CreateMigrationJob(ctx context.Context, req *clouddmspb.CreateMigrationJobRequest, opts ...gax.CallOption) (*CreateMigrationJobOperation, error) {
+	return c.internalClient.CreateMigrationJob(ctx, req, opts...)
+}
+
+// CreateMigrationJobOperation returns a new CreateMigrationJobOperation from a given name.
+// The name must be that of a previously created CreateMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) CreateMigrationJobOperation(name string) *CreateMigrationJobOperation {
+	return c.internalClient.CreateMigrationJobOperation(name)
+}
+
+// UpdateMigrationJob updates the parameters of a single migration job.
+func (c *DataMigrationClient) UpdateMigrationJob(ctx context.Context, req *clouddmspb.UpdateMigrationJobRequest, opts ...gax.CallOption) (*UpdateMigrationJobOperation, error) {
+	return c.internalClient.UpdateMigrationJob(ctx, req, opts...)
+}
+
+// UpdateMigrationJobOperation returns a new UpdateMigrationJobOperation from a given name.
+// The name must be that of a previously created UpdateMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) UpdateMigrationJobOperation(name string) *UpdateMigrationJobOperation {
+	return c.internalClient.UpdateMigrationJobOperation(name)
+}
+
+// DeleteMigrationJob deletes a single migration job.
+func (c *DataMigrationClient) DeleteMigrationJob(ctx context.Context, req *clouddmspb.DeleteMigrationJobRequest, opts ...gax.CallOption) (*DeleteMigrationJobOperation, error) {
+	return c.internalClient.DeleteMigrationJob(ctx, req, opts...)
+}
+
+// DeleteMigrationJobOperation returns a new DeleteMigrationJobOperation from a given name.
+// The name must be that of a previously created DeleteMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) DeleteMigrationJobOperation(name string) *DeleteMigrationJobOperation {
+	return c.internalClient.DeleteMigrationJobOperation(name)
+}
+
+// StartMigrationJob start an already created migration job.
+func (c *DataMigrationClient) StartMigrationJob(ctx context.Context, req *clouddmspb.StartMigrationJobRequest, opts ...gax.CallOption) (*StartMigrationJobOperation, error) {
+	return c.internalClient.StartMigrationJob(ctx, req, opts...)
+}
+
+// StartMigrationJobOperation returns a new StartMigrationJobOperation from a given name.
+// The name must be that of a previously created StartMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) StartMigrationJobOperation(name string) *StartMigrationJobOperation {
+	return c.internalClient.StartMigrationJobOperation(name)
+}
+
+// StopMigrationJob stops a running migration job.
+func (c *DataMigrationClient) StopMigrationJob(ctx context.Context, req *clouddmspb.StopMigrationJobRequest, opts ...gax.CallOption) (*StopMigrationJobOperation, error) {
+	return c.internalClient.StopMigrationJob(ctx, req, opts...)
+}
+
+// StopMigrationJobOperation returns a new StopMigrationJobOperation from a given name.
+// The name must be that of a previously created StopMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) StopMigrationJobOperation(name string) *StopMigrationJobOperation {
+	return c.internalClient.StopMigrationJobOperation(name)
+}
+
+// ResumeMigrationJob resume a migration job that is currently stopped and is resumable (was
+// stopped during CDC phase).
+func (c *DataMigrationClient) ResumeMigrationJob(ctx context.Context, req *clouddmspb.ResumeMigrationJobRequest, opts ...gax.CallOption) (*ResumeMigrationJobOperation, error) {
+	return c.internalClient.ResumeMigrationJob(ctx, req, opts...)
+}
+
+// ResumeMigrationJobOperation returns a new ResumeMigrationJobOperation from a given name.
+// The name must be that of a previously created ResumeMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation {
+	return c.internalClient.ResumeMigrationJobOperation(name)
+}
+
+// PromoteMigrationJob promote a migration job, stopping replication to the destination and
+// promoting the destination to be a standalone database.
+func (c *DataMigrationClient) PromoteMigrationJob(ctx context.Context, req *clouddmspb.PromoteMigrationJobRequest, opts ...gax.CallOption) (*PromoteMigrationJobOperation, error) {
+	return c.internalClient.PromoteMigrationJob(ctx, req, opts...)
+}
+
+// PromoteMigrationJobOperation returns a new PromoteMigrationJobOperation from a given name.
+// The name must be that of a previously created PromoteMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation {
+	return c.internalClient.PromoteMigrationJobOperation(name)
+}
+
+// VerifyMigrationJob verify a migration job, making sure the destination can reach the source
+// and that all configuration and prerequisites are met.
+func (c *DataMigrationClient) VerifyMigrationJob(ctx context.Context, req *clouddmspb.VerifyMigrationJobRequest, opts ...gax.CallOption) (*VerifyMigrationJobOperation, error) {
+	return c.internalClient.VerifyMigrationJob(ctx, req, opts...)
+}
+
+// VerifyMigrationJobOperation returns a new VerifyMigrationJobOperation from a given name.
+// The name must be that of a previously created VerifyMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation {
+	return c.internalClient.VerifyMigrationJobOperation(name)
+}
+
+// RestartMigrationJob restart a stopped or failed migration job, resetting the destination
+// instance to its original state and starting the migration process from
+// scratch.
+func (c *DataMigrationClient) RestartMigrationJob(ctx context.Context, req *clouddmspb.RestartMigrationJobRequest, opts ...gax.CallOption) (*RestartMigrationJobOperation, error) {
+	return c.internalClient.RestartMigrationJob(ctx, req, opts...)
+}
+
+// RestartMigrationJobOperation returns a new RestartMigrationJobOperation from a given name.
+// The name must be that of a previously created RestartMigrationJobOperation, possibly from a different process.
+func (c *DataMigrationClient) RestartMigrationJobOperation(name string) *RestartMigrationJobOperation {
+	return c.internalClient.RestartMigrationJobOperation(name)
+}
+
+// GenerateSshScript generate a SSH configuration script to configure the reverse SSH
+// connectivity.
+func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *clouddmspb.GenerateSshScriptRequest, opts ...gax.CallOption) (*clouddmspb.SshScript, error) {
+	return c.internalClient.GenerateSshScript(ctx, req, opts...)
+}
+
+// ListConnectionProfiles retrieve a list of all connection profiles in a given project and location.
+func (c *DataMigrationClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
+	return c.internalClient.ListConnectionProfiles(ctx, req, opts...)
+}
+
+// GetConnectionProfile gets details of a single connection profile.
+func (c *DataMigrationClient) GetConnectionProfile(ctx context.Context, req *clouddmspb.GetConnectionProfileRequest, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
+	return c.internalClient.GetConnectionProfile(ctx, req, opts...)
+}
+
+// CreateConnectionProfile creates a new connection profile in a given project and location.
+func (c *DataMigrationClient) CreateConnectionProfile(ctx context.Context, req *clouddmspb.CreateConnectionProfileRequest, opts ...gax.CallOption) (*CreateConnectionProfileOperation, error) {
+	return c.internalClient.CreateConnectionProfile(ctx, req, opts...)
+}
+
+// CreateConnectionProfileOperation returns a new CreateConnectionProfileOperation from a given name.
+// The name must be that of a previously created CreateConnectionProfileOperation, possibly from a different process.
+func (c *DataMigrationClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
+	return c.internalClient.CreateConnectionProfileOperation(name)
+}
+
+// UpdateConnectionProfile update the configuration of a single connection profile.
+func (c *DataMigrationClient) UpdateConnectionProfile(ctx context.Context, req *clouddmspb.UpdateConnectionProfileRequest, opts ...gax.CallOption) (*UpdateConnectionProfileOperation, error) {
+	return c.internalClient.UpdateConnectionProfile(ctx, req, opts...)
+}
+
+// UpdateConnectionProfileOperation returns a new UpdateConnectionProfileOperation from a given name.
+// The name must be that of a previously created UpdateConnectionProfileOperation, possibly from a different process.
+func (c *DataMigrationClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
+	return c.internalClient.UpdateConnectionProfileOperation(name)
+}
+
+// DeleteConnectionProfile deletes a single Database Migration Service connection profile.
+// A connection profile can only be deleted if it is not in use by any
+// active migration jobs.
+func (c *DataMigrationClient) DeleteConnectionProfile(ctx context.Context, req *clouddmspb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
+	return c.internalClient.DeleteConnectionProfile(ctx, req, opts...)
+}
+
+// DeleteConnectionProfileOperation returns a new DeleteConnectionProfileOperation from a given name.
+// The name must be that of a previously created DeleteConnectionProfileOperation, possibly from a different process.
+func (c *DataMigrationClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
+	return c.internalClient.DeleteConnectionProfileOperation(name)
+}
+
+// dataMigrationGRPCClient is a client for interacting with Database Migration API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type DataMigrationClient struct {
+type dataMigrationGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing DataMigrationClient
+	CallOptions **DataMigrationCallOptions
+
 	// The gRPC API client.
 	dataMigrationClient clouddmspb.DataMigrationServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *DataMigrationCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewDataMigrationClient creates a new data migration service client.
+// NewDataMigrationClient creates a new data migration service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Database Migration service
 func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*DataMigrationClient, error) {
-	clientOpts := defaultDataMigrationClientOptions()
-
+	clientOpts := defaultDataMigrationGRPCClientOptions()
 	if newDataMigrationClientHook != nil {
 		hookOpts, err := newDataMigrationClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -142,16 +382,19 @@ func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*
 	if err != nil {
 		return nil, err
 	}
-	c := &DataMigrationClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultDataMigrationCallOptions(),
+	client := DataMigrationClient{CallOptions: defaultDataMigrationCallOptions()}
 
+	c := &dataMigrationGRPCClient{
+		connPool:            connPool,
+		disableDeadlines:    disableDeadlines,
 		dataMigrationClient: clouddmspb.NewDataMigrationServiceClient(connPool),
+		CallOptions:         &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -161,36 +404,36 @@ func NewDataMigrationClient(ctx context.Context, opts ...option.ClientOption) (*
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *DataMigrationClient) Connection() *grpc.ClientConn {
+func (c *dataMigrationGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *DataMigrationClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *DataMigrationClient) setGoogleClientInfo(keyval ...string) {
+func (c *dataMigrationGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// ListMigrationJobs lists migration jobs in a given project and location.
-func (c *DataMigrationClient) ListMigrationJobs(ctx context.Context, req *clouddmspb.ListMigrationJobsRequest, opts ...gax.CallOption) *MigrationJobIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *dataMigrationGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *dataMigrationGRPCClient) ListMigrationJobs(ctx context.Context, req *clouddmspb.ListMigrationJobsRequest, opts ...gax.CallOption) *MigrationJobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListMigrationJobs[0:len(c.CallOptions.ListMigrationJobs):len(c.CallOptions.ListMigrationJobs)], opts...)
+	opts = append((*c.CallOptions).ListMigrationJobs[0:len((*c.CallOptions).ListMigrationJobs):len((*c.CallOptions).ListMigrationJobs)], opts...)
 	it := &MigrationJobIterator{}
 	req = proto.Clone(req).(*clouddmspb.ListMigrationJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.MigrationJob, string, error) {
@@ -227,8 +470,7 @@ func (c *DataMigrationClient) ListMigrationJobs(ctx context.Context, req *cloudd
 	return it
 }
 
-// GetMigrationJob gets details of a single migration job.
-func (c *DataMigrationClient) GetMigrationJob(ctx context.Context, req *clouddmspb.GetMigrationJobRequest, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
+func (c *dataMigrationGRPCClient) GetMigrationJob(ctx context.Context, req *clouddmspb.GetMigrationJobRequest, opts ...gax.CallOption) (*clouddmspb.MigrationJob, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -236,7 +478,7 @@ func (c *DataMigrationClient) GetMigrationJob(ctx context.Context, req *clouddms
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetMigrationJob[0:len(c.CallOptions.GetMigrationJob):len(c.CallOptions.GetMigrationJob)], opts...)
+	opts = append((*c.CallOptions).GetMigrationJob[0:len((*c.CallOptions).GetMigrationJob):len((*c.CallOptions).GetMigrationJob)], opts...)
 	var resp *clouddmspb.MigrationJob
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -249,8 +491,7 @@ func (c *DataMigrationClient) GetMigrationJob(ctx context.Context, req *clouddms
 	return resp, nil
 }
 
-// CreateMigrationJob creates a new migration job in a given project and location.
-func (c *DataMigrationClient) CreateMigrationJob(ctx context.Context, req *clouddmspb.CreateMigrationJobRequest, opts ...gax.CallOption) (*CreateMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) CreateMigrationJob(ctx context.Context, req *clouddmspb.CreateMigrationJobRequest, opts ...gax.CallOption) (*CreateMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -258,7 +499,7 @@ func (c *DataMigrationClient) CreateMigrationJob(ctx context.Context, req *cloud
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateMigrationJob[0:len(c.CallOptions.CreateMigrationJob):len(c.CallOptions.CreateMigrationJob)], opts...)
+	opts = append((*c.CallOptions).CreateMigrationJob[0:len((*c.CallOptions).CreateMigrationJob):len((*c.CallOptions).CreateMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -269,12 +510,11 @@ func (c *DataMigrationClient) CreateMigrationJob(ctx context.Context, req *cloud
 		return nil, err
 	}
 	return &CreateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateMigrationJob updates the parameters of a single migration job.
-func (c *DataMigrationClient) UpdateMigrationJob(ctx context.Context, req *clouddmspb.UpdateMigrationJobRequest, opts ...gax.CallOption) (*UpdateMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) UpdateMigrationJob(ctx context.Context, req *clouddmspb.UpdateMigrationJobRequest, opts ...gax.CallOption) (*UpdateMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -282,7 +522,7 @@ func (c *DataMigrationClient) UpdateMigrationJob(ctx context.Context, req *cloud
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migration_job.name", url.QueryEscape(req.GetMigrationJob().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateMigrationJob[0:len(c.CallOptions.UpdateMigrationJob):len(c.CallOptions.UpdateMigrationJob)], opts...)
+	opts = append((*c.CallOptions).UpdateMigrationJob[0:len((*c.CallOptions).UpdateMigrationJob):len((*c.CallOptions).UpdateMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -293,12 +533,11 @@ func (c *DataMigrationClient) UpdateMigrationJob(ctx context.Context, req *cloud
 		return nil, err
 	}
 	return &UpdateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteMigrationJob deletes a single migration job.
-func (c *DataMigrationClient) DeleteMigrationJob(ctx context.Context, req *clouddmspb.DeleteMigrationJobRequest, opts ...gax.CallOption) (*DeleteMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) DeleteMigrationJob(ctx context.Context, req *clouddmspb.DeleteMigrationJobRequest, opts ...gax.CallOption) (*DeleteMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -306,7 +545,7 @@ func (c *DataMigrationClient) DeleteMigrationJob(ctx context.Context, req *cloud
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteMigrationJob[0:len(c.CallOptions.DeleteMigrationJob):len(c.CallOptions.DeleteMigrationJob)], opts...)
+	opts = append((*c.CallOptions).DeleteMigrationJob[0:len((*c.CallOptions).DeleteMigrationJob):len((*c.CallOptions).DeleteMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -317,12 +556,11 @@ func (c *DataMigrationClient) DeleteMigrationJob(ctx context.Context, req *cloud
 		return nil, err
 	}
 	return &DeleteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// StartMigrationJob start an already created migration job.
-func (c *DataMigrationClient) StartMigrationJob(ctx context.Context, req *clouddmspb.StartMigrationJobRequest, opts ...gax.CallOption) (*StartMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) StartMigrationJob(ctx context.Context, req *clouddmspb.StartMigrationJobRequest, opts ...gax.CallOption) (*StartMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -330,7 +568,7 @@ func (c *DataMigrationClient) StartMigrationJob(ctx context.Context, req *cloudd
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StartMigrationJob[0:len(c.CallOptions.StartMigrationJob):len(c.CallOptions.StartMigrationJob)], opts...)
+	opts = append((*c.CallOptions).StartMigrationJob[0:len((*c.CallOptions).StartMigrationJob):len((*c.CallOptions).StartMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -341,12 +579,11 @@ func (c *DataMigrationClient) StartMigrationJob(ctx context.Context, req *cloudd
 		return nil, err
 	}
 	return &StartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// StopMigrationJob stops a running migration job.
-func (c *DataMigrationClient) StopMigrationJob(ctx context.Context, req *clouddmspb.StopMigrationJobRequest, opts ...gax.CallOption) (*StopMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) StopMigrationJob(ctx context.Context, req *clouddmspb.StopMigrationJobRequest, opts ...gax.CallOption) (*StopMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -354,7 +591,7 @@ func (c *DataMigrationClient) StopMigrationJob(ctx context.Context, req *clouddm
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.StopMigrationJob[0:len(c.CallOptions.StopMigrationJob):len(c.CallOptions.StopMigrationJob)], opts...)
+	opts = append((*c.CallOptions).StopMigrationJob[0:len((*c.CallOptions).StopMigrationJob):len((*c.CallOptions).StopMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -365,13 +602,11 @@ func (c *DataMigrationClient) StopMigrationJob(ctx context.Context, req *clouddm
 		return nil, err
 	}
 	return &StopMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// ResumeMigrationJob resume a migration job that is currently stopped and is resumable (was
-// stopped during CDC phase).
-func (c *DataMigrationClient) ResumeMigrationJob(ctx context.Context, req *clouddmspb.ResumeMigrationJobRequest, opts ...gax.CallOption) (*ResumeMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) ResumeMigrationJob(ctx context.Context, req *clouddmspb.ResumeMigrationJobRequest, opts ...gax.CallOption) (*ResumeMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -379,7 +614,7 @@ func (c *DataMigrationClient) ResumeMigrationJob(ctx context.Context, req *cloud
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ResumeMigrationJob[0:len(c.CallOptions.ResumeMigrationJob):len(c.CallOptions.ResumeMigrationJob)], opts...)
+	opts = append((*c.CallOptions).ResumeMigrationJob[0:len((*c.CallOptions).ResumeMigrationJob):len((*c.CallOptions).ResumeMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -390,13 +625,11 @@ func (c *DataMigrationClient) ResumeMigrationJob(ctx context.Context, req *cloud
 		return nil, err
 	}
 	return &ResumeMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// PromoteMigrationJob promote a migration job, stopping replication to the destination and
-// promoting the destination to be a standalone database.
-func (c *DataMigrationClient) PromoteMigrationJob(ctx context.Context, req *clouddmspb.PromoteMigrationJobRequest, opts ...gax.CallOption) (*PromoteMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) PromoteMigrationJob(ctx context.Context, req *clouddmspb.PromoteMigrationJobRequest, opts ...gax.CallOption) (*PromoteMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -404,7 +637,7 @@ func (c *DataMigrationClient) PromoteMigrationJob(ctx context.Context, req *clou
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.PromoteMigrationJob[0:len(c.CallOptions.PromoteMigrationJob):len(c.CallOptions.PromoteMigrationJob)], opts...)
+	opts = append((*c.CallOptions).PromoteMigrationJob[0:len((*c.CallOptions).PromoteMigrationJob):len((*c.CallOptions).PromoteMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -415,13 +648,11 @@ func (c *DataMigrationClient) PromoteMigrationJob(ctx context.Context, req *clou
 		return nil, err
 	}
 	return &PromoteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// VerifyMigrationJob verify a migration job, making sure the destination can reach the source
-// and that all configuration and prerequisites are met.
-func (c *DataMigrationClient) VerifyMigrationJob(ctx context.Context, req *clouddmspb.VerifyMigrationJobRequest, opts ...gax.CallOption) (*VerifyMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) VerifyMigrationJob(ctx context.Context, req *clouddmspb.VerifyMigrationJobRequest, opts ...gax.CallOption) (*VerifyMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -429,7 +660,7 @@ func (c *DataMigrationClient) VerifyMigrationJob(ctx context.Context, req *cloud
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.VerifyMigrationJob[0:len(c.CallOptions.VerifyMigrationJob):len(c.CallOptions.VerifyMigrationJob)], opts...)
+	opts = append((*c.CallOptions).VerifyMigrationJob[0:len((*c.CallOptions).VerifyMigrationJob):len((*c.CallOptions).VerifyMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -440,14 +671,11 @@ func (c *DataMigrationClient) VerifyMigrationJob(ctx context.Context, req *cloud
 		return nil, err
 	}
 	return &VerifyMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// RestartMigrationJob restart a stopped or failed migration job, resetting the destination
-// instance to its original state and starting the migration process from
-// scratch.
-func (c *DataMigrationClient) RestartMigrationJob(ctx context.Context, req *clouddmspb.RestartMigrationJobRequest, opts ...gax.CallOption) (*RestartMigrationJobOperation, error) {
+func (c *dataMigrationGRPCClient) RestartMigrationJob(ctx context.Context, req *clouddmspb.RestartMigrationJobRequest, opts ...gax.CallOption) (*RestartMigrationJobOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -455,7 +683,7 @@ func (c *DataMigrationClient) RestartMigrationJob(ctx context.Context, req *clou
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.RestartMigrationJob[0:len(c.CallOptions.RestartMigrationJob):len(c.CallOptions.RestartMigrationJob)], opts...)
+	opts = append((*c.CallOptions).RestartMigrationJob[0:len((*c.CallOptions).RestartMigrationJob):len((*c.CallOptions).RestartMigrationJob)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -466,13 +694,11 @@ func (c *DataMigrationClient) RestartMigrationJob(ctx context.Context, req *clou
 		return nil, err
 	}
 	return &RestartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// GenerateSshScript generate a SSH configuration script to configure the reverse SSH
-// connectivity.
-func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *clouddmspb.GenerateSshScriptRequest, opts ...gax.CallOption) (*clouddmspb.SshScript, error) {
+func (c *dataMigrationGRPCClient) GenerateSshScript(ctx context.Context, req *clouddmspb.GenerateSshScriptRequest, opts ...gax.CallOption) (*clouddmspb.SshScript, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -480,7 +706,7 @@ func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *cloudd
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "migration_job", url.QueryEscape(req.GetMigrationJob())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GenerateSshScript[0:len(c.CallOptions.GenerateSshScript):len(c.CallOptions.GenerateSshScript)], opts...)
+	opts = append((*c.CallOptions).GenerateSshScript[0:len((*c.CallOptions).GenerateSshScript):len((*c.CallOptions).GenerateSshScript)], opts...)
 	var resp *clouddmspb.SshScript
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -493,11 +719,10 @@ func (c *DataMigrationClient) GenerateSshScript(ctx context.Context, req *cloudd
 	return resp, nil
 }
 
-// ListConnectionProfiles retrieve a list of all connection profiles in a given project and location.
-func (c *DataMigrationClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
+func (c *dataMigrationGRPCClient) ListConnectionProfiles(ctx context.Context, req *clouddmspb.ListConnectionProfilesRequest, opts ...gax.CallOption) *ConnectionProfileIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListConnectionProfiles[0:len(c.CallOptions.ListConnectionProfiles):len(c.CallOptions.ListConnectionProfiles)], opts...)
+	opts = append((*c.CallOptions).ListConnectionProfiles[0:len((*c.CallOptions).ListConnectionProfiles):len((*c.CallOptions).ListConnectionProfiles)], opts...)
 	it := &ConnectionProfileIterator{}
 	req = proto.Clone(req).(*clouddmspb.ListConnectionProfilesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*clouddmspb.ConnectionProfile, string, error) {
@@ -534,8 +759,7 @@ func (c *DataMigrationClient) ListConnectionProfiles(ctx context.Context, req *c
 	return it
 }
 
-// GetConnectionProfile gets details of a single connection profile.
-func (c *DataMigrationClient) GetConnectionProfile(ctx context.Context, req *clouddmspb.GetConnectionProfileRequest, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
+func (c *dataMigrationGRPCClient) GetConnectionProfile(ctx context.Context, req *clouddmspb.GetConnectionProfileRequest, opts ...gax.CallOption) (*clouddmspb.ConnectionProfile, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -543,7 +767,7 @@ func (c *DataMigrationClient) GetConnectionProfile(ctx context.Context, req *clo
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetConnectionProfile[0:len(c.CallOptions.GetConnectionProfile):len(c.CallOptions.GetConnectionProfile)], opts...)
+	opts = append((*c.CallOptions).GetConnectionProfile[0:len((*c.CallOptions).GetConnectionProfile):len((*c.CallOptions).GetConnectionProfile)], opts...)
 	var resp *clouddmspb.ConnectionProfile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -556,8 +780,7 @@ func (c *DataMigrationClient) GetConnectionProfile(ctx context.Context, req *clo
 	return resp, nil
 }
 
-// CreateConnectionProfile creates a new connection profile in a given project and location.
-func (c *DataMigrationClient) CreateConnectionProfile(ctx context.Context, req *clouddmspb.CreateConnectionProfileRequest, opts ...gax.CallOption) (*CreateConnectionProfileOperation, error) {
+func (c *dataMigrationGRPCClient) CreateConnectionProfile(ctx context.Context, req *clouddmspb.CreateConnectionProfileRequest, opts ...gax.CallOption) (*CreateConnectionProfileOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -565,7 +788,7 @@ func (c *DataMigrationClient) CreateConnectionProfile(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateConnectionProfile[0:len(c.CallOptions.CreateConnectionProfile):len(c.CallOptions.CreateConnectionProfile)], opts...)
+	opts = append((*c.CallOptions).CreateConnectionProfile[0:len((*c.CallOptions).CreateConnectionProfile):len((*c.CallOptions).CreateConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -576,12 +799,11 @@ func (c *DataMigrationClient) CreateConnectionProfile(ctx context.Context, req *
 		return nil, err
 	}
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// UpdateConnectionProfile update the configuration of a single connection profile.
-func (c *DataMigrationClient) UpdateConnectionProfile(ctx context.Context, req *clouddmspb.UpdateConnectionProfileRequest, opts ...gax.CallOption) (*UpdateConnectionProfileOperation, error) {
+func (c *dataMigrationGRPCClient) UpdateConnectionProfile(ctx context.Context, req *clouddmspb.UpdateConnectionProfileRequest, opts ...gax.CallOption) (*UpdateConnectionProfileOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -589,7 +811,7 @@ func (c *DataMigrationClient) UpdateConnectionProfile(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "connection_profile.name", url.QueryEscape(req.GetConnectionProfile().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateConnectionProfile[0:len(c.CallOptions.UpdateConnectionProfile):len(c.CallOptions.UpdateConnectionProfile)], opts...)
+	opts = append((*c.CallOptions).UpdateConnectionProfile[0:len((*c.CallOptions).UpdateConnectionProfile):len((*c.CallOptions).UpdateConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -600,14 +822,11 @@ func (c *DataMigrationClient) UpdateConnectionProfile(ctx context.Context, req *
 		return nil, err
 	}
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
-// DeleteConnectionProfile deletes a single Database Migration Service connection profile.
-// A connection profile can only be deleted if it is not in use by any
-// active migration jobs.
-func (c *DataMigrationClient) DeleteConnectionProfile(ctx context.Context, req *clouddmspb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
+func (c *dataMigrationGRPCClient) DeleteConnectionProfile(ctx context.Context, req *clouddmspb.DeleteConnectionProfileRequest, opts ...gax.CallOption) (*DeleteConnectionProfileOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -615,7 +834,7 @@ func (c *DataMigrationClient) DeleteConnectionProfile(ctx context.Context, req *
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteConnectionProfile[0:len(c.CallOptions.DeleteConnectionProfile):len(c.CallOptions.DeleteConnectionProfile)], opts...)
+	opts = append((*c.CallOptions).DeleteConnectionProfile[0:len((*c.CallOptions).DeleteConnectionProfile):len((*c.CallOptions).DeleteConnectionProfile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -626,7 +845,7 @@ func (c *DataMigrationClient) DeleteConnectionProfile(ctx context.Context, req *
 		return nil, err
 	}
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -637,9 +856,9 @@ type CreateConnectionProfileOperation struct {
 
 // CreateConnectionProfileOperation returns a new CreateConnectionProfileOperation from a given name.
 // The name must be that of a previously created CreateConnectionProfileOperation, possibly from a different process.
-func (c *DataMigrationClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
+func (c *dataMigrationGRPCClient) CreateConnectionProfileOperation(name string) *CreateConnectionProfileOperation {
 	return &CreateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -706,9 +925,9 @@ type CreateMigrationJobOperation struct {
 
 // CreateMigrationJobOperation returns a new CreateMigrationJobOperation from a given name.
 // The name must be that of a previously created CreateMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) CreateMigrationJobOperation(name string) *CreateMigrationJobOperation {
+func (c *dataMigrationGRPCClient) CreateMigrationJobOperation(name string) *CreateMigrationJobOperation {
 	return &CreateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -775,9 +994,9 @@ type DeleteConnectionProfileOperation struct {
 
 // DeleteConnectionProfileOperation returns a new DeleteConnectionProfileOperation from a given name.
 // The name must be that of a previously created DeleteConnectionProfileOperation, possibly from a different process.
-func (c *DataMigrationClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
+func (c *dataMigrationGRPCClient) DeleteConnectionProfileOperation(name string) *DeleteConnectionProfileOperation {
 	return &DeleteConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -833,9 +1052,9 @@ type DeleteMigrationJobOperation struct {
 
 // DeleteMigrationJobOperation returns a new DeleteMigrationJobOperation from a given name.
 // The name must be that of a previously created DeleteMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) DeleteMigrationJobOperation(name string) *DeleteMigrationJobOperation {
+func (c *dataMigrationGRPCClient) DeleteMigrationJobOperation(name string) *DeleteMigrationJobOperation {
 	return &DeleteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -891,9 +1110,9 @@ type PromoteMigrationJobOperation struct {
 
 // PromoteMigrationJobOperation returns a new PromoteMigrationJobOperation from a given name.
 // The name must be that of a previously created PromoteMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation {
+func (c *dataMigrationGRPCClient) PromoteMigrationJobOperation(name string) *PromoteMigrationJobOperation {
 	return &PromoteMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -960,9 +1179,9 @@ type RestartMigrationJobOperation struct {
 
 // RestartMigrationJobOperation returns a new RestartMigrationJobOperation from a given name.
 // The name must be that of a previously created RestartMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) RestartMigrationJobOperation(name string) *RestartMigrationJobOperation {
+func (c *dataMigrationGRPCClient) RestartMigrationJobOperation(name string) *RestartMigrationJobOperation {
 	return &RestartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1029,9 +1248,9 @@ type ResumeMigrationJobOperation struct {
 
 // ResumeMigrationJobOperation returns a new ResumeMigrationJobOperation from a given name.
 // The name must be that of a previously created ResumeMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation {
+func (c *dataMigrationGRPCClient) ResumeMigrationJobOperation(name string) *ResumeMigrationJobOperation {
 	return &ResumeMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1098,9 +1317,9 @@ type StartMigrationJobOperation struct {
 
 // StartMigrationJobOperation returns a new StartMigrationJobOperation from a given name.
 // The name must be that of a previously created StartMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) StartMigrationJobOperation(name string) *StartMigrationJobOperation {
+func (c *dataMigrationGRPCClient) StartMigrationJobOperation(name string) *StartMigrationJobOperation {
 	return &StartMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1167,9 +1386,9 @@ type StopMigrationJobOperation struct {
 
 // StopMigrationJobOperation returns a new StopMigrationJobOperation from a given name.
 // The name must be that of a previously created StopMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) StopMigrationJobOperation(name string) *StopMigrationJobOperation {
+func (c *dataMigrationGRPCClient) StopMigrationJobOperation(name string) *StopMigrationJobOperation {
 	return &StopMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1236,9 +1455,9 @@ type UpdateConnectionProfileOperation struct {
 
 // UpdateConnectionProfileOperation returns a new UpdateConnectionProfileOperation from a given name.
 // The name must be that of a previously created UpdateConnectionProfileOperation, possibly from a different process.
-func (c *DataMigrationClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
+func (c *dataMigrationGRPCClient) UpdateConnectionProfileOperation(name string) *UpdateConnectionProfileOperation {
 	return &UpdateConnectionProfileOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1305,9 +1524,9 @@ type UpdateMigrationJobOperation struct {
 
 // UpdateMigrationJobOperation returns a new UpdateMigrationJobOperation from a given name.
 // The name must be that of a previously created UpdateMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) UpdateMigrationJobOperation(name string) *UpdateMigrationJobOperation {
+func (c *dataMigrationGRPCClient) UpdateMigrationJobOperation(name string) *UpdateMigrationJobOperation {
 	return &UpdateMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 
@@ -1374,9 +1593,9 @@ type VerifyMigrationJobOperation struct {
 
 // VerifyMigrationJobOperation returns a new VerifyMigrationJobOperation from a given name.
 // The name must be that of a previously created VerifyMigrationJobOperation, possibly from a different process.
-func (c *DataMigrationClient) VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation {
+func (c *dataMigrationGRPCClient) VerifyMigrationJobOperation(name string) *VerifyMigrationJobOperation {
 	return &VerifyMigrationJobOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

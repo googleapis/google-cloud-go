@@ -20,6 +20,8 @@
 // An implementation of the Grafeas API, which stores, and enables querying
 // and retrieval of critical metadata about all of your software artifacts.
 //
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -29,7 +31,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package containeranalysis // import "cloud.google.com/go/containeranalysis/apiv1beta1"
 
 import (
@@ -49,7 +51,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210518"
+const versionClient = "20210520"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

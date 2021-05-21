@@ -48,7 +48,7 @@ type CallOptions struct {
 	DeleteJobTemplate []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("transcoder.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("transcoder.mtls.googleapis.com:443"),
@@ -73,27 +73,122 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Transcoder API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateJob(context.Context, *transcoderpb.CreateJobRequest, ...gax.CallOption) (*transcoderpb.Job, error)
+	ListJobs(context.Context, *transcoderpb.ListJobsRequest, ...gax.CallOption) *JobIterator
+	GetJob(context.Context, *transcoderpb.GetJobRequest, ...gax.CallOption) (*transcoderpb.Job, error)
+	DeleteJob(context.Context, *transcoderpb.DeleteJobRequest, ...gax.CallOption) error
+	CreateJobTemplate(context.Context, *transcoderpb.CreateJobTemplateRequest, ...gax.CallOption) (*transcoderpb.JobTemplate, error)
+	ListJobTemplates(context.Context, *transcoderpb.ListJobTemplatesRequest, ...gax.CallOption) *JobTemplateIterator
+	GetJobTemplate(context.Context, *transcoderpb.GetJobTemplateRequest, ...gax.CallOption) (*transcoderpb.JobTemplate, error)
+	DeleteJobTemplate(context.Context, *transcoderpb.DeleteJobTemplateRequest, ...gax.CallOption) error
+}
+
 // Client is a client for interacting with Transcoder API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Using the Transcoder API, you can queue asynchronous jobs for transcoding
+// media into various output formats. Output formats may include different
+// streaming standards such as HTTP Live Streaming (HLS) and Dynamic Adaptive
+// Streaming over HTTP (DASH). You can also customize jobs using advanced
+// features such as Digital Rights Management (DRM), audio equalization, content
+// concatenation, and digital ad-stitch ready content generation.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateJob creates a job in the specified region.
+func (c *Client) CreateJob(ctx context.Context, req *transcoderpb.CreateJobRequest, opts ...gax.CallOption) (*transcoderpb.Job, error) {
+	return c.internalClient.CreateJob(ctx, req, opts...)
+}
+
+// ListJobs lists jobs in the specified region.
+func (c *Client) ListJobs(ctx context.Context, req *transcoderpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
+	return c.internalClient.ListJobs(ctx, req, opts...)
+}
+
+// GetJob returns the job data.
+func (c *Client) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest, opts ...gax.CallOption) (*transcoderpb.Job, error) {
+	return c.internalClient.GetJob(ctx, req, opts...)
+}
+
+// DeleteJob deletes a job.
+func (c *Client) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteJob(ctx, req, opts...)
+}
+
+// CreateJobTemplate creates a job template in the specified region.
+func (c *Client) CreateJobTemplate(ctx context.Context, req *transcoderpb.CreateJobTemplateRequest, opts ...gax.CallOption) (*transcoderpb.JobTemplate, error) {
+	return c.internalClient.CreateJobTemplate(ctx, req, opts...)
+}
+
+// ListJobTemplates lists job templates in the specified region.
+func (c *Client) ListJobTemplates(ctx context.Context, req *transcoderpb.ListJobTemplatesRequest, opts ...gax.CallOption) *JobTemplateIterator {
+	return c.internalClient.ListJobTemplates(ctx, req, opts...)
+}
+
+// GetJobTemplate returns the job template data.
+func (c *Client) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJobTemplateRequest, opts ...gax.CallOption) (*transcoderpb.JobTemplate, error) {
+	return c.internalClient.GetJobTemplate(ctx, req, opts...)
+}
+
+// DeleteJobTemplate deletes a job template.
+func (c *Client) DeleteJobTemplate(ctx context.Context, req *transcoderpb.DeleteJobTemplateRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteJobTemplate(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Transcoder API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client transcoderpb.TranscoderServiceClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new transcoder service client.
+// NewClient creates a new transcoder service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Using the Transcoder API, you can queue asynchronous jobs for transcoding
 // media into various output formats. Output formats may include different
@@ -102,8 +197,7 @@ type Client struct {
 // features such as Digital Rights Management (DRM), audio equalization, content
 // concatenation, and digital ad-stitch ready content generation.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -121,42 +215,44 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: transcoderpb.NewTranscoderServiceClient(connPool),
+		client:           transcoderpb.NewTranscoderServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateJob creates a job in the specified region.
-func (c *Client) CreateJob(ctx context.Context, req *transcoderpb.CreateJobRequest, opts ...gax.CallOption) (*transcoderpb.Job, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateJob(ctx context.Context, req *transcoderpb.CreateJobRequest, opts ...gax.CallOption) (*transcoderpb.Job, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -164,7 +260,7 @@ func (c *Client) CreateJob(ctx context.Context, req *transcoderpb.CreateJobReque
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateJob[0:len(c.CallOptions.CreateJob):len(c.CallOptions.CreateJob)], opts...)
+	opts = append((*c.CallOptions).CreateJob[0:len((*c.CallOptions).CreateJob):len((*c.CallOptions).CreateJob)], opts...)
 	var resp *transcoderpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -177,11 +273,10 @@ func (c *Client) CreateJob(ctx context.Context, req *transcoderpb.CreateJobReque
 	return resp, nil
 }
 
-// ListJobs lists jobs in the specified region.
-func (c *Client) ListJobs(ctx context.Context, req *transcoderpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
+func (c *gRPCClient) ListJobs(ctx context.Context, req *transcoderpb.ListJobsRequest, opts ...gax.CallOption) *JobIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListJobs[0:len(c.CallOptions.ListJobs):len(c.CallOptions.ListJobs)], opts...)
+	opts = append((*c.CallOptions).ListJobs[0:len((*c.CallOptions).ListJobs):len((*c.CallOptions).ListJobs)], opts...)
 	it := &JobIterator{}
 	req = proto.Clone(req).(*transcoderpb.ListJobsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.Job, string, error) {
@@ -218,8 +313,7 @@ func (c *Client) ListJobs(ctx context.Context, req *transcoderpb.ListJobsRequest
 	return it
 }
 
-// GetJob returns the job data.
-func (c *Client) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest, opts ...gax.CallOption) (*transcoderpb.Job, error) {
+func (c *gRPCClient) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest, opts ...gax.CallOption) (*transcoderpb.Job, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -227,7 +321,7 @@ func (c *Client) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest, op
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetJob[0:len(c.CallOptions.GetJob):len(c.CallOptions.GetJob)], opts...)
+	opts = append((*c.CallOptions).GetJob[0:len((*c.CallOptions).GetJob):len((*c.CallOptions).GetJob)], opts...)
 	var resp *transcoderpb.Job
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -240,8 +334,7 @@ func (c *Client) GetJob(ctx context.Context, req *transcoderpb.GetJobRequest, op
 	return resp, nil
 }
 
-// DeleteJob deletes a job.
-func (c *Client) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -249,7 +342,7 @@ func (c *Client) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobReque
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteJob[0:len(c.CallOptions.DeleteJob):len(c.CallOptions.DeleteJob)], opts...)
+	opts = append((*c.CallOptions).DeleteJob[0:len((*c.CallOptions).DeleteJob):len((*c.CallOptions).DeleteJob)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteJob(ctx, req, settings.GRPC...)
@@ -258,8 +351,7 @@ func (c *Client) DeleteJob(ctx context.Context, req *transcoderpb.DeleteJobReque
 	return err
 }
 
-// CreateJobTemplate creates a job template in the specified region.
-func (c *Client) CreateJobTemplate(ctx context.Context, req *transcoderpb.CreateJobTemplateRequest, opts ...gax.CallOption) (*transcoderpb.JobTemplate, error) {
+func (c *gRPCClient) CreateJobTemplate(ctx context.Context, req *transcoderpb.CreateJobTemplateRequest, opts ...gax.CallOption) (*transcoderpb.JobTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -267,7 +359,7 @@ func (c *Client) CreateJobTemplate(ctx context.Context, req *transcoderpb.Create
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateJobTemplate[0:len(c.CallOptions.CreateJobTemplate):len(c.CallOptions.CreateJobTemplate)], opts...)
+	opts = append((*c.CallOptions).CreateJobTemplate[0:len((*c.CallOptions).CreateJobTemplate):len((*c.CallOptions).CreateJobTemplate)], opts...)
 	var resp *transcoderpb.JobTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -280,11 +372,10 @@ func (c *Client) CreateJobTemplate(ctx context.Context, req *transcoderpb.Create
 	return resp, nil
 }
 
-// ListJobTemplates lists job templates in the specified region.
-func (c *Client) ListJobTemplates(ctx context.Context, req *transcoderpb.ListJobTemplatesRequest, opts ...gax.CallOption) *JobTemplateIterator {
+func (c *gRPCClient) ListJobTemplates(ctx context.Context, req *transcoderpb.ListJobTemplatesRequest, opts ...gax.CallOption) *JobTemplateIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListJobTemplates[0:len(c.CallOptions.ListJobTemplates):len(c.CallOptions.ListJobTemplates)], opts...)
+	opts = append((*c.CallOptions).ListJobTemplates[0:len((*c.CallOptions).ListJobTemplates):len((*c.CallOptions).ListJobTemplates)], opts...)
 	it := &JobTemplateIterator{}
 	req = proto.Clone(req).(*transcoderpb.ListJobTemplatesRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*transcoderpb.JobTemplate, string, error) {
@@ -321,8 +412,7 @@ func (c *Client) ListJobTemplates(ctx context.Context, req *transcoderpb.ListJob
 	return it
 }
 
-// GetJobTemplate returns the job template data.
-func (c *Client) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJobTemplateRequest, opts ...gax.CallOption) (*transcoderpb.JobTemplate, error) {
+func (c *gRPCClient) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJobTemplateRequest, opts ...gax.CallOption) (*transcoderpb.JobTemplate, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -330,7 +420,7 @@ func (c *Client) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJobTem
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetJobTemplate[0:len(c.CallOptions.GetJobTemplate):len(c.CallOptions.GetJobTemplate)], opts...)
+	opts = append((*c.CallOptions).GetJobTemplate[0:len((*c.CallOptions).GetJobTemplate):len((*c.CallOptions).GetJobTemplate)], opts...)
 	var resp *transcoderpb.JobTemplate
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -343,8 +433,7 @@ func (c *Client) GetJobTemplate(ctx context.Context, req *transcoderpb.GetJobTem
 	return resp, nil
 }
 
-// DeleteJobTemplate deletes a job template.
-func (c *Client) DeleteJobTemplate(ctx context.Context, req *transcoderpb.DeleteJobTemplateRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteJobTemplate(ctx context.Context, req *transcoderpb.DeleteJobTemplateRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -352,7 +441,7 @@ func (c *Client) DeleteJobTemplate(ctx context.Context, req *transcoderpb.Delete
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteJobTemplate[0:len(c.CallOptions.DeleteJobTemplate):len(c.CallOptions.DeleteJobTemplate)], opts...)
+	opts = append((*c.CallOptions).DeleteJobTemplate[0:len((*c.CallOptions).DeleteJobTemplate):len((*c.CallOptions).DeleteJobTemplate)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteJobTemplate(ctx, req, settings.GRPC...)

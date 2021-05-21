@@ -29,18 +29,19 @@ func ExampleNewImageAnnotatorClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleImageAnnotatorClient_BatchAnnotateImages() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.BatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleImageAnnotatorClient_BatchAnnotateImages() {
 }
 
 func ExampleImageAnnotatorClient_BatchAnnotateFiles() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.BatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleImageAnnotatorClient_BatchAnnotateFiles() {
 }
 
 func ExampleImageAnnotatorClient_AsyncBatchAnnotateImages() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.AsyncBatchAnnotateImagesRequest{
 		// TODO: Fill request struct fields.
@@ -99,13 +98,12 @@ func ExampleImageAnnotatorClient_AsyncBatchAnnotateImages() {
 }
 
 func ExampleImageAnnotatorClient_AsyncBatchAnnotateFiles() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.AsyncBatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.

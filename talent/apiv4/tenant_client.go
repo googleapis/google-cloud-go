@@ -46,7 +46,7 @@ type TenantCallOptions struct {
 	ListTenants  []gax.CallOption
 }
 
-func defaultTenantClientOptions() []option.ClientOption {
+func defaultTenantGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("jobs.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("jobs.mtls.googleapis.com:443"),
@@ -101,32 +101,103 @@ func defaultTenantCallOptions() *TenantCallOptions {
 	}
 }
 
+// internalTenantClient is an interface that defines the methods availaible from Cloud Talent Solution API.
+type internalTenantClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateTenant(context.Context, *talentpb.CreateTenantRequest, ...gax.CallOption) (*talentpb.Tenant, error)
+	GetTenant(context.Context, *talentpb.GetTenantRequest, ...gax.CallOption) (*talentpb.Tenant, error)
+	UpdateTenant(context.Context, *talentpb.UpdateTenantRequest, ...gax.CallOption) (*talentpb.Tenant, error)
+	DeleteTenant(context.Context, *talentpb.DeleteTenantRequest, ...gax.CallOption) error
+	ListTenants(context.Context, *talentpb.ListTenantsRequest, ...gax.CallOption) *TenantIterator
+}
+
 // TenantClient is a client for interacting with Cloud Talent Solution API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// A service that handles tenant management, including CRUD and enumeration.
+type TenantClient struct {
+	// The internal transport-dependent client.
+	internalClient internalTenantClient
+
+	// The call options for this service.
+	CallOptions *TenantCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *TenantClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *TenantClient) setGoogleClientInfo(...string) {
+	c.internalClient.setGoogleClientInfo()
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *TenantClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateTenant creates a new tenant entity.
+func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+	return c.internalClient.CreateTenant(ctx, req, opts...)
+}
+
+// GetTenant retrieves specified tenant.
+func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+	return c.internalClient.GetTenant(ctx, req, opts...)
+}
+
+// UpdateTenant updates specified tenant.
+func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+	return c.internalClient.UpdateTenant(ctx, req, opts...)
+}
+
+// DeleteTenant deletes specified tenant.
+func (c *TenantClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTenantRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTenant(ctx, req, opts...)
+}
+
+// ListTenants lists all tenants associated with the project.
+func (c *TenantClient) ListTenants(ctx context.Context, req *talentpb.ListTenantsRequest, opts ...gax.CallOption) *TenantIterator {
+	return c.internalClient.ListTenants(ctx, req, opts...)
+}
+
+// tenantGRPCClient is a client for interacting with Cloud Talent Solution API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type TenantClient struct {
+type tenantGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing TenantClient
+	CallOptions **TenantCallOptions
+
 	// The gRPC API client.
 	tenantClient talentpb.TenantServiceClient
-
-	// The call options for this service.
-	CallOptions *TenantCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewTenantClient creates a new tenant service client.
+// NewTenantClient creates a new tenant service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // A service that handles tenant management, including CRUD and enumeration.
 func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantClient, error) {
-	clientOpts := defaultTenantClientOptions()
-
+	clientOpts := defaultTenantGRPCClientOptions()
 	if newTenantClientHook != nil {
 		hookOpts, err := newTenantClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -144,42 +215,44 @@ func NewTenantClient(ctx context.Context, opts ...option.ClientOption) (*TenantC
 	if err != nil {
 		return nil, err
 	}
-	c := &TenantClient{
+	client := TenantClient{CallOptions: defaultTenantCallOptions()}
+
+	c := &tenantGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultTenantCallOptions(),
-
-		tenantClient: talentpb.NewTenantServiceClient(connPool),
+		tenantClient:     talentpb.NewTenantServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *TenantClient) Connection() *grpc.ClientConn {
+func (c *tenantGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *TenantClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *TenantClient) setGoogleClientInfo(keyval ...string) {
+func (c *tenantGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateTenant creates a new tenant entity.
-func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *tenantGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *tenantGRPCClient) CreateTenant(ctx context.Context, req *talentpb.CreateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -187,7 +260,7 @@ func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTen
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateTenant[0:len(c.CallOptions.CreateTenant):len(c.CallOptions.CreateTenant)], opts...)
+	opts = append((*c.CallOptions).CreateTenant[0:len((*c.CallOptions).CreateTenant):len((*c.CallOptions).CreateTenant)], opts...)
 	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -200,8 +273,7 @@ func (c *TenantClient) CreateTenant(ctx context.Context, req *talentpb.CreateTen
 	return resp, nil
 }
 
-// GetTenant retrieves specified tenant.
-func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+func (c *tenantGRPCClient) GetTenant(ctx context.Context, req *talentpb.GetTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -209,7 +281,7 @@ func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantReq
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetTenant[0:len(c.CallOptions.GetTenant):len(c.CallOptions.GetTenant)], opts...)
+	opts = append((*c.CallOptions).GetTenant[0:len((*c.CallOptions).GetTenant):len((*c.CallOptions).GetTenant)], opts...)
 	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -222,8 +294,7 @@ func (c *TenantClient) GetTenant(ctx context.Context, req *talentpb.GetTenantReq
 	return resp, nil
 }
 
-// UpdateTenant updates specified tenant.
-func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
+func (c *tenantGRPCClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTenantRequest, opts ...gax.CallOption) (*talentpb.Tenant, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -231,7 +302,7 @@ func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTen
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "tenant.name", url.QueryEscape(req.GetTenant().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateTenant[0:len(c.CallOptions.UpdateTenant):len(c.CallOptions.UpdateTenant)], opts...)
+	opts = append((*c.CallOptions).UpdateTenant[0:len((*c.CallOptions).UpdateTenant):len((*c.CallOptions).UpdateTenant)], opts...)
 	var resp *talentpb.Tenant
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -244,8 +315,7 @@ func (c *TenantClient) UpdateTenant(ctx context.Context, req *talentpb.UpdateTen
 	return resp, nil
 }
 
-// DeleteTenant deletes specified tenant.
-func (c *TenantClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTenantRequest, opts ...gax.CallOption) error {
+func (c *tenantGRPCClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTenantRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 30000*time.Millisecond)
 		defer cancel()
@@ -253,7 +323,7 @@ func (c *TenantClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTen
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteTenant[0:len(c.CallOptions.DeleteTenant):len(c.CallOptions.DeleteTenant)], opts...)
+	opts = append((*c.CallOptions).DeleteTenant[0:len((*c.CallOptions).DeleteTenant):len((*c.CallOptions).DeleteTenant)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.tenantClient.DeleteTenant(ctx, req, settings.GRPC...)
@@ -262,11 +332,10 @@ func (c *TenantClient) DeleteTenant(ctx context.Context, req *talentpb.DeleteTen
 	return err
 }
 
-// ListTenants lists all tenants associated with the project.
-func (c *TenantClient) ListTenants(ctx context.Context, req *talentpb.ListTenantsRequest, opts ...gax.CallOption) *TenantIterator {
+func (c *tenantGRPCClient) ListTenants(ctx context.Context, req *talentpb.ListTenantsRequest, opts ...gax.CallOption) *TenantIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListTenants[0:len(c.CallOptions.ListTenants):len(c.CallOptions.ListTenants)], opts...)
+	opts = append((*c.CallOptions).ListTenants[0:len((*c.CallOptions).ListTenants):len((*c.CallOptions).ListTenants)], opts...)
 	it := &TenantIterator{}
 	req = proto.Clone(req).(*talentpb.ListTenantsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*talentpb.Tenant, string, error) {

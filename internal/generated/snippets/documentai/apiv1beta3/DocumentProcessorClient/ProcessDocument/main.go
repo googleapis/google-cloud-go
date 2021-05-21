@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
-
 	ctx := context.Background()
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &documentaipb.ProcessRequest{
 		// TODO: Fill request struct fields.

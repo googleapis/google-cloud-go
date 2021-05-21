@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.

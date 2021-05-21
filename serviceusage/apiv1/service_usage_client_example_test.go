@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_EnableService() {
-	// import serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
-
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &serviceusagepb.EnableServiceRequest{
 		// TODO: Fill request struct fields.
@@ -60,13 +61,12 @@ func ExampleClient_EnableService() {
 }
 
 func ExampleClient_DisableService() {
-	// import serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
-
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &serviceusagepb.DisableServiceRequest{
 		// TODO: Fill request struct fields.
@@ -85,13 +85,12 @@ func ExampleClient_DisableService() {
 }
 
 func ExampleClient_GetService() {
-	// import serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
-
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &serviceusagepb.GetServiceRequest{
 		// TODO: Fill request struct fields.
@@ -105,14 +104,12 @@ func ExampleClient_GetService() {
 }
 
 func ExampleClient_ListServices() {
-	// import serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &serviceusagepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleClient_ListServices() {
 }
 
 func ExampleClient_BatchEnableServices() {
-	// import serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
-
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &serviceusagepb.BatchEnableServicesRequest{
 		// TODO: Fill request struct fields.
@@ -157,13 +153,12 @@ func ExampleClient_BatchEnableServices() {
 }
 
 func ExampleClient_BatchGetServices() {
-	// import serviceusagepb "google.golang.org/genproto/googleapis/api/serviceusage/v1"
-
 	ctx := context.Background()
 	c, err := serviceusage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &serviceusagepb.BatchGetServicesRequest{
 		// TODO: Fill request struct fields.
