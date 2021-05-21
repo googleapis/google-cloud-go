@@ -2150,8 +2150,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Creating app profile: %v", err)
 	}
-	// Delete is tested, but in case of test failure, try to delete at end anyway
-	// defer iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
 
 	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
 	if err != nil {
@@ -2185,7 +2183,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 
 	// App Profile list should contain default, app_profile1
-	if got, want := len(profiles), 1; got != want {
+	if got, want := len(profiles), 2; got != want {
 		t.Fatalf("Initial app profile list len: %d, want: %d", got, want)
 	}
 
