@@ -1474,6 +1474,14 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		t.Skip("emulator doesn't support instance creation")
 	}
 
+	// adjust test environment to use our cluster to create
+	c := testEnv.Config()
+	c.Instance = instanceToCreate
+	testEnv, err = NewProdEnv(c)
+	if err != nil {
+		t.Fatalf("NewProdEnv: %v", err)
+	}
+
 	timeout := 5 * time.Minute
 	ctx, cancel := context.WithTimeout(context.Background(), timeout)
 	defer cancel()
@@ -1531,10 +1539,6 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
-		}
-
-		if len(encryptionInfo[clusterID]) != 1 {
-			t.Fatalf("Expected to find one EncryptionInfo: %v", encryptionInfo[clusterID])
 		}
 
 		kmsKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
