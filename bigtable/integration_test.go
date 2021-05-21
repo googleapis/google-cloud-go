@@ -1249,23 +1249,23 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
 	}
 
-	// Validate Encryption Info not configured
+	// Validate Encryption Info configured to default. (not supported by emulator)
+	if testEnv.Config().UseProd {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+		if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+			t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+		}
 
-	encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
-	if err != nil {
-		t.Fatalf("EncryptionInfo: %v", err)
-	}
-	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
-		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
-	}
-
-	clusterEncryptionInfo := encryptionInfo[testEnv.Config().Cluster][0]
-	if clusterEncryptionInfo.KMSKeyVersion != "" {
-		t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.KMSKeyVersion, 0)
-	}
-	if clusterEncryptionInfo.Type != GoogleDefaultEncryption {
-		t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.Type, GoogleDefaultEncryption)
-
+		clusterEncryptionInfo := encryptionInfo[testEnv.Config().Cluster][0]
+		if clusterEncryptionInfo.KMSKeyVersion != "" {
+			t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.KMSKeyVersion, 0)
+		}
+		if clusterEncryptionInfo.Type != GoogleDefaultEncryption {
+			t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.Type, GoogleDefaultEncryption)
+		}
 	}
 
 }
