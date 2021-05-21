@@ -160,6 +160,16 @@ func (at *ackTracker) Release() {
 	at.outstandingAcks.Init()
 }
 
+// Reset the state of the tracker. Clears and invalidates any outstanding acks.
+func (at *ackTracker) Reset() {
+	at.Release()
+
+	at.mu.Lock()
+	defer at.mu.Unlock()
+	at.ackedPrefixOffset = nilCursorOffset
+	at.enablePush = true
+}
+
 // Process outstanding acks and update `ackedPrefixOffset` until an unacked
 // message is found.
 func (at *ackTracker) unsafeProcessAcks() {
@@ -213,6 +223,13 @@ func extractOffsetFromElem(elem *list.Element) int64 {
 	return offset
 }
 
+// Reset the state of the tracker.
+func (ct *commitCursorTracker) Reset() {
+	ct.acks.Reset()
+	ct.lastConfirmedOffset = nilCursorOffset
+	ct.pendingOffsets.Init()
+}
+
 // NextOffset is the commit offset to be sent to the stream. Returns
 // nilCursorOffset if the commit offset does not need to be updated.
 func (ct *commitCursorTracker) NextOffset() int64 {
@@ -256,7 +273,8 @@ func (ct *commitCursorTracker) ConfirmOffsets(numConfirmed int64) error {
 	return nil
 }
 
-// UpToDate when the server has confirmed the desired commit offset.
+// UpToDate when the server has confirmed the desired commit offset and there
+// are no pending acks.
 func (ct *commitCursorTracker) UpToDate() bool {
-	return ct.acks.CommitOffset() <= ct.lastConfirmedOffset
+	return ct.acks.CommitOffset() <= ct.lastConfirmedOffset && ct.acks.Empty()
 }
