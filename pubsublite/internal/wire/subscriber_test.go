@@ -154,10 +154,11 @@ func (tr *testBlockingMessageReceiver) Return() {
 	tr.blockReceive <- void
 }
 
-func TestMessageDeliveryQueue(t *testing.T) {
+func TestMessageDeliveryQueueStartStop(t *testing.T) {
 	acks := newAckTracker()
 	receiver := newTestMessageReceiver(t)
 	messageQueue := newMessageDeliveryQueue(acks, receiver.onMessage, 10)
+	defer messageQueue.Stop()
 
 	t.Run("Add before start", func(t *testing.T) {
 		msg1 := seqMsgWithOffset(1)
@@ -192,6 +193,43 @@ func TestMessageDeliveryQueue(t *testing.T) {
 
 		receiver.VerifyNoMsgs()
 	})
+
+	t.Run("Restart", func(t *testing.T) {
+		msg5 := seqMsgWithOffset(5)
+		ack5 := newAckConsumer(5, 0, nil)
+
+		messageQueue.Start()
+		messageQueue.Add(&ReceivedMessage{Msg: msg5, Ack: ack5})
+
+		receiver.ValidateMsg(msg5)
+	})
+}
+
+func TestMessageDeliveryQueueDiscardMessages(t *testing.T) {
+	acks := newAckTracker()
+	blockingReceiver := newTestBlockingMessageReceiver(t)
+	messageQueue := newMessageDeliveryQueue(acks, blockingReceiver.onMessage, 10)
+
+	msg1 := seqMsgWithOffset(1)
+	ack1 := newAckConsumer(1, 0, nil)
+	msg2 := seqMsgWithOffset(2)
+	ack2 := newAckConsumer(2, 0, nil)
+
+	messageQueue.Start()
+	messageQueue.Add(&ReceivedMessage{Msg: msg1, Ack: ack1})
+	messageQueue.Add(&ReceivedMessage{Msg: msg2, Ack: ack2})
+
+	// The blocking receiver suspends after receiving msg1.
+	blockingReceiver.ValidateMsg(msg1)
+	// Stopping the message queue should discard undelivered msg2.
+	messageQueue.Stop()
+	// Unsuspend the blocking receiver and verify msg2 is not received.
+	blockingReceiver.Return()
+	messageQueue.Wait()
+	blockingReceiver.VerifyNoMsgs()
+	if got, want := acks.outstandingAcks.Len(), 1; got != want {
+		t.Errorf("ackTracker.outstandingAcks.Len() got %v, want %v", got, want)
+	}
 }
 
 // testSubscribeStream wraps a subscribeStream for ease of testing.
