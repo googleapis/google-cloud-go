@@ -1241,7 +1241,7 @@ func TestIntegration_Admin(t *testing.T) {
 
 	encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
 	if err != nil {
-		t.Errorf("EncryptionInfo does not expect err: %v", err)
+		t.Fatalf("EncryptionInfo: %v", err)
 	}
 	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
 		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
