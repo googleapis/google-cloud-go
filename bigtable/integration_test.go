@@ -2095,8 +2095,6 @@ func TestIntegration_Granularity(t *testing.T) {
 }
 
 func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
-	// TODO(2021/05/21): Fails with entity exists.
-	// integration_test.go:2256: Creating app profile: rpc error: code = AlreadyExists desc = Requested entity already exists
 	testEnv, err := NewIntegrationEnv()
 	if err != nil {
 		t.Fatalf("IntegrationEnv: %v", err)
@@ -2125,6 +2123,9 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		return
 	}
 
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "default")
+
 	defer iAdminClient.Close()
 	profile := ProfileConf{
 		ProfileID:     "app_profile1",
@@ -2138,6 +2139,8 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Creating app profile: %v", err)
 	}
+	// Delete is tested, but in case of test failure, try to delete at end anyway
+	// defer iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
 
 	gotProfile, err := iAdminClient.GetAppProfile(ctx, adminClient.instance, "app_profile1")
 	if err != nil {
@@ -2170,6 +2173,7 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("List app profile: %v", err)
 	}
 
+	// App Profile list should contain default, app_profile1
 	if got, want := len(profiles), 1; got != want {
 		t.Fatalf("Initial app profile list len: %d, want: %d", got, want)
 	}
