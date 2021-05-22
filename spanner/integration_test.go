@@ -1796,8 +1796,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			val  interface{}
 			want interface{}
 		}{
-			{col: "JSON", val: msg, want: msg},
-			{col: "JSON", val: msg, want: NullJSON{unmarshalledJSONstruct, true}},
 			{col: "JSON", val: NullJSON{msg, true}, want: msg},
 			{col: "JSON", val: NullJSON{msg, true}, want: NullJSON{unmarshalledJSONstruct, true}},
 			{col: "JSON", val: NullJSON{msg, false}},
