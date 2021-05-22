@@ -315,7 +315,6 @@ func TestEncodeValue(t *testing.T) {
 		{[]*big.Rat{nil, numValuePtr}, listProto(nullProto(), numericProto(numValuePtr)), listType(tNumeric), "[]*big.Rat"},
 		{[]*big.Rat(nil), nullProto(), listType(tNumeric), "null []*big.Rat"},
 		// JSON
-		{msg, stringProto(jsonStr), tJSON, "json"},
 		{NullJSON{msg, true}, stringProto(jsonStr), tJSON, "NullJSON with value"},
 		{NullJSON{msg, false}, nullProto(), tJSON, "NullJSON with null"},
 		{[]NullJSON(nil), nullProto(), listType(tJSON), "null []NullJSON"},

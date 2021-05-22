@@ -2822,9 +2822,13 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 		pt = listType(numericType())
 	case NullJSON:
 		if v.Valid {
-			return encodeValue(v.Value)
+			b, err := json.Marshal(v.Value)
+			if err != nil {
+				return nil, nil, err
+			}
+			pb.Kind = stringKind(string(b))
 		}
-		pt = jsonType()
+		return pb, jsonType(), nil
 	case []NullJSON:
 		if v != nil {
 			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
@@ -2950,14 +2954,6 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 				return nil, nil, err
 			}
 			return encodeValue(converted)
-		}
-
-		// Check if it can be marshalled to a json string.
-		b, err := json.Marshal(v)
-		if err == nil {
-			pb.Kind = stringKind(string(b))
-			pt = jsonType()
-			return pb, pt, nil
 		}
 
 		if !isStructOrArrayOfStructValue(v) {
