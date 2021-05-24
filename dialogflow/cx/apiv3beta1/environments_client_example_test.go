@@ -169,3 +169,52 @@ func ExampleEnvironmentsClient_LookupEnvironmentHistory() {
 		_ = resp
 	}
 }
+
+func ExampleEnvironmentsClient_RunContinuousTest() {
+	ctx := context.Background()
+	c, err := cx.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.RunContinuousTestRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.RunContinuousTest(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleEnvironmentsClient_ListContinuousTestResults() {
+	ctx := context.Background()
+	c, err := cx.NewEnvironmentsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &cxpb.ListContinuousTestResultsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListContinuousTestResults(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}

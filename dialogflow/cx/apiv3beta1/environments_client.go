@@ -43,12 +43,14 @@ var newEnvironmentsClientHook clientHook
 
 // EnvironmentsCallOptions contains the retry settings for each method of EnvironmentsClient.
 type EnvironmentsCallOptions struct {
-	ListEnvironments         []gax.CallOption
-	GetEnvironment           []gax.CallOption
-	CreateEnvironment        []gax.CallOption
-	UpdateEnvironment        []gax.CallOption
-	DeleteEnvironment        []gax.CallOption
-	LookupEnvironmentHistory []gax.CallOption
+	ListEnvironments          []gax.CallOption
+	GetEnvironment            []gax.CallOption
+	CreateEnvironment         []gax.CallOption
+	UpdateEnvironment         []gax.CallOption
+	DeleteEnvironment         []gax.CallOption
+	LookupEnvironmentHistory  []gax.CallOption
+	RunContinuousTest         []gax.CallOption
+	ListContinuousTestResults []gax.CallOption
 }
 
 func defaultEnvironmentsGRPCClientOptions() []option.ClientOption {
@@ -131,6 +133,28 @@ func defaultEnvironmentsCallOptions() *EnvironmentsCallOptions {
 				})
 			}),
 		},
+		RunContinuousTest: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListContinuousTestResults: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -147,6 +171,9 @@ type internalEnvironmentsClient interface {
 	UpdateEnvironmentOperation(name string) *UpdateEnvironmentOperation
 	DeleteEnvironment(context.Context, *cxpb.DeleteEnvironmentRequest, ...gax.CallOption) error
 	LookupEnvironmentHistory(context.Context, *cxpb.LookupEnvironmentHistoryRequest, ...gax.CallOption) *EnvironmentIterator
+	RunContinuousTest(context.Context, *cxpb.RunContinuousTestRequest, ...gax.CallOption) (*RunContinuousTestOperation, error)
+	RunContinuousTestOperation(name string) *RunContinuousTestOperation
+	ListContinuousTestResults(context.Context, *cxpb.ListContinuousTestResultsRequest, ...gax.CallOption) *ContinuousTestResultIterator
 }
 
 // EnvironmentsClient is a client for interacting with Dialogflow API.
@@ -228,6 +255,22 @@ func (c *EnvironmentsClient) DeleteEnvironment(ctx context.Context, req *cxpb.De
 // LookupEnvironmentHistory looks up the history of the specified Environment.
 func (c *EnvironmentsClient) LookupEnvironmentHistory(ctx context.Context, req *cxpb.LookupEnvironmentHistoryRequest, opts ...gax.CallOption) *EnvironmentIterator {
 	return c.internalClient.LookupEnvironmentHistory(ctx, req, opts...)
+}
+
+// RunContinuousTest kicks off a continuous test under the specified Environment.
+func (c *EnvironmentsClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
+	return c.internalClient.RunContinuousTest(ctx, req, opts...)
+}
+
+// RunContinuousTestOperation returns a new RunContinuousTestOperation from a given name.
+// The name must be that of a previously created RunContinuousTestOperation, possibly from a different process.
+func (c *EnvironmentsClient) RunContinuousTestOperation(name string) *RunContinuousTestOperation {
+	return c.internalClient.RunContinuousTestOperation(name)
+}
+
+// ListContinuousTestResults fetches a list of continuous test results for a given environment.
+func (c *EnvironmentsClient) ListContinuousTestResults(ctx context.Context, req *cxpb.ListContinuousTestResultsRequest, opts ...gax.CallOption) *ContinuousTestResultIterator {
+	return c.internalClient.ListContinuousTestResults(ctx, req, opts...)
 }
 
 // environmentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
@@ -490,6 +533,69 @@ func (c *environmentsGRPCClient) LookupEnvironmentHistory(ctx context.Context, r
 	return it
 }
 
+func (c *environmentsGRPCClient) RunContinuousTest(ctx context.Context, req *cxpb.RunContinuousTestRequest, opts ...gax.CallOption) (*RunContinuousTestOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "environment", url.QueryEscape(req.GetEnvironment())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).RunContinuousTest[0:len((*c.CallOptions).RunContinuousTest):len((*c.CallOptions).RunContinuousTest)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.environmentsClient.RunContinuousTest(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &RunContinuousTestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *environmentsGRPCClient) ListContinuousTestResults(ctx context.Context, req *cxpb.ListContinuousTestResultsRequest, opts ...gax.CallOption) *ContinuousTestResultIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListContinuousTestResults[0:len((*c.CallOptions).ListContinuousTestResults):len((*c.CallOptions).ListContinuousTestResults)], opts...)
+	it := &ContinuousTestResultIterator{}
+	req = proto.Clone(req).(*cxpb.ListContinuousTestResultsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*cxpb.ContinuousTestResult, string, error) {
+		var resp *cxpb.ListContinuousTestResultsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.environmentsClient.ListContinuousTestResults(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetContinuousTestResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
 // CreateEnvironmentOperation manages a long-running operation from CreateEnvironment.
 type CreateEnvironmentOperation struct {
 	lro *longrunning.Operation
@@ -556,6 +662,75 @@ func (op *CreateEnvironmentOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *CreateEnvironmentOperation) Name() string {
+	return op.lro.Name()
+}
+
+// RunContinuousTestOperation manages a long-running operation from RunContinuousTest.
+type RunContinuousTestOperation struct {
+	lro *longrunning.Operation
+}
+
+// RunContinuousTestOperation returns a new RunContinuousTestOperation from a given name.
+// The name must be that of a previously created RunContinuousTestOperation, possibly from a different process.
+func (c *environmentsGRPCClient) RunContinuousTestOperation(name string) *RunContinuousTestOperation {
+	return &RunContinuousTestOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *RunContinuousTestOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*cxpb.RunContinuousTestResponse, error) {
+	var resp cxpb.RunContinuousTestResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *RunContinuousTestOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*cxpb.RunContinuousTestResponse, error) {
+	var resp cxpb.RunContinuousTestResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *RunContinuousTestOperation) Metadata() (*cxpb.RunContinuousTestMetadata, error) {
+	var meta cxpb.RunContinuousTestMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *RunContinuousTestOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *RunContinuousTestOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -626,6 +801,53 @@ func (op *UpdateEnvironmentOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateEnvironmentOperation) Name() string {
 	return op.lro.Name()
+}
+
+// ContinuousTestResultIterator manages a stream of *cxpb.ContinuousTestResult.
+type ContinuousTestResultIterator struct {
+	items    []*cxpb.ContinuousTestResult
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*cxpb.ContinuousTestResult, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ContinuousTestResultIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ContinuousTestResultIterator) Next() (*cxpb.ContinuousTestResult, error) {
+	var item *cxpb.ContinuousTestResult
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ContinuousTestResultIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ContinuousTestResultIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // EnvironmentIterator manages a stream of *cxpb.Environment.
