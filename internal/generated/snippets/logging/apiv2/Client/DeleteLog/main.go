@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_Client_DeleteLog]
+// [START logging_v2_generated_LoggingServiceV2_DeleteLog_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.DeleteLogRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END logging_generated_logging_apiv2_Client_DeleteLog]
+// [END logging_v2_generated_LoggingServiceV2_DeleteLog_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START oslogin_generated_oslogin_apiv1_Client_UpdateSshPublicKey]
+// [START oslogin_v1_generated_OsLoginService_UpdateSshPublicKey_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
-
 	ctx := context.Background()
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.UpdateSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END oslogin_generated_oslogin_apiv1_Client_UpdateSshPublicKey]
+// [END oslogin_v1_generated_OsLoginService_UpdateSshPublicKey_sync]

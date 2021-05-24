@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_ConfigClient_GetCmekSettings]
+// [START logging_v2_generated_ConfigServiceV2_GetCmekSettings_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.GetCmekSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END logging_generated_logging_apiv2_ConfigClient_GetCmekSettings]
+// [END logging_v2_generated_ConfigServiceV2_GetCmekSettings_sync]

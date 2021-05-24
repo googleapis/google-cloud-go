@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START apigateway_generated_apigateway_apiv1_Client_DeleteApiConfig]
+// [START apigateway_v1_generated_ApiGatewayService_DeleteApiConfig_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.DeleteApiConfigRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END apigateway_generated_apigateway_apiv1_Client_DeleteApiConfig]
+// [END apigateway_v1_generated_ApiGatewayService_DeleteApiConfig_sync]

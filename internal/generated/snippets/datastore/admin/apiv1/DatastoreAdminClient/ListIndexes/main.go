@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datastore_generated_datastore_admin_apiv1_DatastoreAdminClient_ListIndexes]
+// [START datastore_v1_generated_DatastoreAdmin_ListIndexes_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListIndexesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END datastore_generated_datastore_admin_apiv1_DatastoreAdminClient_ListIndexes]
+// [END datastore_v1_generated_DatastoreAdmin_ListIndexes_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudscheduler_generated_scheduler_apiv1beta1_CloudSchedulerClient_DeleteJob]
+// [START cloudscheduler_v1beta1_generated_CloudScheduler_DeleteJob_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END cloudscheduler_generated_scheduler_apiv1beta1_CloudSchedulerClient_DeleteJob]
+// [END cloudscheduler_v1beta1_generated_CloudScheduler_DeleteJob_sync]

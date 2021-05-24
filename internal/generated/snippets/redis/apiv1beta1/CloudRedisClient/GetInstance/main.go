@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START redis_generated_redis_apiv1beta1_CloudRedisClient_GetInstance]
+// [START redis_v1beta1_generated_CloudRedis_GetInstance_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END redis_generated_redis_apiv1beta1_CloudRedisClient_GetInstance]
+// [END redis_v1beta1_generated_CloudRedis_GetInstance_sync]

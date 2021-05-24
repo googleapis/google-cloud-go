@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_BatchDeleteUserLinks]
+// [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteUserLinks_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchDeleteUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_BatchDeleteUserLinks]
+// [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_BatchDeleteUserLinks_sync]

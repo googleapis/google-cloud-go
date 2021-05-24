@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START binaryauthorization_generated_binaryauthorization_apiv1beta1_BinauthzManagementServiceV1Beta1Client_GetPolicy]
+// [START binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetPolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END binaryauthorization_generated_binaryauthorization_apiv1beta1_BinauthzManagementServiceV1Beta1Client_GetPolicy]
+// [END binaryauthorization_v1beta1_generated_BinauthzManagementServiceV1Beta1_GetPolicy_sync]

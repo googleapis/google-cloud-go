@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerystorage_generated_bigquery_storage_apiv1beta1_BigQueryStorageClient_CreateReadSession]
+// [START bigquerystorage_v1beta1_generated_BigQueryStorage_CreateReadSession_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryStorageClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateReadSessionRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerystorage_generated_bigquery_storage_apiv1beta1_BigQueryStorageClient_CreateReadSession]
+// [END bigquerystorage_v1beta1_generated_BigQueryStorage_CreateReadSession_sync]

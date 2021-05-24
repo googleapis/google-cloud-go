@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudiot_generated_iot_apiv1_DeviceManagerClient_TestIamPermissions]
+// [START cloudiot_v1_generated_DeviceManager_TestIamPermissions_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudiot_generated_iot_apiv1_DeviceManagerClient_TestIamPermissions]
+// [END cloudiot_v1_generated_DeviceManager_TestIamPermissions_sync]

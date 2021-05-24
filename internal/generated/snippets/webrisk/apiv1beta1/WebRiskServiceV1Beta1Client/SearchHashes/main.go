@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START webrisk_generated_webrisk_apiv1beta1_WebRiskServiceV1Beta1Client_SearchHashes]
+// [START webrisk_v1beta1_generated_WebRiskServiceV1Beta1_SearchHashes_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END webrisk_generated_webrisk_apiv1beta1_WebRiskServiceV1Beta1Client_SearchHashes]
+// [END webrisk_v1beta1_generated_WebRiskServiceV1Beta1_SearchHashes_sync]

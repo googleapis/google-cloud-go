@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_settings_apiv1beta1_SecurityCenterSettingsClient_ResetSettings]
+// [START securitycenter_v1beta1_generated_SecurityCenterSettingsService_ResetSettings_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END securitycenter_generated_securitycenter_settings_apiv1beta1_SecurityCenterSettingsClient_ResetSettings]
+// [END securitycenter_v1beta1_generated_SecurityCenterSettingsService_ResetSettings_sync]

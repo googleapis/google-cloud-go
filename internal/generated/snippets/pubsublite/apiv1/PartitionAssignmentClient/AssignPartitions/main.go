@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_PartitionAssignmentClient_AssignPartitions]
+// [START pubsublite_v1_generated_PartitionAssignmentService_AssignPartitions_sync]
 
 package main
 
@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewPartitionAssignmentClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.AssignPartitions(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,4 +59,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_PartitionAssignmentClient_AssignPartitions]
+// [END pubsublite_v1_generated_PartitionAssignmentService_AssignPartitions_sync]

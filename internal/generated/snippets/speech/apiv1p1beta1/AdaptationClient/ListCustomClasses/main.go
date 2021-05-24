@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START speech_generated_speech_apiv1p1beta1_AdaptationClient_ListCustomClasses]
+// [START speech_v1p1beta1_generated_Adaptation_ListCustomClasses_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.ListCustomClassesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END speech_generated_speech_apiv1p1beta1_AdaptationClient_ListCustomClasses]
+// [END speech_v1p1beta1_generated_Adaptation_ListCustomClasses_sync]

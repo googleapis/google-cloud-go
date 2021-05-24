@@ -90,7 +90,7 @@ type ExternalDataConfig struct {
 	// when reading data.
 	MaxBadRecords int64
 
-	// Additional options for CSV, GoogleSheets and Bigtable formats.
+	// Additional options for CSV, GoogleSheets, Bigtable, and Parquet formats.
 	Options ExternalDataConfigOptions
 
 	// HivePartitioningOptions allows use of Hive partitioning based on the
@@ -139,6 +139,8 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		if err != nil {
 			return nil, err
 		}
+	case q.ParquetOptions != nil:
+		e.Options = bqToParquetOptions(q.ParquetOptions)
 	}
 	return e, nil
 }
@@ -414,6 +416,36 @@ func bqToBigtableColumn(q *bq.BigtableColumn) (*BigtableColumn, error) {
 		b.Qualifier = string(bytes)
 	}
 	return b, nil
+}
+
+// ParquetOptions are additional options for Parquet external data sources.
+type ParquetOptions struct {
+	// EnumAsString indicates whether to infer Parquet ENUM logical type as
+	// STRING instead of BYTES by default.
+	EnumAsString bool
+
+	// EnableListInference indicates whether to use schema inference
+	// specifically for Parquet LIST logical type.
+	EnableListInference bool
+}
+
+func (o *ParquetOptions) populateExternalDataConfig(c *bq.ExternalDataConfiguration) {
+	if o != nil {
+		c.ParquetOptions = &bq.ParquetOptions{
+			EnumAsString:        o.EnumAsString,
+			EnableListInference: o.EnableListInference,
+		}
+	}
+}
+
+func bqToParquetOptions(q *bq.ParquetOptions) *ParquetOptions {
+	if q == nil {
+		return nil
+	}
+	return &ParquetOptions{
+		EnumAsString:        q.EnumAsString,
+		EnableListInference: q.EnableListInference,
+	}
 }
 
 // HivePartitioningMode is used in conjunction with HivePartitioningOptions.

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START appengine_generated_appengine_apiv1_FirewallClient_ListIngressRules]
+// [START appengine_v1_generated_Firewall_ListIngressRules_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END appengine_generated_appengine_apiv1_FirewallClient_ListIngressRules]
+// [END appengine_v1_generated_Firewall_ListIngressRules_sync]

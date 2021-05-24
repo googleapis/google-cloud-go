@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START oslogin_generated_oslogin_apiv1_Client_DeletePosixAccount]
+// [START oslogin_v1_generated_OsLoginService_DeletePosixAccount_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.DeletePosixAccountRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END oslogin_generated_oslogin_apiv1_Client_DeletePosixAccount]
+// [END oslogin_v1_generated_OsLoginService_DeletePosixAccount_sync]

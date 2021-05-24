@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerystorage_generated_bigquery_storage_apiv1_BigQueryReadClient_SplitReadStream]
+// [START bigquerystorage_v1_generated_BigQueryRead_SplitReadStream_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryReadClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerystorage_generated_bigquery_storage_apiv1_BigQueryReadClient_SplitReadStream]
+// [END bigquerystorage_v1_generated_BigQueryRead_SplitReadStream_sync]

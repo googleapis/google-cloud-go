@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START documentai_generated_documentai_apiv1beta3_DocumentProcessorClient_BatchProcessDocuments]
+// [START documentai_v1beta3_generated_DocumentProcessorService_BatchProcessDocuments_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
-
 	ctx := context.Background()
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &documentaipb.BatchProcessRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END documentai_generated_documentai_apiv1beta3_DocumentProcessorClient_BatchProcessDocuments]
+// [END documentai_v1beta3_generated_DocumentProcessorService_BatchProcessDocuments_sync]

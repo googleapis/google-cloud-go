@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START domains_generated_domains_apiv1beta1_Client_DeleteRegistration]
+// [START domains_v1beta1_generated_Domains_DeleteRegistration_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.DeleteRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END domains_generated_domains_apiv1beta1_Client_DeleteRegistration]
+// [END domains_v1beta1_generated_Domains_DeleteRegistration_sync]

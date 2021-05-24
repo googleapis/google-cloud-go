@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_BatchCreateNotes]
+// [START containeranalysis_v1beta1_generated_GrafeasV1Beta1_BatchCreateNotes_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.BatchCreateNotesRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_BatchCreateNotes]
+// [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_BatchCreateNotes_sync]

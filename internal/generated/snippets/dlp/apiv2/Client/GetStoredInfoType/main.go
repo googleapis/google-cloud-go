@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dlp_generated_dlp_apiv2_Client_GetStoredInfoType]
+// [START dlp_v2_generated_DlpService_GetStoredInfoType_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END dlp_generated_dlp_apiv2_Client_GetStoredInfoType]
+// [END dlp_v2_generated_DlpService_GetStoredInfoType_sync]

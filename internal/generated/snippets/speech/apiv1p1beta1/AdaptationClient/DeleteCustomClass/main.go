@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START speech_generated_speech_apiv1p1beta1_AdaptationClient_DeleteCustomClass]
+// [START speech_v1p1beta1_generated_Adaptation_DeleteCustomClass_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.DeleteCustomClassRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END speech_generated_speech_apiv1p1beta1_AdaptationClient_DeleteCustomClass]
+// [END speech_v1p1beta1_generated_Adaptation_DeleteCustomClass_sync]

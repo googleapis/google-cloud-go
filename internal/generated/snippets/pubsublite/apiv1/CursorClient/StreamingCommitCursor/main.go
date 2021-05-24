@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_CursorClient_StreamingCommitCursor]
+// [START pubsublite_v1_generated_CursorService_StreamingCommitCursor_sync]
 
 package main
 
@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingCommitCursor(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,4 +59,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_CursorClient_StreamingCommitCursor]
+// [END pubsublite_v1_generated_CursorService_StreamingCommitCursor_sync]

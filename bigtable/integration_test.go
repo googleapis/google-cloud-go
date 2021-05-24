@@ -22,6 +22,7 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+	"os"
 	"os/exec"
 	"reflect"
 	"sort"
@@ -75,29 +76,27 @@ func populatePresidentsGraph(table *Table) error {
 	return nil
 }
 
-var (
-	instanceToCreate      string
-	instanceToCreateZone  string
-	instanceToCreateZone2 string
-	blackholeDpv6Cmd      string
-	blackholeDpv4Cmd      string
-	allowDpv6Cmd          string
-	allowDpv4Cmd          string
-)
+var instanceToCreate string
 
 func init() {
-	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
-	flag.StringVar(&instanceToCreate, "it.instance-to-create", "",
-		"The id of an instance to create, update and delete. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
-	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
-		"The zone in which to create the new test instance.")
-	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
-		"The zone in which to create a second cluster in the test instance.")
-	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
-	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
-	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
-	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
-	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
+	if runCreateInstanceTests {
+		instanceToCreate = fmt.Sprintf("create-%d", time.Now().Unix())
+	}
+}
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+
+	c := integrationConfig
+	if c.UseProd {
+		fmt.Printf(
+			"Note: when using prod, you must first create an instance:\n"+
+				"cbt createinstance %s %s %s %s %s SSD\n",
+			c.Instance, c.Instance,
+			c.Cluster, "us-central1-b", "1",
+		)
+	}
+	os.Exit(m.Run())
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -1056,11 +1055,23 @@ func TestIntegration_Read(t *testing.T) {
 
 func TestIntegration_SampleRowKeys(t *testing.T) {
 	ctx := context.Background()
-	testEnv, _, _, table, _, cleanup, err := setupIntegration(ctx, t)
+	testEnv, client, adminClient, _, _, cleanup, err := setupIntegration(ctx, t)
 	if err != nil {
 		t.Fatal(err)
 	}
 	defer cleanup()
+
+	presplitTable := fmt.Sprintf("presplit-table-%d", time.Now().Unix())
+	if err := adminClient.CreatePresplitTable(ctx, presplitTable, []string{"follows"}); err != nil {
+		t.Fatal(err)
+	}
+	defer adminClient.DeleteTable(ctx, presplitTable)
+
+	if err := adminClient.CreateColumnFamily(ctx, presplitTable, "follows"); err != nil {
+		t.Fatal(err)
+	}
+
+	table := client.Open(presplitTable)
 
 	// Insert some data.
 	initialData := map[string][]string{
@@ -1113,7 +1124,6 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 	if iAdminClient != nil {
 		defer iAdminClient.Close()
-
 		iInfo, err := iAdminClient.InstanceInfo(ctx, adminClient.instance)
 		if err != nil {
 			t.Errorf("InstanceInfo: %v", err)
@@ -1254,6 +1264,26 @@ func TestIntegration_Admin(t *testing.T) {
 	if gotRowCount != 0 {
 		t.Errorf("Invalid row count after truncating table: got %v, want %v", gotRowCount, 0)
 	}
+
+	// Validate Encryption Info configured to default. (not supported by emulator)
+	if testEnv.Config().UseProd {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+		if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+			t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+		}
+
+		clusterEncryptionInfo := encryptionInfo[testEnv.Config().Cluster][0]
+		if clusterEncryptionInfo.KMSKeyVersion != "" {
+			t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.KMSKeyVersion, 0)
+		}
+		if clusterEncryptionInfo.Type != GoogleDefaultEncryption {
+			t.Errorf("Encryption Info mismatch, got %v, want %v", clusterEncryptionInfo.Type, GoogleDefaultEncryption)
+		}
+	}
+
 }
 
 func TestIntegration_TableIam(t *testing.T) {
@@ -1397,6 +1427,7 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
 		t.Fatalf("CreateInstance: %v", err)
 	}
+
 	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
 
 	iInfo, err := iAdminClient.InstanceInfo(ctx, instanceToCreate)
@@ -1449,6 +1480,183 @@ func TestIntegration_AdminCreateInstance(t *testing.T) {
 
 	if cInfo.ServeNodes != 5 {
 		t.Fatalf("NumNodes: %v, want: %v", cInfo.ServeNodes, 5)
+	}
+
+	if cInfo.KMSKeyName != "" {
+		t.Fatalf("KMSKeyName: %v, want: %v", cInfo.KMSKeyName, "")
+	}
+}
+
+func TestIntegration_AdminEncryptionInfo(t *testing.T) {
+	if instanceToCreate == "" {
+		t.Skip("instanceToCreate not set, skipping instance creation testing")
+	}
+
+	testEnv, err := NewIntegrationEnv()
+	if err != nil {
+		t.Fatalf("IntegrationEnv: %v", err)
+	}
+	defer testEnv.Close()
+
+	if !testEnv.Config().UseProd {
+		t.Skip("emulator doesn't support instance creation")
+	}
+
+	// adjust test environment to use our cluster to create
+	c := testEnv.Config()
+	c.Instance = instanceToCreate
+	testEnv, err = NewProdEnv(c)
+	if err != nil {
+		t.Fatalf("NewProdEnv: %v", err)
+	}
+
+	timeout := 5 * time.Minute
+	ctx, cancel := context.WithTimeout(context.Background(), timeout)
+	defer cancel()
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+
+	adminClient, err := testEnv.NewAdminClient()
+	if err != nil {
+		t.Fatalf("NewAdminClient: %v", err)
+	}
+	defer adminClient.Close()
+
+	table := instanceToCreate + "-table"
+	clusterID := instanceToCreate + "-cluster"
+
+	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+	if keyRingName == "" {
+		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+	}
+	kmsKeyName := keyRingName + "/cryptoKeys/key1"
+
+	conf := &InstanceWithClustersConfig{
+		InstanceID:  instanceToCreate,
+		DisplayName: "test instance",
+		Clusters: []ClusterConfig{
+			{
+				ClusterID:  clusterID,
+				KMSKeyName: kmsKeyName,
+				Zone:       instanceToCreateZone,
+				NumNodes:   1,
+			},
+		},
+	}
+	if err := iAdminClient.CreateInstanceWithClusters(ctx, conf); err != nil {
+		t.Fatalf("CreateInstance: %v", err)
+	}
+	defer iAdminClient.DeleteInstance(ctx, instanceToCreate)
+
+	// Delete the table at the end of the test. Schedule ahead of time
+	// in case the client fails
+	defer deleteTable(ctx, t, adminClient, table)
+	if err := adminClient.CreateTable(ctx, table); err != nil {
+		t.Fatalf("Creating table: %v", err)
+	}
+
+	encryptionKeyVersion := kmsKeyName + "/cryptoKeyVersions/1"
+
+	// The encryption info can take 30-300s (currently about 120-190s) to
+	// become ready.
+	for i := 0; i < 30; i++ {
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+		if err != nil {
+			t.Fatalf("EncryptionInfo: %v", err)
+		}
+
+		kmsKeyVersion := encryptionInfo[clusterID][0].KMSKeyVersion
+		if kmsKeyVersion != "" {
+			break
+		}
+
+		time.Sleep(time.Second * 10)
+	}
+
+	// Validate Encryption Info under getTable
+	table2, err := adminClient.getTable(ctx, table, btapb.Table_ENCRYPTION_VIEW)
+	if err != nil {
+		t.Fatalf("Getting Table: %v", err)
+	}
+	if got, want := len(table2.ClusterStates), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Cluster States %v, want: %v", got, want)
+	}
+	clusterState := table2.ClusterStates[clusterID]
+	if got, want := len(clusterState.EncryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Table Encryption Info Length: %v, want: %v", got, want)
+	}
+	tableEncInfo := clusterState.EncryptionInfo[0]
+	if got, want := int(tableEncInfo.EncryptionStatus.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is btapb.EncryptionInfo_EncryptionType
+	if got, want := tableEncInfo.EncryptionType, btapb.EncryptionInfo_CUSTOMER_MANAGED_ENCRYPTION; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := tableEncInfo.KmsKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate Encyrption Info retrieved via EncryptionInfo
+	encryptionInfo, err := adminClient.EncryptionInfo(ctx, table)
+	if err != nil {
+		t.Fatalf("EncryptionInfo: %v", err)
+	}
+	if got, want := len(encryptionInfo), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Number of Clusters with Encryption Info: %v, want: %v", got, want)
+	}
+	encryptionInfos := encryptionInfo[clusterID]
+	if got, want := len(encryptionInfos), 1; !cmp.Equal(got, want) {
+		t.Fatalf("Encryption Info Length: %v, want: %v", got, want)
+	}
+	if len(encryptionInfos) != 1 {
+		t.Fatalf("Expected Single EncryptionInfo")
+	}
+	v := encryptionInfos[0]
+	if got, want := int(v.Status.Code), 0; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionStatus: %v, want: %v", got, want)
+	}
+	// NOTE: this EncryptionType is EncryptionType
+	if got, want := v.Type, CustomerManagedEncryption; !cmp.Equal(got, want) {
+		t.Fatalf("EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := v.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("KMS Key Version: %v, want: %v", got, want)
+	}
+
+	// Validate CMEK on Cluster Info
+	cInfo, err := iAdminClient.GetCluster(ctx, instanceToCreate, clusterID)
+	if err != nil {
+		t.Fatalf("GetCluster: %v", err)
+	}
+
+	if got, want := cInfo.KMSKeyName, kmsKeyName; !cmp.Equal(got, want) {
+		t.Fatalf("KMSKeyName: %v, want: %v", got, want)
+	}
+
+	// Create a backup with CMEK enabled, verify backup encryption info
+	backupName := "backupCMEK"
+	defer adminClient.DeleteBackup(ctx, clusterID, backupName)
+	if err = adminClient.CreateBackup(ctx, table, clusterID, backupName, time.Now().Add(8*time.Hour)); err != nil {
+		t.Fatalf("Creating backup: %v", err)
+	}
+	backup, err := adminClient.BackupInfo(ctx, clusterID, backupName)
+	if err != nil {
+		t.Fatalf("BackupInfo: %v", backup)
+	}
+
+	if got, want := backup.EncryptionInfo.Type, CustomerManagedEncryption; !cmp.Equal(got, want) {
+		t.Fatalf("Backup Encryption EncryptionType: %v, want: %v", got, want)
+	}
+	if got, want := backup.EncryptionInfo.KMSKeyVersion, encryptionKeyVersion; !cmp.Equal(got, want) {
+		t.Fatalf("Backup Encryption KMSKeyVersion: %v, want: %v", got, want)
+	}
+	if got, want := int(backup.EncryptionInfo.Status.Code), 2; !cmp.Equal(got, want) {
+		t.Fatalf("Backup EncryptionStatus: %v, want: %v", got, want)
 	}
 }
 
@@ -1713,123 +1921,6 @@ func TestIntegration_AdminUpdateInstanceAndSyncClusters(t *testing.T) {
 	}
 }
 
-func TestIntegration_AdminSnapshot(t *testing.T) {
-	testEnv, err := NewIntegrationEnv()
-	if err != nil {
-		t.Fatalf("IntegrationEnv: %v", err)
-	}
-	defer testEnv.Close()
-
-	if !testEnv.Config().UseProd {
-		t.Skip("emulator doesn't support snapshots")
-	}
-
-	timeout := 2 * time.Second
-	if testEnv.Config().UseProd {
-		timeout = 5 * time.Minute
-	}
-	ctx, _ := context.WithTimeout(context.Background(), timeout)
-
-	adminClient, err := testEnv.NewAdminClient()
-	if err != nil {
-		t.Fatalf("NewAdminClient: %v", err)
-	}
-	defer adminClient.Close()
-
-	table := testEnv.Config().Table
-	cluster := testEnv.Config().Cluster
-
-	list := func(cluster string) ([]*SnapshotInfo, error) {
-		infos := []*SnapshotInfo(nil)
-
-		it := adminClient.Snapshots(ctx, cluster)
-		for {
-			s, err := it.Next()
-			if err == iterator.Done {
-				break
-			}
-			if err != nil {
-				return nil, err
-			}
-			infos = append(infos, s)
-		}
-		return infos, err
-	}
-
-	// Delete the table at the end of the test. Schedule ahead of time
-	// in case the client fails
-	defer deleteTable(ctx, t, adminClient, table)
-
-	if err := adminClient.CreateTable(ctx, table); err != nil {
-		t.Fatalf("Creating table: %v", err)
-	}
-
-	// Precondition: no snapshots
-	snapshots, err := list(cluster)
-	if err != nil {
-		t.Fatalf("Initial snapshot list: %v", err)
-	}
-	if got, want := len(snapshots), 0; got != want {
-		t.Fatalf("Initial snapshot list len: %d, want: %d", got, want)
-	}
-
-	// Create snapshot
-	defer adminClient.DeleteSnapshot(ctx, cluster, "mysnapshot")
-
-	if err = adminClient.SnapshotTable(ctx, table, cluster, "mysnapshot", 5*time.Hour); err != nil {
-		t.Fatalf("Creating snaphot: %v", err)
-	}
-
-	// List snapshot
-	snapshots, err = list(cluster)
-	if err != nil {
-		t.Fatalf("Listing snapshots: %v", err)
-	}
-	if got, want := len(snapshots), 1; got != want {
-		t.Fatalf("Listing snapshot count: %d, want: %d", got, want)
-	}
-	if got, want := snapshots[0].Name, "mysnapshot"; got != want {
-		t.Fatalf("Snapshot name: %s, want: %s", got, want)
-	}
-	if got, want := snapshots[0].SourceTable, table; got != want {
-		t.Fatalf("Snapshot SourceTable: %s, want: %s", got, want)
-	}
-	if got, want := snapshots[0].DeleteTime, snapshots[0].CreateTime.Add(5*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Fatalf("Snapshot DeleteTime: %s, want: %s", got, want)
-	}
-
-	// Get snapshot
-	snapshot, err := adminClient.SnapshotInfo(ctx, cluster, "mysnapshot")
-	if err != nil {
-		t.Fatalf("SnapshotInfo: %v", snapshot)
-	}
-	if got, want := *snapshot, *snapshots[0]; got != want {
-		t.Fatalf("SnapshotInfo: %v, want: %v", got, want)
-	}
-
-	// Restore
-	restoredTable := table + "-restored"
-	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.CreateTableFromSnapshot(ctx, restoredTable, cluster, "mysnapshot"); err != nil {
-		t.Fatalf("CreateTableFromSnapshot: %v", err)
-	}
-	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
-		t.Fatalf("Restored TableInfo: %v", err)
-	}
-
-	// Delete snapshot
-	if err = adminClient.DeleteSnapshot(ctx, cluster, "mysnapshot"); err != nil {
-		t.Fatalf("DeleteSnapshot: %v", err)
-	}
-	snapshots, err = list(cluster)
-	if err != nil {
-		t.Fatalf("List after Delete: %v", err)
-	}
-	if got, want := len(snapshots), 0; got != want {
-		t.Fatalf("List after delete len: %d, want: %d", got, want)
-	}
-}
-
 // instanceAdminClientMock is used to test FailedLocations field processing.
 type instanceAdminClientMock struct {
 	Clusters             []*btapb.Cluster
@@ -2059,6 +2150,9 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		return
 	}
 
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
+	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "default")
+
 	defer iAdminClient.Close()
 	profile := ProfileConf{
 		ProfileID:     "app_profile1",
@@ -2104,7 +2198,8 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 		t.Fatalf("List app profile: %v", err)
 	}
 
-	if got, want := len(profiles), 1; got != want {
+	// App Profile list should contain default, app_profile1
+	if got, want := len(profiles), 2; got != want {
 		t.Fatalf("Initial app profile list len: %d, want: %d", got, want)
 	}
 
@@ -2209,7 +2304,6 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	if err != nil {
 		t.Errorf("InstanceInfo: %v", err)
 	}
-
 	if iInfo.Name != adminClient.instance {
 		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
 	}
@@ -2254,12 +2348,43 @@ func TestIntegration_AdminBackup(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	table := testEnv.Config().Table
-	cluster := testEnv.Config().Cluster
-
+	tblConf := TableConf{
+		TableID: testEnv.Config().Table,
+		Families: map[string]GCPolicy{
+			"fam1": MaxVersionsPolicy(1),
+			"fam2": MaxVersionsPolicy(2),
+		},
+	}
+	if err := adminClient.CreateTableFromConf(ctx, &tblConf); err != nil {
+		t.Fatalf("Creating table from TableConf: %v", err)
+	}
 	// Delete the table at the end of the test. Schedule ahead of time
 	// in case the client fails
-	defer deleteTable(ctx, t, adminClient, table)
+	defer deleteTable(ctx, t, adminClient, tblConf.TableID)
+
+	sourceInstance := testEnv.Config().Instance
+	sourceCluster := testEnv.Config().Cluster
+
+	iAdminClient, err := testEnv.NewInstanceAdminClient()
+	if err != nil {
+		t.Fatalf("NewInstanceAdminClient: %v", err)
+	}
+	defer iAdminClient.Close()
+	diffInstance := testEnv.Config().Instance + "-diff"
+	diffCluster := sourceCluster + "-diff"
+	conf := &InstanceConf{
+		InstanceId:   diffInstance,
+		ClusterId:    diffCluster,
+		DisplayName:  "different test sourceInstance",
+		Zone:         instanceToCreateZone2,
+		InstanceType: DEVELOPMENT,
+		Labels:       map[string]string{"test-label-key": "test-label-value"},
+	}
+	defer iAdminClient.DeleteInstance(ctx, diffInstance)
+	// Create different instance to restore table.
+	if err := iAdminClient.CreateInstance(ctx, conf); err != nil {
+		t.Errorf("CreateInstance: %v", err)
+	}
 
 	list := func(cluster string) ([]*BackupInfo, error) {
 		infos := []*BackupInfo(nil)
@@ -2278,12 +2403,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		return infos, err
 	}
 
-	if err := adminClient.CreateTable(ctx, table); err != nil {
-		t.Fatalf("Creating table: %v", err)
-	}
-
 	// Precondition: no backups
-	backups, err := list(cluster)
+	backups, err := list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Initial backup list: %v", err)
 	}
@@ -2293,14 +2414,14 @@ func TestIntegration_AdminBackup(t *testing.T) {
 
 	// Create backup
 	backupName := "mybackup"
-	defer adminClient.DeleteBackup(ctx, cluster, "mybackup")
+	defer adminClient.DeleteBackup(ctx, sourceCluster, "mybackup")
 
-	if err = adminClient.CreateBackup(ctx, table, cluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
+	if err = adminClient.CreateBackup(ctx, tblConf.TableID, sourceCluster, backupName, time.Now().Add(8*time.Hour)); err != nil {
 		t.Fatalf("Creating backup: %v", err)
 	}
 
 	// List backup
-	backups, err = list(cluster)
+	backups, err = list(sourceCluster)
 	if err != nil {
 		t.Fatalf("Listing backups: %v", err)
 	}
@@ -2308,62 +2429,93 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("Listing backup count: %d, want: %d", got, want)
 	}
 	if got, want := backups[0].Name, backupName; got != want {
-		t.Fatalf("Backup name: %s, want: %s", got, want)
+		t.Errorf("Backup name: %s, want: %s", got, want)
 	}
-	if got, want := backups[0].SourceTable, table; got != want {
-		t.Fatalf("Backup SourceTable: %s, want: %s", got, want)
+	if got, want := backups[0].SourceTable, tblConf.TableID; got != want {
+		t.Errorf("Backup SourceTable: %s, want: %s", got, want)
 	}
 	if got, want := backups[0].ExpireTime, backups[0].StartTime.Add(8*time.Hour); math.Abs(got.Sub(want).Minutes()) > 1 {
-		t.Fatalf("Backup ExpireTime: %s, want: %s", got, want)
+		t.Errorf("Backup ExpireTime: %s, want: %s", got, want)
 	}
 
 	// Get backup
-	backup, err := adminClient.BackupInfo(ctx, cluster, backupName)
+	backup, err := adminClient.BackupInfo(ctx, sourceCluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", backup)
 	}
-	if got, want := *backup, *backups[0]; got != want {
-		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+	if got, want := *backup, *backups[0]; cmp.Equal(got, &want) {
+		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Update backup
 	newExpireTime := time.Now().Add(10 * time.Hour)
-	err = adminClient.UpdateBackup(ctx, cluster, backupName, newExpireTime)
+	err = adminClient.UpdateBackup(ctx, sourceCluster, backupName, newExpireTime)
 	if err != nil {
 		t.Fatalf("UpdateBackup failed: %v", err)
 	}
 
 	// Check that updated backup has the correct expire time
-	updatedBackup, err := adminClient.BackupInfo(ctx, cluster, backupName)
+	updatedBackup, err := adminClient.BackupInfo(ctx, sourceCluster, backupName)
 	if err != nil {
 		t.Fatalf("BackupInfo: %v", err)
 	}
 	backup.ExpireTime = newExpireTime
 	// Server clock and local clock may not be perfectly sync'ed.
 	if got, want := *updatedBackup, *backup; got.ExpireTime.Sub(want.ExpireTime) > time.Minute {
-		t.Fatalf("BackupInfo: %v, want: %v", got, want)
+		t.Errorf("BackupInfo: %v, want: %v", got, want)
 	}
 
 	// Restore backup
-	restoredTable := table + "-restored"
+	restoredTable := tblConf.TableID + "-restored"
 	defer deleteTable(ctx, t, adminClient, restoredTable)
-	if err = adminClient.RestoreTable(ctx, restoredTable, cluster, backupName); err != nil {
+	if err = adminClient.RestoreTable(ctx, restoredTable, sourceCluster, backupName); err != nil {
 		t.Fatalf("RestoreTable: %v", err)
 	}
 	if _, err := adminClient.TableInfo(ctx, restoredTable); err != nil {
 		t.Fatalf("Restored TableInfo: %v", err)
 	}
+	// Restore backup to different instance
+	restoreTableName := tblConf.TableID + "-diff-restored"
+	diffConf := IntegrationTestConfig{
+		Project:  testEnv.Config().Project,
+		Instance: diffInstance,
+		Cluster:  diffCluster,
+		Table:    restoreTableName,
+	}
+	env := &ProdEnv{
+		config: diffConf,
+	}
+	dAdminClient, err := env.NewAdminClient()
+	if err != nil {
+		t.Errorf("NewAdminClient: %v", err)
+	}
+	defer dAdminClient.Close()
+
+	defer deleteTable(ctx, t, dAdminClient, restoreTableName)
+	if err = dAdminClient.RestoreTableFrom(ctx, sourceInstance, restoreTableName, sourceCluster, "mybackup"); err != nil {
+		t.Fatalf("RestoreTableFrom: %v", err)
+	}
+	tblInfo, err := dAdminClient.TableInfo(ctx, restoreTableName)
+	if err != nil {
+		t.Fatalf("Restored to different sourceInstance failed, TableInfo: %v", err)
+	}
+	families := tblInfo.Families
+	sort.Strings(tblInfo.Families)
+	wantFams := []string{"fam1", "fam2"}
+	if !testutil.Equal(families, wantFams) {
+		t.Errorf("Column family mismatch, got %v, want %v", tblInfo.Families, wantFams)
+	}
 
 	// Delete backup
-	if err = adminClient.DeleteBackup(ctx, cluster, backupName); err != nil {
+	if err = adminClient.DeleteBackup(ctx, sourceCluster, backupName); err != nil {
 		t.Fatalf("DeleteBackup: %v", err)
 	}
-	backups, err = list(cluster)
+	backups, err = list(sourceCluster)
 	if err != nil {
 		t.Fatalf("List after Delete: %v", err)
 	}
 	if got, want := len(backups), 0; got != want {
-		t.Fatalf("List after delete len: %d, want: %d", got, want)
+		t.Errorf("List after delete len: %d, want: %d", got, want)
 	}
 }
 

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudresourcemanager_generated_resourcemanager_apiv2_FoldersClient_ListFolders]
+// [START cloudresourcemanager_v2_generated_Folders_ListFolders_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import resourcemanagerpb "google.golang.org/genproto/googleapis/cloud/resourcemanager/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := resourcemanager.NewFoldersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcemanagerpb.ListFoldersRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudresourcemanager_generated_resourcemanager_apiv2_FoldersClient_ListFolders]
+// [END cloudresourcemanager_v2_generated_Folders_ListFolders_sync]

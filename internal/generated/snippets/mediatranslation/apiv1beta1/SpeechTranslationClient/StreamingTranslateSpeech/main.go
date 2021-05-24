@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START mediatranslation_generated_mediatranslation_apiv1beta1_SpeechTranslationClient_StreamingTranslateSpeech]
+// [START mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync]
 
 package main
 
@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import mediatranslationpb "google.golang.org/genproto/googleapis/cloud/mediatranslation/v1beta1"
-
 	ctx := context.Background()
 	c, err := mediatranslation.NewSpeechTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingTranslateSpeech(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,4 +59,4 @@ func main() {
 	}
 }
 
-// [END mediatranslation_generated_mediatranslation_apiv1beta1_SpeechTranslationClient_StreamingTranslateSpeech]
+// [END mediatranslation_v1beta1_generated_SpeechTranslationService_StreamingTranslateSpeech_sync]

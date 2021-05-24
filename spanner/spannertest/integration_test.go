@@ -1145,6 +1145,62 @@ func TestIntegration_ReadsAndQueries(t *testing.T) {
 				{"Daniel"},
 			},
 		},
+		{
+			`SELECT MIN(Name), MAX(Name) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{"Daniel", "Teal'c"},
+			},
+		},
+		{
+			`SELECT Cool, MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			nil,
+			[][]interface{}{
+				{nil, "George", "Jack", int64(2)},
+				{false, "Daniel", "Sam", int64(2)},
+				{true, "Teal'c", "Teal'c", int64(1)},
+			},
+		},
+		{
+			`SELECT Tenure/2, Cool, Name FROM Staff WHERE Tenure/2 > 5`,
+			nil,
+			[][]interface{}{
+				{float64(5.5), false, "Daniel"},
+			},
+		},
+		{
+			`SELECT Tenure/2, MAX(Cool) FROM Staff WHERE Tenure/2 > 5 GROUP BY Tenure/2`,
+			nil,
+			[][]interface{}{
+				{float64(5.5), false},
+			},
+		},
+		{
+			`SELECT Tenure/2, Cool, MIN(Name) FROM Staff WHERE Tenure/2 >= 4 GROUP BY Tenure/2, Cool ORDER BY Cool DESC, Tenure/2`,
+			nil,
+			[][]interface{}{
+				{float64(4), true, "Teal'c"},
+				{float64(4.5), false, "Sam"},
+				{float64(5.5), false, "Daniel"},
+				{float64(5), nil, "Jack"},
+			},
+		},
+		{
+			`SELECT MIN(Cool), MAX(Cool), MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff`,
+			nil,
+			[][]interface{}{
+				{false, true, int64(6), int64(11), 1.73, 1.91, "Daniel", "Teal'c", int64(5)},
+			},
+		},
+		{
+			`SELECT Cool, MIN(Tenure), MAX(Tenure), MIN(Height), MAX(Height), MIN(Name), MAX(Name), COUNT(*) FROM Staff GROUP BY Cool ORDER BY Cool`,
+			nil,
+			[][]interface{}{
+				{nil, int64(6), int64(10), 1.73, 1.85, "George", "Jack", int64(2)},
+				{false, int64(9), int64(11), 1.75, 1.83, "Daniel", "Sam", int64(2)},
+				{true, int64(8), int64(8), 1.91, 1.91, "Teal'c", "Teal'c", int64(1)},
+			},
+		},
 	}
 	var failures int
 	for _, test := range tests {

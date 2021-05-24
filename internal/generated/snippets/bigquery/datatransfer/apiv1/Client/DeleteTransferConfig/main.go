@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_DeleteTransferConfig]
+// [START bigquerydatatransfer_v1_generated_DataTransferService_DeleteTransferConfig_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.DeleteTransferConfigRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_DeleteTransferConfig]
+// [END bigquerydatatransfer_v1_generated_DataTransferService_DeleteTransferConfig_sync]

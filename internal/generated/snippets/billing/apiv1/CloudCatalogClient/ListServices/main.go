@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbilling_generated_billing_apiv1_CloudCatalogClient_ListServices]
+// [START cloudbilling_v1_generated_CloudCatalog_ListServices_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudbilling_generated_billing_apiv1_CloudCatalogClient_ListServices]
+// [END cloudbilling_v1_generated_CloudCatalog_ListServices_sync]

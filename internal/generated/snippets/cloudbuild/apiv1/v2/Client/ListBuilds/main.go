@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbuild_generated_cloudbuild_apiv1_v2_Client_ListBuilds]
+// [START cloudbuild_v1_generated_CloudBuild_ListBuilds_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudbuildpb.ListBuildsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudbuild_generated_cloudbuild_apiv1_v2_Client_ListBuilds]
+// [END cloudbuild_v1_generated_CloudBuild_ListBuilds_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datalabeling_generated_datalabeling_apiv1beta1_Client_ImportData]
+// [START datalabeling_v1beta1_generated_DataLabelingService_ImportData_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END datalabeling_generated_datalabeling_apiv1beta1_Client_ImportData]
+// [END datalabeling_v1beta1_generated_DataLabelingService_ImportData_sync]

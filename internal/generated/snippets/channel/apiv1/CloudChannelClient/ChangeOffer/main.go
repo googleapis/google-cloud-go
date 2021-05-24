@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudchannel_generated_channel_apiv1_CloudChannelClient_ChangeOffer]
+// [START cloudchannel_v1_generated_CloudChannelService_ChangeOffer_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ChangeOfferRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudchannel_generated_channel_apiv1_CloudChannelClient_ChangeOffer]
+// [END cloudchannel_v1_generated_CloudChannelService_ChangeOffer_sync]

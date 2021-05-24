@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_agentendpoint_apiv1_Client_StartNextTask]
+// [START osconfig_v1_generated_AgentEndpointService_StartNextTask_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.StartNextTaskRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_agentendpoint_apiv1_Client_StartNextTask]
+// [END osconfig_v1_generated_AgentEndpointService_StartNextTask_sync]

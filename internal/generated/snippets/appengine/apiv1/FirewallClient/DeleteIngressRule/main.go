@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START appengine_generated_appengine_apiv1_FirewallClient_DeleteIngressRule]
+// [START appengine_v1_generated_Firewall_DeleteIngressRule_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteIngressRuleRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END appengine_generated_appengine_apiv1_FirewallClient_DeleteIngressRule]
+// [END appengine_v1_generated_Firewall_DeleteIngressRule_sync]

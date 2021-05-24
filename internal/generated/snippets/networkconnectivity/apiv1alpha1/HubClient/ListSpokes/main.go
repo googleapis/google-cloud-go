@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_ListSpokes]
+// [START networkconnectivity_v1alpha1_generated_HubService_ListSpokes_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.ListSpokesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_ListSpokes]
+// [END networkconnectivity_v1alpha1_generated_HubService_ListSpokes_sync]

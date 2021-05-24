@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtasks_generated_cloudtasks_apiv2_Client_GetQueue]
+// [START cloudtasks_v2_generated_CloudTasks_GetQueue_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.GetQueueRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudtasks_generated_cloudtasks_apiv2_Client_GetQueue]
+// [END cloudtasks_v2_generated_CloudTasks_GetQueue_sync]

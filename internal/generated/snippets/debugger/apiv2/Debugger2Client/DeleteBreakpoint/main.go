@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START clouddebugger_generated_debugger_apiv2_Debugger2Client_DeleteBreakpoint]
+// [START clouddebugger_v2_generated_Debugger2_DeleteBreakpoint_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.DeleteBreakpointRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END clouddebugger_generated_debugger_apiv2_Debugger2Client_DeleteBreakpoint]
+// [END clouddebugger_v2_generated_Debugger2_DeleteBreakpoint_sync]

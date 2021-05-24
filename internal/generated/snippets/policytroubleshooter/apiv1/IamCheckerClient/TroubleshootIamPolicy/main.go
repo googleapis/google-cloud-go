@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START policytroubleshooter_generated_policytroubleshooter_apiv1_IamCheckerClient_TroubleshootIamPolicy]
+// [START policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import policytroubleshooterpb "google.golang.org/genproto/googleapis/cloud/policytroubleshooter/v1"
-
 	ctx := context.Background()
 	c, err := policytroubleshooter.NewIamCheckerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &policytroubleshooterpb.TroubleshootIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END policytroubleshooter_generated_policytroubleshooter_apiv1_IamCheckerClient_TroubleshootIamPolicy]
+// [END policytroubleshooter_v1_generated_IamChecker_TroubleshootIamPolicy_sync]

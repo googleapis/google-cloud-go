@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicedirectory_generated_servicedirectory_apiv1_RegistrationClient_DeleteNamespace]
+// [START servicedirectory_v1_generated_RegistrationService_DeleteNamespace_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.DeleteNamespaceRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END servicedirectory_generated_servicedirectory_apiv1_RegistrationClient_DeleteNamespace]
+// [END servicedirectory_v1_generated_RegistrationService_DeleteNamespace_sync]

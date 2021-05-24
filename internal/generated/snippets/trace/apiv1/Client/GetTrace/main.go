@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtrace_generated_trace_apiv1_Client_GetTrace]
+// [START cloudtrace_v1_generated_TraceService_GetTrace_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.GetTraceRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudtrace_generated_trace_apiv1_Client_GetTrace]
+// [END cloudtrace_v1_generated_TraceService_GetTrace_sync]

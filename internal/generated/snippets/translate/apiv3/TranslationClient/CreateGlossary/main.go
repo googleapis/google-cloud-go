@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START translate_generated_translate_apiv3_TranslationClient_CreateGlossary]
+// [START translate_v3_generated_TranslationService_CreateGlossary_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.CreateGlossaryRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END translate_generated_translate_apiv3_TranslationClient_CreateGlossary]
+// [END translate_v3_generated_TranslationService_CreateGlossary_sync]

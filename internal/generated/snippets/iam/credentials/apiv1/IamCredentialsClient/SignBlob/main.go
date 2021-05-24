@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START iamcredentials_generated_iam_credentials_apiv1_IamCredentialsClient_SignBlob]
+// [START iamcredentials_v1_generated_IAMCredentials_SignBlob_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.SignBlobRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END iamcredentials_generated_iam_credentials_apiv1_IamCredentialsClient_SignBlob]
+// [END iamcredentials_v1_generated_IAMCredentials_SignBlob_sync]

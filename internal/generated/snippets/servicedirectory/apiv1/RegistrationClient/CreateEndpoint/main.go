@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicedirectory_generated_servicedirectory_apiv1_RegistrationClient_CreateEndpoint]
+// [START servicedirectory_v1_generated_RegistrationService_CreateEndpoint_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END servicedirectory_generated_servicedirectory_apiv1_RegistrationClient_CreateEndpoint]
+// [END servicedirectory_v1_generated_RegistrationService_CreateEndpoint_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_UpdateInstance]
+// [START spanner_v1_generated_InstanceAdmin_UpdateInstance_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END spanner_generated_spanner_admin_instance_apiv1_InstanceAdminClient_UpdateInstance]
+// [END spanner_v1_generated_InstanceAdmin_UpdateInstance_sync]

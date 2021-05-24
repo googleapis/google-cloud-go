@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START metastore_generated_metastore_apiv1alpha_DataprocMetastoreClient_CreateBackup]
+// [START metastore_v1alpha_generated_DataprocMetastore_CreateBackup_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1alpha"
-
 	ctx := context.Background()
 	c, err := metastore.NewDataprocMetastoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &metastorepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END metastore_generated_metastore_apiv1alpha_DataprocMetastoreClient_CreateBackup]
+// [END metastore_v1alpha_generated_DataprocMetastore_CreateBackup_sync]

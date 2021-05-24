@@ -191,6 +191,11 @@
                 "DeleteFlow"
               ]
             },
+            "ExportFlow": {
+              "methods": [
+                "ExportFlow"
+              ]
+            },
             "GetFlow": {
               "methods": [
                 "GetFlow"
@@ -199,6 +204,11 @@
             "GetFlowValidationResult": {
               "methods": [
                 "GetFlowValidationResult"
+              ]
+            },
+            "ImportFlow": {
+              "methods": [
+                "ImportFlow"
               ]
             },
             "ListFlows": {

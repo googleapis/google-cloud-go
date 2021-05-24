@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_DeleteSpoke]
+// [START networkconnectivity_v1alpha1_generated_HubService_DeleteSpoke_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.DeleteSpokeRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END networkconnectivity_generated_networkconnectivity_apiv1alpha1_HubClient_DeleteSpoke]
+// [END networkconnectivity_v1alpha1_generated_HubService_DeleteSpoke_sync]

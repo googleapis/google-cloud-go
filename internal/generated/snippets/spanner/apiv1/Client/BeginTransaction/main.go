@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_apiv1_Client_BeginTransaction]
+// [START spanner_v1_generated_Spanner_BeginTransaction_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END spanner_generated_spanner_apiv1_Client_BeginTransaction]
+// [END spanner_v1_generated_Spanner_BeginTransaction_sync]

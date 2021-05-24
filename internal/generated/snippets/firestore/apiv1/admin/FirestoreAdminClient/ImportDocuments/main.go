@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START firestore_generated_firestore_apiv1_admin_FirestoreAdminClient_ImportDocuments]
+// [START firestore_v1_generated_FirestoreAdmin_ImportDocuments_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/firestore/admin/v1"
-
 	ctx := context.Background()
 	c, err := apiv1.NewFirestoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ImportDocumentsRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END firestore_generated_firestore_apiv1_admin_FirestoreAdminClient_ImportDocuments]
+// [END firestore_v1_generated_FirestoreAdmin_ImportDocuments_sync]

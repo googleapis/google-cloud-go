@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START container_generated_container_apiv1_ClusterManagerClient_CancelOperation]
+// [START container_v1_generated_ClusterManager_CancelOperation_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END container_generated_container_apiv1_ClusterManagerClient_CancelOperation]
+// [END container_v1_generated_ClusterManager_CancelOperation_sync]

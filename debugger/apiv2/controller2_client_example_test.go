@@ -29,18 +29,19 @@ func ExampleNewController2Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleController2Client_RegisterDebuggee() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.RegisterDebuggeeRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleController2Client_RegisterDebuggee() {
 }
 
 func ExampleController2Client_ListActiveBreakpoints() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.ListActiveBreakpointsRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleController2Client_ListActiveBreakpoints() {
 }
 
 func ExampleController2Client_UpdateActiveBreakpoint() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
 		// TODO: Fill request struct fields.

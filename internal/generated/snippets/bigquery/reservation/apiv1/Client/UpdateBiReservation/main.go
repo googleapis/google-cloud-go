@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryreservation_generated_bigquery_reservation_apiv1_Client_UpdateBiReservation]
+// [START bigqueryreservation_v1_generated_ReservationService_UpdateBiReservation_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1"
-
 	ctx := context.Background()
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &reservationpb.UpdateBiReservationRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigqueryreservation_generated_bigquery_reservation_apiv1_Client_UpdateBiReservation]
+// [END bigqueryreservation_v1_generated_ReservationService_UpdateBiReservation_sync]

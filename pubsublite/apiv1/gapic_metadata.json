@@ -154,6 +154,11 @@
               "methods": [
                 "ComputeMessageStats"
               ]
+            },
+            "ComputeTimeCursor": {
+              "methods": [
+                "ComputeTimeCursor"
+              ]
             }
           }
         }

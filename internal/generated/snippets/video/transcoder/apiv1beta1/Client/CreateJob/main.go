@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START transcoder_generated_video_transcoder_apiv1beta1_Client_CreateJob]
+// [START transcoder_v1beta1_generated_TranscoderService_CreateJob_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.CreateJobRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END transcoder_generated_video_transcoder_apiv1beta1_Client_CreateJob]
+// [END transcoder_v1beta1_generated_TranscoderService_CreateJob_sync]

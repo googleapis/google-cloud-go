@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START managedidentities_generated_managedidentities_apiv1_Client_ListDomains]
+// [START managedidentities_v1_generated_ManagedIdentitiesService_ListDomains_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ListDomainsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END managedidentities_generated_managedidentities_apiv1_Client_ListDomains]
+// [END managedidentities_v1_generated_ManagedIdentitiesService_ListDomains_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START language_generated_language_apiv1beta2_Client_AnnotateText]
+// [START language_v1beta2_generated_LanguageService_AnnotateText_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1beta2"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END language_generated_language_apiv1beta2_Client_AnnotateText]
+// [END language_v1beta2_generated_LanguageService_AnnotateText_sync]

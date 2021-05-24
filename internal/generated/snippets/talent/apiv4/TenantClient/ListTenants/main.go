@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4_TenantClient_ListTenants]
+// [START jobs_v4_generated_TenantService_ListTenants_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewTenantClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListTenantsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END jobs_generated_talent_apiv4_TenantClient_ListTenants]
+// [END jobs_v4_generated_TenantService_ListTenants_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_GetGlobalSiteTag]
+// [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetGlobalSiteTag_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetGlobalSiteTagRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_GetGlobalSiteTag]
+// [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_GetGlobalSiteTag_sync]

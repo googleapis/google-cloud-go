@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_SearchDomains() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.SearchDomainsRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_SearchDomains() {
 }
 
 func ExampleClient_RetrieveRegisterParameters() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.RetrieveRegisterParametersRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClient_RetrieveRegisterParameters() {
 }
 
 func ExampleClient_RegisterDomain() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.RegisterDomainRequest{
 		// TODO: Fill request struct fields.
@@ -100,14 +99,12 @@ func ExampleClient_RegisterDomain() {
 }
 
 func ExampleClient_ListRegistrations() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ListRegistrationsRequest{
 		// TODO: Fill request struct fields.
@@ -127,13 +124,12 @@ func ExampleClient_ListRegistrations() {
 }
 
 func ExampleClient_GetRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.GetRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -147,13 +143,12 @@ func ExampleClient_GetRegistration() {
 }
 
 func ExampleClient_UpdateRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.UpdateRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -172,13 +167,12 @@ func ExampleClient_UpdateRegistration() {
 }
 
 func ExampleClient_ConfigureManagementSettings() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ConfigureManagementSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -197,13 +191,12 @@ func ExampleClient_ConfigureManagementSettings() {
 }
 
 func ExampleClient_ConfigureDnsSettings() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ConfigureDnsSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -222,13 +215,12 @@ func ExampleClient_ConfigureDnsSettings() {
 }
 
 func ExampleClient_ConfigureContactSettings() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ConfigureContactSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -247,13 +239,12 @@ func ExampleClient_ConfigureContactSettings() {
 }
 
 func ExampleClient_ExportRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ExportRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -272,13 +263,12 @@ func ExampleClient_ExportRegistration() {
 }
 
 func ExampleClient_DeleteRegistration() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.DeleteRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -295,13 +285,12 @@ func ExampleClient_DeleteRegistration() {
 }
 
 func ExampleClient_RetrieveAuthorizationCode() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.RetrieveAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
@@ -315,13 +304,12 @@ func ExampleClient_RetrieveAuthorizationCode() {
 }
 
 func ExampleClient_ResetAuthorizationCode() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ResetAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.

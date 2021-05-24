@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_UpdateConnection]
+// [START bigqueryconnection_v1beta1_generated_ConnectionService_UpdateConnection_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1beta1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.UpdateConnectionRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_UpdateConnection]
+// [END bigqueryconnection_v1beta1_generated_ConnectionService_UpdateConnection_sync]

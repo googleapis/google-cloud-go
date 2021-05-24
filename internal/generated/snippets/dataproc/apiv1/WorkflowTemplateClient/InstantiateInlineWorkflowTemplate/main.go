@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_WorkflowTemplateClient_InstantiateInlineWorkflowTemplate]
+// [START dataproc_v1_generated_WorkflowTemplateService_InstantiateInlineWorkflowTemplate_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.InstantiateInlineWorkflowTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1_WorkflowTemplateClient_InstantiateInlineWorkflowTemplate]
+// [END dataproc_v1_generated_WorkflowTemplateService_InstantiateInlineWorkflowTemplate_sync]

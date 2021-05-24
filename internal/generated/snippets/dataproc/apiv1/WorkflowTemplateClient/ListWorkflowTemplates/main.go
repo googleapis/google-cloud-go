@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_WorkflowTemplateClient_ListWorkflowTemplates]
+// [START dataproc_v1_generated_WorkflowTemplateService_ListWorkflowTemplates_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dataproc.NewWorkflowTemplateClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.ListWorkflowTemplatesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1_WorkflowTemplateClient_ListWorkflowTemplates]
+// [END dataproc_v1_generated_WorkflowTemplateService_ListWorkflowTemplates_sync]

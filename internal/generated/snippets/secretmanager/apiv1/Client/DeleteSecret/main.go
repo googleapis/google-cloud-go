@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START secretmanager_generated_secretmanager_apiv1_Client_DeleteSecret]
+// [START secretmanager_v1_generated_SecretManagerService_DeleteSecret_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.DeleteSecretRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END secretmanager_generated_secretmanager_apiv1_Client_DeleteSecret]
+// [END secretmanager_v1_generated_SecretManagerService_DeleteSecret_sync]

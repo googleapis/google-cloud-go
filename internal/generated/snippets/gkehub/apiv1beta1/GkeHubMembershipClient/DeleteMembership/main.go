@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gkehub_generated_gkehub_apiv1beta1_GkeHubMembershipClient_DeleteMembership]
+// [START gkehub_v1beta1_generated_GkeHubMembershipService_DeleteMembership_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.DeleteMembershipRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END gkehub_generated_gkehub_apiv1beta1_GkeHubMembershipClient_DeleteMembership]
+// [END gkehub_v1beta1_generated_GkeHubMembershipService_DeleteMembership_sync]

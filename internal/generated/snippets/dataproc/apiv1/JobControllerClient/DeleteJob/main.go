@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1_JobControllerClient_DeleteJob]
+// [START dataproc_v1_generated_JobController_DeleteJob_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DeleteJobRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1_JobControllerClient_DeleteJob]
+// [END dataproc_v1_generated_JobController_DeleteJob_sync]

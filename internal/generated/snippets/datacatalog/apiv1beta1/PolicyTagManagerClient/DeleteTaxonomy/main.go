@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerClient_DeleteTaxonomy]
+// [START datacatalog_v1beta1_generated_PolicyTagManager_DeleteTaxonomy_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerClient_DeleteTaxonomy]
+// [END datacatalog_v1beta1_generated_PolicyTagManager_DeleteTaxonomy_sync]

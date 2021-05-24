@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_generated_retail_apiv2_CatalogClient_ListCatalogs]
+// [START retail_v2_generated_CatalogService_ListCatalogs_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.ListCatalogsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END retail_generated_retail_apiv2_CatalogClient_ListCatalogs]
+// [END retail_v2_generated_CatalogService_ListCatalogs_sync]

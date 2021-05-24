@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_settings_apiv1beta1_SecurityCenterSettingsClient_ListComponents]
+// [START securitycenter_v1beta1_generated_SecurityCenterSettingsService_ListComponents_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListComponentsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END securitycenter_generated_securitycenter_settings_apiv1beta1_SecurityCenterSettingsClient_ListComponents]
+// [END securitycenter_v1beta1_generated_SecurityCenterSettingsService_ListComponents_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1beta_GameServerConfigsClient_ListGameServerConfigs]
+// [START gameservices_v1beta_generated_GameServerConfigsService_ListGameServerConfigs_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListGameServerConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1beta_GameServerConfigsClient_ListGameServerConfigs]
+// [END gameservices_v1beta_generated_GameServerConfigsService_ListGameServerConfigs_sync]

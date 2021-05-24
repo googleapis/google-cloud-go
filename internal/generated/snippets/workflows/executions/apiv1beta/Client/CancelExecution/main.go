@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START workflowexecutions_generated_workflows_executions_apiv1beta_Client_CancelExecution]
+// [START workflowexecutions_v1beta_generated_Executions_CancelExecution_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CancelExecutionRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END workflowexecutions_generated_workflows_executions_apiv1beta_Client_CancelExecution]
+// [END workflowexecutions_v1beta_generated_Executions_CancelExecution_sync]

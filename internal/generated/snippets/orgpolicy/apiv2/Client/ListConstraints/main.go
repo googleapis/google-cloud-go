@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START orgpolicy_generated_orgpolicy_apiv2_Client_ListConstraints]
+// [START orgpolicy_v2_generated_OrgPolicy_ListConstraints_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.ListConstraintsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END orgpolicy_generated_orgpolicy_apiv2_Client_ListConstraints]
+// [END orgpolicy_v2_generated_OrgPolicy_ListConstraints_sync]

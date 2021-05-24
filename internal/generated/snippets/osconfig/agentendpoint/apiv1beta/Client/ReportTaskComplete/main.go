@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_agentendpoint_apiv1beta_Client_ReportTaskComplete]
+// [START osconfig_v1beta_generated_AgentEndpointService_ReportTaskComplete_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1beta"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_agentendpoint_apiv1beta_Client_ReportTaskComplete]
+// [END osconfig_v1beta_generated_AgentEndpointService_ReportTaskComplete_sync]

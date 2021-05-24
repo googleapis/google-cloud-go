@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datalabeling_generated_datalabeling_apiv1beta1_Client_DeleteAnnotatedDataset]
+// [START datalabeling_v1beta1_generated_DataLabelingService_DeleteAnnotatedDataset_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.DeleteAnnotatedDatasetRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END datalabeling_generated_datalabeling_apiv1beta1_Client_DeleteAnnotatedDataset]
+// [END datalabeling_v1beta1_generated_DataLabelingService_DeleteAnnotatedDataset_sync]

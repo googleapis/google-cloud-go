@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_apiv1_Client_CreateSource]
+// [START securitycenter_v1_generated_SecurityCenter_CreateSource_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateSourceRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END securitycenter_generated_securitycenter_apiv1_Client_CreateSource]
+// [END securitycenter_v1_generated_SecurityCenter_CreateSource_sync]

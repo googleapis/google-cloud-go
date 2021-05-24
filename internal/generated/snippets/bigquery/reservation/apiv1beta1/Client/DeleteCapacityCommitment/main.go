@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryreservation_generated_bigquery_reservation_apiv1beta1_Client_DeleteCapacityCommitment]
+// [START bigqueryreservation_v1beta1_generated_ReservationService_DeleteCapacityCommitment_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &reservationpb.DeleteCapacityCommitmentRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END bigqueryreservation_generated_bigquery_reservation_apiv1beta1_Client_DeleteCapacityCommitment]
+// [END bigqueryreservation_v1beta1_generated_ReservationService_DeleteCapacityCommitment_sync]

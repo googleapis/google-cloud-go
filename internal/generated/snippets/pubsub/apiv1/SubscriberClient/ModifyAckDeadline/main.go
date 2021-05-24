@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_generated_pubsub_apiv1_SubscriberClient_ModifyAckDeadline]
+// [START pubsub_v1_generated_Subscriber_ModifyAckDeadline_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ModifyAckDeadlineRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END pubsub_generated_pubsub_apiv1_SubscriberClient_ModifyAckDeadline]
+// [END pubsub_v1_generated_Subscriber_ModifyAckDeadline_sync]
