@@ -133,7 +133,6 @@ func cleanup(c IntegrationTestConfig) error {
 			}
 			uT := time.Unix(t, 0)
 			sevenDays := time.Hour * 24 * 7
-			sevenDays = time.Second * 60
 			if time.Now().After(uT.Add(sevenDays)) {
 				// delete an instance older than 7 days
 				iac.DeleteInstance(ctx, info.Name)
