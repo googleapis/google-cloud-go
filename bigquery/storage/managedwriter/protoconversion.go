@@ -18,6 +18,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/golang/protobuf/proto"
 	"github.com/golang/protobuf/protoc-gen-go/descriptor"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
 	"google.golang.org/protobuf/types/descriptorpb"
@@ -50,7 +51,7 @@ var bqTypeToFieldTypeMap = map[storagepb.TableFieldSchema_Type]descriptorpb.Fiel
 
 // bqSchemaToDescriptor builds a suitable proto descriptor suitable for communicating values for all fields in the schema.
 // TODO: what we'll want is a protoreflect equivalent, so we can hand it to dynamicpb, but baby steps.
-func bqSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, dependencies map[*storagepb.TableFieldSchema]*descriptorpb.FileDescriptorProto) (*descriptor.DescriptorProto, error) {
+func bqSchemaToFileDescriptorProto(inSchema *storagepb.TableSchema, scope string, dependencies map[*storagepb.TableFieldSchema]*descriptorpb.FileDescriptorProto) (*descriptorpb.FileDescriptorProto, error) {
 	if inSchema == nil {
 		return nil, fmt.Errorf("no input schema provided")
 	}
@@ -71,10 +72,21 @@ func bqSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, depende
 			fNumber++
 		}
 	}
-	return &descriptorpb.DescriptorProto{
+	dp := &descriptorpb.DescriptorProto{
 		Name:  &scope,
 		Field: fields,
-	}, nil
+	}
+	fdp := &descriptorpb.FileDescriptorProto{
+		MessageType: []*descriptor.DescriptorProto{dp},
+		Syntax:      proto.String("proto2"),
+		Name:        proto.String(fmt.Sprintf("%s.proto", scope)),
+	}
+	return fdp, nil
+	/*
+		return &descriptorpb.FileDescriptorSet{
+			File: []*descriptor.FileDescriptorProto{fdp},
+		}, nil
+	*/
 }
 
 func tableFieldToFieldDescriptor(field *storagepb.TableFieldSchema, idx int32, scope string) (*descriptorpb.FieldDescriptorProto, error) {
