@@ -90,7 +90,7 @@ func TestMain(m *testing.M) {
 	c := integrationConfig
 	if c.UseProd {
 		fmt.Printf(
-			"BBBNote: when using prod, you must first create an instance:\n"+
+			"Note: when using prod, you must first create an instance:\n"+
 				"cbt createinstance %s %s %s %s %s SSD\n",
 			c.Instance, c.Instance,
 			c.Cluster, "us-central1-b", "1",

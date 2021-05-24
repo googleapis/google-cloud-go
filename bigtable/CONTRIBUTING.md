@@ -16,6 +16,8 @@ go test -test.run="TestIntegration_*" -v \
     -it.instance="your-test-instance"
 ```
 
+> **Note**: More flags exist and can be found in `export_test.go`
+
 If you do not have a cluster and instance to target, you can create one via `cbt`:
 
 ```
