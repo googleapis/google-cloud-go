@@ -18,6 +18,7 @@ package bigtable
 
 import (
 	"context"
+	"flag"
 	"fmt"
 	"math"
 	"math/rand"
@@ -81,6 +82,21 @@ func init() {
 	if runCreateInstanceTests {
 		instanceToCreate = fmt.Sprintf("create-%d", time.Now().Unix())
 	}
+}
+
+func TestMain(m *testing.M) {
+	flag.Parse()
+
+	c := integrationConfig
+	if c.UseProd {
+		fmt.Printf(
+			"BBBNote: when using prod, you must first create an instance:\n"+
+				"cbt createinstance %s %s %s %s %s SSD\n",
+			c.Instance, c.Instance,
+			c.Cluster, "us-central1-b", "1",
+		)
+	}
+	os.Exit(m.Run())
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
