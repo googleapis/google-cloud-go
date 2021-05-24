@@ -362,8 +362,8 @@ func (c *ProductSearchClient) Close() error {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ProductSearchClient) setGoogleClientInfo(...string) {
-	c.internalClient.setGoogleClientInfo()
+func (c *ProductSearchClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
