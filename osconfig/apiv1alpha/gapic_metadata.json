@@ -1,72 +1,72 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.osconfig.v1alpha",
-  "libraryPackage":  "cloud.google.com/go/osconfig/apiv1alpha",
-  "services":  {
-    "OsConfigZonalService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "OsConfigZonalClient",
-          "rpcs":  {
-            "CreateOSPolicyAssignment":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.osconfig.v1alpha",
+  "libraryPackage": "cloud.google.com/go/osconfig/apiv1alpha",
+  "services": {
+    "OsConfigZonalService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "OsConfigZonalClient",
+          "rpcs": {
+            "CreateOSPolicyAssignment": {
+              "methods": [
                 "CreateOSPolicyAssignment"
               ]
             },
-            "DeleteOSPolicyAssignment":  {
-              "methods":  [
+            "DeleteOSPolicyAssignment": {
+              "methods": [
                 "DeleteOSPolicyAssignment"
               ]
             },
-            "GetInstanceOSPoliciesCompliance":  {
-              "methods":  [
+            "GetInstanceOSPoliciesCompliance": {
+              "methods": [
                 "GetInstanceOSPoliciesCompliance"
               ]
             },
-            "GetInventory":  {
-              "methods":  [
+            "GetInventory": {
+              "methods": [
                 "GetInventory"
               ]
             },
-            "GetOSPolicyAssignment":  {
-              "methods":  [
+            "GetOSPolicyAssignment": {
+              "methods": [
                 "GetOSPolicyAssignment"
               ]
             },
-            "GetVulnerabilityReport":  {
-              "methods":  [
+            "GetVulnerabilityReport": {
+              "methods": [
                 "GetVulnerabilityReport"
               ]
             },
-            "ListInstanceOSPoliciesCompliances":  {
-              "methods":  [
+            "ListInstanceOSPoliciesCompliances": {
+              "methods": [
                 "ListInstanceOSPoliciesCompliances"
               ]
             },
-            "ListInventories":  {
-              "methods":  [
+            "ListInventories": {
+              "methods": [
                 "ListInventories"
               ]
             },
-            "ListOSPolicyAssignmentRevisions":  {
-              "methods":  [
+            "ListOSPolicyAssignmentRevisions": {
+              "methods": [
                 "ListOSPolicyAssignmentRevisions"
               ]
             },
-            "ListOSPolicyAssignments":  {
-              "methods":  [
+            "ListOSPolicyAssignments": {
+              "methods": [
                 "ListOSPolicyAssignments"
               ]
             },
-            "ListVulnerabilityReports":  {
-              "methods":  [
+            "ListVulnerabilityReports": {
+              "methods": [
                 "ListVulnerabilityReports"
               ]
             },
-            "UpdateOSPolicyAssignment":  {
-              "methods":  [
+            "UpdateOSPolicyAssignment": {
+              "methods": [
                 "UpdateOSPolicyAssignment"
               ]
             }
