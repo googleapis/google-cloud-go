@@ -1359,7 +1359,7 @@ func TestIntegration_TableIam(t *testing.T) {
 	iamHandle := adminClient.TableIAM("mytable")
 	p, err := iamHandle.Policy(ctx)
 	if err != nil {
-		t.Errorf("Iam GetPolicy mytable: %v", err)
+		t.Fatalf("Iam GetPolicy mytable: %v", err)
 	}
 	if err = iamHandle.SetPolicy(ctx, p); err != nil {
 		t.Errorf("Iam SetPolicy mytable: %v", err)
