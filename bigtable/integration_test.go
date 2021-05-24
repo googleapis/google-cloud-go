@@ -20,12 +20,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"os"
 	"os/exec"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -39,6 +41,7 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
@@ -80,7 +83,7 @@ var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("create-%d", time.Now().Unix())
+		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
 	}
 }
 
@@ -96,7 +99,49 @@ func TestMain(m *testing.M) {
 			c.Cluster, "us-central1-b", "1",
 		)
 	}
-	os.Exit(m.Run())
+	exit := m.Run()
+	if err := cleanup(c); err != nil {
+		log.Printf("Post-test cleanup failed: %v", err)
+	}
+	os.Exit(exit)
+}
+
+func cleanup(c IntegrationTestConfig) error {
+	// Cleanup resources marked with bt-it-. Check timestamp, remove over 7D old.
+
+	instancePrefix := "bt-it-"
+	if !c.UseProd {
+		return nil
+	}
+	ctx := context.Background()
+	var opts []option.ClientOption
+	iac, err := NewInstanceAdminClient(ctx, c.Project, opts...)
+	if err != nil {
+		return err
+	}
+	instances, err := iac.Instances(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, info := range instances {
+		if strings.HasPrefix(info.Name, instancePrefix) {
+			timestamp := info.Name[len(instancePrefix):]
+			t, err := strconv.ParseInt(timestamp, 10, 64)
+			if err != nil {
+				return err
+			}
+			uT := time.Unix(t, 0)
+			sevenDays := time.Hour * 24 * 7
+			sevenDays = time.Second * 60
+			if time.Now().After(uT.Add(sevenDays)) {
+				// delete an instance older than 7 days
+				iac.DeleteInstance(ctx, info.Name)
+			}
+		}
+	}
+
+	return nil
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -2151,7 +2196,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 
 	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "default")
 
 	defer iAdminClient.Close()
 	profile := ProfileConf{
