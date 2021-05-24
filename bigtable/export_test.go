@@ -22,7 +22,8 @@ import (
 	"flag"
 	"fmt"
 	"strings"
-	"testing"
+
+	//"testing"
 	"time"
 
 	"cloud.google.com/go/bigtable/bttest"
@@ -48,7 +49,7 @@ var (
 )
 
 func init() {
-	testing.Init()
+	//testing.Init()
 
 	c := &integrationConfig
 
@@ -78,8 +79,9 @@ func init() {
 	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
 	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 
-	flag.Parse()
+	//flag.Parse()
 
+	// Withouth parsing flags, this will not be reached
 	if integrationConfig.UseProd {
 		fmt.Printf(
 			"Note: when using prod, you must first create an instance:\n"+
