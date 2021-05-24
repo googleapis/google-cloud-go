@@ -90,7 +90,8 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	c := integrationConfig
+	env, _ := NewIntegrationEnv()
+	c := env.Config()
 	if c.UseProd {
 		fmt.Printf(
 			"Note: when using prod, you must first create an instance:\n"+

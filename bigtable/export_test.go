@@ -104,7 +104,7 @@ type IntegrationEnv interface {
 
 // NewIntegrationEnv creates a new environment based on the command line args
 func NewIntegrationEnv() (IntegrationEnv, error) {
-	c := integrationConfig
+	c := &integrationConfig
 
 	// Check if config settings aren't set. If not, populate from env vars.
 	if c.Project == "" {
@@ -132,9 +132,9 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 	}
 
 	if integrationConfig.UseProd {
-		return NewProdEnv(c)
+		return NewProdEnv(*c)
 	}
-	return NewEmulatedEnv(c)
+	return NewEmulatedEnv(*c)
 }
 
 // EmulatedEnv encapsulates the state of an emulator
