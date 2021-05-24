@@ -21,6 +21,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -105,6 +106,17 @@ type IntegrationEnv interface {
 func NewIntegrationEnv() (IntegrationEnv, error) {
 	c := integrationConfig
 
+	// Check if config settings aren't set. If not, populate from env vars.
+	if c.Project == "" {
+		c.Project = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
+	}
+	if c.Instance == "" {
+		c.Instance = os.Getenv("GCLOUD_TESTS_BIGTABLE_INSTANCE")
+	}
+	if c.Cluster == "" {
+		c.Cluster = os.Getenv("GCLOUD_TESTS_BIGTABLE_CLUSTER")
+	}
+
 	if legacyUseProd != "" {
 		fmt.Println("WARNING: using legacy commandline arg -use_prod, please switch to -it.*")
 		parts := strings.SplitN(legacyUseProd, ",", 3)
@@ -112,6 +124,11 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 		c.Project = parts[0]
 		c.Instance = parts[1]
 		c.Table = parts[2]
+	}
+
+	if c.Instance != "" || c.Cluster != "" {
+		// If commandline args were specified for a live instance, set UseProd
+		c.UseProd = true
 	}
 
 	if integrationConfig.UseProd {
@@ -240,6 +257,9 @@ func NewProdEnv(config IntegrationTestConfig) (*ProdEnv, error) {
 	}
 	if config.Instance == "" {
 		return nil, errors.New("Instance not set")
+	}
+	if config.Cluster == "" {
+		return nil, errors.New("Cluster not set")
 	}
 	if config.Table == "" {
 		return nil, errors.New("Table not set")
