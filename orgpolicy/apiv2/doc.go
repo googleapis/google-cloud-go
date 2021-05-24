@@ -17,7 +17,7 @@
 // Package orgpolicy is an auto-generated package for the
 // Organization Policy API.
 //
-// The Org Policy API allows users to configure governance ruleson their GCP
+// The Org Policy API allows users to configure governance rules on their GCP
 // resources across the Cloud Resource Hierarchy.
 //
 // Use of Context
@@ -49,7 +49,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210520"
+const versionClient = "20210521"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
