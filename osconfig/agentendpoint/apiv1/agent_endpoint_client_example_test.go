@@ -29,18 +29,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_StartNextTask() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.StartNextTaskRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleClient_StartNextTask() {
 }
 
 func ExampleClient_ReportTaskProgress() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportTaskProgressRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleClient_ReportTaskProgress() {
 }
 
 func ExampleClient_ReportTaskComplete() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportTaskCompleteRequest{
 		// TODO: Fill request struct fields.
@@ -94,13 +93,12 @@ func ExampleClient_ReportTaskComplete() {
 }
 
 func ExampleClient_RegisterAgent() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.RegisterAgentRequest{
 		// TODO: Fill request struct fields.
@@ -114,13 +112,12 @@ func ExampleClient_RegisterAgent() {
 }
 
 func ExampleClient_ReportInventory() {
-	// import agentendpointpb "google.golang.org/genproto/googleapis/cloud/osconfig/agentendpoint/v1"
-
 	ctx := context.Background()
 	c, err := agentendpoint.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &agentendpointpb.ReportInventoryRequest{
 		// TODO: Fill request struct fields.

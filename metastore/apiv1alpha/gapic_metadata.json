@@ -1,87 +1,87 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.metastore.v1alpha",
-  "libraryPackage":  "cloud.google.com/go/metastore/apiv1alpha",
-  "services":  {
-    "DataprocMetastore":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "DataprocMetastoreClient",
-          "rpcs":  {
-            "CreateBackup":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.metastore.v1alpha",
+  "libraryPackage": "cloud.google.com/go/metastore/apiv1alpha",
+  "services": {
+    "DataprocMetastore": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataprocMetastoreClient",
+          "rpcs": {
+            "CreateBackup": {
+              "methods": [
                 "CreateBackup"
               ]
             },
-            "CreateMetadataImport":  {
-              "methods":  [
+            "CreateMetadataImport": {
+              "methods": [
                 "CreateMetadataImport"
               ]
             },
-            "CreateService":  {
-              "methods":  [
+            "CreateService": {
+              "methods": [
                 "CreateService"
               ]
             },
-            "DeleteBackup":  {
-              "methods":  [
+            "DeleteBackup": {
+              "methods": [
                 "DeleteBackup"
               ]
             },
-            "DeleteService":  {
-              "methods":  [
+            "DeleteService": {
+              "methods": [
                 "DeleteService"
               ]
             },
-            "ExportMetadata":  {
-              "methods":  [
+            "ExportMetadata": {
+              "methods": [
                 "ExportMetadata"
               ]
             },
-            "GetBackup":  {
-              "methods":  [
+            "GetBackup": {
+              "methods": [
                 "GetBackup"
               ]
             },
-            "GetMetadataImport":  {
-              "methods":  [
+            "GetMetadataImport": {
+              "methods": [
                 "GetMetadataImport"
               ]
             },
-            "GetService":  {
-              "methods":  [
+            "GetService": {
+              "methods": [
                 "GetService"
               ]
             },
-            "ListBackups":  {
-              "methods":  [
+            "ListBackups": {
+              "methods": [
                 "ListBackups"
               ]
             },
-            "ListMetadataImports":  {
-              "methods":  [
+            "ListMetadataImports": {
+              "methods": [
                 "ListMetadataImports"
               ]
             },
-            "ListServices":  {
-              "methods":  [
+            "ListServices": {
+              "methods": [
                 "ListServices"
               ]
             },
-            "RestoreService":  {
-              "methods":  [
+            "RestoreService": {
+              "methods": [
                 "RestoreService"
               ]
             },
-            "UpdateMetadataImport":  {
-              "methods":  [
+            "UpdateMetadataImport": {
+              "methods": [
                 "UpdateMetadataImport"
               ]
             },
-            "UpdateService":  {
-              "methods":  [
+            "UpdateService": {
+              "methods": [
                 "UpdateService"
               ]
             }

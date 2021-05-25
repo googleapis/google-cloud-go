@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_InspectContent() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.InspectContentRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_InspectContent() {
 }
 
 func ExampleClient_RedactImage() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.RedactImageRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClient_RedactImage() {
 }
 
 func ExampleClient_DeidentifyContent() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeidentifyContentRequest{
 		// TODO: Fill request struct fields.
@@ -95,13 +94,12 @@ func ExampleClient_DeidentifyContent() {
 }
 
 func ExampleClient_ReidentifyContent() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ReidentifyContentRequest{
 		// TODO: Fill request struct fields.
@@ -115,13 +113,12 @@ func ExampleClient_ReidentifyContent() {
 }
 
 func ExampleClient_ListInfoTypes() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListInfoTypesRequest{
 		// TODO: Fill request struct fields.
@@ -135,13 +132,12 @@ func ExampleClient_ListInfoTypes() {
 }
 
 func ExampleClient_CreateInspectTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateInspectTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +151,12 @@ func ExampleClient_CreateInspectTemplate() {
 }
 
 func ExampleClient_UpdateInspectTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateInspectTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -175,13 +170,12 @@ func ExampleClient_UpdateInspectTemplate() {
 }
 
 func ExampleClient_GetInspectTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetInspectTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -195,14 +189,12 @@ func ExampleClient_GetInspectTemplate() {
 }
 
 func ExampleClient_ListInspectTemplates() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListInspectTemplatesRequest{
 		// TODO: Fill request struct fields.
@@ -227,6 +219,7 @@ func ExampleClient_DeleteInspectTemplate() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteInspectTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -238,13 +231,12 @@ func ExampleClient_DeleteInspectTemplate() {
 }
 
 func ExampleClient_CreateDeidentifyTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -258,13 +250,12 @@ func ExampleClient_CreateDeidentifyTemplate() {
 }
 
 func ExampleClient_UpdateDeidentifyTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -278,13 +269,12 @@ func ExampleClient_UpdateDeidentifyTemplate() {
 }
 
 func ExampleClient_GetDeidentifyTemplate() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -298,14 +288,12 @@ func ExampleClient_GetDeidentifyTemplate() {
 }
 
 func ExampleClient_ListDeidentifyTemplates() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListDeidentifyTemplatesRequest{
 		// TODO: Fill request struct fields.
@@ -330,6 +318,7 @@ func ExampleClient_DeleteDeidentifyTemplate() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -341,13 +330,12 @@ func ExampleClient_DeleteDeidentifyTemplate() {
 }
 
 func ExampleClient_CreateJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateJobTriggerRequest{
 		// TODO: Fill request struct fields.
@@ -361,13 +349,12 @@ func ExampleClient_CreateJobTrigger() {
 }
 
 func ExampleClient_UpdateJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateJobTriggerRequest{
 		// TODO: Fill request struct fields.
@@ -381,13 +368,12 @@ func ExampleClient_UpdateJobTrigger() {
 }
 
 func ExampleClient_HybridInspectJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.HybridInspectJobTriggerRequest{
 		// TODO: Fill request struct fields.
@@ -401,13 +387,12 @@ func ExampleClient_HybridInspectJobTrigger() {
 }
 
 func ExampleClient_GetJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetJobTriggerRequest{
 		// TODO: Fill request struct fields.
@@ -421,14 +406,12 @@ func ExampleClient_GetJobTrigger() {
 }
 
 func ExampleClient_ListJobTriggers() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListJobTriggersRequest{
 		// TODO: Fill request struct fields.
@@ -453,6 +436,7 @@ func ExampleClient_DeleteJobTrigger() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteJobTriggerRequest{
 		// TODO: Fill request struct fields.
@@ -464,13 +448,12 @@ func ExampleClient_DeleteJobTrigger() {
 }
 
 func ExampleClient_ActivateJobTrigger() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ActivateJobTriggerRequest{
 		// TODO: Fill request struct fields.
@@ -484,13 +467,12 @@ func ExampleClient_ActivateJobTrigger() {
 }
 
 func ExampleClient_CreateDlpJob() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateDlpJobRequest{
 		// TODO: Fill request struct fields.
@@ -504,14 +486,12 @@ func ExampleClient_CreateDlpJob() {
 }
 
 func ExampleClient_ListDlpJobs() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListDlpJobsRequest{
 		// TODO: Fill request struct fields.
@@ -531,13 +511,12 @@ func ExampleClient_ListDlpJobs() {
 }
 
 func ExampleClient_GetDlpJob() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetDlpJobRequest{
 		// TODO: Fill request struct fields.
@@ -556,6 +535,7 @@ func ExampleClient_DeleteDlpJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteDlpJobRequest{
 		// TODO: Fill request struct fields.
@@ -572,6 +552,7 @@ func ExampleClient_CancelDlpJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CancelDlpJobRequest{
 		// TODO: Fill request struct fields.
@@ -583,13 +564,12 @@ func ExampleClient_CancelDlpJob() {
 }
 
 func ExampleClient_CreateStoredInfoType() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.CreateStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
@@ -603,13 +583,12 @@ func ExampleClient_CreateStoredInfoType() {
 }
 
 func ExampleClient_UpdateStoredInfoType() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.UpdateStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
@@ -623,13 +602,12 @@ func ExampleClient_UpdateStoredInfoType() {
 }
 
 func ExampleClient_GetStoredInfoType() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.GetStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
@@ -643,14 +621,12 @@ func ExampleClient_GetStoredInfoType() {
 }
 
 func ExampleClient_ListStoredInfoTypes() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListStoredInfoTypesRequest{
 		// TODO: Fill request struct fields.
@@ -675,6 +651,7 @@ func ExampleClient_DeleteStoredInfoType() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteStoredInfoTypeRequest{
 		// TODO: Fill request struct fields.
@@ -686,13 +663,12 @@ func ExampleClient_DeleteStoredInfoType() {
 }
 
 func ExampleClient_HybridInspectDlpJob() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.HybridInspectDlpJobRequest{
 		// TODO: Fill request struct fields.
@@ -711,6 +687,7 @@ func ExampleClient_FinishDlpJob() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.FinishDlpJobRequest{
 		// TODO: Fill request struct fields.

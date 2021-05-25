@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewApplicationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetApplicationRequest{
 		// TODO: Fill request struct fields.

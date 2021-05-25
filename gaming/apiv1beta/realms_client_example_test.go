@@ -30,19 +30,19 @@ func ExampleNewRealmsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleRealmsClient_ListRealms() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListRealmsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleRealmsClient_ListRealms() {
 }
 
 func ExampleRealmsClient_GetRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.GetRealmRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleRealmsClient_GetRealm() {
 }
 
 func ExampleRealmsClient_CreateRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.CreateRealmRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleRealmsClient_CreateRealm() {
 }
 
 func ExampleRealmsClient_DeleteRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteRealmRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +127,12 @@ func ExampleRealmsClient_DeleteRealm() {
 }
 
 func ExampleRealmsClient_UpdateRealm() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.UpdateRealmRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +151,12 @@ func ExampleRealmsClient_UpdateRealm() {
 }
 
 func ExampleRealmsClient_PreviewRealmUpdate() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.PreviewRealmUpdateRequest{
 		// TODO: Fill request struct fields.

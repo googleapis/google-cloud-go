@@ -36,6 +36,16 @@ import (
 var legacyUseProd string
 var integrationConfig IntegrationTestConfig
 
+var (
+	runCreateInstanceTests bool
+	instanceToCreateZone   string
+	instanceToCreateZone2  string
+	blackholeDpv6Cmd       string
+	blackholeDpv4Cmd       string
+	allowDpv6Cmd           string
+	allowDpv4Cmd           string
+)
+
 func init() {
 	c := &integrationConfig
 
@@ -45,13 +55,25 @@ func init() {
 	flag.StringVar(&c.Project, "it.project", "", "Project to use for integration test")
 	flag.StringVar(&c.Instance, "it.instance", "", "Bigtable instance to use")
 	flag.StringVar(&c.Cluster, "it.cluster", "", "Bigtable cluster to use")
-	flag.StringVar(&c.Table, "it.table", "", "Bigtable table to create")
+	flag.StringVar(&c.Table, "it.table", "it-table", "Bigtable table to create")
 	flag.BoolVar(&c.AttemptDirectPath, "it.attempt-directpath", false, "Attempt DirectPath")
 	flag.BoolVar(&c.DirectPathIPV4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a ipv4-only VM")
 
 	// Backwards compat
 	flag.StringVar(&legacyUseProd, "use_prod", "", `DEPRECATED: if set to "proj,instance,table", run integration test against production`)
 
+	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
+	flag.BoolVar(&runCreateInstanceTests, "it.run-create-instance-tests", true,
+		"Run tests that create instances as part of executing. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
+	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
+		"The zone in which to create the new test instance.")
+	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
+		"The zone in which to create a second cluster in the test instance.")
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 // IntegrationTestConfig contains parameters to pick and setup a IntegrationEnv for testing

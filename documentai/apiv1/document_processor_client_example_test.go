@@ -29,18 +29,19 @@ func ExampleNewDocumentProcessorClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDocumentProcessorClient_ProcessDocument() {
-	// import documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
-
 	ctx := context.Background()
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &documentaipb.ProcessRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleDocumentProcessorClient_ProcessDocument() {
 }
 
 func ExampleDocumentProcessorClient_BatchProcessDocuments() {
-	// import documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
-
 	ctx := context.Background()
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &documentaipb.BatchProcessRequest{
 		// TODO: Fill request struct fields.
@@ -79,13 +79,12 @@ func ExampleDocumentProcessorClient_BatchProcessDocuments() {
 }
 
 func ExampleDocumentProcessorClient_ReviewDocument() {
-	// import documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1"
-
 	ctx := context.Background()
 	c, err := documentai.NewDocumentProcessorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &documentaipb.ReviewDocumentRequest{
 		// TODO: Fill request struct fields.

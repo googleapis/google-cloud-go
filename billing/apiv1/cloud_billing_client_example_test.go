@@ -31,18 +31,19 @@ func ExampleNewCloudBillingClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudBillingClient_GetBillingAccount() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.GetBillingAccountRequest{
 		// TODO: Fill request struct fields.
@@ -56,14 +57,12 @@ func ExampleCloudBillingClient_GetBillingAccount() {
 }
 
 func ExampleCloudBillingClient_ListBillingAccounts() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListBillingAccountsRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleCloudBillingClient_ListBillingAccounts() {
 }
 
 func ExampleCloudBillingClient_UpdateBillingAccount() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.UpdateBillingAccountRequest{
 		// TODO: Fill request struct fields.
@@ -103,13 +101,12 @@ func ExampleCloudBillingClient_UpdateBillingAccount() {
 }
 
 func ExampleCloudBillingClient_CreateBillingAccount() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.CreateBillingAccountRequest{
 		// TODO: Fill request struct fields.
@@ -123,14 +120,12 @@ func ExampleCloudBillingClient_CreateBillingAccount() {
 }
 
 func ExampleCloudBillingClient_ListProjectBillingInfo() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
@@ -150,13 +145,12 @@ func ExampleCloudBillingClient_ListProjectBillingInfo() {
 }
 
 func ExampleCloudBillingClient_GetProjectBillingInfo() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.GetProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
@@ -170,13 +164,12 @@ func ExampleCloudBillingClient_GetProjectBillingInfo() {
 }
 
 func ExampleCloudBillingClient_UpdateProjectBillingInfo() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.UpdateProjectBillingInfoRequest{
 		// TODO: Fill request struct fields.
@@ -190,13 +183,12 @@ func ExampleCloudBillingClient_UpdateProjectBillingInfo() {
 }
 
 func ExampleCloudBillingClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -210,13 +202,12 @@ func ExampleCloudBillingClient_GetIamPolicy() {
 }
 
 func ExampleCloudBillingClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -230,13 +221,12 @@ func ExampleCloudBillingClient_SetIamPolicy() {
 }
 
 func ExampleCloudBillingClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

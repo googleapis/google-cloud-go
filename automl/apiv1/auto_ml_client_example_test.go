@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateDataset() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.CreateDatasetRequest{
 		// TODO: Fill request struct fields.
@@ -60,13 +61,12 @@ func ExampleClient_CreateDataset() {
 }
 
 func ExampleClient_GetDataset() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.GetDatasetRequest{
 		// TODO: Fill request struct fields.
@@ -80,14 +80,12 @@ func ExampleClient_GetDataset() {
 }
 
 func ExampleClient_ListDatasets() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleClient_ListDatasets() {
 }
 
 func ExampleClient_UpdateDataset() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.UpdateDatasetRequest{
 		// TODO: Fill request struct fields.
@@ -127,13 +124,12 @@ func ExampleClient_UpdateDataset() {
 }
 
 func ExampleClient_DeleteDataset() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.DeleteDatasetRequest{
 		// TODO: Fill request struct fields.
@@ -150,13 +146,12 @@ func ExampleClient_DeleteDataset() {
 }
 
 func ExampleClient_ImportData() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ImportDataRequest{
 		// TODO: Fill request struct fields.
@@ -173,13 +168,12 @@ func ExampleClient_ImportData() {
 }
 
 func ExampleClient_ExportData() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ExportDataRequest{
 		// TODO: Fill request struct fields.
@@ -196,13 +190,12 @@ func ExampleClient_ExportData() {
 }
 
 func ExampleClient_GetAnnotationSpec() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.GetAnnotationSpecRequest{
 		// TODO: Fill request struct fields.
@@ -216,13 +209,12 @@ func ExampleClient_GetAnnotationSpec() {
 }
 
 func ExampleClient_CreateModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.CreateModelRequest{
 		// TODO: Fill request struct fields.
@@ -241,13 +233,12 @@ func ExampleClient_CreateModel() {
 }
 
 func ExampleClient_GetModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.GetModelRequest{
 		// TODO: Fill request struct fields.
@@ -261,14 +252,12 @@ func ExampleClient_GetModel() {
 }
 
 func ExampleClient_ListModels() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ListModelsRequest{
 		// TODO: Fill request struct fields.
@@ -288,13 +277,12 @@ func ExampleClient_ListModels() {
 }
 
 func ExampleClient_DeleteModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.DeleteModelRequest{
 		// TODO: Fill request struct fields.
@@ -311,13 +299,12 @@ func ExampleClient_DeleteModel() {
 }
 
 func ExampleClient_UpdateModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.UpdateModelRequest{
 		// TODO: Fill request struct fields.
@@ -331,13 +318,12 @@ func ExampleClient_UpdateModel() {
 }
 
 func ExampleClient_DeployModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.DeployModelRequest{
 		// TODO: Fill request struct fields.
@@ -354,13 +340,12 @@ func ExampleClient_DeployModel() {
 }
 
 func ExampleClient_UndeployModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.UndeployModelRequest{
 		// TODO: Fill request struct fields.
@@ -377,13 +362,12 @@ func ExampleClient_UndeployModel() {
 }
 
 func ExampleClient_ExportModel() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ExportModelRequest{
 		// TODO: Fill request struct fields.
@@ -400,13 +384,12 @@ func ExampleClient_ExportModel() {
 }
 
 func ExampleClient_GetModelEvaluation() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.GetModelEvaluationRequest{
 		// TODO: Fill request struct fields.
@@ -420,14 +403,12 @@ func ExampleClient_GetModelEvaluation() {
 }
 
 func ExampleClient_ListModelEvaluations() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ListModelEvaluationsRequest{
 		// TODO: Fill request struct fields.
