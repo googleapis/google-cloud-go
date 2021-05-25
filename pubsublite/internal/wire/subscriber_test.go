@@ -158,7 +158,6 @@ func TestMessageDeliveryQueueStartStop(t *testing.T) {
 	acks := newAckTracker()
 	receiver := newTestMessageReceiver(t)
 	messageQueue := newMessageDeliveryQueue(acks, receiver.onMessage, 10)
-	defer messageQueue.Stop()
 
 	t.Run("Add before start", func(t *testing.T) {
 		msg1 := seqMsgWithOffset(1)
@@ -190,6 +189,7 @@ func TestMessageDeliveryQueueStartStop(t *testing.T) {
 		messageQueue.Stop()
 		messageQueue.Stop() // Check duplicate stop
 		messageQueue.Add(&ReceivedMessage{Msg: msg4, Ack: ack4})
+		messageQueue.Wait()
 
 		receiver.VerifyNoMsgs()
 	})
@@ -202,6 +202,13 @@ func TestMessageDeliveryQueueStartStop(t *testing.T) {
 		messageQueue.Add(&ReceivedMessage{Msg: msg5, Ack: ack5})
 
 		receiver.ValidateMsg(msg5)
+	})
+
+	t.Run("Stop", func(t *testing.T) {
+		messageQueue.Stop()
+		messageQueue.Wait()
+
+		receiver.VerifyNoMsgs()
 	})
 }
 
@@ -223,6 +230,7 @@ func TestMessageDeliveryQueueDiscardMessages(t *testing.T) {
 	blockingReceiver.ValidateMsg(msg1)
 	// Stopping the message queue should discard undelivered msg2.
 	messageQueue.Stop()
+
 	// Unsuspend the blocking receiver and verify msg2 is not received.
 	blockingReceiver.Return()
 	messageQueue.Wait()

@@ -97,18 +97,18 @@ func (mq *messageDeliveryQueue) Add(msg *ReceivedMessage) {
 }
 
 func (mq *messageDeliveryQueue) deliverMessages(messagesC chan *ReceivedMessage, stopC chan struct{}) {
+	defer mq.active.Done()
+
 	for {
 		// stopC has higher priority.
 		select {
 		case <-stopC:
-			mq.active.Done()
 			return // Ends the goroutine.
 		default:
 		}
 
 		select {
 		case <-stopC:
-			mq.active.Done()
 			return // Ends the goroutine.
 		case msg := <-messagesC:
 			// Register outstanding acks, which are primarily handled by the
