@@ -152,22 +152,26 @@ func (at *ackTracker) Release() {
 
 	at.enablePush = false
 	at.unsafeProcessAcks()
+	at.unsafeClearAcks()
+}
 
+// Reset the state of the tracker. Clears and invalidates any outstanding acks.
+func (at *ackTracker) Reset() {
+	at.mu.Lock()
+	defer at.mu.Unlock()
+
+	at.unsafeClearAcks()
+	at.ackedPrefixOffset = nilCursorOffset
+	at.enablePush = true
+}
+
+// Clears and invalidates any outstanding acks.
+func (at *ackTracker) unsafeClearAcks() {
 	for elem := at.outstandingAcks.Front(); elem != nil; elem = elem.Next() {
 		ack, _ := elem.Value.(*ackConsumer)
 		ack.Clear()
 	}
 	at.outstandingAcks.Init()
-}
-
-// Reset the state of the tracker. Clears and invalidates any outstanding acks.
-func (at *ackTracker) Reset() {
-	at.Release()
-
-	at.mu.Lock()
-	defer at.mu.Unlock()
-	at.ackedPrefixOffset = nilCursorOffset
-	at.enablePush = true
 }
 
 // Process outstanding acks and update `ackedPrefixOffset` until an unacked

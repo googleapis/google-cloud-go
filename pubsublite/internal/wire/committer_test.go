@@ -371,10 +371,15 @@ func TestCommitterBlockingResetNormalCompletion(t *testing.T) {
 		t.Errorf("ackTracker.Empty() got %v, want %v", got, want)
 	}
 
+	// Calling committer.BlockingReset again should immediately return.
+	if err := cmt.BlockingReset(); err != nil {
+		t.Errorf("BlockingReset() got err: (%v), want: <nil>", err)
+	}
+
 	cmt.StopVerifyNoError()
 }
 
-func TestCommitterBlockingResetCommitterStops(t *testing.T) {
+func TestCommitterBlockingResetCommitterStopped(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
 	ack1 := newAckConsumer(33, 0, nil)
 	ack2 := newAckConsumer(55, 0, nil)
@@ -409,7 +414,7 @@ func TestCommitterBlockingResetCommitterStops(t *testing.T) {
 	cmt.SendBatchCommit()
 	complete.VerifyNotDone(t)
 
-	// committer.BlockingReset should return when the committer stops.
+	// committer.BlockingReset should return when the committer is stopped.
 	cmt.Stop()
 	complete.WaitUntilDone(t, serviceTestWaitTimeout)
 
