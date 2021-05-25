@@ -258,7 +258,9 @@ func (w *Writer) CloseWithError(err error) error {
 	if !w.opened {
 		return nil
 	}
-	return w.pw.CloseWithError(err)
+	err = w.pw.CloseWithError(err)
+	<-w.donec
+	return err
 }
 
 // Attrs returns metadata about a successfully-written object.
