@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import cloudbuildpb "google.golang.org/genproto/googleapis/devtools/cloudbuild/v1"
-
 	ctx := context.Background()
 	c, err := cloudbuild.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudbuildpb.GetBuildTriggerRequest{
 		// TODO: Fill request struct fields.

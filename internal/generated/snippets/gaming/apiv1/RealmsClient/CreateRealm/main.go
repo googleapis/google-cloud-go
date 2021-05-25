@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.CreateRealmRequest{
 		// TODO: Fill request struct fields.

@@ -30,19 +30,19 @@ func ExampleNewServiceManagerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleServiceManagerClient_ListServices() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.ListServicesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleServiceManagerClient_ListServices() {
 }
 
 func ExampleServiceManagerClient_GetService() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.GetServiceRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleServiceManagerClient_GetService() {
 }
 
 func ExampleServiceManagerClient_CreateService() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleServiceManagerClient_CreateService() {
 }
 
 func ExampleServiceManagerClient_DeleteService() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +127,12 @@ func ExampleServiceManagerClient_DeleteService() {
 }
 
 func ExampleServiceManagerClient_UndeleteService() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.UndeleteServiceRequest{
 		// TODO: Fill request struct fields.
@@ -155,14 +151,12 @@ func ExampleServiceManagerClient_UndeleteService() {
 }
 
 func ExampleServiceManagerClient_ListServiceConfigs() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.ListServiceConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -182,13 +176,12 @@ func ExampleServiceManagerClient_ListServiceConfigs() {
 }
 
 func ExampleServiceManagerClient_GetServiceConfig() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.GetServiceConfigRequest{
 		// TODO: Fill request struct fields.
@@ -202,13 +195,12 @@ func ExampleServiceManagerClient_GetServiceConfig() {
 }
 
 func ExampleServiceManagerClient_CreateServiceConfig() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.CreateServiceConfigRequest{
 		// TODO: Fill request struct fields.
@@ -222,13 +214,12 @@ func ExampleServiceManagerClient_CreateServiceConfig() {
 }
 
 func ExampleServiceManagerClient_SubmitConfigSource() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.SubmitConfigSourceRequest{
 		// TODO: Fill request struct fields.
@@ -247,14 +238,12 @@ func ExampleServiceManagerClient_SubmitConfigSource() {
 }
 
 func ExampleServiceManagerClient_ListServiceRollouts() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.ListServiceRolloutsRequest{
 		// TODO: Fill request struct fields.
@@ -274,13 +263,12 @@ func ExampleServiceManagerClient_ListServiceRollouts() {
 }
 
 func ExampleServiceManagerClient_GetServiceRollout() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.GetServiceRolloutRequest{
 		// TODO: Fill request struct fields.
@@ -294,13 +282,12 @@ func ExampleServiceManagerClient_GetServiceRollout() {
 }
 
 func ExampleServiceManagerClient_CreateServiceRollout() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.CreateServiceRolloutRequest{
 		// TODO: Fill request struct fields.
@@ -319,13 +306,12 @@ func ExampleServiceManagerClient_CreateServiceRollout() {
 }
 
 func ExampleServiceManagerClient_GenerateConfigReport() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.GenerateConfigReportRequest{
 		// TODO: Fill request struct fields.
@@ -339,13 +325,12 @@ func ExampleServiceManagerClient_GenerateConfigReport() {
 }
 
 func ExampleServiceManagerClient_EnableService() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.EnableServiceRequest{
 		// TODO: Fill request struct fields.
@@ -364,13 +349,12 @@ func ExampleServiceManagerClient_EnableService() {
 }
 
 func ExampleServiceManagerClient_DisableService() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.DisableServiceRequest{
 		// TODO: Fill request struct fields.

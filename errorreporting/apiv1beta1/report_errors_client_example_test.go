@@ -29,18 +29,19 @@ func ExampleNewReportErrorsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleReportErrorsClient_ReportErrorEvent() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewReportErrorsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.ReportErrorEventRequest{
 		// TODO: Fill request struct fields.

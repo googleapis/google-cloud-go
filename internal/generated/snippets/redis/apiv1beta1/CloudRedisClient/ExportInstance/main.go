@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.ExportInstanceRequest{
 		// TODO: Fill request struct fields.

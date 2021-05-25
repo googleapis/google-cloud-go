@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := retail.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.ListCatalogsRequest{
 		// TODO: Fill request struct fields.

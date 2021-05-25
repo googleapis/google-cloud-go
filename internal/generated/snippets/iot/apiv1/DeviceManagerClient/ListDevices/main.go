@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import iotpb "google.golang.org/genproto/googleapis/cloud/iot/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := iot.NewDeviceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iotpb.ListDevicesRequest{
 		// TODO: Fill request struct fields.

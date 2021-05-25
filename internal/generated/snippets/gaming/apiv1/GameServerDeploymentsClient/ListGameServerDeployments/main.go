@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListGameServerDeploymentsRequest{
 		// TODO: Fill request struct fields.

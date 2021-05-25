@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.GetRecommendationRequest{
 		// TODO: Fill request struct fields.

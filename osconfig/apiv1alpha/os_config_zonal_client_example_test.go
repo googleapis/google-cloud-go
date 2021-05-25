@@ -30,18 +30,19 @@ func ExampleNewOsConfigZonalClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.CreateOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
@@ -60,13 +61,12 @@ func ExampleOsConfigZonalClient_CreateOSPolicyAssignment() {
 }
 
 func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.UpdateOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
@@ -85,13 +85,12 @@ func ExampleOsConfigZonalClient_UpdateOSPolicyAssignment() {
 }
 
 func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
@@ -105,14 +104,12 @@ func ExampleOsConfigZonalClient_GetOSPolicyAssignment() {
 }
 
 func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListOSPolicyAssignmentsRequest{
 		// TODO: Fill request struct fields.
@@ -132,14 +129,12 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignments() {
 }
 
 func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListOSPolicyAssignmentRevisionsRequest{
 		// TODO: Fill request struct fields.
@@ -159,13 +154,12 @@ func ExampleOsConfigZonalClient_ListOSPolicyAssignmentRevisions() {
 }
 
 func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.DeleteOSPolicyAssignmentRequest{
 		// TODO: Fill request struct fields.
@@ -182,13 +176,12 @@ func ExampleOsConfigZonalClient_DeleteOSPolicyAssignment() {
 }
 
 func ExampleOsConfigZonalClient_GetInstanceOSPoliciesCompliance() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetInstanceOSPoliciesComplianceRequest{
 		// TODO: Fill request struct fields.
@@ -202,14 +195,12 @@ func ExampleOsConfigZonalClient_GetInstanceOSPoliciesCompliance() {
 }
 
 func ExampleOsConfigZonalClient_ListInstanceOSPoliciesCompliances() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListInstanceOSPoliciesCompliancesRequest{
 		// TODO: Fill request struct fields.
@@ -229,13 +220,12 @@ func ExampleOsConfigZonalClient_ListInstanceOSPoliciesCompliances() {
 }
 
 func ExampleOsConfigZonalClient_GetInventory() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetInventoryRequest{
 		// TODO: Fill request struct fields.
@@ -249,14 +239,12 @@ func ExampleOsConfigZonalClient_GetInventory() {
 }
 
 func ExampleOsConfigZonalClient_ListInventories() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListInventoriesRequest{
 		// TODO: Fill request struct fields.
@@ -276,13 +264,12 @@ func ExampleOsConfigZonalClient_ListInventories() {
 }
 
 func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetVulnerabilityReportRequest{
 		// TODO: Fill request struct fields.
@@ -296,14 +283,12 @@ func ExampleOsConfigZonalClient_GetVulnerabilityReport() {
 }
 
 func ExampleOsConfigZonalClient_ListVulnerabilityReports() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewOsConfigZonalClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListVulnerabilityReportsRequest{
 		// TODO: Fill request struct fields.

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewSessionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.FulfillIntentRequest{
 		// TODO: Fill request struct fields.
