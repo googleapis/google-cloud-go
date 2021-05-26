@@ -1082,6 +1082,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel: "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/essentialcontacts/v1",
+		pkg:                   "essentialcontacts",
+		importPath:            "cloud.google.com/go/essentialcontacts/apiv1",
+		gRPCServiceConfigPath: "google/cloud/essentialcontacts/v1/essentialcontacts_v1_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/essentialcontacts/v1/essentialcontacts_v1.yaml",
+		// GA after 2021/06/18
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/api/serviceusage/v1",
 		pkg:                   "serviceusage",
 		importPath:            "cloud.google.com/go/serviceusage/apiv1",

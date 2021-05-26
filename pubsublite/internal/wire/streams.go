@@ -35,11 +35,13 @@ type streamStatus int
 const (
 	streamUninitialized streamStatus = iota
 	streamReconnecting
+	streamResetState
 	streamConnected
 	streamTerminated
 )
 
 type initialResponseRequired bool
+type notifyReset bool
 
 // streamHandler provides hooks for different Pub/Sub Lite streaming APIs
 // (e.g. publish, subscribe, streaming cursor, etc.) to use retryableStream.
@@ -63,11 +65,15 @@ type streamHandler interface {
 	validateInitialResponse(interface{}) error
 
 	// onStreamStatusChange is used to notify stream handlers when the stream has
-	// changed state. A `streamReconnecting` status change is fired before
-	// attempting to connect a new stream. A `streamConnected` status change is
-	// fired when the stream is successfully connected. These are followed by
-	// onResponse() calls when responses are received from the server. These
-	// events are guaranteed to occur in this order.
+	// changed state.
+	// - A `streamReconnecting` status change is fired before attempting to
+	//   connect a new stream.
+	// - A `streamResetState` status change may be fired if the stream should
+	//   reset its state (due to receipt of the RESET signal from the server).
+	// - A `streamConnected` status change is fired when the stream is
+	//   successfully connected.
+	// These are followed by onResponse() calls when responses are received from
+	// the server. These events are guaranteed to occur in this order.
 	//
 	// A final `streamTerminated` status change is fired when a permanent error
 	// occurs. retryableStream.Error() returns the error that caused the stream to
@@ -124,7 +130,7 @@ func (rs *retryableStream) Start() {
 	defer rs.mu.Unlock()
 
 	if rs.status == streamUninitialized {
-		go rs.connectStream()
+		go rs.connectStream(notifyReset(false))
 	}
 }
 
@@ -151,7 +157,7 @@ func (rs *retryableStream) Send(request interface{}) (sent bool) {
 			// stream. Nothing to do here.
 			break
 		case isRetryableSendError(err):
-			go rs.connectStream()
+			go rs.connectStream(notifyReset(false))
 		default:
 			rs.unsafeTerminate(err)
 		}
@@ -206,7 +212,7 @@ func (rs *retryableStream) setCancel(cancel context.CancelFunc) {
 // terminated during reconnection.
 //
 // Intended to be called in a goroutine. It ends once the client stream closes.
-func (rs *retryableStream) connectStream() {
+func (rs *retryableStream) connectStream(notifyReset notifyReset) {
 	canReconnect := func() bool {
 		rs.mu.Lock()
 		defer rs.mu.Unlock()
@@ -225,7 +231,15 @@ func (rs *retryableStream) connectStream() {
 	if !canReconnect() {
 		return
 	}
+
 	rs.handler.onStreamStatusChange(streamReconnecting)
+	if notifyReset {
+		rs.handler.onStreamStatusChange(streamResetState)
+	}
+	// Check whether handler terminated stream before reconnecting.
+	if rs.Status() == streamTerminated {
+		return
+	}
 
 	newStream, cancelFunc, err := rs.initNewStream()
 	if err != nil {
@@ -275,6 +289,9 @@ func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelF
 			if needsResponse {
 				response := reflect.New(rs.responseType).Interface()
 				if err = newStream.RecvMsg(response); err != nil {
+					if isStreamResetSignal(err) {
+						rs.handler.onStreamStatusChange(streamResetState)
+					}
 					return r.RetryRecv(err)
 				}
 				if err = rs.handler.validateInitialResponse(response); err != nil {
@@ -323,7 +340,7 @@ func (rs *retryableStream) listen(recvStream grpc.ClientStream) {
 		}
 		if err != nil {
 			if isRetryableRecvError(err) {
-				go rs.connectStream()
+				go rs.connectStream(notifyReset(isStreamResetSignal(err)))
 			} else {
 				rs.terminate(err)
 			}
