@@ -68,8 +68,8 @@ type streamHandler interface {
 	// changed state.
 	// - A `streamReconnecting` status change is fired before attempting to
 	//   connect a new stream.
-	// - A `streamResetState` status change may be fired if the server broke a
-	//   stream with the RESET signal, instructing the stream to reset its state.
+	// - A `streamResetState` status change may be fired if the stream should
+	//   reset its state (due to receipt of the RESET signal from the server).
 	// - A `streamConnected` status change is fired when the stream is
 	//   successfully connected.
 	// These are followed by onResponse() calls when responses are received from

@@ -133,7 +133,7 @@ func retryableReadOnlyCallOption() gax.CallOption {
 
 const (
 	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
-	pubsubLiteDomain          = "pubsublite.googleapis.com"
+	pubsubLiteErrorDomain     = "pubsublite.googleapis.com"
 	resetSignal               = "RESET"
 )
 
@@ -148,7 +148,7 @@ func isStreamResetSignal(err error) bool {
 		return false
 	}
 	for _, details := range status.Details() {
-		if errInfo, ok := details.(*errdetails.ErrorInfo); ok && errInfo.Reason == resetSignal && errInfo.Domain == pubsubLiteDomain {
+		if errInfo, ok := details.(*errdetails.ErrorInfo); ok && errInfo.Reason == resetSignal && errInfo.Domain == pubsubLiteErrorDomain {
 			return true
 		}
 	}
