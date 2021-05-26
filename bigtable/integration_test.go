@@ -41,7 +41,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
-	"google.golang.org/api/option"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	v1 "google.golang.org/genproto/googleapis/iam/v1"
 	longrunning "google.golang.org/genproto/googleapis/longrunning"
@@ -50,8 +49,10 @@ import (
 )
 
 const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
+	directPathIPV6Prefix      = "[2001:4860:8040"
+	directPathIPV4Prefix      = "34.126"
+	timeUntilResourceCleanup  = time.Hour * 48 // two days
+	prefixOfInstanceResources = "bt-it-"
 )
 
 var (
@@ -112,14 +113,11 @@ func TestMain(m *testing.M) {
 
 func cleanup(c IntegrationTestConfig) error {
 	// Cleanup resources marked with bt-it- after a time delay
-	timeToWait := time.Hour * 48 // two days
-	instancePrefix := "bt-it-"
 	if !c.UseProd {
 		return nil
 	}
 	ctx := context.Background()
-	var opts []option.ClientOption
-	iac, err := NewInstanceAdminClient(ctx, c.Project, opts...)
+	iac, err := NewInstanceAdminClient(ctx, c.Project)
 	if err != nil {
 		return err
 	}
@@ -129,14 +127,14 @@ func cleanup(c IntegrationTestConfig) error {
 	}
 
 	for _, info := range instances {
-		if strings.HasPrefix(info.Name, instancePrefix) {
-			timestamp := info.Name[len(instancePrefix):]
+		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
+			timestamp := info.Name[len(prefixOfInstanceResources):]
 			t, err := strconv.ParseInt(timestamp, 10, 64)
 			if err != nil {
 				return err
 			}
 			uT := time.Unix(t, 0)
-			if time.Now().After(uT.Add(timeToWait)) {
+			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
 				iac.DeleteInstance(ctx, info.Name)
 			}
 		}
