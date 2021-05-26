@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-
 	ctx := context.Background()
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &kmspb.AsymmetricSignRequest{
 		// TODO: Fill request struct fields.

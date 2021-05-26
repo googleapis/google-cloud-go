@@ -30,19 +30,19 @@ func ExampleNewVersionsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleVersionsClient_ListVersions() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleVersionsClient_ListVersions() {
 }
 
 func ExampleVersionsClient_GetVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetVersionRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleVersionsClient_GetVersion() {
 }
 
 func ExampleVersionsClient_CreateVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleVersionsClient_CreateVersion() {
 }
 
 func ExampleVersionsClient_UpdateVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.UpdateVersionRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleVersionsClient_UpdateVersion() {
 }
 
 func ExampleVersionsClient_DeleteVersion() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.

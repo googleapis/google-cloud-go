@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.GetTransferRunRequest{
 		// TODO: Fill request struct fields.

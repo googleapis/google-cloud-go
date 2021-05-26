@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.

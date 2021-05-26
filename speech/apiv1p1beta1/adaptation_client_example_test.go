@@ -30,18 +30,19 @@ func ExampleNewAdaptationClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAdaptationClient_CreatePhraseSet() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.CreatePhraseSetRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleAdaptationClient_CreatePhraseSet() {
 }
 
 func ExampleAdaptationClient_GetPhraseSet() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.GetPhraseSetRequest{
 		// TODO: Fill request struct fields.
@@ -75,14 +75,12 @@ func ExampleAdaptationClient_GetPhraseSet() {
 }
 
 func ExampleAdaptationClient_ListPhraseSet() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.ListPhraseSetRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleAdaptationClient_ListPhraseSet() {
 }
 
 func ExampleAdaptationClient_UpdatePhraseSet() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.UpdatePhraseSetRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleAdaptationClient_DeletePhraseSet() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.DeletePhraseSetRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleAdaptationClient_DeletePhraseSet() {
 }
 
 func ExampleAdaptationClient_CreateCustomClass() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.CreateCustomClassRequest{
 		// TODO: Fill request struct fields.
@@ -158,13 +155,12 @@ func ExampleAdaptationClient_CreateCustomClass() {
 }
 
 func ExampleAdaptationClient_GetCustomClass() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.GetCustomClassRequest{
 		// TODO: Fill request struct fields.
@@ -178,14 +174,12 @@ func ExampleAdaptationClient_GetCustomClass() {
 }
 
 func ExampleAdaptationClient_ListCustomClasses() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.ListCustomClassesRequest{
 		// TODO: Fill request struct fields.
@@ -205,13 +199,12 @@ func ExampleAdaptationClient_ListCustomClasses() {
 }
 
 func ExampleAdaptationClient_UpdateCustomClass() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.UpdateCustomClassRequest{
 		// TODO: Fill request struct fields.
@@ -230,6 +223,7 @@ func ExampleAdaptationClient_DeleteCustomClass() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.DeleteCustomClassRequest{
 		// TODO: Fill request struct fields.

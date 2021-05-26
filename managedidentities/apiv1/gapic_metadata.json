@@ -1,62 +1,62 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.managedidentities.v1",
-  "libraryPackage":  "cloud.google.com/go/managedidentities/apiv1",
-  "services":  {
-    "ManagedIdentitiesService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "AttachTrust":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.managedidentities.v1",
+  "libraryPackage": "cloud.google.com/go/managedidentities/apiv1",
+  "services": {
+    "ManagedIdentitiesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AttachTrust": {
+              "methods": [
                 "AttachTrust"
               ]
             },
-            "CreateMicrosoftAdDomain":  {
-              "methods":  [
+            "CreateMicrosoftAdDomain": {
+              "methods": [
                 "CreateMicrosoftAdDomain"
               ]
             },
-            "DeleteDomain":  {
-              "methods":  [
+            "DeleteDomain": {
+              "methods": [
                 "DeleteDomain"
               ]
             },
-            "DetachTrust":  {
-              "methods":  [
+            "DetachTrust": {
+              "methods": [
                 "DetachTrust"
               ]
             },
-            "GetDomain":  {
-              "methods":  [
+            "GetDomain": {
+              "methods": [
                 "GetDomain"
               ]
             },
-            "ListDomains":  {
-              "methods":  [
+            "ListDomains": {
+              "methods": [
                 "ListDomains"
               ]
             },
-            "ReconfigureTrust":  {
-              "methods":  [
+            "ReconfigureTrust": {
+              "methods": [
                 "ReconfigureTrust"
               ]
             },
-            "ResetAdminPassword":  {
-              "methods":  [
+            "ResetAdminPassword": {
+              "methods": [
                 "ResetAdminPassword"
               ]
             },
-            "UpdateDomain":  {
-              "methods":  [
+            "UpdateDomain": {
+              "methods": [
                 "UpdateDomain"
               ]
             },
-            "ValidateTrust":  {
-              "methods":  [
+            "ValidateTrust": {
+              "methods": [
                 "ValidateTrust"
               ]
             }

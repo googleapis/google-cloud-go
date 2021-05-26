@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
-
 	ctx := context.Background()
 	c, err := budgets.NewBudgetClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &budgetspb.GetBudgetRequest{
 		// TODO: Fill request struct fields.

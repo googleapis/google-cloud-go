@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.CreateCustomClassRequest{
 		// TODO: Fill request struct fields.

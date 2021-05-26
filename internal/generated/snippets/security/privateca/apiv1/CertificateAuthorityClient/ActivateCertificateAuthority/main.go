@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1"
-
 	ctx := context.Background()
 	c, err := privateca.NewCertificateAuthorityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &privatecapb.ActivateCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.

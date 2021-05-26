@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.CreateOccurrenceRequest{
 		// TODO: Fill request struct fields.

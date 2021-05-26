@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import billingpb "google.golang.org/genproto/googleapis/cloud/billing/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &billingpb.ListSkusRequest{
 		// TODO: Fill request struct fields.

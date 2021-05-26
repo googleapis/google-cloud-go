@@ -41,7 +41,7 @@ type FulfillmentsCallOptions struct {
 	UpdateFulfillment []gax.CallOption
 }
 
-func defaultFulfillmentsClientOptions() []option.ClientOption {
+func defaultFulfillmentsGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("dialogflow.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("dialogflow.mtls.googleapis.com:443"),
@@ -80,32 +80,85 @@ func defaultFulfillmentsCallOptions() *FulfillmentsCallOptions {
 	}
 }
 
+// internalFulfillmentsClient is an interface that defines the methods availaible from Dialogflow API.
+type internalFulfillmentsClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	GetFulfillment(context.Context, *dialogflowpb.GetFulfillmentRequest, ...gax.CallOption) (*dialogflowpb.Fulfillment, error)
+	UpdateFulfillment(context.Context, *dialogflowpb.UpdateFulfillmentRequest, ...gax.CallOption) (*dialogflowpb.Fulfillment, error)
+}
+
 // FulfillmentsClient is a client for interacting with Dialogflow API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for managing Fulfillments.
+type FulfillmentsClient struct {
+	// The internal transport-dependent client.
+	internalClient internalFulfillmentsClient
+
+	// The call options for this service.
+	CallOptions *FulfillmentsCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *FulfillmentsClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *FulfillmentsClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *FulfillmentsClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// GetFulfillment retrieves the fulfillment.
+func (c *FulfillmentsClient) GetFulfillment(ctx context.Context, req *dialogflowpb.GetFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
+	return c.internalClient.GetFulfillment(ctx, req, opts...)
+}
+
+// UpdateFulfillment updates the fulfillment.
+func (c *FulfillmentsClient) UpdateFulfillment(ctx context.Context, req *dialogflowpb.UpdateFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
+	return c.internalClient.UpdateFulfillment(ctx, req, opts...)
+}
+
+// fulfillmentsGRPCClient is a client for interacting with Dialogflow API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type FulfillmentsClient struct {
+type fulfillmentsGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing FulfillmentsClient
+	CallOptions **FulfillmentsCallOptions
+
 	// The gRPC API client.
 	fulfillmentsClient dialogflowpb.FulfillmentsClient
-
-	// The call options for this service.
-	CallOptions *FulfillmentsCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewFulfillmentsClient creates a new fulfillments client.
+// NewFulfillmentsClient creates a new fulfillments client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for managing Fulfillments.
 func NewFulfillmentsClient(ctx context.Context, opts ...option.ClientOption) (*FulfillmentsClient, error) {
-	clientOpts := defaultFulfillmentsClientOptions()
-
+	clientOpts := defaultFulfillmentsGRPCClientOptions()
 	if newFulfillmentsClientHook != nil {
 		hookOpts, err := newFulfillmentsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -123,42 +176,44 @@ func NewFulfillmentsClient(ctx context.Context, opts ...option.ClientOption) (*F
 	if err != nil {
 		return nil, err
 	}
-	c := &FulfillmentsClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultFulfillmentsCallOptions(),
+	client := FulfillmentsClient{CallOptions: defaultFulfillmentsCallOptions()}
 
+	c := &fulfillmentsGRPCClient{
+		connPool:           connPool,
+		disableDeadlines:   disableDeadlines,
 		fulfillmentsClient: dialogflowpb.NewFulfillmentsClient(connPool),
+		CallOptions:        &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *FulfillmentsClient) Connection() *grpc.ClientConn {
+func (c *fulfillmentsGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *FulfillmentsClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *FulfillmentsClient) setGoogleClientInfo(keyval ...string) {
+func (c *fulfillmentsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// GetFulfillment retrieves the fulfillment.
-func (c *FulfillmentsClient) GetFulfillment(ctx context.Context, req *dialogflowpb.GetFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *fulfillmentsGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *fulfillmentsGRPCClient) GetFulfillment(ctx context.Context, req *dialogflowpb.GetFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -166,7 +221,7 @@ func (c *FulfillmentsClient) GetFulfillment(ctx context.Context, req *dialogflow
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetFulfillment[0:len(c.CallOptions.GetFulfillment):len(c.CallOptions.GetFulfillment)], opts...)
+	opts = append((*c.CallOptions).GetFulfillment[0:len((*c.CallOptions).GetFulfillment):len((*c.CallOptions).GetFulfillment)], opts...)
 	var resp *dialogflowpb.Fulfillment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -179,8 +234,7 @@ func (c *FulfillmentsClient) GetFulfillment(ctx context.Context, req *dialogflow
 	return resp, nil
 }
 
-// UpdateFulfillment updates the fulfillment.
-func (c *FulfillmentsClient) UpdateFulfillment(ctx context.Context, req *dialogflowpb.UpdateFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
+func (c *fulfillmentsGRPCClient) UpdateFulfillment(ctx context.Context, req *dialogflowpb.UpdateFulfillmentRequest, opts ...gax.CallOption) (*dialogflowpb.Fulfillment, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -188,7 +242,7 @@ func (c *FulfillmentsClient) UpdateFulfillment(ctx context.Context, req *dialogf
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "fulfillment.name", url.QueryEscape(req.GetFulfillment().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateFulfillment[0:len(c.CallOptions.UpdateFulfillment):len(c.CallOptions.UpdateFulfillment)], opts...)
+	opts = append((*c.CallOptions).UpdateFulfillment[0:len((*c.CallOptions).UpdateFulfillment):len((*c.CallOptions).UpdateFulfillment)], opts...)
 	var resp *dialogflowpb.Fulfillment
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

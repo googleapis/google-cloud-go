@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
-
 	ctx := context.Background()
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
