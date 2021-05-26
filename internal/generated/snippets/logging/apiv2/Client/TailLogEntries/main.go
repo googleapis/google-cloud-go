@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.TailLogEntries(ctx)
 	if err != nil {
 		// TODO: Handle error.

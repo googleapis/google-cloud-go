@@ -30,19 +30,19 @@ func ExampleNewErrorStatsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleErrorStatsClient_ListGroupStats() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.ListGroupStatsRequest{
 		// TODO: Fill request struct fields.
@@ -62,14 +62,12 @@ func ExampleErrorStatsClient_ListGroupStats() {
 }
 
 func ExampleErrorStatsClient_ListEvents() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.ListEventsRequest{
 		// TODO: Fill request struct fields.
@@ -89,13 +87,12 @@ func ExampleErrorStatsClient_ListEvents() {
 }
 
 func ExampleErrorStatsClient_DeleteEvents() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.DeleteEventsRequest{
 		// TODO: Fill request struct fields.

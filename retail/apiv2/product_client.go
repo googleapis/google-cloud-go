@@ -47,7 +47,7 @@ type ProductCallOptions struct {
 	ImportProducts []gax.CallOption
 }
 
-func defaultProductClientOptions() []option.ClientOption {
+func defaultProductGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("retail.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("retail.mtls.googleapis.com:443"),
@@ -124,38 +124,128 @@ func defaultProductCallOptions() *ProductCallOptions {
 	}
 }
 
+// internalProductClient is an interface that defines the methods availaible from Retail API.
+type internalProductClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateProduct(context.Context, *retailpb.CreateProductRequest, ...gax.CallOption) (*retailpb.Product, error)
+	GetProduct(context.Context, *retailpb.GetProductRequest, ...gax.CallOption) (*retailpb.Product, error)
+	UpdateProduct(context.Context, *retailpb.UpdateProductRequest, ...gax.CallOption) (*retailpb.Product, error)
+	DeleteProduct(context.Context, *retailpb.DeleteProductRequest, ...gax.CallOption) error
+	ImportProducts(context.Context, *retailpb.ImportProductsRequest, ...gax.CallOption) (*ImportProductsOperation, error)
+	ImportProductsOperation(name string) *ImportProductsOperation
+}
+
 // ProductClient is a client for interacting with Retail API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for ingesting Product information
+// of the customer’s website.
+type ProductClient struct {
+	// The internal transport-dependent client.
+	internalClient internalProductClient
+
+	// The call options for this service.
+	CallOptions *ProductCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *ProductClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *ProductClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ProductClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateProduct creates a Product.
+func (c *ProductClient) CreateProduct(ctx context.Context, req *retailpb.CreateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
+	return c.internalClient.CreateProduct(ctx, req, opts...)
+}
+
+// GetProduct gets a Product.
+func (c *ProductClient) GetProduct(ctx context.Context, req *retailpb.GetProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
+	return c.internalClient.GetProduct(ctx, req, opts...)
+}
+
+// UpdateProduct updates a Product.
+func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
+	return c.internalClient.UpdateProduct(ctx, req, opts...)
+}
+
+// DeleteProduct deletes a Product.
+func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteProduct(ctx, req, opts...)
+}
+
+// ImportProducts bulk import of multiple Products.
+//
+// Request processing may be synchronous. No partial updating is supported.
+// Non-existing items are created.
+//
+// Note that it is possible for a subset of the
+// Products to be successfully updated.
+func (c *ProductClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
+	return c.internalClient.ImportProducts(ctx, req, opts...)
+}
+
+// ImportProductsOperation returns a new ImportProductsOperation from a given name.
+// The name must be that of a previously created ImportProductsOperation, possibly from a different process.
+func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOperation {
+	return c.internalClient.ImportProductsOperation(name)
+}
+
+// productGRPCClient is a client for interacting with Retail API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ProductClient struct {
+type productGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing ProductClient
+	CallOptions **ProductCallOptions
+
 	// The gRPC API client.
 	productClient retailpb.ProductServiceClient
 
-	// LROClient is used internally to handle longrunning operations.
+	// LROClient is used internally to handle long-running operations.
 	// It is exposed so that its CallOptions can be modified if required.
 	// Users should not Close this client.
-	LROClient *lroauto.OperationsClient
-
-	// The call options for this service.
-	CallOptions *ProductCallOptions
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewProductClient creates a new product service client.
+// NewProductClient creates a new product service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for ingesting Product information
 // of the customer’s website.
 func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*ProductClient, error) {
-	clientOpts := defaultProductClientOptions()
-
+	clientOpts := defaultProductGRPCClientOptions()
 	if newProductClientHook != nil {
 		hookOpts, err := newProductClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -173,16 +263,19 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 	if err != nil {
 		return nil, err
 	}
-	c := &ProductClient{
+	client := ProductClient{CallOptions: defaultProductCallOptions()}
+
+	c := &productGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultProductCallOptions(),
-
-		productClient: retailpb.NewProductServiceClient(connPool),
+		productClient:    retailpb.NewProductServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	c.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	client.internalClient = c
+
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
 	if err != nil {
 		// This error "should not happen", since we are just reusing old connection pool
 		// and never actually need to dial.
@@ -192,33 +285,33 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 		// TODO: investigate error conditions.
 		return nil, err
 	}
-	return c, nil
+	c.LROClient = &client.LROClient
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *ProductClient) Connection() *grpc.ClientConn {
+func (c *productGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *ProductClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *ProductClient) setGoogleClientInfo(keyval ...string) {
+func (c *productGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateProduct creates a Product.
-func (c *ProductClient) CreateProduct(ctx context.Context, req *retailpb.CreateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *productGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.CreateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -226,7 +319,7 @@ func (c *ProductClient) CreateProduct(ctx context.Context, req *retailpb.CreateP
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateProduct[0:len(c.CallOptions.CreateProduct):len(c.CallOptions.CreateProduct)], opts...)
+	opts = append((*c.CallOptions).CreateProduct[0:len((*c.CallOptions).CreateProduct):len((*c.CallOptions).CreateProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -239,8 +332,7 @@ func (c *ProductClient) CreateProduct(ctx context.Context, req *retailpb.CreateP
 	return resp, nil
 }
 
-// GetProduct gets a Product.
-func (c *ProductClient) GetProduct(ctx context.Context, req *retailpb.GetProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
+func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -248,7 +340,7 @@ func (c *ProductClient) GetProduct(ctx context.Context, req *retailpb.GetProduct
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetProduct[0:len(c.CallOptions.GetProduct):len(c.CallOptions.GetProduct)], opts...)
+	opts = append((*c.CallOptions).GetProduct[0:len((*c.CallOptions).GetProduct):len((*c.CallOptions).GetProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -261,8 +353,7 @@ func (c *ProductClient) GetProduct(ctx context.Context, req *retailpb.GetProduct
 	return resp, nil
 }
 
-// UpdateProduct updates a Product.
-func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
+func (c *productGRPCClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateProductRequest, opts ...gax.CallOption) (*retailpb.Product, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -270,7 +361,7 @@ func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateP
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "product.name", url.QueryEscape(req.GetProduct().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateProduct[0:len(c.CallOptions.UpdateProduct):len(c.CallOptions.UpdateProduct)], opts...)
+	opts = append((*c.CallOptions).UpdateProduct[0:len((*c.CallOptions).UpdateProduct):len((*c.CallOptions).UpdateProduct)], opts...)
 	var resp *retailpb.Product
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -283,8 +374,7 @@ func (c *ProductClient) UpdateProduct(ctx context.Context, req *retailpb.UpdateP
 	return resp, nil
 }
 
-// DeleteProduct deletes a Product.
-func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
+func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteProductRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -292,7 +382,7 @@ func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteP
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteProduct[0:len(c.CallOptions.DeleteProduct):len(c.CallOptions.DeleteProduct)], opts...)
+	opts = append((*c.CallOptions).DeleteProduct[0:len((*c.CallOptions).DeleteProduct):len((*c.CallOptions).DeleteProduct)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.productClient.DeleteProduct(ctx, req, settings.GRPC...)
@@ -301,14 +391,7 @@ func (c *ProductClient) DeleteProduct(ctx context.Context, req *retailpb.DeleteP
 	return err
 }
 
-// ImportProducts bulk import of multiple Products.
-//
-// Request processing may be synchronous. No partial updating is supported.
-// Non-existing items are created.
-//
-// Note that it is possible for a subset of the
-// Products to be successfully updated.
-func (c *ProductClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
+func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.ImportProductsRequest, opts ...gax.CallOption) (*ImportProductsOperation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -316,7 +399,7 @@ func (c *ProductClient) ImportProducts(ctx context.Context, req *retailpb.Import
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ImportProducts[0:len(c.CallOptions.ImportProducts):len(c.CallOptions.ImportProducts)], opts...)
+	opts = append((*c.CallOptions).ImportProducts[0:len((*c.CallOptions).ImportProducts):len((*c.CallOptions).ImportProducts)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -327,7 +410,7 @@ func (c *ProductClient) ImportProducts(ctx context.Context, req *retailpb.Import
 		return nil, err
 	}
 	return &ImportProductsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, resp),
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
 }
 
@@ -338,9 +421,9 @@ type ImportProductsOperation struct {
 
 // ImportProductsOperation returns a new ImportProductsOperation from a given name.
 // The name must be that of a previously created ImportProductsOperation, possibly from a different process.
-func (c *ProductClient) ImportProductsOperation(name string) *ImportProductsOperation {
+func (c *productGRPCClient) ImportProductsOperation(name string) *ImportProductsOperation {
 	return &ImportProductsOperation{
-		lro: longrunning.InternalNewOperation(c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
 	}
 }
 

@@ -30,18 +30,19 @@ func ExampleNewAgentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAgentsClient_GetAgent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetAgentRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleAgentsClient_GetAgent() {
 }
 
 func ExampleAgentsClient_SetAgent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.SetAgentRequest{
 		// TODO: Fill request struct fields.
@@ -80,6 +80,7 @@ func ExampleAgentsClient_DeleteAgent() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteAgentRequest{
 		// TODO: Fill request struct fields.
@@ -91,14 +92,12 @@ func ExampleAgentsClient_DeleteAgent() {
 }
 
 func ExampleAgentsClient_SearchAgents() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.SearchAgentsRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleAgentsClient_SearchAgents() {
 }
 
 func ExampleAgentsClient_TrainAgent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.TrainAgentRequest{
 		// TODO: Fill request struct fields.
@@ -141,13 +139,12 @@ func ExampleAgentsClient_TrainAgent() {
 }
 
 func ExampleAgentsClient_ExportAgent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ExportAgentRequest{
 		// TODO: Fill request struct fields.
@@ -166,13 +163,12 @@ func ExampleAgentsClient_ExportAgent() {
 }
 
 func ExampleAgentsClient_ImportAgent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ImportAgentRequest{
 		// TODO: Fill request struct fields.
@@ -189,13 +185,12 @@ func ExampleAgentsClient_ImportAgent() {
 }
 
 func ExampleAgentsClient_RestoreAgent() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.RestoreAgentRequest{
 		// TODO: Fill request struct fields.
@@ -212,13 +207,12 @@ func ExampleAgentsClient_RestoreAgent() {
 }
 
 func ExampleAgentsClient_GetValidationResult() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewAgentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetValidationResultRequest{
 		// TODO: Fill request struct fields.

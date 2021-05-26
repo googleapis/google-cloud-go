@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import dlppb "google.golang.org/genproto/googleapis/privacy/dlp/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dlp.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.ListDeidentifyTemplatesRequest{
 		// TODO: Fill request struct fields.

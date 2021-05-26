@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetWriteStreamRequest{
 		// TODO: Fill request struct fields.

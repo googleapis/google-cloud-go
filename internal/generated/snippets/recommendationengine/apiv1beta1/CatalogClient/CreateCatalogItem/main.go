@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewCatalogClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.CreateCatalogItemRequest{
 		// TODO: Fill request struct fields.

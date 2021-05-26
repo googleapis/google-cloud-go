@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.

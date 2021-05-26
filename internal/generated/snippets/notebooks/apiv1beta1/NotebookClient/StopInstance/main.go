@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
-
 	ctx := context.Background()
 	c, err := notebooks.NewNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &notebookspb.StopInstanceRequest{
 		// TODO: Fill request struct fields.

@@ -30,19 +30,19 @@ func ExampleNewKnowledgeBasesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleKnowledgeBasesClient_ListKnowledgeBases() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListKnowledgeBasesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleKnowledgeBasesClient_ListKnowledgeBases() {
 }
 
 func ExampleKnowledgeBasesClient_GetKnowledgeBase() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleKnowledgeBasesClient_GetKnowledgeBase() {
 }
 
 func ExampleKnowledgeBasesClient_CreateKnowledgeBase() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
@@ -107,6 +105,7 @@ func ExampleKnowledgeBasesClient_DeleteKnowledgeBase() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleKnowledgeBasesClient_DeleteKnowledgeBase() {
 }
 
 func ExampleKnowledgeBasesClient_UpdateKnowledgeBase() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewKnowledgeBasesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateKnowledgeBaseRequest{
 		// TODO: Fill request struct fields.

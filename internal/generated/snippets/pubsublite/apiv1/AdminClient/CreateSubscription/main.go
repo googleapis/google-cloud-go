@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.CreateSubscriptionRequest{
 		// TODO: Fill request struct fields.

@@ -442,7 +442,7 @@ type SessionPoolConfig struct {
 
 	// HealthCheckInterval is how often the health checker pings a session.
 	//
-	// Defaults to 5m.
+	// Defaults to 50m.
 	HealthCheckInterval time.Duration
 
 	// TrackSessionHandles determines whether the session pool will keep track

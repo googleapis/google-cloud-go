@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.BatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
