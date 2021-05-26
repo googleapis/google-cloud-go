@@ -79,7 +79,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "language",
 		importPath:            "cloud.google.com/go/language/apiv1",
 		gRPCServiceConfigPath: "google/cloud/language/v1/language_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/language/language_v1.yaml",
+		apiServiceConfigPath:  "google/cloud/language/v1/language_v1.yaml",
 		releaseLevel:          "ga",
 	},
 	{
@@ -1098,6 +1098,32 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/api/serviceusage/v1/serviceusage_v1.yaml",
 		// GA after 2021/06/18
 		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/shell/v1",
+		pkg:                   "shell",
+		importPath:            "cloud.google.com/go/shell/apiv1",
+		gRPCServiceConfigPath: "google/cloud/shell/v1/cloudshell_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/shell/v1/cloudshell_v1.yaml",
+		// GA after 2021/06/26
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/vpcaccess/v1",
+		pkg:                   "vpcaccess",
+		importPath:            "cloud.google.com/go/vpcaccess/apiv1",
+		gRPCServiceConfigPath: "google/cloud/vpcaccess/v1/vpcaccess_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/vpcaccess/v1/vpcaccess_v1.yaml",
+		// GA after 2021/06/26
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/privatecatalog/v1beta1",
+		pkg:                   "privatecatalog",
+		importPath:            "cloud.google.com/go/privatecatalog/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/privatecatalog/v1beta1/cloudprivatecatalog_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/privatecatalog/v1beta1/cloudprivatecatalog_v1beta1.yaml",
+		releaseLevel:          "beta",
 	},
 
 	// Non-Cloud APIs
