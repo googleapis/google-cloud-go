@@ -35,6 +35,42 @@ import (
 	durpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
+// MessageReceiverFunc handles messages sent by a Subscriber.
+//
+// The implementation must arrange for Message.Ack() or Message.Nack() to be
+// called after processing the message.
+type MessageReceiverFunc func(context.Context, *Message)
+
+// Subscriber is an interface for subscribing to messages shared by Pub/Sub and Pub/Sub Lite.
+type Subscriber interface {
+	// Receive calls f with outstanding messages.
+	// It blocks until ctx is done, or the service returns a non-retryable error.
+	//
+	// The standard way to terminate a Receive is to cancel its context:
+	//
+	//   cctx, cancel := context.WithCancel(ctx)
+	//   err := sub.Receive(cctx, callback)
+	//   // Call cancel from callback, or another goroutine.
+	//
+	// If the service returns a non-retryable error, Receive returns that error after
+	// all of the outstanding calls to f have returned. If ctx is done, Receive
+	// returns nil after all of the outstanding calls to f have returned and
+	// all messages have been acknowledged or have expired.
+	//
+	// Receive calls f concurrently from multiple goroutines. It is encouraged to
+	// process messages synchronously in f, even if that processing is relatively
+	// time-consuming.
+	//
+	// The context passed to f will be canceled when ctx is Done or there is a
+	// fatal service error.
+	//
+	// Each Subscriber may have only one invocation of Receive active at a time.
+	Receive(ctx context.Context, f MessageReceiverFunc) error
+}
+
+// Check that Subscription implements Subscriber
+var _ Subscriber = (*Subscription)(nil)
+
 // Subscription is a reference to a PubSub subscription.
 type Subscription struct {
 	c *Client
@@ -775,7 +811,7 @@ var errReceiveInProgress = errors.New("pubsub: Receive already in progress for t
 // period specified by s.ReceiveSettings.MaxExtension.
 //
 // Each Subscription may have only one invocation of Receive active at a time.
-func (s *Subscription) Receive(ctx context.Context, f func(context.Context, *Message)) error {
+func (s *Subscription) Receive(ctx context.Context, f MessageReceiverFunc) error {
 	s.mu.Lock()
 	if s.receiveActive {
 		s.mu.Unlock()

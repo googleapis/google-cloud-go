@@ -52,6 +52,27 @@ const (
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
 var ErrOversizedMessage = bundler.ErrOversizedItem
 
+// Publisher is an interface for message publishing shared by Pub/Sub and Pub/Sub Lite.
+type Publisher interface {
+	// Publish publishes msg to the topic asynchronously. Messages are batched and
+	// sent according to the topic's PublishSettings. Publish never blocks.
+	//
+	// Publish returns a non-nil PublishResult which will be ready when the
+	// message has been sent (or has failed to be sent) to the server.
+	//
+	// Publish creates goroutines for batching and sending messages. These goroutines
+	// need to be stopped by calling Stop(). Once stopped, future calls to Publish
+	// will immediately return a PublishResult with an error.
+	Publish(ctx context.Context, msg *Message) *PublishResult
+	// Stop sends all remaining published messages and stop goroutines created for handling
+	// publishing. Returns once all outstanding messages have been sent or have
+	// failed to be sent.
+	Stop()
+}
+
+// Check that Topic implements Publisher
+var _ Publisher = (*Topic)(nil)
+
 // Topic is a reference to a PubSub topic.
 //
 // The methods of Topic are safe for use by multiple goroutines.

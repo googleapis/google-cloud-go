@@ -230,7 +230,7 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 // is connected to multiple partitions. Only one call from any connected
 // partition will be outstanding at a time, and blocking in this receiver
 // callback will block the delivery of subsequent messages for the partition.
-type MessageReceiverFunc func(context.Context, *pubsub.Message)
+type MessageReceiverFunc = pubsub.MessageReceiverFunc
 
 // SubscriberClient is a Pub/Sub Lite client to receive messages for a given
 // subscription.
@@ -245,6 +245,9 @@ type SubscriberClient struct {
 	mu            sync.Mutex
 	receiveActive bool
 }
+
+// Check that SubscriberClient implements Subscriber
+var _ pubsub.Subscriber = (*SubscriberClient)(nil)
 
 // NewSubscriberClient creates a new Pub/Sub Lite client to receive messages for
 // a given subscription, using DefaultReceiveSettings. A valid subscription path

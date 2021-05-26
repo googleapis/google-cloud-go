@@ -61,6 +61,9 @@ type PublisherClient struct {
 	err error
 }
 
+// Check that PublisherClient implements Publisher
+var _ pubsub.Publisher = (*PublisherClient)(nil)
+
 // NewPublisherClient creates a new Pub/Sub Lite publisher client to publish
 // messages to a given topic, using DefaultPublishSettings. A valid topic path
 // has the format: "projects/PROJECT_ID/locations/ZONE/topics/TOPIC_ID".
