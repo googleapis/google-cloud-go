@@ -22,6 +22,7 @@ import (
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/keepalive"
@@ -130,7 +131,29 @@ func retryableReadOnlyCallOption() gax.CallOption {
 	})
 }
 
-const pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+const (
+	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+	pubsubLiteErrorDomain     = "pubsublite.googleapis.com"
+	resetSignal               = "RESET"
+)
+
+// Pub/Sub Lite's RESET signal is a status containing error details that
+// instructs streams to reset their state.
+func isStreamResetSignal(err error) bool {
+	status, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+	if !isRetryableRecvCode(status.Code()) {
+		return false
+	}
+	for _, details := range status.Details() {
+		if errInfo, ok := details.(*errdetails.ErrorInfo); ok && errInfo.Reason == resetSignal && errInfo.Domain == pubsubLiteErrorDomain {
+			return true
+		}
+	}
+	return false
+}
 
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
