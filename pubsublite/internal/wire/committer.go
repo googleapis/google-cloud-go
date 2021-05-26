@@ -250,6 +250,7 @@ func (c *committer) unsafeInitiateShutdown(targetStatus serviceStatus, err error
 	c.unsafeOnTerminated()
 }
 
+// Performs actions when the cursor tracker is up to date.
 func (c *committer) unsafeCheckDone() {
 	if !c.cursorTracker.UpToDate() {
 		return
