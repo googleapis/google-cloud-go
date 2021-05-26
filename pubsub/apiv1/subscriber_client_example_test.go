@@ -31,18 +31,19 @@ func ExampleNewSubscriberClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSubscriberClient_CreateSubscription() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.Subscription{
 		// TODO: Fill request struct fields.
@@ -56,13 +57,12 @@ func ExampleSubscriberClient_CreateSubscription() {
 }
 
 func ExampleSubscriberClient_GetSubscription() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.GetSubscriptionRequest{
 		// TODO: Fill request struct fields.
@@ -76,13 +76,12 @@ func ExampleSubscriberClient_GetSubscription() {
 }
 
 func ExampleSubscriberClient_UpdateSubscription() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.UpdateSubscriptionRequest{
 		// TODO: Fill request struct fields.
@@ -96,14 +95,12 @@ func ExampleSubscriberClient_UpdateSubscription() {
 }
 
 func ExampleSubscriberClient_ListSubscriptions() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListSubscriptionsRequest{
 		// TODO: Fill request struct fields.
@@ -128,6 +125,7 @@ func ExampleSubscriberClient_DeleteSubscription() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.DeleteSubscriptionRequest{
 		// TODO: Fill request struct fields.
@@ -144,6 +142,7 @@ func ExampleSubscriberClient_ModifyAckDeadline() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ModifyAckDeadlineRequest{
 		// TODO: Fill request struct fields.
@@ -160,6 +159,7 @@ func ExampleSubscriberClient_Acknowledge() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.AcknowledgeRequest{
 		// TODO: Fill request struct fields.
@@ -171,13 +171,12 @@ func ExampleSubscriberClient_Acknowledge() {
 }
 
 func ExampleSubscriberClient_Pull() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.PullRequest{
 		// TODO: Fill request struct fields.
@@ -191,13 +190,12 @@ func ExampleSubscriberClient_Pull() {
 }
 
 func ExampleSubscriberClient_StreamingPull() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingPull(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -232,6 +230,7 @@ func ExampleSubscriberClient_ModifyPushConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ModifyPushConfigRequest{
 		// TODO: Fill request struct fields.
@@ -243,13 +242,12 @@ func ExampleSubscriberClient_ModifyPushConfig() {
 }
 
 func ExampleSubscriberClient_GetSnapshot() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.GetSnapshotRequest{
 		// TODO: Fill request struct fields.
@@ -263,14 +261,12 @@ func ExampleSubscriberClient_GetSnapshot() {
 }
 
 func ExampleSubscriberClient_ListSnapshots() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListSnapshotsRequest{
 		// TODO: Fill request struct fields.
@@ -290,13 +286,12 @@ func ExampleSubscriberClient_ListSnapshots() {
 }
 
 func ExampleSubscriberClient_CreateSnapshot() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.CreateSnapshotRequest{
 		// TODO: Fill request struct fields.
@@ -310,13 +305,12 @@ func ExampleSubscriberClient_CreateSnapshot() {
 }
 
 func ExampleSubscriberClient_UpdateSnapshot() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.UpdateSnapshotRequest{
 		// TODO: Fill request struct fields.
@@ -335,6 +329,7 @@ func ExampleSubscriberClient_DeleteSnapshot() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
@@ -346,13 +341,12 @@ func ExampleSubscriberClient_DeleteSnapshot() {
 }
 
 func ExampleSubscriberClient_Seek() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.SeekRequest{
 		// TODO: Fill request struct fields.

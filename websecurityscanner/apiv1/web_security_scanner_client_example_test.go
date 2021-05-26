@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateScanConfig() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.CreateScanConfigRequest{
 		// TODO: Fill request struct fields.
@@ -60,6 +61,7 @@ func ExampleClient_DeleteScanConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.DeleteScanConfigRequest{
 		// TODO: Fill request struct fields.
@@ -71,13 +73,12 @@ func ExampleClient_DeleteScanConfig() {
 }
 
 func ExampleClient_GetScanConfig() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.GetScanConfigRequest{
 		// TODO: Fill request struct fields.
@@ -91,14 +92,12 @@ func ExampleClient_GetScanConfig() {
 }
 
 func ExampleClient_ListScanConfigs() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListScanConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleClient_ListScanConfigs() {
 }
 
 func ExampleClient_UpdateScanConfig() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.UpdateScanConfigRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleClient_UpdateScanConfig() {
 }
 
 func ExampleClient_StartScanRun() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.StartScanRunRequest{
 		// TODO: Fill request struct fields.
@@ -158,13 +155,12 @@ func ExampleClient_StartScanRun() {
 }
 
 func ExampleClient_GetScanRun() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.GetScanRunRequest{
 		// TODO: Fill request struct fields.
@@ -178,14 +174,12 @@ func ExampleClient_GetScanRun() {
 }
 
 func ExampleClient_ListScanRuns() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListScanRunsRequest{
 		// TODO: Fill request struct fields.
@@ -205,13 +199,12 @@ func ExampleClient_ListScanRuns() {
 }
 
 func ExampleClient_StopScanRun() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.StopScanRunRequest{
 		// TODO: Fill request struct fields.
@@ -225,14 +218,12 @@ func ExampleClient_StopScanRun() {
 }
 
 func ExampleClient_ListCrawledUrls() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListCrawledUrlsRequest{
 		// TODO: Fill request struct fields.
@@ -252,13 +243,12 @@ func ExampleClient_ListCrawledUrls() {
 }
 
 func ExampleClient_GetFinding() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.GetFindingRequest{
 		// TODO: Fill request struct fields.
@@ -272,14 +262,12 @@ func ExampleClient_GetFinding() {
 }
 
 func ExampleClient_ListFindings() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
@@ -299,13 +287,12 @@ func ExampleClient_ListFindings() {
 }
 
 func ExampleClient_ListFindingTypeStats() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListFindingTypeStatsRequest{
 		// TODO: Fill request struct fields.

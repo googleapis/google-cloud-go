@@ -29,18 +29,19 @@ func ExampleNewFulfillmentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleFulfillmentsClient_GetFulfillment() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewFulfillmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetFulfillmentRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleFulfillmentsClient_GetFulfillment() {
 }
 
 func ExampleFulfillmentsClient_UpdateFulfillment() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewFulfillmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateFulfillmentRequest{
 		// TODO: Fill request struct fields.

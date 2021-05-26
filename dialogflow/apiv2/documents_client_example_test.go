@@ -30,19 +30,19 @@ func ExampleNewDocumentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDocumentsClient_ListDocuments() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleDocumentsClient_ListDocuments() {
 }
 
 func ExampleDocumentsClient_GetDocument() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleDocumentsClient_GetDocument() {
 }
 
 func ExampleDocumentsClient_CreateDocument() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleDocumentsClient_CreateDocument() {
 }
 
 func ExampleDocumentsClient_DeleteDocument() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +127,12 @@ func ExampleDocumentsClient_DeleteDocument() {
 }
 
 func ExampleDocumentsClient_UpdateDocument() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +151,12 @@ func ExampleDocumentsClient_UpdateDocument() {
 }
 
 func ExampleDocumentsClient_ReloadDocument() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewDocumentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ReloadDocumentRequest{
 		// TODO: Fill request struct fields.

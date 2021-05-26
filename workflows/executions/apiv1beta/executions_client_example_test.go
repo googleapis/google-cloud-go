@@ -30,19 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListExecutions() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.ListExecutionsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleClient_ListExecutions() {
 }
 
 func ExampleClient_CreateExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CreateExecutionRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleClient_CreateExecution() {
 }
 
 func ExampleClient_GetExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.GetExecutionRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleClient_GetExecution() {
 }
 
 func ExampleClient_CancelExecution() {
-	// import executionspb "google.golang.org/genproto/googleapis/cloud/workflows/executions/v1beta"
-
 	ctx := context.Background()
 	c, err := executions.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &executionspb.CancelExecutionRequest{
 		// TODO: Fill request struct fields.

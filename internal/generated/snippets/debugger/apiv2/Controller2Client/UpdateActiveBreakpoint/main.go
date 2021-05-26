@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewController2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.UpdateActiveBreakpointRequest{
 		// TODO: Fill request struct fields.

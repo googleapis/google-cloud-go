@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
-
 	ctx := context.Background()
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.ImportSshPublicKeyRequest{
 		// TODO: Fill request struct fields.

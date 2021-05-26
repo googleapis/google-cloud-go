@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.GetWorkflowRequest{
 		// TODO: Fill request struct fields.

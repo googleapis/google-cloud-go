@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import reservationpb "google.golang.org/genproto/googleapis/cloud/bigquery/reservation/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := reservation.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &reservationpb.ListAssignmentsRequest{
 		// TODO: Fill request struct fields.

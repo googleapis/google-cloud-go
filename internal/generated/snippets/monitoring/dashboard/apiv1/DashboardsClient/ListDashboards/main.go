@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.

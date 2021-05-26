@@ -30,19 +30,19 @@ func ExampleNewCloudRedisClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudRedisClient_ListInstances() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleCloudRedisClient_ListInstances() {
 }
 
 func ExampleCloudRedisClient_GetInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleCloudRedisClient_GetInstance() {
 }
 
 func ExampleCloudRedisClient_CreateInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleCloudRedisClient_CreateInstance() {
 }
 
 func ExampleCloudRedisClient_UpdateInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleCloudRedisClient_UpdateInstance() {
 }
 
 func ExampleCloudRedisClient_UpgradeInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.UpgradeInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -157,13 +153,12 @@ func ExampleCloudRedisClient_UpgradeInstance() {
 }
 
 func ExampleCloudRedisClient_ImportInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.ImportInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -182,13 +177,12 @@ func ExampleCloudRedisClient_ImportInstance() {
 }
 
 func ExampleCloudRedisClient_ExportInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.ExportInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -207,13 +201,12 @@ func ExampleCloudRedisClient_ExportInstance() {
 }
 
 func ExampleCloudRedisClient_FailoverInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.FailoverInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -232,13 +225,12 @@ func ExampleCloudRedisClient_FailoverInstance() {
 }
 
 func ExampleCloudRedisClient_DeleteInstance() {
-	// import redispb "google.golang.org/genproto/googleapis/cloud/redis/v1beta1"
-
 	ctx := context.Background()
 	c, err := redis.NewCloudRedisClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &redispb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.

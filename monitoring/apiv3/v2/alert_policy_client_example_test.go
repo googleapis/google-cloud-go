@@ -30,19 +30,19 @@ func ExampleNewAlertPolicyClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAlertPolicyClient_ListAlertPolicies() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListAlertPoliciesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleAlertPolicyClient_ListAlertPolicies() {
 }
 
 func ExampleAlertPolicyClient_GetAlertPolicy() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetAlertPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleAlertPolicyClient_GetAlertPolicy() {
 }
 
 func ExampleAlertPolicyClient_CreateAlertPolicy() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateAlertPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -107,6 +105,7 @@ func ExampleAlertPolicyClient_DeleteAlertPolicy() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteAlertPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleAlertPolicyClient_DeleteAlertPolicy() {
 }
 
 func ExampleAlertPolicyClient_UpdateAlertPolicy() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateAlertPolicyRequest{
 		// TODO: Fill request struct fields.

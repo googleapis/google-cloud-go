@@ -29,18 +29,19 @@ func ExampleNewProductClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleProductClient_CreateProduct() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.CreateProductRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleProductClient_CreateProduct() {
 }
 
 func ExampleProductClient_GetProduct() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.GetProductRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleProductClient_GetProduct() {
 }
 
 func ExampleProductClient_UpdateProduct() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.UpdateProductRequest{
 		// TODO: Fill request struct fields.
@@ -99,6 +98,7 @@ func ExampleProductClient_DeleteProduct() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
@@ -110,13 +110,12 @@ func ExampleProductClient_DeleteProduct() {
 }
 
 func ExampleProductClient_ImportProducts() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewProductClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.ImportProductsRequest{
 		// TODO: Fill request struct fields.

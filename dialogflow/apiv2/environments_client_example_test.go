@@ -30,19 +30,19 @@ func ExampleNewEnvironmentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleEnvironmentsClient_ListEnvironments() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListEnvironmentsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleEnvironmentsClient_ListEnvironments() {
 }
 
 func ExampleEnvironmentsClient_GetEnvironment() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleEnvironmentsClient_GetEnvironment() {
 }
 
 func ExampleEnvironmentsClient_CreateEnvironment() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleEnvironmentsClient_CreateEnvironment() {
 }
 
 func ExampleEnvironmentsClient_UpdateEnvironment() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteEnvironmentRequest{
 		// TODO: Fill request struct fields.
@@ -138,14 +136,12 @@ func ExampleEnvironmentsClient_DeleteEnvironment() {
 }
 
 func ExampleEnvironmentsClient_GetEnvironmentHistory() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEnvironmentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetEnvironmentHistoryRequest{
 		// TODO: Fill request struct fields.

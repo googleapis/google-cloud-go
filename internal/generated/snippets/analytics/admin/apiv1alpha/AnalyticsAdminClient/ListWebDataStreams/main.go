@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListWebDataStreamsRequest{
 		// TODO: Fill request struct fields.
