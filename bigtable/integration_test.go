@@ -20,12 +20,14 @@ import (
 	"context"
 	"flag"
 	"fmt"
+	"log"
 	"math"
 	"math/rand"
 	"os"
 	"os/exec"
 	"reflect"
 	"sort"
+	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -47,8 +49,10 @@ import (
 )
 
 const (
-	directPathIPV6Prefix = "[2001:4860:8040"
-	directPathIPV4Prefix = "34.126"
+	directPathIPV6Prefix      = "[2001:4860:8040"
+	directPathIPV4Prefix      = "34.126"
+	timeUntilResourceCleanup  = time.Hour * 48 // two days
+	prefixOfInstanceResources = "bt-it-"
 )
 
 var (
@@ -80,14 +84,18 @@ var instanceToCreate string
 
 func init() {
 	if runCreateInstanceTests {
-		instanceToCreate = fmt.Sprintf("create-%d", time.Now().Unix())
+		instanceToCreate = fmt.Sprintf("bt-it-%d", time.Now().Unix())
 	}
 }
 
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	c := integrationConfig
+	env, err := NewIntegrationEnv()
+	if err != nil {
+		panic(fmt.Sprintf("there was an issue creating an integration env: %v", err))
+	}
+	c := env.Config()
 	if c.UseProd {
 		fmt.Printf(
 			"Note: when using prod, you must first create an instance:\n"+
@@ -96,7 +104,43 @@ func TestMain(m *testing.M) {
 			c.Cluster, "us-central1-b", "1",
 		)
 	}
-	os.Exit(m.Run())
+	exit := m.Run()
+	if err := cleanup(c); err != nil {
+		log.Printf("Post-test cleanup failed: %v", err)
+	}
+	os.Exit(exit)
+}
+
+func cleanup(c IntegrationTestConfig) error {
+	// Cleanup resources marked with bt-it- after a time delay
+	if !c.UseProd {
+		return nil
+	}
+	ctx := context.Background()
+	iac, err := NewInstanceAdminClient(ctx, c.Project)
+	if err != nil {
+		return err
+	}
+	instances, err := iac.Instances(ctx)
+	if err != nil {
+		return err
+	}
+
+	for _, info := range instances {
+		if strings.HasPrefix(info.Name, prefixOfInstanceResources) {
+			timestamp := info.Name[len(prefixOfInstanceResources):]
+			t, err := strconv.ParseInt(timestamp, 10, 64)
+			if err != nil {
+				return err
+			}
+			uT := time.Unix(t, 0)
+			if time.Now().After(uT.Add(timeUntilResourceCleanup)) {
+				iac.DeleteInstance(ctx, info.Name)
+			}
+		}
+	}
+
+	return nil
 }
 
 func TestIntegration_ConditionalMutations(t *testing.T) {
@@ -1315,7 +1359,7 @@ func TestIntegration_TableIam(t *testing.T) {
 	iamHandle := adminClient.TableIAM("mytable")
 	p, err := iamHandle.Policy(ctx)
 	if err != nil {
-		t.Errorf("Iam GetPolicy mytable: %v", err)
+		t.Fatalf("Iam GetPolicy mytable: %v", err)
 	}
 	if err = iamHandle.SetPolicy(ctx, p); err != nil {
 		t.Errorf("Iam SetPolicy mytable: %v", err)
@@ -2151,7 +2195,6 @@ func TestIntegration_InstanceAdminClient_AppProfile(t *testing.T) {
 	}
 
 	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "app_profile1")
-	err = iAdminClient.DeleteAppProfile(ctx, adminClient.instance, "default")
 
 	defer iAdminClient.Close()
 	profile := ProfileConf{
