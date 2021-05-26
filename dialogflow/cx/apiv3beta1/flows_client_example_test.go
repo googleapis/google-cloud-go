@@ -30,18 +30,19 @@ func ExampleNewFlowsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleFlowsClient_CreateFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateFlowRequest{
 		// TODO: Fill request struct fields.
@@ -60,6 +61,7 @@ func ExampleFlowsClient_DeleteFlow() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteFlowRequest{
 		// TODO: Fill request struct fields.
@@ -71,14 +73,12 @@ func ExampleFlowsClient_DeleteFlow() {
 }
 
 func ExampleFlowsClient_ListFlows() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListFlowsRequest{
 		// TODO: Fill request struct fields.
@@ -98,13 +98,12 @@ func ExampleFlowsClient_ListFlows() {
 }
 
 func ExampleFlowsClient_GetFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetFlowRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleFlowsClient_GetFlow() {
 }
 
 func ExampleFlowsClient_UpdateFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateFlowRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleFlowsClient_UpdateFlow() {
 }
 
 func ExampleFlowsClient_TrainFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.TrainFlowRequest{
 		// TODO: Fill request struct fields.
@@ -161,13 +158,12 @@ func ExampleFlowsClient_TrainFlow() {
 }
 
 func ExampleFlowsClient_ValidateFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ValidateFlowRequest{
 		// TODO: Fill request struct fields.
@@ -181,13 +177,12 @@ func ExampleFlowsClient_ValidateFlow() {
 }
 
 func ExampleFlowsClient_GetFlowValidationResult() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetFlowValidationResultRequest{
 		// TODO: Fill request struct fields.
@@ -201,13 +196,12 @@ func ExampleFlowsClient_GetFlowValidationResult() {
 }
 
 func ExampleFlowsClient_ImportFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ImportFlowRequest{
 		// TODO: Fill request struct fields.
@@ -226,13 +220,12 @@ func ExampleFlowsClient_ImportFlow() {
 }
 
 func ExampleFlowsClient_ExportFlow() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ExportFlowRequest{
 		// TODO: Fill request struct fields.

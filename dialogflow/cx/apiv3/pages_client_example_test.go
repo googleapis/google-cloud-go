@@ -30,19 +30,19 @@ func ExampleNewPagesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePagesClient_ListPages() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewPagesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListPagesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExamplePagesClient_ListPages() {
 }
 
 func ExamplePagesClient_GetPage() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewPagesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetPageRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExamplePagesClient_GetPage() {
 }
 
 func ExamplePagesClient_CreatePage() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewPagesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreatePageRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExamplePagesClient_CreatePage() {
 }
 
 func ExamplePagesClient_UpdatePage() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewPagesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdatePageRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExamplePagesClient_DeletePage() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeletePageRequest{
 		// TODO: Fill request struct fields.

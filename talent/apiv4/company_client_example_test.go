@@ -30,18 +30,19 @@ func ExampleNewCompanyClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCompanyClient_CreateCompany() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CreateCompanyRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleCompanyClient_CreateCompany() {
 }
 
 func ExampleCompanyClient_GetCompany() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.GetCompanyRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleCompanyClient_GetCompany() {
 }
 
 func ExampleCompanyClient_UpdateCompany() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.UpdateCompanyRequest{
 		// TODO: Fill request struct fields.
@@ -100,6 +99,7 @@ func ExampleCompanyClient_DeleteCompany() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.DeleteCompanyRequest{
 		// TODO: Fill request struct fields.
@@ -111,14 +111,12 @@ func ExampleCompanyClient_DeleteCompany() {
 }
 
 func ExampleCompanyClient_ListCompanies() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewCompanyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListCompaniesRequest{
 		// TODO: Fill request struct fields.

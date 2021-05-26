@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.CreateMembershipRequest{
 		// TODO: Fill request struct fields.

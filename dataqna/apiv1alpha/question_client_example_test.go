@@ -29,18 +29,19 @@ func ExampleNewQuestionClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleQuestionClient_GetQuestion() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.GetQuestionRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleQuestionClient_GetQuestion() {
 }
 
 func ExampleQuestionClient_CreateQuestion() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.CreateQuestionRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleQuestionClient_CreateQuestion() {
 }
 
 func ExampleQuestionClient_ExecuteQuestion() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.
@@ -94,13 +93,12 @@ func ExampleQuestionClient_ExecuteQuestion() {
 }
 
 func ExampleQuestionClient_GetUserFeedback() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.GetUserFeedbackRequest{
 		// TODO: Fill request struct fields.
@@ -114,13 +112,12 @@ func ExampleQuestionClient_GetUserFeedback() {
 }
 
 func ExampleQuestionClient_UpdateUserFeedback() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.UpdateUserFeedbackRequest{
 		// TODO: Fill request struct fields.

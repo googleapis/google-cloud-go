@@ -31,18 +31,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateSourceRequest{
 		// TODO: Fill request struct fields.
@@ -56,13 +57,12 @@ func ExampleClient_CreateSource() {
 }
 
 func ExampleClient_CreateFinding() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateFindingRequest{
 		// TODO: Fill request struct fields.
@@ -76,13 +76,12 @@ func ExampleClient_CreateFinding() {
 }
 
 func ExampleClient_CreateNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.CreateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
@@ -101,6 +100,7 @@ func ExampleClient_DeleteNotificationConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.DeleteNotificationConfigRequest{
 		// TODO: Fill request struct fields.
@@ -112,13 +112,12 @@ func ExampleClient_DeleteNotificationConfig() {
 }
 
 func ExampleClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +131,12 @@ func ExampleClient_GetIamPolicy() {
 }
 
 func ExampleClient_GetNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetNotificationConfigRequest{
 		// TODO: Fill request struct fields.
@@ -152,13 +150,12 @@ func ExampleClient_GetNotificationConfig() {
 }
 
 func ExampleClient_GetOrganizationSettings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -172,13 +169,12 @@ func ExampleClient_GetOrganizationSettings() {
 }
 
 func ExampleClient_GetSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GetSourceRequest{
 		// TODO: Fill request struct fields.
@@ -192,14 +188,12 @@ func ExampleClient_GetSource() {
 }
 
 func ExampleClient_GroupAssets() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupAssetsRequest{
 		// TODO: Fill request struct fields.
@@ -219,14 +213,12 @@ func ExampleClient_GroupAssets() {
 }
 
 func ExampleClient_GroupFindings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupFindingsRequest{
 		// TODO: Fill request struct fields.
@@ -246,14 +238,12 @@ func ExampleClient_GroupFindings() {
 }
 
 func ExampleClient_ListAssets() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListAssetsRequest{
 		// TODO: Fill request struct fields.
@@ -273,14 +263,12 @@ func ExampleClient_ListAssets() {
 }
 
 func ExampleClient_ListFindings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListFindingsRequest{
 		// TODO: Fill request struct fields.
@@ -300,14 +288,12 @@ func ExampleClient_ListFindings() {
 }
 
 func ExampleClient_ListNotificationConfigs() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -327,14 +313,12 @@ func ExampleClient_ListNotificationConfigs() {
 }
 
 func ExampleClient_ListSources() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListSourcesRequest{
 		// TODO: Fill request struct fields.
@@ -354,13 +338,12 @@ func ExampleClient_ListSources() {
 }
 
 func ExampleClient_RunAssetDiscovery() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.RunAssetDiscoveryRequest{
 		// TODO: Fill request struct fields.
@@ -379,13 +362,12 @@ func ExampleClient_RunAssetDiscovery() {
 }
 
 func ExampleClient_SetFindingState() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.SetFindingStateRequest{
 		// TODO: Fill request struct fields.
@@ -399,13 +381,12 @@ func ExampleClient_SetFindingState() {
 }
 
 func ExampleClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -419,13 +400,12 @@ func ExampleClient_SetIamPolicy() {
 }
 
 func ExampleClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -439,13 +419,12 @@ func ExampleClient_TestIamPermissions() {
 }
 
 func ExampleClient_UpdateFinding() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateFindingRequest{
 		// TODO: Fill request struct fields.
@@ -459,13 +438,12 @@ func ExampleClient_UpdateFinding() {
 }
 
 func ExampleClient_UpdateNotificationConfig() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateNotificationConfigRequest{
 		// TODO: Fill request struct fields.
@@ -479,13 +457,12 @@ func ExampleClient_UpdateNotificationConfig() {
 }
 
 func ExampleClient_UpdateOrganizationSettings() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateOrganizationSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -499,13 +476,12 @@ func ExampleClient_UpdateOrganizationSettings() {
 }
 
 func ExampleClient_UpdateSource() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateSourceRequest{
 		// TODO: Fill request struct fields.
@@ -519,13 +495,12 @@ func ExampleClient_UpdateSource() {
 }
 
 func ExampleClient_UpdateSecurityMarks() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.UpdateSecurityMarksRequest{
 		// TODO: Fill request struct fields.

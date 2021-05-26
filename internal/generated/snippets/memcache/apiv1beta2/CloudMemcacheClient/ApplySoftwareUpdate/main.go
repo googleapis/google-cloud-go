@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1beta2"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.ApplySoftwareUpdateRequest{
 		// TODO: Fill request struct fields.

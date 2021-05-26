@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import websecurityscannerpb "google.golang.org/genproto/googleapis/cloud/websecurityscanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := websecurityscanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &websecurityscannerpb.ListScanConfigsRequest{
 		// TODO: Fill request struct fields.

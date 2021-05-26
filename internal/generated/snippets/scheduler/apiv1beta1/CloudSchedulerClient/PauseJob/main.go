@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1beta1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.PauseJobRequest{
 		// TODO: Fill request struct fields.

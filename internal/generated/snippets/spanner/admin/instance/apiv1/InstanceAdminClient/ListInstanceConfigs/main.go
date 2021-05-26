@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.ListInstanceConfigsRequest{
 		// TODO: Fill request struct fields.

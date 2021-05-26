@@ -29,18 +29,19 @@ func ExampleNewUserEventClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleUserEventClient_WriteUserEvent() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.WriteUserEventRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleUserEventClient_WriteUserEvent() {
 }
 
 func ExampleUserEventClient_CollectUserEvent() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.CollectUserEventRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleUserEventClient_CollectUserEvent() {
 }
 
 func ExampleUserEventClient_PurgeUserEvents() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.PurgeUserEventsRequest{
 		// TODO: Fill request struct fields.
@@ -99,13 +98,12 @@ func ExampleUserEventClient_PurgeUserEvents() {
 }
 
 func ExampleUserEventClient_ImportUserEvents() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.ImportUserEventsRequest{
 		// TODO: Fill request struct fields.
@@ -124,13 +122,12 @@ func ExampleUserEventClient_ImportUserEvents() {
 }
 
 func ExampleUserEventClient_RejoinUserEvents() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewUserEventClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.RejoinUserEventsRequest{
 		// TODO: Fill request struct fields.

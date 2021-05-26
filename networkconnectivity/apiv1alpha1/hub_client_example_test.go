@@ -30,19 +30,19 @@ func ExampleNewHubClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleHubClient_ListHubs() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.ListHubsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleHubClient_ListHubs() {
 }
 
 func ExampleHubClient_GetHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.GetHubRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleHubClient_GetHub() {
 }
 
 func ExampleHubClient_CreateHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.CreateHubRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleHubClient_CreateHub() {
 }
 
 func ExampleHubClient_UpdateHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.UpdateHubRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleHubClient_UpdateHub() {
 }
 
 func ExampleHubClient_DeleteHub() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.DeleteHubRequest{
 		// TODO: Fill request struct fields.
@@ -155,14 +151,12 @@ func ExampleHubClient_DeleteHub() {
 }
 
 func ExampleHubClient_ListSpokes() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.ListSpokesRequest{
 		// TODO: Fill request struct fields.
@@ -182,13 +176,12 @@ func ExampleHubClient_ListSpokes() {
 }
 
 func ExampleHubClient_GetSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.GetSpokeRequest{
 		// TODO: Fill request struct fields.
@@ -202,13 +195,12 @@ func ExampleHubClient_GetSpoke() {
 }
 
 func ExampleHubClient_CreateSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.CreateSpokeRequest{
 		// TODO: Fill request struct fields.
@@ -227,13 +219,12 @@ func ExampleHubClient_CreateSpoke() {
 }
 
 func ExampleHubClient_UpdateSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.UpdateSpokeRequest{
 		// TODO: Fill request struct fields.
@@ -252,13 +243,12 @@ func ExampleHubClient_UpdateSpoke() {
 }
 
 func ExampleHubClient_DeleteSpoke() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.DeleteSpokeRequest{
 		// TODO: Fill request struct fields.

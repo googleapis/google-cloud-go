@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.ListUsableSubnetworksRequest{
 		// TODO: Fill request struct fields.

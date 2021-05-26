@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.GetReferenceImageRequest{
 		// TODO: Fill request struct fields.

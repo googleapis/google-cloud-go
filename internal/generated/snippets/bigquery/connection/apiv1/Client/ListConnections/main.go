@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import connectionpb "google.golang.org/genproto/googleapis/cloud/bigquery/connection/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &connectionpb.ListConnectionsRequest{
 		// TODO: Fill request struct fields.

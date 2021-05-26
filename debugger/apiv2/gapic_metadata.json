@@ -1,27 +1,27 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.devtools.clouddebugger.v2",
-  "libraryPackage":  "cloud.google.com/go/debugger/apiv2",
-  "services":  {
-    "Controller2":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Controller2Client",
-          "rpcs":  {
-            "ListActiveBreakpoints":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.devtools.clouddebugger.v2",
+  "libraryPackage": "cloud.google.com/go/debugger/apiv2",
+  "services": {
+    "Controller2": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Controller2Client",
+          "rpcs": {
+            "ListActiveBreakpoints": {
+              "methods": [
                 "ListActiveBreakpoints"
               ]
             },
-            "RegisterDebuggee":  {
-              "methods":  [
+            "RegisterDebuggee": {
+              "methods": [
                 "RegisterDebuggee"
               ]
             },
-            "UpdateActiveBreakpoint":  {
-              "methods":  [
+            "UpdateActiveBreakpoint": {
+              "methods": [
                 "UpdateActiveBreakpoint"
               ]
             }
@@ -29,33 +29,33 @@
         }
       }
     },
-    "Debugger2":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Debugger2Client",
-          "rpcs":  {
-            "DeleteBreakpoint":  {
-              "methods":  [
+    "Debugger2": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Debugger2Client",
+          "rpcs": {
+            "DeleteBreakpoint": {
+              "methods": [
                 "DeleteBreakpoint"
               ]
             },
-            "GetBreakpoint":  {
-              "methods":  [
+            "GetBreakpoint": {
+              "methods": [
                 "GetBreakpoint"
               ]
             },
-            "ListBreakpoints":  {
-              "methods":  [
+            "ListBreakpoints": {
+              "methods": [
                 "ListBreakpoints"
               ]
             },
-            "ListDebuggees":  {
-              "methods":  [
+            "ListDebuggees": {
+              "methods": [
                 "ListDebuggees"
               ]
             },
-            "SetBreakpoint":  {
-              "methods":  [
+            "SetBreakpoint": {
+              "methods": [
                 "SetBreakpoint"
               ]
             }

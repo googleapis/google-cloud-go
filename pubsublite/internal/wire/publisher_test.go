@@ -1014,17 +1014,6 @@ func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {
 	})
 }
 
-func TestNewPublisherCreatesImpl(t *testing.T) {
-	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
-	const region = "us-central1"
-
-	if pub, err := NewPublisher(context.Background(), DefaultPublishSettings, region, topic); err != nil {
-		t.Errorf("NewPublisher() got error: %v", err)
-	} else if _, ok := pub.(*routingPublisher); !ok {
-		t.Error("NewPublisher() did not return a routingPublisher")
-	}
-}
-
 func TestNewPublisherValidatesSettings(t *testing.T) {
 	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
 	const region = "us-central1"
