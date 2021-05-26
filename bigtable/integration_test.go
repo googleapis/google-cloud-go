@@ -90,7 +90,10 @@ func init() {
 func TestMain(m *testing.M) {
 	flag.Parse()
 
-	env, _ := NewIntegrationEnv()
+	env, err := NewIntegrationEnv()
+	if err != nil {
+		panic(fmt.Sprintf("there was an issue creating an integration env: %v", err))
+	}
 	c := env.Config()
 	if c.UseProd {
 		fmt.Printf(
@@ -108,8 +111,8 @@ func TestMain(m *testing.M) {
 }
 
 func cleanup(c IntegrationTestConfig) error {
-	// Cleanup resources marked with bt-it-. Check timestamp, remove over 7D old.
-
+	// Cleanup resources marked with bt-it- after a time delay
+	timeToWait := time.Hour * 48 // two days
 	instancePrefix := "bt-it-"
 	if !c.UseProd {
 		return nil
@@ -133,9 +136,7 @@ func cleanup(c IntegrationTestConfig) error {
 				return err
 			}
 			uT := time.Unix(t, 0)
-			sevenDays := time.Hour * 24 * 7
-			if time.Now().After(uT.Add(sevenDays)) {
-				// delete an instance older than 7 days
+			if time.Now().After(uT.Add(timeToWait)) {
 				iac.DeleteInstance(ctx, info.Name)
 			}
 		}
