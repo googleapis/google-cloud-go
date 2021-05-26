@@ -52,6 +52,10 @@ func (tc *testCommitter) Terminate() {
 	tc.cmt.Terminate()
 }
 
+func (tc *testCommitter) BlockingReset() error {
+	return tc.cmt.BlockingReset()
+}
+
 func TestCommitterStreamReconnect(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
 	ack1 := newAckConsumer(33, 0, nil)
@@ -310,5 +314,161 @@ func TestCommitterZeroConfirmedOffsets(t *testing.T) {
 	wantMsg := "server acknowledged an invalid commit count"
 	if gotErr := cmt.FinalError(); !test.ErrorHasMsg(gotErr, wantMsg) {
 		t.Errorf("Final err: (%v), want msg: (%v)", gotErr, wantMsg)
+	}
+}
+
+func TestCommitterBlockingResetNormalCompletion(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack1 := newAckConsumer(33, 0, nil)
+	ack2 := newAckConsumer(55, 0, nil)
+	acks := newAckTracker()
+	acks.Push(ack1)
+	acks.Push(ack2)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	stream.Push(commitReq(34), commitResp(1), nil)
+	barrier := stream.PushWithBarrier(commitReq(56), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	complete := test.NewCondition("blocking reset complete")
+	go func() {
+		if err := cmt.BlockingReset(); err != nil {
+			t.Errorf("BlockingReset() got err: (%v), want: <nil>", err)
+		}
+		cmt.BlockingReset()
+		complete.SetDone()
+	}()
+	complete.VerifyNotDone(t)
+
+	ack1.Ack()
+	cmt.SendBatchCommit()
+	complete.VerifyNotDone(t)
+	ack2.Ack()
+	cmt.SendBatchCommit()
+
+	// Until the final commit response is received, committer.BlockingReset should
+	// not return.
+	barrier.ReleaseAfter(func() {
+		complete.VerifyNotDone(t)
+	})
+	complete.WaitUntilDone(t, serviceTestWaitTimeout)
+
+	// Ack tracker should be reset.
+	if got, want := acks.CommitOffset(), nilCursorOffset; got != want {
+		t.Errorf("ackTracker.CommitOffset() got %v, want %v", got, want)
+	}
+	if got, want := acks.Empty(), true; got != want {
+		t.Errorf("ackTracker.Empty() got %v, want %v", got, want)
+	}
+
+	// Calling committer.BlockingReset again should immediately return.
+	if err := cmt.BlockingReset(); err != nil {
+		t.Errorf("BlockingReset() got err: (%v), want: <nil>", err)
+	}
+
+	cmt.StopVerifyNoError()
+}
+
+func TestCommitterBlockingResetCommitterStopped(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack1 := newAckConsumer(33, 0, nil)
+	ack2 := newAckConsumer(55, 0, nil)
+	acks := newAckTracker()
+	acks.Push(ack1)
+	acks.Push(ack2)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	stream.Push(commitReq(34), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	complete := test.NewCondition("blocking reset complete")
+	go func() {
+		if got, want := cmt.BlockingReset(), ErrServiceStopped; !test.ErrorEqual(got, want) {
+			t.Errorf("BlockingReset() got: (%v), want: (%v)", got, want)
+		}
+		complete.SetDone()
+	}()
+	complete.VerifyNotDone(t)
+
+	ack1.Ack()
+	cmt.SendBatchCommit()
+	complete.VerifyNotDone(t)
+
+	// committer.BlockingReset should return when the committer is stopped.
+	cmt.Stop()
+	complete.WaitUntilDone(t, serviceTestWaitTimeout)
+
+	// Ack tracker should not be reset.
+	if got, want := acks.Empty(), false; got != want {
+		t.Errorf("ackTracker.Empty() got %v, want %v", got, want)
+	}
+
+	cmt.Terminate()
+	if gotErr := cmt.FinalError(); gotErr != nil {
+		t.Errorf("Final err: (%v), want: <nil>", gotErr)
+	}
+}
+
+func TestCommitterBlockingResetFatalError(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-subs", 0}
+	ack1 := newAckConsumer(33, 0, nil)
+	ack2 := newAckConsumer(55, 0, nil)
+	acks := newAckTracker()
+	acks.Push(ack1)
+	acks.Push(ack2)
+	serverErr := status.Error(codes.FailedPrecondition, "failed")
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	stream.Push(commitReq(34), nil, serverErr)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	cmt := newTestCommitter(t, subscription, acks)
+	if gotErr := cmt.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	complete := test.NewCondition("blocking reset complete")
+	go func() {
+		if got, want := cmt.BlockingReset(), ErrServiceStopped; !test.ErrorEqual(got, want) {
+			t.Errorf("BlockingReset() got: (%v), want: (%v)", got, want)
+		}
+		complete.SetDone()
+	}()
+	complete.VerifyNotDone(t)
+
+	ack1.Ack()
+	cmt.SendBatchCommit()
+
+	// committer.BlockingReset should return when the committer terminates due to
+	// fatal server error.
+	complete.WaitUntilDone(t, serviceTestWaitTimeout)
+
+	if gotErr := cmt.FinalError(); !test.ErrorEqual(gotErr, serverErr) {
+		t.Errorf("Final err: (%v), want: (%v)", gotErr, serverErr)
 	}
 }
