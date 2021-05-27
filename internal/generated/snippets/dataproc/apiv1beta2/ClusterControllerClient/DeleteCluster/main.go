@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataproc_generated_dataproc_apiv1beta2_ClusterControllerClient_DeleteCluster]
+// [START dataproc_v1beta2_generated_ClusterController_DeleteCluster_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1beta2"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DeleteClusterRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END dataproc_generated_dataproc_apiv1beta2_ClusterControllerClient_DeleteCluster]
+// [END dataproc_v1beta2_generated_ClusterController_DeleteCluster_sync]

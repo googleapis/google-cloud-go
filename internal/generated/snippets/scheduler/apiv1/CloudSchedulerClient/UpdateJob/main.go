@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudscheduler_generated_scheduler_apiv1_CloudSchedulerClient_UpdateJob]
+// [START cloudscheduler_v1_generated_CloudScheduler_UpdateJob_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import schedulerpb "google.golang.org/genproto/googleapis/cloud/scheduler/v1"
-
 	ctx := context.Background()
 	c, err := scheduler.NewCloudSchedulerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &schedulerpb.UpdateJobRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudscheduler_generated_scheduler_apiv1_CloudSchedulerClient_UpdateJob]
+// [END cloudscheduler_v1_generated_CloudScheduler_UpdateJob_sync]

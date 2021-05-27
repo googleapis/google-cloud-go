@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_ListOccurrences]
+// [START containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListOccurrences_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import grafeaspb "google.golang.org/genproto/googleapis/devtools/containeranalysis/v1beta1/grafeas"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := containeranalysis.NewGrafeasV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.ListOccurrencesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_ListOccurrences]
+// [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_ListOccurrences_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_ConversationsClient_CompleteConversation]
+// [START dialogflow_v2_generated_Conversations_CompleteConversation_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CompleteConversationRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_ConversationsClient_CompleteConversation]
+// [END dialogflow_v2_generated_Conversations_CompleteConversation_sync]

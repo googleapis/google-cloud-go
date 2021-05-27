@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START area120tables_generated_area120_tables_apiv1alpha1_Client_ListRows]
+// [START area120tables_v1alpha1_generated_TablesService_ListRows_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListRowsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END area120tables_generated_area120_tables_apiv1alpha1_Client_ListRows]
+// [END area120tables_v1alpha1_generated_TablesService_ListRows_sync]

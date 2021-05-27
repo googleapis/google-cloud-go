@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START memcache_generated_memcache_apiv1_CloudMemcacheClient_UpdateInstance]
+// [START memcache_v1_generated_CloudMemcache_UpdateInstance_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import memcachepb "google.golang.org/genproto/googleapis/cloud/memcache/v1"
-
 	ctx := context.Background()
 	c, err := memcache.NewCloudMemcacheClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &memcachepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END memcache_generated_memcache_apiv1_CloudMemcacheClient_UpdateInstance]
+// [END memcache_v1_generated_CloudMemcache_UpdateInstance_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START spanner_generated_spanner_admin_database_apiv1_DatabaseAdminClient_CreateDatabase]
+// [START spanner_v1_generated_DatabaseAdmin_CreateDatabase_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.CreateDatabaseRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END spanner_generated_spanner_admin_database_apiv1_DatabaseAdminClient_CreateDatabase]
+// [END spanner_v1_generated_DatabaseAdmin_CreateDatabase_sync]

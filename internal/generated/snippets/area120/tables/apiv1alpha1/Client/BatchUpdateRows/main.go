@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START area120tables_generated_area120_tables_apiv1alpha1_Client_BatchUpdateRows]
+// [START area120tables_v1alpha1_generated_TablesService_BatchUpdateRows_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.BatchUpdateRowsRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END area120tables_generated_area120_tables_apiv1alpha1_Client_BatchUpdateRows]
+// [END area120tables_v1alpha1_generated_TablesService_BatchUpdateRows_sync]

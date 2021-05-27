@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudbilling_generated_billing_apiv1_CloudBillingClient_SetIamPolicy]
+// [START cloudbilling_v1_generated_CloudBilling_SetIamPolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := billing.NewCloudBillingClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudbilling_generated_billing_apiv1_CloudBillingClient_SetIamPolicy]
+// [END cloudbilling_v1_generated_CloudBilling_SetIamPolicy_sync]

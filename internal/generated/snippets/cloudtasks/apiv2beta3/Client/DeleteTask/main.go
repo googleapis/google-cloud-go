@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtasks_generated_cloudtasks_apiv2beta3_Client_DeleteTask]
+// [START cloudtasks_v2beta3_generated_CloudTasks_DeleteTask_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.DeleteTaskRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END cloudtasks_generated_cloudtasks_apiv2beta3_Client_DeleteTask]
+// [END cloudtasks_v2beta3_generated_CloudTasks_DeleteTask_sync]

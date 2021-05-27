@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4beta1_ApplicationClient_ListApplications]
+// [START jobs_v4beta1_generated_ApplicationService_ListApplications_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewApplicationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListApplicationsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END jobs_generated_talent_apiv4beta1_ApplicationClient_ListApplications]
+// [END jobs_v4beta1_generated_ApplicationService_ListApplications_sync]

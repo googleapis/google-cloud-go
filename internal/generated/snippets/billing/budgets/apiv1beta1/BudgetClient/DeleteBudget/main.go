@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START billingbudgets_generated_billing_budgets_apiv1beta1_BudgetClient_DeleteBudget]
+// [START billingbudgets_v1beta1_generated_BudgetService_DeleteBudget_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &budgetspb.DeleteBudgetRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END billingbudgets_generated_billing_budgets_apiv1beta1_BudgetClient_DeleteBudget]
+// [END billingbudgets_v1beta1_generated_BudgetService_DeleteBudget_sync]

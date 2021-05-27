@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dlp_generated_dlp_apiv2_Client_DeleteDeidentifyTemplate]
+// [START dlp_v2_generated_DlpService_DeleteDeidentifyTemplate_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteDeidentifyTemplateRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END dlp_generated_dlp_apiv2_Client_DeleteDeidentifyTemplate]
+// [END dlp_v2_generated_DlpService_DeleteDeidentifyTemplate_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_DeleteOccurrence]
+// [START containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteOccurrence_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &grafeaspb.DeleteOccurrenceRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END containeranalysis_generated_containeranalysis_apiv1beta1_GrafeasV1Beta1Client_DeleteOccurrence]
+// [END containeranalysis_v1beta1_generated_GrafeasV1Beta1_DeleteOccurrence_sync]

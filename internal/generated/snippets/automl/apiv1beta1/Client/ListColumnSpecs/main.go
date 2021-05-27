@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START automl_generated_automl_apiv1beta1_Client_ListColumnSpecs]
+// [START automl_v1beta1_generated_AutoMl_ListColumnSpecs_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ListColumnSpecsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END automl_generated_automl_apiv1beta1_Client_ListColumnSpecs]
+// [END automl_v1beta1_generated_AutoMl_ListColumnSpecs_sync]

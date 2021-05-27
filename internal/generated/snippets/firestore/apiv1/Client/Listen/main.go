@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START firestore_generated_firestore_apiv1_Client_Listen]
+// [START firestore_v1_generated_Firestore_Listen_sync]
 
 package main
 
@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Listen(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -60,4 +59,4 @@ func main() {
 	}
 }
 
-// [END firestore_generated_firestore_apiv1_Client_Listen]
+// [END firestore_v1_generated_Firestore_Listen_sync]

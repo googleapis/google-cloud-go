@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerSerializationClient_ImportTaxonomies]
+// [START datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerSerializationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ImportTaxonomiesRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END datacatalog_generated_datacatalog_apiv1beta1_PolicyTagManagerSerializationClient_ImportTaxonomies]
+// [END datacatalog_v1beta1_generated_PolicyTagManagerSerialization_ImportTaxonomies_sync]

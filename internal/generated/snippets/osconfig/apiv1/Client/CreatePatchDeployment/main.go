@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1_Client_CreatePatchDeployment]
+// [START osconfig_v1_generated_OsConfigService_CreatePatchDeployment_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.CreatePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END osconfig_generated_osconfig_apiv1_Client_CreatePatchDeployment]
+// [END osconfig_v1_generated_OsConfigService_CreatePatchDeployment_sync]

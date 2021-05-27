@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_apiv1p1beta1_Client_TestIamPermissions]
+// [START securitycenter_v1p1beta1_generated_SecurityCenter_TestIamPermissions_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END securitycenter_generated_securitycenter_apiv1p1beta1_Client_TestIamPermissions]
+// [END securitycenter_v1p1beta1_generated_SecurityCenter_TestIamPermissions_sync]

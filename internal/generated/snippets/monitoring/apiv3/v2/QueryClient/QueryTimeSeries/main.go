@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_QueryClient_QueryTimeSeries]
+// [START monitoring_v3_generated_QueryService_QueryTimeSeries_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewQueryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.QueryTimeSeriesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_QueryClient_QueryTimeSeries]
+// [END monitoring_v3_generated_QueryService_QueryTimeSeries_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicecontrol_generated_servicecontrol_apiv1_ServiceControllerClient_Report]
+// [START servicecontrol_v1_generated_ServiceController_Report_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
-
 	ctx := context.Background()
 	c, err := servicecontrol.NewServiceControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicecontrolpb.ReportRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END servicecontrol_generated_servicecontrol_apiv1_ServiceControllerClient_Report]
+// [END servicecontrol_v1_generated_ServiceController_Report_sync]

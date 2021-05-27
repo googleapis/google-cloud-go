@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_ConfigClient_ListSinks]
+// [START logging_v2_generated_ConfigServiceV2_ListSinks_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := logging.NewConfigClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.ListSinksRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END logging_generated_logging_apiv2_ConfigClient_ListSinks]
+// [END logging_v2_generated_ConfigServiceV2_ListSinks_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_generated_pubsub_apiv1_PublisherClient_ListTopics]
+// [START pubsub_v1_generated_Publisher_ListTopics_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END pubsub_generated_pubsub_apiv1_PublisherClient_ListTopics]
+// [END pubsub_v1_generated_Publisher_ListTopics_sync]

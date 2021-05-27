@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START jobs_generated_talent_apiv4_JobClient_BatchDeleteJobs]
+// [START jobs_v4_generated_JobService_BatchDeleteJobs_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewJobClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.BatchDeleteJobsRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END jobs_generated_talent_apiv4_JobClient_BatchDeleteJobs]
+// [END jobs_v4_generated_JobService_BatchDeleteJobs_sync]

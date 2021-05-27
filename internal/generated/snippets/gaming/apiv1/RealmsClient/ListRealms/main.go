@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_RealmsClient_ListRealms]
+// [START gameservices_v1_generated_RealmsService_ListRealms_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gaming.NewRealmsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.ListRealmsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1_RealmsClient_ListRealms]
+// [END gameservices_v1_generated_RealmsService_ListRealms_sync]

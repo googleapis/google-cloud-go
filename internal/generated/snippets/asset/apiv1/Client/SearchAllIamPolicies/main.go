@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudasset_generated_asset_apiv1_Client_SearchAllIamPolicies]
+// [START cloudasset_v1_generated_AssetService_SearchAllIamPolicies_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.SearchAllIamPoliciesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudasset_generated_asset_apiv1_Client_SearchAllIamPolicies]
+// [END cloudasset_v1_generated_AssetService_SearchAllIamPolicies_sync]

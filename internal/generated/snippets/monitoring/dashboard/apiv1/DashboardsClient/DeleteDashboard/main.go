@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_dashboard_apiv1_DashboardsClient_DeleteDashboard]
+// [START monitoring_v1_generated_DashboardsService_DeleteDashboard_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_dashboard_apiv1_DashboardsClient_DeleteDashboard]
+// [END monitoring_v1_generated_DashboardsService_DeleteDashboard_sync]

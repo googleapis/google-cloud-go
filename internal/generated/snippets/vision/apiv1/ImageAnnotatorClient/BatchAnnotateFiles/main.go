@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START vision_generated_vision_apiv1_ImageAnnotatorClient_BatchAnnotateFiles]
+// [START vision_v1_generated_ImageAnnotator_BatchAnnotateFiles_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-
 	ctx := context.Background()
 	c, err := vision.NewImageAnnotatorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.BatchAnnotateFilesRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END vision_generated_vision_apiv1_ImageAnnotatorClient_BatchAnnotateFiles]
+// [END vision_v1_generated_ImageAnnotator_BatchAnnotateFiles_sync]

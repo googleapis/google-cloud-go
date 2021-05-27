@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START container_generated_container_apiv1_ClusterManagerClient_SetNetworkPolicy]
+// [START container_v1_generated_ClusterManager_SetNetworkPolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetNetworkPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END container_generated_container_apiv1_ClusterManagerClient_SetNetworkPolicy]
+// [END container_v1_generated_ClusterManager_SetNetworkPolicy_sync]

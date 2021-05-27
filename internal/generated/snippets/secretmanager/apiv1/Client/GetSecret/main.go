@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START secretmanager_generated_secretmanager_apiv1_Client_GetSecret]
+// [START secretmanager_v1_generated_SecretManagerService_GetSecret_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import secretmanagerpb "google.golang.org/genproto/googleapis/cloud/secretmanager/v1"
-
 	ctx := context.Background()
 	c, err := secretmanager.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &secretmanagerpb.GetSecretRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END secretmanager_generated_secretmanager_apiv1_Client_GetSecret]
+// [END secretmanager_v1_generated_SecretManagerService_GetSecret_sync]

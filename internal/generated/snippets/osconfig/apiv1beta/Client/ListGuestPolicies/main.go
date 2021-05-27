@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1beta_Client_ListGuestPolicies]
+// [START osconfig_v1beta_generated_OsConfigService_ListGuestPolicies_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListGuestPoliciesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END osconfig_generated_osconfig_apiv1beta_Client_ListGuestPolicies]
+// [END osconfig_v1beta_generated_OsConfigService_ListGuestPolicies_sync]

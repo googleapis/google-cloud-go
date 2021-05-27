@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtasks_generated_cloudtasks_apiv2_Client_ListTasks]
+// [START cloudtasks_v2_generated_CloudTasks_ListTasks_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.ListTasksRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudtasks_generated_cloudtasks_apiv2_Client_ListTasks]
+// [END cloudtasks_v2_generated_CloudTasks_ListTasks_sync]

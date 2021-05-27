@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START longrunning_generated_longrunning_autogen_OperationsClient_WaitOperation]
+// [START longrunning_longrunning_generated_Operations_WaitOperation_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import longrunningpb "google.golang.org/genproto/googleapis/longrunning"
-
 	ctx := context.Background()
 	c, err := longrunning.NewOperationsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &longrunningpb.WaitOperationRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END longrunning_generated_longrunning_autogen_OperationsClient_WaitOperation]
+// [END longrunning_longrunning_generated_Operations_WaitOperation_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START vision_generated_vision_apiv1_ProductSearchClient_DeleteReferenceImage]
+// [START vision_v1_generated_ProductSearch_DeleteReferenceImage_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.DeleteReferenceImageRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END vision_generated_vision_apiv1_ProductSearchClient_DeleteReferenceImage]
+// [END vision_v1_generated_ProductSearch_DeleteReferenceImage_sync]

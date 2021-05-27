@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_GroupClient_UpdateGroup]
+// [START monitoring_v3_generated_GroupService_UpdateGroup_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewGroupClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateGroupRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_GroupClient_UpdateGroup]
+// [END monitoring_v3_generated_GroupService_UpdateGroup_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_CheckValidCreds]
+// [START bigquerydatatransfer_v1_generated_DataTransferService_CheckValidCreds_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.CheckValidCredsRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerydatatransfer_generated_bigquery_datatransfer_apiv1_Client_CheckValidCreds]
+// [END bigquerydatatransfer_v1_generated_DataTransferService_CheckValidCreds_sync]

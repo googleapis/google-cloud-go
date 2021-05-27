@@ -14,12 +14,12 @@ jobs:
         with:
           # token: ${{ secrets.FORKING_TOKEN }}
           token: ${{ secrets.FORKING_TOKEN }}
-          release-type: go
+          release-type: go-yoshi
           bump-minor-pre-major: true
           fork: true
           package-name: google-cloud-go
           command: release-pr
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v4
         id: label # Add the magic "autorelease: pending" label.
         if: ${{ steps.release-pr.outputs.pr }}
         with:
@@ -40,13 +40,13 @@ jobs:
         id: tag-release
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: go
+          release-type: go-yoshi
           package-name: google-cloud-go
           command: github-release
           changelog-path: CHANGES.md
       # Add the "autorelease: published" and remove tagged, this allows
       # monitoring to be enabled that detects failed releases:
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v4
         id: untag-release
         if: ${{steps.tag-release.outputs.pr}}
         with:

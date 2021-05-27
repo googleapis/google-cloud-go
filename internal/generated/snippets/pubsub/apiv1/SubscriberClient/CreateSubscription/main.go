@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_generated_pubsub_apiv1_SubscriberClient_CreateSubscription]
+// [START pubsub_v1_generated_Subscriber_CreateSubscription_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.Subscription{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END pubsub_generated_pubsub_apiv1_SubscriberClient_CreateSubscription]
+// [END pubsub_v1_generated_Subscriber_CreateSubscription_sync]

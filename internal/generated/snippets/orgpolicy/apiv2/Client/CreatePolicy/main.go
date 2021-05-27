@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START orgpolicy_generated_orgpolicy_apiv2_Client_CreatePolicy]
+// [START orgpolicy_v2_generated_OrgPolicy_CreatePolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import orgpolicypb "google.golang.org/genproto/googleapis/cloud/orgpolicy/v2"
-
 	ctx := context.Background()
 	c, err := orgpolicy.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &orgpolicypb.CreatePolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END orgpolicy_generated_orgpolicy_apiv2_Client_CreatePolicy]
+// [END orgpolicy_v2_generated_OrgPolicy_CreatePolicy_sync]

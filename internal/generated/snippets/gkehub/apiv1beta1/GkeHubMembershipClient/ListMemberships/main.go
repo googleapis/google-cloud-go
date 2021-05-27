@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gkehub_generated_gkehub_apiv1beta1_GkeHubMembershipClient_ListMemberships]
+// [START gkehub_v1beta1_generated_GkeHubMembershipService_ListMemberships_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.ListMembershipsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END gkehub_generated_gkehub_apiv1beta1_GkeHubMembershipClient_ListMemberships]
+// [END gkehub_v1beta1_generated_GkeHubMembershipService_ListMemberships_sync]

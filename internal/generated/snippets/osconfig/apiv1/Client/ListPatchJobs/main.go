@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1_Client_ListPatchJobs]
+// [START osconfig_v1_generated_OsConfigService_ListPatchJobs_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchJobsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END osconfig_generated_osconfig_apiv1_Client_ListPatchJobs]
+// [END osconfig_v1_generated_OsConfigService_ListPatchJobs_sync]

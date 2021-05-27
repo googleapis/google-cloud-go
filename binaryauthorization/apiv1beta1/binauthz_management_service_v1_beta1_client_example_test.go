@@ -30,18 +30,19 @@ func ExampleNewBinauthzManagementServiceV1Beta1Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_GetPolicy() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.GetPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleBinauthzManagementServiceV1Beta1Client_GetPolicy() {
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_UpdatePolicy() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.UpdatePolicyRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleBinauthzManagementServiceV1Beta1Client_UpdatePolicy() {
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_CreateAttestor() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.CreateAttestorRequest{
 		// TODO: Fill request struct fields.
@@ -95,13 +94,12 @@ func ExampleBinauthzManagementServiceV1Beta1Client_CreateAttestor() {
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_GetAttestor() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.GetAttestorRequest{
 		// TODO: Fill request struct fields.
@@ -115,13 +113,12 @@ func ExampleBinauthzManagementServiceV1Beta1Client_GetAttestor() {
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.UpdateAttestorRequest{
 		// TODO: Fill request struct fields.
@@ -135,14 +132,12 @@ func ExampleBinauthzManagementServiceV1Beta1Client_UpdateAttestor() {
 }
 
 func ExampleBinauthzManagementServiceV1Beta1Client_ListAttestors() {
-	// import binaryauthorizationpb "google.golang.org/genproto/googleapis/cloud/binaryauthorization/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := binaryauthorization.NewBinauthzManagementServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.ListAttestorsRequest{
 		// TODO: Fill request struct fields.
@@ -167,6 +162,7 @@ func ExampleBinauthzManagementServiceV1Beta1Client_DeleteAttestor() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &binaryauthorizationpb.DeleteAttestorRequest{
 		// TODO: Fill request struct fields.

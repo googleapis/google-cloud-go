@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_DeleteWorkload]
+// [START assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assuredworkloadspb.DeleteWorkloadRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_DeleteWorkload]
+// [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_DeleteWorkload_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START notebooks_generated_notebooks_apiv1beta1_NotebookClient_DeleteInstance]
+// [START notebooks_v1beta1_generated_NotebookService_DeleteInstance_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
-
 	ctx := context.Background()
 	c, err := notebooks.NewNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &notebookspb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END notebooks_generated_notebooks_apiv1beta1_NotebookClient_DeleteInstance]
+// [END notebooks_v1beta1_generated_NotebookService_DeleteInstance_sync]

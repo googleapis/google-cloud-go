@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudfunctions_generated_functions_apiv1_CloudFunctionsClient_ListFunctions]
+// [START cloudfunctions_v1_generated_CloudFunctionsService_ListFunctions_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudfunctions_generated_functions_apiv1_CloudFunctionsClient_ListFunctions]
+// [END cloudfunctions_v1_generated_CloudFunctionsService_ListFunctions_sync]

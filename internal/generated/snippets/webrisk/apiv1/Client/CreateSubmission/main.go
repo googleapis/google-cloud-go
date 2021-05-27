@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START webrisk_generated_webrisk_apiv1_Client_CreateSubmission]
+// [START webrisk_v1_generated_WebRiskService_CreateSubmission_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.CreateSubmissionRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END webrisk_generated_webrisk_apiv1_Client_CreateSubmission]
+// [END webrisk_v1_generated_WebRiskService_CreateSubmission_sync]

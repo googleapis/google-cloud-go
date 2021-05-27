@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_GameServerConfigsClient_GetGameServerConfig]
+// [START gameservices_v1_generated_GameServerConfigsService_GetGameServerConfig_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.GetGameServerConfigRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END gameservices_generated_gaming_apiv1_GameServerConfigsClient_GetGameServerConfig]
+// [END gameservices_v1_generated_GameServerConfigsService_GetGameServerConfig_sync]

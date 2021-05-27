@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START billingbudgets_generated_billing_budgets_apiv1_BudgetClient_UpdateBudget]
+// [START billingbudgets_v1_generated_BudgetService_UpdateBudget_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import budgetspb "google.golang.org/genproto/googleapis/cloud/billing/budgets/v1"
-
 	ctx := context.Background()
 	c, err := budgets.NewBudgetClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &budgetspb.UpdateBudgetRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END billingbudgets_generated_billing_budgets_apiv1_BudgetClient_UpdateBudget]
+// [END billingbudgets_v1_generated_BudgetService_UpdateBudget_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_dashboard_apiv1_DashboardsClient_UpdateDashboard]
+// [START monitoring_v1_generated_DashboardsService_UpdateDashboard_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.UpdateDashboardRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END monitoring_generated_monitoring_dashboard_apiv1_DashboardsClient_UpdateDashboard]
+// [END monitoring_v1_generated_DashboardsService_UpdateDashboard_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START appengine_generated_appengine_apiv1_DomainMappingsClient_DeleteDomainMapping]
+// [START appengine_v1_generated_DomainMappings_DeleteDomainMapping_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteDomainMappingRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END appengine_generated_appengine_apiv1_DomainMappingsClient_DeleteDomainMapping]
+// [END appengine_v1_generated_DomainMappings_DeleteDomainMapping_sync]

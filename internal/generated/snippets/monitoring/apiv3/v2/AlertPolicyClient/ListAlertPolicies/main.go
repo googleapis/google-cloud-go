@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_AlertPolicyClient_ListAlertPolicies]
+// [START monitoring_v3_generated_AlertPolicyService_ListAlertPolicies_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewAlertPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListAlertPoliciesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_AlertPolicyClient_ListAlertPolicies]
+// [END monitoring_v3_generated_AlertPolicyService_ListAlertPolicies_sync]

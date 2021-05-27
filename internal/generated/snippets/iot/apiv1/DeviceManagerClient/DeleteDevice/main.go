@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudiot_generated_iot_apiv1_DeviceManagerClient_DeleteDevice]
+// [START cloudiot_v1_generated_DeviceManager_DeleteDevice_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iotpb.DeleteDeviceRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END cloudiot_generated_iot_apiv1_DeviceManagerClient_DeleteDevice]
+// [END cloudiot_v1_generated_DeviceManager_DeleteDevice_sync]

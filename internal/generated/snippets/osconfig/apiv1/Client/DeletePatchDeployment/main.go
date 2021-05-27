@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START osconfig_generated_osconfig_apiv1_Client_DeletePatchDeployment]
+// [START osconfig_v1_generated_OsConfigService_DeletePatchDeployment_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.DeletePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END osconfig_generated_osconfig_apiv1_Client_DeletePatchDeployment]
+// [END osconfig_v1_generated_OsConfigService_DeletePatchDeployment_sync]

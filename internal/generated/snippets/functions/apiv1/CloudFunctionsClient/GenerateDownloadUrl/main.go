@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudfunctions_generated_functions_apiv1_CloudFunctionsClient_GenerateDownloadUrl]
+// [START cloudfunctions_v1_generated_CloudFunctionsService_GenerateDownloadUrl_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.GenerateDownloadUrlRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudfunctions_generated_functions_apiv1_CloudFunctionsClient_GenerateDownloadUrl]
+// [END cloudfunctions_v1_generated_CloudFunctionsService_GenerateDownloadUrl_sync]

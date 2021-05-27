@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudasset_generated_asset_apiv1_Client_CreateFeed]
+// [START cloudasset_v1_generated_AssetService_CreateFeed_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.CreateFeedRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END cloudasset_generated_asset_apiv1_Client_CreateFeed]
+// [END cloudasset_v1_generated_AssetService_CreateFeed_sync]

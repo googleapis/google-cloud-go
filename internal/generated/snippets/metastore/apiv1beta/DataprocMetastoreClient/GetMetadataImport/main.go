@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START metastore_generated_metastore_apiv1beta_DataprocMetastoreClient_GetMetadataImport]
+// [START metastore_v1beta_generated_DataprocMetastore_GetMetadataImport_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import metastorepb "google.golang.org/genproto/googleapis/cloud/metastore/v1beta"
-
 	ctx := context.Background()
 	c, err := metastore.NewDataprocMetastoreClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &metastorepb.GetMetadataImportRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END metastore_generated_metastore_apiv1beta_DataprocMetastoreClient_GetMetadataImport]
+// [END metastore_v1beta_generated_DataprocMetastore_GetMetadataImport_sync]

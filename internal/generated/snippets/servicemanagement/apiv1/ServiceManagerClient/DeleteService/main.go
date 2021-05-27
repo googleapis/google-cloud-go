@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START servicemanagement_generated_servicemanagement_apiv1_ServiceManagerClient_DeleteService]
+// [START servicemanagement_v1_generated_ServiceManager_DeleteService_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END servicemanagement_generated_servicemanagement_apiv1_ServiceManagerClient_DeleteService]
+// [END servicemanagement_v1_generated_ServiceManager_DeleteService_sync]

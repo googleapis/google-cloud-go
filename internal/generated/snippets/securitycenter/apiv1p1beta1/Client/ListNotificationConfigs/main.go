@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_apiv1p1beta1_Client_ListNotificationConfigs]
+// [START securitycenter_v1p1beta1_generated_SecurityCenter_ListNotificationConfigs_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1p1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.ListNotificationConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END securitycenter_generated_securitycenter_apiv1p1beta1_Client_ListNotificationConfigs]
+// [END securitycenter_v1p1beta1_generated_SecurityCenter_ListNotificationConfigs_sync]

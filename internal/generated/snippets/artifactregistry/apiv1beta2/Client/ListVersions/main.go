@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START artifactregistry_generated_artifactregistry_apiv1beta2_Client_ListVersions]
+// [START artifactregistry_v1beta2_generated_ArtifactRegistry_ListVersions_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import artifactregistrypb "google.golang.org/genproto/googleapis/devtools/artifactregistry/v1beta2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := artifactregistry.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &artifactregistrypb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END artifactregistry_generated_artifactregistry_apiv1beta2_Client_ListVersions]
+// [END artifactregistry_v1beta2_generated_ArtifactRegistry_ListVersions_sync]

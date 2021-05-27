@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_ServiceMonitoringClient_GetServiceLevelObjective]
+// [START monitoring_v3_generated_ServiceMonitoringService_GetServiceLevelObjective_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewServiceMonitoringClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetServiceLevelObjectiveRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_ServiceMonitoringClient_GetServiceLevelObjective]
+// [END monitoring_v3_generated_ServiceMonitoringService_GetServiceLevelObjective_sync]

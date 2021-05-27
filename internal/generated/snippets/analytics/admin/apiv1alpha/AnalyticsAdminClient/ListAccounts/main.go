@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_ListAccounts]
+// [START analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccounts_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAccountsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END analyticsadmin_generated_analytics_admin_apiv1alpha_AnalyticsAdminClient_ListAccounts]
+// [END analyticsadmin_v1alpha_generated_AnalyticsAdminService_ListAccounts_sync]

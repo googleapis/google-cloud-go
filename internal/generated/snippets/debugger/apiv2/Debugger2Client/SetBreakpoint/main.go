@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START clouddebugger_generated_debugger_apiv2_Debugger2Client_SetBreakpoint]
+// [START clouddebugger_v2_generated_Debugger2_SetBreakpoint_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.SetBreakpointRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END clouddebugger_generated_debugger_apiv2_Debugger2Client_SetBreakpoint]
+// [END clouddebugger_v2_generated_Debugger2_SetBreakpoint_sync]

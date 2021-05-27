@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START texttospeech_generated_texttospeech_apiv1_Client_ListVoices]
+// [START texttospeech_v1_generated_TextToSpeech_ListVoices_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
-
 	ctx := context.Background()
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END texttospeech_generated_texttospeech_apiv1_Client_ListVoices]
+// [END texttospeech_v1_generated_TextToSpeech_ListVoices_sync]

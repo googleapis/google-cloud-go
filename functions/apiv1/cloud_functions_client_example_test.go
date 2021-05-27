@@ -31,19 +31,19 @@ func ExampleNewCloudFunctionsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudFunctionsClient_ListFunctions() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.ListFunctionsRequest{
 		// TODO: Fill request struct fields.
@@ -63,13 +63,12 @@ func ExampleCloudFunctionsClient_ListFunctions() {
 }
 
 func ExampleCloudFunctionsClient_GetFunction() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.GetFunctionRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleCloudFunctionsClient_GetFunction() {
 }
 
 func ExampleCloudFunctionsClient_CreateFunction() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.CreateFunctionRequest{
 		// TODO: Fill request struct fields.
@@ -108,13 +106,12 @@ func ExampleCloudFunctionsClient_CreateFunction() {
 }
 
 func ExampleCloudFunctionsClient_UpdateFunction() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.UpdateFunctionRequest{
 		// TODO: Fill request struct fields.
@@ -133,13 +130,12 @@ func ExampleCloudFunctionsClient_UpdateFunction() {
 }
 
 func ExampleCloudFunctionsClient_DeleteFunction() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.DeleteFunctionRequest{
 		// TODO: Fill request struct fields.
@@ -156,13 +152,12 @@ func ExampleCloudFunctionsClient_DeleteFunction() {
 }
 
 func ExampleCloudFunctionsClient_CallFunction() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.CallFunctionRequest{
 		// TODO: Fill request struct fields.
@@ -176,13 +171,12 @@ func ExampleCloudFunctionsClient_CallFunction() {
 }
 
 func ExampleCloudFunctionsClient_GenerateUploadUrl() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.GenerateUploadUrlRequest{
 		// TODO: Fill request struct fields.
@@ -196,13 +190,12 @@ func ExampleCloudFunctionsClient_GenerateUploadUrl() {
 }
 
 func ExampleCloudFunctionsClient_GenerateDownloadUrl() {
-	// import functionspb "google.golang.org/genproto/googleapis/cloud/functions/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &functionspb.GenerateDownloadUrlRequest{
 		// TODO: Fill request struct fields.
@@ -216,13 +209,12 @@ func ExampleCloudFunctionsClient_GenerateDownloadUrl() {
 }
 
 func ExampleCloudFunctionsClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -236,13 +228,12 @@ func ExampleCloudFunctionsClient_SetIamPolicy() {
 }
 
 func ExampleCloudFunctionsClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -256,13 +247,12 @@ func ExampleCloudFunctionsClient_GetIamPolicy() {
 }
 
 func ExampleCloudFunctionsClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := functions.NewCloudFunctionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

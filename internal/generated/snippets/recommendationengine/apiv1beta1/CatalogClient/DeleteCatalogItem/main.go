@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_CatalogClient_DeleteCatalogItem]
+// [START recommendationengine_v1beta1_generated_CatalogService_DeleteCatalogItem_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.DeleteCatalogItemRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_CatalogClient_DeleteCatalogItem]
+// [END recommendationengine_v1beta1_generated_CatalogService_DeleteCatalogItem_sync]

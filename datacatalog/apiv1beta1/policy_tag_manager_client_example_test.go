@@ -31,18 +31,19 @@ func ExampleNewPolicyTagManagerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePolicyTagManagerClient_CreateTaxonomy() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreateTaxonomyRequest{
 		// TODO: Fill request struct fields.
@@ -61,6 +62,7 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteTaxonomyRequest{
 		// TODO: Fill request struct fields.
@@ -72,13 +74,12 @@ func ExamplePolicyTagManagerClient_DeleteTaxonomy() {
 }
 
 func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdateTaxonomyRequest{
 		// TODO: Fill request struct fields.
@@ -92,14 +93,12 @@ func ExamplePolicyTagManagerClient_UpdateTaxonomy() {
 }
 
 func ExamplePolicyTagManagerClient_ListTaxonomies() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ListTaxonomiesRequest{
 		// TODO: Fill request struct fields.
@@ -119,13 +118,12 @@ func ExamplePolicyTagManagerClient_ListTaxonomies() {
 }
 
 func ExamplePolicyTagManagerClient_GetTaxonomy() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.GetTaxonomyRequest{
 		// TODO: Fill request struct fields.
@@ -139,13 +137,12 @@ func ExamplePolicyTagManagerClient_GetTaxonomy() {
 }
 
 func ExamplePolicyTagManagerClient_CreatePolicyTag() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.CreatePolicyTagRequest{
 		// TODO: Fill request struct fields.
@@ -164,6 +161,7 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeletePolicyTagRequest{
 		// TODO: Fill request struct fields.
@@ -175,13 +173,12 @@ func ExamplePolicyTagManagerClient_DeletePolicyTag() {
 }
 
 func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.UpdatePolicyTagRequest{
 		// TODO: Fill request struct fields.
@@ -195,14 +192,12 @@ func ExamplePolicyTagManagerClient_UpdatePolicyTag() {
 }
 
 func ExamplePolicyTagManagerClient_ListPolicyTags() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ListPolicyTagsRequest{
 		// TODO: Fill request struct fields.
@@ -222,13 +217,12 @@ func ExamplePolicyTagManagerClient_ListPolicyTags() {
 }
 
 func ExamplePolicyTagManagerClient_GetPolicyTag() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1beta1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.GetPolicyTagRequest{
 		// TODO: Fill request struct fields.
@@ -242,13 +236,12 @@ func ExamplePolicyTagManagerClient_GetPolicyTag() {
 }
 
 func ExamplePolicyTagManagerClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -262,13 +255,12 @@ func ExamplePolicyTagManagerClient_GetIamPolicy() {
 }
 
 func ExamplePolicyTagManagerClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -282,13 +274,12 @@ func ExamplePolicyTagManagerClient_SetIamPolicy() {
 }
 
 func ExamplePolicyTagManagerClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

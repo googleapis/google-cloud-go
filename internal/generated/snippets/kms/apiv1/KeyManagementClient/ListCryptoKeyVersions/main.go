@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudkms_generated_kms_apiv1_KeyManagementClient_ListCryptoKeyVersions]
+// [START cloudkms_v1_generated_KeyManagementService_ListCryptoKeyVersions_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &kmspb.ListCryptoKeyVersionsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudkms_generated_kms_apiv1_KeyManagementClient_ListCryptoKeyVersions]
+// [END cloudkms_v1_generated_KeyManagementService_ListCryptoKeyVersions_sync]

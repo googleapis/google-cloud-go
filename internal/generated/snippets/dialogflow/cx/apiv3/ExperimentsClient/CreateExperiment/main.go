@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_ExperimentsClient_CreateExperiment]
+// [START dialogflow_v3_generated_Experiments_CreateExperiment_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewExperimentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateExperimentRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_ExperimentsClient_CreateExperiment]
+// [END dialogflow_v3_generated_Experiments_CreateExperiment_sync]

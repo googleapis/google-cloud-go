@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_apiv2_EntityTypesClient_BatchDeleteEntities]
+// [START dialogflow_v2_generated_EntityTypes_BatchDeleteEntities_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.BatchDeleteEntitiesRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_apiv2_EntityTypesClient_BatchDeleteEntities]
+// [END dialogflow_v2_generated_EntityTypes_BatchDeleteEntities_sync]

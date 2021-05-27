@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_CursorClient_ListPartitionCursors]
+// [START pubsublite_v1_generated_CursorService_ListPartitionCursors_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewCursorClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListPartitionCursorsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_CursorClient_ListPartitionCursors]
+// [END pubsublite_v1_generated_CursorService_ListPartitionCursors_sync]

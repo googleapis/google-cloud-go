@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START workflows_generated_workflows_apiv1beta_Client_ListWorkflows]
+// [START workflows_v1beta_generated_Workflows_ListWorkflows_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.ListWorkflowsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END workflows_generated_workflows_apiv1beta_Client_ListWorkflows]
+// [END workflows_v1beta_generated_Workflows_ListWorkflows_sync]

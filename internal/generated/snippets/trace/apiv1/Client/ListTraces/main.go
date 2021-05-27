@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtrace_generated_trace_apiv1_Client_ListTraces]
+// [START cloudtrace_v1_generated_TraceService_ListTraces_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := trace.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.ListTracesRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudtrace_generated_trace_apiv1_Client_ListTraces]
+// [END cloudtrace_v1_generated_TraceService_ListTraces_sync]

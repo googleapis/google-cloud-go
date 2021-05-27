@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START managedidentities_generated_managedidentities_apiv1_Client_ResetAdminPassword]
+// [START managedidentities_v1_generated_ManagedIdentitiesService_ResetAdminPassword_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ResetAdminPasswordRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END managedidentities_generated_managedidentities_apiv1_Client_ResetAdminPassword]
+// [END managedidentities_v1_generated_ManagedIdentitiesService_ResetAdminPassword_sync]

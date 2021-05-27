@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommender_generated_recommender_apiv1_Client_ListInsights]
+// [START recommender_v1_generated_Recommender_ListInsights_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import recommenderpb "google.golang.org/genproto/googleapis/cloud/recommender/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recommender.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommenderpb.ListInsightsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END recommender_generated_recommender_apiv1_Client_ListInsights]
+// [END recommender_v1_generated_Recommender_ListInsights_sync]

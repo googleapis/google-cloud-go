@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_EntityTypesClient_GetEntityType]
+// [START dialogflow_v3_generated_EntityTypes_GetEntityType_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_EntityTypesClient_GetEntityType]
+// [END dialogflow_v3_generated_EntityTypes_GetEntityType_sync]

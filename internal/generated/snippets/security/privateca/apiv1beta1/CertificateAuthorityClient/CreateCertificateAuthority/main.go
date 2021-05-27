@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START privateca_generated_security_privateca_apiv1beta1_CertificateAuthorityClient_CreateCertificateAuthority]
+// [START privateca_v1beta1_generated_CertificateAuthorityService_CreateCertificateAuthority_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-
 	ctx := context.Background()
 	c, err := privateca.NewCertificateAuthorityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &privatecapb.CreateCertificateAuthorityRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END privateca_generated_security_privateca_apiv1beta1_CertificateAuthorityClient_CreateCertificateAuthority]
+// [END privateca_v1beta1_generated_CertificateAuthorityService_CreateCertificateAuthority_sync]

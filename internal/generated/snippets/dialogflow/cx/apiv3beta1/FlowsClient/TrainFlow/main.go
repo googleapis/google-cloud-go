@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3beta1_FlowsClient_TrainFlow]
+// [START dialogflow_v3beta1_generated_Flows_TrainFlow_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewFlowsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.TrainFlowRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3beta1_FlowsClient_TrainFlow]
+// [END dialogflow_v3beta1_generated_Flows_TrainFlow_sync]

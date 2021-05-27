@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsub_generated_pubsub_apiv1_SubscriberClient_DeleteSnapshot]
+// [START pubsub_v1_generated_Subscriber_DeleteSnapshot_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.DeleteSnapshotRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END pubsub_generated_pubsub_apiv1_SubscriberClient_DeleteSnapshot]
+// [END pubsub_v1_generated_Subscriber_DeleteSnapshot_sync]

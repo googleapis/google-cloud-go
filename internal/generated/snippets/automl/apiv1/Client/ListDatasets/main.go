@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START automl_generated_automl_apiv1_Client_ListDatasets]
+// [START automl_v1_generated_AutoMl_ListDatasets_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := automl.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.ListDatasetsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END automl_generated_automl_apiv1_Client_ListDatasets]
+// [END automl_v1_generated_AutoMl_ListDatasets_sync]

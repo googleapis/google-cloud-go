@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1_GameServerDeploymentsClient_DeleteGameServerDeployment]
+// [START gameservices_v1_generated_GameServerDeploymentsService_DeleteGameServerDeployment_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerDeploymentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteGameServerDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1_GameServerDeploymentsClient_DeleteGameServerDeployment]
+// [END gameservices_v1_generated_GameServerDeploymentsService_DeleteGameServerDeployment_sync]

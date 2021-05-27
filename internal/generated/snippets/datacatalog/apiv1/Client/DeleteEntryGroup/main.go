@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1_Client_DeleteEntryGroup]
+// [START datacatalog_v1_generated_DataCatalog_DeleteEntryGroup_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.DeleteEntryGroupRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END datacatalog_generated_datacatalog_apiv1_Client_DeleteEntryGroup]
+// [END datacatalog_v1_generated_DataCatalog_DeleteEntryGroup_sync]

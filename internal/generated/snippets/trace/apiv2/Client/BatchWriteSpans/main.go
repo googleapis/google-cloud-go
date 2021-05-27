@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudtrace_generated_trace_apiv2_Client_BatchWriteSpans]
+// [START cloudtrace_v2_generated_TraceService_BatchWriteSpans_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cloudtracepb.BatchWriteSpansRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END cloudtrace_generated_trace_apiv2_Client_BatchWriteSpans]
+// [END cloudtrace_v2_generated_TraceService_BatchWriteSpans_sync]

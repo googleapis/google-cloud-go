@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START firestore_generated_firestore_apiv1_Client_DeleteDocument]
+// [START firestore_v1_generated_Firestore_DeleteDocument_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END firestore_generated_firestore_apiv1_Client_DeleteDocument]
+// [END firestore_v1_generated_Firestore_DeleteDocument_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_Client_ListLogs]
+// [START logging_v2_generated_LoggingServiceV2_ListLogs_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := logging.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.ListLogsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END logging_generated_logging_apiv2_Client_ListLogs]
+// [END logging_v2_generated_LoggingServiceV2_ListLogs_sync]

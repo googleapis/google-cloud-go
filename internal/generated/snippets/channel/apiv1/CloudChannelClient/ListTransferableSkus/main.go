@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START cloudchannel_generated_channel_apiv1_CloudChannelClient_ListTransferableSkus]
+// [START cloudchannel_v1_generated_CloudChannelService_ListTransferableSkus_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListTransferableSkusRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END cloudchannel_generated_channel_apiv1_CloudChannelClient_ListTransferableSkus]
+// [END cloudchannel_v1_generated_CloudChannelService_ListTransferableSkus_sync]

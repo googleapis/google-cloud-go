@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dataqna_generated_dataqna_apiv1alpha_QuestionClient_ExecuteQuestion]
+// [START dataqna_v1alpha_generated_QuestionService_ExecuteQuestion_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dataqnapb "google.golang.org/genproto/googleapis/cloud/dataqna/v1alpha"
-
 	ctx := context.Background()
 	c, err := dataqna.NewQuestionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataqnapb.ExecuteQuestionRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END dataqna_generated_dataqna_apiv1alpha_QuestionClient_ExecuteQuestion]
+// [END dataqna_v1alpha_generated_QuestionService_ExecuteQuestion_sync]

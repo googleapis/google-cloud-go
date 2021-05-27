@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START logging_generated_logging_apiv2_MetricsClient_UpdateLogMetric]
+// [START logging_v2_generated_MetricsServiceV2_UpdateLogMetric_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import loggingpb "google.golang.org/genproto/googleapis/logging/v2"
-
 	ctx := context.Background()
 	c, err := logging.NewMetricsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &loggingpb.UpdateLogMetricRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END logging_generated_logging_apiv2_MetricsClient_UpdateLogMetric]
+// [END logging_v2_generated_MetricsServiceV2_UpdateLogMetric_sync]

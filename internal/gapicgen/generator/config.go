@@ -195,14 +195,6 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/cloud/bigquery/storage/v1alpha2",
-		pkg:                   "storage",
-		importPath:            "cloud.google.com/go/bigquery/storage/apiv1alpha2",
-		gRPCServiceConfigPath: "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_grpc_service_config.json",
-		apiServiceConfigPath:  "google/cloud/bigquery/storage/v1alpha2/bigquerystorage_v1alpha2.yaml",
-		releaseLevel:          "alpha",
-	},
-	{
 		inputDirectoryPath:    "google/cloud/bigquery/storage/v1beta1",
 		pkg:                   "storage",
 		importPath:            "cloud.google.com/go/bigquery/storage/apiv1beta1",
@@ -321,6 +313,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/osconfig/v1/osconfig_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/osconfig/v1/osconfig_v1.yaml",
 		releaseLevel:          "ga",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/osconfig/v1alpha",
+		pkg:                   "osconfig",
+		importPath:            "cloud.google.com/go/osconfig/apiv1alpha",
+		gRPCServiceConfigPath: "google/cloud/osconfig/v1alpha/osconfig_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/osconfig/v1alpha/osconfig_v1alpha.yaml",
+		releaseLevel:          "alpha",
 	},
 	{
 		inputDirectoryPath:    "google/cloud/osconfig/v1beta",
@@ -856,6 +856,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "beta",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/security/privateca/v1",
+		pkg:                   "privateca",
+		importPath:            "cloud.google.com/go/security/privateca/apiv1",
+		gRPCServiceConfigPath: "google/cloud/security/privateca/v1/privateca_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/security/privateca/v1/privateca_v1.yaml",
+		// GA after 2021/05/29
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/assuredworkloads/v1beta1",
 		pkg:                   "assuredworkloads",
 		importPath:            "cloud.google.com/go/assuredworkloads/apiv1beta1",
@@ -1030,6 +1039,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
+		inputDirectoryPath:    "google/cloud/metastore/v1",
+		pkg:                   "metastore",
+		importPath:            "cloud.google.com/go/metastore/apiv1",
+		gRPCServiceConfigPath: "google/cloud/metastore/v1/metastore_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/metastore/v1/metastore_v1.yaml",
+		// GA after 2021/06/10
+		releaseLevel: "beta",
+	},
+	{
 		inputDirectoryPath:    "google/cloud/metastore/v1alpha",
 		pkg:                   "metastore",
 		importPath:            "cloud.google.com/go/metastore/apiv1alpha",
@@ -1052,6 +1070,33 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/resourcesettings/v1/resourcesettings_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/resourcesettings/v1/resourcesettings_v1.yaml",
 		// GA after 2021/04/23
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/clouddms/v1",
+		pkg:                   "clouddms",
+		importPath:            "cloud.google.com/go/clouddms/apiv1",
+		gRPCServiceConfigPath: "google/cloud/clouddms/v1/library_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/clouddms/v1/datamigration_v1.yaml",
+		// GA after 2021/06/10
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/essentialcontacts/v1",
+		pkg:                   "essentialcontacts",
+		importPath:            "cloud.google.com/go/essentialcontacts/apiv1",
+		gRPCServiceConfigPath: "google/cloud/essentialcontacts/v1/essentialcontacts_v1_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/essentialcontacts/v1/essentialcontacts_v1.yaml",
+		// GA after 2021/06/18
+		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/api/serviceusage/v1",
+		pkg:                   "serviceusage",
+		importPath:            "cloud.google.com/go/serviceusage/apiv1",
+		gRPCServiceConfigPath: "google/api/serviceusage/v1/serviceusage_grpc_service_config.json",
+		apiServiceConfigPath:  "google/api/serviceusage/v1/serviceusage_v1.yaml",
+		// GA after 2021/06/18
 		releaseLevel: "beta",
 	},
 
@@ -1079,5 +1124,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/area120/tables/v1alpha1/tables_grpc_service_config.json",
 		apiServiceConfigPath:  "google/area120/tables/v1alpha1/area120tables_v1alpha1.yaml",
 		releaseLevel:          "alpha",
+	},
+	{
+		inputDirectoryPath:    "google/cloud/gsuiteaddons/v1",
+		pkg:                   "gsuiteaddons",
+		importPath:            "cloud.google.com/go/gsuiteaddons/apiv1",
+		gRPCServiceConfigPath: "google/cloud/gsuiteaddons/v1/gsuiteaddons_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gsuiteaddons/v1/gsuiteaddons_v1.yaml",
+		// GA after 2021/06/10
+		releaseLevel: "beta",
 	},
 }

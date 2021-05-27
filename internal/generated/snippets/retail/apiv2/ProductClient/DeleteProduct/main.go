@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START retail_generated_retail_apiv2_ProductClient_DeleteProduct]
+// [START retail_v2_generated_ProductService_DeleteProduct_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.DeleteProductRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END retail_generated_retail_apiv2_ProductClient_DeleteProduct]
+// [END retail_v2_generated_ProductService_DeleteProduct_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START datacatalog_generated_datacatalog_apiv1_Client_SearchCatalog]
+// [START datacatalog_v1_generated_DataCatalog_SearchCatalog_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.SearchCatalogRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END datacatalog_generated_datacatalog_apiv1_Client_SearchCatalog]
+// [END datacatalog_v1_generated_DataCatalog_SearchCatalog_sync]

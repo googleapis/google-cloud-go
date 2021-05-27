@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recommendationengine_generated_recommendationengine_apiv1beta1_PredictionApiKeyRegistryClient_CreatePredictionApiKeyRegistration]
+// [START recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_CreatePredictionApiKeyRegistration_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewPredictionApiKeyRegistryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.CreatePredictionApiKeyRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END recommendationengine_generated_recommendationengine_apiv1beta1_PredictionApiKeyRegistryClient_CreatePredictionApiKeyRegistration]
+// [END recommendationengine_v1beta1_generated_PredictionApiKeyRegistry_CreatePredictionApiKeyRegistration_sync]

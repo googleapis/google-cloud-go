@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START artifactregistry_generated_artifactregistry_apiv1beta2_Client_TestIamPermissions]
+// [START artifactregistry_v1beta2_generated_ArtifactRegistry_TestIamPermissions_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := artifactregistry.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END artifactregistry_generated_artifactregistry_apiv1beta2_Client_TestIamPermissions]
+// [END artifactregistry_v1beta2_generated_ArtifactRegistry_TestIamPermissions_sync]

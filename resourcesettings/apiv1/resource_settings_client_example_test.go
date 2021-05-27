@@ -30,19 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListSettings() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcesettingspb.ListSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -61,46 +61,18 @@ func ExampleClient_ListSettings() {
 	}
 }
 
-func ExampleClient_SearchSettingValues() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-	// import "google.golang.org/api/iterator"
-
+func ExampleClient_GetSetting() {
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
-	req := &resourcesettingspb.SearchSettingValuesRequest{
+	req := &resourcesettingspb.GetSettingRequest{
 		// TODO: Fill request struct fields.
 	}
-	it := c.SearchSettingValues(ctx, req)
-	for {
-		resp, err := it.Next()
-		if err == iterator.Done {
-			break
-		}
-		if err != nil {
-			// TODO: Handle error.
-		}
-		// TODO: Use resp.
-		_ = resp
-	}
-}
-
-func ExampleClient_GetSettingValue() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-
-	ctx := context.Background()
-	c, err := resourcesettings.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &resourcesettingspb.GetSettingValueRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.GetSettingValue(ctx, req)
+	resp, err := c.GetSetting(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -108,78 +80,21 @@ func ExampleClient_GetSettingValue() {
 	_ = resp
 }
 
-func ExampleClient_LookupEffectiveSettingValue() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-
+func ExampleClient_UpdateSetting() {
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
-	req := &resourcesettingspb.LookupEffectiveSettingValueRequest{
+	req := &resourcesettingspb.UpdateSettingRequest{
 		// TODO: Fill request struct fields.
 	}
-	resp, err := c.LookupEffectiveSettingValue(ctx, req)
+	resp, err := c.UpdateSetting(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
 	// TODO: Use resp.
 	_ = resp
-}
-
-func ExampleClient_CreateSettingValue() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-
-	ctx := context.Background()
-	c, err := resourcesettings.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &resourcesettingspb.CreateSettingValueRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.CreateSettingValue(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_UpdateSettingValue() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-
-	ctx := context.Background()
-	c, err := resourcesettings.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &resourcesettingspb.UpdateSettingValueRequest{
-		// TODO: Fill request struct fields.
-	}
-	resp, err := c.UpdateSettingValue(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
-	// TODO: Use resp.
-	_ = resp
-}
-
-func ExampleClient_DeleteSettingValue() {
-	ctx := context.Background()
-	c, err := resourcesettings.NewClient(ctx)
-	if err != nil {
-		// TODO: Handle error.
-	}
-
-	req := &resourcesettingspb.DeleteSettingValueRequest{
-		// TODO: Fill request struct fields.
-	}
-	err = c.DeleteSettingValue(ctx, req)
-	if err != nil {
-		// TODO: Handle error.
-	}
 }

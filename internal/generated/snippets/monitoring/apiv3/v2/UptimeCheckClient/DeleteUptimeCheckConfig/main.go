@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START monitoring_generated_monitoring_apiv3_v2_UptimeCheckClient_DeleteUptimeCheckConfig]
+// [START monitoring_v3_generated_UptimeCheckService_DeleteUptimeCheckConfig_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END monitoring_generated_monitoring_apiv3_v2_UptimeCheckClient_DeleteUptimeCheckConfig]
+// [END monitoring_v3_generated_UptimeCheckService_DeleteUptimeCheckConfig_sync]

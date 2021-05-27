@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START speech_generated_speech_apiv1p1beta1_AdaptationClient_UpdatePhraseSet]
+// [START speech_v1p1beta1_generated_Adaptation_UpdatePhraseSet_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewAdaptationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.UpdatePhraseSetRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END speech_generated_speech_apiv1p1beta1_AdaptationClient_UpdatePhraseSet]
+// [END speech_v1p1beta1_generated_Adaptation_UpdatePhraseSet_sync]

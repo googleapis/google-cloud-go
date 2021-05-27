@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_SetIamPolicy]
+// [START bigqueryconnection_v1beta1_generated_ConnectionService_SetIamPolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := connection.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigqueryconnection_generated_bigquery_connection_apiv1beta1_Client_SetIamPolicy]
+// [END bigqueryconnection_v1beta1_generated_ConnectionService_SetIamPolicy_sync]

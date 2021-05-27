@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START recaptchaenterprise_generated_recaptchaenterprise_apiv1_Client_CreateKey]
+// [START recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateKey_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import recaptchaenterprisepb "google.golang.org/genproto/googleapis/cloud/recaptchaenterprise/v1"
-
 	ctx := context.Background()
 	c, err := recaptchaenterprise.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recaptchaenterprisepb.CreateKeyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END recaptchaenterprise_generated_recaptchaenterprise_apiv1_Client_CreateKey]
+// [END recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_CreateKey_sync]

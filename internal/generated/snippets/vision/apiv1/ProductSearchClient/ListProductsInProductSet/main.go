@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START vision_generated_vision_apiv1_ProductSearchClient_ListProductsInProductSet]
+// [START vision_v1_generated_ProductSearch_ListProductsInProductSet_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import visionpb "google.golang.org/genproto/googleapis/cloud/vision/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := vision.NewProductSearchClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &visionpb.ListProductsInProductSetRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END vision_generated_vision_apiv1_ProductSearchClient_ListProductsInProductSet]
+// [END vision_v1_generated_ProductSearch_ListProductsInProductSet_sync]

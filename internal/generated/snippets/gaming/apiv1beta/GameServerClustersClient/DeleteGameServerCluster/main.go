@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START gameservices_generated_gaming_apiv1beta_GameServerClustersClient_DeleteGameServerCluster]
+// [START gameservices_v1beta_generated_GameServerClustersService_DeleteGameServerCluster_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerClustersClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteGameServerClusterRequest{
 		// TODO: Fill request struct fields.
@@ -46,4 +45,4 @@ func main() {
 	}
 }
 
-// [END gameservices_generated_gaming_apiv1beta_GameServerClustersClient_DeleteGameServerCluster]
+// [END gameservices_v1beta_generated_GameServerClustersService_DeleteGameServerCluster_sync]

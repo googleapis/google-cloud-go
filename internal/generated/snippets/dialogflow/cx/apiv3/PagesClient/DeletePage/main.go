@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START dialogflow_generated_dialogflow_cx_apiv3_PagesClient_DeletePage]
+// [START dialogflow_v3_generated_Pages_DeletePage_sync]
 
 package main
 
@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeletePageRequest{
 		// TODO: Fill request struct fields.
@@ -39,4 +40,4 @@ func main() {
 	}
 }
 
-// [END dialogflow_generated_dialogflow_cx_apiv3_PagesClient_DeletePage]
+// [END dialogflow_v3_generated_Pages_DeletePage_sync]

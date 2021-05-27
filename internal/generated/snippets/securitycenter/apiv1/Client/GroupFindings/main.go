@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_apiv1_Client_GroupFindings]
+// [START securitycenter_v1_generated_SecurityCenter_GroupFindings_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import securitycenterpb "google.golang.org/genproto/googleapis/cloud/securitycenter/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &securitycenterpb.GroupFindingsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END securitycenter_generated_securitycenter_apiv1_Client_GroupFindings]
+// [END securitycenter_v1_generated_SecurityCenter_GroupFindings_sync]

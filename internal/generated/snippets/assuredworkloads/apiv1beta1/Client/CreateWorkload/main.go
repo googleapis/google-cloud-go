@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_CreateWorkload]
+// [START assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import assuredworkloadspb "google.golang.org/genproto/googleapis/cloud/assuredworkloads/v1beta1"
-
 	ctx := context.Background()
 	c, err := assuredworkloads.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assuredworkloadspb.CreateWorkloadRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END assuredworkloads_generated_assuredworkloads_apiv1beta1_Client_CreateWorkload]
+// [END assuredworkloads_v1beta1_generated_AssuredWorkloadsService_CreateWorkload_sync]

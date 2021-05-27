@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START bigquerystorage_generated_bigquery_storage_apiv1beta2_BigQueryWriteClient_GetWriteStream]
+// [START bigquerystorage_v1beta2_generated_BigQueryWrite_GetWriteStream_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetWriteStreamRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END bigquerystorage_generated_bigquery_storage_apiv1beta2_BigQueryWriteClient_GetWriteStream]
+// [END bigquerystorage_v1beta2_generated_BigQueryWrite_GetWriteStream_sync]

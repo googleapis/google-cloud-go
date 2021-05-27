@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START accessapproval_generated_accessapproval_apiv1_Client_ListApprovalRequests]
+// [START accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.ListApprovalRequestsMessage{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END accessapproval_generated_accessapproval_apiv1_Client_ListApprovalRequests]
+// [END accessapproval_v1_generated_AccessApproval_ListApprovalRequests_sync]

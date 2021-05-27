@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START securitycenter_generated_securitycenter_apiv1beta1_Client_GetIamPolicy]
+// [START securitycenter_v1beta1_generated_SecurityCenter_GetIamPolicy_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := securitycenter.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END securitycenter_generated_securitycenter_apiv1beta1_Client_GetIamPolicy]
+// [END securitycenter_v1beta1_generated_SecurityCenter_GetIamPolicy_sync]

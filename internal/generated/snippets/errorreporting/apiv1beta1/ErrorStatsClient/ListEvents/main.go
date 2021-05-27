@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START clouderrorreporting_generated_errorreporting_apiv1beta1_ErrorStatsClient_ListEvents]
+// [START clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import clouderrorreportingpb "google.golang.org/genproto/googleapis/devtools/clouderrorreporting/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := errorreporting.NewErrorStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouderrorreportingpb.ListEventsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END clouderrorreporting_generated_errorreporting_apiv1beta1_ErrorStatsClient_ListEvents]
+// [END clouderrorreporting_v1beta1_generated_ErrorStatsService_ListEvents_sync]

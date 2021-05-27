@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START resourcesettings_generated_resourcesettings_apiv1_Client_ListSettings]
+// [START resourcesettings_v1_generated_ResourceSettingsService_ListSettings_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import resourcesettingspb "google.golang.org/genproto/googleapis/cloud/resourcesettings/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := resourcesettings.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &resourcesettingspb.ListSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END resourcesettings_generated_resourcesettings_apiv1_Client_ListSettings]
+// [END resourcesettings_v1_generated_ResourceSettingsService_ListSettings_sync]

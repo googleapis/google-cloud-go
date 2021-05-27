@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START automl_generated_automl_apiv1_PredictionClient_Predict]
+// [START automl_v1_generated_PredictionService_Predict_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.PredictRequest{
 		// TODO: Fill request struct fields.
@@ -43,4 +42,4 @@ func main() {
 	_ = resp
 }
 
-// [END automl_generated_automl_apiv1_PredictionClient_Predict]
+// [END automl_v1_generated_PredictionService_Predict_sync]

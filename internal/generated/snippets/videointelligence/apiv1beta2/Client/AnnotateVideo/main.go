@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START videointelligence_generated_videointelligence_apiv1beta2_Client_AnnotateVideo]
+// [START videointelligence_v1beta2_generated_VideoIntelligenceService_AnnotateVideo_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import videointelligencepb "google.golang.org/genproto/googleapis/cloud/videointelligence/v1beta2"
-
 	ctx := context.Background()
 	c, err := videointelligence.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &videointelligencepb.AnnotateVideoRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END videointelligence_generated_videointelligence_apiv1beta2_Client_AnnotateVideo]
+// [END videointelligence_v1beta2_generated_VideoIntelligenceService_AnnotateVideo_sync]

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START notebooks_generated_notebooks_apiv1beta1_NotebookClient_SetInstanceMachineType]
+// [START notebooks_v1beta1_generated_NotebookService_SetInstanceMachineType_sync]
 
 package main
 
@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import notebookspb "google.golang.org/genproto/googleapis/cloud/notebooks/v1beta1"
-
 	ctx := context.Background()
 	c, err := notebooks.NewNotebookClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &notebookspb.SetInstanceMachineTypeRequest{
 		// TODO: Fill request struct fields.
@@ -48,4 +47,4 @@ func main() {
 	_ = resp
 }
 
-// [END notebooks_generated_notebooks_apiv1beta1_NotebookClient_SetInstanceMachineType]
+// [END notebooks_v1beta1_generated_NotebookService_SetInstanceMachineType_sync]

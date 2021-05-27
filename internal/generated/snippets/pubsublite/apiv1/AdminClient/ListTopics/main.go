@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// [START pubsublite_generated_pubsublite_apiv1_AdminClient_ListTopics]
+// [START pubsublite_v1_generated_AdminService_ListTopics_sync]
 
 package main
 
@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ListTopicsRequest{
 		// TODO: Fill request struct fields.
@@ -51,4 +49,4 @@ func main() {
 	}
 }
 
-// [END pubsublite_generated_pubsublite_apiv1_AdminClient_ListTopics]
+// [END pubsublite_v1_generated_AdminService_ListTopics_sync]
