@@ -34,12 +34,13 @@ export GCLOUD_TESTS_GOLANG_KEY=$GOOGLE_APPLICATION_CREDENTIALS
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
 export GCLOUD_TESTS_API_KEY=`cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key`
-export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us-central1/keyRings/go-integration-test
+export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
 export GCLOUD_TESTS_GOLANG_PROFILER_ZONE="us-west1-b"
 
 # Bigtable integration tests expect an existing instance and cluster
 #  ❯ cbt createinstance gcloud-bt-it-tests-instance "Bigtable IT Instance" \
 #    gcloud-bt-it-tests-cluster us-west1-b 1 SSD
+export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-central1/keyRings/go-integration-test
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gcloud-bt-it-tests-cluster"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gcloud-bt-it-tests-instance"
 
