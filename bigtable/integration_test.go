@@ -2352,7 +2352,7 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 
 	if iInfo.DisplayName != adminClient.instance {
-		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
+		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.DisplayName, adminClient.instance)
 	}
 
 	const numNodes = 4
@@ -2413,8 +2413,8 @@ func TestIntegration_AdminBackup(t *testing.T) {
 		t.Fatalf("NewInstanceAdminClient: %v", err)
 	}
 	defer iAdminClient.Close()
-	diffInstance := testEnv.Config().Instance + "-diff"
-	diffCluster := sourceCluster + "-diff"
+	diffInstance := testEnv.Config().Instance + "-d"
+	diffCluster := sourceCluster + "-d"
 	conf := &InstanceConf{
 		InstanceId:   diffInstance,
 		ClusterId:    diffCluster,
