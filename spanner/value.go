@@ -458,6 +458,9 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 }
 
 // NullJSON represents a Cloud Spanner JSON that may be NULL.
+//
+// This type must always be used when encoding values to a JSON column in Cloud
+// Spanner.
 type NullJSON struct {
 	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
 	Valid bool        // Valid is true if Json is not NULL.
