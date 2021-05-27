@@ -21,6 +21,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -103,7 +104,18 @@ type IntegrationEnv interface {
 
 // NewIntegrationEnv creates a new environment based on the command line args
 func NewIntegrationEnv() (IntegrationEnv, error) {
-	c := integrationConfig
+	c := &integrationConfig
+
+	// Check if config settings aren't set. If not, populate from env vars.
+	if c.Project == "" {
+		c.Project = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
+	}
+	if c.Instance == "" {
+		c.Instance = os.Getenv("GCLOUD_TESTS_BIGTABLE_INSTANCE")
+	}
+	if c.Cluster == "" {
+		c.Cluster = os.Getenv("GCLOUD_TESTS_BIGTABLE_CLUSTER")
+	}
 
 	if legacyUseProd != "" {
 		fmt.Println("WARNING: using legacy commandline arg -use_prod, please switch to -it.*")
@@ -114,10 +126,15 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 		c.Table = parts[2]
 	}
 
-	if integrationConfig.UseProd {
-		return NewProdEnv(c)
+	if c.Instance != "" || c.Cluster != "" {
+		// If commandline args were specified for a live instance, set UseProd
+		c.UseProd = true
 	}
-	return NewEmulatedEnv(c)
+
+	if integrationConfig.UseProd {
+		return NewProdEnv(*c)
+	}
+	return NewEmulatedEnv(*c)
 }
 
 // EmulatedEnv encapsulates the state of an emulator
@@ -240,6 +257,9 @@ func NewProdEnv(config IntegrationTestConfig) (*ProdEnv, error) {
 	}
 	if config.Instance == "" {
 		return nil, errors.New("Instance not set")
+	}
+	if config.Cluster == "" {
+		return nil, errors.New("Cluster not set")
 	}
 	if config.Table == "" {
 		return nil, errors.New("Table not set")
