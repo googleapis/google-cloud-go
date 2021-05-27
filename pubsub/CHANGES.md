@@ -1,5 +1,12 @@
 # Changes
 
+## [1.11.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.3...pubsub/v1.11.0) (2021-05-27)
+
+
+### Features
+
+* **pubsub:** add flush method to topic ([#2863](https://www.github.com/googleapis/google-cloud-go/issues/2863)) ([825ddd6](https://www.github.com/googleapis/google-cloud-go/commit/825ddd692363eb2dd8cd253cc5976867e432f547))
+
 ### [1.10.3](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.2...pubsub/v1.10.3) (2021-04-23)
 
 
