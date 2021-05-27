@@ -1601,3 +1601,34 @@ func TestDetectProjectID(t *testing.T) {
 		t.Errorf("expected an error while using TokenSource that does not have a project ID")
 	}
 }
+
+func TestIntegration_ColGroupRefPartitions(t *testing.T) {
+	h := testHelper{t}
+	coll := integrationColl(t)
+	ctx := context.Background()
+
+	// Create a doc in the test collection so a collectionID is live for testing
+	doc := coll.NewDoc()
+	h.mustCreate(doc, integrationTestMap)
+
+	for _, tc := range []struct {
+		collectionID           string
+		expectedPartitionCount int
+	}{
+		// Verify no failures if a collection doesn't exist
+		{collectionID: "does-not-exist", expectedPartitionCount: 1},
+		// Verify a collectionID with a small number of results returns a partition
+		{collectionID: coll.collectionID, expectedPartitionCount: 1},
+		// TODO: could implement a scenario where a collectionID had a good
+		// number (200+) documents. Would require test document creation.
+	} {
+		colGroup := iClient.CollectionGroup(tc.collectionID)
+		partitions, err := colGroup.GetPartitions(ctx, 10)
+		if err != nil {
+			t.Fatalf("Did not expect error: %v", err)
+		}
+		if got, want := len(partitions), tc.expectedPartitionCount; got != want {
+			t.Errorf("Unexpected Partition Count: got %d, want %d", got, want)
+		}
+	}
+}
