@@ -1125,4 +1125,13 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/area120/tables/v1alpha1/area120tables_v1alpha1.yaml",
 		releaseLevel:          "alpha",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/gsuiteaddons/v1",
+		pkg:                   "gsuiteaddons",
+		importPath:            "cloud.google.com/go/gsuiteaddons/apiv1",
+		gRPCServiceConfigPath: "google/cloud/gsuiteaddons/v1/gsuiteaddons_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gsuiteaddons/v1/gsuiteaddons_v1.yaml",
+		// GA after 2021/06/10
+		releaseLevel: "beta",
+	},
 }
