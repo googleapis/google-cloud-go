@@ -2352,7 +2352,7 @@ func TestIntegration_InstanceUpdate(t *testing.T) {
 	}
 
 	if iInfo.DisplayName != adminClient.instance {
-		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.Name, adminClient.instance)
+		t.Errorf("InstanceInfo returned name %#v, want %#v", iInfo.DisplayName, adminClient.instance)
 	}
 
 	const numNodes = 4
