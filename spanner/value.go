@@ -1415,19 +1415,6 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return decodableType.decodeValueToCustomType(v, t, acode, ptr)
 		}
 
-		if code == sppb.TypeCode_JSON {
-			x, err := getStringValue(v)
-			if err != nil {
-				return fmt.Errorf("failed to read json string: %s", err)
-			}
-			// Check if it can be unmarshalled to the given type.
-			err = json.Unmarshal([]byte(x), ptr)
-			if err != nil {
-				return fmt.Errorf("failed to unmarshal the json string: %s", err)
-			}
-			break
-		}
-
 		// Check if the proto encoding is for an array of structs.
 		if !(code == sppb.TypeCode_ARRAY && acode == sppb.TypeCode_STRUCT) {
 			return errTypeMismatch(code, acode, ptr)

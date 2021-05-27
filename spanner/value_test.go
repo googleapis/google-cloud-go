@@ -1285,12 +1285,6 @@ func TestDecodeValue(t *testing.T) {
 	type CustomNullNumeric NullNumeric
 	type CustomNullJSON NullJSON
 
-	type Message struct {
-		Name string
-		Body string
-		Time int64
-	}
-	msg := Message{"Alice", "Hello", 1294706395881547000}
 	jsonStr := `{"Name":"Alice","Body":"Hello","Time":1294706395881547000}`
 	var unmarshalledJSONstruct interface{}
 	json.Unmarshal([]byte(jsonStr), &unmarshalledJSONstruct)
@@ -1414,10 +1408,9 @@ func TestDecodeValue(t *testing.T) {
 		{desc: "decode ARRAY<NUMERIC> to []*big.Rat", proto: listProto(numericProto(numValuePtr), nullProto(), numericProto(num2ValuePtr)), protoType: listType(numericType()), want: []*big.Rat{numValuePtr, nil, num2ValuePtr}},
 		{desc: "decode NULL to []*big.Rat", proto: nullProto(), protoType: listType(numericType()), want: []*big.Rat(nil)},
 		// JSON
-		{desc: "decode json to struct", proto: stringProto(jsonStr), protoType: jsonType(), want: msg},
 		{desc: "decode json to NullJSON", proto: stringProto(jsonStr), protoType: jsonType(), want: NullJSON{unmarshalledJSONstruct, true}},
 		{desc: "decode NULL to NullJSON", proto: nullProto(), protoType: jsonType(), want: NullJSON{}},
-		{desc: "decode an invalid json string", proto: stringProto(invalidJsonStr), protoType: jsonType(), want: msg, wantErr: true},
+		{desc: "decode an invalid json string", proto: stringProto(invalidJsonStr), protoType: jsonType(), want: NullJSON{}, wantErr: true},
 		// JSON ARRAY with []NullJSON
 		{desc: "decode ARRAY<JSON> to []NullJSON", proto: listProto(stringProto(jsonStr), stringProto(jsonStr), nullProto()), protoType: listType(jsonType()), want: []NullJSON{{unmarshalledJSONstruct, true}, {unmarshalledJSONstruct, true}, {}}},
 		{desc: "decode NULL to []NullJSON", proto: nullProto(), protoType: listType(jsonType()), want: []NullJSON(nil)},
