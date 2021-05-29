@@ -30,27 +30,71 @@ import (
 )
 
 var scalarTests = []struct {
-	val      interface{}            // The Go value
-	wantVal  string                 // paramValue's desired output
-	wantType *bq.QueryParameterType // paramType's desired output
+	val         interface{}            // The Go value
+	wantVal     string                 // paramValue's desired output
+	wantType    *bq.QueryParameterType // paramType's desired output
+	roundTripOk bool                   // Value can roundtrip without issue.
 }{
-	{int64(0), "0", int64ParamType},
-	{3.14, "3.14", float64ParamType},
-	{3.14159e-87, "3.14159e-87", float64ParamType},
-	{true, "true", boolParamType},
-	{"string", "string", stringParamType},
-	{"\u65e5\u672c\u8a9e\n", "\u65e5\u672c\u8a9e\n", stringParamType},
-	{math.NaN(), "NaN", float64ParamType},
-	{[]byte("foo"), "Zm9v", bytesParamType}, // base64 encoding of "foo"
+	{int64(0), "0", int64ParamType, true},
+	{NullInt64{Int64: 3, Valid: true}, "3", int64ParamType, false},
+	{NullInt64{Valid: false}, "", int64ParamType, true},
+	{3.14, "3.14", float64ParamType, true},
+	{3.14159e-87, "3.14159e-87", float64ParamType, true},
+	{NullFloat64{Float64: 3.14, Valid: true}, "3.14", float64ParamType, false},
+	{NullFloat64{Valid: false}, "", float64ParamType, true},
+	{math.NaN(), "NaN", float64ParamType, true},
+	{true, "true", boolParamType, true},
+	{NullBool{Bool: true, Valid: true}, "true", boolParamType, false},
+	{NullBool{Valid: false}, "", boolParamType, true},
+	{"string", "string", stringParamType, true},
+	{"\u65e5\u672c\u8a9e\n", "\u65e5\u672c\u8a9e\n", stringParamType, true},
+	{NullString{StringVal: "string", Valid: true}, "string", stringParamType, false},
+	{NullString{Valid: false}, "", stringParamType, false}, // Cannot detect null strings on roundtrip.
+	{[]byte("foo"), "Zm9v", bytesParamType, true},          // base64 encoding of "foo"
 	{time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
 		"2016-03-20 04:22:09.000005-01:02",
-		timestampParamType},
-	{civil.Date{Year: 2016, Month: 3, Day: 20}, "2016-03-20", dateParamType},
-	{civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}, "04:05:06.789000", timeParamType},
+		timestampParamType,
+		true},
+	{NullTimestamp{Timestamp: time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)), Valid: true},
+		"2016-03-20 04:22:09.000005-01:02",
+		timestampParamType,
+		false},
+	{NullTimestamp{Valid: false},
+		"",
+		timestampParamType,
+		true},
+	{civil.Date{Year: 2016, Month: 3, Day: 20}, "2016-03-20", dateParamType, true},
+	{NullDate{
+		Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Valid: true},
+		"2016-03-20",
+		dateParamType, false},
+	{NullDate{
+		Valid: false},
+		"",
+		dateParamType, true},
+	{civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}, "04:05:06.789000", timeParamType, true},
+	{NullTime{
+		Time: civil.Time{Hour: 5, Minute: 6, Second: 7, Nanosecond: 789000000}, Valid: true},
+		"05:06:07.789000",
+		timeParamType, false},
+	{NullTime{
+		Valid: false},
+		"",
+		timeParamType, true},
 	{civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}},
 		"2016-03-20 04:05:06.789000",
-		dateTimeParamType},
-	{big.NewRat(12345, 1000), "12.345000000", numericParamType},
+		dateTimeParamType, true},
+	{NullDateTime{
+		DateTime: civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 21}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}, Valid: true},
+		"2016-03-21 04:05:06.789000",
+		dateTimeParamType, false},
+	{NullDateTime{
+		Valid: false},
+		"",
+		dateTimeParamType, true},
+	{big.NewRat(12345, 1000), "12.345000000", numericParamType, true},
+	{NullGeography{GeographyVal: "foo", Valid: true}, "foo", geographyParamType, false},
+	{NullGeography{Valid: false}, "", geographyParamType, true},
 }
 
 type (
@@ -224,9 +268,16 @@ func TestConvertParamValue(t *testing.T) {
 		if err != nil {
 			t.Fatalf("convertParamValue(%+v, %+v): %v", pval, ptype, err)
 		}
-		if !testutil.Equal(got, test.val) {
-			t.Errorf("%#v: got %#v", test.val, got)
+		if test.roundTripOk {
+			if !testutil.Equal(got, test.val) {
+				t.Errorf("%#v: got %#v", test.val, got)
+			}
+		} else {
+			if testutil.Equal(got, test.val) {
+				t.Errorf("%#v: roundtripped equal but shouldn't, got %#v", test.val, got)
+			}
 		}
+
 	}
 	// Arrays.
 	for _, test := range []struct {
@@ -268,15 +319,17 @@ func TestIntegration_ScalarParam(t *testing.T) {
 		func(t time.Time) time.Time { return t.Round(time.Microsecond) })
 	c := getClient(t)
 	for _, test := range scalarTests {
-		gotData, gotParam, err := paramRoundTrip(c, test.val)
-		if err != nil {
-			t.Fatal(err)
-		}
-		if !testutil.Equal(gotData, test.val, roundToMicros) {
-			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotData, gotData, test.val, test.val)
-		}
-		if !testutil.Equal(gotParam, test.val, roundToMicros) {
-			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.val, test.val)
+		if test.roundTripOk {
+			gotData, gotParam, err := paramRoundTrip(c, test.val)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if !testutil.Equal(gotData, test.val, roundToMicros) {
+				t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotData, gotData, test.val, test.val)
+			}
+			if !testutil.Equal(gotParam, test.val, roundToMicros) {
+				t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.val, test.val)
+			}
 		}
 	}
 }
