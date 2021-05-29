@@ -25,6 +25,7 @@ import (
 	"math/big"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -1090,20 +1091,52 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 		if p == nil {
 			return errNilDst(p)
 		}
-		if code != sppb.TypeCode_JSON {
+		if code == sppb.TypeCode_ARRAY {
+			x, err := getListValue(v)
+			if err != nil {
+				return err
+			}
+			y, err := decodeNullJSONArrayToNullJSON(x)
+			if err != nil {
+				return err
+			}
+			*p = *y
+		} else {
+			if code != sppb.TypeCode_JSON {
+				return errTypeMismatch(code, acode, ptr)
+			}
+			if isNull {
+				*p = NullJSON{}
+				break
+			}
+			x := v.GetStringValue()
+			var y interface{}
+			err := json.Unmarshal([]byte(x), &y)
+			if err != nil {
+				return err
+			}
+			*p = NullJSON{y, true}
+		}
+	case *[]NullJSON:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_JSON {
 			return errTypeMismatch(code, acode, ptr)
 		}
 		if isNull {
-			*p = NullJSON{}
+			*p = nil
 			break
 		}
-		x := v.GetStringValue()
-		var y interface{}
-		err := json.Unmarshal([]byte(x), &y)
+		x, err := getListValue(v)
 		if err != nil {
 			return err
 		}
-		*p = NullJSON{y, true}
+		y, err := decodeNullJSONArray(x)
+		if err != nil {
+			return err
+		}
+		*p = y
 	case *NullNumeric:
 		if p == nil {
 			return errNilDst(p)
@@ -2308,6 +2341,42 @@ func decodeNullNumericArray(pb *proto3.ListValue) ([]NullNumeric, error) {
 		}
 	}
 	return a, nil
+}
+
+// decodeNullJSONArray decodes proto3.ListValue pb into a NullJSON slice.
+func decodeNullJSONArray(pb *proto3.ListValue) ([]NullJSON, error) {
+	if pb == nil {
+		return nil, errNilListValue("JSON")
+	}
+	a := make([]NullJSON, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, jsonType(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "JSON", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeNullJSONArray decodes proto3.ListValue pb into a NullJSON pointer.
+func decodeNullJSONArrayToNullJSON(pb *proto3.ListValue) (*NullJSON, error) {
+	if pb == nil {
+		return nil, errNilListValue("JSON")
+	}
+	strs := []string{}
+	for _, v := range pb.Values {
+		if _, ok := v.Kind.(*proto3.Value_NullValue); ok {
+			strs = append(strs, "null")
+		} else {
+			strs = append(strs, v.GetStringValue())
+		}
+	}
+	s := fmt.Sprintf("[%s]", strings.Join(strs, ","))
+	var y interface{}
+	err := json.Unmarshal([]byte(s), &y)
+	if err != nil {
+		return nil, err
+	}
+	return &NullJSON{y, true}, nil
 }
 
 // decodeNumericPointerArray decodes proto3.ListValue pb into a *big.Rat slice.
