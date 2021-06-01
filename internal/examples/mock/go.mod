@@ -4,5 +4,5 @@ go 1.15
 
 require (
 	github.com/googleapis/gax-go/v2 v2.0.5
-	google.golang.org/genproto v0.0.0-20210506142907-4a47615972c2
+	google.golang.org/genproto v0.0.0-20210601144548-a796c710e9b6
 )
