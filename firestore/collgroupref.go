@@ -71,8 +71,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 		PartitionCount: partitionCount,
 		QueryType:      structuredQuery,
 	}
-	cursors := make([]string, 0, partitionCount)
-
+	cursorReferences := make([]*firestorepb.Value, 0, partitionCount)
 	iter := cgr.c.c.PartitionQuery(ctx, pbr)
 	for {
 		cursor, err := iter.Next()
@@ -83,31 +82,29 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 			return nil, err
 		}
 		for _, v := range cursor.Values {
-			cursorVal := v.GetReferenceValue()
-			cursors = append(cursors, cursorVal)
+			cursorReferences = append(cursorReferences, v)
 		}
 	}
 
-	// Once we have exhausted the pages, the cursor values need to be sorted in
-	// lexicographical order.
-	// TODO(crwilcox): not actually lexicographical. see https://github.com/googleapis/nodejs-firestore/blob/master/dev/test/order.ts#L206
-	// watch order should do the do.
 	// From Proto documentation:
 	// To obtain a complete result set ordered with respect to the results of the
 	// query supplied to PartitionQuery, the results sets should be merged:
 	// cursor A, cursor B, cursor M, cursor Q, cursor U, cursor W
-	sort.Strings(cursors)
+	// Once we have exhausted the pages, the cursor values need to be sorted in
+	// lexicographical order by segment (areas between '/').
+	sort.Sort(byReferenceValue(cursorReferences))
 
-	partitionQueries := make([]QueryPartition, 0, len(cursors))
+	partitionQueries := make([]QueryPartition, 0, len(cursorReferences))
 	var previousCursor string = ""
 
-	for _, cursor := range cursors {
+	for _, cursor := range cursorReferences {
+		cursorRef := cursor.GetReferenceValue()
 		qp := QueryPartition{
 			StartAt:   previousCursor,
-			EndBefore: cursor,
+			EndBefore: cursorRef,
 		}
 		partitionQueries = append(partitionQueries, qp)
-		previousCursor = cursor
+		previousCursor = cursorRef
 	}
 
 	// In the case there were no partitions, we still add a single partition to
@@ -116,13 +113,21 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 		StartAt:   "",
 		EndBefore: "",
 	}
-	if len(cursors) > 0 {
-		lastPart.StartAt = cursors[len(cursors)-1]
+	if len(cursorReferences) > 0 {
+		lastPart.StartAt = cursorReferences[len(cursorReferences)-1].GetReferenceValue()
 	}
 	partitionQueries = append(partitionQueries, lastPart)
 
 	return partitionQueries, nil
 }
+
+// byReferenceValue implements sort.Interface for []*firestorepb.Value based on
+// the Age field.
+type byReferenceValue []*firestorepb.Value
+
+func (a byReferenceValue) Len() int           { return len(a) }
+func (a byReferenceValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a byReferenceValue) Less(i, j int) bool { return compareValues(a[i], a[j]) < 0 }
 
 type QueryPartition struct {
 	CollectionGroupRef *CollectionGroupRef

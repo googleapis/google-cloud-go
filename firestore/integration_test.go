@@ -1621,6 +1621,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		{collectionID: coll.collectionID, expectedPartitionCount: 1},
 		// TODO: could implement a scenario where a collectionID had a good
 		// number (200+) documents. Would require test document creation.
+		// {collectionID: "thousand", expectedPartitionCount: 4},
 	} {
 		colGroup := iClient.CollectionGroup(tc.collectionID)
 		partitions, err := colGroup.GetPartitions(ctx, 10)
