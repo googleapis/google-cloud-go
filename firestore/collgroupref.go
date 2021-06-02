@@ -81,9 +81,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 		if err != nil {
 			return nil, err
 		}
-		for _, v := range cursor.Values {
-			cursorReferences = append(cursorReferences, v)
-		}
+		cursorReferences = append(cursorReferences, cursor.Values...)
 	}
 
 	// From Proto documentation:
