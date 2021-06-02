@@ -63,6 +63,11 @@ var (
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
 	spannerHost = getSpannerHost()
 
+	// instanceConfig specifies the instance config used to create an instance for testing.
+	// It can be changed by setting the environment variable
+	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
+	instanceConfig = getInstanceConfig()
+
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
@@ -204,6 +209,10 @@ func getSpannerHost() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
 }
 
+func getInstanceConfig() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
+}
+
 const (
 	str1 = "alice"
 	str2 = "a@example.com"
@@ -250,17 +259,23 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
-	// Get the list of supported instance configs for the project that is used
-	// for the integration tests. The supported instance configs can differ per
-	// project. The integration tests will use the first instance config that
-	// is returned by Cloud Spanner. This will normally be the regional config
-	// that is physically the closest to where the request is coming from.
-	configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
-		Parent: fmt.Sprintf("projects/%s", testProjectID),
-	})
-	config, err := configIterator.Next()
-	if err != nil {
-		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+	var configName string
+	if instanceConfig != "" {
+		configName = fmt.Sprintf("projects/%s/instanceConfigs/%s", testProjectID, instanceConfig)
+	} else {
+		// Get the list of supported instance configs for the project that is used
+		// for the integration tests. The supported instance configs can differ per
+		// project. The integration tests will use the first instance config that
+		// is returned by Cloud Spanner. This will normally be the regional config
+		// that is physically the closest to where the request is coming from.
+		configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
+			Parent: fmt.Sprintf("projects/%s", testProjectID),
+		})
+		config, err := configIterator.Next()
+		if err != nil {
+			log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+		}
+		configName = config.Name
 	}
 
 	// First clean up any old test instances before we start the actual testing
@@ -272,7 +287,7 @@ func initIntegrationTests() (cleanup func()) {
 		Parent:     fmt.Sprintf("projects/%s", testProjectID),
 		InstanceId: testInstanceID,
 		Instance: &instancepb.Instance{
-			Config:      config.Name,
+			Config:      configName,
 			DisplayName: testInstanceID,
 			NodeCount:   1,
 		},
