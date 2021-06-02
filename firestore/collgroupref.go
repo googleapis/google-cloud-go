@@ -127,12 +127,16 @@ func (a byReferenceValue) Len() int           { return len(a) }
 func (a byReferenceValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byReferenceValue) Less(i, j int) bool { return compareValues(a[i], a[j]) < 0 }
 
+// QueryPartition provides a Collection Group Reference and start and end split
+// points. This is used by GetPartition which, given a CollectionGroupReference
+// returns smaller sub-queries or partitions
 type QueryPartition struct {
 	CollectionGroupRef *CollectionGroupRef
 	StartAt            string
 	EndBefore          string
 }
 
+// ToQuery converts a QueryPartition object to a Query object
 func (qp QueryPartition) ToQuery() Query {
 	// TODO(crwilcox) exposing the collection group reference here,
 	//but just as well could pass the collection id, and then compose a ref.
