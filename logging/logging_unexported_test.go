@@ -24,12 +24,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/proto"
 	durpb "github.com/golang/protobuf/ptypes/duration"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	"google.golang.org/api/support/bundler"
 	mrpb "google.golang.org/genproto/googleapis/api/monitoredres"
 	logtypepb "google.golang.org/genproto/googleapis/logging/type"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestLoggerCreation(t *testing.T) {
@@ -117,65 +117,6 @@ func TestLoggerCreation(t *testing.T) {
 		if got, want := gotLogger.bundler.BufferedByteLimit, test.wantBundler.BufferedByteLimit; got != want {
 			t.Errorf("%v: BufferedByteLimit: got %v, want %v", test.options, got, want)
 		}
-	}
-}
-
-func TestToProtoStruct(t *testing.T) {
-	v := struct {
-		Foo string                 `json:"foo"`
-		Bar int                    `json:"bar,omitempty"`
-		Baz []float64              `json:"baz"`
-		Moo map[string]interface{} `json:"moo"`
-	}{
-		Foo: "foovalue",
-		Baz: []float64{1.1},
-		Moo: map[string]interface{}{
-			"a": 1,
-			"b": "two",
-			"c": true,
-		},
-	}
-
-	got, err := toProtoStruct(v)
-	if err != nil {
-		t.Fatal(err)
-	}
-	want := &structpb.Struct{
-		Fields: map[string]*structpb.Value{
-			"foo": {Kind: &structpb.Value_StringValue{StringValue: v.Foo}},
-			"baz": {Kind: &structpb.Value_ListValue{ListValue: &structpb.ListValue{Values: []*structpb.Value{
-				{Kind: &structpb.Value_NumberValue{NumberValue: 1.1}},
-			}}}},
-			"moo": {Kind: &structpb.Value_StructValue{
-				StructValue: &structpb.Struct{
-					Fields: map[string]*structpb.Value{
-						"a": {Kind: &structpb.Value_NumberValue{NumberValue: 1}},
-						"b": {Kind: &structpb.Value_StringValue{StringValue: "two"}},
-						"c": {Kind: &structpb.Value_BoolValue{BoolValue: true}},
-					},
-				},
-			}},
-		},
-	}
-	if !proto.Equal(got, want) {
-		t.Errorf("got  %+v\nwant %+v", got, want)
-	}
-
-	// Non-structs should fail to convert.
-	for v := range []interface{}{3, "foo", []int{1, 2, 3}} {
-		_, err := toProtoStruct(v)
-		if err == nil {
-			t.Errorf("%v: got nil, want error", v)
-		}
-	}
-
-	// Test fast path.
-	got, err = toProtoStruct(want)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if got != want {
-		t.Error("got and want should be identical, but are not")
 	}
 }
 
