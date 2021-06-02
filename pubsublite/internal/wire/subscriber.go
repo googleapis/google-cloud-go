@@ -65,6 +65,7 @@ func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, buf
 	}
 }
 
+// Start the message delivery, if not already started.
 func (mq *messageDeliveryQueue) Start() {
 	if mq.stopC != nil {
 		return
@@ -76,6 +77,7 @@ func (mq *messageDeliveryQueue) Start() {
 	go mq.deliverMessages(mq.messagesC, mq.stopC)
 }
 
+// Stop message delivery and discard undelivered messages.
 func (mq *messageDeliveryQueue) Stop() {
 	if mq.stopC == nil {
 		return
@@ -86,6 +88,7 @@ func (mq *messageDeliveryQueue) Stop() {
 	mq.messagesC = nil
 }
 
+// Wait until the message delivery goroutine has terminated.
 func (mq *messageDeliveryQueue) Wait() {
 	mq.active.Wait()
 }
@@ -97,6 +100,7 @@ func (mq *messageDeliveryQueue) Add(msg *ReceivedMessage) {
 }
 
 func (mq *messageDeliveryQueue) deliverMessages(messagesC chan *ReceivedMessage, stopC chan struct{}) {
+	// Notify the wait group that the goroutine has terminated upon exit.
 	defer mq.active.Done()
 
 	for {
