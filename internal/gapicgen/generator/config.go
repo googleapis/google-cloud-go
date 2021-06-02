@@ -1125,6 +1125,15 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/privatecatalog/v1beta1/cloudprivatecatalog_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/tpu/v1",
+		pkg:                   "tpu",
+		importPath:            "cloud.google.com/go/tpu/apiv1",
+		gRPCServiceConfigPath: "google/cloud/tpu/v1/tpu_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/tpu/v1/tpu_v1.yaml",
+		// GA after 2021/07/02
+		releaseLevel: "beta",
+	},
 
 	// Non-Cloud APIs
 	{
