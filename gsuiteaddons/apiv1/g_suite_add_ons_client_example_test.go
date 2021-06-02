@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_GetAuthorization() {
-	// import gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
-
 	ctx := context.Background()
 	c, err := gsuiteaddons.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.GetAuthorizationRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_GetAuthorization() {
 }
 
 func ExampleClient_CreateDeployment() {
-	// import gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
-
 	ctx := context.Background()
 	c, err := gsuiteaddons.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.CreateDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClient_CreateDeployment() {
 }
 
 func ExampleClient_ReplaceDeployment() {
-	// import gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
-
 	ctx := context.Background()
 	c, err := gsuiteaddons.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.ReplaceDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -95,13 +94,12 @@ func ExampleClient_ReplaceDeployment() {
 }
 
 func ExampleClient_GetDeployment() {
-	// import gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
-
 	ctx := context.Background()
 	c, err := gsuiteaddons.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.GetDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -115,14 +113,12 @@ func ExampleClient_GetDeployment() {
 }
 
 func ExampleClient_ListDeployments() {
-	// import gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gsuiteaddons.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.ListDeploymentsRequest{
 		// TODO: Fill request struct fields.
@@ -147,6 +143,7 @@ func ExampleClient_DeleteDeployment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.DeleteDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -163,6 +160,7 @@ func ExampleClient_InstallDeployment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.InstallDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -179,6 +177,7 @@ func ExampleClient_UninstallDeployment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.UninstallDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -190,13 +189,12 @@ func ExampleClient_UninstallDeployment() {
 }
 
 func ExampleClient_GetInstallStatus() {
-	// import gsuiteaddonspb "google.golang.org/genproto/googleapis/cloud/gsuiteaddons/v1"
-
 	ctx := context.Background()
 	c, err := gsuiteaddons.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gsuiteaddonspb.GetInstallStatusRequest{
 		// TODO: Fill request struct fields.
