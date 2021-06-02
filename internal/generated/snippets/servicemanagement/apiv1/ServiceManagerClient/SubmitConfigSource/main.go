@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import servicemanagementpb "google.golang.org/genproto/googleapis/api/servicemanagement/v1"
-
 	ctx := context.Background()
 	c, err := servicemanagement.NewServiceManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicemanagementpb.SubmitConfigSourceRequest{
 		// TODO: Fill request struct fields.

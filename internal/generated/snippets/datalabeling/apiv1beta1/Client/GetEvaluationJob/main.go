@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import datalabelingpb "google.golang.org/genproto/googleapis/cloud/datalabeling/v1beta1"
-
 	ctx := context.Background()
 	c, err := datalabeling.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datalabelingpb.GetEvaluationJobRequest{
 		// TODO: Fill request struct fields.

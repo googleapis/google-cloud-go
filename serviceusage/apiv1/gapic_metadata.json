@@ -1,0 +1,48 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.api.serviceusage.v1",
+  "libraryPackage": "cloud.google.com/go/serviceusage/apiv1",
+  "services": {
+    "ServiceUsage": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchEnableServices": {
+              "methods": [
+                "BatchEnableServices"
+              ]
+            },
+            "BatchGetServices": {
+              "methods": [
+                "BatchGetServices"
+              ]
+            },
+            "DisableService": {
+              "methods": [
+                "DisableService"
+              ]
+            },
+            "EnableService": {
+              "methods": [
+                "EnableService"
+              ]
+            },
+            "GetService": {
+              "methods": [
+                "GetService"
+              ]
+            },
+            "ListServices": {
+              "methods": [
+                "ListServices"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

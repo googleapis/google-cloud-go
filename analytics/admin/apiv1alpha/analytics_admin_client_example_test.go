@@ -30,18 +30,19 @@ func ExampleNewAnalyticsAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAnalyticsAdminClient_GetAccount() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetAccountRequest{
 		// TODO: Fill request struct fields.
@@ -55,14 +56,12 @@ func ExampleAnalyticsAdminClient_GetAccount() {
 }
 
 func ExampleAnalyticsAdminClient_ListAccounts() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAccountsRequest{
 		// TODO: Fill request struct fields.
@@ -87,6 +86,7 @@ func ExampleAnalyticsAdminClient_DeleteAccount() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteAccountRequest{
 		// TODO: Fill request struct fields.
@@ -98,13 +98,12 @@ func ExampleAnalyticsAdminClient_DeleteAccount() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateAccount() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateAccountRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleAnalyticsAdminClient_UpdateAccount() {
 }
 
 func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ProvisionAccountTicketRequest{
 		// TODO: Fill request struct fields.
@@ -138,14 +136,12 @@ func ExampleAnalyticsAdminClient_ProvisionAccountTicket() {
 }
 
 func ExampleAnalyticsAdminClient_ListAccountSummaries() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAccountSummariesRequest{
 		// TODO: Fill request struct fields.
@@ -165,13 +161,12 @@ func ExampleAnalyticsAdminClient_ListAccountSummaries() {
 }
 
 func ExampleAnalyticsAdminClient_GetProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetPropertyRequest{
 		// TODO: Fill request struct fields.
@@ -185,14 +180,12 @@ func ExampleAnalyticsAdminClient_GetProperty() {
 }
 
 func ExampleAnalyticsAdminClient_ListProperties() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListPropertiesRequest{
 		// TODO: Fill request struct fields.
@@ -212,13 +205,12 @@ func ExampleAnalyticsAdminClient_ListProperties() {
 }
 
 func ExampleAnalyticsAdminClient_CreateProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreatePropertyRequest{
 		// TODO: Fill request struct fields.
@@ -232,13 +224,12 @@ func ExampleAnalyticsAdminClient_CreateProperty() {
 }
 
 func ExampleAnalyticsAdminClient_DeleteProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeletePropertyRequest{
 		// TODO: Fill request struct fields.
@@ -252,13 +243,12 @@ func ExampleAnalyticsAdminClient_DeleteProperty() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateProperty() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdatePropertyRequest{
 		// TODO: Fill request struct fields.
@@ -272,13 +262,12 @@ func ExampleAnalyticsAdminClient_UpdateProperty() {
 }
 
 func ExampleAnalyticsAdminClient_GetUserLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetUserLinkRequest{
 		// TODO: Fill request struct fields.
@@ -292,13 +281,12 @@ func ExampleAnalyticsAdminClient_GetUserLink() {
 }
 
 func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchGetUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -312,14 +300,12 @@ func ExampleAnalyticsAdminClient_BatchGetUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_ListUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -339,14 +325,12 @@ func ExampleAnalyticsAdminClient_ListUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_AuditUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.AuditUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -366,13 +350,12 @@ func ExampleAnalyticsAdminClient_AuditUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_CreateUserLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateUserLinkRequest{
 		// TODO: Fill request struct fields.
@@ -386,13 +369,12 @@ func ExampleAnalyticsAdminClient_CreateUserLink() {
 }
 
 func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchCreateUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -406,13 +388,12 @@ func ExampleAnalyticsAdminClient_BatchCreateUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateUserLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateUserLinkRequest{
 		// TODO: Fill request struct fields.
@@ -426,13 +407,12 @@ func ExampleAnalyticsAdminClient_UpdateUserLink() {
 }
 
 func ExampleAnalyticsAdminClient_BatchUpdateUserLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchUpdateUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -451,6 +431,7 @@ func ExampleAnalyticsAdminClient_DeleteUserLink() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteUserLinkRequest{
 		// TODO: Fill request struct fields.
@@ -467,6 +448,7 @@ func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.BatchDeleteUserLinksRequest{
 		// TODO: Fill request struct fields.
@@ -478,13 +460,12 @@ func ExampleAnalyticsAdminClient_BatchDeleteUserLinks() {
 }
 
 func ExampleAnalyticsAdminClient_GetWebDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetWebDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -503,6 +484,7 @@ func ExampleAnalyticsAdminClient_DeleteWebDataStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteWebDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -514,13 +496,12 @@ func ExampleAnalyticsAdminClient_DeleteWebDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateWebDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateWebDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -534,13 +515,12 @@ func ExampleAnalyticsAdminClient_UpdateWebDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_CreateWebDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateWebDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -554,14 +534,12 @@ func ExampleAnalyticsAdminClient_CreateWebDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_ListWebDataStreams() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListWebDataStreamsRequest{
 		// TODO: Fill request struct fields.
@@ -581,13 +559,12 @@ func ExampleAnalyticsAdminClient_ListWebDataStreams() {
 }
 
 func ExampleAnalyticsAdminClient_GetIosAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -606,6 +583,7 @@ func ExampleAnalyticsAdminClient_DeleteIosAppDataStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -617,13 +595,12 @@ func ExampleAnalyticsAdminClient_DeleteIosAppDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateIosAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateIosAppDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -637,14 +614,12 @@ func ExampleAnalyticsAdminClient_UpdateIosAppDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_ListIosAppDataStreams() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListIosAppDataStreamsRequest{
 		// TODO: Fill request struct fields.
@@ -664,13 +639,12 @@ func ExampleAnalyticsAdminClient_ListIosAppDataStreams() {
 }
 
 func ExampleAnalyticsAdminClient_GetAndroidAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -689,6 +663,7 @@ func ExampleAnalyticsAdminClient_DeleteAndroidAppDataStream() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -700,13 +675,12 @@ func ExampleAnalyticsAdminClient_DeleteAndroidAppDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateAndroidAppDataStream() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateAndroidAppDataStreamRequest{
 		// TODO: Fill request struct fields.
@@ -720,14 +694,12 @@ func ExampleAnalyticsAdminClient_UpdateAndroidAppDataStream() {
 }
 
 func ExampleAnalyticsAdminClient_ListAndroidAppDataStreams() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListAndroidAppDataStreamsRequest{
 		// TODO: Fill request struct fields.
@@ -747,13 +719,12 @@ func ExampleAnalyticsAdminClient_ListAndroidAppDataStreams() {
 }
 
 func ExampleAnalyticsAdminClient_GetEnhancedMeasurementSettings() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetEnhancedMeasurementSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -767,13 +738,12 @@ func ExampleAnalyticsAdminClient_GetEnhancedMeasurementSettings() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateEnhancedMeasurementSettings() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateEnhancedMeasurementSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -787,13 +757,12 @@ func ExampleAnalyticsAdminClient_UpdateEnhancedMeasurementSettings() {
 }
 
 func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
@@ -807,13 +776,12 @@ func ExampleAnalyticsAdminClient_CreateFirebaseLink() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateFirebaseLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
@@ -832,6 +800,7 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteFirebaseLinkRequest{
 		// TODO: Fill request struct fields.
@@ -843,14 +812,12 @@ func ExampleAnalyticsAdminClient_DeleteFirebaseLink() {
 }
 
 func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListFirebaseLinksRequest{
 		// TODO: Fill request struct fields.
@@ -870,13 +837,12 @@ func ExampleAnalyticsAdminClient_ListFirebaseLinks() {
 }
 
 func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetGlobalSiteTagRequest{
 		// TODO: Fill request struct fields.
@@ -890,13 +856,12 @@ func ExampleAnalyticsAdminClient_GetGlobalSiteTag() {
 }
 
 func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.CreateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
@@ -910,13 +875,12 @@ func ExampleAnalyticsAdminClient_CreateGoogleAdsLink() {
 }
 
 func ExampleAnalyticsAdminClient_UpdateGoogleAdsLink() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.UpdateGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
@@ -935,6 +899,7 @@ func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.DeleteGoogleAdsLinkRequest{
 		// TODO: Fill request struct fields.
@@ -946,14 +911,12 @@ func ExampleAnalyticsAdminClient_DeleteGoogleAdsLink() {
 }
 
 func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListGoogleAdsLinksRequest{
 		// TODO: Fill request struct fields.
@@ -973,13 +936,12 @@ func ExampleAnalyticsAdminClient_ListGoogleAdsLinks() {
 }
 
 func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.GetDataSharingSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -992,15 +954,112 @@ func ExampleAnalyticsAdminClient_GetDataSharingSettings() {
 	_ = resp
 }
 
-func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
-	// import adminpb "google.golang.org/genproto/googleapis/analytics/admin/v1alpha"
-	// import "google.golang.org/api/iterator"
-
+func ExampleAnalyticsAdminClient_GetMeasurementProtocolSecret() {
 	ctx := context.Background()
 	c, err := admin.NewAnalyticsAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &adminpb.GetMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListMeasurementProtocolSecrets() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListMeasurementProtocolSecretsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListMeasurementProtocolSecrets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_UpdateMeasurementProtocolSecret() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateMeasurementProtocolSecretRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateMeasurementProtocolSecret(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &adminpb.SearchChangeHistoryEventsRequest{
 		// TODO: Fill request struct fields.
@@ -1017,4 +1076,320 @@ func ExampleAnalyticsAdminClient_SearchChangeHistoryEvents() {
 		// TODO: Use resp.
 		_ = resp
 	}
+}
+
+func ExampleAnalyticsAdminClient_GetGoogleSignalsSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetGoogleSignalsSettingsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetGoogleSignalsSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateGoogleSignalsSettings() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateGoogleSignalsSettingsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateGoogleSignalsSettings(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateConversionEvent() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateConversionEventRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_GetConversionEvent() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetConversionEventRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_DeleteConversionEvent() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.DeleteConversionEventRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteConversionEvent(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_ListConversionEvents() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListConversionEventsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListConversionEvents(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_CreateCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListCustomDimensions() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListCustomDimensionsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListCustomDimensions(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_ArchiveCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ArchiveCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.ArchiveCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetCustomDimension() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetCustomDimensionRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetCustomDimension(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_CreateCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.CreateCustomMetricRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_UpdateCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.UpdateCustomMetricRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAnalyticsAdminClient_ListCustomMetrics() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ListCustomMetricsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListCustomMetrics(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAnalyticsAdminClient_ArchiveCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.ArchiveCustomMetricRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.ArchiveCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAnalyticsAdminClient_GetCustomMetric() {
+	ctx := context.Background()
+	c, err := admin.NewAnalyticsAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &adminpb.GetCustomMetricRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetCustomMetric(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }

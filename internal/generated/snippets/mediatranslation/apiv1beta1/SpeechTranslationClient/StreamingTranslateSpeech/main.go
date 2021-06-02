@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import mediatranslationpb "google.golang.org/genproto/googleapis/cloud/mediatranslation/v1beta1"
-
 	ctx := context.Background()
 	c, err := mediatranslation.NewSpeechTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingTranslateSpeech(ctx)
 	if err != nil {
 		// TODO: Handle error.

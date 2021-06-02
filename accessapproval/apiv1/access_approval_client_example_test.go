@@ -30,19 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListApprovalRequests() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.ListApprovalRequestsMessage{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleClient_ListApprovalRequests() {
 }
 
 func ExampleClient_GetApprovalRequest() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.GetApprovalRequestMessage{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleClient_GetApprovalRequest() {
 }
 
 func ExampleClient_ApproveApprovalRequest() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.ApproveApprovalRequestMessage{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleClient_ApproveApprovalRequest() {
 }
 
 func ExampleClient_DismissApprovalRequest() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.DismissApprovalRequestMessage{
 		// TODO: Fill request struct fields.
@@ -122,13 +119,12 @@ func ExampleClient_DismissApprovalRequest() {
 }
 
 func ExampleClient_GetAccessApprovalSettings() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.GetAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.
@@ -142,13 +138,12 @@ func ExampleClient_GetAccessApprovalSettings() {
 }
 
 func ExampleClient_UpdateAccessApprovalSettings() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.UpdateAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.
@@ -167,6 +162,7 @@ func ExampleClient_DeleteAccessApprovalSettings() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.DeleteAccessApprovalSettingsMessage{
 		// TODO: Fill request struct fields.

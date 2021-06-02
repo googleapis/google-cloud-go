@@ -30,18 +30,19 @@ func ExampleNewSecurityCenterSettingsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetServiceAccountRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleSecurityCenterSettingsClient_GetServiceAccount() {
 }
 
 func ExampleSecurityCenterSettingsClient_GetSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleSecurityCenterSettingsClient_GetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_UpdateSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -100,6 +99,7 @@ func ExampleSecurityCenterSettingsClient_ResetSettings() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -111,13 +111,12 @@ func ExampleSecurityCenterSettingsClient_ResetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.BatchGetSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -131,13 +130,12 @@ func ExampleSecurityCenterSettingsClient_BatchGetSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.CalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -151,13 +149,12 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.BatchCalculateEffectiveSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -171,13 +168,12 @@ func ExampleSecurityCenterSettingsClient_BatchCalculateEffectiveSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.GetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -191,13 +187,12 @@ func ExampleSecurityCenterSettingsClient_GetComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_UpdateComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateComponentSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -216,6 +211,7 @@ func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ResetComponentSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -227,13 +223,12 @@ func ExampleSecurityCenterSettingsClient_ResetComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.CalculateEffectiveComponentSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -247,14 +242,12 @@ func ExampleSecurityCenterSettingsClient_CalculateEffectiveComponentSettings() {
 }
 
 func ExampleSecurityCenterSettingsClient_ListDetectors() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListDetectorsRequest{
 		// TODO: Fill request struct fields.
@@ -274,14 +267,12 @@ func ExampleSecurityCenterSettingsClient_ListDetectors() {
 }
 
 func ExampleSecurityCenterSettingsClient_ListComponents() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.ListComponentsRequest{
 		// TODO: Fill request struct fields.

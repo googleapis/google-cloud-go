@@ -17,7 +17,7 @@
 // Package orgpolicy is an auto-generated package for the
 // Organization Policy API.
 //
-// The Org Policy API allows users to configure governance ruleson their GCP
+// The Org Policy API allows users to configure governance rules on their GCP
 // resources across the Cloud Resource Hierarchy.
 //
 // Use of Context
@@ -29,7 +29,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package orgpolicy // import "cloud.google.com/go/orgpolicy/apiv2"
 
 import (
@@ -49,7 +49,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210508"
+const versionClient = "20210602"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

@@ -42,6 +42,10 @@ var denylist = map[string]bool{
 	// due to manual layer built on top of them.
 	"google.golang.org/genproto/googleapis/grafeas/v1":                    true,
 	"google.golang.org/genproto/googleapis/devtools/containeranalysis/v1": true,
+
+	// Temporarily stop generation of removed protos. Will be manually cleaned
+	// up with: https://github.com/googleapis/google-cloud-go/issues/4098
+	"google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1alpha2": true,
 }
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.

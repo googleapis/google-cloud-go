@@ -30,18 +30,19 @@ func ExampleNewBigQueryWriteClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleBigQueryWriteClient_CreateWriteStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateWriteStreamRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleBigQueryWriteClient_CreateWriteStream() {
 }
 
 func ExampleBigQueryWriteClient_AppendRows() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.AppendRows(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -91,13 +91,12 @@ func ExampleBigQueryWriteClient_AppendRows() {
 }
 
 func ExampleBigQueryWriteClient_GetWriteStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetWriteStreamRequest{
 		// TODO: Fill request struct fields.
@@ -111,13 +110,12 @@ func ExampleBigQueryWriteClient_GetWriteStream() {
 }
 
 func ExampleBigQueryWriteClient_FinalizeWriteStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.FinalizeWriteStreamRequest{
 		// TODO: Fill request struct fields.
@@ -131,13 +129,12 @@ func ExampleBigQueryWriteClient_FinalizeWriteStream() {
 }
 
 func ExampleBigQueryWriteClient_BatchCommitWriteStreams() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.BatchCommitWriteStreamsRequest{
 		// TODO: Fill request struct fields.
@@ -151,13 +148,12 @@ func ExampleBigQueryWriteClient_BatchCommitWriteStreams() {
 }
 
 func ExampleBigQueryWriteClient_FlushRows() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryWriteClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.FlushRowsRequest{
 		// TODO: Fill request struct fields.

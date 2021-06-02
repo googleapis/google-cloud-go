@@ -31,18 +31,19 @@ func ExampleNewRegistrationClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleRegistrationClient_CreateNamespace() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.CreateNamespaceRequest{
 		// TODO: Fill request struct fields.
@@ -56,14 +57,12 @@ func ExampleRegistrationClient_CreateNamespace() {
 }
 
 func ExampleRegistrationClient_ListNamespaces() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.ListNamespacesRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleRegistrationClient_ListNamespaces() {
 }
 
 func ExampleRegistrationClient_GetNamespace() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.GetNamespaceRequest{
 		// TODO: Fill request struct fields.
@@ -103,13 +101,12 @@ func ExampleRegistrationClient_GetNamespace() {
 }
 
 func ExampleRegistrationClient_UpdateNamespace() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.UpdateNamespaceRequest{
 		// TODO: Fill request struct fields.
@@ -128,6 +125,7 @@ func ExampleRegistrationClient_DeleteNamespace() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.DeleteNamespaceRequest{
 		// TODO: Fill request struct fields.
@@ -139,13 +137,12 @@ func ExampleRegistrationClient_DeleteNamespace() {
 }
 
 func ExampleRegistrationClient_CreateService() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.CreateServiceRequest{
 		// TODO: Fill request struct fields.
@@ -159,14 +156,12 @@ func ExampleRegistrationClient_CreateService() {
 }
 
 func ExampleRegistrationClient_ListServices() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.ListServicesRequest{
 		// TODO: Fill request struct fields.
@@ -186,13 +181,12 @@ func ExampleRegistrationClient_ListServices() {
 }
 
 func ExampleRegistrationClient_GetService() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.GetServiceRequest{
 		// TODO: Fill request struct fields.
@@ -206,13 +200,12 @@ func ExampleRegistrationClient_GetService() {
 }
 
 func ExampleRegistrationClient_UpdateService() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
@@ -231,6 +224,7 @@ func ExampleRegistrationClient_DeleteService() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
@@ -242,13 +236,12 @@ func ExampleRegistrationClient_DeleteService() {
 }
 
 func ExampleRegistrationClient_CreateEndpoint() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.CreateEndpointRequest{
 		// TODO: Fill request struct fields.
@@ -262,14 +255,12 @@ func ExampleRegistrationClient_CreateEndpoint() {
 }
 
 func ExampleRegistrationClient_ListEndpoints() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.ListEndpointsRequest{
 		// TODO: Fill request struct fields.
@@ -289,13 +280,12 @@ func ExampleRegistrationClient_ListEndpoints() {
 }
 
 func ExampleRegistrationClient_GetEndpoint() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.GetEndpointRequest{
 		// TODO: Fill request struct fields.
@@ -309,13 +299,12 @@ func ExampleRegistrationClient_GetEndpoint() {
 }
 
 func ExampleRegistrationClient_UpdateEndpoint() {
-	// import servicedirectorypb "google.golang.org/genproto/googleapis/cloud/servicedirectory/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.UpdateEndpointRequest{
 		// TODO: Fill request struct fields.
@@ -334,6 +323,7 @@ func ExampleRegistrationClient_DeleteEndpoint() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicedirectorypb.DeleteEndpointRequest{
 		// TODO: Fill request struct fields.
@@ -345,13 +335,12 @@ func ExampleRegistrationClient_DeleteEndpoint() {
 }
 
 func ExampleRegistrationClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -365,13 +354,12 @@ func ExampleRegistrationClient_GetIamPolicy() {
 }
 
 func ExampleRegistrationClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -385,13 +373,12 @@ func ExampleRegistrationClient_SetIamPolicy() {
 }
 
 func ExampleRegistrationClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := servicedirectory.NewRegistrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

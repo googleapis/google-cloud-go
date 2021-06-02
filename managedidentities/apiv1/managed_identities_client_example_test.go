@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateMicrosoftAdDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.CreateMicrosoftAdDomainRequest{
 		// TODO: Fill request struct fields.
@@ -60,13 +61,12 @@ func ExampleClient_CreateMicrosoftAdDomain() {
 }
 
 func ExampleClient_ResetAdminPassword() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ResetAdminPasswordRequest{
 		// TODO: Fill request struct fields.
@@ -80,14 +80,12 @@ func ExampleClient_ResetAdminPassword() {
 }
 
 func ExampleClient_ListDomains() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ListDomainsRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleClient_ListDomains() {
 }
 
 func ExampleClient_GetDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.GetDomainRequest{
 		// TODO: Fill request struct fields.
@@ -127,13 +124,12 @@ func ExampleClient_GetDomain() {
 }
 
 func ExampleClient_UpdateDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.UpdateDomainRequest{
 		// TODO: Fill request struct fields.
@@ -152,13 +148,12 @@ func ExampleClient_UpdateDomain() {
 }
 
 func ExampleClient_DeleteDomain() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.DeleteDomainRequest{
 		// TODO: Fill request struct fields.
@@ -175,13 +170,12 @@ func ExampleClient_DeleteDomain() {
 }
 
 func ExampleClient_AttachTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.AttachTrustRequest{
 		// TODO: Fill request struct fields.
@@ -200,13 +194,12 @@ func ExampleClient_AttachTrust() {
 }
 
 func ExampleClient_ReconfigureTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ReconfigureTrustRequest{
 		// TODO: Fill request struct fields.
@@ -225,13 +218,12 @@ func ExampleClient_ReconfigureTrust() {
 }
 
 func ExampleClient_DetachTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.DetachTrustRequest{
 		// TODO: Fill request struct fields.
@@ -250,13 +242,12 @@ func ExampleClient_DetachTrust() {
 }
 
 func ExampleClient_ValidateTrust() {
-	// import managedidentitiespb "google.golang.org/genproto/googleapis/cloud/managedidentities/v1"
-
 	ctx := context.Background()
 	c, err := managedidentities.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &managedidentitiespb.ValidateTrustRequest{
 		// TODO: Fill request struct fields.

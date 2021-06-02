@@ -29,6 +29,8 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
@@ -39,6 +41,7 @@ func ExampleClient_DeletePosixAccount() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.DeletePosixAccountRequest{
 		// TODO: Fill request struct fields.
@@ -55,6 +58,7 @@ func ExampleClient_DeleteSshPublicKey() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.DeleteSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
@@ -66,13 +70,12 @@ func ExampleClient_DeleteSshPublicKey() {
 }
 
 func ExampleClient_GetLoginProfile() {
-	// import osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
-
 	ctx := context.Background()
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.GetLoginProfileRequest{
 		// TODO: Fill request struct fields.
@@ -86,13 +89,12 @@ func ExampleClient_GetLoginProfile() {
 }
 
 func ExampleClient_GetSshPublicKey() {
-	// import osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
-
 	ctx := context.Background()
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.GetSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
@@ -106,13 +108,12 @@ func ExampleClient_GetSshPublicKey() {
 }
 
 func ExampleClient_ImportSshPublicKey() {
-	// import osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
-
 	ctx := context.Background()
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.ImportSshPublicKeyRequest{
 		// TODO: Fill request struct fields.
@@ -126,13 +127,12 @@ func ExampleClient_ImportSshPublicKey() {
 }
 
 func ExampleClient_UpdateSshPublicKey() {
-	// import osloginpb "google.golang.org/genproto/googleapis/cloud/oslogin/v1"
-
 	ctx := context.Background()
 	c, err := oslogin.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osloginpb.UpdateSshPublicKeyRequest{
 		// TODO: Fill request struct fields.

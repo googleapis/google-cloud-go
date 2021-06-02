@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_Recognize() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.RecognizeRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_Recognize() {
 }
 
 func ExampleClient_LongRunningRecognize() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.LongRunningRecognizeRequest{
 		// TODO: Fill request struct fields.
@@ -80,13 +80,12 @@ func ExampleClient_LongRunningRecognize() {
 }
 
 func ExampleClient_StreamingRecognize() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1p1beta1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingRecognize(ctx)
 	if err != nil {
 		// TODO: Handle error.

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.CompleteIPRotationRequest{
 		// TODO: Fill request struct fields.

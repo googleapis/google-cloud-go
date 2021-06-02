@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.
