@@ -43,6 +43,7 @@ var newClientHook clientHook
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
 	ExportAssets                []gax.CallOption
+	ListAssets                  []gax.CallOption
 	BatchGetAssetsHistory       []gax.CallOption
 	CreateFeed                  []gax.CallOption
 	GetFeed                     []gax.CallOption
@@ -70,6 +71,18 @@ func defaultGRPCClientOptions() []option.ClientOption {
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
 		ExportAssets: []gax.CallOption{},
+		ListAssets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		BatchGetAssetsHistory: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -166,6 +179,7 @@ type internalClient interface {
 	Connection() *grpc.ClientConn
 	ExportAssets(context.Context, *assetpb.ExportAssetsRequest, ...gax.CallOption) (*ExportAssetsOperation, error)
 	ExportAssetsOperation(name string) *ExportAssetsOperation
+	ListAssets(context.Context, *assetpb.ListAssetsRequest, ...gax.CallOption) *AssetIterator
 	BatchGetAssetsHistory(context.Context, *assetpb.BatchGetAssetsHistoryRequest, ...gax.CallOption) (*assetpb.BatchGetAssetsHistoryResponse, error)
 	CreateFeed(context.Context, *assetpb.CreateFeedRequest, ...gax.CallOption) (*assetpb.Feed, error)
 	GetFeed(context.Context, *assetpb.GetFeedRequest, ...gax.CallOption) (*assetpb.Feed, error)
@@ -236,6 +250,12 @@ func (c *Client) ExportAssets(ctx context.Context, req *assetpb.ExportAssetsRequ
 // The name must be that of a previously created ExportAssetsOperation, possibly from a different process.
 func (c *Client) ExportAssetsOperation(name string) *ExportAssetsOperation {
 	return c.internalClient.ExportAssetsOperation(name)
+}
+
+// ListAssets lists assets with time and resource types and returns paged results in
+// response.
+func (c *Client) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
+	return c.internalClient.ListAssets(ctx, req, opts...)
 }
 
 // BatchGetAssetsHistory batch gets the update history of assets that overlap a time window.
@@ -433,6 +453,46 @@ func (c *gRPCClient) ExportAssets(ctx context.Context, req *assetpb.ExportAssets
 	return &ExportAssetsOperation{
 		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
 	}, nil
+}
+
+func (c *gRPCClient) ListAssets(ctx context.Context, req *assetpb.ListAssetsRequest, opts ...gax.CallOption) *AssetIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListAssets[0:len((*c.CallOptions).ListAssets):len((*c.CallOptions).ListAssets)], opts...)
+	it := &AssetIterator{}
+	req = proto.Clone(req).(*assetpb.ListAssetsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*assetpb.Asset, string, error) {
+		var resp *assetpb.ListAssetsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.client.ListAssets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAssets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
 }
 
 func (c *gRPCClient) BatchGetAssetsHistory(ctx context.Context, req *assetpb.BatchGetAssetsHistoryRequest, opts ...gax.CallOption) (*assetpb.BatchGetAssetsHistoryResponse, error) {
@@ -817,6 +877,53 @@ func (op *ExportAssetsOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *ExportAssetsOperation) Name() string {
 	return op.lro.Name()
+}
+
+// AssetIterator manages a stream of *assetpb.Asset.
+type AssetIterator struct {
+	items    []*assetpb.Asset
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*assetpb.Asset, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *AssetIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *AssetIterator) Next() (*assetpb.Asset, error) {
+	var item *assetpb.Asset
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *AssetIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *AssetIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // IamPolicySearchResultIterator manages a stream of *assetpb.IamPolicySearchResult.

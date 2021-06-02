@@ -45,6 +45,11 @@
                 "GetFeed"
               ]
             },
+            "ListAssets": {
+              "methods": [
+                "ListAssets"
+              ]
+            },
             "ListFeeds": {
               "methods": [
                 "ListFeeds"

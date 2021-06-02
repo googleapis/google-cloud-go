@@ -29,6 +29,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -48,6 +49,9 @@ type PublisherCallOptions struct {
 	ListTopicSnapshots     []gax.CallOption
 	DeleteTopic            []gax.CallOption
 	DetachSubscription     []gax.CallOption
+	GetIamPolicy           []gax.CallOption
+	SetIamPolicy           []gax.CallOption
+	TestIamPermissions     []gax.CallOption
 }
 
 func defaultPublisherGRPCClientOptions() []option.ClientOption {
@@ -177,6 +181,9 @@ func defaultPublisherCallOptions() *PublisherCallOptions {
 				})
 			}),
 		},
+		GetIamPolicy:       []gax.CallOption{},
+		SetIamPolicy:       []gax.CallOption{},
+		TestIamPermissions: []gax.CallOption{},
 	}
 }
 
@@ -194,6 +201,9 @@ type internalPublisherClient interface {
 	ListTopicSnapshots(context.Context, *pubsubpb.ListTopicSnapshotsRequest, ...gax.CallOption) *StringIterator
 	DeleteTopic(context.Context, *pubsubpb.DeleteTopicRequest, ...gax.CallOption) error
 	DetachSubscription(context.Context, *pubsubpb.DetachSubscriptionRequest, ...gax.CallOption) (*pubsubpb.DetachSubscriptionResponse, error)
+	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
+	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
 }
 
 // PublisherClient is a client for interacting with Cloud Pub/Sub API.
@@ -290,6 +300,32 @@ func (c *PublisherClient) DetachSubscription(ctx context.Context, req *pubsubpb.
 	return c.internalClient.DetachSubscription(ctx, req, opts...)
 }
 
+// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
+// if the resource exists and does not have a policy set.
+func (c *PublisherClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces
+// any existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
+// errors.
+func (c *PublisherClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource. If the
+// resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building
+// permission-aware UIs and command-line tools, not for authorization
+// checking. This operation may “fail open” without warning.
+func (c *PublisherClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
 // publisherGRPCClient is a client for interacting with Cloud Pub/Sub API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -305,6 +341,8 @@ type publisherGRPCClient struct {
 
 	// The gRPC API client.
 	publisherClient pubsubpb.PublisherClient
+
+	iamPolicyClient iampb.IAMPolicyClient
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
@@ -341,6 +379,7 @@ func NewPublisherClient(ctx context.Context, opts ...option.ClientOption) (*Publ
 		disableDeadlines: disableDeadlines,
 		publisherClient:  pubsubpb.NewPublisherClient(connPool),
 		CallOptions:      &client.CallOptions,
+		iamPolicyClient:  iampb.NewIAMPolicyClient(connPool),
 	}
 	c.setGoogleClientInfo()
 
@@ -605,6 +644,51 @@ func (c *publisherGRPCClient) DetachSubscription(ctx context.Context, req *pubsu
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.publisherClient.DetachSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *publisherGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.GetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *publisherGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.SetIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *publisherGRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.iamPolicyClient.TestIamPermissions(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
