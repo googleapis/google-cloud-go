@@ -30,18 +30,19 @@ func ExampleNewPredictionApiKeyRegistryClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePredictionApiKeyRegistryClient_CreatePredictionApiKeyRegistration() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewPredictionApiKeyRegistryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.CreatePredictionApiKeyRegistrationRequest{
 		// TODO: Fill request struct fields.
@@ -55,14 +56,12 @@ func ExamplePredictionApiKeyRegistryClient_CreatePredictionApiKeyRegistration() 
 }
 
 func ExamplePredictionApiKeyRegistryClient_ListPredictionApiKeyRegistrations() {
-	// import recommendationenginepb "google.golang.org/genproto/googleapis/cloud/recommendationengine/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := recommendationengine.NewPredictionApiKeyRegistryClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.ListPredictionApiKeyRegistrationsRequest{
 		// TODO: Fill request struct fields.
@@ -87,6 +86,7 @@ func ExamplePredictionApiKeyRegistryClient_DeletePredictionApiKeyRegistration() 
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &recommendationenginepb.DeletePredictionApiKeyRegistrationRequest{
 		// TODO: Fill request struct fields.

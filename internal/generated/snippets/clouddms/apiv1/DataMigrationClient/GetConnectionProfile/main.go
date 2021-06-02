@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import clouddmspb "google.golang.org/genproto/googleapis/cloud/clouddms/v1"
-
 	ctx := context.Background()
 	c, err := clouddms.NewDataMigrationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddmspb.GetConnectionProfileRequest{
 		// TODO: Fill request struct fields.

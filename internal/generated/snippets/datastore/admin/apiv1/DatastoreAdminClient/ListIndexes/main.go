@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import adminpb "google.golang.org/genproto/googleapis/datastore/admin/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := admin.NewDatastoreAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &adminpb.ListIndexesRequest{
 		// TODO: Fill request struct fields.

@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import kmspb "google.golang.org/genproto/googleapis/cloud/kms/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := kms.NewKeyManagementClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &kmspb.ListImportJobsRequest{
 		// TODO: Fill request struct fields.

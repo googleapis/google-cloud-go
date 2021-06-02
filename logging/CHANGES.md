@@ -1,5 +1,12 @@
 # Changes
 
+### [1.4.2](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.1...logging/v1.4.2) (2021-05-20)
+
+
+### Bug Fixes
+
+* **logging:** correctly detect GKE resource ([#4092](https://www.github.com/googleapis/google-cloud-go/issues/4092)) ([a2538e1](https://www.github.com/googleapis/google-cloud-go/commit/a2538e16123c21da62036b56df8c104360f1c2d6))
+
 ### [1.4.1](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.0...logging/v1.4.1) (2021-05-03)
 
 

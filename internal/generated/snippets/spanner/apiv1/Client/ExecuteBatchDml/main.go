@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.ExecuteBatchDmlRequest{
 		// TODO: Fill request struct fields.

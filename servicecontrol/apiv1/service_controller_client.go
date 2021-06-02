@@ -39,7 +39,7 @@ type ServiceControllerCallOptions struct {
 	Report []gax.CallOption
 }
 
-func defaultServiceControllerClientOptions() []option.ClientOption {
+func defaultServiceControllerGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("servicecontrol.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("servicecontrol.mtls.googleapis.com:443"),
@@ -58,84 +58,50 @@ func defaultServiceControllerCallOptions() *ServiceControllerCallOptions {
 	}
 }
 
-// ServiceControllerClient is a client for interacting with Service Control API.
-//
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type ServiceControllerClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
-
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// The gRPC API client.
-	serviceControllerClient servicecontrolpb.ServiceControllerClient
-
-	// The call options for this service.
-	CallOptions *ServiceControllerCallOptions
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
+// internalServiceControllerClient is an interface that defines the methods availaible from Service Control API.
+type internalServiceControllerClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	Check(context.Context, *servicecontrolpb.CheckRequest, ...gax.CallOption) (*servicecontrolpb.CheckResponse, error)
+	Report(context.Context, *servicecontrolpb.ReportRequest, ...gax.CallOption) (*servicecontrolpb.ReportResponse, error)
 }
 
-// NewServiceControllerClient creates a new service controller client.
+// ServiceControllerClient is a client for interacting with Service Control API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Google Service Control API (at https://cloud.google.com/service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
-func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceControllerClient, error) {
-	clientOpts := defaultServiceControllerClientOptions()
+type ServiceControllerClient struct {
+	// The internal transport-dependent client.
+	internalClient internalServiceControllerClient
 
-	if newServiceControllerClientHook != nil {
-		hookOpts, err := newServiceControllerClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	c := &ServiceControllerClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultServiceControllerCallOptions(),
-
-		serviceControllerClient: servicecontrolpb.NewServiceControllerClient(connPool),
-	}
-	c.setGoogleClientInfo()
-
-	return c, nil
+	// The call options for this service.
+	CallOptions *ServiceControllerCallOptions
 }
 
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *ServiceControllerClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
-}
+// Wrapper methods routed to the internal client.
 
 // Close closes the connection to the API service. The user should invoke this when
 // the client is no longer required.
 func (c *ServiceControllerClient) Close() error {
-	return c.connPool.Close()
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
 func (c *ServiceControllerClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *ServiceControllerClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // Check checks whether an operation on a service should be allowed to proceed
@@ -155,19 +121,7 @@ func (c *ServiceControllerClient) setGoogleClientInfo(keyval ...string) {
 // on the specified service. For more information, see
 // Cloud IAM (at https://cloud.google.com/iam).
 func (c *ServiceControllerClient) Check(ctx context.Context, req *servicecontrolpb.CheckRequest, opts ...gax.CallOption) (*servicecontrolpb.CheckResponse, error) {
-	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
-	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.Check[0:len(c.CallOptions.Check):len(c.CallOptions.Check)], opts...)
-	var resp *servicecontrolpb.CheckResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.serviceControllerClient.Check(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+	return c.internalClient.Check(ctx, req, opts...)
 }
 
 // Report reports operation results to Google Service Control, such as logs and
@@ -186,9 +140,112 @@ func (c *ServiceControllerClient) Check(ctx context.Context, req *servicecontrol
 // on the specified service. For more information, see
 // Google Cloud IAM (at https://cloud.google.com/iam).
 func (c *ServiceControllerClient) Report(ctx context.Context, req *servicecontrolpb.ReportRequest, opts ...gax.CallOption) (*servicecontrolpb.ReportResponse, error) {
+	return c.internalClient.Report(ctx, req, opts...)
+}
+
+// serviceControllerGRPCClient is a client for interacting with Service Control API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type serviceControllerGRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing ServiceControllerClient
+	CallOptions **ServiceControllerCallOptions
+
+	// The gRPC API client.
+	serviceControllerClient servicecontrolpb.ServiceControllerClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewServiceControllerClient creates a new service controller client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Google Service Control API (at https://cloud.google.com/service-control/overview)
+//
+// Lets clients check and report operations against a managed
+// service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
+func NewServiceControllerClient(ctx context.Context, opts ...option.ClientOption) (*ServiceControllerClient, error) {
+	clientOpts := defaultServiceControllerGRPCClientOptions()
+	if newServiceControllerClientHook != nil {
+		hookOpts, err := newServiceControllerClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := ServiceControllerClient{CallOptions: defaultServiceControllerCallOptions()}
+
+	c := &serviceControllerGRPCClient{
+		connPool:                connPool,
+		disableDeadlines:        disableDeadlines,
+		serviceControllerClient: servicecontrolpb.NewServiceControllerClient(connPool),
+		CallOptions:             &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *serviceControllerGRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *serviceControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *serviceControllerGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *serviceControllerGRPCClient) Check(ctx context.Context, req *servicecontrolpb.CheckRequest, opts ...gax.CallOption) (*servicecontrolpb.CheckResponse, error) {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.Report[0:len(c.CallOptions.Report):len(c.CallOptions.Report)], opts...)
+	opts = append((*c.CallOptions).Check[0:len((*c.CallOptions).Check):len((*c.CallOptions).Check)], opts...)
+	var resp *servicecontrolpb.CheckResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.serviceControllerClient.Check(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *serviceControllerGRPCClient) Report(ctx context.Context, req *servicecontrolpb.ReportRequest, opts ...gax.CallOption) (*servicecontrolpb.ReportResponse, error) {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "service_name", url.QueryEscape(req.GetServiceName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).Report[0:len((*c.CallOptions).Report):len((*c.CallOptions).Report)], opts...)
 	var resp *servicecontrolpb.ReportResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error

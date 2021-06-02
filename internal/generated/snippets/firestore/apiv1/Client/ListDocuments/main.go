@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.

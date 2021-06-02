@@ -1,72 +1,72 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.area120.tables.v1alpha1",
-  "libraryPackage":  "cloud.google.com/go/area120/tables/apiv1alpha1",
-  "services":  {
-    "TablesService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "BatchCreateRows":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.area120.tables.v1alpha1",
+  "libraryPackage": "cloud.google.com/go/area120/tables/apiv1alpha1",
+  "services": {
+    "TablesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "BatchCreateRows": {
+              "methods": [
                 "BatchCreateRows"
               ]
             },
-            "BatchDeleteRows":  {
-              "methods":  [
+            "BatchDeleteRows": {
+              "methods": [
                 "BatchDeleteRows"
               ]
             },
-            "BatchUpdateRows":  {
-              "methods":  [
+            "BatchUpdateRows": {
+              "methods": [
                 "BatchUpdateRows"
               ]
             },
-            "CreateRow":  {
-              "methods":  [
+            "CreateRow": {
+              "methods": [
                 "CreateRow"
               ]
             },
-            "DeleteRow":  {
-              "methods":  [
+            "DeleteRow": {
+              "methods": [
                 "DeleteRow"
               ]
             },
-            "GetRow":  {
-              "methods":  [
+            "GetRow": {
+              "methods": [
                 "GetRow"
               ]
             },
-            "GetTable":  {
-              "methods":  [
+            "GetTable": {
+              "methods": [
                 "GetTable"
               ]
             },
-            "GetWorkspace":  {
-              "methods":  [
+            "GetWorkspace": {
+              "methods": [
                 "GetWorkspace"
               ]
             },
-            "ListRows":  {
-              "methods":  [
+            "ListRows": {
+              "methods": [
                 "ListRows"
               ]
             },
-            "ListTables":  {
-              "methods":  [
+            "ListTables": {
+              "methods": [
                 "ListTables"
               ]
             },
-            "ListWorkspaces":  {
-              "methods":  [
+            "ListWorkspaces": {
+              "methods": [
                 "ListWorkspaces"
               ]
             },
-            "UpdateRow":  {
-              "methods":  [
+            "UpdateRow": {
+              "methods": [
                 "UpdateRow"
               ]
             }

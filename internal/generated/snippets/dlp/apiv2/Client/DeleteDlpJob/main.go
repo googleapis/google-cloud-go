@@ -29,6 +29,7 @@ func main() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dlppb.DeleteDlpJobRequest{
 		// TODO: Fill request struct fields.

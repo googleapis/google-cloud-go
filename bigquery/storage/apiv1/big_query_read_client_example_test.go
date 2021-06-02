@@ -29,18 +29,19 @@ func ExampleNewBigQueryReadClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleBigQueryReadClient_CreateReadSession() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryReadClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateReadSessionRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleBigQueryReadClient_CreateReadSession() {
 }
 
 func ExampleBigQueryReadClient_SplitReadStream() {
-	// import storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewBigQueryReadClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.SplitReadStreamRequest{
 		// TODO: Fill request struct fields.

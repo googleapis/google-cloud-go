@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import translatepb "google.golang.org/genproto/googleapis/cloud/translate/v3"
-
 	ctx := context.Background()
 	c, err := translate.NewTranslationClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &translatepb.BatchTranslateTextRequest{
 		// TODO: Fill request struct fields.

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import taskspb "google.golang.org/genproto/googleapis/cloud/tasks/v2beta2"
-
 	ctx := context.Background()
 	c, err := cloudtasks.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &taskspb.RunTaskRequest{
 		// TODO: Fill request struct fields.

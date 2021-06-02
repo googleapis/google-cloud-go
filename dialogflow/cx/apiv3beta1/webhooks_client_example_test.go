@@ -30,19 +30,19 @@ func ExampleNewWebhooksClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleWebhooksClient_ListWebhooks() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewWebhooksClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListWebhooksRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleWebhooksClient_ListWebhooks() {
 }
 
 func ExampleWebhooksClient_GetWebhook() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewWebhooksClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetWebhookRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleWebhooksClient_GetWebhook() {
 }
 
 func ExampleWebhooksClient_CreateWebhook() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewWebhooksClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateWebhookRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleWebhooksClient_CreateWebhook() {
 }
 
 func ExampleWebhooksClient_UpdateWebhook() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewWebhooksClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateWebhookRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleWebhooksClient_DeleteWebhook() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteWebhookRequest{
 		// TODO: Fill request struct fields.

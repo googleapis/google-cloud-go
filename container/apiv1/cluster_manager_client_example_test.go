@@ -30,18 +30,19 @@ func ExampleNewClusterManagerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClusterManagerClient_ListClusters() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.ListClustersRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClusterManagerClient_ListClusters() {
 }
 
 func ExampleClusterManagerClient_GetCluster() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.GetClusterRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClusterManagerClient_GetCluster() {
 }
 
 func ExampleClusterManagerClient_CreateCluster() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.CreateClusterRequest{
 		// TODO: Fill request struct fields.
@@ -95,13 +94,12 @@ func ExampleClusterManagerClient_CreateCluster() {
 }
 
 func ExampleClusterManagerClient_UpdateCluster() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.UpdateClusterRequest{
 		// TODO: Fill request struct fields.
@@ -115,13 +113,12 @@ func ExampleClusterManagerClient_UpdateCluster() {
 }
 
 func ExampleClusterManagerClient_UpdateNodePool() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.UpdateNodePoolRequest{
 		// TODO: Fill request struct fields.
@@ -135,13 +132,12 @@ func ExampleClusterManagerClient_UpdateNodePool() {
 }
 
 func ExampleClusterManagerClient_SetNodePoolAutoscaling() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetNodePoolAutoscalingRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +151,12 @@ func ExampleClusterManagerClient_SetNodePoolAutoscaling() {
 }
 
 func ExampleClusterManagerClient_SetLoggingService() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetLoggingServiceRequest{
 		// TODO: Fill request struct fields.
@@ -175,13 +170,12 @@ func ExampleClusterManagerClient_SetLoggingService() {
 }
 
 func ExampleClusterManagerClient_SetMonitoringService() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetMonitoringServiceRequest{
 		// TODO: Fill request struct fields.
@@ -195,13 +189,12 @@ func ExampleClusterManagerClient_SetMonitoringService() {
 }
 
 func ExampleClusterManagerClient_SetAddonsConfig() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetAddonsConfigRequest{
 		// TODO: Fill request struct fields.
@@ -215,13 +208,12 @@ func ExampleClusterManagerClient_SetAddonsConfig() {
 }
 
 func ExampleClusterManagerClient_SetLocations() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetLocationsRequest{
 		// TODO: Fill request struct fields.
@@ -235,13 +227,12 @@ func ExampleClusterManagerClient_SetLocations() {
 }
 
 func ExampleClusterManagerClient_UpdateMaster() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.UpdateMasterRequest{
 		// TODO: Fill request struct fields.
@@ -255,13 +246,12 @@ func ExampleClusterManagerClient_UpdateMaster() {
 }
 
 func ExampleClusterManagerClient_SetMasterAuth() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetMasterAuthRequest{
 		// TODO: Fill request struct fields.
@@ -275,13 +265,12 @@ func ExampleClusterManagerClient_SetMasterAuth() {
 }
 
 func ExampleClusterManagerClient_DeleteCluster() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.DeleteClusterRequest{
 		// TODO: Fill request struct fields.
@@ -295,13 +284,12 @@ func ExampleClusterManagerClient_DeleteCluster() {
 }
 
 func ExampleClusterManagerClient_ListOperations() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.ListOperationsRequest{
 		// TODO: Fill request struct fields.
@@ -315,13 +303,12 @@ func ExampleClusterManagerClient_ListOperations() {
 }
 
 func ExampleClusterManagerClient_GetOperation() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.GetOperationRequest{
 		// TODO: Fill request struct fields.
@@ -340,6 +327,7 @@ func ExampleClusterManagerClient_CancelOperation() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.CancelOperationRequest{
 		// TODO: Fill request struct fields.
@@ -351,13 +339,12 @@ func ExampleClusterManagerClient_CancelOperation() {
 }
 
 func ExampleClusterManagerClient_GetServerConfig() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.GetServerConfigRequest{
 		// TODO: Fill request struct fields.
@@ -371,13 +358,12 @@ func ExampleClusterManagerClient_GetServerConfig() {
 }
 
 func ExampleClusterManagerClient_GetJSONWebKeys() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.GetJSONWebKeysRequest{
 		// TODO: Fill request struct fields.
@@ -391,13 +377,12 @@ func ExampleClusterManagerClient_GetJSONWebKeys() {
 }
 
 func ExampleClusterManagerClient_ListNodePools() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.ListNodePoolsRequest{
 		// TODO: Fill request struct fields.
@@ -411,13 +396,12 @@ func ExampleClusterManagerClient_ListNodePools() {
 }
 
 func ExampleClusterManagerClient_GetNodePool() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.GetNodePoolRequest{
 		// TODO: Fill request struct fields.
@@ -431,13 +415,12 @@ func ExampleClusterManagerClient_GetNodePool() {
 }
 
 func ExampleClusterManagerClient_CreateNodePool() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.CreateNodePoolRequest{
 		// TODO: Fill request struct fields.
@@ -451,13 +434,12 @@ func ExampleClusterManagerClient_CreateNodePool() {
 }
 
 func ExampleClusterManagerClient_DeleteNodePool() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.DeleteNodePoolRequest{
 		// TODO: Fill request struct fields.
@@ -471,13 +453,12 @@ func ExampleClusterManagerClient_DeleteNodePool() {
 }
 
 func ExampleClusterManagerClient_RollbackNodePoolUpgrade() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.RollbackNodePoolUpgradeRequest{
 		// TODO: Fill request struct fields.
@@ -491,13 +472,12 @@ func ExampleClusterManagerClient_RollbackNodePoolUpgrade() {
 }
 
 func ExampleClusterManagerClient_SetNodePoolManagement() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetNodePoolManagementRequest{
 		// TODO: Fill request struct fields.
@@ -511,13 +491,12 @@ func ExampleClusterManagerClient_SetNodePoolManagement() {
 }
 
 func ExampleClusterManagerClient_SetLabels() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetLabelsRequest{
 		// TODO: Fill request struct fields.
@@ -531,13 +510,12 @@ func ExampleClusterManagerClient_SetLabels() {
 }
 
 func ExampleClusterManagerClient_SetLegacyAbac() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetLegacyAbacRequest{
 		// TODO: Fill request struct fields.
@@ -551,13 +529,12 @@ func ExampleClusterManagerClient_SetLegacyAbac() {
 }
 
 func ExampleClusterManagerClient_StartIPRotation() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.StartIPRotationRequest{
 		// TODO: Fill request struct fields.
@@ -571,13 +548,12 @@ func ExampleClusterManagerClient_StartIPRotation() {
 }
 
 func ExampleClusterManagerClient_CompleteIPRotation() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.CompleteIPRotationRequest{
 		// TODO: Fill request struct fields.
@@ -591,13 +567,12 @@ func ExampleClusterManagerClient_CompleteIPRotation() {
 }
 
 func ExampleClusterManagerClient_SetNodePoolSize() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetNodePoolSizeRequest{
 		// TODO: Fill request struct fields.
@@ -611,13 +586,12 @@ func ExampleClusterManagerClient_SetNodePoolSize() {
 }
 
 func ExampleClusterManagerClient_SetNetworkPolicy() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetNetworkPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -631,13 +605,12 @@ func ExampleClusterManagerClient_SetNetworkPolicy() {
 }
 
 func ExampleClusterManagerClient_SetMaintenancePolicy() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.SetMaintenancePolicyRequest{
 		// TODO: Fill request struct fields.
@@ -651,14 +624,12 @@ func ExampleClusterManagerClient_SetMaintenancePolicy() {
 }
 
 func ExampleClusterManagerClient_ListUsableSubnetworks() {
-	// import containerpb "google.golang.org/genproto/googleapis/container/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := container.NewClusterManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &containerpb.ListUsableSubnetworksRequest{
 		// TODO: Fill request struct fields.

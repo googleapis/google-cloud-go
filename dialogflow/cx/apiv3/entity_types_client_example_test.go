@@ -30,19 +30,19 @@ func ExampleNewEntityTypesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleEntityTypesClient_ListEntityTypes() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListEntityTypesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleEntityTypesClient_ListEntityTypes() {
 }
 
 func ExampleEntityTypesClient_GetEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleEntityTypesClient_GetEntityType() {
 }
 
 func ExampleEntityTypesClient_CreateEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleEntityTypesClient_CreateEntityType() {
 }
 
 func ExampleEntityTypesClient_UpdateEntityType() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3"
-
 	ctx := context.Background()
 	c, err := cx.NewEntityTypesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateEntityTypeRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleEntityTypesClient_DeleteEntityType() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteEntityTypeRequest{
 		// TODO: Fill request struct fields.

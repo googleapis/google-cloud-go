@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewConversationProfilesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListConversationProfilesRequest{
 		// TODO: Fill request struct fields.
