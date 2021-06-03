@@ -15,10 +15,11 @@
 package firestore
 
 import (
+	"context"
 	"testing"
 )
 
-func TestCGR_TestQueryPartition(t *testing.T) {
+func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 	cgr := newCollectionGroupRef(testClient, testClient.path(), "collectionID")
 	qp := QueryPartition{
 		CollectionGroupQuery: cgr.Query,
@@ -41,6 +42,27 @@ func TestCGR_TestQueryPartition(t *testing.T) {
 		orders:         []order{{fieldPath: []string{"__name__"}, dir: 1}},
 	}
 
+	if !testEqual(got, want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+}
+
+func TestCGR_TestGetPartitions(t *testing.T) {
+	cgr := newCollectionGroupRef(testClient, testClient.path(), "collectionID")
+	_, err := cgr.GetPartitions(context.Background(), 0)
+	if err == nil {
+		t.Error("Expected an error when requested partition count is < 1")
+	}
+
+	parts, err := cgr.GetPartitions(context.Background(), 1)
+	if err != nil {
+		t.Error("Didn't expect an error when requested partition count is 1")
+	}
+	if len(parts) != 1 {
+		t.Fatal("Expected 1 QueryPartition")
+	}
+	got := parts[0]
+	want := QueryPartition{CollectionGroupQuery: cgr.Query, StartAt: "", EndBefore: ""}
 	if !testEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}

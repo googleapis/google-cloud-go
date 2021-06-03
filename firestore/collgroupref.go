@@ -51,6 +51,8 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount int64) ([]QueryPartition, error) {
 	if partitionCount <= 0 {
 		return nil, errors.New("a positive partitionCount must be provided")
+	} else if partitionCount == 1 {
+		return []QueryPartition{{CollectionGroupQuery: cgr.Query, StartAt: "", EndBefore: ""}}, nil
 	}
 
 	db := cgr.c.path()
