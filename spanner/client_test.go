@@ -416,6 +416,19 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 	}
 }
 
+func TestClient_ReturnDatabaseName(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	got := client.DatabaseName()
+	want := "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+	if got != want {
+		t.Fatalf("Incorrect database name returned, got: %s, want: %s", got, want)
+	}
+}
+
 func testQueryOptions(t *testing.T, iter *RowIterator, server InMemSpannerServer, qo QueryOptions) {
 	defer iter.Stop()
 
