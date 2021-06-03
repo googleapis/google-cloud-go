@@ -28,6 +28,9 @@ set -eo pipefail
 # Display commands being run.
 set -x
 
+# Dump environment variables on error.
+trap 'printenv' ERR
+
 cd $(dirname $0)/..
 
 export GOOGLE_APPLICATION_CREDENTIALS="${KOKORO_KEYSTORE_DIR}/72935_cloud-profiler-e2e-service-account-key"
