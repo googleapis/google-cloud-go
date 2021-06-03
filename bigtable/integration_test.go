@@ -1573,9 +1573,13 @@ func TestIntegration_AdminEncryptionInfo(t *testing.T) {
 	table := instanceToCreate + "-table"
 	clusterID := instanceToCreate + "-cluster"
 
-	keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+	keyRingName := os.Getenv("GCLOUD_TESTS_BIGTABLE_KEYRING")
 	if keyRingName == "" {
-		t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		// try to fall back on GOLANG keyring
+		keyRingName = os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_BIGTABLE_KEYRING or GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
 	}
 	kmsKeyName := keyRingName + "/cryptoKeys/key1"
 
