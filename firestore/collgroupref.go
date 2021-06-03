@@ -119,8 +119,8 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	return partitionQueries, nil
 }
 
-// byReferenceValue implements sort.Interface for []*firestorepb.Value based on
-// the Age field.
+// byReferenceValue implements sort.Interface for []*firestorepb.Value
+
 type byReferenceValue []*firestorepb.Value
 
 func (a byReferenceValue) Len() int           { return len(a) }
@@ -138,8 +138,6 @@ type QueryPartition struct {
 
 // ToQuery converts a QueryPartition object to a Query object
 func (qp QueryPartition) ToQuery() Query {
-	// TODO(crwilcox) exposing the collection group reference here,
-	//but just as well could pass the collection id, and then compose a ref.
 	q := qp.CollectionGroupQuery.query().OrderBy(DocumentID, Asc)
 	if qp.StartAt != "" {
 		q = q.StartAt(qp.StartAt)
