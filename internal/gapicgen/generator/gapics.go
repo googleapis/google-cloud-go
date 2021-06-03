@@ -64,7 +64,7 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		// config has a block on it. Or if generating a single gapic and it does
 		// not match the specified import path.
 		if (c.stopGeneration && g.gapicToGenerate == "") ||
-			(g.gapicToGenerate != "" && g.gapicToGenerate != c.importPath) {
+			(g.gapicToGenerate != "" && !strings.Contains(g.gapicToGenerate, c.importPath)) {
 			continue
 		}
 		if err := g.microgen(c); err != nil {
