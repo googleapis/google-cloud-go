@@ -95,7 +95,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	sort.Sort(byReferenceValue(cursorReferences))
 
 	partitionQueries := make([]QueryPartition, 0, len(cursorReferences))
-	var previousCursor string = ""
+	previousCursor := ""
 
 	for _, cursor := range cursorReferences {
 		cursorRef := cursor.GetReferenceValue()
