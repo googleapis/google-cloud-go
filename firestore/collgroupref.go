@@ -131,16 +131,16 @@ func (a byReferenceValue) Less(i, j int) bool { return compareValues(a[i], a[j])
 // points. This is used by GetPartition which, given a CollectionGroupReference
 // returns smaller sub-queries or partitions
 type QueryPartition struct {
-	CollectionGroupRef *CollectionGroupRef
-	StartAt            string
-	EndBefore          string
+	CollectionGroupQuery Query
+	StartAt              string
+	EndBefore            string
 }
 
 // ToQuery converts a QueryPartition object to a Query object
 func (qp QueryPartition) ToQuery() Query {
 	// TODO(crwilcox) exposing the collection group reference here,
 	//but just as well could pass the collection id, and then compose a ref.
-	q := qp.CollectionGroupRef.query().OrderBy(DocumentID, Asc)
+	q := qp.CollectionGroupQuery.query().OrderBy(DocumentID, Asc)
 	if qp.StartAt != "" {
 		q = q.StartAt(qp.StartAt)
 	}
