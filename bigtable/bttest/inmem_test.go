@@ -334,8 +334,13 @@ func TestTableRowsConcurrent(t *testing.T) {
 		}
 		finished <- true
 	}()
-	<-finished
-	<-finished
+	for i := 0; i < 2; i++ {
+		select {
+		case <-finished:
+		case <-time.After(2 * time.Second):
+			t.Fatalf("Timeout waiting for task %d\n", i)
+		}
+	}
 }
 
 func TestDropRowRange(t *testing.T) {
