@@ -483,10 +483,19 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 	// Handle filters that apply beyond just including/excluding cells.
 	switch f := f.Filter.(type) {
 	case *btpb.RowFilter_BlockAllFilter:
-		return !f.BlockAllFilter, nil
+		if !f.BlockAllFilter {
+			return false, status.Errorf(codes.InvalidArgument, "block_all_filter must be true if set")
+		}
+		return false, nil
 	case *btpb.RowFilter_PassAllFilter:
-		return f.PassAllFilter, nil
+		if !f.PassAllFilter {
+			return false, status.Errorf(codes.InvalidArgument, "pass_all_filter must be true if set")
+		}
+		return true, nil
 	case *btpb.RowFilter_Chain_:
+		if len(f.Chain.Filters) < 2 {
+			return false, status.Errorf(codes.InvalidArgument, "Chain must contain at least two RowFilters")
+		}
 		for _, sub := range f.Chain.Filters {
 			match, err := filterRow(sub, r)
 			if err != nil {
@@ -498,6 +507,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 		}
 		return true, nil
 	case *btpb.RowFilter_Interleave_:
+		if len(f.Interleave.Filters) < 2 {
+			return false, status.Errorf(codes.InvalidArgument, "Interleave must contain at least two RowFilters")
+		}
 		srs := make([]*row, 0, len(f.Interleave.Filters))
 		for _, sub := range f.Interleave.Filters {
 			sr := r.copy()
