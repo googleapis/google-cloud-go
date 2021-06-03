@@ -252,12 +252,14 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 
 func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeRequest) (*emptypb.Empty, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	tbl, ok := s.tables[req.Name]
+	s.mu.Unlock()
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
 
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
 	if req.GetDeleteAllDataFromTable() {
 		tbl.rows = btree.New(btreeDegree)
 	} else {
