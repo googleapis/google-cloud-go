@@ -1092,6 +1092,9 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return errNilDst(p)
 		}
 		if code == sppb.TypeCode_ARRAY {
+			if acode != sppb.TypeCode_JSON {
+				return errTypeMismatch(code, acode, ptr)
+			}
 			x, err := getListValue(v)
 			if err != nil {
 				return err
