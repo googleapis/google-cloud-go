@@ -328,8 +328,7 @@ func TestCommitterBlockingResetNormalCompletion(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
 	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
-	stream.Push(commitReq(34), commitResp(1), nil)
-	barrier := stream.PushWithBarrier(commitReq(56), commitResp(1), nil)
+	barrier := stream.PushWithBarrier(commitReq(34), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
@@ -339,6 +338,8 @@ func TestCommitterBlockingResetNormalCompletion(t *testing.T) {
 	if gotErr := cmt.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
+
+	ack1.Ack()
 
 	complete := test.NewCondition("blocking reset complete")
 	go func() {
@@ -350,14 +351,8 @@ func TestCommitterBlockingResetNormalCompletion(t *testing.T) {
 	}()
 	complete.VerifyNotDone(t)
 
-	ack1.Ack()
-	cmt.SendBatchCommit()
-	complete.VerifyNotDone(t)
-	ack2.Ack()
-	cmt.SendBatchCommit()
-
-	// Until the final commit response is received, committer.BlockingReset should
-	// not return.
+	// Until the commit response is received, committer.BlockingReset should not
+	// return.
 	barrier.ReleaseAfter(func() {
 		complete.VerifyNotDone(t)
 	})
@@ -370,6 +365,9 @@ func TestCommitterBlockingResetNormalCompletion(t *testing.T) {
 	if got, want := acks.Empty(), true; got != want {
 		t.Errorf("ackTracker.Empty() got %v, want %v", got, want)
 	}
+
+	// This ack should have been discarded.
+	ack2.Ack()
 
 	// Calling committer.BlockingReset again should immediately return.
 	if err := cmt.BlockingReset(); err != nil {
@@ -390,7 +388,7 @@ func TestCommitterBlockingResetCommitterStopped(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
 	stream.Push(initCommitReq(subscription), initCommitResp(), nil)
-	stream.Push(commitReq(34), commitResp(1), nil)
+	barrier := stream.PushWithBarrier(commitReq(34), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
@@ -401,6 +399,8 @@ func TestCommitterBlockingResetCommitterStopped(t *testing.T) {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
 
+	ack1.Ack()
+
 	complete := test.NewCondition("blocking reset complete")
 	go func() {
 		if got, want := cmt.BlockingReset(), ErrServiceStopped; !test.ErrorEqual(got, want) {
@@ -410,18 +410,11 @@ func TestCommitterBlockingResetCommitterStopped(t *testing.T) {
 	}()
 	complete.VerifyNotDone(t)
 
-	ack1.Ack()
-	cmt.SendBatchCommit()
-	complete.VerifyNotDone(t)
-
 	// committer.BlockingReset should return when the committer is stopped.
-	cmt.Stop()
-	complete.WaitUntilDone(t, serviceTestWaitTimeout)
-
-	// Ack tracker should not be reset.
-	if got, want := acks.Empty(), false; got != want {
-		t.Errorf("ackTracker.Empty() got %v, want %v", got, want)
-	}
+	barrier.ReleaseAfter(func() {
+		cmt.Stop()
+		complete.WaitUntilDone(t, serviceTestWaitTimeout)
+	})
 
 	cmt.Terminate()
 	if gotErr := cmt.FinalError(); gotErr != nil {
@@ -452,6 +445,8 @@ func TestCommitterBlockingResetFatalError(t *testing.T) {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
 
+	ack1.Ack()
+
 	complete := test.NewCondition("blocking reset complete")
 	go func() {
 		if got, want := cmt.BlockingReset(), ErrServiceStopped; !test.ErrorEqual(got, want) {
@@ -459,10 +454,6 @@ func TestCommitterBlockingResetFatalError(t *testing.T) {
 		}
 		complete.SetDone()
 	}()
-	complete.VerifyNotDone(t)
-
-	ack1.Ack()
-	cmt.SendBatchCommit()
 
 	// committer.BlockingReset should return when the committer terminates due to
 	// fatal server error.

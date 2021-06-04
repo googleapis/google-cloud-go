@@ -784,12 +784,13 @@ func TestSinglePartitionSubscriberAdminSeekWhileConnected(t *testing.T) {
 	receiver := newTestMessageReceiver(t)
 	msg1 := seqMsgWithOffsetAndSize(1, 100)
 	msg2 := seqMsgWithOffsetAndSize(2, 100)
+	msg3 := seqMsgWithOffsetAndSize(3, 100)
 
 	verifiers := test.NewVerifiers(t)
 
 	subStream1 := test.NewRPCVerifier(t)
 	subStream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
-	subStream1.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
+	subStream1.Push(initFlowControlReq(), msgSubResp(msg1, msg2, msg3), nil)
 	// Server disconnects the stream with the RESET signal.
 	barrier := subStream1.PushWithBarrier(nil, nil, makeStreamResetSignal())
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
@@ -804,7 +805,7 @@ func TestSinglePartitionSubscriberAdminSeekWhileConnected(t *testing.T) {
 
 	cmtStream := test.NewRPCVerifier(t)
 	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
-	cmtStream.Push(commitReq(3), commitResp(1), nil)
+	cmtStream.Push(commitReq(4), commitResp(1), nil)
 	cmtStream.Push(commitReq(2), commitResp(1), nil)
 	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
 
@@ -818,6 +819,7 @@ func TestSinglePartitionSubscriberAdminSeekWhileConnected(t *testing.T) {
 
 	receiver.ValidateMsg(msg1).Ack()
 	receiver.ValidateMsg(msg2).Ack()
+	receiver.ValidateMsg(msg3).Ack()
 	barrier.Release()
 	receiver.ValidateMsg(msg1).Ack()
 
@@ -832,19 +834,20 @@ func TestSinglePartitionSubscriberAdminSeekWhileReconnecting(t *testing.T) {
 	receiver := newTestMessageReceiver(t)
 	msg1 := seqMsgWithOffsetAndSize(1, 100)
 	msg2 := seqMsgWithOffsetAndSize(2, 100)
+	msg3 := seqMsgWithOffsetAndSize(3, 100)
 
 	verifiers := test.NewVerifiers(t)
 
 	subStream1 := test.NewRPCVerifier(t)
 	subStream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
-	subStream1.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
+	subStream1.Push(initFlowControlReq(), msgSubResp(msg1, msg2, msg3), nil)
 	// Normal stream breakage.
 	barrier := subStream1.PushWithBarrier(nil, nil, status.Error(codes.DeadlineExceeded, ""))
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
 
 	subStream2 := test.NewRPCVerifier(t)
 	// The server sends the RESET signal during stream initialization.
-	subStream2.Push(initSubReqCursor(subscription, 3), nil, makeStreamResetSignal())
+	subStream2.Push(initSubReqCursor(subscription, 4), nil, makeStreamResetSignal())
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream2)
 
 	subStream3 := test.NewRPCVerifier(t)
@@ -871,8 +874,10 @@ func TestSinglePartitionSubscriberAdminSeekWhileReconnecting(t *testing.T) {
 
 	receiver.ValidateMsg(msg1).Ack()
 	receiver.ValidateMsg(msg2).Ack()
+	ack := receiver.ValidateMsg(msg3) // Unacked message discarded
 	barrier.Release()
 	receiver.ValidateMsg(msg1).Ack()
+	ack.Ack() // Should be ignored
 
 	sub.Stop()
 	if gotErr := sub.WaitStopped(); gotErr != nil {
