@@ -63,7 +63,9 @@ var (
 		"j§adams":     {"gwashington", "tjefferson"},
 	}
 
-	tableNameSpace = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	tableNameSpace   = uid.NewSpace("cbt-test", &uid.Options{Short: true})
+	myTableName      = fmt.Sprintf("mytable-%d", time.Now().Unix())
+	myOtherTableName = fmt.Sprintf("myothertable-%d", time.Now().Unix())
 )
 
 func populatePresidentsGraph(table *Table) error {
@@ -1199,32 +1201,32 @@ func TestIntegration_Admin(t *testing.T) {
 		return true
 	}
 
-	defer deleteTable(ctx, t, adminClient, "mytable")
+	defer deleteTable(ctx, t, adminClient, myTableName)
 
-	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	defer deleteTable(ctx, t, adminClient, "myothertable")
+	defer deleteTable(ctx, t, adminClient, myOtherTableName)
 
-	if err := adminClient.CreateTable(ctx, "myothertable"); err != nil {
+	if err := adminClient.CreateTable(ctx, myOtherTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
-	if got, want := list(), []string{"myothertable", "mytable"}; !containsAll(got, want) {
+	if got, want := list(), []string{myOtherTableName, myTableName}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
 
-	must(adminClient.WaitForReplication(ctx, "mytable"))
+	must(adminClient.WaitForReplication(ctx, myTableName))
 
-	if err := adminClient.DeleteTable(ctx, "myothertable"); err != nil {
+	if err := adminClient.DeleteTable(ctx, myOtherTableName); err != nil {
 		t.Fatalf("Deleting table: %v", err)
 	}
 	tables := list()
-	if got, want := tables, []string{"mytable"}; !containsAll(got, want) {
+	if got, want := tables, []string{myTableName}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
-	if got, unwanted := tables, []string{"myothertable"}; containsAll(got, unwanted) {
+	if got, unwanted := tables, []string{myOtherTableName}; containsAll(got, unwanted) {
 		t.Errorf("adminClient.Tables return %#v. unwanted %#v", got, unwanted)
 	}
 
@@ -1251,7 +1253,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 
 	// Populate mytable and drop row ranges
-	if err = adminClient.CreateColumnFamily(ctx, "mytable", "cf"); err != nil {
+	if err = adminClient.CreateColumnFamily(ctx, myTableName, "cf"); err != nil {
 		t.Fatalf("Creating column family: %v", err)
 	}
 
@@ -1261,7 +1263,7 @@ func TestIntegration_Admin(t *testing.T) {
 	}
 	defer client.Close()
 
-	tbl := client.Open("mytable")
+	tbl := client.Open(myTableName)
 
 	prefixes := []string{"a", "b", "c"}
 	for _, prefix := range prefixes {
@@ -1274,13 +1276,13 @@ func TestIntegration_Admin(t *testing.T) {
 		}
 	}
 
-	if err = adminClient.DropRowRange(ctx, "mytable", "a"); err != nil {
+	if err = adminClient.DropRowRange(ctx, myTableName, "a"); err != nil {
 		t.Errorf("DropRowRange a: %v", err)
 	}
-	if err = adminClient.DropRowRange(ctx, "mytable", "c"); err != nil {
+	if err = adminClient.DropRowRange(ctx, myTableName, "c"); err != nil {
 		t.Errorf("DropRowRange c: %v", err)
 	}
-	if err = adminClient.DropRowRange(ctx, "mytable", "x"); err != nil {
+	if err = adminClient.DropRowRange(ctx, myTableName, "x"); err != nil {
 		t.Errorf("DropRowRange x: %v", err)
 	}
 
@@ -1296,7 +1298,7 @@ func TestIntegration_Admin(t *testing.T) {
 		t.Errorf("Invalid row count after dropping range: got %v, want %v", gotRowCount, 5)
 	}
 
-	if err = adminClient.DropAllRows(ctx, "mytable"); err != nil {
+	if err = adminClient.DropAllRows(ctx, myTableName); err != nil {
 		t.Errorf("DropAllRows mytable: %v", err)
 	}
 
@@ -1311,7 +1313,7 @@ func TestIntegration_Admin(t *testing.T) {
 
 	// Validate Encryption Info configured to default. (not supported by emulator)
 	if testEnv.Config().UseProd {
-		encryptionInfo, err := adminClient.EncryptionInfo(ctx, "mytable")
+		encryptionInfo, err := adminClient.EncryptionInfo(ctx, myTableName)
 		if err != nil {
 			t.Fatalf("EncryptionInfo: %v", err)
 		}
@@ -1350,13 +1352,13 @@ func TestIntegration_TableIam(t *testing.T) {
 	}
 	defer adminClient.Close()
 
-	defer deleteTable(ctx, t, adminClient, "mytable")
-	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+	defer deleteTable(ctx, t, adminClient, myTableName)
+	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
 	// Verify that the IAM Controls work for Tables.
-	iamHandle := adminClient.TableIAM("mytable")
+	iamHandle := adminClient.TableIAM(myTableName)
 	p, err := iamHandle.Policy(ctx)
 	if err != nil {
 		t.Fatalf("Iam GetPolicy mytable: %v", err)
@@ -2140,21 +2142,21 @@ func TestIntegration_Granularity(t *testing.T) {
 		return true
 	}
 
-	defer deleteTable(ctx, t, adminClient, "mytable")
+	defer deleteTable(ctx, t, adminClient, myTableName)
 
-	if err := adminClient.CreateTable(ctx, "mytable"); err != nil {
+	if err := adminClient.CreateTable(ctx, myTableName); err != nil {
 		t.Fatalf("Creating table: %v", err)
 	}
 
 	tables := list()
-	if got, want := tables, []string{"mytable"}; !containsAll(got, want) {
+	if got, want := tables, []string{myTableName}; !containsAll(got, want) {
 		t.Errorf("adminClient.Tables returned %#v, want %#v", got, want)
 	}
 
 	// calling ModifyColumnFamilies to check the granularity of table
 	prefix := adminClient.instancePrefix()
 	req := &btapb.ModifyColumnFamiliesRequest{
-		Name: prefix + "/tables/" + "mytable",
+		Name: prefix + "/tables/" + myTableName,
 		Modifications: []*btapb.ModifyColumnFamiliesRequest_Modification{{
 			Id:  "cf",
 			Mod: &btapb.ModifyColumnFamiliesRequest_Modification_Create{&btapb.ColumnFamily{}},
