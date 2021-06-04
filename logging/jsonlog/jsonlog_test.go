@@ -23,114 +23,55 @@ import (
 	"time"
 
 	"cloud.google.com/go/logging"
+	"cloud.google.com/go/logging/internal"
 	"github.com/google/go-cmp/cmp"
 	ltype "google.golang.org/genproto/googleapis/logging/type"
 )
 
 func TestLoggerLevel(t *testing.T) {
-	buf := bytes.NewBuffer(nil)
-	l, err := NewLogger("projects/test")
-	if err != nil {
-		t.Fatalf("unable to create logger: %v", err)
-	}
-	l.w = buf
 	now := time.Date(1977, time.May, 25, 0, 0, 0, 0, time.UTC)
 	fnow := now.Format(time.RFC3339)
-	l.now = func() time.Time {
-		return now
+	tests := []struct {
+		severity string
+		lFn      func(*Logger)
+	}{
+		{severity: debugSeverity, lFn: func(l *Logger) { l.Debugf("Hello, World!") }},
+		{severity: infoSeverity, lFn: func(l *Logger) { l.Infof("Hello, World!") }},
+		{severity: noticeSeverity, lFn: func(l *Logger) { l.Noticef("Hello, World!") }},
+		{severity: warnSeverity, lFn: func(l *Logger) { l.Warnf("Hello, World!") }},
+		{severity: errorSeverity, lFn: func(l *Logger) { l.Errorf("Hello, World!") }},
+		{severity: criticalSeverity, lFn: func(l *Logger) { l.Criticalf("Hello, World!") }},
+		{severity: alertSeverity, lFn: func(l *Logger) { l.Alertf("Hello, World!") }},
+		{severity: emergencySeverity, lFn: func(l *Logger) { l.Emergencyf("Hello, World!") }},
 	}
-	e := &entry{
-		Message:   "Hello, World!",
-		Timestamp: fnow,
+	for _, tt := range tests {
+		t.Run(tt.severity, func(t *testing.T) {
+			buf := bytes.NewBuffer(nil)
+			l, err := NewLogger("projects/test")
+			if err != nil {
+				t.Fatalf("unable to create logger: %v", err)
+			}
+			l.w = buf
+			l.now = func() time.Time {
+				return now
+			}
+
+			e := &entry{
+				Message:   "Hello, World!",
+				Timestamp: fnow,
+			}
+			e.Severity = tt.severity
+			b, err := json.Marshal(e)
+			if err != nil {
+				t.Fatalf("unable to marshal: %v", err)
+			}
+			tt.lFn(l)
+			if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
+				t.Fatalf("Logger.Debugf() mismatch (-want +got):\n%s", diff)
+			}
+		})
 	}
 
-	e.Severity = "DEBUG"
-	b, err := json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Debugf("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Debugf() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "INFO"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Infof("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Infof() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "NOTICE"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Noticef("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Noticef() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "WARNING"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Warnf("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Warnf() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "ERROR"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Errorf("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Errorf() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "CRITICAL"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Criticalf("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Criticalf() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "ALERT"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Alertf("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Alertf() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
-
-	e.Severity = "EMERGENCY"
-	b, err = json.Marshal(e)
-	if err != nil {
-		t.Fatalf("unable to marshal: %v", err)
-	}
-	l.Emergencyf("Hello, %s!", "World")
-	if diff := cmp.Diff(string(b), strings.TrimSpace(buf.String())); diff != "" {
-		t.Fatalf("Logger.Emergencyf() mismatch (-want +got):\n%s", diff)
-	}
-	buf.Reset()
 }
 
 func TestLoggerWithLabels(t *testing.T) {
@@ -289,7 +230,7 @@ func TestParseName(t *testing.T) {
 	}
 }
 
-func TestNewLoggerFromRequest(t *testing.T) {
+func TestLogger_WithRequest(t *testing.T) {
 	now := time.Date(1977, time.May, 25, 0, 0, 0, 0, time.UTC)
 	fnow := now.Format(time.RFC3339)
 
@@ -298,10 +239,11 @@ func TestNewLoggerFromRequest(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to create request: %v", err)
 		}
-		l, err := NewLoggerFromRequest("projects/test/log123", r)
+		l, err := NewLogger("projects/test/log123")
 		if err != nil {
 			t.Fatalf("unable to create logger: %v", err)
 		}
+		l = l.WithRequest(r)
 		buf := bytes.NewBuffer(nil)
 		l.w = buf
 		l.now = func() time.Time {
@@ -333,11 +275,12 @@ func TestNewLoggerFromRequest(t *testing.T) {
 		if err != nil {
 			t.Fatalf("unable to create request: %v", err)
 		}
-		r.Header.Set("X-Cloud-Trace-Context", "105445aa7843bc8bf206b120001000/1;o=1")
-		l, err := NewLoggerFromRequest("projects/test", r)
+		r.Header.Set(internal.TraceHeader, "105445aa7843bc8bf206b120001000/1;o=1")
+		l, err := NewLogger("projects/test")
 		if err != nil {
 			t.Fatalf("unable to create logger: %v", err)
 		}
+		l = l.WithRequest(r)
 		buf := bytes.NewBuffer(nil)
 		l.w = buf
 		l.now = func() time.Time {

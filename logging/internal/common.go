@@ -28,6 +28,9 @@ import (
 const (
 	// ProdAddr is the production address.
 	ProdAddr = "logging.googleapis.com:443"
+
+	// TraceHeader is the HTTP header trace information is stored in.
+	TraceHeader = "X-Cloud-Trace-Context"
 )
 
 // LogPath creates a formatted path from a parent and a logID.
@@ -67,15 +70,6 @@ var reCloudTraceContext = regexp.MustCompile(
 //   * spanID (optional):       	"1"
 //   * traceSampled (optional): 	true
 func DeconstructXCloudTraceContext(s string) (traceID, spanID string, traceSampled bool) {
-	// As per the format described at https://cloud.google.com/trace/docs/setup#force-trace
-	//    "X-Cloud-Trace-Context: TRACE_ID/SPAN_ID;o=TRACE_TRUE"
-	// for example:
-	//    "X-Cloud-Trace-Context: 105445aa7843bc8bf206b120001000/1;o=1"
-	//
-	// We expect:
-	//   * traceID (optional): 			"105445aa7843bc8bf206b120001000"
-	//   * spanID (optional):       	"1"
-	//   * traceSampled (optional): 	true
 	matches := reCloudTraceContext.FindStringSubmatch(s)
 
 	traceID, spanID, traceSampled = matches[1], matches[2], matches[3] == "1"

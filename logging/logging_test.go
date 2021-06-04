@@ -37,6 +37,7 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/internal/uid"
 	"cloud.google.com/go/logging"
+	"cloud.google.com/go/logging/internal"
 	ltesting "cloud.google.com/go/logging/internal/testing"
 	"cloud.google.com/go/logging/logadmin"
 	gax "github.com/googleapis/gax-go/v2"
@@ -282,7 +283,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+						Header: http.Header{internal.TraceHeader: {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
 					},
 				},
 			},
@@ -298,7 +299,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=0"}},
+						Header: http.Header{internal.TraceHeader: {"105445aa7843bc8bf206b120001000/000000000000004a;o=0"}},
 					},
 				},
 			},
@@ -313,7 +314,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
+						Header: http.Header{internal.TraceHeader: {"105445aa7843bc8bf206b120001000/000000000000004a;o=1"}},
 					},
 				},
 			},
@@ -328,7 +329,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"/0;o=1"}},
+						Header: http.Header{internal.TraceHeader: {"/0;o=1"}},
 					},
 				},
 			},
@@ -341,7 +342,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/;o=0"}},
+						Header: http.Header{internal.TraceHeader: {"105445aa7843bc8bf206b120001000/;o=0"}},
 					},
 				},
 			},
@@ -354,7 +355,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"105445aa7843bc8bf206b120001000/0"}},
+						Header: http.Header{internal.TraceHeader: {"105445aa7843bc8bf206b120001000/0"}},
 					},
 				},
 			},
@@ -367,7 +368,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {""}},
+						Header: http.Header{internal.TraceHeader: {""}},
 					},
 				},
 			},
@@ -378,7 +379,7 @@ func TestToLogEntry(t *testing.T) {
 				HTTPRequest: &logging.HTTPRequest{
 					Request: &http.Request{
 						URL:    u,
-						Header: http.Header{"X-Cloud-Trace-Context": {"t3"}},
+						Header: http.Header{internal.TraceHeader: {"t3"}},
 					},
 				},
 				Trace: "t4",

@@ -709,7 +709,7 @@ func toLogEntryInternal(e Entry, client *Client, parent string) (*logpb.LogEntry
 	}
 	ts := timestamppb.New(t)
 	if e.Trace == "" && e.HTTPRequest != nil && e.HTTPRequest.Request != nil {
-		traceHeader := e.HTTPRequest.Request.Header.Get("X-Cloud-Trace-Context")
+		traceHeader := e.HTTPRequest.Request.Header.Get(internal.TraceHeader)
 		if traceHeader != "" {
 			// Set to a relative resource name, as described at
 			// https://cloud.google.com/appengine/docs/flexible/go/writing-application-logs.

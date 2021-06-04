@@ -30,14 +30,15 @@ func ExampleNewLogger() {
 	l.Infof("Hello World!")
 }
 
-func ExampleNewLoggerFromRequest() {
-	// Create a Logger with additional information pulled from the current
-	// request context.
+func ExampLogger_WithRequest() {
 	var req *http.Request
-	l, err := jsonlog.NewLoggerFromRequest("projects/PROJECT_ID", req)
+	l, err := jsonlog.NewLogger("projects/PROJECT_ID")
 	if err != nil {
 		// TODO: handle error.
 	}
+	// Create a Logger with additional information pulled from the current
+	// request context.
+	l = l.WithRequest(req)
 	l.Infof("Hello World!")
 }
 

@@ -35,6 +35,17 @@ import (
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
+const (
+	debugSeverity     = "DEBUG"
+	infoSeverity      = "INFO"
+	noticeSeverity    = "NOTICE"
+	warnSeverity      = "WARNING"
+	errorSeverity     = "ERROR"
+	criticalSeverity  = "CRITICAL"
+	alertSeverity     = "ALERT"
+	emergencySeverity = "EMERGENCY"
+)
+
 // NewLogger creates a Logger that logs structured JSON to Stderr. The value of
 // parent must be in the format of:
 //    projects/PROJECT_ID
@@ -42,49 +53,12 @@ import (
 //    billingAccounts/ACCOUNT_ID
 //    organizations/ORG_ID
 func NewLogger(parent string, opts ...LoggerOption) (*Logger, error) {
-	return NewLoggerFromRequest(parent, nil, opts...)
-}
-
-// NewLoggerFromRequest creates a Logger similar to NewLogger but with the
-// additional context that the current request can provide.
-// The value of parent must be in the format of:
-//    projects/PROJECT_ID
-//    folders/FOLDER_ID
-//    billingAccounts/ACCOUNT_ID
-//    organizations/ORG_ID
-func NewLoggerFromRequest(parent string, r *http.Request, opts ...LoggerOption) (*Logger, error) {
-	err := validateParent(parent)
-	if err != nil {
+	if err := validateParent(parent); err != nil {
 		return nil, err
 	}
-	var req *logtypepb.HttpRequest
-	if r != nil {
-		u := *r.URL
-		req = &logtypepb.HttpRequest{
-			RequestMethod: r.Method,
-			RequestUrl:    internal.FixUTF8(u.String()),
-			UserAgent:     r.UserAgent(),
-			Referer:       r.Referer(),
-			Protocol:      r.Proto,
-		}
-		if r.Response != nil {
-			req.Status = int32(r.Response.StatusCode)
-		}
-	}
 	l := &Logger{
-		w:   os.Stderr,
-		req: req,
-	}
-
-	var traceHeader string
-	if r != nil && r.Header != nil {
-		traceHeader = r.Header.Get("X-Cloud-Trace-Context")
-	}
-	if traceHeader != "" {
-		traceID, spanID, traceSampled := internal.DeconstructXCloudTraceContext(traceHeader)
-		l.traceID = fmt.Sprintf("%s/traces/%s", parent, traceID)
-		l.spanID = spanID
-		l.sampled = traceSampled
+		w:      os.Stderr,
+		parent: parent,
 	}
 	for _, opt := range opts {
 		opt.set(l)
@@ -97,6 +71,7 @@ type Logger struct {
 	w       io.Writer
 	now     func() time.Time
 	errhook func(error)
+	parent  string
 
 	// read-only fields
 	labels  map[string]string
@@ -106,12 +81,28 @@ type Logger struct {
 	spanID  string
 }
 
+// copy does a shallow copy of the logger. Individual fields should not be
+// modified but replaced.
+func (l *Logger) copy() *Logger {
+	return &Logger{
+		w:       l.w,
+		now:     l.now,
+		errhook: l.errhook,
+		parent:  l.parent,
+		labels:  l.labels,
+		req:     l.req,
+		traceID: l.traceID,
+		sampled: l.sampled,
+		spanID:  l.spanID,
+	}
+}
+
 // Debugf is a convenience method for writing an Entry with a Debug Severity
 // and the provided formatted message.
 func (l *Logger) Debugf(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "DEBUG",
+		Severity: debugSeverity,
 	}
 	l.log(e)
 }
@@ -121,7 +112,7 @@ func (l *Logger) Debugf(format string, a ...interface{}) {
 func (l *Logger) Infof(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "INFO",
+		Severity: infoSeverity,
 	}
 	l.log(e)
 }
@@ -131,7 +122,7 @@ func (l *Logger) Infof(format string, a ...interface{}) {
 func (l *Logger) Noticef(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "NOTICE",
+		Severity: noticeSeverity,
 	}
 	l.log(e)
 }
@@ -141,7 +132,7 @@ func (l *Logger) Noticef(format string, a ...interface{}) {
 func (l *Logger) Warnf(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "WARNING",
+		Severity: warnSeverity,
 	}
 	l.log(e)
 }
@@ -151,7 +142,7 @@ func (l *Logger) Warnf(format string, a ...interface{}) {
 func (l *Logger) Errorf(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "ERROR",
+		Severity: errorSeverity,
 	}
 	l.log(e)
 }
@@ -161,7 +152,7 @@ func (l *Logger) Errorf(format string, a ...interface{}) {
 func (l *Logger) Criticalf(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "CRITICAL",
+		Severity: criticalSeverity,
 	}
 	l.log(e)
 }
@@ -171,7 +162,7 @@ func (l *Logger) Criticalf(format string, a ...interface{}) {
 func (l *Logger) Alertf(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "ALERT",
+		Severity: alertSeverity,
 	}
 	l.log(e)
 }
@@ -181,7 +172,7 @@ func (l *Logger) Alertf(format string, a ...interface{}) {
 func (l *Logger) Emergencyf(format string, a ...interface{}) {
 	e := entry{
 		Message:  fmt.Sprintf(format, a...),
-		Severity: "EMERGENCY",
+		Severity: emergencySeverity,
 	}
 	l.log(e)
 }
@@ -265,13 +256,7 @@ func (l *Logger) log(e entry) {
 // provided will be added to the loggers existing labels, replacing any
 // overlapping keys with the new values.
 func (l *Logger) WithLabels(labels map[string]string) *Logger {
-	new := &Logger{
-		w:       l.w,
-		req:     l.req,
-		traceID: l.traceID,
-		sampled: l.sampled,
-		spanID:  l.spanID,
-	}
+	new := l.copy()
 	newLabels := make(map[string]string, len(new.labels))
 	for k, v := range new.labels {
 		newLabels[k] = v
@@ -280,6 +265,40 @@ func (l *Logger) WithLabels(labels map[string]string) *Logger {
 		newLabels[k] = v
 	}
 	new.labels = newLabels
+	return new
+}
+
+// WithRequest creates a new JSONLogger based off an existing one with request
+// information populated. By giving a Logger a request context all logs
+// will be auto-populated with some basic information about the request as well
+// as tracing details, if included.
+func (l *Logger) WithRequest(r *http.Request) *Logger {
+	new := l.copy()
+	var req *logtypepb.HttpRequest
+	if r != nil {
+		u := *r.URL
+		req = &logtypepb.HttpRequest{
+			RequestMethod: r.Method,
+			RequestUrl:    internal.FixUTF8(u.String()),
+			UserAgent:     r.UserAgent(),
+			Referer:       r.Referer(),
+			Protocol:      r.Proto,
+		}
+		if r.Response != nil {
+			req.Status = int32(r.Response.StatusCode)
+		}
+		new.req = req
+	}
+	var traceHeader string
+	if r != nil && r.Header != nil {
+		traceHeader = r.Header.Get(internal.TraceHeader)
+	}
+	if traceHeader != "" {
+		traceID, spanID, traceSampled := internal.DeconstructXCloudTraceContext(traceHeader)
+		new.traceID = fmt.Sprintf("%s/traces/%s", new.parent, traceID)
+		new.spanID = spanID
+		new.sampled = traceSampled
+	}
 	return new
 }
 
