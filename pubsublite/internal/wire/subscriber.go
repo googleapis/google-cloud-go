@@ -478,6 +478,21 @@ func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.Partit
 }
 
 func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
+	removedSubscribers, err := as.doHandleAssignment(partitions)
+	if err != nil {
+		return err
+	}
+
+	// Wait for removed subscribers to completely stop (which waits for commit
+	// acknowledgments from the server) before acking the assignment. This avoids
+	// commits racing with the new assigned client.
+	for _, subscriber := range removedSubscribers {
+		subscriber.WaitStopped()
+	}
+	return nil
+}
+
+func (as *assigningSubscriber) doHandleAssignment(partitions partitionSet) ([]*singlePartitionSubscriber, error) {
 	as.mu.Lock()
 	defer as.mu.Unlock()
 
@@ -487,18 +502,20 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 			subscriber := as.subFactory.New(partition)
 			if err := as.unsafeAddServices(subscriber); err != nil {
 				// Occurs when the assigningSubscriber is stopping/stopped.
-				return err
+				return nil, err
 			}
 			as.subscribers[partition] = subscriber
 		}
 	}
 
 	// Handle removed partitions.
+	var removedSubscribers []*singlePartitionSubscriber
 	for partition, subscriber := range as.subscribers {
 		if !partitions.Contains(partition) {
 			// Ignore unacked messages from this point on to avoid conflicting with
 			// the commits of the new subscriber that will be assigned this partition.
 			subscriber.Terminate()
+			removedSubscribers = append(removedSubscribers, subscriber)
 
 			as.unsafeRemoveService(subscriber)
 			// Safe to delete map entry during range loop:
@@ -506,7 +523,7 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 			delete(as.subscribers, partition)
 		}
 	}
-	return nil
+	return removedSubscribers, nil
 }
 
 // Terminate shuts down all singlePartitionSubscribers without waiting for

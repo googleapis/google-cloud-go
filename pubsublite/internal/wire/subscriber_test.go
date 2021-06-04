@@ -887,6 +887,17 @@ func (as *assigningSubscriber) Partitions() []int {
 	return partitions
 }
 
+func (as *assigningSubscriber) Subscribers() []*singlePartitionSubscriber {
+	as.mu.Lock()
+	defer as.mu.Unlock()
+
+	var subscribers []*singlePartitionSubscriber
+	for _, s := range as.subscribers {
+		subscribers = append(subscribers, s)
+	}
+	return subscribers
+}
+
 func (as *assigningSubscriber) FlushCommits() {
 	as.mu.Lock()
 	defer as.mu.Unlock()
@@ -1110,10 +1121,20 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 	// Partition assignments are initially {1}.
 	receiver.ValidateMsg(msg1).Ack()
 	ack2 := receiver.ValidateMsg(msg2)
+	subscribers := sub.Subscribers()
 
 	// Partition assignments will now be {}.
 	assignmentBarrier1.Release()
-	assignmentBarrier2.Release() // Wait for ack to ensure the test is deterministic
+	assignmentBarrier2.ReleaseAfter(func() {
+		// Verify that the assignment is acked after the subscriber has terminated.
+		if got, want := len(subscribers), 1; got != want {
+			t.Errorf("singlePartitionSubcriber count: got %d, want %d", got, want)
+			return
+		}
+		if got, want := subscribers[0].Status(), serviceTerminated; got != want {
+			t.Errorf("singlePartitionSubcriber status: got %v, want %v", got, want)
+		}
+	})
 
 	// Partition 1 has already been unassigned, so this ack is discarded.
 	ack2.Ack()
