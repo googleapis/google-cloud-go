@@ -820,7 +820,7 @@ func TestSeverityAsNumberUnmarshal(t *testing.T) {
 }
 
 func TestSeverityMarshalThenUnmarshal(t *testing.T) {
-	entry := logging.Entry { Severity: logging.Warning, Payload: "test" }
+	entry := logging.Entry{Severity: logging.Warning, Payload: "test"}
 	j, err := json.Marshal(entry)
 	if err != nil {
 		t.Fatalf("en.Marshal: %v", err)
