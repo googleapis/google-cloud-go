@@ -389,7 +389,17 @@ func shouldRetryRead(err error) bool {
 	if err == nil {
 		return false
 	}
-	return strings.HasSuffix(err.Error(), "INTERNAL_ERROR") && strings.Contains(reflect.TypeOf(err).String(), "http2")
+	// Certain HTTP/2 errors are retryable, but the types are not exported.
+	if strings.Contains(reflect.TypeOf(err).String(), "http2") {
+		retryableHTTP2Strings := []string{"INTERNAL_ERROR", "GOAWAY"}
+		e := err.Error()
+		for _, s := range(retryableHTTP2Strings) {
+			if strings.Contains(e, s) {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 // Size returns the size of the object in bytes.
