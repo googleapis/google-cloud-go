@@ -393,7 +393,7 @@ func shouldRetryRead(err error) bool {
 	if strings.Contains(reflect.TypeOf(err).String(), "http2") {
 		retryableHTTP2Strings := []string{"INTERNAL_ERROR", "GOAWAY"}
 		e := err.Error()
-		for _, s := range(retryableHTTP2Strings) {
+		for _, s := range retryableHTTP2Strings {
 			if strings.Contains(e, s) {
 				return true
 			}
