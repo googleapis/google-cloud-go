@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.GenerateAccessTokenRequest{
 		// TODO: Fill request struct fields.

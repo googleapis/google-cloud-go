@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import privatecapb "google.golang.org/genproto/googleapis/cloud/security/privateca/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := privateca.NewCertificateAuthorityClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &privatecapb.ListReusableConfigsRequest{
 		// TODO: Fill request struct fields.

@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListWorkspacesRequest{
 		// TODO: Fill request struct fields.

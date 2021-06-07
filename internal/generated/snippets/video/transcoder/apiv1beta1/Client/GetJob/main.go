@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import transcoderpb "google.golang.org/genproto/googleapis/cloud/video/transcoder/v1beta1"
-
 	ctx := context.Background()
 	c, err := transcoder.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &transcoderpb.GetJobRequest{
 		// TODO: Fill request struct fields.

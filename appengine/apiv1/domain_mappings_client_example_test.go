@@ -30,19 +30,19 @@ func ExampleNewDomainMappingsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDomainMappingsClient_ListDomainMappings() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListDomainMappingsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleDomainMappingsClient_ListDomainMappings() {
 }
 
 func ExampleDomainMappingsClient_GetDomainMapping() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetDomainMappingRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleDomainMappingsClient_GetDomainMapping() {
 }
 
 func ExampleDomainMappingsClient_CreateDomainMapping() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.CreateDomainMappingRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleDomainMappingsClient_CreateDomainMapping() {
 }
 
 func ExampleDomainMappingsClient_UpdateDomainMapping() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.UpdateDomainMappingRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleDomainMappingsClient_UpdateDomainMapping() {
 }
 
 func ExampleDomainMappingsClient_DeleteDomainMapping() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewDomainMappingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteDomainMappingRequest{
 		// TODO: Fill request struct fields.

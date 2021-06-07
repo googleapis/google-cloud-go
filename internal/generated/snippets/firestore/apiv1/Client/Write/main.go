@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Write(ctx)
 	if err != nil {
 		// TODO: Handle error.

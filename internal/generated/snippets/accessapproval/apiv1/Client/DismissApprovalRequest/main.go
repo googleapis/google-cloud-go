@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import accessapprovalpb "google.golang.org/genproto/googleapis/cloud/accessapproval/v1"
-
 	ctx := context.Background()
 	c, err := accessapproval.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &accessapprovalpb.DismissApprovalRequestMessage{
 		// TODO: Fill request struct fields.

@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1"
-
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.PredictRequest{
 		// TODO: Fill request struct fields.

@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import networkconnectivitypb "google.golang.org/genproto/googleapis/cloud/networkconnectivity/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := networkconnectivity.NewHubClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &networkconnectivitypb.ListHubsRequest{
 		// TODO: Fill request struct fields.
