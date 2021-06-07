@@ -162,7 +162,6 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 		return float64ParamType, nil
 	case typeOfNullInt64:
 		return int64ParamType, nil
-	// TODO: geography needs more plumbing
 	case typeOfNullString:
 		return stringParamType, nil
 	case typeOfNullGeography:
@@ -415,7 +414,7 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 			case "TIME":
 				return NullTime{Valid: false}, nil
 			case "GEOGRAPHY":
-				// TODO: confirm empty geography string isn't valid
+				// TODO: decide if empty geography string should represent empty or null
 				return NullGeography{Valid: false}, nil
 			}
 		}
