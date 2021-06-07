@@ -85,7 +85,28 @@ type AnalyticsAdminCallOptions struct {
 	DeleteGoogleAdsLink               []gax.CallOption
 	ListGoogleAdsLinks                []gax.CallOption
 	GetDataSharingSettings            []gax.CallOption
+	GetMeasurementProtocolSecret      []gax.CallOption
+	ListMeasurementProtocolSecrets    []gax.CallOption
+	CreateMeasurementProtocolSecret   []gax.CallOption
+	DeleteMeasurementProtocolSecret   []gax.CallOption
+	UpdateMeasurementProtocolSecret   []gax.CallOption
 	SearchChangeHistoryEvents         []gax.CallOption
+	GetGoogleSignalsSettings          []gax.CallOption
+	UpdateGoogleSignalsSettings       []gax.CallOption
+	CreateConversionEvent             []gax.CallOption
+	GetConversionEvent                []gax.CallOption
+	DeleteConversionEvent             []gax.CallOption
+	ListConversionEvents              []gax.CallOption
+	CreateCustomDimension             []gax.CallOption
+	UpdateCustomDimension             []gax.CallOption
+	ListCustomDimensions              []gax.CallOption
+	ArchiveCustomDimension            []gax.CallOption
+	GetCustomDimension                []gax.CallOption
+	CreateCustomMetric                []gax.CallOption
+	UpdateCustomMetric                []gax.CallOption
+	ListCustomMetrics                 []gax.CallOption
+	ArchiveCustomMetric               []gax.CallOption
+	GetCustomMetric                   []gax.CallOption
 }
 
 func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
@@ -181,7 +202,259 @@ func defaultAnalyticsAdminCallOptions() *AnalyticsAdminCallOptions {
 				})
 			}),
 		},
+		GetMeasurementProtocolSecret: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListMeasurementProtocolSecrets: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateMeasurementProtocolSecret: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteMeasurementProtocolSecret: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateMeasurementProtocolSecret: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		SearchChangeHistoryEvents: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetGoogleSignalsSettings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateGoogleSignalsSettings: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateConversionEvent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetConversionEvent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteConversionEvent: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListConversionEvents: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCustomDimension: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCustomDimension: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCustomDimensions: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ArchiveCustomDimension: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCustomDimension: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		CreateCustomMetric: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateCustomMetric: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListCustomMetrics: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ArchiveCustomMetric: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetCustomMetric: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
@@ -247,7 +520,28 @@ type internalAnalyticsAdminClient interface {
 	DeleteGoogleAdsLink(context.Context, *adminpb.DeleteGoogleAdsLinkRequest, ...gax.CallOption) error
 	ListGoogleAdsLinks(context.Context, *adminpb.ListGoogleAdsLinksRequest, ...gax.CallOption) *GoogleAdsLinkIterator
 	GetDataSharingSettings(context.Context, *adminpb.GetDataSharingSettingsRequest, ...gax.CallOption) (*adminpb.DataSharingSettings, error)
+	GetMeasurementProtocolSecret(context.Context, *adminpb.GetMeasurementProtocolSecretRequest, ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error)
+	ListMeasurementProtocolSecrets(context.Context, *adminpb.ListMeasurementProtocolSecretsRequest, ...gax.CallOption) *MeasurementProtocolSecretIterator
+	CreateMeasurementProtocolSecret(context.Context, *adminpb.CreateMeasurementProtocolSecretRequest, ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error)
+	DeleteMeasurementProtocolSecret(context.Context, *adminpb.DeleteMeasurementProtocolSecretRequest, ...gax.CallOption) error
+	UpdateMeasurementProtocolSecret(context.Context, *adminpb.UpdateMeasurementProtocolSecretRequest, ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error)
 	SearchChangeHistoryEvents(context.Context, *adminpb.SearchChangeHistoryEventsRequest, ...gax.CallOption) *ChangeHistoryEventIterator
+	GetGoogleSignalsSettings(context.Context, *adminpb.GetGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
+	UpdateGoogleSignalsSettings(context.Context, *adminpb.UpdateGoogleSignalsSettingsRequest, ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error)
+	CreateConversionEvent(context.Context, *adminpb.CreateConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
+	GetConversionEvent(context.Context, *adminpb.GetConversionEventRequest, ...gax.CallOption) (*adminpb.ConversionEvent, error)
+	DeleteConversionEvent(context.Context, *adminpb.DeleteConversionEventRequest, ...gax.CallOption) error
+	ListConversionEvents(context.Context, *adminpb.ListConversionEventsRequest, ...gax.CallOption) *ConversionEventIterator
+	CreateCustomDimension(context.Context, *adminpb.CreateCustomDimensionRequest, ...gax.CallOption) (*adminpb.CustomDimension, error)
+	UpdateCustomDimension(context.Context, *adminpb.UpdateCustomDimensionRequest, ...gax.CallOption) (*adminpb.CustomDimension, error)
+	ListCustomDimensions(context.Context, *adminpb.ListCustomDimensionsRequest, ...gax.CallOption) *CustomDimensionIterator
+	ArchiveCustomDimension(context.Context, *adminpb.ArchiveCustomDimensionRequest, ...gax.CallOption) error
+	GetCustomDimension(context.Context, *adminpb.GetCustomDimensionRequest, ...gax.CallOption) (*adminpb.CustomDimension, error)
+	CreateCustomMetric(context.Context, *adminpb.CreateCustomMetricRequest, ...gax.CallOption) (*adminpb.CustomMetric, error)
+	UpdateCustomMetric(context.Context, *adminpb.UpdateCustomMetricRequest, ...gax.CallOption) (*adminpb.CustomMetric, error)
+	ListCustomMetrics(context.Context, *adminpb.ListCustomMetricsRequest, ...gax.CallOption) *CustomMetricIterator
+	ArchiveCustomMetric(context.Context, *adminpb.ArchiveCustomMetricRequest, ...gax.CallOption) error
+	GetCustomMetric(context.Context, *adminpb.GetCustomMetricRequest, ...gax.CallOption) (*adminpb.CustomMetric, error)
 }
 
 // AnalyticsAdminClient is a client for interacting with Google Analytics Admin API.
@@ -576,10 +870,118 @@ func (c *AnalyticsAdminClient) GetDataSharingSettings(ctx context.Context, req *
 	return c.internalClient.GetDataSharingSettings(ctx, req, opts...)
 }
 
+// GetMeasurementProtocolSecret lookup for a single “GA4” MeasurementProtocolSecret.
+func (c *AnalyticsAdminClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
+	return c.internalClient.GetMeasurementProtocolSecret(ctx, req, opts...)
+}
+
+// ListMeasurementProtocolSecrets returns child MeasurementProtocolSecrets under the specified parent
+// Property.
+func (c *AnalyticsAdminClient) ListMeasurementProtocolSecrets(ctx context.Context, req *adminpb.ListMeasurementProtocolSecretsRequest, opts ...gax.CallOption) *MeasurementProtocolSecretIterator {
+	return c.internalClient.ListMeasurementProtocolSecrets(ctx, req, opts...)
+}
+
+// CreateMeasurementProtocolSecret creates a measurement protocol secret.
+func (c *AnalyticsAdminClient) CreateMeasurementProtocolSecret(ctx context.Context, req *adminpb.CreateMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
+	return c.internalClient.CreateMeasurementProtocolSecret(ctx, req, opts...)
+}
+
+// DeleteMeasurementProtocolSecret deletes target MeasurementProtocolSecret.
+func (c *AnalyticsAdminClient) DeleteMeasurementProtocolSecret(ctx context.Context, req *adminpb.DeleteMeasurementProtocolSecretRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteMeasurementProtocolSecret(ctx, req, opts...)
+}
+
+// UpdateMeasurementProtocolSecret updates a measurement protocol secret.
+func (c *AnalyticsAdminClient) UpdateMeasurementProtocolSecret(ctx context.Context, req *adminpb.UpdateMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
+	return c.internalClient.UpdateMeasurementProtocolSecret(ctx, req, opts...)
+}
+
 // SearchChangeHistoryEvents searches through all changes to an account or its children given the
 // specified set of filters.
 func (c *AnalyticsAdminClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	return c.internalClient.SearchChangeHistoryEvents(ctx, req, opts...)
+}
+
+// GetGoogleSignalsSettings lookup for Google Signals settings for a property.
+func (c *AnalyticsAdminClient) GetGoogleSignalsSettings(ctx context.Context, req *adminpb.GetGoogleSignalsSettingsRequest, opts ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error) {
+	return c.internalClient.GetGoogleSignalsSettings(ctx, req, opts...)
+}
+
+// UpdateGoogleSignalsSettings updates Google Signals settings for a property.
+func (c *AnalyticsAdminClient) UpdateGoogleSignalsSettings(ctx context.Context, req *adminpb.UpdateGoogleSignalsSettingsRequest, opts ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error) {
+	return c.internalClient.UpdateGoogleSignalsSettings(ctx, req, opts...)
+}
+
+// CreateConversionEvent creates a conversion event with the specified attributes.
+func (c *AnalyticsAdminClient) CreateConversionEvent(ctx context.Context, req *adminpb.CreateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	return c.internalClient.CreateConversionEvent(ctx, req, opts...)
+}
+
+// GetConversionEvent retrieve a single conversion event.
+func (c *AnalyticsAdminClient) GetConversionEvent(ctx context.Context, req *adminpb.GetConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	return c.internalClient.GetConversionEvent(ctx, req, opts...)
+}
+
+// DeleteConversionEvent deletes a conversion event in a property.
+func (c *AnalyticsAdminClient) DeleteConversionEvent(ctx context.Context, req *adminpb.DeleteConversionEventRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteConversionEvent(ctx, req, opts...)
+}
+
+// ListConversionEvents returns a list of conversion events in the specified parent property.
+//
+// Returns an empty list if no conversion events are found.
+func (c *AnalyticsAdminClient) ListConversionEvents(ctx context.Context, req *adminpb.ListConversionEventsRequest, opts ...gax.CallOption) *ConversionEventIterator {
+	return c.internalClient.ListConversionEvents(ctx, req, opts...)
+}
+
+// CreateCustomDimension creates a CustomDimension.
+func (c *AnalyticsAdminClient) CreateCustomDimension(ctx context.Context, req *adminpb.CreateCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
+	return c.internalClient.CreateCustomDimension(ctx, req, opts...)
+}
+
+// UpdateCustomDimension updates a CustomDimension on a property.
+func (c *AnalyticsAdminClient) UpdateCustomDimension(ctx context.Context, req *adminpb.UpdateCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
+	return c.internalClient.UpdateCustomDimension(ctx, req, opts...)
+}
+
+// ListCustomDimensions lists CustomDimensions on a property.
+func (c *AnalyticsAdminClient) ListCustomDimensions(ctx context.Context, req *adminpb.ListCustomDimensionsRequest, opts ...gax.CallOption) *CustomDimensionIterator {
+	return c.internalClient.ListCustomDimensions(ctx, req, opts...)
+}
+
+// ArchiveCustomDimension archives a CustomDimension on a property.
+func (c *AnalyticsAdminClient) ArchiveCustomDimension(ctx context.Context, req *adminpb.ArchiveCustomDimensionRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ArchiveCustomDimension(ctx, req, opts...)
+}
+
+// GetCustomDimension lookup for a single CustomDimension.
+func (c *AnalyticsAdminClient) GetCustomDimension(ctx context.Context, req *adminpb.GetCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
+	return c.internalClient.GetCustomDimension(ctx, req, opts...)
+}
+
+// CreateCustomMetric creates a CustomMetric.
+func (c *AnalyticsAdminClient) CreateCustomMetric(ctx context.Context, req *adminpb.CreateCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
+	return c.internalClient.CreateCustomMetric(ctx, req, opts...)
+}
+
+// UpdateCustomMetric updates a CustomMetric on a property.
+func (c *AnalyticsAdminClient) UpdateCustomMetric(ctx context.Context, req *adminpb.UpdateCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
+	return c.internalClient.UpdateCustomMetric(ctx, req, opts...)
+}
+
+// ListCustomMetrics lists CustomMetrics on a property.
+func (c *AnalyticsAdminClient) ListCustomMetrics(ctx context.Context, req *adminpb.ListCustomMetricsRequest, opts ...gax.CallOption) *CustomMetricIterator {
+	return c.internalClient.ListCustomMetrics(ctx, req, opts...)
+}
+
+// ArchiveCustomMetric archives a CustomMetric on a property.
+func (c *AnalyticsAdminClient) ArchiveCustomMetric(ctx context.Context, req *adminpb.ArchiveCustomMetricRequest, opts ...gax.CallOption) error {
+	return c.internalClient.ArchiveCustomMetric(ctx, req, opts...)
+}
+
+// GetCustomMetric lookup for a single CustomMetric.
+func (c *AnalyticsAdminClient) GetCustomMetric(ctx context.Context, req *adminpb.GetCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
+	return c.internalClient.GetCustomMetric(ctx, req, opts...)
 }
 
 // analyticsAdminGRPCClient is a client for interacting with Google Analytics Admin API over gRPC transport.
@@ -1781,6 +2183,126 @@ func (c *analyticsAdminGRPCClient) GetDataSharingSettings(ctx context.Context, r
 	return resp, nil
 }
 
+func (c *analyticsAdminGRPCClient) GetMeasurementProtocolSecret(ctx context.Context, req *adminpb.GetMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetMeasurementProtocolSecret[0:len((*c.CallOptions).GetMeasurementProtocolSecret):len((*c.CallOptions).GetMeasurementProtocolSecret)], opts...)
+	var resp *adminpb.MeasurementProtocolSecret
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListMeasurementProtocolSecrets(ctx context.Context, req *adminpb.ListMeasurementProtocolSecretsRequest, opts ...gax.CallOption) *MeasurementProtocolSecretIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListMeasurementProtocolSecrets[0:len((*c.CallOptions).ListMeasurementProtocolSecrets):len((*c.CallOptions).ListMeasurementProtocolSecrets)], opts...)
+	it := &MeasurementProtocolSecretIterator{}
+	req = proto.Clone(req).(*adminpb.ListMeasurementProtocolSecretsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.MeasurementProtocolSecret, string, error) {
+		var resp *adminpb.ListMeasurementProtocolSecretsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListMeasurementProtocolSecrets(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMeasurementProtocolSecrets(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateMeasurementProtocolSecret(ctx context.Context, req *adminpb.CreateMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateMeasurementProtocolSecret[0:len((*c.CallOptions).CreateMeasurementProtocolSecret):len((*c.CallOptions).CreateMeasurementProtocolSecret)], opts...)
+	var resp *adminpb.MeasurementProtocolSecret
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteMeasurementProtocolSecret(ctx context.Context, req *adminpb.DeleteMeasurementProtocolSecretRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteMeasurementProtocolSecret[0:len((*c.CallOptions).DeleteMeasurementProtocolSecret):len((*c.CallOptions).DeleteMeasurementProtocolSecret)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) UpdateMeasurementProtocolSecret(ctx context.Context, req *adminpb.UpdateMeasurementProtocolSecretRequest, opts ...gax.CallOption) (*adminpb.MeasurementProtocolSecret, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "measurement_protocol_secret.name", url.QueryEscape(req.GetMeasurementProtocolSecret().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateMeasurementProtocolSecret[0:len((*c.CallOptions).UpdateMeasurementProtocolSecret):len((*c.CallOptions).UpdateMeasurementProtocolSecret)], opts...)
+	var resp *adminpb.MeasurementProtocolSecret
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateMeasurementProtocolSecret(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context, req *adminpb.SearchChangeHistoryEventsRequest, opts ...gax.CallOption) *ChangeHistoryEventIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "account", url.QueryEscape(req.GetAccount())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
@@ -1819,6 +2341,387 @@ func (c *analyticsAdminGRPCClient) SearchChangeHistoryEvents(ctx context.Context
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+func (c *analyticsAdminGRPCClient) GetGoogleSignalsSettings(ctx context.Context, req *adminpb.GetGoogleSignalsSettingsRequest, opts ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetGoogleSignalsSettings[0:len((*c.CallOptions).GetGoogleSignalsSettings):len((*c.CallOptions).GetGoogleSignalsSettings)], opts...)
+	var resp *adminpb.GoogleSignalsSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetGoogleSignalsSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateGoogleSignalsSettings(ctx context.Context, req *adminpb.UpdateGoogleSignalsSettingsRequest, opts ...gax.CallOption) (*adminpb.GoogleSignalsSettings, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "google_signals_settings.name", url.QueryEscape(req.GetGoogleSignalsSettings().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateGoogleSignalsSettings[0:len((*c.CallOptions).UpdateGoogleSignalsSettings):len((*c.CallOptions).UpdateGoogleSignalsSettings)], opts...)
+	var resp *adminpb.GoogleSignalsSettings
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateGoogleSignalsSettings(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateConversionEvent(ctx context.Context, req *adminpb.CreateConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateConversionEvent[0:len((*c.CallOptions).CreateConversionEvent):len((*c.CallOptions).CreateConversionEvent)], opts...)
+	var resp *adminpb.ConversionEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateConversionEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) GetConversionEvent(ctx context.Context, req *adminpb.GetConversionEventRequest, opts ...gax.CallOption) (*adminpb.ConversionEvent, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetConversionEvent[0:len((*c.CallOptions).GetConversionEvent):len((*c.CallOptions).GetConversionEvent)], opts...)
+	var resp *adminpb.ConversionEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetConversionEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) DeleteConversionEvent(ctx context.Context, req *adminpb.DeleteConversionEventRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteConversionEvent[0:len((*c.CallOptions).DeleteConversionEvent):len((*c.CallOptions).DeleteConversionEvent)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.DeleteConversionEvent(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) ListConversionEvents(ctx context.Context, req *adminpb.ListConversionEventsRequest, opts ...gax.CallOption) *ConversionEventIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListConversionEvents[0:len((*c.CallOptions).ListConversionEvents):len((*c.CallOptions).ListConversionEvents)], opts...)
+	it := &ConversionEventIterator{}
+	req = proto.Clone(req).(*adminpb.ListConversionEventsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.ConversionEvent, string, error) {
+		var resp *adminpb.ListConversionEventsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListConversionEvents(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetConversionEvents(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) CreateCustomDimension(ctx context.Context, req *adminpb.CreateCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateCustomDimension[0:len((*c.CallOptions).CreateCustomDimension):len((*c.CallOptions).CreateCustomDimension)], opts...)
+	var resp *adminpb.CustomDimension
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateCustomDimension(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateCustomDimension(ctx context.Context, req *adminpb.UpdateCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "custom_dimension.name", url.QueryEscape(req.GetCustomDimension().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateCustomDimension[0:len((*c.CallOptions).UpdateCustomDimension):len((*c.CallOptions).UpdateCustomDimension)], opts...)
+	var resp *adminpb.CustomDimension
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateCustomDimension(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListCustomDimensions(ctx context.Context, req *adminpb.ListCustomDimensionsRequest, opts ...gax.CallOption) *CustomDimensionIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListCustomDimensions[0:len((*c.CallOptions).ListCustomDimensions):len((*c.CallOptions).ListCustomDimensions)], opts...)
+	it := &CustomDimensionIterator{}
+	req = proto.Clone(req).(*adminpb.ListCustomDimensionsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomDimension, string, error) {
+		var resp *adminpb.ListCustomDimensionsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListCustomDimensions(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCustomDimensions(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) ArchiveCustomDimension(ctx context.Context, req *adminpb.ArchiveCustomDimensionRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ArchiveCustomDimension[0:len((*c.CallOptions).ArchiveCustomDimension):len((*c.CallOptions).ArchiveCustomDimension)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.ArchiveCustomDimension(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) GetCustomDimension(ctx context.Context, req *adminpb.GetCustomDimensionRequest, opts ...gax.CallOption) (*adminpb.CustomDimension, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetCustomDimension[0:len((*c.CallOptions).GetCustomDimension):len((*c.CallOptions).GetCustomDimension)], opts...)
+	var resp *adminpb.CustomDimension
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetCustomDimension(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) CreateCustomMetric(ctx context.Context, req *adminpb.CreateCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateCustomMetric[0:len((*c.CallOptions).CreateCustomMetric):len((*c.CallOptions).CreateCustomMetric)], opts...)
+	var resp *adminpb.CustomMetric
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.CreateCustomMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) UpdateCustomMetric(ctx context.Context, req *adminpb.UpdateCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "custom_metric.name", url.QueryEscape(req.GetCustomMetric().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateCustomMetric[0:len((*c.CallOptions).UpdateCustomMetric):len((*c.CallOptions).UpdateCustomMetric)], opts...)
+	var resp *adminpb.CustomMetric
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.UpdateCustomMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *analyticsAdminGRPCClient) ListCustomMetrics(ctx context.Context, req *adminpb.ListCustomMetricsRequest, opts ...gax.CallOption) *CustomMetricIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListCustomMetrics[0:len((*c.CallOptions).ListCustomMetrics):len((*c.CallOptions).ListCustomMetrics)], opts...)
+	it := &CustomMetricIterator{}
+	req = proto.Clone(req).(*adminpb.ListCustomMetricsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*adminpb.CustomMetric, string, error) {
+		var resp *adminpb.ListCustomMetricsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.analyticsAdminClient.ListCustomMetrics(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetCustomMetrics(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+func (c *analyticsAdminGRPCClient) ArchiveCustomMetric(ctx context.Context, req *adminpb.ArchiveCustomMetricRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ArchiveCustomMetric[0:len((*c.CallOptions).ArchiveCustomMetric):len((*c.CallOptions).ArchiveCustomMetric)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.analyticsAdminClient.ArchiveCustomMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *analyticsAdminGRPCClient) GetCustomMetric(ctx context.Context, req *adminpb.GetCustomMetricRequest, opts ...gax.CallOption) (*adminpb.CustomMetric, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetCustomMetric[0:len((*c.CallOptions).GetCustomMetric):len((*c.CallOptions).GetCustomMetric)], opts...)
+	var resp *adminpb.CustomMetric
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.analyticsAdminClient.GetCustomMetric(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // AccountIterator manages a stream of *adminpb.Account.
@@ -2056,6 +2959,147 @@ func (it *ChangeHistoryEventIterator) takeBuf() interface{} {
 	return b
 }
 
+// ConversionEventIterator manages a stream of *adminpb.ConversionEvent.
+type ConversionEventIterator struct {
+	items    []*adminpb.ConversionEvent
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.ConversionEvent, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ConversionEventIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ConversionEventIterator) Next() (*adminpb.ConversionEvent, error) {
+	var item *adminpb.ConversionEvent
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ConversionEventIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ConversionEventIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// CustomDimensionIterator manages a stream of *adminpb.CustomDimension.
+type CustomDimensionIterator struct {
+	items    []*adminpb.CustomDimension
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CustomDimension, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *CustomDimensionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CustomDimensionIterator) Next() (*adminpb.CustomDimension, error) {
+	var item *adminpb.CustomDimension
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CustomDimensionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CustomDimensionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// CustomMetricIterator manages a stream of *adminpb.CustomMetric.
+type CustomMetricIterator struct {
+	items    []*adminpb.CustomMetric
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.CustomMetric, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *CustomMetricIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *CustomMetricIterator) Next() (*adminpb.CustomMetric, error) {
+	var item *adminpb.CustomMetric
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *CustomMetricIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *CustomMetricIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
 // FirebaseLinkIterator manages a stream of *adminpb.FirebaseLink.
 type FirebaseLinkIterator struct {
 	items    []*adminpb.FirebaseLink
@@ -2192,6 +3236,53 @@ func (it *IosAppDataStreamIterator) bufLen() int {
 }
 
 func (it *IosAppDataStreamIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// MeasurementProtocolSecretIterator manages a stream of *adminpb.MeasurementProtocolSecret.
+type MeasurementProtocolSecretIterator struct {
+	items    []*adminpb.MeasurementProtocolSecret
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*adminpb.MeasurementProtocolSecret, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *MeasurementProtocolSecretIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *MeasurementProtocolSecretIterator) Next() (*adminpb.MeasurementProtocolSecret, error) {
+	var item *adminpb.MeasurementProtocolSecret
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *MeasurementProtocolSecretIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *MeasurementProtocolSecretIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

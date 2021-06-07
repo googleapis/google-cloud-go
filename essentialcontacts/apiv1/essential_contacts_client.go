@@ -48,7 +48,7 @@ type CallOptions struct {
 	SendTestMessage []gax.CallOption
 }
 
-func defaultClientOptions() []option.ClientOption {
+func defaultGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("essentialcontacts.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("essentialcontacts.mtls.googleapis.com:443"),
@@ -92,32 +92,119 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
+// internalClient is an interface that defines the methods availaible from Essential Contacts API.
+type internalClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	CreateContact(context.Context, *essentialcontactspb.CreateContactRequest, ...gax.CallOption) (*essentialcontactspb.Contact, error)
+	UpdateContact(context.Context, *essentialcontactspb.UpdateContactRequest, ...gax.CallOption) (*essentialcontactspb.Contact, error)
+	ListContacts(context.Context, *essentialcontactspb.ListContactsRequest, ...gax.CallOption) *ContactIterator
+	GetContact(context.Context, *essentialcontactspb.GetContactRequest, ...gax.CallOption) (*essentialcontactspb.Contact, error)
+	DeleteContact(context.Context, *essentialcontactspb.DeleteContactRequest, ...gax.CallOption) error
+	ComputeContacts(context.Context, *essentialcontactspb.ComputeContactsRequest, ...gax.CallOption) *ContactIterator
+	SendTestMessage(context.Context, *essentialcontactspb.SendTestMessageRequest, ...gax.CallOption) error
+}
+
 // Client is a client for interacting with Essential Contacts API.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages contacts for important Google Cloud notifications.
+type Client struct {
+	// The internal transport-dependent client.
+	internalClient internalClient
+
+	// The call options for this service.
+	CallOptions *CallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// CreateContact adds a new contact for a resource.
+func (c *Client) CreateContact(ctx context.Context, req *essentialcontactspb.CreateContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
+	return c.internalClient.CreateContact(ctx, req, opts...)
+}
+
+// UpdateContact updates a contact.
+// Note: A contact’s email address cannot be changed.
+func (c *Client) UpdateContact(ctx context.Context, req *essentialcontactspb.UpdateContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
+	return c.internalClient.UpdateContact(ctx, req, opts...)
+}
+
+// ListContacts lists the contacts that have been set on a resource.
+func (c *Client) ListContacts(ctx context.Context, req *essentialcontactspb.ListContactsRequest, opts ...gax.CallOption) *ContactIterator {
+	return c.internalClient.ListContacts(ctx, req, opts...)
+}
+
+// GetContact gets a single contact.
+func (c *Client) GetContact(ctx context.Context, req *essentialcontactspb.GetContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
+	return c.internalClient.GetContact(ctx, req, opts...)
+}
+
+// DeleteContact deletes a contact.
+func (c *Client) DeleteContact(ctx context.Context, req *essentialcontactspb.DeleteContactRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteContact(ctx, req, opts...)
+}
+
+// ComputeContacts lists all contacts for the resource that are subscribed to the
+// specified notification categories, including contacts inherited from
+// any parent resources.
+func (c *Client) ComputeContacts(ctx context.Context, req *essentialcontactspb.ComputeContactsRequest, opts ...gax.CallOption) *ContactIterator {
+	return c.internalClient.ComputeContacts(ctx, req, opts...)
+}
+
+// SendTestMessage allows a contact admin to send a test message to contact to verify that it
+// has been configured correctly.
+func (c *Client) SendTestMessage(ctx context.Context, req *essentialcontactspb.SendTestMessageRequest, opts ...gax.CallOption) error {
+	return c.internalClient.SendTestMessage(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Essential Contacts API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type Client struct {
+type gRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
 	// The gRPC API client.
 	client essentialcontactspb.EssentialContactsServiceClient
-
-	// The call options for this service.
-	CallOptions *CallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewClient creates a new essential contacts service client.
+// NewClient creates a new essential contacts service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Manages contacts for important Google Cloud notifications.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultClientOptions()
-
+	clientOpts := defaultGRPCClientOptions()
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -135,42 +222,44 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, err
 	}
-	c := &Client{
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultCallOptions(),
-
-		client: essentialcontactspb.NewEssentialContactsServiceClient(connPool),
+		client:           essentialcontactspb.NewEssentialContactsServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *Client) Connection() *grpc.ClientConn {
+func (c *gRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *Client) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(keyval ...string) {
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// CreateContact adds a new contact for a resource.
-func (c *Client) CreateContact(ctx context.Context, req *essentialcontactspb.CreateContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) CreateContact(ctx context.Context, req *essentialcontactspb.CreateContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -178,7 +267,7 @@ func (c *Client) CreateContact(ctx context.Context, req *essentialcontactspb.Cre
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.CreateContact[0:len(c.CallOptions.CreateContact):len(c.CallOptions.CreateContact)], opts...)
+	opts = append((*c.CallOptions).CreateContact[0:len((*c.CallOptions).CreateContact):len((*c.CallOptions).CreateContact)], opts...)
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -191,9 +280,7 @@ func (c *Client) CreateContact(ctx context.Context, req *essentialcontactspb.Cre
 	return resp, nil
 }
 
-// UpdateContact updates a contact.
-// Note: A contact’s email address cannot be changed.
-func (c *Client) UpdateContact(ctx context.Context, req *essentialcontactspb.UpdateContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
+func (c *gRPCClient) UpdateContact(ctx context.Context, req *essentialcontactspb.UpdateContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -201,7 +288,7 @@ func (c *Client) UpdateContact(ctx context.Context, req *essentialcontactspb.Upd
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "contact.name", url.QueryEscape(req.GetContact().GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.UpdateContact[0:len(c.CallOptions.UpdateContact):len(c.CallOptions.UpdateContact)], opts...)
+	opts = append((*c.CallOptions).UpdateContact[0:len((*c.CallOptions).UpdateContact):len((*c.CallOptions).UpdateContact)], opts...)
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -214,11 +301,10 @@ func (c *Client) UpdateContact(ctx context.Context, req *essentialcontactspb.Upd
 	return resp, nil
 }
 
-// ListContacts lists the contacts that have been set on a resource.
-func (c *Client) ListContacts(ctx context.Context, req *essentialcontactspb.ListContactsRequest, opts ...gax.CallOption) *ContactIterator {
+func (c *gRPCClient) ListContacts(ctx context.Context, req *essentialcontactspb.ListContactsRequest, opts ...gax.CallOption) *ContactIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ListContacts[0:len(c.CallOptions.ListContacts):len(c.CallOptions.ListContacts)], opts...)
+	opts = append((*c.CallOptions).ListContacts[0:len((*c.CallOptions).ListContacts):len((*c.CallOptions).ListContacts)], opts...)
 	it := &ContactIterator{}
 	req = proto.Clone(req).(*essentialcontactspb.ListContactsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
@@ -255,8 +341,7 @@ func (c *Client) ListContacts(ctx context.Context, req *essentialcontactspb.List
 	return it
 }
 
-// GetContact gets a single contact.
-func (c *Client) GetContact(ctx context.Context, req *essentialcontactspb.GetContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
+func (c *gRPCClient) GetContact(ctx context.Context, req *essentialcontactspb.GetContactRequest, opts ...gax.CallOption) (*essentialcontactspb.Contact, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -264,7 +349,7 @@ func (c *Client) GetContact(ctx context.Context, req *essentialcontactspb.GetCon
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.GetContact[0:len(c.CallOptions.GetContact):len(c.CallOptions.GetContact)], opts...)
+	opts = append((*c.CallOptions).GetContact[0:len((*c.CallOptions).GetContact):len((*c.CallOptions).GetContact)], opts...)
 	var resp *essentialcontactspb.Contact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -277,8 +362,7 @@ func (c *Client) GetContact(ctx context.Context, req *essentialcontactspb.GetCon
 	return resp, nil
 }
 
-// DeleteContact deletes a contact.
-func (c *Client) DeleteContact(ctx context.Context, req *essentialcontactspb.DeleteContactRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteContact(ctx context.Context, req *essentialcontactspb.DeleteContactRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -286,7 +370,7 @@ func (c *Client) DeleteContact(ctx context.Context, req *essentialcontactspb.Del
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.DeleteContact[0:len(c.CallOptions.DeleteContact):len(c.CallOptions.DeleteContact)], opts...)
+	opts = append((*c.CallOptions).DeleteContact[0:len((*c.CallOptions).DeleteContact):len((*c.CallOptions).DeleteContact)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.DeleteContact(ctx, req, settings.GRPC...)
@@ -295,13 +379,10 @@ func (c *Client) DeleteContact(ctx context.Context, req *essentialcontactspb.Del
 	return err
 }
 
-// ComputeContacts lists all contacts for the resource that are subscribed to the
-// specified notification categories, including contacts inherited from
-// any parent resources.
-func (c *Client) ComputeContacts(ctx context.Context, req *essentialcontactspb.ComputeContactsRequest, opts ...gax.CallOption) *ContactIterator {
+func (c *gRPCClient) ComputeContacts(ctx context.Context, req *essentialcontactspb.ComputeContactsRequest, opts ...gax.CallOption) *ContactIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.ComputeContacts[0:len(c.CallOptions.ComputeContacts):len(c.CallOptions.ComputeContacts)], opts...)
+	opts = append((*c.CallOptions).ComputeContacts[0:len((*c.CallOptions).ComputeContacts):len((*c.CallOptions).ComputeContacts)], opts...)
 	it := &ContactIterator{}
 	req = proto.Clone(req).(*essentialcontactspb.ComputeContactsRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*essentialcontactspb.Contact, string, error) {
@@ -338,9 +419,7 @@ func (c *Client) ComputeContacts(ctx context.Context, req *essentialcontactspb.C
 	return it
 }
 
-// SendTestMessage allows a contact admin to send a test message to contact to verify that it
-// has been configured correctly.
-func (c *Client) SendTestMessage(ctx context.Context, req *essentialcontactspb.SendTestMessageRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) SendTestMessage(ctx context.Context, req *essentialcontactspb.SendTestMessageRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -348,7 +427,7 @@ func (c *Client) SendTestMessage(ctx context.Context, req *essentialcontactspb.S
 	}
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.SendTestMessage[0:len(c.CallOptions.SendTestMessage):len(c.CallOptions.SendTestMessage)], opts...)
+	opts = append((*c.CallOptions).SendTestMessage[0:len((*c.CallOptions).SendTestMessage):len((*c.CallOptions).SendTestMessage)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = c.client.SendTestMessage(ctx, req, settings.GRPC...)

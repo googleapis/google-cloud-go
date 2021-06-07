@@ -51,6 +51,12 @@ type AdminCallOptions struct {
 	ListSubscriptions      []gax.CallOption
 	UpdateSubscription     []gax.CallOption
 	DeleteSubscription     []gax.CallOption
+	CreateReservation      []gax.CallOption
+	GetReservation         []gax.CallOption
+	ListReservations       []gax.CallOption
+	UpdateReservation      []gax.CallOption
+	DeleteReservation      []gax.CallOption
+	ListReservationTopics  []gax.CallOption
 }
 
 func defaultAdminGRPCClientOptions() []option.ClientOption {
@@ -247,6 +253,96 @@ func defaultAdminCallOptions() *AdminCallOptions {
 				})
 			}),
 		},
+		CreateReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		GetReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListReservations: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteReservation: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		ListReservationTopics: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -267,6 +363,12 @@ type internalAdminClient interface {
 	ListSubscriptions(context.Context, *pubsublitepb.ListSubscriptionsRequest, ...gax.CallOption) *SubscriptionIterator
 	UpdateSubscription(context.Context, *pubsublitepb.UpdateSubscriptionRequest, ...gax.CallOption) (*pubsublitepb.Subscription, error)
 	DeleteSubscription(context.Context, *pubsublitepb.DeleteSubscriptionRequest, ...gax.CallOption) error
+	CreateReservation(context.Context, *pubsublitepb.CreateReservationRequest, ...gax.CallOption) (*pubsublitepb.Reservation, error)
+	GetReservation(context.Context, *pubsublitepb.GetReservationRequest, ...gax.CallOption) (*pubsublitepb.Reservation, error)
+	ListReservations(context.Context, *pubsublitepb.ListReservationsRequest, ...gax.CallOption) *ReservationIterator
+	UpdateReservation(context.Context, *pubsublitepb.UpdateReservationRequest, ...gax.CallOption) (*pubsublitepb.Reservation, error)
+	DeleteReservation(context.Context, *pubsublitepb.DeleteReservationRequest, ...gax.CallOption) error
+	ListReservationTopics(context.Context, *pubsublitepb.ListReservationTopicsRequest, ...gax.CallOption) *StringIterator
 }
 
 // AdminClient is a client for interacting with Pub/Sub Lite API.
@@ -362,6 +464,36 @@ func (c *AdminClient) UpdateSubscription(ctx context.Context, req *pubsublitepb.
 // DeleteSubscription deletes the specified subscription.
 func (c *AdminClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.DeleteSubscriptionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteSubscription(ctx, req, opts...)
+}
+
+// CreateReservation creates a new reservation.
+func (c *AdminClient) CreateReservation(ctx context.Context, req *pubsublitepb.CreateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
+	return c.internalClient.CreateReservation(ctx, req, opts...)
+}
+
+// GetReservation returns the reservation configuration.
+func (c *AdminClient) GetReservation(ctx context.Context, req *pubsublitepb.GetReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
+	return c.internalClient.GetReservation(ctx, req, opts...)
+}
+
+// ListReservations returns the list of reservations for the given project.
+func (c *AdminClient) ListReservations(ctx context.Context, req *pubsublitepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
+	return c.internalClient.ListReservations(ctx, req, opts...)
+}
+
+// UpdateReservation updates properties of the specified reservation.
+func (c *AdminClient) UpdateReservation(ctx context.Context, req *pubsublitepb.UpdateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
+	return c.internalClient.UpdateReservation(ctx, req, opts...)
+}
+
+// DeleteReservation deletes the specified reservation.
+func (c *AdminClient) DeleteReservation(ctx context.Context, req *pubsublitepb.DeleteReservationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteReservation(ctx, req, opts...)
+}
+
+// ListReservationTopics lists the topics attached to the specified reservation.
+func (c *AdminClient) ListReservationTopics(ctx context.Context, req *pubsublitepb.ListReservationTopicsRequest, opts ...gax.CallOption) *StringIterator {
+	return c.internalClient.ListReservationTopics(ctx, req, opts...)
 }
 
 // adminGRPCClient is a client for interacting with Pub/Sub Lite API over gRPC transport.
@@ -744,6 +876,213 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublitepb.CreateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).CreateReservation[0:len((*c.CallOptions).CreateReservation):len((*c.CallOptions).CreateReservation)], opts...)
+	var resp *pubsublitepb.Reservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.adminClient.CreateReservation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *adminGRPCClient) GetReservation(ctx context.Context, req *pubsublitepb.GetReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).GetReservation[0:len((*c.CallOptions).GetReservation):len((*c.CallOptions).GetReservation)], opts...)
+	var resp *pubsublitepb.Reservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.adminClient.GetReservation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *adminGRPCClient) ListReservations(ctx context.Context, req *pubsublitepb.ListReservationsRequest, opts ...gax.CallOption) *ReservationIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListReservations[0:len((*c.CallOptions).ListReservations):len((*c.CallOptions).ListReservations)], opts...)
+	it := &ReservationIterator{}
+	req = proto.Clone(req).(*pubsublitepb.ListReservationsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*pubsublitepb.Reservation, string, error) {
+		var resp *pubsublitepb.ListReservationsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.adminClient.ListReservations(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetReservations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+func (c *adminGRPCClient) UpdateReservation(ctx context.Context, req *pubsublitepb.UpdateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "reservation.name", url.QueryEscape(req.GetReservation().GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).UpdateReservation[0:len((*c.CallOptions).UpdateReservation):len((*c.CallOptions).UpdateReservation)], opts...)
+	var resp *pubsublitepb.Reservation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.adminClient.UpdateReservation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *adminGRPCClient) DeleteReservation(ctx context.Context, req *pubsublitepb.DeleteReservationRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).DeleteReservation[0:len((*c.CallOptions).DeleteReservation):len((*c.CallOptions).DeleteReservation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.adminClient.DeleteReservation(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsublitepb.ListReservationTopicsRequest, opts ...gax.CallOption) *StringIterator {
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).ListReservationTopics[0:len((*c.CallOptions).ListReservationTopics):len((*c.CallOptions).ListReservationTopics)], opts...)
+	it := &StringIterator{}
+	req = proto.Clone(req).(*pubsublitepb.ListReservationTopicsRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
+		var resp *pubsublitepb.ListReservationTopicsResponse
+		req.PageToken = pageToken
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = c.adminClient.ListReservationTopics(ctx, req, settings.GRPC...)
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetTopics(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+	return it
+}
+
+// ReservationIterator manages a stream of *pubsublitepb.Reservation.
+type ReservationIterator struct {
+	items    []*pubsublitepb.Reservation
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*pubsublitepb.Reservation, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the google.golang.org/api/iterator package for details.
+func (it *ReservationIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *ReservationIterator) Next() (*pubsublitepb.Reservation, error) {
+	var item *pubsublitepb.Reservation
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *ReservationIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *ReservationIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
 }
 
 // StringIterator manages a stream of string.

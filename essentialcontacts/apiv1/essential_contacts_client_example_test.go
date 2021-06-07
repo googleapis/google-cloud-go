@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateContact() {
-	// import essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
-
 	ctx := context.Background()
 	c, err := essentialcontacts.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.CreateContactRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_CreateContact() {
 }
 
 func ExampleClient_UpdateContact() {
-	// import essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
-
 	ctx := context.Background()
 	c, err := essentialcontacts.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.UpdateContactRequest{
 		// TODO: Fill request struct fields.
@@ -75,14 +75,12 @@ func ExampleClient_UpdateContact() {
 }
 
 func ExampleClient_ListContacts() {
-	// import essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := essentialcontacts.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.ListContactsRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleClient_ListContacts() {
 }
 
 func ExampleClient_GetContact() {
-	// import essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
-
 	ctx := context.Background()
 	c, err := essentialcontacts.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.GetContactRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleClient_DeleteContact() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.DeleteContactRequest{
 		// TODO: Fill request struct fields.
@@ -138,14 +136,12 @@ func ExampleClient_DeleteContact() {
 }
 
 func ExampleClient_ComputeContacts() {
-	// import essentialcontactspb "google.golang.org/genproto/googleapis/cloud/essentialcontacts/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := essentialcontacts.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.ComputeContactsRequest{
 		// TODO: Fill request struct fields.
@@ -170,6 +166,7 @@ func ExampleClient_SendTestMessage() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &essentialcontactspb.SendTestMessageRequest{
 		// TODO: Fill request struct fields.

@@ -95,6 +95,13 @@ func exceedsExpediteRatio(pending, client int64) bool {
 	return client > 0 && (float64(pending)/float64(client)) >= expediteBatchRequestRatio
 }
 
+// Reset client tokens to the given values and reset pending tokens.
+func (fc *flowControlBatcher) Reset(tokens flowControlTokens) {
+	fc.clientTokens.Reset()
+	fc.clientTokens.Add(tokens)
+	fc.pendingTokens.Reset()
+}
+
 // OnClientFlow increments flow control tokens. This occurs when:
 // - Initialization from ReceiveSettings.
 // - The user acks messages.
@@ -145,6 +152,11 @@ func (fc *flowControlBatcher) ShouldExpediteBatchRequest() bool {
 // received from the server. It is only accessed by the subscribeStream.
 type subscriberOffsetTracker struct {
 	minNextOffset int64
+}
+
+// Reset the offset tracker to the initial state.
+func (ot *subscriberOffsetTracker) Reset() {
+	ot.minNextOffset = 0
 }
 
 // RequestForRestart returns the seek request to send when a new subscribe
