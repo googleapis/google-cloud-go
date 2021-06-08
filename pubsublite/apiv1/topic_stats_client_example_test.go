@@ -29,18 +29,19 @@ func ExampleNewTopicStatsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleTopicStatsClient_ComputeMessageStats() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ComputeMessageStatsRequest{
 		// TODO: Fill request struct fields.
@@ -54,18 +55,36 @@ func ExampleTopicStatsClient_ComputeMessageStats() {
 }
 
 func ExampleTopicStatsClient_ComputeHeadCursor() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewTopicStatsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsublitepb.ComputeHeadCursorRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.ComputeHeadCursor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleTopicStatsClient_ComputeTimeCursor() {
+	ctx := context.Background()
+	c, err := pubsublite.NewTopicStatsClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ComputeTimeCursorRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.ComputeTimeCursor(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

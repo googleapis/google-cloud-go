@@ -29,18 +29,19 @@ func ExampleNewServiceControllerClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleServiceControllerClient_Check() {
-	// import servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
-
 	ctx := context.Background()
 	c, err := servicecontrol.NewServiceControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicecontrolpb.CheckRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleServiceControllerClient_Check() {
 }
 
 func ExampleServiceControllerClient_Report() {
-	// import servicecontrolpb "google.golang.org/genproto/googleapis/api/servicecontrol/v1"
-
 	ctx := context.Background()
 	c, err := servicecontrol.NewServiceControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &servicecontrolpb.ReportRequest{
 		// TODO: Fill request struct fields.

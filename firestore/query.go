@@ -701,11 +701,11 @@ func newQueryDocumentIterator(ctx context.Context, q *Query, tid []byte) *queryD
 }
 
 func (it *queryDocumentIterator) next() (_ *DocumentSnapshot, err error) {
-	it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
-	defer func() { trace.EndSpan(it.ctx, err) }()
-
 	client := it.q.c
 	if it.streamClient == nil {
+		it.ctx = trace.StartSpan(it.ctx, "cloud.google.com/go/firestore.Query.RunQuery")
+		defer func() { trace.EndSpan(it.ctx, err) }()
+
 		sq, err := it.q.toProto()
 		if err != nil {
 			return nil, err

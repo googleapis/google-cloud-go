@@ -222,6 +222,28 @@ func TestFlowControlBatcher(t *testing.T) {
 	})
 }
 
+func TestFlowControlBatcherReset(t *testing.T) {
+	var batcher flowControlBatcher
+
+	initialTokens := flowControlTokens{Bytes: 400, Messages: 40}
+	batcher.OnClientFlow(initialTokens)
+	if got, want := batcher.clientTokens.ToFlowControlRequest(), flowControlReq(initialTokens); !proto.Equal(got, want) {
+		t.Errorf("flowControlBatcher.clientTokens.ToFlowControlRequest(): got %v, want %v", got, want)
+	}
+	if got, want := batcher.pendingTokens.ToFlowControlRequest(), flowControlReq(initialTokens); !proto.Equal(got, want) {
+		t.Errorf("flowControlBatcher.pendingTokens.ToFlowControlRequest(): got %v, want %v", got, want)
+	}
+
+	updatedTokens := flowControlTokens{Bytes: 500, Messages: 50}
+	batcher.Reset(updatedTokens)
+	if got, want := batcher.clientTokens.ToFlowControlRequest(), flowControlReq(updatedTokens); !proto.Equal(got, want) {
+		t.Errorf("flowControlBatcher.clientTokens.ToFlowControlRequest(): got %v, want %v", got, want)
+	}
+	if got, want := batcher.pendingTokens.ToFlowControlRequest(), (*pb.FlowControlRequest)(nil); !proto.Equal(got, want) {
+		t.Errorf("flowControlBatcher.pendingTokens.ToFlowControlRequest(): got %v, want %v", got, want)
+	}
+}
+
 func TestOffsetTrackerRequestForRestart(t *testing.T) {
 	for _, tc := range []struct {
 		desc    string

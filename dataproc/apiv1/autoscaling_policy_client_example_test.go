@@ -30,18 +30,19 @@ func ExampleNewAutoscalingPolicyClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleAutoscalingPolicyClient_CreateAutoscalingPolicy() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewAutoscalingPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.CreateAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleAutoscalingPolicyClient_CreateAutoscalingPolicy() {
 }
 
 func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewAutoscalingPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.UpdateAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleAutoscalingPolicyClient_UpdateAutoscalingPolicy() {
 }
 
 func ExampleAutoscalingPolicyClient_GetAutoscalingPolicy() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewAutoscalingPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.GetAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -95,14 +94,12 @@ func ExampleAutoscalingPolicyClient_GetAutoscalingPolicy() {
 }
 
 func ExampleAutoscalingPolicyClient_ListAutoscalingPolicies() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dataproc.NewAutoscalingPolicyClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.ListAutoscalingPoliciesRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleAutoscalingPolicyClient_DeleteAutoscalingPolicy() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.DeleteAutoscalingPolicyRequest{
 		// TODO: Fill request struct fields.

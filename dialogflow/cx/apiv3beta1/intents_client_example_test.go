@@ -30,19 +30,19 @@ func ExampleNewIntentsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleIntentsClient_ListIntents() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListIntentsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleIntentsClient_ListIntents() {
 }
 
 func ExampleIntentsClient_GetIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetIntentRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleIntentsClient_GetIntent() {
 }
 
 func ExampleIntentsClient_CreateIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateIntentRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleIntentsClient_CreateIntent() {
 }
 
 func ExampleIntentsClient_UpdateIntent() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewIntentsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateIntentRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleIntentsClient_DeleteIntent() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteIntentRequest{
 		// TODO: Fill request struct fields.

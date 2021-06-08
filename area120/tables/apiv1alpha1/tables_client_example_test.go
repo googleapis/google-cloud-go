@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_GetTable() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.GetTableRequest{
 		// TODO: Fill request struct fields.
@@ -55,14 +56,12 @@ func ExampleClient_GetTable() {
 }
 
 func ExampleClient_ListTables() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListTablesRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleClient_ListTables() {
 }
 
 func ExampleClient_GetWorkspace() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.GetWorkspaceRequest{
 		// TODO: Fill request struct fields.
@@ -102,14 +100,12 @@ func ExampleClient_GetWorkspace() {
 }
 
 func ExampleClient_ListWorkspaces() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListWorkspacesRequest{
 		// TODO: Fill request struct fields.
@@ -129,13 +125,12 @@ func ExampleClient_ListWorkspaces() {
 }
 
 func ExampleClient_GetRow() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.GetRowRequest{
 		// TODO: Fill request struct fields.
@@ -149,14 +144,12 @@ func ExampleClient_GetRow() {
 }
 
 func ExampleClient_ListRows() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.ListRowsRequest{
 		// TODO: Fill request struct fields.
@@ -176,13 +169,12 @@ func ExampleClient_ListRows() {
 }
 
 func ExampleClient_CreateRow() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.CreateRowRequest{
 		// TODO: Fill request struct fields.
@@ -196,13 +188,12 @@ func ExampleClient_CreateRow() {
 }
 
 func ExampleClient_BatchCreateRows() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.BatchCreateRowsRequest{
 		// TODO: Fill request struct fields.
@@ -216,13 +207,12 @@ func ExampleClient_BatchCreateRows() {
 }
 
 func ExampleClient_UpdateRow() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.UpdateRowRequest{
 		// TODO: Fill request struct fields.
@@ -236,13 +226,12 @@ func ExampleClient_UpdateRow() {
 }
 
 func ExampleClient_BatchUpdateRows() {
-	// import tablespb "google.golang.org/genproto/googleapis/area120/tables/v1alpha1"
-
 	ctx := context.Background()
 	c, err := tables.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.BatchUpdateRowsRequest{
 		// TODO: Fill request struct fields.
@@ -261,6 +250,7 @@ func ExampleClient_DeleteRow() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.DeleteRowRequest{
 		// TODO: Fill request struct fields.
@@ -277,6 +267,7 @@ func ExampleClient_BatchDeleteRows() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &tablespb.BatchDeleteRowsRequest{
 		// TODO: Fill request struct fields.

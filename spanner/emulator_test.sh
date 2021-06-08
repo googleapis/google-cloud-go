@@ -24,7 +24,7 @@ export GCLOUD_TESTS_GOLANG_PROJECT_ID=emulator-test-project
 echo "Running the Cloud Spanner emulator: $SPANNER_EMULATOR_HOST";
 
 # Download the emulator
-EMULATOR_VERSION=0.8.0
+EMULATOR_VERSION=1.2.0
 wget https://storage.googleapis.com/cloud-spanner-emulator/releases/${EMULATOR_VERSION}/cloud-spanner-emulator_linux_amd64-${EMULATOR_VERSION}.tar.gz
 tar zxvf cloud-spanner-emulator_linux_amd64-${EMULATOR_VERSION}.tar.gz
 chmod u+x emulator_main

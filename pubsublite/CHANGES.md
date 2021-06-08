@@ -1,5 +1,38 @@
 # Changes
 
+## [0.9.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.8.0...pubsublite/v0.9.0) (2021-06-08)
+
+
+### Features
+
+* **pubsublite:** Add initial_cursor field to InitialSubscribeRequest ([6f9c8b0](https://www.github.com/googleapis/google-cloud-go/commit/6f9c8b0a5d6e4509f056a146cb586f310f3336a9))
+* **pubsublite:** Add Pub/Sub Lite Reservation APIs ([18375e5](https://www.github.com/googleapis/google-cloud-go/commit/18375e50e8f16e63506129b8927a7b62f85e407b))
+* **pubsublite:** ComputeTimeCursor RPC for Pub/Sub Lite ([d089dda](https://www.github.com/googleapis/google-cloud-go/commit/d089dda0089acb9aaef9b3da40b219476af9fc06))
+* **pubsublite:** detect stream reset signal ([#4144](https://www.github.com/googleapis/google-cloud-go/issues/4144)) ([ff5f8c9](https://www.github.com/googleapis/google-cloud-go/commit/ff5f8c989cba2751dcc77745483ef3828e6df78c))
+* **pubsublite:** flush and reset committer ([#4143](https://www.github.com/googleapis/google-cloud-go/issues/4143)) ([0ecd732](https://www.github.com/googleapis/google-cloud-go/commit/0ecd732e3f57928e7999ae4e78871be070c184d9))
+
+
+### Bug Fixes
+
+* **pubsublite:** prevent subscriber flow control token races ([#4060](https://www.github.com/googleapis/google-cloud-go/issues/4060)) ([dc0103b](https://www.github.com/googleapis/google-cloud-go/commit/dc0103baeaf168474b9e163f0aa5f7555170ffc4))
+
+## [0.8.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.7.0...pubsublite/v0.8.0) (2021-03-25)
+
+
+### Features
+
+* **pubsublite:** add skip_backlog field to allow subscriptions to be created at HEAD ([18c88c4](https://www.github.com/googleapis/google-cloud-go/commit/18c88c437bd1741eaf5bf5911b9da6f6ea7cd75d))
+* **pubsublite:** adding ability to create subscriptions at head ([#3790](https://www.github.com/googleapis/google-cloud-go/issues/3790)) ([bc083b6](https://www.github.com/googleapis/google-cloud-go/commit/bc083b66972b1c4329c18da9529c76b79ef56c50))
+
+
+### Bug Fixes
+
+* **pubsublite:** ackTracker should discard new acks after committer terminates ([#3827](https://www.github.com/googleapis/google-cloud-go/issues/3827)) ([bc49753](https://www.github.com/googleapis/google-cloud-go/commit/bc497531a9918f2e3bc9f1895ddd49011427e388))
+* **pubsublite:** fix committer races ([#3810](https://www.github.com/googleapis/google-cloud-go/issues/3810)) ([d8689f1](https://www.github.com/googleapis/google-cloud-go/commit/d8689f1d32be83f9bbbacb9dd24ce085d81d79e8))
+* **pubsublite:** improve handling of backend unavailability ([#3846](https://www.github.com/googleapis/google-cloud-go/issues/3846)) ([db31457](https://www.github.com/googleapis/google-cloud-go/commit/db31457cebdcd1c6370953e0360acd227567496d))
+* **pubsublite:** increase default timeouts for publish and subscribe stream connections ([#3821](https://www.github.com/googleapis/google-cloud-go/issues/3821)) ([df28999](https://www.github.com/googleapis/google-cloud-go/commit/df28999076fa91939038c06a706fc63811b20932))
+* **pubsublite:** remove publish error translation ([#3843](https://www.github.com/googleapis/google-cloud-go/issues/3843)) ([d8d8f68](https://www.github.com/googleapis/google-cloud-go/commit/d8d8f68e8a70e2353048578f5d22fa1cd2ca6482))
+
 ## [0.7.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.6.0...v0.7.0) (2021-02-18)
 
 The status of this library is now **BETA**.

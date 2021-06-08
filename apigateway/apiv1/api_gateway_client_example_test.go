@@ -30,19 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListGateways() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.ListGatewaysRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleClient_ListGateways() {
 }
 
 func ExampleClient_GetGateway() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.GetGatewayRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleClient_GetGateway() {
 }
 
 func ExampleClient_CreateGateway() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.CreateGatewayRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleClient_CreateGateway() {
 }
 
 func ExampleClient_UpdateGateway() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.UpdateGatewayRequest{
 		// TODO: Fill request struct fields.
@@ -132,13 +129,12 @@ func ExampleClient_UpdateGateway() {
 }
 
 func ExampleClient_DeleteGateway() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.DeleteGatewayRequest{
 		// TODO: Fill request struct fields.
@@ -155,14 +151,12 @@ func ExampleClient_DeleteGateway() {
 }
 
 func ExampleClient_ListApis() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.ListApisRequest{
 		// TODO: Fill request struct fields.
@@ -182,13 +176,12 @@ func ExampleClient_ListApis() {
 }
 
 func ExampleClient_GetApi() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.GetApiRequest{
 		// TODO: Fill request struct fields.
@@ -202,13 +195,12 @@ func ExampleClient_GetApi() {
 }
 
 func ExampleClient_CreateApi() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.CreateApiRequest{
 		// TODO: Fill request struct fields.
@@ -227,13 +219,12 @@ func ExampleClient_CreateApi() {
 }
 
 func ExampleClient_UpdateApi() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.UpdateApiRequest{
 		// TODO: Fill request struct fields.
@@ -252,13 +243,12 @@ func ExampleClient_UpdateApi() {
 }
 
 func ExampleClient_DeleteApi() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.DeleteApiRequest{
 		// TODO: Fill request struct fields.
@@ -275,14 +265,12 @@ func ExampleClient_DeleteApi() {
 }
 
 func ExampleClient_ListApiConfigs() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.ListApiConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -302,13 +290,12 @@ func ExampleClient_ListApiConfigs() {
 }
 
 func ExampleClient_GetApiConfig() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.GetApiConfigRequest{
 		// TODO: Fill request struct fields.
@@ -322,13 +309,12 @@ func ExampleClient_GetApiConfig() {
 }
 
 func ExampleClient_CreateApiConfig() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.CreateApiConfigRequest{
 		// TODO: Fill request struct fields.
@@ -347,13 +333,12 @@ func ExampleClient_CreateApiConfig() {
 }
 
 func ExampleClient_UpdateApiConfig() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.UpdateApiConfigRequest{
 		// TODO: Fill request struct fields.
@@ -372,13 +357,12 @@ func ExampleClient_UpdateApiConfig() {
 }
 
 func ExampleClient_DeleteApiConfig() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.DeleteApiConfigRequest{
 		// TODO: Fill request struct fields.

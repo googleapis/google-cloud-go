@@ -30,19 +30,19 @@ func ExampleNewProfileClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleProfileClient_ListProfiles() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListProfilesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleProfileClient_ListProfiles() {
 }
 
 func ExampleProfileClient_CreateProfile() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CreateProfileRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleProfileClient_CreateProfile() {
 }
 
 func ExampleProfileClient_GetProfile() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.GetProfileRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleProfileClient_GetProfile() {
 }
 
 func ExampleProfileClient_UpdateProfile() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.UpdateProfileRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleProfileClient_DeleteProfile() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.DeleteProfileRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleProfileClient_DeleteProfile() {
 }
 
 func ExampleProfileClient_SearchProfiles() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4beta1"
-
 	ctx := context.Background()
 	c, err := talent.NewProfileClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.SearchProfilesRequest{
 		// TODO: Fill request struct fields.

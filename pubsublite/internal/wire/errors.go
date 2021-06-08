@@ -42,6 +42,11 @@ var (
 	// cannot perform an operation because it has stopped or is in the process of
 	// stopping.
 	ErrServiceStopped = errors.New("pubsublite: service has stopped or is stopping")
+
+	// ErrBackendUnavailable indicates that the backend service has been
+	// unavailable for a period of time. The timeout can be configured using
+	// PublishSettings.Timeout or ReceiveSettings.Timeout.
+	ErrBackendUnavailable = errors.New("pubsublite: backend service is unavailable")
 )
 
 func wrapError(context, resource string, err error) error {

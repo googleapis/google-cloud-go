@@ -22,7 +22,10 @@ import (
 
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/keepalive"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -50,24 +53,22 @@ func newStreamRetryer(timeout time.Duration) *streamRetryer {
 	}
 }
 
-func (r *streamRetryer) RetrySend(err error) (time.Duration, bool) {
-	if time.Now().After(r.deadline) {
-		return 0, false
-	}
+func (r *streamRetryer) RetrySend(err error) (backoff time.Duration, shouldRetry bool) {
 	if isRetryableSendError(err) {
 		return r.bo.Pause(), true
 	}
 	return 0, false
 }
 
-func (r *streamRetryer) RetryRecv(err error) (time.Duration, bool) {
-	if time.Now().After(r.deadline) {
-		return 0, false
-	}
+func (r *streamRetryer) RetryRecv(err error) (backoff time.Duration, shouldRetry bool) {
 	if isRetryableRecvError(err) {
 		return r.bo.Pause(), true
 	}
 	return 0, false
+}
+
+func (r *streamRetryer) ExceededDeadline() bool {
+	return time.Now().After(r.deadline)
 }
 
 func isRetryableSendCode(code codes.Code) bool {
@@ -130,11 +131,37 @@ func retryableReadOnlyCallOption() gax.CallOption {
 	})
 }
 
-const pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+const (
+	pubsubLiteDefaultEndpoint = "-pubsublite.googleapis.com:443"
+	pubsubLiteErrorDomain     = "pubsublite.googleapis.com"
+	resetSignal               = "RESET"
+)
+
+// Pub/Sub Lite's RESET signal is a status containing error details that
+// instructs streams to reset their state.
+func isStreamResetSignal(err error) bool {
+	status, ok := status.FromError(err)
+	if !ok {
+		return false
+	}
+	if !isRetryableRecvCode(status.Code()) {
+		return false
+	}
+	for _, details := range status.Details() {
+		if errInfo, ok := details.(*errdetails.ErrorInfo); ok && errInfo.Reason == resetSignal && errInfo.Domain == pubsubLiteErrorDomain {
+			return true
+		}
+	}
+	return false
+}
 
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
+		// Keep inactive connections alive.
+		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
+			Time: 5 * time.Minute,
+		})),
 	}
 }
 

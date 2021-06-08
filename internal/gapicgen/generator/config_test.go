@@ -32,6 +32,11 @@ var apivExceptions = map[string]bool{
 	"cloud.google.com/go/monitoring/apiv3/v2":   true,
 }
 
+var packagePathExceptions = map[string]bool{
+	"cloud.google.com/go/longrunning/autogen":   true,
+	"cloud.google.com/go/firestore/apiv1/admin": true,
+}
+
 // TestMicrogenConfigs validates config entries.
 // We expect entries here to have reasonable production settings, whereas
 // the low level tooling is more permissive in the face of ambiguity.
@@ -49,6 +54,9 @@ func TestMicrogenConfigs(t *testing.T) {
 		if !strings.HasPrefix(v, "apiv") && !apivExceptions[entry.importPath] {
 			t.Errorf("config %q (#%d) expected the last part of import path %q to start with \"apiv\"", entry.inputDirectoryPath, k, entry.importPath)
 		}
+		if want := entry.pkg + "/apiv"; !strings.Contains(entry.importPath, want) && !packagePathExceptions[entry.importPath] {
+			t.Errorf("config %q (#%d) want import path to contain %q", entry.importPath, k, want)
+		}
 		if entry.inputDirectoryPath == "" {
 			t.Errorf("config %q (#%d) expected non-empty inputDirectoryPath field", entry.importPath, k)
 		}
@@ -57,6 +65,9 @@ func TestMicrogenConfigs(t *testing.T) {
 		}
 		if entry.apiServiceConfigPath == "" {
 			t.Errorf("config %q (#%d) expected non-empty apiServiceConfigPath", entry.importPath, k)
+		}
+		if p := entry.apiServiceConfigPath; p != "" && strings.HasSuffix(p, "gapic.yaml") {
+			t.Errorf("config %q (#%d) should not use GAPIC yaml for apiServiceConfigPath", entry.importPath, k)
 		}
 		// Internally, an empty release level means "ga" to the underlying tool, but we
 		// want to be explicit in this configuration.

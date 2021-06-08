@@ -30,19 +30,19 @@ func ExampleNewServicesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleServicesClient_ListServices() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListServicesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleServicesClient_ListServices() {
 }
 
 func ExampleServicesClient_GetService() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetServiceRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleServicesClient_GetService() {
 }
 
 func ExampleServicesClient_UpdateService() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.UpdateServiceRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleServicesClient_UpdateService() {
 }
 
 func ExampleServicesClient_DeleteService() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewServicesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteServiceRequest{
 		// TODO: Fill request struct fields.
