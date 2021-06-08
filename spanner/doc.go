@@ -300,12 +300,10 @@ of the transaction:
         }
         balance -= 10
         m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
-        txn.BufferWrite([]*spanner.Mutation{m})
-
         // The buffered mutation will be committed.  If the commit
         // fails with an Aborted error, this function will be called
         // again.
-        return nil
+        return txn.BufferWrite([]*spanner.Mutation{m})
     })
 
 

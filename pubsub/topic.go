@@ -474,6 +474,14 @@ func (t *Topic) Stop() {
 	t.scheduler.FlushAndStop()
 }
 
+// Flush blocks until all remaining messages are sent.
+func (t *Topic) Flush() {
+	if t.stopped || t.scheduler == nil {
+		return
+	}
+	t.scheduler.Flush()
+}
+
 type bundledMessage struct {
 	msg *Message
 	res *PublishResult

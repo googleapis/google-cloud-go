@@ -1,0 +1,73 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.tpu.v1",
+  "libraryPackage": "cloud.google.com/go/tpu/apiv1",
+  "services": {
+    "Tpu": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateNode": {
+              "methods": [
+                "CreateNode"
+              ]
+            },
+            "DeleteNode": {
+              "methods": [
+                "DeleteNode"
+              ]
+            },
+            "GetAcceleratorType": {
+              "methods": [
+                "GetAcceleratorType"
+              ]
+            },
+            "GetNode": {
+              "methods": [
+                "GetNode"
+              ]
+            },
+            "GetTensorFlowVersion": {
+              "methods": [
+                "GetTensorFlowVersion"
+              ]
+            },
+            "ListAcceleratorTypes": {
+              "methods": [
+                "ListAcceleratorTypes"
+              ]
+            },
+            "ListNodes": {
+              "methods": [
+                "ListNodes"
+              ]
+            },
+            "ListTensorFlowVersions": {
+              "methods": [
+                "ListTensorFlowVersions"
+              ]
+            },
+            "ReimageNode": {
+              "methods": [
+                "ReimageNode"
+              ]
+            },
+            "StartNode": {
+              "methods": [
+                "StartNode"
+              ]
+            },
+            "StopNode": {
+              "methods": [
+                "StopNode"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

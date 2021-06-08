@@ -29,18 +29,19 @@ func ExampleNewDebugger2Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDebugger2Client_SetBreakpoint() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.SetBreakpointRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleDebugger2Client_SetBreakpoint() {
 }
 
 func ExampleDebugger2Client_GetBreakpoint() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.GetBreakpointRequest{
 		// TODO: Fill request struct fields.
@@ -79,6 +79,7 @@ func ExampleDebugger2Client_DeleteBreakpoint() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.DeleteBreakpointRequest{
 		// TODO: Fill request struct fields.
@@ -90,13 +91,12 @@ func ExampleDebugger2Client_DeleteBreakpoint() {
 }
 
 func ExampleDebugger2Client_ListBreakpoints() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.ListBreakpointsRequest{
 		// TODO: Fill request struct fields.
@@ -110,13 +110,12 @@ func ExampleDebugger2Client_ListBreakpoints() {
 }
 
 func ExampleDebugger2Client_ListDebuggees() {
-	// import clouddebuggerpb "google.golang.org/genproto/googleapis/devtools/clouddebugger/v2"
-
 	ctx := context.Background()
 	c, err := debugger.NewDebugger2Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &clouddebuggerpb.ListDebuggeesRequest{
 		// TODO: Fill request struct fields.

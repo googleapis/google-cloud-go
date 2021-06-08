@@ -63,6 +63,11 @@ var (
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
 	spannerHost = getSpannerHost()
 
+	// instanceConfig specifies the instance config used to create an instance for testing.
+	// It can be changed by setting the environment variable
+	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
+	instanceConfig = getInstanceConfig()
+
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
 	backupIDSpace     = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
@@ -204,6 +209,10 @@ func getSpannerHost() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
 }
 
+func getInstanceConfig() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
+}
+
 const (
 	str1 = "alice"
 	str2 = "a@example.com"
@@ -250,17 +259,23 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
-	// Get the list of supported instance configs for the project that is used
-	// for the integration tests. The supported instance configs can differ per
-	// project. The integration tests will use the first instance config that
-	// is returned by Cloud Spanner. This will normally be the regional config
-	// that is physically the closest to where the request is coming from.
-	configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
-		Parent: fmt.Sprintf("projects/%s", testProjectID),
-	})
-	config, err := configIterator.Next()
-	if err != nil {
-		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+	var configName string
+	if instanceConfig != "" {
+		configName = fmt.Sprintf("projects/%s/instanceConfigs/%s", testProjectID, instanceConfig)
+	} else {
+		// Get the list of supported instance configs for the project that is used
+		// for the integration tests. The supported instance configs can differ per
+		// project. The integration tests will use the first instance config that
+		// is returned by Cloud Spanner. This will normally be the regional config
+		// that is physically the closest to where the request is coming from.
+		configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
+			Parent: fmt.Sprintf("projects/%s", testProjectID),
+		})
+		config, err := configIterator.Next()
+		if err != nil {
+			log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+		}
+		configName = config.Name
 	}
 
 	// First clean up any old test instances before we start the actual testing
@@ -272,7 +287,7 @@ func initIntegrationTests() (cleanup func()) {
 		Parent:     fmt.Sprintf("projects/%s", testProjectID),
 		InstanceId: testInstanceID,
 		Instance: &instancepb.Instance{
-			Config:      config.Name,
+			Config:      configName,
 			DisplayName: testInstanceID,
 			NodeCount:   1,
 		},
@@ -1061,7 +1076,7 @@ func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
 		}
 	}
 
-	txOpts := TransactionOptions{CommitOptions{ReturnCommitStats: true}}
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
 	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
 		// Query Foo's balance and Bar's balance.
 		bf, e := readBalance(tx.Query(ctx,
@@ -1240,7 +1255,7 @@ func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T
 	}
 
 	var resp CommitResponse
-	txOpts := TransactionOptions{CommitOptions{ReturnCommitStats: true}}
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
 	for {
 		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, txOpts)
 		if err != nil {
@@ -1546,22 +1561,21 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	stmts := singerDBStatements
-	if !isEmulatorEnvSet() {
-		stmts = []string{
-			`CREATE TABLE Singers (
+	stmts = []string{
+		`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
 					FirstName	STRING(1024),
 					LastName	STRING(1024),
 					SingerInfo	BYTES(MAX)
 				) PRIMARY KEY (SingerId)`,
-			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-			`CREATE TABLE Accounts (
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
 					AccountId	INT64 NOT NULL,
 					Nickname	STRING(100),
 					Balance		INT64 NOT NULL,
 				) PRIMARY KEY (AccountId)`,
-			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-			`CREATE TABLE Types (
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
 					String		STRING(MAX),
 					StringArray	ARRAY<STRING(MAX)>,
@@ -1580,7 +1594,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Numeric		NUMERIC,
 					NumericArray	ARRAY<NUMERIC>
 				) PRIMARY KEY (RowID)`,
-		}
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -1688,31 +1701,20 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
-	}
-
-	if !isEmulatorEnvSet() {
-		for _, tc := range []struct {
-			col  string
-			val  interface{}
-			want interface{}
-		}{
-			{col: "Numeric", val: n1},
-			{col: "Numeric", val: n2},
-			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: NullNumeric{n0, false}},
-			{col: "Numeric", val: nil, want: NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
-			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
-			{col: "NumericArray", val: []NullNumeric(nil)},
-			{col: "NumericArray", val: []NullNumeric{}},
-			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		} {
-			tests = append(tests, tc)
-		}
+		{col: "Numeric", val: n1},
+		{col: "Numeric", val: n2},
+		{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: NullNumeric{n0, false}},
+		{col: "Numeric", val: nil, want: NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []NullNumeric(nil)},
+		{col: "NumericArray", val: []NullNumeric{}},
+		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
 	}
 
 	// Write rows into table first.

@@ -29,18 +29,19 @@ func ExampleNewWebRiskServiceV1Beta1Client() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.ComputeThreatListDiffRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleWebRiskServiceV1Beta1Client_ComputeThreatListDiff() {
 }
 
 func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchUrisRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleWebRiskServiceV1Beta1Client_SearchUris() {
 }
 
 func ExampleWebRiskServiceV1Beta1Client_SearchHashes() {
-	// import webriskpb "google.golang.org/genproto/googleapis/cloud/webrisk/v1beta1"
-
 	ctx := context.Background()
 	c, err := webrisk.NewWebRiskServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &webriskpb.SearchHashesRequest{
 		// TODO: Fill request struct fields.

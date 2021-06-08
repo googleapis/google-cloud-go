@@ -29,18 +29,19 @@ func ExampleNewPredictionClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePredictionClient_Predict() {
-	// import retailpb "google.golang.org/genproto/googleapis/cloud/retail/v2"
-
 	ctx := context.Background()
 	c, err := retail.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &retailpb.PredictRequest{
 		// TODO: Fill request struct fields.

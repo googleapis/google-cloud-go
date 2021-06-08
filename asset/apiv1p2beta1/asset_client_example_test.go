@@ -29,18 +29,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateFeed() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.CreateFeedRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleClient_CreateFeed() {
 }
 
 func ExampleClient_GetFeed() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.GetFeedRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleClient_GetFeed() {
 }
 
 func ExampleClient_ListFeeds() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.ListFeedsRequest{
 		// TODO: Fill request struct fields.
@@ -94,13 +93,12 @@ func ExampleClient_ListFeeds() {
 }
 
 func ExampleClient_UpdateFeed() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1p2beta1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.UpdateFeedRequest{
 		// TODO: Fill request struct fields.
@@ -119,6 +117,7 @@ func ExampleClient_DeleteFeed() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.DeleteFeedRequest{
 		// TODO: Fill request struct fields.

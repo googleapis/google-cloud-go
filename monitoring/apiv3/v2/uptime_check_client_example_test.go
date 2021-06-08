@@ -30,19 +30,19 @@ func ExampleNewUptimeCheckClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewUptimeCheckClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListUptimeCheckConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleUptimeCheckClient_ListUptimeCheckConfigs() {
 }
 
 func ExampleUptimeCheckClient_GetUptimeCheckConfig() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewUptimeCheckClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.GetUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleUptimeCheckClient_GetUptimeCheckConfig() {
 }
 
 func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewUptimeCheckClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.CreateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleUptimeCheckClient_CreateUptimeCheckConfig() {
 }
 
 func ExampleUptimeCheckClient_UpdateUptimeCheckConfig() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-
 	ctx := context.Background()
 	c, err := monitoring.NewUptimeCheckClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.UpdateUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.DeleteUptimeCheckConfigRequest{
 		// TODO: Fill request struct fields.
@@ -138,14 +136,12 @@ func ExampleUptimeCheckClient_DeleteUptimeCheckConfig() {
 }
 
 func ExampleUptimeCheckClient_ListUptimeCheckIps() {
-	// import monitoringpb "google.golang.org/genproto/googleapis/monitoring/v3"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := monitoring.NewUptimeCheckClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &monitoringpb.ListUptimeCheckIpsRequest{
 		// TODO: Fill request struct fields.

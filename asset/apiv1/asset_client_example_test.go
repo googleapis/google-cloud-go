@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ExportAssets() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.ExportAssetsRequest{
 		// TODO: Fill request struct fields.
@@ -59,14 +60,38 @@ func ExampleClient_ExportAssets() {
 	_ = resp
 }
 
-func ExampleClient_BatchGetAssetsHistory() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
+func ExampleClient_ListAssets() {
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &assetpb.ListAssetsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListAssets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleClient_BatchGetAssetsHistory() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &assetpb.BatchGetAssetsHistoryRequest{
 		// TODO: Fill request struct fields.
@@ -80,13 +105,12 @@ func ExampleClient_BatchGetAssetsHistory() {
 }
 
 func ExampleClient_CreateFeed() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.CreateFeedRequest{
 		// TODO: Fill request struct fields.
@@ -100,13 +124,12 @@ func ExampleClient_CreateFeed() {
 }
 
 func ExampleClient_GetFeed() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.GetFeedRequest{
 		// TODO: Fill request struct fields.
@@ -120,13 +143,12 @@ func ExampleClient_GetFeed() {
 }
 
 func ExampleClient_ListFeeds() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.ListFeedsRequest{
 		// TODO: Fill request struct fields.
@@ -140,13 +162,12 @@ func ExampleClient_ListFeeds() {
 }
 
 func ExampleClient_UpdateFeed() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.UpdateFeedRequest{
 		// TODO: Fill request struct fields.
@@ -165,6 +186,7 @@ func ExampleClient_DeleteFeed() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.DeleteFeedRequest{
 		// TODO: Fill request struct fields.
@@ -176,14 +198,12 @@ func ExampleClient_DeleteFeed() {
 }
 
 func ExampleClient_SearchAllResources() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.SearchAllResourcesRequest{
 		// TODO: Fill request struct fields.
@@ -203,14 +223,12 @@ func ExampleClient_SearchAllResources() {
 }
 
 func ExampleClient_SearchAllIamPolicies() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.SearchAllIamPoliciesRequest{
 		// TODO: Fill request struct fields.
@@ -230,13 +248,12 @@ func ExampleClient_SearchAllIamPolicies() {
 }
 
 func ExampleClient_AnalyzeIamPolicy() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.AnalyzeIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -250,13 +267,12 @@ func ExampleClient_AnalyzeIamPolicy() {
 }
 
 func ExampleClient_AnalyzeIamPolicyLongrunning() {
-	// import assetpb "google.golang.org/genproto/googleapis/cloud/asset/v1"
-
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &assetpb.AnalyzeIamPolicyLongrunningRequest{
 		// TODO: Fill request struct fields.
