@@ -82,6 +82,12 @@ type Client struct {
 	qo           QueryOptions
 }
 
+// DatabaseName returns the full name of a database, e.g.,
+// "projects/spanner-cloud-test/instances/foo/databases/foodb".
+func (c *Client) DatabaseName() string {
+	return c.sc.database
+}
+
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.

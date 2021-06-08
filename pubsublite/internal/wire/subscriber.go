@@ -17,6 +17,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -46,57 +47,74 @@ type ReceivedMessage struct {
 type MessageReceiverFunc func(*ReceivedMessage)
 
 // messageDeliveryQueue delivers received messages to the client-provided
-// MessageReceiverFunc sequentially.
+// MessageReceiverFunc sequentially. It is only accessed by the subscribeStream.
 type messageDeliveryQueue struct {
-	receiver  MessageReceiverFunc
-	messagesC chan *ReceivedMessage
-	stopC     chan struct{}
-	acks      *ackTracker
-	status    serviceStatus
+	bufferSize int
+	acks       *ackTracker
+	receiver   MessageReceiverFunc
+	messagesC  chan *ReceivedMessage
+	stopC      chan struct{}
+	active     sync.WaitGroup
 }
 
 func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
 	return &messageDeliveryQueue{
-		acks:      acks,
-		receiver:  receiver,
-		messagesC: make(chan *ReceivedMessage, bufferSize),
-		stopC:     make(chan struct{}),
+		bufferSize: bufferSize,
+		acks:       acks,
+		receiver:   receiver,
 	}
 }
 
+// Start the message delivery, if not already started.
 func (mq *messageDeliveryQueue) Start() {
-	if mq.status == serviceUninitialized {
-		go mq.deliverMessages()
-		mq.status = serviceActive
+	if mq.stopC != nil {
+		return
 	}
+
+	mq.stopC = make(chan struct{})
+	mq.messagesC = make(chan *ReceivedMessage, mq.bufferSize)
+	mq.active.Add(1)
+	go mq.deliverMessages(mq.messagesC, mq.stopC)
 }
 
+// Stop message delivery and discard undelivered messages.
 func (mq *messageDeliveryQueue) Stop() {
-	if mq.status < serviceTerminated {
-		close(mq.stopC)
-		mq.status = serviceTerminated
+	if mq.stopC == nil {
+		return
 	}
+
+	close(mq.stopC)
+	mq.stopC = nil
+	mq.messagesC = nil
+}
+
+// Wait until the message delivery goroutine has terminated.
+func (mq *messageDeliveryQueue) Wait() {
+	mq.active.Wait()
 }
 
 func (mq *messageDeliveryQueue) Add(msg *ReceivedMessage) {
-	if mq.status == serviceActive {
+	if mq.messagesC != nil {
 		mq.messagesC <- msg
 	}
 }
 
-func (mq *messageDeliveryQueue) deliverMessages() {
+func (mq *messageDeliveryQueue) deliverMessages(messagesC chan *ReceivedMessage, stopC chan struct{}) {
+	// Notify the wait group that the goroutine has terminated upon exit.
+	defer mq.active.Done()
+
 	for {
 		// stopC has higher priority.
 		select {
-		case <-mq.stopC:
+		case <-stopC:
 			return // Ends the goroutine.
 		default:
 		}
 
 		select {
-		case <-mq.stopC:
+		case <-stopC:
 			return // Ends the goroutine.
-		case msg := <-mq.messagesC:
+		case msg := <-messagesC:
 			// Register outstanding acks, which are primarily handled by the
 			// `committer`.
 			mq.acks.Push(msg.Ack.(*ackConsumer))
@@ -175,7 +193,7 @@ func (s *subscribeStream) Start() {
 		s.pollFlowControl.Start()
 		s.messageQueue.Start()
 
-		s.flowControl.OnClientFlow(flowControlTokens{
+		s.flowControl.Reset(flowControlTokens{
 			Bytes:    int64(s.settings.MaxOutstandingBytes),
 			Messages: int64(s.settings.MaxOutstandingMessages),
 		})

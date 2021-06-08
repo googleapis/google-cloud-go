@@ -60,6 +60,31 @@ func ExampleClient_ExportAssets() {
 	_ = resp
 }
 
+func ExampleClient_ListAssets() {
+	ctx := context.Background()
+	c, err := asset.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &assetpb.ListAssetsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListAssets(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
 func ExampleClient_BatchGetAssetsHistory() {
 	ctx := context.Background()
 	c, err := asset.NewClient(ctx)
