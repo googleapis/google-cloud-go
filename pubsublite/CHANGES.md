@@ -1,5 +1,21 @@
 # Changes
 
+## [0.9.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.8.0...pubsublite/v0.9.0) (2021-06-08)
+
+
+### Features
+
+* **pubsublite:** Add initial_cursor field to InitialSubscribeRequest ([6f9c8b0](https://www.github.com/googleapis/google-cloud-go/commit/6f9c8b0a5d6e4509f056a146cb586f310f3336a9))
+* **pubsublite:** Add Pub/Sub Lite Reservation APIs ([18375e5](https://www.github.com/googleapis/google-cloud-go/commit/18375e50e8f16e63506129b8927a7b62f85e407b))
+* **pubsublite:** ComputeTimeCursor RPC for Pub/Sub Lite ([d089dda](https://www.github.com/googleapis/google-cloud-go/commit/d089dda0089acb9aaef9b3da40b219476af9fc06))
+* **pubsublite:** detect stream reset signal ([#4144](https://www.github.com/googleapis/google-cloud-go/issues/4144)) ([ff5f8c9](https://www.github.com/googleapis/google-cloud-go/commit/ff5f8c989cba2751dcc77745483ef3828e6df78c))
+* **pubsublite:** flush and reset committer ([#4143](https://www.github.com/googleapis/google-cloud-go/issues/4143)) ([0ecd732](https://www.github.com/googleapis/google-cloud-go/commit/0ecd732e3f57928e7999ae4e78871be070c184d9))
+
+
+### Bug Fixes
+
+* **pubsublite:** prevent subscriber flow control token races ([#4060](https://www.github.com/googleapis/google-cloud-go/issues/4060)) ([dc0103b](https://www.github.com/googleapis/google-cloud-go/commit/dc0103baeaf168474b9e163f0aa5f7555170ffc4))
+
 ## [0.8.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.7.0...pubsublite/v0.8.0) (2021-03-25)
 
 
