@@ -590,6 +590,25 @@ func ExampleCloudChannelClient_UpdateChannelPartnerLink() {
 	_ = resp
 }
 
+func ExampleCloudChannelClient_LookupOffer() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &channelpb.LookupOfferRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.LookupOffer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleCloudChannelClient_ListProducts() {
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)

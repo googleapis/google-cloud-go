@@ -67,6 +67,7 @@ type CloudChannelCallOptions struct {
 	GetChannelPartnerLink           []gax.CallOption
 	CreateChannelPartnerLink        []gax.CallOption
 	UpdateChannelPartnerLink        []gax.CallOption
+	LookupOffer                     []gax.CallOption
 	ListProducts                    []gax.CallOption
 	ListSkus                        []gax.CallOption
 	ListOffers                      []gax.CallOption
@@ -256,6 +257,17 @@ func defaultCloudChannelCallOptions() *CloudChannelCallOptions {
 				})
 			}),
 		},
+		LookupOffer: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		ListProducts: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -388,6 +400,7 @@ type internalCloudChannelClient interface {
 	GetChannelPartnerLink(context.Context, *channelpb.GetChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
 	CreateChannelPartnerLink(context.Context, *channelpb.CreateChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
 	UpdateChannelPartnerLink(context.Context, *channelpb.UpdateChannelPartnerLinkRequest, ...gax.CallOption) (*channelpb.ChannelPartnerLink, error)
+	LookupOffer(context.Context, *channelpb.LookupOfferRequest, ...gax.CallOption) (*channelpb.Offer, error)
 	ListProducts(context.Context, *channelpb.ListProductsRequest, ...gax.CallOption) *ProductIterator
 	ListSkus(context.Context, *channelpb.ListSkusRequest, ...gax.CallOption) *SkuIterator
 	ListOffers(context.Context, *channelpb.ListOffersRequest, ...gax.CallOption) *OfferIterator
@@ -474,7 +487,7 @@ func (c *CloudChannelClient) ListCustomers(ctx context.Context, req *channelpb.L
 	return c.internalClient.ListCustomers(ctx, req, opts...)
 }
 
-// GetCustomer returns a requested Customer resource.
+// GetCustomer returns the requested Customer resource.
 //
 // Possible error codes:
 //
@@ -552,7 +565,7 @@ func (c *CloudChannelClient) UpdateCustomer(ctx context.Context, req *channelpb.
 	return c.internalClient.UpdateCustomer(ctx, req, opts...)
 }
 
-// DeleteCustomer deletes the given Customer permanently and irreversibly.
+// DeleteCustomer deletes the given Customer permanently.
 //
 // Possible error codes:
 //
@@ -670,7 +683,7 @@ func (c *CloudChannelClient) ListTransferableOffers(ctx context.Context, req *ch
 	return c.internalClient.ListTransferableOffers(ctx, req, opts...)
 }
 
-// GetEntitlement returns a requested Entitlement resource.
+// GetEntitlement returns the requested Entitlement resource.
 //
 // Possible error codes:
 //
@@ -1135,7 +1148,7 @@ func (c *CloudChannelClient) ListChannelPartnerLinks(ctx context.Context, req *c
 	return c.internalClient.ListChannelPartnerLinks(ctx, req, opts...)
 }
 
-// GetChannelPartnerLink returns a requested ChannelPartnerLink resource.
+// GetChannelPartnerLink returns the requested ChannelPartnerLink resource.
 // You must be a distributor to call this method.
 //
 // Possible error codes:
@@ -1215,6 +1228,22 @@ func (c *CloudChannelClient) CreateChannelPartnerLink(ctx context.Context, req *
 // The updated ChannelPartnerLink resource.
 func (c *CloudChannelClient) UpdateChannelPartnerLink(ctx context.Context, req *channelpb.UpdateChannelPartnerLinkRequest, opts ...gax.CallOption) (*channelpb.ChannelPartnerLink, error) {
 	return c.internalClient.UpdateChannelPartnerLink(ctx, req, opts...)
+}
+
+// LookupOffer returns the requested Offer resource.
+//
+// Possible error codes:
+//
+//   PERMISSION_DENIED: The entitlement doesn’t belong to the reseller.
+//
+//   INVALID_ARGUMENT: Required request parameters are missing or invalid.
+//
+//   NOT_FOUND: Entitlement or offer was not found.
+//
+// Return value:
+// The Offer resource.
+func (c *CloudChannelClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
+	return c.internalClient.LookupOffer(ctx, req, opts...)
 }
 
 // ListProducts lists the Products the reseller is authorized to sell.
@@ -2100,6 +2129,27 @@ func (c *cloudChannelGRPCClient) UpdateChannelPartnerLink(ctx context.Context, r
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = c.cloudChannelClient.UpdateChannelPartnerLink(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *cloudChannelGRPCClient) LookupOffer(ctx context.Context, req *channelpb.LookupOfferRequest, opts ...gax.CallOption) (*channelpb.Offer, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "entitlement", url.QueryEscape(req.GetEntitlement())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).LookupOffer[0:len((*c.CallOptions).LookupOffer):len((*c.CallOptions).LookupOffer)], opts...)
+	var resp *channelpb.Offer
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.cloudChannelClient.LookupOffer(ctx, req, settings.GRPC...)
 		return err
 	}, opts...)
 	if err != nil {
