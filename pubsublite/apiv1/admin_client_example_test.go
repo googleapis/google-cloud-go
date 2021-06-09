@@ -277,3 +277,127 @@ func ExampleAdminClient_DeleteSubscription() {
 		// TODO: Handle error.
 	}
 }
+
+func ExampleAdminClient_CreateReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.CreateReservationRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_GetReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.GetReservationRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_ListReservations() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ListReservationsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListReservations(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleAdminClient_UpdateReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.UpdateReservationRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.UpdateReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleAdminClient_DeleteReservation() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.DeleteReservationRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.DeleteReservation(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleAdminClient_ListReservationTopics() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.ListReservationTopicsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListReservationTopics(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}

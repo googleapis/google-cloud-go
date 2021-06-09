@@ -397,8 +397,8 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
@@ -413,6 +413,19 @@ func TestClient_Single_QueryOptions(t *testing.T) {
 			}
 			testQueryOptions(t, iter, server.TestSpanner, tt.want)
 		})
+	}
+}
+
+func TestClient_ReturnDatabaseName(t *testing.T) {
+	t.Parallel()
+
+	_, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	got := client.DatabaseName()
+	want := "projects/[PROJECT]/instances/[INSTANCE]/databases/[DATABASE]"
+	if got != want {
+		t.Fatalf("Incorrect database name returned, got: %s, want: %s", got, want)
 	}
 }
 
@@ -444,6 +457,9 @@ func checkReqsForQueryOptions(t *testing.T, server InMemSpannerServer, qo QueryO
 	reqQueryOptions := sqlReqs[0].QueryOptions
 	if got, want := reqQueryOptions.OptimizerVersion, qo.Options.OptimizerVersion; got != want {
 		t.Fatalf("Optimizer version mismatch, got %v, want %v", got, want)
+	}
+	if got, want := reqQueryOptions.OptimizerStatisticsPackage, qo.Options.OptimizerStatisticsPackage; got != want {
+		t.Fatalf("Optimizer statistics package mismatch, got %v, want %v", got, want)
 	}
 }
 
@@ -610,8 +626,8 @@ func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
@@ -629,6 +645,15 @@ func TestClient_ReadOnlyTransaction_QueryOptions(t *testing.T) {
 			}
 			testQueryOptions(t, iter, server.TestSpanner, tt.want)
 		})
+	}
+}
+
+func setQueryOptionsEnvVars(opts *sppb.ExecuteSqlRequest_QueryOptions) func() {
+	os.Setenv("SPANNER_OPTIMIZER_VERSION", opts.OptimizerVersion)
+	os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", opts.OptimizerStatisticsPackage)
+	return func() {
+		defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+		defer os.Setenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE", "")
 	}
 }
 
@@ -771,8 +796,8 @@ func TestClient_ReadWriteTransaction_Query_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
@@ -800,8 +825,8 @@ func TestClient_ReadWriteTransaction_Update_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()
@@ -2227,7 +2252,10 @@ func TestClient_EmulatorWithCredentialsFile(t *testing.T) {
 
 func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
 	ctx := context.Background()
-	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+	}}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
 	defer teardown()
 
@@ -2243,7 +2271,10 @@ func TestBatchReadOnlyTransaction_QueryOptions(t *testing.T) {
 }
 
 func TestBatchReadOnlyTransactionFromID_QueryOptions(t *testing.T) {
-	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+	}}
 	_, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{QueryOptions: qo})
 	defer teardown()
 
@@ -2263,48 +2294,49 @@ type QueryOptionsTestCase struct {
 }
 
 func queryOptionsTestCases() []QueryOptionsTestCase {
+	statsPkg := "auto_20191128_14_47_22UTC"
 	return []QueryOptionsTestCase{
 		{
 			"Client level",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: nil},
 			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
 			"Environment level",
 			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
 			"Query level",
 			QueryOptions{Options: nil},
 			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
 			"Environment level has precedence",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
 			"Query level has precedence than client level",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
 			QueryOptions{Options: nil},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
 		},
 		{
 			"Query level has highest precedence",
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2"}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
-			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3"}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1", OptimizerStatisticsPackage: statsPkg}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "2", OptimizerStatisticsPackage: statsPkg}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
+			QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "3", OptimizerStatisticsPackage: statsPkg}},
 		},
 	}
 }
