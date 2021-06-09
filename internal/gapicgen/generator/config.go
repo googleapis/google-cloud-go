@@ -1160,6 +1160,14 @@ var microgenGapicConfigs = []*microgenConfig{
 		// GA after 2021/07/03
 		releaseLevel: "beta",
 	},
+	{
+		inputDirectoryPath:    "google/cloud/gkeconnect/gateway/v1beta1",
+		pkg:                   "gateway",
+		importPath:            "cloud.google.com/go/gkeconnect/gateway/apiv1beta1",
+		gRPCServiceConfigPath: "google/cloud/gkeconnect/gateway/v1beta1/connectgw_grpc_service_config.json",
+		apiServiceConfigPath:  "google/cloud/gkeconnect/gateway/v1beta1/connectgateway_v1beta1.yaml",
+		releaseLevel:          "beta",
+	},
 
 	// Non-Cloud APIs
 	{
