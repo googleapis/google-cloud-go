@@ -343,6 +343,21 @@ func removeFromSlice(services []service, removeIdx int) []service {
 	return services[:lastIdx]
 }
 
+type apiClient interface {
+	Close() error
+}
+
+type apiClients []apiClient
+
+func (ac apiClients) Close() (retErr error) {
+	for _, c := range ac {
+		if err := c.Close(); retErr == nil {
+			retErr = err
+		}
+	}
+	return
+}
+
 // A compositeService that handles closing API clients on shutdown.
 type apiClientService struct {
 	clients apiClients
