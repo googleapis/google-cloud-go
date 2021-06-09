@@ -342,3 +342,24 @@ func removeFromSlice(services []service, removeIdx int) []service {
 	services[lastIdx] = nil
 	return services[:lastIdx]
 }
+
+// A compositeService that handles closing API clients on shutdown.
+type apiClientService struct {
+	clients apiClients
+
+	compositeService
+}
+
+func (acs *apiClientService) WaitStarted() error {
+	err := acs.compositeService.WaitStarted()
+	if err != nil {
+		acs.WaitStopped()
+	}
+	return err
+}
+
+func (acs *apiClientService) WaitStopped() error {
+	err := acs.compositeService.WaitStopped()
+	acs.clients.Close()
+	return err
+}
