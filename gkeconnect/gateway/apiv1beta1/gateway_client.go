@@ -25,6 +25,7 @@ import (
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httpbodypb "google.golang.org/genproto/googleapis/api/httpbody"
+	gatewaypb "google.golang.org/genproto/googleapis/cloud/gkeconnect/gateway/v1beta1"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
 )
