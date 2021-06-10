@@ -307,16 +307,11 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 }
 
 func (s *subscribeStream) onAck(ac *ackConsumer) {
-	// Don't block the user's goroutine with potentially expensive ack processing.
-	go s.onAckAsync(ac.MsgBytes)
-}
-
-func (s *subscribeStream) onAckAsync(msgBytes int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.status == serviceActive {
-		s.unsafeAllowFlow(flowControlTokens{Bytes: msgBytes, Messages: 1})
+		s.unsafeAllowFlow(flowControlTokens{Bytes: ac.MsgBytes, Messages: 1})
 	}
 }
 
@@ -407,15 +402,14 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // partitions.
 type multiPartitionSubscriber struct {
 	// Immutable after creation.
-	clients     apiClients
 	subscribers []*singlePartitionSubscriber
 
-	compositeService
+	apiClientService
 }
 
 func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
 	ms := &multiPartitionSubscriber{
-		clients: allClients,
+		apiClientService: apiClientService{clients: allClients},
 	}
 	ms.init()
 
@@ -438,18 +432,11 @@ func (ms *multiPartitionSubscriber) Terminate() {
 	}
 }
 
-func (ms *multiPartitionSubscriber) WaitStopped() error {
-	err := ms.compositeService.WaitStopped()
-	ms.clients.Close()
-	return err
-}
-
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
 // listen to its assigned partition numbers and dynamically add/remove
 // singlePartitionSubscribers.
 type assigningSubscriber struct {
 	// Immutable after creation.
-	clients    apiClients
 	subFactory *singlePartitionSubscriberFactory
 	assigner   *assigner
 
@@ -457,14 +444,14 @@ type assigningSubscriber struct {
 	// Subscribers keyed by partition number. Updated as assignments change.
 	subscribers map[int]*singlePartitionSubscriber
 
-	compositeService
+	apiClientService
 }
 
 func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
-		clients:     allClients,
-		subFactory:  subFactory,
-		subscribers: make(map[int]*singlePartitionSubscriber),
+		apiClientService: apiClientService{clients: allClients},
+		subFactory:       subFactory,
+		subscribers:      make(map[int]*singlePartitionSubscriber),
 	}
 	as.init()
 
@@ -537,12 +524,6 @@ func (as *assigningSubscriber) Terminate() {
 	}
 }
 
-func (as *assigningSubscriber) WaitStopped() error {
-	err := as.compositeService.WaitStopped()
-	as.clients.Close()
-	return err
-}
-
 // Subscriber is the client interface exported from this package for receiving
 // messages.
 type Subscriber interface {
@@ -561,15 +542,20 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	if err := validateReceiveSettings(settings); err != nil {
 		return nil, err
 	}
+
+	var allClients apiClients
 	subClient, err := newSubscriberClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
+	allClients = append(allClients, subClient)
+
 	cursorClient, err := newCursorClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
-	allClients := apiClients{subClient, cursorClient}
+	allClients = append(allClients, cursorClient)
 
 	subFactory := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -585,6 +571,7 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	}
 	partitionClient, err := newPartitionAssignmentClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
 	allClients = append(allClients, partitionClient)

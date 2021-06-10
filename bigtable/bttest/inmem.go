@@ -228,6 +228,15 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 				return nil, fmt.Errorf("can't delete unknown family %q", mod.Id)
 			}
 			delete(tbl.families, mod.Id)
+
+			// Purge all data for this column family
+			tbl.rows.Ascend(func(i btree.Item) bool {
+				r := i.(*row)
+				r.mu.Lock()
+				defer r.mu.Unlock()
+				delete(r.families, mod.Id)
+				return true
+			})
 		} else if modify := mod.GetUpdate(); modify != nil {
 			if _, ok := tbl.families[mod.Id]; !ok {
 				return nil, fmt.Errorf("no such family %q", mod.Id)
