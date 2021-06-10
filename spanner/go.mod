@@ -10,7 +10,7 @@ require (
 	go.opencensus.io v0.23.0
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.48.0
-	google.golang.org/genproto v0.0.0-20210608175058-d8f7434f6428
+	google.golang.org/genproto v0.0.0-20210610141715-e7a9b787a5a4
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.26.0
 )
