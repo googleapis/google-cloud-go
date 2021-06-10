@@ -353,8 +353,8 @@ func TestSubscribeStreamFlowControlBatching(t *testing.T) {
 	}
 	sub.Receiver.ValidateMsg(msg1)
 	sub.Receiver.ValidateMsg(msg2)
-	sub.sub.onAckAsync(msg1.SizeBytes)
-	sub.sub.onAckAsync(msg2.SizeBytes)
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg1.SizeBytes})
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg2.SizeBytes})
 	sub.sub.sendBatchFlowControl()
 	if gotErr := sub.FinalError(); !test.ErrorEqual(gotErr, serverErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, serverErr)
@@ -386,8 +386,8 @@ func TestSubscribeStreamExpediteFlowControl(t *testing.T) {
 	}
 	sub.Receiver.ValidateMsg(msg1)
 	sub.Receiver.ValidateMsg(msg2)
-	sub.sub.onAckAsync(msg1.SizeBytes)
-	sub.sub.onAckAsync(msg2.SizeBytes)
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg1.SizeBytes})
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg2.SizeBytes})
 	// Note: the ack for msg2 automatically triggers sending the flow control.
 	if gotErr := sub.FinalError(); !test.ErrorEqual(gotErr, serverErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, serverErr)
@@ -430,7 +430,7 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 	barrier.ReleaseAfter(func() {
 		// While the stream is not connected, the pending flow control request
 		// should not be released and sent to the stream.
-		sub.sub.onAckAsync(msg.SizeBytes)
+		sub.sub.onAck(&ackConsumer{MsgBytes: msg.SizeBytes})
 		if sub.PendingFlowControlRequest() == nil {
 			t.Errorf("Pending flow control request should not be cleared")
 		}
