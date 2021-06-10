@@ -17,6 +17,7 @@ package firestore
 import (
 	"context"
 	"errors"
+	"fmt"
 	"sort"
 
 	"google.golang.org/api/iterator"
@@ -46,9 +47,12 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 	}
 }
 
-// GetPartitions returns a slice of QueryPartition objects. The number must be
-// positive. The actual number of partitions returned may be fewer.
-func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount int64) ([]QueryPartition, error) {
+// GetPartitions returns a slice of QueryPartition objects, describing a start
+// and end range to query a subsection of the collection group. partitionCount
+// must be a positive value and the number of returned partitions may be less
+// than the requested number if providing the desired number would result in
+// partitions with very few documents.
+func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount int) ([]QueryPartition, error) {
 	if partitionCount <= 0 {
 		return nil, errors.New("a positive partitionCount must be provided")
 	} else if partitionCount == 1 {
@@ -58,7 +62,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	db := cgr.c.path()
 	ctx = withResourceHeader(ctx, db)
 
-	// CollectiongGroup Queries need to be ordered by __name__ ASC
+	// CollectionGroup Queries need to be ordered by __name__ ASC.
 	query, err := cgr.query().OrderBy(DocumentID, Asc).toProto()
 	if err != nil {
 		return nil, err
@@ -70,7 +74,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	// Uses default PageSize
 	pbr := &firestorepb.PartitionQueryRequest{
 		Parent:         db + "/documents",
-		PartitionCount: partitionCount,
+		PartitionCount: int64(partitionCount),
 		QueryType:      structuredQuery,
 	}
 	cursorReferences := make([]*firestorepb.Value, 0, partitionCount)
@@ -81,7 +85,8 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 			break
 		}
 		if err != nil {
-			return nil, err
+
+			return nil, fmt.Errorf("GetPartitions: %v", err)
 		}
 		cursorReferences = append(cursorReferences, cursor.Values...)
 	}
@@ -122,7 +127,6 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 }
 
 // byReferenceValue implements sort.Interface for []*firestorepb.Value
-
 type byReferenceValue []*firestorepb.Value
 
 func (a byReferenceValue) Len() int           { return len(a) }
@@ -130,8 +134,9 @@ func (a byReferenceValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
 func (a byReferenceValue) Less(i, j int) bool { return compareValues(a[i], a[j]) < 0 }
 
 // QueryPartition provides a Collection Group Reference and start and end split
-// points. This is used by GetPartition which, given a CollectionGroupReference
-// returns smaller sub-queries or partitions
+// points allowing for a section of a collection group to be queried. This is
+// used by GetPartition which, given a CollectionGroupReference returns smaller
+// sub-queries or partitions
 type QueryPartition struct {
 	CollectionGroupQuery Query
 	StartAt              string
