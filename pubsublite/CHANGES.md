@@ -1,5 +1,12 @@
 # Changes
 
+### [0.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.0...pubsublite/v0.9.1) (2021-06-10)
+
+
+### Bug Fixes
+
+* **pubsublite:** ensure api clients are closed when startup fails ([#4239](https://www.github.com/googleapis/google-cloud-go/issues/4239)) ([55025a1](https://www.github.com/googleapis/google-cloud-go/commit/55025a1c6abe0ef4e57dd31347265aab3b78bdf8))
+
 ## [0.9.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.8.0...pubsublite/v0.9.0) (2021-06-08)
 
 
