@@ -1,0 +1,40 @@
+
+#
+# Example format file
+#
+
+default_encoding: HEX
+
+protocol_buffer:
+  definitions:
+    - MyProto.proto
+    - MyOtherProto.proto
+  imports:
+    - mycode/stuff
+    - /home/user/dev/othercode/
+
+families:
+  family1:
+    default_encoding: BigEndian:INT64
+    columns:
+      address:
+        encoding: PROTO
+        type: tutorial.Person
+
+  family2:
+    columns:
+      col1:
+        encoding: B
+        type: INT32
+      col2:
+        encoding: L
+        type: INT16
+      address:
+        encoding: PROTO
+        type: tutorial.Person
+
+  family3:
+    columns:
+      proto_col:
+        encoding: PROTO
+        type: MyProtoMessageType

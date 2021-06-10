@@ -1,53 +1,11 @@
 package main
 
 import (
+	"path/filepath"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 )
-
-var sample = `
-
-#
-# Example format file
-#
-
-default_encoding: HEX
-
-protocol_buffer:
-  definitions:
-    - MyProto.proto
-    - MyOtherProto.proto
-  imports:
-    - mycode/stuff
-    - /home/user/dev/othercode/
-
-families:
-  family1:
-    default_encoding: BigEndian:INT64
-    columns:
-      address:
-        encoding: PROTO
-        type: tutorial.Person
-
-  family2:
-    columns:
-      col1:
-        encoding: B
-        type: INT32
-      col2:
-        encoding: L
-        type: INT16
-      address:
-        encoding: PROTO
-        type: tutorial.Person
-
-  family3:
-    columns:
-      proto_col: 
-        encoding: PROTO
-        type: MyProtoMessageType
-`
 
 func assertEqual(t *testing.T, label string, got, want interface{}) {
 	if ! testutil.Equal(got, want) {
@@ -55,7 +13,7 @@ func assertEqual(t *testing.T, label string, got, want interface{}) {
 	}
 }
 
-func TestParseRowFormatText(t *testing.T) {
+func TestParseRowFormatFile(t *testing.T) {
 	want := RowFormat{
 		DefaultEncoding: "HEX",
 		ProtocolBuffer: RowFormatProtocolBufferDefinition{
@@ -102,7 +60,7 @@ func TestParseRowFormatText(t *testing.T) {
 		},
 	}
 	
-	formats, err := parseRowFormatText(sample)
+	formats, err := parseRowFormatFile(filepath.Join("testdata", t.Name() + ".yml"))
 	if err != nil {
 		t.Errorf("Parse error: %s", err)
 	}

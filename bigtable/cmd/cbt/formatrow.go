@@ -2,6 +2,7 @@ package main
 
 import (
 	//"flag"
+	"io/ioutil"
 
 	"gopkg.in/yaml.v2"
 )
@@ -73,8 +74,12 @@ type RowFormat struct {
 	Families map[string]RowFormatFamily
 }
 
-func parseRowFormatText(format_data string) (RowFormat, error) {
+func parseRowFormatFile(formatFile string) (RowFormat, error) {
 	format := RowFormat{}
-	err := yaml.UnmarshalStrict([]byte(format_data), &format)
+	formatData, err := ioutil.ReadFile(formatFile)
+	if err == nil {
+		err = yaml.UnmarshalStrict([]byte(formatData), &format)
+	}
 	return format, err
 }
+
