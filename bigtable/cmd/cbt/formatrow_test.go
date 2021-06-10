@@ -2,6 +2,7 @@ package main
 
 import (
 	"testing"
+
 	"cloud.google.com/go/internal/testutil"
 )
 
@@ -11,43 +12,100 @@ var sample = `
 # Example format file
 #
 
-# Everything in "family1" is binary
-family1:=BINARY
+default_encoding: HEX
 
-# Two columns in family2 are binary
-family2:col1,col2=BINARY
+protocol_buffer:
+  definitions:
+    - MyProto.proto
+    - MyOtherProto.proto
+  imports:
+    - mycode/stuff
+    - /home/user/dev/othercode/
 
-# Protocol buffer config
+families:
+  family1:
+    default_encoding: BigEndian:INT64
+    columns:
+      address:
+        encoding: PROTO
+        type: tutorial.Person
 
-# The paths used to search for dependencies that are referenced in import
-# statements in proto source files. If no import paths are provided then
-# "." (current directory) is assumed to be the only import path.
-proto_import_paths=mycode/stuff,/home/user/dev/othercode/
+  family2:
+    columns:
+      col1:
+        encoding: B
+        type: INT32
+      col2:
+        encoding: L
+        type: INT16
+      address:
+        encoding: PROTO
+        type: tutorial.Person
 
-# The proto files to compile. Any referenced message types should be found here.
-proto_source_files=MyProto.proto, MyOtherProto.proto
+  family3:
+    columns:
+      proto_col: 
+        encoding: PROTO
+        type: MyProtoMessageType
+`
 
-# Format one column as a specified message
-family3:proto_col=MyProtoMessageType
+func assertEqual(t *testing.T, label string, got, want interface{}) {
+	if ! testutil.Equal(got, want) {
+		t.Errorf("%s didn't match %s", label, got)
+	}
+}
 
-` 
-
-func TestParseFormats(t *testing.T) {
+func TestParseRowFormatText(t *testing.T) {
+	want := RowFormat{
+		DefaultEncoding: "HEX",
+		ProtocolBuffer: RowFormatProtocolBufferDefinition{
+			Definitions: []string{"MyProto.proto", "MyOtherProto.proto"},
+			Imports: []string{"mycode/stuff", "/home/user/dev/othercode/"},
+		},
+		Families: map[string]RowFormatFamily{
+			"family1": RowFormatFamily{
+				DefaultEncoding: "BigEndian:INT64",
+				Columns: map[string]RowFormatColumn{
+					"address": RowFormatColumn{
+						Encoding: "PROTO",
+						Type: "tutorial.Person",
+					},
+				},
+			},
+			
+			
+			"family2": RowFormatFamily{
+				Columns: map[string]RowFormatColumn{
+					"col1": RowFormatColumn{
+						Encoding: "B",
+						Type: "INT32",
+					},
+					"col2": RowFormatColumn{
+						Encoding: "L",
+						Type: "INT16",
+					},
+					"address": RowFormatColumn{
+						Encoding: "PROTO",
+						Type: "tutorial.Person",
+					},
+				},
+			},
+			"family3": RowFormatFamily{
+				Columns: map[string]RowFormatColumn{
+					"proto_col": RowFormatColumn{ 
+						Encoding: "PROTO",
+						Type: "MyProtoMessageType",
+					},
+				},
+			},
+			
+		},
+	}
 	
-	want := map[string]string{
-		"family1:": "BINARY",
-		"family2:col1,col2": "BINARY",
-		"proto_import_paths": "mycode/stuff,/home/user/dev/othercode/",
-		"proto_source_files": "MyProto.proto, MyOtherProto.proto",
-		"family3:proto_col": "MyProtoMessageType",
-		}
-
-	formats, err := ParseFormats(sample)
+	formats, err := parseRowFormatText(sample)
 	if err != nil {
-		t.Errorf("ParseFormats failed")
+		t.Errorf("Parse error: %s", err)
 	}
 
-	if ! testutil.Equal(formats, want) {
-		t.Errorf("Didn't match %s", formats)
-	}
+	assertEqual(t, "format", formats, want)
 }
