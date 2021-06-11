@@ -103,11 +103,10 @@ type PublishSettings struct {
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
 	BufferedByteLimit int
 
-	// MaxOutstandingMessages is the maximum number of unsent messages
+	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
 	MaxOutstandingMessages int
 
-	// MaxOutstandingBytes is the maximum size of messages waiting
-	// to be published.
+	// MaxOutstandingBytes is the maximum size of buffered messages to be published.
 	MaxOutstandingBytes int
 
 	// LimitExceededBehavior configures the behavior when trying to publish

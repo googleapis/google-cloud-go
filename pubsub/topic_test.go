@@ -307,3 +307,95 @@ func TestDetachSubscription(t *testing.T) {
 		t.Errorf("DetachSubscription failed: %v", err)
 	}
 }
+
+func TestPublishFlowControl_SignalError(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic, err := c.CreateTopic(ctx, "some-topic")
+	if err != nil {
+		t.Fatal(err)
+	}
+	topic.PublishSettings.MaxOutstandingMessages = 1
+	topic.PublishSettings.MaxOutstandingBytes = 10
+	topic.PublishSettings.LimitExceededBehavior = FlowControlSignalError
+
+	// Sending a message that is too large results in an error in SignalError mode.
+	r := publishSingleMessage(ctx, topic, "AAAAAAAAAAA")
+	if _, err := r.Get(ctx); err != ErrFlowControllerMaxOutstandingBytes {
+		t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingBytes)
+	}
+
+	// Sending a second message succeeds.
+	r = publishSingleMessage(ctx, topic, "AAAA")
+	if _, err := r.Get(ctx); err != nil {
+		t.Fatalf("publishResult.Get(): got %v, want nil", err)
+	}
+
+	// Sending a third message fails because of the outstanding message.
+	r = publishSingleMessage(ctx, topic, "AA")
+	if _, err := r.Get(ctx); err != ErrFlowControllerMaxOutstandingMessages {
+		t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingMessages)
+	}
+
+	// Publish 11 messages, nothing should fail.
+	var res []*PublishResult
+	for i := 0; i < 11; i++ {
+		r := topic.Publish(ctx, &Message{
+			Data: []byte("test"),
+		})
+		res = append(res, r)
+	}
+	for _, r := range res {
+		if _, err := r.Get(ctx); err != nil {
+			t.Fatalf("got err: %v", err)
+		}
+	}
+
+	topic.scheduler = nil
+	topic.PublishSettings.LimitExceededBehavior = FlowControlBlock
+	// Publish 11 messages, nothing should fail.
+	res = []*PublishResult{}
+	for i := 0; i < 11; i++ {
+		r := topic.Publish(ctx, &Message{
+			Data: []byte("test"),
+		})
+		res = append(res, r)
+	}
+	for _, r := range res {
+		if _, err := r.Get(ctx); err != nil {
+			t.Fatalf("got err: %v", err)
+		}
+	}
+
+	topic.scheduler = nil
+	topic.PublishSettings.LimitExceededBehavior = FlowControlSignalError
+	// Publish 11 messages, should signal error on the 11th message.
+	res = []*PublishResult{}
+	for i := 0; i < 11; i++ {
+		r := topic.Publish(ctx, &Message{
+			Data: []byte("test"),
+		})
+		res = append(res, r)
+	}
+	for i, r := range res {
+		if i == 10 {
+			if _, err := r.Get(ctx); err != ErrFlowControllerMaxOutstandingMessages {
+				t.Fatalf("publishResult.Get(): got %v, want %v", err, ErrFlowControllerMaxOutstandingMessages)
+			}
+		} else {
+			if _, err := r.Get(ctx); err != nil {
+				t.Fatalf("got err: %v", err)
+			}
+		}
+	}
+}
+
+// publishSingleMessage published a single message to a topic.
+func publishSingleMessage(ctx context.Context, t *Topic, data string) *PublishResult {
+	return t.Publish(ctx, &Message{
+		Data: []byte(data),
+	})
+}

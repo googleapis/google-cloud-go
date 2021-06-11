@@ -17,7 +17,6 @@ package pubsub
 import (
 	"context"
 	"errors"
-	"fmt"
 	"sync/atomic"
 
 	"golang.org/x/sync/semaphore"
@@ -28,12 +27,17 @@ import (
 type LimitExceededBehavior int
 
 const (
-	// Ignore disables flow control.
-	Ignore LimitExceededBehavior = iota
-	// Block signals to wait until the request can be made without exceeding the limit.
-	Block
-	// SignalError signals an error to the caller of acquire.
-	SignalError
+	// FlowControlIgnore disables flow control.
+	FlowControlIgnore LimitExceededBehavior = iota
+	// FlowControlBlock signals to wait until the request can be made without exceeding the limit.
+	FlowControlBlock
+	// FlowControlSignalError signals an error to the caller of acquire.
+	FlowControlSignalError
+)
+
+var (
+	ErrFlowControllerMaxOutstandingMessages = errors.New("pubsub: MaxOutstandingMessages flow controller limit exceeded")
+	ErrFlowControllerMaxOutstandingBytes    = errors.New("pubsub: MaxOutstandingBytes flow control limit exceeded")
 )
 
 // flowController implements flow control for Subscription.Receive.
@@ -76,7 +80,7 @@ func newFlowController(maxCount, maxSize int, behavior LimitExceededBehavior) *f
 // acquire allows large messages to proceed by treating a size greater than maxSize
 // as if it were equal to maxSize.
 func (f *flowController) acquire(ctx context.Context, size int) error {
-	if f.limitBehavior == Ignore {
+	if f.limitBehavior == FlowControlIgnore {
 		return nil
 	}
 	if f.semCount != nil {
@@ -101,30 +105,34 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 //
 // tryAcquire allows large messages to proceed by treating a size greater than
 // maxSize as if it were equal to maxSize.
-func (f *flowController) tryAcquire(size int) bool {
-	if f.semCount != nil {
-		if !f.semCount.TryAcquire(1) {
-			return false
-		}
-	}
-	if f.semSize != nil {
-		if !f.semSize.TryAcquire(f.bound(size)) {
-			if f.semCount != nil {
-				f.semCount.Release(1)
-			}
-			return false
-		}
-	}
-	atomic.AddInt64(&f.countRemaining, 1)
-	return true
-}
+// func (f *flowController) tryAcquire(size int) bool {
+// 	if f.semCount != nil {
+// 		if !f.semCount.TryAcquire(1) {
+// 			return false
+// 		}
+// 	}
+// 	if f.semSize != nil {
+// 		if !f.semSize.TryAcquire(f.bound(size)) {
+// 			if f.semCount != nil {
+// 				f.semCount.Release(1)
+// 			}
+// 			return false
+// 		}
+// 	}
+// 	atomic.AddInt64(&f.countRemaining, 1)
+// 	return true
+// }
 
+// newAcquire acquires space for a message: the message count and its size.
+//
+// In FlowControlSignalError mode, large messages greater than maxSize
+// will be result in an error. In other modes, large messages will be treated
+// as if it were equal to maxSize.
 func (f *flowController) newAcquire(ctx context.Context, size int) error {
 	switch f.limitBehavior {
-	case Ignore:
+	case FlowControlIgnore:
 		return nil
-	case Block:
-		return fmt.Errorf("blah")
+	case FlowControlBlock:
 		if f.semCount != nil {
 			if err := f.semCount.Acquire(ctx, 1); err != nil {
 				return err
@@ -139,18 +147,19 @@ func (f *flowController) newAcquire(ctx context.Context, size int) error {
 			}
 		}
 		atomic.AddInt64(&f.countRemaining, 1)
-	case SignalError:
+	case FlowControlSignalError:
 		if f.semCount != nil {
 			if !f.semCount.TryAcquire(1) {
-				return errors.New("pubsub: MaxOutstandingMessages flow controller limit exceeded")
+				return ErrFlowControllerMaxOutstandingMessages
 			}
 		}
 		if f.semSize != nil {
-			if !f.semSize.TryAcquire(f.bound(size)) {
+			// Try to acquire the full size of the message here.
+			if !f.semSize.TryAcquire(int64(size)) {
 				if f.semCount != nil {
 					f.semCount.Release(1)
 				}
-				return errors.New("pubsub: MaxOutstandingBytes flow controller limit exceeded")
+				return ErrFlowControllerMaxOutstandingBytes
 			}
 		}
 		atomic.AddInt64(&f.countRemaining, 1)
@@ -160,7 +169,7 @@ func (f *flowController) newAcquire(ctx context.Context, size int) error {
 
 // release notes that one message of size bytes is no longer outstanding.
 func (f *flowController) release(size int) {
-	if f.limitBehavior == Ignore {
+	if f.limitBehavior == FlowControlIgnore {
 		return
 	}
 	atomic.AddInt64(&f.countRemaining, -1)
