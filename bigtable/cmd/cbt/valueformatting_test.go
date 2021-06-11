@@ -216,3 +216,25 @@ func TestBinaryValueFormaterFLOAT64(t *testing.T) {
 	checkBinaryValueFormater(
 		t, "float64", 16, "[1.40159977307889e-309 NaN]", binary.BigEndian)
 }
+
+func TestValueFormattingBinaryFormatter(t *testing.T) {
+	formatting := ValueFormatting{}
+	var formatter = formatting.binaryFormatter("BigEndian", "Int32", "B")
+	s, err := formatter(TestBinaryFormaterTestData)
+	assertNoError(t, err)
+	assertEqual(t, "int32", s, "[66051 67438087 -1 -100]")
+	formatter = formatting.binaryFormatter("LittleEndian", "Int32", "l")
+	s, err = formatter(TestBinaryFormaterTestData)
+	assertNoError(t, err)
+	assertEqual(t, "int32", s, "[50462976 117835012 -1 -1660944385]")
+
+	formatter = formatting.binaryFormatter("BigEndian", "", "B")
+	_, err = formatter(TestBinaryFormaterTestData)
+	assertEqual(t, "no type error", fmt.Sprint(err),
+		"A data type must be provided for the B encoding")
+
+	formatter = formatting.binaryFormatter("BigEndian", "xxx", "B")
+	_, err = formatter(TestBinaryFormaterTestData)
+	assertEqual(t, "bad type error", fmt.Sprint(err),
+		"Invalid binary type: xxx")
+}

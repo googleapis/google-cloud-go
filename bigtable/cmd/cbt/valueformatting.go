@@ -35,6 +35,14 @@ type ValueFormatSettings struct {
 	Families map[string]ValueFormatFamily
 }
 
+type ValueFormatting struct {
+	settings ValueFormatSettings
+	flags struct {
+		formatFile string
+	}
+	pbMessageTypes map[string]*desc.MessageDescriptor
+}
+
 func binaryFormatterHelper(
 	in []byte,
 	byteOrder binary.ByteOrder,
@@ -106,15 +114,43 @@ var binaryValueFormatters = map[string]binaryValueFormatter{
 	},
 }
 
-
-
-type ValueFormatting struct {
-	settings ValueFormatSettings
-	flags struct {
-		formatFile string
+func (self *ValueFormatting) badFormatter(err error) valueFormatter {
+	return func (in []byte) (string, error) {
+		return "", err
 	}
-	pbMessageTypes map[string]*desc.MessageDescriptor
 }
+
+func (self *ValueFormatting) badFormatterf(format string, args ...interface{}) valueFormatter {
+	return self.badFormatter(fmt.Errorf(format, args...))
+}
+
+func (self *ValueFormatting) binaryFormatter(
+      valid_encoding string,
+      type_ string,
+      encoding string,
+) valueFormatter {
+	type_formatter, valid := binaryValueFormatters[strings.ToLower(type_)]
+	if ! valid {
+		if type_ == "" {
+			return self.badFormatterf(
+				"A data type must be provided for the %s encoding",
+				encoding)
+		} else {
+			return self.badFormatterf("Invalid binary type: %s", type_)
+		}
+	}
+	var byteOrder binary.ByteOrder
+	if valid_encoding == "BigEndian" {
+		byteOrder = binary.BigEndian
+	} else {
+		byteOrder = binary.LittleEndian
+	} 
+
+	return func (in []byte) (string, error) {
+		return type_formatter(in, byteOrder)
+	}
+}
+
 
 func (self *ValueFormatting) parse(path string) error {
 	data, err := ioutil.ReadFile(path)
