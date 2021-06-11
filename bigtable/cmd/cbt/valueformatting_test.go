@@ -13,18 +13,18 @@ func assertEqual(t *testing.T, label string, got, want interface{}) {
 	}
 }
 
-func TestParseRowFormatFile(t *testing.T) {
-	want := RowFormat{
+func TestParseValueFormatSettings(t *testing.T) {
+	want := ValueFormatSettings{
 		DefaultEncoding: "HEX",
-		ProtocolBuffer: RowFormatProtocolBufferDefinition{
+		ProtocolBuffer: ValueFormatProtocolBufferDefinition{
 			Definitions: []string{"MyProto.proto", "MyOtherProto.proto"},
 			Imports: []string{"mycode/stuff", "/home/user/dev/othercode/"},
 		},
-		Families: map[string]RowFormatFamily{
-			"family1": RowFormatFamily{
+		Families: map[string]ValueFormatFamily{
+			"family1": ValueFormatFamily{
 				DefaultEncoding: "BigEndian:INT64",
-				Columns: map[string]RowFormatColumn{
-					"address": RowFormatColumn{
+				Columns: map[string]ValueFormatColumn{
+					"address": ValueFormatColumn{
 						Encoding: "PROTO",
 						Type: "tutorial.Person",
 					},
@@ -32,25 +32,25 @@ func TestParseRowFormatFile(t *testing.T) {
 			},
 			
 			
-			"family2": RowFormatFamily{
-				Columns: map[string]RowFormatColumn{
-					"col1": RowFormatColumn{
+			"family2": ValueFormatFamily{
+				Columns: map[string]ValueFormatColumn{
+					"col1": ValueFormatColumn{
 						Encoding: "B",
 						Type: "INT32",
 					},
-					"col2": RowFormatColumn{
+					"col2": ValueFormatColumn{
 						Encoding: "L",
 						Type: "INT16",
 					},
-					"address": RowFormatColumn{
+					"address": ValueFormatColumn{
 						Encoding: "PROTO",
 						Type: "tutorial.Person",
 					},
 				},
 			},
-			"family3": RowFormatFamily{
-				Columns: map[string]RowFormatColumn{
-					"proto_col": RowFormatColumn{ 
+			"family3": ValueFormatFamily{
+				Columns: map[string]ValueFormatColumn{
+					"proto_col": ValueFormatColumn{ 
 						Encoding: "PROTO",
 						Type: "MyProtoMessageType",
 					},
@@ -59,11 +59,13 @@ func TestParseRowFormatFile(t *testing.T) {
 			
 		},
 	}
+
+	formatting := ValueFormatting{}
 	
-	formats, err := parseRowFormatFile(filepath.Join("testdata", t.Name() + ".yml"))
+	err := formatting.parse(filepath.Join("testdata", t.Name() + ".yml"))
 	if err != nil {
 		t.Errorf("Parse error: %s", err)
 	}
 
-	assertEqual(t, "format", formats, want)
+	assertEqual(t, "format", formatting.settings, want)
 }

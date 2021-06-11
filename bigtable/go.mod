@@ -8,6 +8,7 @@ require (
 	github.com/google/btree v1.0.1
 	github.com/google/go-cmp v0.5.6
 	github.com/googleapis/gax-go/v2 v2.0.5
+	github.com/jhump/protoreflect v1.8.2
 	golang.org/x/oauth2 v0.0.0-20210514164344-f6687ab2804c
 	golang.org/x/sys v0.0.0-20210603125802-9665404d3644
 	google.golang.org/api v0.47.0
