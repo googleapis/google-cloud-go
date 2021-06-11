@@ -34,12 +34,12 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
+	"github.com/golang/protobuf/ptypes"
+	durpb "github.com/golang/protobuf/ptypes/duration"
+	emptypb "github.com/golang/protobuf/ptypes/empty"
 	pb "google.golang.org/genproto/googleapis/pubsub/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	durpb "google.golang.org/protobuf/types/known/durationpb"
-	"google.golang.org/protobuf/types/known/emptypb"
-	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 // ReactorOptions is a map that Server uses to look up reactors.
@@ -58,6 +58,11 @@ type Reactor interface {
 type ServerReactorOption struct {
 	FuncName string
 	Reactor  Reactor
+}
+
+type publishResponse struct {
+	resp *pb.PublishResponse
+	err  error
 }
 
 // For testing. Note that even though changes to the now variable are atomic, a call
@@ -88,16 +93,24 @@ type GServer struct {
 	pb.PublisherServer
 	pb.SubscriberServer
 
-	mu             sync.Mutex
-	topics         map[string]*topic
-	subs           map[string]*subscription
-	msgs           []*Message // all messages ever published
-	msgsByID       map[string]*Message
-	wg             sync.WaitGroup
-	nextID         int
-	streamTimeout  time.Duration
-	timeNowFunc    func() time.Time
+	mu            sync.Mutex
+	topics        map[string]*topic
+	subs          map[string]*subscription
+	msgs          []*Message // all messages ever published
+	msgsByID      map[string]*Message
+	wg            sync.WaitGroup
+	nextID        int
+	streamTimeout time.Duration
+	timeNowFunc   func() time.Time
+
+	// reactorOptions allow configuring the reaction function for calls.
 	reactorOptions ReactorOptions
+	// PublishResponses is a channel of responses to use for Publish.
+	publishResponses chan *publishResponse
+	// autoPublishResponse enables the server to automatically generate
+	// PublishResponse when publish is called. Otherwise, responses
+	// are generated from the publishResponses channel.
+	autoPublishResponse bool
 }
 
 // NewServer creates a new fake server running in the current process.
@@ -114,11 +127,13 @@ func NewServer(opts ...ServerReactorOption) *Server {
 		srv:  srv,
 		Addr: srv.Addr,
 		GServer: GServer{
-			topics:         map[string]*topic{},
-			subs:           map[string]*subscription{},
-			msgsByID:       map[string]*Message{},
-			timeNowFunc:    timeNow,
-			reactorOptions: reactorOptions,
+			topics:              map[string]*topic{},
+			subs:                map[string]*subscription{},
+			msgsByID:            map[string]*Message{},
+			timeNowFunc:         timeNow,
+			reactorOptions:      reactorOptions,
+			publishResponses:    make(chan *publishResponse, 100),
+			autoPublishResponse: true,
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
@@ -166,6 +181,37 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 		panic(fmt.Sprintf("pstest.Server.Publish: %v", err))
 	}
 	return res.MessageIds[0]
+}
+
+// AddPublishResponse adds a new publish response to the channel used for
+// responding to publish requests.
+func (s *Server) AddPublishResponse(pbr *pb.PublishResponse, err error) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	pr := &publishResponse{}
+	if err != nil {
+		pr.err = err
+	} else {
+		pr.resp = pbr
+	}
+	s.GServer.publishResponses <- pr
+}
+
+// SetAutoPublishResponse controls whether to automatically respond
+// to messages published or to use user-added responses from the
+// publishResponses channel.
+func (s *Server) SetAutoPublishResponse(autoPublishResponse bool) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	s.GServer.autoPublishResponse = autoPublishResponse
+}
+
+// ResetPublishResponses resets the buffered publishResponses channel
+// with a new buffered channel with the given size.
+func (s *Server) ResetPublishResponses(size int) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	s.GServer.publishResponses = make(chan *publishResponse, size)
 }
 
 // SetStreamTimeout sets the amount of time a stream will be active before it shuts
@@ -455,11 +501,11 @@ const (
 	maxMessageRetentionDuration = 168 * time.Hour
 )
 
-var defaultMessageRetentionDuration = durpb.New(maxMessageRetentionDuration)
+var defaultMessageRetentionDuration = ptypes.DurationProto(maxMessageRetentionDuration)
 
 func checkMRD(pmrd *durpb.Duration) error {
-	mrd := pmrd.AsDuration()
-	if mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
+	mrd, err := ptypes.Duration(pmrd)
+	if err != nil || mrd < minMessageRetentionDuration || mrd > maxMessageRetentionDuration {
 		return status.Errorf(codes.InvalidArgument, "bad message_retention_duration %+v", pmrd)
 	}
 	return nil
@@ -613,13 +659,25 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 	if top == nil {
 		return nil, status.Errorf(codes.NotFound, "topic %q", req.Topic)
 	}
+
+	if !s.autoPublishResponse {
+		r := <-s.publishResponses
+		if r.err != nil {
+			return nil, r.err
+		}
+		return r.resp, nil
+	}
+
 	var ids []string
 	for _, pm := range req.Messages {
 		id := fmt.Sprintf("m%d", s.nextID)
 		s.nextID++
 		pm.MessageId = id
 		pubTime := s.timeNowFunc()
-		tsPubTime := timestamppb.New(pubTime)
+		tsPubTime, err := ptypes.TimestampProto(pubTime)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
 		pm.PublishTime = tsPubTime
 		m := &Message{
 			ID:          id,
@@ -830,7 +888,11 @@ func (s *GServer) Seek(ctx context.Context, req *pb.SeekRequest) (*pb.SeekRespon
 	case nil:
 		return nil, status.Errorf(codes.InvalidArgument, "missing Seek target type")
 	case *pb.SeekRequest_Time:
-		target = v.Time.AsTime()
+		var err error
+		target, err = ptypes.Timestamp(v.Time)
+		if err != nil {
+			return nil, status.Errorf(codes.InvalidArgument, "bad Time target: %v", err)
+		}
 	default:
 		return nil, status.Errorf(codes.Unimplemented, "unhandled Seek target type %T", v)
 	}
@@ -978,7 +1040,10 @@ func (s *subscription) maintainMessages(now time.Time) {
 		if m.outstanding() && now.After(m.ackDeadline) {
 			m.makeAvailable()
 		}
-		pubTime := m.proto.Message.PublishTime.AsTime()
+		pubTime, err := ptypes.Timestamp(m.proto.Message.PublishTime)
+		if err != nil {
+			panic(err)
+		}
 		// Remove messages that have been undelivered for a long time.
 		if !m.outstanding() && now.Sub(pubTime) > retentionDuration {
 			delete(s.msgs, id)
