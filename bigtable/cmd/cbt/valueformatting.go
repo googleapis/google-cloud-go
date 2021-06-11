@@ -8,6 +8,7 @@ import (
 	"strings"
 
 	"github.com/jhump/protoreflect/desc"
+	"github.com/jhump/protoreflect/dynamic"
 	"github.com/jhump/protoreflect/desc/protoparse"
 	"gopkg.in/yaml.v2"
 )
@@ -151,6 +152,29 @@ func (self *ValueFormatting) binaryFormatter(
 	}
 }
 
+func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
+
+	md, got := self.pbMessageTypes[type_]
+	if ! got {
+		md, got = self.pbMessageTypes[strings.ToLower(type_)]
+		if ! got {
+			return self.badFormatterf(
+				"No Protocol-Buffer message time for: %s", type_)
+		}
+	}
+
+	return func (in []byte) (string, error) {
+		message := dynamic.NewMessage(md)
+		err := message.Unmarshal(in)
+		if err == nil {
+			data, err := message.MarshalTextIndent()
+			if err == nil {
+				return string(data), nil
+			}
+		}
+		return "", err
+	}
+}
 
 func (self *ValueFormatting) parse(path string) error {
 	data, err := ioutil.ReadFile(path)

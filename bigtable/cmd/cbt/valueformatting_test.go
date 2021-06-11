@@ -131,15 +131,9 @@ func TestSetupPBMessages(t *testing.T) {
 	// Make sure teh message descriptors are usable.
 	message := dynamic.NewMessage(formatting.pbMessageTypes["tutorial.person"])
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if err != nil {
-		t.Errorf("reading data file")
-		return
-	}
+	if assertNoError(t, err) { return }
 	err = message.Unmarshal(in)
-	if err != nil {
-		t.Errorf("unmarshalling")
-		return
-	}
+	if assertNoError(t, err) { return }
 	assertEqual(
 		t,
 		"message",
@@ -235,6 +229,32 @@ func TestValueFormattingBinaryFormatter(t *testing.T) {
 
 	formatter = formatting.binaryFormatter("BigEndian", "xxx", "B")
 	_, err = formatter(TestBinaryFormaterTestData)
-	assertEqual(t, "bad type error", fmt.Sprint(err),
+	assertEqual(t, "bad binary type error", fmt.Sprint(err),
 		"Invalid binary type: xxx")
+}
+
+func testValueFormattingPBFormatter(t *testing.T) {
+	formatting := ValueFormatting{}
+	formatting.settings.ProtocolBuffer.Definitions = append(
+		formatting.settings.ProtocolBuffer.Definitions,
+		filepath.Join("testdata", "addressbook.proto"))	
+	err := formatting.setupPBMessages()
+	if assertNoError(t, err) { return }
+
+	formatter := formatting.pbFormatter("person")
+	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
+	if assertNoError(t, err) { return }
+
+	text, err := formatter(in)
+	if assertNoError(t, err) { return }
+
+	assertEqual(t, "formatted person", text, 
+		`name:"Jim" id:42 email:"jim@example.com"` +
+		` phones:<number:"555-1212" type:HOME>`)
+
+	formatter = formatting.pbFormatter("not a thing")
+	text, err = formatter(in)
+
+	assertEqual(t, "bad pb type error", fmt.Sprint(err),
+		"No Protocol-Buffer message time for: not a thing")
 }
