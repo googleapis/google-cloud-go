@@ -2,8 +2,10 @@ package main
 
 import (
 	"io/ioutil"
+	"strings"
 
 	"github.com/jhump/protoreflect/desc"
+	"github.com/jhump/protoreflect/desc/protoparse"
 	"gopkg.in/yaml.v2"
 )
 
@@ -23,7 +25,6 @@ type ValueFormatProtocolBufferDefinition struct {
 	Imports []string
 }
 
-
 type ValueFormatSettings struct {
 	ProtocolBuffer ValueFormatProtocolBufferDefinition `yaml:"protocol_buffer"`
 	DefaultEncoding string `yaml:"default_encoding"`
@@ -39,7 +40,6 @@ type ValueFormatting struct {
 	pbMessageTypes map[string]*desc.MessageDescriptor
 }
 
-
 func (self *ValueFormatting) parse(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err == nil {
@@ -48,10 +48,41 @@ func (self *ValueFormatting) parse(path string) error {
 	return err
 }
 
+func (self *ValueFormatting) setupPBMessages() error {
+	if len(self.settings.ProtocolBuffer.Definitions) > 0 {
+		parser := protoparse.Parser{
+			ImportPaths: self.settings.ProtocolBuffer.Imports,
+		}
+		fds, err := parser.ParseFiles(
+			self.settings.ProtocolBuffer.Definitions...)
+		if err != nil {
+			return err
+		}
+		self.pbMessageTypes = make(map[string]*desc.MessageDescriptor)
+		for _, fd := range(fds) {
+			prefix := fd.GetPackage()
+			for _, md := range fd.GetMessageTypes() {
+				key := md.GetName()
+				self.pbMessageTypes[key] = md
+				self.pbMessageTypes[strings.ToLower(key)] = md
+				if prefix != "" {
+					key = prefix + "." + key
+					self.pbMessageTypes[key] = md
+					self.pbMessageTypes[strings.ToLower(key)] = md
+				}
+			}		
+		}
+	}
+	return nil
+}
 
 func (self *ValueFormatting) setup() error {
 	if self.flags.formatFile != "" {
-		self.parse(self.flags.formatFile)
+		err := self.parse(self.flags.formatFile)
+		if err == nil {
+			err = self.setupPBMessages()
+		}
+		return err
 	}
 	return nil
 }

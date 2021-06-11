@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+import "phone.proto";
+
+message Person {
+  string name = 1;
+  repeated PhoneNumber phones = 2;
+  repeated string hobbies = 3;
+}
+
+message Equipment {
+  string name = 1;
+  int32 count = 2;
+}
