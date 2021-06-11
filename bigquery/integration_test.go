@@ -1202,6 +1202,7 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 }
 
 func TestIntegration_InsertErrors(t *testing.T) {
+	t.Skip("skipping, backend behavior in flux https://github.com/googleapis/google-cloud-go/issues/4248")
 	// This test serves to verify streaming behavior in the face of oversized data.
 	// BigQuery will reject insertAll payloads that exceed a defined limit (10MB).
 	// Additionally, if a payload vastly exceeds this limit, the request is rejected
