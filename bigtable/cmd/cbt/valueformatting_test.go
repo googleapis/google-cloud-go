@@ -33,9 +33,20 @@ func TestParseValueFormatSettings(t *testing.T) {
 			Definitions: []string{"MyProto.proto", "MyOtherProto.proto"},
 			Imports: []string{"mycode/stuff", "/home/user/dev/othercode/"},
 		},
+		Columns: map[string]ValueFormatColumn{
+			"col3": ValueFormatColumn{
+				Encoding: "P",
+				Type: "person",
+			},
+			"col4": ValueFormatColumn{
+				Encoding: "P",
+				Type: "hobby",
+			},
+		},
 		Families: map[string]ValueFormatFamily{
 			"family1": ValueFormatFamily{
-				DefaultEncoding: "BigEndian:INT64",
+				DefaultEncoding: "BigEndian",
+				DefaultType: "INT64",
 				Columns: map[string]ValueFormatColumn{
 					"address": ValueFormatColumn{
 						Encoding: "PROTO",

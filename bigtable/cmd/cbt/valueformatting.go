@@ -33,6 +33,7 @@ type ValueFormatSettings struct {
 	ProtocolBuffer ValueFormatProtocolBufferDefinition `yaml:"protocol_buffer"`
 	DefaultEncoding string `yaml:"default_encoding"`
 	DefaultType string `yaml:"default_type"`
+	Columns map[string]ValueFormatColumn
 	Families map[string]ValueFormatFamily
 }
 

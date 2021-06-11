@@ -15,7 +15,8 @@ protocol_buffer:
 
 families:
   family1:
-    default_encoding: BigEndian:INT64
+    default_encoding: BigEndian
+    default_type: INT64
     columns:
       address:
         encoding: PROTO
@@ -38,3 +39,11 @@ families:
       proto_col:
         encoding: PROTO
         type: MyProtoMessageType
+
+columns:
+  col3:
+    encoding: P
+    type: person
+  col4:
+    encoding: P
+    type: hobby
