@@ -8,13 +8,14 @@ import (
 	"sort"
 	"testing"
 
+	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/dynamic"
 	"cloud.google.com/go/internal/testutil"
 )
 
 func assertEqual(t *testing.T, label string, got, want interface{}) {
 	if ! testutil.Equal(got, want) {
-		t.Errorf("%s didn't match %s", label, got)
+		t.Errorf("%s didn't match: %s", label, got)
 	}
 }
 
@@ -268,4 +269,84 @@ func testValueFormattingPBFormatter(t *testing.T) {
 
 	assertEqual(t, "bad pb type error", fmt.Sprint(err),
 		"No Protocol-Buffer message time for: not a thing")
+}
+
+func TestValueFormattingValidateColumns(t *testing.T) {
+	formatting := NewValueFormatting()
+
+	// No encoding:
+	formatting.settings.Columns["c1"] = ValueFormatColumn{}
+	err := formatting.validateColumns()
+	assertEqual(t, "c1 bad", fmt.Sprint(err),
+		"Bad encoding and types:\nc1: No Encoding specified")
+
+	// Typeless encoding:
+	formatting.settings.Columns["c1"] = ValueFormatColumn{Encoding: "HEX"}
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 good", err, nil)
+
+	// Inherit encoding:
+	formatting.settings.Columns["c1"] = ValueFormatColumn{}
+	formatting.settings.DefaultEncoding = "H"
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 good", err, nil)
+
+	// Inherited encoding wants a type:
+	formatting.settings.DefaultEncoding = "B"
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 bad", fmt.Sprint(err),
+		"Bad encoding and types:\nc1: No type specified for encoding: B")
+
+	// provide a type:
+	formatting.settings.Columns["c1"] = ValueFormatColumn{Type: "INT"}
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 bad", fmt.Sprint(err),
+		"Bad encoding and types:\nc1: Invalid type: INT for encoding: B")
+	
+	// Fix the type:
+	formatting.settings.Columns["c1"] = ValueFormatColumn{Type: "INT64"}
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 good", err, nil)
+
+	// Now, do a bunch of this again in a family
+	family := NewValueFormatFamily()
+	formatting.settings.Families["f"] = family
+	formatting.settings.Families["f"].Columns["c2"] = ValueFormatColumn{}
+	err = formatting.validateColumns()
+	assertEqual(t, "c2 bad", fmt.Sprint(err),
+		"Bad encoding and types:\nf:c2: No type specified for encoding: B")
+	formatting.settings.Families["f"].Columns["c2"] =
+		ValueFormatColumn{Type: "int64"}
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 good", err, nil)
+
+	// Change the family encoding.  The type won't work anymore.
+	family.DefaultEncoding = "p"
+	formatting.settings.Families["f"] = family
+	err = formatting.validateColumns()
+	assertEqual(t, "c1 bad", fmt.Sprint(err),
+		"Bad encoding and types:\nf:c2: Invalid type: int64 for encoding: p")
+
+	// clear the type_ to make sure we get that message:
+	formatting.settings.Families["f"].Columns["c2"] = ValueFormatColumn{}
+	err = formatting.validateColumns()
+	assertEqual(t, "c2 bad", fmt.Sprint(err),
+		"Bad encoding and types:\nf:c2: No type specified for encoding: p")
+
+	// Look! Multiple errors!
+	formatting.settings.Columns["c1"] = ValueFormatColumn{}
+	err = formatting.validateColumns()
+	assertEqual(t, "all bad", fmt.Sprint(err),
+		"Bad encoding and types:\n" +
+		"c1: No type specified for encoding: B\n" +
+		"f:c2: No type specified for encoding: p")
+
+	// Fix the protocol-buffer problem:
+	formatting.pbMessageTypes["address"] = &desc.MessageDescriptor{}
+	formatting.settings.Families["f"].Columns["c2"] =
+		ValueFormatColumn{Type: "address"}
+	err = formatting.validateColumns()
+	assertEqual(t, "all bad", fmt.Sprint(err),
+		"Bad encoding and types:\n" +
+		"c1: No type specified for encoding: B")
 }
