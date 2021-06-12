@@ -48,7 +48,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210611"
+const versionClient = "20210612"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
