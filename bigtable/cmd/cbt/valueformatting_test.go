@@ -350,3 +350,11 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 		"Bad encoding and types:\n" +
 		"c1: No type specified for encoding: B")
 }
+
+func TestValueFormattingSetup(t *testing.T) {
+	formatting := NewValueFormatting()
+	formatting.flags.formatFile = filepath.Join("testdata", t.Name() + ".yml")
+	err := formatting.setup()
+	assertEqual(t, "setup w bad settings", fmt.Sprint(err),
+		"Bad encoding and types:\ncol1: No Encoding specified")
+}

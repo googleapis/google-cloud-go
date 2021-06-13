@@ -322,13 +322,16 @@ func (self *ValueFormatting) setupPBMessages() error {
 }
 
 func (self *ValueFormatting) setup() error {
+	var err error = nil
 	if self.flags.formatFile != "" {
-		err := self.parse(self.flags.formatFile)
+		err = self.parse(self.flags.formatFile)
 		if err == nil {
 			err = self.setupPBMessages()
 		}
-		return err
 	}
-	return nil
-}
+	if err == nil {
+		err = self.validateColumns()
+	}
+	return err
+}	
 
