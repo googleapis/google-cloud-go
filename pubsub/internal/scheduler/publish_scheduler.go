@@ -143,8 +143,9 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 		}
 
 		s.bundlers[key] = b
+	} else {
+		s.outstanding[key]++
 	}
-	s.outstanding[key]++
 	return b.Add(item, size)
 }
 
