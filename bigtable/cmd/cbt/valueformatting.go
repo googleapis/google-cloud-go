@@ -221,7 +221,7 @@ func (self *ValueFormatting) validate_encoding(encoding string) (string, error) 
 }
 
 func (self *ValueFormatting) validate_type(
-	valid_encoding, encoding, type_ string,
+	cname, valid_encoding, encoding, type_ string,
 ) error {
 	var got bool
 	if ((valid_encoding == "LittleEndian" || valid_encoding == "BigEndian")) {
@@ -237,9 +237,7 @@ func (self *ValueFormatting) validate_type(
 		}
 	} else if valid_encoding == "ProtocolBuffer" {
 		if type_ == "" {
-			return fmt.Errorf(
-				"No type specified for encoding: %s",
-				encoding)
+			type_ = cname
 		}
 		_, got = self.pbMessageTypes[type_]
 		if ! got {
@@ -250,10 +248,10 @@ func (self *ValueFormatting) validate_type(
 	return nil
 }
 
-func (self *ValueFormatting) validate_format(encoding, type_ string) error {
+func (self *ValueFormatting) validate_format(cname, encoding, type_ string) error {
 	valid_encoding, err := self.validate_encoding(encoding)
 	if err == nil {
-		err = self.validate_type(valid_encoding, encoding, type_)
+		err = self.validate_type(cname, valid_encoding, encoding, type_)
 	}
 	return err
 }
@@ -273,6 +271,7 @@ func (self *ValueFormatting) validateColumns() error {
 	var errs []string
 	for cname, col := range self.settings.Columns {
 		err := self.validate_format(
+			cname,
 			self.override(encoding, col.Encoding),
 			self.override(type_, col.Type))
 		if err != nil {
@@ -284,6 +283,7 @@ func (self *ValueFormatting) validateColumns() error {
 		ftype_ := self.override(type_, fam.DefaultType)
 		for cname, col := range fam.Columns {
 			err := self.validate_format(
+				cname,
 				self.override(fencoding, col.Encoding),
 				self.override(ftype_, col.Type))
 			if err != nil {

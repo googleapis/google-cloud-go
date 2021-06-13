@@ -330,8 +330,11 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 	// clear the type_ to make sure we get that message:
 	formatting.settings.Families["f"].Columns["c2"] = ValueFormatColumn{}
 	err = formatting.validateColumns()
+	// we're bad here because no type was specified, so we fall
+	// back to the column name, which doesn't have a
+	// protocol-buffer message type.
 	assertEqual(t, "c2 bad", fmt.Sprint(err),
-		"Bad encoding and types:\nf:c2: No type specified for encoding: p")
+		"Bad encoding and types:\nf:c2: Invalid type: c2 for encoding: p")
 
 	// Look! Multiple errors!
 	formatting.settings.Columns["c1"] = ValueFormatColumn{}
@@ -339,7 +342,7 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 	assertEqual(t, "all bad", fmt.Sprint(err),
 		"Bad encoding and types:\n" +
 		"c1: No type specified for encoding: B\n" +
-		"f:c2: No type specified for encoding: p")
+		"f:c2: Invalid type: c2 for encoding: p")
 
 	// Fix the protocol-buffer problem:
 	formatting.pbMessageTypes["address"] = &desc.MessageDescriptor{}
