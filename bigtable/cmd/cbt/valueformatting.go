@@ -209,14 +209,21 @@ func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
 	}
 }
 
-func (self *ValueFormatting) validate_format(encoding string, type_ string) error {
+func (self *ValueFormatting) validate_encoding(encoding string) (string, error) {
 	valid_encoding, got := validValueFormattingEncodings[strings.ToLower(encoding)]
 	if ! got {
 		if encoding == "" {
-			return fmt.Errorf("No Encoding specified")
+			return "", fmt.Errorf("No Encoding specified")
 		}
-		return fmt.Errorf("Invalid encoding: %s", encoding)
+		return "", fmt.Errorf("Invalid encoding: %s", encoding)
 	}
+	return valid_encoding, nil
+}
+
+func (self *ValueFormatting) validate_type(
+	valid_encoding, encoding, type_ string,
+) error {
+	var got bool
 	if ((valid_encoding == "LittleEndian" || valid_encoding == "BigEndian")) {
 		if type_ == "" {
 			return fmt.Errorf(
@@ -243,7 +250,15 @@ func (self *ValueFormatting) validate_format(encoding string, type_ string) erro
 	return nil
 }
 
-func (self *ValueFormatting) override(old string, new string) string {
+func (self *ValueFormatting) validate_format(encoding, type_ string) error {
+	valid_encoding, err := self.validate_encoding(encoding)
+	if err == nil {
+		err = self.validate_type(valid_encoding, encoding, type_)
+	}
+	return err
+}
+
+func (self *ValueFormatting) override(old, new string) string {
 	if new != "" {
 		return new
 	} else {
