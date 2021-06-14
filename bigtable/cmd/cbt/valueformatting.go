@@ -43,12 +43,15 @@ type ValueFormatSettings struct {
 	Families map[string]ValueFormatFamily
 }
 
+type valueFormatter func ([]byte) (string, error)
+
 type ValueFormatting struct {
 	settings ValueFormatSettings
 	flags struct {
 		formatFile string
 	}
 	pbMessageTypes map[string]*desc.MessageDescriptor
+	formatters map[[2]string]valueFormatter
 }
 
 func NewValueFormatting() ValueFormatting {
@@ -56,6 +59,7 @@ func NewValueFormatting() ValueFormatting {
 	formatting.settings.Columns = make(map[string]ValueFormatColumn)
 	formatting.settings.Families = make(map[string]ValueFormatFamily)
 	formatting.pbMessageTypes = make(map[string]*desc.MessageDescriptor)
+	formatting.formatters = make(map[[2]string]valueFormatter)
 	return formatting
 }
 
@@ -84,8 +88,6 @@ func binaryFormatterHelper(
 	}
 	return s, err
 }
-
-type valueFormatter func ([]byte) (string, error)
 
 type binaryValueFormatter func([]byte, binary.ByteOrder) (string, error) 
 
@@ -132,54 +134,21 @@ var binaryValueFormatters = map[string]binaryValueFormatter{
 	},
 }
 
-func (self *ValueFormatting) badFormatter(err error) valueFormatter {
-	return func (in []byte) (string, error) {
-		return "", err
-	}
-}
-
-func (self *ValueFormatting) badFormatterf(format string, args ...interface{}) valueFormatter {
-	return self.badFormatter(fmt.Errorf(format, args...))
-}
-
-func (self *ValueFormatting) binaryFormatter(
-      valid_encoding string,
-      type_ string,
-      encoding string,
-) valueFormatter {
-	type_formatter, valid := binaryValueFormatters[strings.ToLower(type_)]
-	if ! valid {
-		if type_ == "" {
-			return self.badFormatterf(
-				"A data type must be provided for the %s encoding",
-				encoding)
-		} else {
-			return self.badFormatterf("Invalid binary type: %s", type_)
-		}
-	}
+func (self *ValueFormatting) binaryFormatter(encoding, type_ string) valueFormatter {
 	var byteOrder binary.ByteOrder
-	if valid_encoding == "BigEndian" {
+	typeFormatter := binaryValueFormatters[type_]
+	if encoding == "BigEndian" {
 		byteOrder = binary.BigEndian
 	} else {
 		byteOrder = binary.LittleEndian
 	} 
-
 	return func (in []byte) (string, error) {
-		return type_formatter(in, byteOrder)
+		return typeFormatter(in, byteOrder)
 	}
 }
 
 func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
-
-	md, got := self.pbMessageTypes[type_]
-	if ! got {
-		md, got = self.pbMessageTypes[strings.ToLower(type_)]
-		if ! got {
-			return self.badFormatterf(
-				"No Protocol-Buffer message time for: %s", type_)
-		}
-	}
-
+	md := self.pbMessageTypes[type_]
 	return func (in []byte) (string, error) {
 		message := dynamic.NewMessage(md)
 		err := message.Unmarshal(in)
@@ -209,48 +178,52 @@ var validValueFormattingEncodings = map[string]string{
 	"": "",
 }
 
-func (self *ValueFormatting) validate_encoding(encoding string) (string, error) {
-	valid_encoding, got := validValueFormattingEncodings[strings.ToLower(encoding)]
+func (self *ValueFormatting) validateEncoding(encoding string) (string, error) {
+	validEncoding, got := validValueFormattingEncodings[strings.ToLower(encoding)]
 	if ! got {
 		return "", fmt.Errorf("Invalid encoding: %s", encoding)
 	}
-	return valid_encoding, nil
+	return validEncoding, nil
 }
 
-func (self *ValueFormatting) validate_type(
-	cname, valid_encoding, encoding, type_ string,
-) error {
+func (self *ValueFormatting) validateType(
+	cname, validEncoding, encoding, type_ string,
+) (string, error) {
 	var got bool
-	if ((valid_encoding == "LittleEndian" || valid_encoding == "BigEndian")) {
+	switch validEncoding { 
+	case "LittleEndian", "BigEndian":
 		if type_ == "" {
-			return fmt.Errorf(
+			return type_, fmt.Errorf(
 				"No type specified for encoding: %s",
 				encoding)
 		}
 		_, got = binaryValueFormatters[strings.ToLower(type_)]
 		if ! got {
-			return fmt.Errorf("Invalid type: %s for encoding: %s",
+			return type_, fmt.Errorf("Invalid type: %s for encoding: %s",
 				type_, encoding)
 		}
-	} else if valid_encoding == "ProtocolBuffer" {
+		type_ = strings.ToLower(type_)
+	case "ProtocolBuffer":
 		if type_ == "" {
 			type_ = cname
 		}
 		_, got = self.pbMessageTypes[type_]
 		if ! got {
-			return fmt.Errorf("Invalid type: %s for encoding: %s",
+			return type_, fmt.Errorf("Invalid type: %s for encoding: %s",
 				type_, encoding)
 		}
 	}
-	return nil
+	return type_, nil
 }
 
-func (self *ValueFormatting) validate_format(cname, encoding, type_ string) error {
-	valid_encoding, err := self.validate_encoding(encoding)
+func (self *ValueFormatting) validateFormat(
+	cname, encoding, type_ string,
+) (string, string, error) {
+	validEncoding, err := self.validateEncoding(encoding)
 	if err == nil {
-		err = self.validate_type(cname, valid_encoding, encoding, type_)
+		type_, err = self.validateType(cname, validEncoding, encoding, type_)
 	}
-	return err
+	return validEncoding, type_, err
 }
 
 func (self *ValueFormatting) override(old, new string) string {
@@ -267,7 +240,7 @@ func (self *ValueFormatting) validateColumns() error {
 
 	var errs []string
 	for cname, col := range self.settings.Columns {
-		err := self.validate_format(
+		_, _, err := self.validateFormat(
 			cname,
 			self.override(encoding, col.Encoding),
 			self.override(type_, col.Type))
@@ -279,7 +252,7 @@ func (self *ValueFormatting) validateColumns() error {
 		fencoding := self.override(encoding, fam.DefaultEncoding)
 		ftype_ := self.override(type_, fam.DefaultType)
 		for cname, col := range fam.Columns {
-			err := self.validate_format(
+			_, _, err := self.validateFormat(
 				cname,
 				self.override(fencoding, col.Encoding),
 				self.override(ftype_, col.Type))
@@ -337,9 +310,9 @@ func (self *ValueFormatting) setup() error {
 	var err error = nil
 	if self.flags.formatFile != "" {
 		err = self.parse(self.flags.formatFile)
-		if err == nil {
-			err = self.setupPBMessages()
-		}
+	}
+	if err == nil {
+		err = self.setupPBMessages()
 	}
 	if err == nil {
 		err = self.validateColumns()
@@ -347,3 +320,78 @@ func (self *ValueFormatting) setup() error {
 	return err
 }	
 
+func (self *ValueFormatting) colEncodingType(family, column string) (string, string) {
+	encoding := self.settings.DefaultEncoding
+	type_ := self.settings.DefaultType
+
+	fam, got := self.settings.Families[family]
+	if got {
+		fencoding := self.override(encoding, fam.DefaultEncoding)
+		ftype := self.override(type_, fam.DefaultType)
+		col, got := fam.Columns[column]
+		if got {
+			return self.override(fencoding, col.Encoding),
+				self.override(ftype, col.Type)
+		} else {
+			return fencoding, ftype
+		}
+	} else {
+		col, got := self.settings.Columns[column]
+		if got {
+			return self.override(encoding, col.Encoding),
+				self.override(type_, col.Type)
+		} else {
+			return encoding, type_
+		}
+	}
+}
+
+func (self *ValueFormatting) badFormatter(err error) valueFormatter {
+	return func (in []byte) (string, error) {
+		return "", err
+	}
+}
+
+func (self *ValueFormatting) hexFormatter(in []byte) (string, error) {
+	return fmt.Sprintf("% x", in), nil
+}
+
+func (self *ValueFormatting) defaultFormatter(in []byte) (string, error) {
+	return fmt.Sprintf("%q", in), nil
+}
+
+func (self *ValueFormatting) format(
+	prefix, family, column string, value []byte,
+) (string, error) {
+	key := [2]string{family, column}
+	formatter, got := self.formatters[key]
+	if ! got {
+		encoding, type_ := self.colEncodingType(family, column)
+		encoding, type_, err := self.validateFormat(column, encoding, type_)
+		if err != nil {
+			formatter = self.badFormatter(err)
+		} else {
+			switch encoding {
+			case "BigEndian", "LittleEndian":
+				formatter = self.binaryFormatter(encoding, type_)
+			case "Hex":
+				formatter = self.hexFormatter
+			case "ProtocolBuffer":
+				formatter = self.pbFormatter(type_)
+			case "":
+				formatter = self.defaultFormatter
+			}
+		}
+		self.formatters[key] = formatter
+	}
+	formatted, err := formatter(value)
+	if err == nil {
+		formatted = prefix +
+			strings.TrimSuffix(
+				strings.ReplaceAll(formatted, "\n", "\n" + prefix),
+				prefix)
+	}
+	return formatted, err
+}
+
+	

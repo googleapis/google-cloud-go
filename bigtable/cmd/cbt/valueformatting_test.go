@@ -232,24 +232,14 @@ func TestBinaryValueFormaterFLOAT64(t *testing.T) {
 
 func TestValueFormattingBinaryFormatter(t *testing.T) {
 	formatting := ValueFormatting{}
-	var formatter = formatting.binaryFormatter("BigEndian", "Int32", "B")
+	var formatter = formatting.binaryFormatter("BigEndian", "int32")
 	s, err := formatter(TestBinaryFormaterTestData)
 	assertNoError(t, err)
 	assertEqual(t, "int32", s, "[66051 67438087 -1 -100]")
-	formatter = formatting.binaryFormatter("LittleEndian", "Int32", "l")
+	formatter = formatting.binaryFormatter("LittleEndian", "int32")
 	s, err = formatter(TestBinaryFormaterTestData)
 	assertNoError(t, err)
 	assertEqual(t, "int32", s, "[50462976 117835012 -1 -1660944385]")
-
-	formatter = formatting.binaryFormatter("BigEndian", "", "B")
-	_, err = formatter(TestBinaryFormaterTestData)
-	assertEqual(t, "no type error", fmt.Sprint(err),
-		"A data type must be provided for the B encoding")
-
-	formatter = formatting.binaryFormatter("BigEndian", "xxx", "B")
-	_, err = formatter(TestBinaryFormaterTestData)
-	assertEqual(t, "bad binary type error", fmt.Sprint(err),
-		"Invalid binary type: xxx")
 }
 
 func testValueFormattingPBFormatter(t *testing.T) {
@@ -362,3 +352,52 @@ func TestValueFormattingSetup(t *testing.T) {
 	assertEqual(t, "setup w bad settings", fmt.Sprint(err),
 		"Bad encoding and types:\ncol1: No type specified for encoding: B")
 }
+
+func TestValueFormattingFormat(t *testing.T) {
+	formatting := NewValueFormatting()
+	formatting.settings.ProtocolBuffer.Definitions =
+		append(formatting.settings.ProtocolBuffer.Definitions,
+			filepath.Join("testdata", "addressbook.proto"))
+	family := NewValueFormatFamily()
+	family.DefaultEncoding="Binary"
+	formatting.settings.Families["binaries"] = family
+	formatting.settings.Families["binaries"].Columns["cb"] =
+		ValueFormatColumn{Type: "int16"}
+
+	formatting.settings.Columns["hexy"] =
+		ValueFormatColumn{Encoding: "hex"}
+	formatting.settings.Columns["address"] =
+		ValueFormatColumn{Encoding: "p", Type: "tutorial.Person"}
+	formatting.settings.Columns["person"] =	ValueFormatColumn{Encoding: "p"}
+	err := formatting.setup()
+
+	s, err := formatting.format("", "f1", "c1", []byte("Hello world!"))
+	assertEqual(t, "q", s, `"Hello world!"`)
+
+	s, err = formatting.format("  ", "f1", "hexy", []byte("Hello world!"))
+	assertNoError(t, err)
+	assertEqual(t, "q", s, "  48 65 6c 6c 6f 20 77 6f 72 6c 64 21")
+
+	s, err = formatting.format("    ", "binaries", "cb", []byte("Hello world!"))
+	assertNoError(t, err)
+	assertEqual(t, "q", s, "    [18533 27756 28448 30575 29292 25633]")
+
+	
+	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
+	if assertNoError(t, err) { return }
+	pbExpect := 
+		"      name: \"Jim\"\n" +
+		"      id: 42\n" +
+		"      email: \"jim@example.com\"\n" +
+		"      phones: <\n" +
+		"        number: \"555-1212\"\n" +
+		"        type: HOME\n" +
+		"      >"
+
+	for _, col := range []string{"address", "person"} {
+		s, err = formatting.format("      ", "f1", col, in)
+		assertNoError(t, err)
+		assertEqual(t, "q", s, pbExpect)
+	}
+}
+	
