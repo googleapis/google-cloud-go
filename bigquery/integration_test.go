@@ -2582,6 +2582,29 @@ func TestIntegration_ListJobs(t *testing.T) {
 	}
 }
 
+func TestIntegration_DeleteJob(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT 17 as foo")
+	q.Location = "us-east1"
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("job Run failure: %v", err)
+	}
+	_, err = job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("job completion failure: %v", err)
+	}
+
+	if err := job.Delete(ctx); err != nil {
+		t.Fatalf("job.Delete failed: %v", err)
+	}
+}
+
 const tokyo = "asia-northeast1"
 
 func TestIntegration_Location(t *testing.T) {
