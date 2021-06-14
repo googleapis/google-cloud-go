@@ -154,7 +154,7 @@ func (tr *testBlockingMessageReceiver) Return() {
 	tr.blockReceive <- void
 }
 
-func TestMessageDeliveryQueue(t *testing.T) {
+func TestMessageDeliveryQueueStartStop(t *testing.T) {
 	acks := newAckTracker()
 	receiver := newTestMessageReceiver(t)
 	messageQueue := newMessageDeliveryQueue(acks, receiver.onMessage, 10)
@@ -189,9 +189,55 @@ func TestMessageDeliveryQueue(t *testing.T) {
 		messageQueue.Stop()
 		messageQueue.Stop() // Check duplicate stop
 		messageQueue.Add(&ReceivedMessage{Msg: msg4, Ack: ack4})
+		messageQueue.Wait()
 
 		receiver.VerifyNoMsgs()
 	})
+
+	t.Run("Restart", func(t *testing.T) {
+		msg5 := seqMsgWithOffset(5)
+		ack5 := newAckConsumer(5, 0, nil)
+
+		messageQueue.Start()
+		messageQueue.Add(&ReceivedMessage{Msg: msg5, Ack: ack5})
+
+		receiver.ValidateMsg(msg5)
+	})
+
+	t.Run("Stop", func(t *testing.T) {
+		messageQueue.Stop()
+		messageQueue.Wait()
+
+		receiver.VerifyNoMsgs()
+	})
+}
+
+func TestMessageDeliveryQueueDiscardMessages(t *testing.T) {
+	acks := newAckTracker()
+	blockingReceiver := newTestBlockingMessageReceiver(t)
+	messageQueue := newMessageDeliveryQueue(acks, blockingReceiver.onMessage, 10)
+
+	msg1 := seqMsgWithOffset(1)
+	ack1 := newAckConsumer(1, 0, nil)
+	msg2 := seqMsgWithOffset(2)
+	ack2 := newAckConsumer(2, 0, nil)
+
+	messageQueue.Start()
+	messageQueue.Add(&ReceivedMessage{Msg: msg1, Ack: ack1})
+	messageQueue.Add(&ReceivedMessage{Msg: msg2, Ack: ack2})
+
+	// The blocking receiver suspends after receiving msg1.
+	blockingReceiver.ValidateMsg(msg1)
+	// Stopping the message queue should discard undelivered msg2.
+	messageQueue.Stop()
+
+	// Unsuspend the blocking receiver and verify msg2 is not received.
+	blockingReceiver.Return()
+	messageQueue.Wait()
+	blockingReceiver.VerifyNoMsgs()
+	if got, want := acks.outstandingAcks.Len(), 1; got != want {
+		t.Errorf("ackTracker.outstandingAcks.Len() got %v, want %v", got, want)
+	}
 }
 
 // testSubscribeStream wraps a subscribeStream for ease of testing.
@@ -293,8 +339,8 @@ func TestSubscribeStreamFlowControlBatching(t *testing.T) {
 	}
 	sub.Receiver.ValidateMsg(msg1)
 	sub.Receiver.ValidateMsg(msg2)
-	sub.sub.onAckAsync(msg1.SizeBytes)
-	sub.sub.onAckAsync(msg2.SizeBytes)
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg1.SizeBytes})
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg2.SizeBytes})
 	sub.sub.sendBatchFlowControl()
 	if gotErr := sub.FinalError(); !test.ErrorEqual(gotErr, serverErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, serverErr)
@@ -327,8 +373,8 @@ func TestSubscribeStreamExpediteFlowControl(t *testing.T) {
 	}
 	sub.Receiver.ValidateMsg(msg1)
 	sub.Receiver.ValidateMsg(msg2)
-	sub.sub.onAckAsync(msg1.SizeBytes)
-	sub.sub.onAckAsync(msg2.SizeBytes)
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg1.SizeBytes})
+	sub.sub.onAck(&ackConsumer{MsgBytes: msg2.SizeBytes})
 	// Note: the ack for msg2 automatically triggers sending the flow control.
 	if gotErr := sub.FinalError(); !test.ErrorEqual(gotErr, serverErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, serverErr)
@@ -373,7 +419,7 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 	barrier.ReleaseAfter(func() {
 		// While the stream is not connected, the pending flow control request
 		// should not be released and sent to the stream.
-		sub.sub.onAckAsync(msg.SizeBytes)
+		sub.sub.onAck(&ackConsumer{MsgBytes: msg.SizeBytes})
 		if sub.PendingFlowControlRequest() == nil {
 			t.Errorf("Pending flow control request should not be cleared")
 		}

@@ -146,8 +146,8 @@ func (c *CloudSchedulerClient) Close() error {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *CloudSchedulerClient) setGoogleClientInfo(...string) {
-	c.internalClient.setGoogleClientInfo()
+func (c *CloudSchedulerClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.

@@ -82,6 +82,12 @@ type Client struct {
 	qo           QueryOptions
 }
 
+// DatabaseName returns the full name of a database, e.g.,
+// "projects/spanner-cloud-test/instances/foo/databases/foodb".
+func (c *Client) DatabaseName() string {
+	return c.sc.database
+}
+
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
 	// NumChannels is the number of gRPC channels.
@@ -221,12 +227,16 @@ func allClientOpts(numChannels int, userOpts ...option.ClientOption) []option.Cl
 // via application-level configuration. If the environment variables are set,
 // this will return the overwritten query options.
 func getQueryOptions(opts QueryOptions) QueryOptions {
+	if opts.Options == nil {
+		opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
+	}
 	opv := os.Getenv("SPANNER_OPTIMIZER_VERSION")
 	if opv != "" {
-		if opts.Options == nil {
-			opts.Options = &sppb.ExecuteSqlRequest_QueryOptions{}
-		}
 		opts.Options.OptimizerVersion = opv
+	}
+	opsp := os.Getenv("SPANNER_OPTIMIZER_STATISTICS_PACKAGE")
+	if opsp != "" {
+		opts.Options.OptimizerStatisticsPackage = opsp
 	}
 	return opts
 }

@@ -132,7 +132,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from Cloud Natural Language API.
+// internalClient is an interface that defines the methods availaible from Google Cloud Natural Language API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -145,7 +145,7 @@ type internalClient interface {
 	AnnotateText(context.Context, *languagepb.AnnotateTextRequest, ...gax.CallOption) (*languagepb.AnnotateTextResponse, error)
 }
 
-// Client is a client for interacting with Cloud Natural Language API.
+// Client is a client for interacting with Google Cloud Natural Language API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Provides text analysis operations such as sentiment analysis and entity
@@ -169,8 +169,8 @@ func (c *Client) Close() error {
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *Client) setGoogleClientInfo(...string) {
-	c.internalClient.setGoogleClientInfo()
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
 // Connection returns a connection to the API service.
@@ -216,7 +216,7 @@ func (c *Client) AnnotateText(ctx context.Context, req *languagepb.AnnotateTextR
 	return c.internalClient.AnnotateText(ctx, req, opts...)
 }
 
-// gRPCClient is a client for interacting with Cloud Natural Language API over gRPC transport.
+// gRPCClient is a client for interacting with Google Cloud Natural Language API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
