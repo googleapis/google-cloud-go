@@ -389,7 +389,7 @@ func (self *ValueFormatting) format(
 		formatted = prefix +
 			strings.TrimSuffix(
 				strings.ReplaceAll(formatted, "\n", "\n" + prefix),
-				prefix)
+				prefix) + "\n"
 	}
 	return formatted, err
 }

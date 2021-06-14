@@ -1018,8 +1018,16 @@ func printRow(r bigtable.Row) {
 		sort.Sort(byColumn(ris))
 		for _, ri := range ris {
 			ts := time.Unix(0, int64(ri.Timestamp)*1e3)
-			fmt.Printf("  %-40s @ %s\n", ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
-			fmt.Printf("    %q\n", ri.Value)
+			fmt.Printf("  %-40s @ %s\n",
+				ri.Column,
+				ts.Format("2006/01/02-15:04:05.000000"))
+			formatted, err :=
+				valueFormatting.format("    ", fam, ri.Column, ri.Value)
+			if err !=nil {
+				log.Fatal(err)
+			}
+			fmt.Print(formatted)
+			//fmt.Printf("    %q\n", ri.Value)
 		}
 	}
 }
