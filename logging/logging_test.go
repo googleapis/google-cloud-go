@@ -806,3 +806,34 @@ func TestSeverityUnmarshal(t *testing.T) {
 		t.Fatalf("Severity: got %v, want %v", entry.Severity, logging.Error)
 	}
 }
+
+func TestSeverityAsNumberUnmarshal(t *testing.T) {
+	j := []byte(fmt.Sprintf(`{"logName": "test-log","severity": %d, "payload": "test"}`, logging.Info))
+	var entry logging.Entry
+	err := json.Unmarshal(j, &entry)
+	if err != nil {
+		t.Fatalf("en.Unmarshal: %v", err)
+	}
+	if entry.Severity != logging.Info {
+		t.Fatalf("Severity: got %v, want %v", entry.Severity, logging.Info)
+	}
+}
+
+func TestSeverityMarshalThenUnmarshal(t *testing.T) {
+	entry := logging.Entry{Severity: logging.Warning, Payload: "test"}
+	j, err := json.Marshal(entry)
+	if err != nil {
+		t.Fatalf("en.Marshal: %v", err)
+	}
+
+	var entryU logging.Entry
+
+	err = json.Unmarshal(j, &entryU)
+	if err != nil {
+		t.Fatalf("en.Unmarshal: %v", err)
+	}
+
+	if entryU.Severity != logging.Warning {
+		t.Fatalf("Severity: got %v, want %v", entryU.Severity, logging.Warning)
+	}
+}
