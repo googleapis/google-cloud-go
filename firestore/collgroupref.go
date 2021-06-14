@@ -97,7 +97,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	// cursor A, cursor B, cursor M, cursor Q, cursor U, cursor W
 	// Once we have exhausted the pages, the cursor values need to be sorted in
 	// lexicographical order by segment (areas between '/').
-	sort.Sort(byReferenceValue(cursorReferences))
+	sort.Sort(byFirestoreValue(cursorReferences))
 
 	partitionQueries := make([]QueryPartition, 0, len(cursorReferences))
 	previousCursor := ""
@@ -125,13 +125,6 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 
 	return partitionQueries, nil
 }
-
-// byReferenceValue implements sort.Interface for []*firestorepb.Value
-type byReferenceValue []*firestorepb.Value
-
-func (a byReferenceValue) Len() int           { return len(a) }
-func (a byReferenceValue) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
-func (a byReferenceValue) Less(i, j int) bool { return compareValues(a[i], a[j]) < 0 }
 
 // QueryPartition provides a Collection Group Reference and start and end split
 // points allowing for a section of a collection group to be queried. This is
