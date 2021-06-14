@@ -1,2 +1,4 @@
 columns:
   col1:
+    encoding: B
+

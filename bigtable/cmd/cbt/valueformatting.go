@@ -61,22 +61,6 @@ func NewValueFormatting() ValueFormatting {
 
 var valueFormatting = NewValueFormatting()
 
-
-var validValueFormattingEncodings = map[string]string{
-	"bigendian": "BigEndian",
-	"b": "BigEndian",
-	"binary": "BigEndian",
-	"littleendian": "LittleEndian",
-	"L": "LittleEndian",
-	"hex": "Hex",
-	"h": "Hex",
-	"protocolbuffer": "ProtocolBuffer",
-	"protocol-buffer": "ProtocolBuffer",
-	"protocol_buffer": "ProtocolBuffer",
-	"proto": "ProtocolBuffer",
-	"p": "ProtocolBuffer",
-}
-
 func binaryFormatterHelper(
 	in []byte,
 	byteOrder binary.ByteOrder,
@@ -209,12 +193,25 @@ func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
 	}
 }
 
+var validValueFormattingEncodings = map[string]string{
+	"bigendian": "BigEndian",
+	"b": "BigEndian",
+	"binary": "BigEndian",
+	"littleendian": "LittleEndian",
+	"L": "LittleEndian",
+	"hex": "Hex",
+	"h": "Hex",
+	"protocolbuffer": "ProtocolBuffer",
+	"protocol-buffer": "ProtocolBuffer",
+	"protocol_buffer": "ProtocolBuffer",
+	"proto": "ProtocolBuffer",
+	"p": "ProtocolBuffer",
+	"": "",
+}
+
 func (self *ValueFormatting) validate_encoding(encoding string) (string, error) {
 	valid_encoding, got := validValueFormattingEncodings[strings.ToLower(encoding)]
 	if ! got {
-		if encoding == "" {
-			return "", fmt.Errorf("No Encoding specified")
-		}
 		return "", fmt.Errorf("Invalid encoding: %s", encoding)
 	}
 	return valid_encoding, nil

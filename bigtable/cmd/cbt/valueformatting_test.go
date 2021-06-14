@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
+	"runtime"
 	"sort"
 	"testing"
 
@@ -15,7 +16,13 @@ import (
 
 func assertEqual(t *testing.T, label string, got, want interface{}) {
 	if ! testutil.Equal(got, want) {
-		t.Errorf("%s didn't match: %s", label, got)
+		_, fpath, lno, ok := runtime.Caller(1)
+		if ok {
+			_, fname := filepath.Split(fpath)
+			t.Errorf("%s:%d:%s didn't match: %s", fname, lno, label, got)
+		} else {
+			t.Errorf("%s didn't match: %s", label, got)
+		}
 	}
 }
 
@@ -274,15 +281,9 @@ func testValueFormattingPBFormatter(t *testing.T) {
 func TestValueFormattingValidateColumns(t *testing.T) {
 	formatting := NewValueFormatting()
 
-	// No encoding:
-	formatting.settings.Columns["c1"] = ValueFormatColumn{}
-	err := formatting.validateColumns()
-	assertEqual(t, "c1 bad", fmt.Sprint(err),
-		"Bad encoding and types:\nc1: No Encoding specified")
-
 	// Typeless encoding:
 	formatting.settings.Columns["c1"] = ValueFormatColumn{Encoding: "HEX"}
-	err = formatting.validateColumns()
+	err := formatting.validateColumns()
 	assertEqual(t, "c1 good", err, nil)
 
 	// Inherit encoding:
@@ -359,5 +360,5 @@ func TestValueFormattingSetup(t *testing.T) {
 	formatting.flags.formatFile = filepath.Join("testdata", t.Name() + ".yml")
 	err := formatting.setup()
 	assertEqual(t, "setup w bad settings", fmt.Sprint(err),
-		"Bad encoding and types:\ncol1: No Encoding specified")
+		"Bad encoding and types:\ncol1: No type specified for encoding: B")
 }
