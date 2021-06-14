@@ -30,19 +30,19 @@ func ExampleNewVersionsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleVersionsClient_ListVersions() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.ListVersionsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleVersionsClient_ListVersions() {
 }
 
 func ExampleVersionsClient_GetVersion() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.GetVersionRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleVersionsClient_GetVersion() {
 }
 
 func ExampleVersionsClient_CreateVersion() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.CreateVersionRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleVersionsClient_CreateVersion() {
 }
 
 func ExampleVersionsClient_UpdateVersion() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.UpdateVersionRequest{
 		// TODO: Fill request struct fields.
@@ -132,6 +129,7 @@ func ExampleVersionsClient_DeleteVersion() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.DeleteVersionRequest{
 		// TODO: Fill request struct fields.
@@ -143,13 +141,12 @@ func ExampleVersionsClient_DeleteVersion() {
 }
 
 func ExampleVersionsClient_LoadVersion() {
-	// import cxpb "google.golang.org/genproto/googleapis/cloud/dialogflow/cx/v3beta1"
-
 	ctx := context.Background()
 	c, err := cx.NewVersionsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &cxpb.LoadVersionRequest{
 		// TODO: Fill request struct fields.

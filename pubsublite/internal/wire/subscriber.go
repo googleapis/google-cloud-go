@@ -17,6 +17,7 @@ import (
 	"context"
 	"errors"
 	"reflect"
+	"sync"
 	"time"
 
 	"github.com/google/uuid"
@@ -46,57 +47,74 @@ type ReceivedMessage struct {
 type MessageReceiverFunc func(*ReceivedMessage)
 
 // messageDeliveryQueue delivers received messages to the client-provided
-// MessageReceiverFunc sequentially.
+// MessageReceiverFunc sequentially. It is only accessed by the subscribeStream.
 type messageDeliveryQueue struct {
-	receiver  MessageReceiverFunc
-	messagesC chan *ReceivedMessage
-	stopC     chan struct{}
-	acks      *ackTracker
-	status    serviceStatus
+	bufferSize int
+	acks       *ackTracker
+	receiver   MessageReceiverFunc
+	messagesC  chan *ReceivedMessage
+	stopC      chan struct{}
+	active     sync.WaitGroup
 }
 
 func newMessageDeliveryQueue(acks *ackTracker, receiver MessageReceiverFunc, bufferSize int) *messageDeliveryQueue {
 	return &messageDeliveryQueue{
-		acks:      acks,
-		receiver:  receiver,
-		messagesC: make(chan *ReceivedMessage, bufferSize),
-		stopC:     make(chan struct{}),
+		bufferSize: bufferSize,
+		acks:       acks,
+		receiver:   receiver,
 	}
 }
 
+// Start the message delivery, if not already started.
 func (mq *messageDeliveryQueue) Start() {
-	if mq.status == serviceUninitialized {
-		go mq.deliverMessages()
-		mq.status = serviceActive
+	if mq.stopC != nil {
+		return
 	}
+
+	mq.stopC = make(chan struct{})
+	mq.messagesC = make(chan *ReceivedMessage, mq.bufferSize)
+	mq.active.Add(1)
+	go mq.deliverMessages(mq.messagesC, mq.stopC)
 }
 
+// Stop message delivery and discard undelivered messages.
 func (mq *messageDeliveryQueue) Stop() {
-	if mq.status < serviceTerminated {
-		close(mq.stopC)
-		mq.status = serviceTerminated
+	if mq.stopC == nil {
+		return
 	}
+
+	close(mq.stopC)
+	mq.stopC = nil
+	mq.messagesC = nil
+}
+
+// Wait until the message delivery goroutine has terminated.
+func (mq *messageDeliveryQueue) Wait() {
+	mq.active.Wait()
 }
 
 func (mq *messageDeliveryQueue) Add(msg *ReceivedMessage) {
-	if mq.status == serviceActive {
+	if mq.messagesC != nil {
 		mq.messagesC <- msg
 	}
 }
 
-func (mq *messageDeliveryQueue) deliverMessages() {
+func (mq *messageDeliveryQueue) deliverMessages(messagesC chan *ReceivedMessage, stopC chan struct{}) {
+	// Notify the wait group that the goroutine has terminated upon exit.
+	defer mq.active.Done()
+
 	for {
 		// stopC has higher priority.
 		select {
-		case <-mq.stopC:
+		case <-stopC:
 			return // Ends the goroutine.
 		default:
 		}
 
 		select {
-		case <-mq.stopC:
+		case <-stopC:
 			return // Ends the goroutine.
-		case msg := <-mq.messagesC:
+		case msg := <-messagesC:
 			// Register outstanding acks, which are primarily handled by the
 			// `committer`.
 			mq.acks.Push(msg.Ack.(*ackConsumer))
@@ -123,12 +141,13 @@ type subscribeStream struct {
 	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mu.
-	messageQueue    *messageDeliveryQueue
-	stream          *retryableStream
-	offsetTracker   subscriberOffsetTracker
-	flowControl     flowControlBatcher
-	pollFlowControl *periodicTask
-	seekInFlight    bool
+	messageQueue           *messageDeliveryQueue
+	stream                 *retryableStream
+	offsetTracker          subscriberOffsetTracker
+	flowControl            flowControlBatcher
+	pollFlowControl        *periodicTask
+	seekInFlight           bool
+	enableBatchFlowControl bool
 
 	abstractService
 }
@@ -174,7 +193,7 @@ func (s *subscribeStream) Start() {
 		s.pollFlowControl.Start()
 		s.messageQueue.Start()
 
-		s.flowControl.OnClientFlow(flowControlTokens{
+		s.flowControl.Reset(flowControlTokens{
 			Bytes:    int64(s.settings.MaxOutstandingBytes),
 			Messages: int64(s.settings.MaxOutstandingMessages),
 		})
@@ -223,10 +242,14 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 			s.seekInFlight = true
 		}
 		s.unsafeSendFlowControl(s.flowControl.RequestForRestart())
+		s.enableBatchFlowControl = true
 		s.pollFlowControl.Start()
 
 	case streamReconnecting:
 		s.seekInFlight = false
+		// Ensure no batch flow control tokens are sent until the RequestForRestart
+		// is sent above when a new subscribe stream is initialized.
+		s.enableBatchFlowControl = false
 		s.pollFlowControl.Stop()
 
 	case streamTerminated:
@@ -284,16 +307,11 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 }
 
 func (s *subscribeStream) onAck(ac *ackConsumer) {
-	// Don't block the user's goroutine with potentially expensive ack processing.
-	go s.onAckAsync(ac.MsgBytes)
-}
-
-func (s *subscribeStream) onAckAsync(msgBytes int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.status == serviceActive {
-		s.unsafeAllowFlow(flowControlTokens{Bytes: msgBytes, Messages: 1})
+		s.unsafeAllowFlow(flowControlTokens{Bytes: ac.MsgBytes, Messages: 1})
 	}
 }
 
@@ -301,12 +319,15 @@ func (s *subscribeStream) onAckAsync(msgBytes int64) {
 func (s *subscribeStream) sendBatchFlowControl() {
 	s.mu.Lock()
 	defer s.mu.Unlock()
-	s.unsafeSendFlowControl(s.flowControl.ReleasePendingRequest())
+
+	if s.enableBatchFlowControl {
+		s.unsafeSendFlowControl(s.flowControl.ReleasePendingRequest())
+	}
 }
 
 func (s *subscribeStream) unsafeAllowFlow(allow flowControlTokens) {
 	s.flowControl.OnClientFlow(allow)
-	if s.flowControl.ShouldExpediteBatchRequest() {
+	if s.flowControl.ShouldExpediteBatchRequest() && s.enableBatchFlowControl {
 		s.unsafeSendFlowControl(s.flowControl.ReleasePendingRequest())
 	}
 }
@@ -381,15 +402,14 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // partitions.
 type multiPartitionSubscriber struct {
 	// Immutable after creation.
-	clients     apiClients
 	subscribers []*singlePartitionSubscriber
 
-	compositeService
+	apiClientService
 }
 
 func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
 	ms := &multiPartitionSubscriber{
-		clients: allClients,
+		apiClientService: apiClientService{clients: allClients},
 	}
 	ms.init()
 
@@ -412,18 +432,11 @@ func (ms *multiPartitionSubscriber) Terminate() {
 	}
 }
 
-func (ms *multiPartitionSubscriber) WaitStopped() error {
-	err := ms.compositeService.WaitStopped()
-	ms.clients.Close()
-	return err
-}
-
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
 // listen to its assigned partition numbers and dynamically add/remove
 // singlePartitionSubscribers.
 type assigningSubscriber struct {
 	// Immutable after creation.
-	clients    apiClients
 	subFactory *singlePartitionSubscriberFactory
 	assigner   *assigner
 
@@ -431,14 +444,14 @@ type assigningSubscriber struct {
 	// Subscribers keyed by partition number. Updated as assignments change.
 	subscribers map[int]*singlePartitionSubscriber
 
-	compositeService
+	apiClientService
 }
 
 func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
-		clients:     allClients,
-		subFactory:  subFactory,
-		subscribers: make(map[int]*singlePartitionSubscriber),
+		apiClientService: apiClientService{clients: allClients},
+		subFactory:       subFactory,
+		subscribers:      make(map[int]*singlePartitionSubscriber),
 	}
 	as.init()
 
@@ -494,12 +507,6 @@ func (as *assigningSubscriber) Terminate() {
 	}
 }
 
-func (as *assigningSubscriber) WaitStopped() error {
-	err := as.compositeService.WaitStopped()
-	as.clients.Close()
-	return err
-}
-
 // Subscriber is the client interface exported from this package for receiving
 // messages.
 type Subscriber interface {
@@ -518,15 +525,20 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	if err := validateReceiveSettings(settings); err != nil {
 		return nil, err
 	}
+
+	var allClients apiClients
 	subClient, err := newSubscriberClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
+	allClients = append(allClients, subClient)
+
 	cursorClient, err := newCursorClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
-	allClients := apiClients{subClient, cursorClient}
+	allClients = append(allClients, cursorClient)
 
 	subFactory := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -542,6 +554,7 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	}
 	partitionClient, err := newPartitionAssignmentClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
 	allClients = append(allClients, partitionClient)

@@ -399,6 +399,12 @@ func TestTableMetadataToUpdateToBQ(t *testing.T) {
 				ForceSendFields:        []string{"RequirePartitionFilter"},
 			},
 		},
+		{
+			tm: TableMetadataToUpdate{Clustering: &Clustering{Fields: []string{"foo", "bar"}}},
+			want: &bq.Table{
+				Clustering: &bq.Clustering{Fields: []string{"foo", "bar"}},
+			},
+		},
 	} {
 		got, _ := test.tm.toBQ()
 		if !testutil.Equal(got, test.want) {

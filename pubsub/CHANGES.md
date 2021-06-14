@@ -1,5 +1,20 @@
 # Changes
 
+## [1.11.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.3...pubsub/v1.11.0) (2021-05-27)
+
+
+### Features
+
+* **pubsub:** add flush method to topic ([#2863](https://www.github.com/googleapis/google-cloud-go/issues/2863)) ([825ddd6](https://www.github.com/googleapis/google-cloud-go/commit/825ddd692363eb2dd8cd253cc5976867e432f547))
+
+### [1.10.3](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.2...pubsub/v1.10.3) (2021-04-23)
+
+
+### Bug Fixes
+
+* **pubsub:** fix failing message storage policy tests ([#4003](https://www.github.com/googleapis/google-cloud-go/issues/4003)) ([8946158](https://www.github.com/googleapis/google-cloud-go/commit/8946158561e1599c164021364e7fcb2a4c4d2f3d))
+* **pubsub:** make config call permission error in Receive transparent ([#3985](https://www.github.com/googleapis/google-cloud-go/issues/3985)) ([a1614db](https://www.github.com/googleapis/google-cloud-go/commit/a1614db35a51d21c52bcba5e805071381d8f5133))
+
 ### [1.10.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.10.1...pubsub/v1.10.2) (2021-04-08)
 
 

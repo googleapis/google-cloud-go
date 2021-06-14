@@ -30,19 +30,19 @@ func ExampleNewFirewallClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleFirewallClient_ListIngressRules() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListIngressRulesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleFirewallClient_ListIngressRules() {
 }
 
 func ExampleFirewallClient_BatchUpdateIngressRules() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.BatchUpdateIngressRulesRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleFirewallClient_BatchUpdateIngressRules() {
 }
 
 func ExampleFirewallClient_CreateIngressRule() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.CreateIngressRuleRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleFirewallClient_CreateIngressRule() {
 }
 
 func ExampleFirewallClient_GetIngressRule() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetIngressRuleRequest{
 		// TODO: Fill request struct fields.
@@ -122,13 +119,12 @@ func ExampleFirewallClient_GetIngressRule() {
 }
 
 func ExampleFirewallClient_UpdateIngressRule() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewFirewallClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.UpdateIngressRuleRequest{
 		// TODO: Fill request struct fields.
@@ -147,6 +143,7 @@ func ExampleFirewallClient_DeleteIngressRule() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteIngressRuleRequest{
 		// TODO: Fill request struct fields.

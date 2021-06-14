@@ -30,19 +30,19 @@ func ExampleNewInstancesClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleInstancesClient_ListInstances() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := appengine.NewInstancesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleInstancesClient_ListInstances() {
 }
 
 func ExampleInstancesClient_GetInstance() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewInstancesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleInstancesClient_GetInstance() {
 }
 
 func ExampleInstancesClient_DeleteInstance() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewInstancesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -105,13 +103,12 @@ func ExampleInstancesClient_DeleteInstance() {
 }
 
 func ExampleInstancesClient_DebugInstance() {
-	// import appenginepb "google.golang.org/genproto/googleapis/appengine/v1"
-
 	ctx := context.Background()
 	c, err := appengine.NewInstancesClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &appenginepb.DebugInstanceRequest{
 		// TODO: Fill request struct fields.

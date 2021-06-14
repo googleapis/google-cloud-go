@@ -249,6 +249,36 @@ func TestIntegration_TableCreate(t *testing.T) {
 	}
 }
 
+func TestIntegration_TableCreateWithConstraints(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	table := dataset.Table("constraints")
+	schema := Schema{
+		{Name: "str_col", Type: StringFieldType, MaxLength: 10},
+		{Name: "bytes_col", Type: BytesFieldType, MaxLength: 150},
+		{Name: "num_col", Type: NumericFieldType, Precision: 20},
+		{Name: "bignumeric_col", Type: BigNumericFieldType, Precision: 30, Scale: 5},
+	}
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
+	})
+	if err != nil {
+		t.Fatalf("table create error: %v", err)
+	}
+
+	meta, err := table.Metadata(context.Background())
+	if err != nil {
+		t.Fatalf("couldn't get metadata: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+
+}
+
 func TestIntegration_TableCreateView(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")

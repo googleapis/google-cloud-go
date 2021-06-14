@@ -30,19 +30,19 @@ func ExampleNewContextsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleContextsClient_ListContexts() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.ListContextsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleContextsClient_ListContexts() {
 }
 
 func ExampleContextsClient_GetContext() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.GetContextRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleContextsClient_GetContext() {
 }
 
 func ExampleContextsClient_CreateContext() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.CreateContextRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleContextsClient_CreateContext() {
 }
 
 func ExampleContextsClient_UpdateContext() {
-	// import dialogflowpb "google.golang.org/genproto/googleapis/cloud/dialogflow/v2"
-
 	ctx := context.Background()
 	c, err := dialogflow.NewContextsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.UpdateContextRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleContextsClient_DeleteContext() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteContextRequest{
 		// TODO: Fill request struct fields.
@@ -143,6 +141,7 @@ func ExampleContextsClient_DeleteAllContexts() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dialogflowpb.DeleteAllContextsRequest{
 		// TODO: Fill request struct fields.

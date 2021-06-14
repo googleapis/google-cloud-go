@@ -30,19 +30,19 @@ func ExampleNewCloudChannelClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleCloudChannelClient_ListCustomers() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListCustomersRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleCloudChannelClient_ListCustomers() {
 }
 
 func ExampleCloudChannelClient_GetCustomer() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.GetCustomerRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleCloudChannelClient_GetCustomer() {
 }
 
 func ExampleCloudChannelClient_CheckCloudIdentityAccountsExist() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.CheckCloudIdentityAccountsExistRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleCloudChannelClient_CheckCloudIdentityAccountsExist() {
 }
 
 func ExampleCloudChannelClient_CreateCustomer() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.CreateCustomerRequest{
 		// TODO: Fill request struct fields.
@@ -122,13 +119,12 @@ func ExampleCloudChannelClient_CreateCustomer() {
 }
 
 func ExampleCloudChannelClient_UpdateCustomer() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.UpdateCustomerRequest{
 		// TODO: Fill request struct fields.
@@ -147,6 +143,7 @@ func ExampleCloudChannelClient_DeleteCustomer() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.DeleteCustomerRequest{
 		// TODO: Fill request struct fields.
@@ -158,13 +155,12 @@ func ExampleCloudChannelClient_DeleteCustomer() {
 }
 
 func ExampleCloudChannelClient_ProvisionCloudIdentity() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ProvisionCloudIdentityRequest{
 		// TODO: Fill request struct fields.
@@ -183,14 +179,12 @@ func ExampleCloudChannelClient_ProvisionCloudIdentity() {
 }
 
 func ExampleCloudChannelClient_ListEntitlements() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListEntitlementsRequest{
 		// TODO: Fill request struct fields.
@@ -210,14 +204,12 @@ func ExampleCloudChannelClient_ListEntitlements() {
 }
 
 func ExampleCloudChannelClient_ListTransferableSkus() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListTransferableSkusRequest{
 		// TODO: Fill request struct fields.
@@ -237,14 +229,12 @@ func ExampleCloudChannelClient_ListTransferableSkus() {
 }
 
 func ExampleCloudChannelClient_ListTransferableOffers() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListTransferableOffersRequest{
 		// TODO: Fill request struct fields.
@@ -264,13 +254,12 @@ func ExampleCloudChannelClient_ListTransferableOffers() {
 }
 
 func ExampleCloudChannelClient_GetEntitlement() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.GetEntitlementRequest{
 		// TODO: Fill request struct fields.
@@ -284,13 +273,12 @@ func ExampleCloudChannelClient_GetEntitlement() {
 }
 
 func ExampleCloudChannelClient_CreateEntitlement() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.CreateEntitlementRequest{
 		// TODO: Fill request struct fields.
@@ -309,13 +297,12 @@ func ExampleCloudChannelClient_CreateEntitlement() {
 }
 
 func ExampleCloudChannelClient_ChangeParameters() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ChangeParametersRequest{
 		// TODO: Fill request struct fields.
@@ -334,13 +321,12 @@ func ExampleCloudChannelClient_ChangeParameters() {
 }
 
 func ExampleCloudChannelClient_ChangeRenewalSettings() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ChangeRenewalSettingsRequest{
 		// TODO: Fill request struct fields.
@@ -359,13 +345,12 @@ func ExampleCloudChannelClient_ChangeRenewalSettings() {
 }
 
 func ExampleCloudChannelClient_ChangeOffer() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ChangeOfferRequest{
 		// TODO: Fill request struct fields.
@@ -384,13 +369,12 @@ func ExampleCloudChannelClient_ChangeOffer() {
 }
 
 func ExampleCloudChannelClient_StartPaidService() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.StartPaidServiceRequest{
 		// TODO: Fill request struct fields.
@@ -409,13 +393,12 @@ func ExampleCloudChannelClient_StartPaidService() {
 }
 
 func ExampleCloudChannelClient_SuspendEntitlement() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.SuspendEntitlementRequest{
 		// TODO: Fill request struct fields.
@@ -434,13 +417,12 @@ func ExampleCloudChannelClient_SuspendEntitlement() {
 }
 
 func ExampleCloudChannelClient_CancelEntitlement() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.CancelEntitlementRequest{
 		// TODO: Fill request struct fields.
@@ -457,13 +439,12 @@ func ExampleCloudChannelClient_CancelEntitlement() {
 }
 
 func ExampleCloudChannelClient_ActivateEntitlement() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ActivateEntitlementRequest{
 		// TODO: Fill request struct fields.
@@ -482,13 +463,12 @@ func ExampleCloudChannelClient_ActivateEntitlement() {
 }
 
 func ExampleCloudChannelClient_TransferEntitlements() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.TransferEntitlementsRequest{
 		// TODO: Fill request struct fields.
@@ -507,13 +487,12 @@ func ExampleCloudChannelClient_TransferEntitlements() {
 }
 
 func ExampleCloudChannelClient_TransferEntitlementsToGoogle() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.TransferEntitlementsToGoogleRequest{
 		// TODO: Fill request struct fields.
@@ -530,14 +509,12 @@ func ExampleCloudChannelClient_TransferEntitlementsToGoogle() {
 }
 
 func ExampleCloudChannelClient_ListChannelPartnerLinks() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListChannelPartnerLinksRequest{
 		// TODO: Fill request struct fields.
@@ -557,13 +534,12 @@ func ExampleCloudChannelClient_ListChannelPartnerLinks() {
 }
 
 func ExampleCloudChannelClient_GetChannelPartnerLink() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.GetChannelPartnerLinkRequest{
 		// TODO: Fill request struct fields.
@@ -577,13 +553,12 @@ func ExampleCloudChannelClient_GetChannelPartnerLink() {
 }
 
 func ExampleCloudChannelClient_CreateChannelPartnerLink() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.CreateChannelPartnerLinkRequest{
 		// TODO: Fill request struct fields.
@@ -597,13 +572,12 @@ func ExampleCloudChannelClient_CreateChannelPartnerLink() {
 }
 
 func ExampleCloudChannelClient_UpdateChannelPartnerLink() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.UpdateChannelPartnerLinkRequest{
 		// TODO: Fill request struct fields.
@@ -616,15 +590,32 @@ func ExampleCloudChannelClient_UpdateChannelPartnerLink() {
 	_ = resp
 }
 
-func ExampleCloudChannelClient_ListProducts() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
+func ExampleCloudChannelClient_LookupOffer() {
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
+	req := &channelpb.LookupOfferRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.LookupOffer(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleCloudChannelClient_ListProducts() {
+	ctx := context.Background()
+	c, err := channel.NewCloudChannelClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
 
 	req := &channelpb.ListProductsRequest{
 		// TODO: Fill request struct fields.
@@ -644,14 +635,12 @@ func ExampleCloudChannelClient_ListProducts() {
 }
 
 func ExampleCloudChannelClient_ListSkus() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListSkusRequest{
 		// TODO: Fill request struct fields.
@@ -671,14 +660,12 @@ func ExampleCloudChannelClient_ListSkus() {
 }
 
 func ExampleCloudChannelClient_ListOffers() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListOffersRequest{
 		// TODO: Fill request struct fields.
@@ -698,14 +685,12 @@ func ExampleCloudChannelClient_ListOffers() {
 }
 
 func ExampleCloudChannelClient_ListPurchasableSkus() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListPurchasableSkusRequest{
 		// TODO: Fill request struct fields.
@@ -725,14 +710,12 @@ func ExampleCloudChannelClient_ListPurchasableSkus() {
 }
 
 func ExampleCloudChannelClient_ListPurchasableOffers() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListPurchasableOffersRequest{
 		// TODO: Fill request struct fields.
@@ -752,13 +735,12 @@ func ExampleCloudChannelClient_ListPurchasableOffers() {
 }
 
 func ExampleCloudChannelClient_RegisterSubscriber() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.RegisterSubscriberRequest{
 		// TODO: Fill request struct fields.
@@ -772,13 +754,12 @@ func ExampleCloudChannelClient_RegisterSubscriber() {
 }
 
 func ExampleCloudChannelClient_UnregisterSubscriber() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.UnregisterSubscriberRequest{
 		// TODO: Fill request struct fields.
@@ -792,14 +773,12 @@ func ExampleCloudChannelClient_UnregisterSubscriber() {
 }
 
 func ExampleCloudChannelClient_ListSubscribers() {
-	// import channelpb "google.golang.org/genproto/googleapis/cloud/channel/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := channel.NewCloudChannelClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &channelpb.ListSubscribersRequest{
 		// TODO: Fill request struct fields.
