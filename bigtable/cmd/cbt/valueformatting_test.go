@@ -382,7 +382,6 @@ func TestValueFormattingFormat(t *testing.T) {
 	assertNoError(t, err)
 	assertEqual(t, "q", s, "    [18533 27756 28448 30575 29292 25633]")
 
-	
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
 	if assertNoError(t, err) { return }
 	pbExpect := 
