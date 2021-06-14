@@ -18,6 +18,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"log"
 	"math/big"
 	"reflect"
 	"regexp"
@@ -136,7 +137,7 @@ func (p QueryParameter) toBQ() (*bq.QueryParameter, error) {
 	}
 	return &bq.QueryParameter{
 		Name:           p.Name,
-		ParameterValue: &pv,
+		ParameterValue: pv,
 		ParameterType:  pt,
 	}, nil
 }
@@ -221,8 +222,8 @@ func paramType(t reflect.Type) (*bq.QueryParameterType, error) {
 	return nil, fmt.Errorf("bigquery: Go type %s cannot be represented as a parameter type", t)
 }
 
-func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
-	var res bq.QueryParameterValue
+func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
+	res := &bq.QueryParameterValue{}
 	if !v.IsValid() {
 		return res, errors.New("bigquery: nil parameter")
 	}
@@ -241,7 +242,7 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 		typeOfNullDateTime:
 		// Shared:  If the Null type isn't valid, we're not sending a value.
 		if !v.FieldByName("Valid").Bool() {
-			return res, nil
+			return nil, nil
 		}
 		// Now, handle each Null type seperately, where we have a value.
 		switch t {
@@ -309,11 +310,11 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 		for i := 0; i < v.Len(); i++ {
 			val, err := paramValue(v.Index(i))
 			if err != nil {
-				return bq.QueryParameterValue{}, err
+				return nil, err
 			}
-			vals = append(vals, &val)
+			vals = append(vals, val)
 		}
-		return bq.QueryParameterValue{ArrayValues: vals}, nil
+		return &bq.QueryParameterValue{ArrayValues: vals}, nil
 
 	case reflect.Ptr:
 		if t.Elem().Kind() != reflect.Struct {
@@ -330,16 +331,16 @@ func paramValue(v reflect.Value) (bq.QueryParameterValue, error) {
 	case reflect.Struct:
 		fields, err := fieldCache.Fields(t)
 		if err != nil {
-			return bq.QueryParameterValue{}, err
+			return nil, err
 		}
 		res.StructValues = map[string]bq.QueryParameterValue{}
 		for _, f := range fields {
 			fv := v.FieldByIndex(f.Index)
 			fp, err := paramValue(fv)
 			if err != nil {
-				return bq.QueryParameterValue{}, err
+				return nil, err
 			}
-			res.StructValues[f.Name] = fp
+			res.StructValues[f.Name] = *fp
 		}
 		return res, nil
 	}
@@ -391,20 +392,22 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		}
 		return convertParamStruct(qval.StructValues, qtype.StructTypes)
 	case "TIMESTAMP":
-		if qval.Value == "" {
+		if qval == nil {
 			return NullTimestamp{Valid: false}, nil
 		}
 		return time.Parse(timestampFormat, qval.Value)
 	case "DATETIME":
-		if qval.Value == "" {
+		if qval == nil {
 			return NullDateTime{Valid: false}, nil
 		}
 		return parseCivilDateTime(qval.Value)
 	default:
-		if qval.Value == "" {
+		if qval == nil {
 			switch qtype.Type {
 			case "INT64":
 				return NullInt64{Valid: false}, nil
+			case "STRING":
+				return NullString{Valid: false}, nil
 			case "FLOAT64":
 				return NullFloat64{Valid: false}, nil
 			case "BOOL":
@@ -414,13 +417,15 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 			case "TIME":
 				return NullTime{Valid: false}, nil
 			case "GEOGRAPHY":
-				// TODO: decide if empty geography string should represent empty or null
 				return NullGeography{Valid: false}, nil
 			}
+
 		}
-		// Note: we cannot tell the difference between a null and empty string
+		// Note: we cannot tell the difference between a null and empty STRING
 		// in the *bq.QueryParameterValue from backend due to how JSON is handled,
-		// so we retain the existing behavior that it's treated an empty string.
+		// so we retain the existing behavior that it's treated an empty string.  We
+		// use the same behavior for GEOGRAPHY.
+		log.Printf("WTF: %v -> %v", qval.Value, qtype.Type)
 		return convertBasicType(qval.Value, paramTypeToFieldType[qtype.Type])
 	}
 }

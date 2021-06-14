@@ -17,6 +17,7 @@ package bigquery
 import (
 	"context"
 	"errors"
+	"log"
 	"math"
 	"math/big"
 	"reflect"
@@ -30,71 +31,94 @@ import (
 )
 
 var scalarTests = []struct {
-	val         interface{}            // The Go value
-	wantVal     string                 // paramValue's desired output
-	wantType    *bq.QueryParameterType // paramType's desired output
-	roundTripOk bool                   // Value can roundtrip without issue.
+	val      interface{} // input value sent as query param
+	wantNil  bool        // paramValue desired as nil
+	wantVal  string
+	wantType *bq.QueryParameterType // paramType's desired output
+	wantStat interface{}            // val when roundtripped as a backend stat.
 }{
-	{int64(0), "0", int64ParamType, true},
-	{NullInt64{Int64: 3, Valid: true}, "3", int64ParamType, false},
-	{NullInt64{Valid: false}, "", int64ParamType, true},
-	{3.14, "3.14", float64ParamType, true},
-	{3.14159e-87, "3.14159e-87", float64ParamType, true},
-	{NullFloat64{Float64: 3.14, Valid: true}, "3.14", float64ParamType, false},
-	{NullFloat64{Valid: false}, "", float64ParamType, true},
-	{math.NaN(), "NaN", float64ParamType, true},
-	{true, "true", boolParamType, true},
-	{NullBool{Bool: true, Valid: true}, "true", boolParamType, false},
-	{NullBool{Valid: false}, "", boolParamType, true},
-	{"string", "string", stringParamType, true},
-	{"\u65e5\u672c\u8a9e\n", "\u65e5\u672c\u8a9e\n", stringParamType, true},
-	{NullString{StringVal: "string", Valid: true}, "string", stringParamType, false},
-	{NullString{Valid: false}, "", stringParamType, false}, // Cannot detect null strings on roundtrip.
-	{[]byte("foo"), "Zm9v", bytesParamType, true},          // base64 encoding of "foo"
+	{int64(0), false, "0", int64ParamType, int64(0)},
+	{NullInt64{Int64: 3, Valid: true}, false, "3", int64ParamType, int64(3)},
+	{NullInt64{Valid: false}, true, "", int64ParamType, NullInt64{Valid: false}},
+	{3.14, false, "3.14", float64ParamType, 3.14},
+	{3.14159e-87, false, "3.14159e-87", float64ParamType, 3.14159e-87},
+	{NullFloat64{Float64: 3.14, Valid: true}, false, "3.14", float64ParamType, 3.14},
+	{NullFloat64{Valid: false}, true, "", float64ParamType, NullFloat64{Valid: false}},
+	{math.NaN(), false, "NaN", float64ParamType, math.NaN()},
+	{true, false, "true", boolParamType, true},
+	{NullBool{Bool: true, Valid: true}, false, "true", boolParamType, true},
+	{NullBool{Valid: false}, true, "", boolParamType, NullBool{Valid: false}},
+	{"string", false, "string", stringParamType, "string"},
+	{"\u65e5\u672c\u8a9e\n", false, "\u65e5\u672c\u8a9e\n", stringParamType, "\u65e5\u672c\u8a9e\n"},
+	{NullString{StringVal: "string2", Valid: true}, false, "string2", stringParamType, "string2"},
+	{NullString{Valid: false}, true, "", stringParamType, NullString{Valid: false}},
+	{[]byte("foo"), false, "Zm9v", bytesParamType, []byte("foo")}, // base64 encoding of "foo"
 	{time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)),
+		false,
 		"2016-03-20 04:22:09.000005-01:02",
 		timestampParamType,
-		true},
-	{NullTimestamp{Timestamp: time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)), Valid: true},
-		"2016-03-20 04:22:09.000005-01:02",
+		time.Date(2016, 3, 20, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))},
+	{NullTimestamp{Timestamp: time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720)), Valid: true},
+		false,
+		"2016-03-22 04:22:09.000005-01:02",
 		timestampParamType,
-		false},
+		time.Date(2016, 3, 22, 4, 22, 9, 5000, time.FixedZone("neg1-2", -3720))},
 	{NullTimestamp{Valid: false},
+		true,
 		"",
 		timestampParamType,
-		true},
-	{civil.Date{Year: 2016, Month: 3, Day: 20}, "2016-03-20", dateParamType, true},
-	{NullDate{
-		Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Valid: true},
+		NullTimestamp{Valid: false}},
+	{civil.Date{Year: 2016, Month: 3, Day: 20},
+		false,
 		"2016-03-20",
-		dateParamType, false},
+		dateParamType,
+		civil.Date{Year: 2016, Month: 3, Day: 20}},
 	{NullDate{
-		Valid: false},
+		Date: civil.Date{Year: 2016, Month: 3, Day: 24}, Valid: true},
+		false,
+		"2016-03-24",
+		dateParamType,
+		civil.Date{Year: 2016, Month: 3, Day: 24}},
+	{NullDate{Valid: false},
+		true,
 		"",
-		dateParamType, true},
-	{civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}, "04:05:06.789000", timeParamType, true},
+		dateParamType,
+		NullDate{Valid: false}},
+	{civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000},
+		false,
+		"04:05:06.789000",
+		timeParamType,
+		civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}},
 	{NullTime{
-		Time: civil.Time{Hour: 5, Minute: 6, Second: 7, Nanosecond: 789000000}, Valid: true},
-		"05:06:07.789000",
-		timeParamType, false},
-	{NullTime{
-		Valid: false},
+		Time: civil.Time{Hour: 6, Minute: 7, Second: 8, Nanosecond: 789000000}, Valid: true},
+		false,
+		"06:07:08.789000",
+		timeParamType,
+		civil.Time{Hour: 6, Minute: 7, Second: 8, Nanosecond: 789000000}},
+	{NullTime{Valid: false},
+		true,
 		"",
-		timeParamType, true},
+		timeParamType,
+		NullTime{Valid: false}},
 	{civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}},
+		false,
 		"2016-03-20 04:05:06.789000",
-		dateTimeParamType, true},
+		dateTimeParamType,
+		civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 20}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}},
 	{NullDateTime{
 		DateTime: civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 21}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}, Valid: true},
+		false,
 		"2016-03-21 04:05:06.789000",
-		dateTimeParamType, false},
-	{NullDateTime{
-		Valid: false},
+		dateTimeParamType,
+		civil.DateTime{Date: civil.Date{Year: 2016, Month: 3, Day: 21}, Time: civil.Time{Hour: 4, Minute: 5, Second: 6, Nanosecond: 789000000}}},
+	{NullDateTime{Valid: false},
+		true,
 		"",
-		dateTimeParamType, true},
-	{big.NewRat(12345, 1000), "12.345000000", numericParamType, true},
-	{NullGeography{GeographyVal: "foo", Valid: true}, "foo", geographyParamType, false},
-	{NullGeography{Valid: false}, "", geographyParamType, true},
+		dateTimeParamType,
+		NullDateTime{Valid: false}},
+	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
+	{NullGeography{GeographyVal: "foo", Valid: true}, false, "foo", geographyParamType, "foo"},
+	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
 }
 
 type (
@@ -156,28 +180,33 @@ func TestParamValueScalar(t *testing.T) {
 	for _, test := range scalarTests {
 		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
-			t.Errorf("%v: got %v, want nil", test.val, err)
-			continue
+			t.Errorf("%v: got err %v", test.val, err)
 		}
-		want := sval(test.wantVal)
-		if !testutil.Equal(got, want) {
-			t.Errorf("%v:\ngot  %+v\nwant %+v", test.val, got, want)
+		if test.wantNil {
+			if got != nil {
+				t.Errorf("%#v: wanted nil, got %v", test.val, got)
+			}
+		} else {
+			want := sval(test.wantVal)
+			if !testutil.Equal(got, &want) {
+				t.Errorf("%#v:\ngot  %+v\nwant %+v", test.val, got, want)
+			}
 		}
 	}
 }
 
 func TestParamValueArray(t *testing.T) {
-	qpv := bq.QueryParameterValue{ArrayValues: []*bq.QueryParameterValue{
+	qpv := &bq.QueryParameterValue{ArrayValues: []*bq.QueryParameterValue{
 		{Value: "1"},
 		{Value: "2"},
 	},
 	}
 	for _, test := range []struct {
 		val  interface{}
-		want bq.QueryParameterValue
+		want *bq.QueryParameterValue
 	}{
-		{[]int(nil), bq.QueryParameterValue{}},
-		{[]int{}, bq.QueryParameterValue{}},
+		{[]int(nil), &bq.QueryParameterValue{}},
+		{[]int{}, &bq.QueryParameterValue{}},
 		{[]int{1, 2}, qpv},
 		{[2]int{1, 2}, qpv},
 	} {
@@ -196,8 +225,8 @@ func TestParamValueStruct(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if !testutil.Equal(got, s1ParamValue) {
-		t.Errorf("got  %+v\nwant %+v", got, s1ParamValue)
+	if !testutil.Equal(got, &s1ParamValue) {
+		t.Errorf("got  %+v\nwant %+v", got, &s1ParamValue)
 	}
 }
 
@@ -264,18 +293,12 @@ func TestConvertParamValue(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		got, err := convertParamValue(&pval, ptype)
+		got, err := convertParamValue(pval, ptype)
 		if err != nil {
 			t.Fatalf("convertParamValue(%+v, %+v): %v", pval, ptype, err)
 		}
-		if test.roundTripOk {
-			if !testutil.Equal(got, test.val) {
-				t.Errorf("%#v: got %#v", test.val, got)
-			}
-		} else {
-			if testutil.Equal(got, test.val) {
-				t.Errorf("%#v: roundtripped equal but shouldn't, got %#v", test.val, got)
-			}
+		if !testutil.Equal(got, test.wantStat) {
+			t.Errorf("%#v: wanted stat as %#v, got %#v", test.val, test.wantStat, got)
 		}
 
 	}
@@ -319,17 +342,16 @@ func TestIntegration_ScalarParam(t *testing.T) {
 		func(t time.Time) time.Time { return t.Round(time.Microsecond) })
 	c := getClient(t)
 	for _, test := range scalarTests {
-		if test.roundTripOk {
-			gotData, gotParam, err := paramRoundTrip(c, test.val)
-			if err != nil {
-				t.Fatal(err)
-			}
-			if !testutil.Equal(gotData, test.val, roundToMicros) {
-				t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotData, gotData, test.val, test.val)
-			}
-			if !testutil.Equal(gotParam, test.val, roundToMicros) {
-				t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.val, test.val)
-			}
+		log.Printf("val: %T %#v", test.val, test.val)
+		gotData, gotParam, err := paramRoundTrip(c, test.val)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !testutil.Equal(gotData, test.wantVal, roundToMicros) {
+			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotData, gotData, test.val, test.val)
+		}
+		if !testutil.Equal(gotParam, test.wantStat, roundToMicros) {
+			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.wantStat, test.wantStat)
 		}
 	}
 }
