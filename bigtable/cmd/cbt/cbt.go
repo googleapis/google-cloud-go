@@ -968,7 +968,8 @@ func doLookup(ctx context.Context, args ...string) {
 			"[app-profile=<app profile id>]")
 	}
 
-	parsed, err := parseArgs(args[2:], []string{"columns", "cells-per-column", "app-profile"})
+	parsed, err := parseArgs(args[2:], []string{
+		"columns", "cells-per-column", "app-profile", "format-file"})
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -998,6 +999,10 @@ func doLookup(ctx context.Context, args ...string) {
 	table, row := args[0], args[1]
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(table)
 	r, err := tbl.ReadRow(ctx, row, opts...)
+	if err != nil {
+		log.Fatalf("Reading row: %v", err)
+	}
+	err = valueFormatting.setup(parsed)
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
@@ -1109,7 +1114,9 @@ func doRead(ctx context.Context, args ...string) {
 	}
 
 	parsed, err := parseArgs(args[1:], []string{
-		"start", "end", "prefix", "columns", "count", "cells-per-column", "regex", "app-profile", "limit",
+		"start", "end", "prefix", "columns", "count",
+		"cells-per-column", "regex", "app-profile", "limit",
+		"format-file",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -1165,6 +1172,12 @@ func doRead(ctx context.Context, args ...string) {
 	} else if len(filters) == 1 {
 		opts = append(opts, bigtable.RowFilter(filters[0]))
 	}
+
+	err = valueFormatting.setup(parsed)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 
 	// TODO(dsymonds): Support filters.
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])

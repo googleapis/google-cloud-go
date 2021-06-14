@@ -354,8 +354,8 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 
 func TestValueFormattingSetup(t *testing.T) {
 	formatting := NewValueFormatting()
-	formatting.flags.formatFile = filepath.Join("testdata", t.Name() + ".yml")
-	err := formatting.setup()
+	err := formatting.setup(map[string]string{
+		"format-file": filepath.Join("testdata", t.Name() + ".yml")})
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\ncol1: No type specified for encoding: B")
 }
@@ -376,7 +376,7 @@ func TestValueFormattingFormat(t *testing.T) {
 	formatting.settings.Columns["address"] =
 		ValueFormatColumn{Encoding: "p", Type: "tutorial.Person"}
 	formatting.settings.Columns["person"] =	ValueFormatColumn{Encoding: "p"}
-	err := formatting.setup()
+	err := formatting.setup(map[string]string{})
 
 	s, err := formatting.format("", "f1", "c1", []byte("Hello world!"))
 	assertEqual(t, s, "\"Hello world!\"\n")
@@ -463,8 +463,6 @@ func TestPrintRow(t *testing.T) {
 		"  person                                   @ 1969/12/31-19:00:00.000000\n" +
 		"    \"\\n\\x03Jim\\x10*\\x1a\\x0fjim@example.com\\\"\\f\\n\\b555-1212\\x10\\x01\"\n" +
                 ""
-	// fmt.Println(out)
-	// fmt.Println(expect)
 
 	assertEqual(t, out, expect)
 
@@ -478,7 +476,7 @@ func TestPrintRow(t *testing.T) {
 		ValueFormatColumn{Encoding: "Binary", Type: "int16"}
 	valueFormatting.settings.Columns["person"] =
 		ValueFormatColumn{Encoding: "ProtocolBuffer"}
-	valueFormatting.setup()
+	valueFormatting.setup(map[string]string{})
 
 	expectf := (
 		"----------------------------------------\n" +
@@ -496,7 +494,7 @@ func TestPrintRow(t *testing.T) {
 		"      type: HOME\n" +
 		"    >\n" +
 		"")
-	
+
 	out, err = grabStdout(func () { printRow(row) })
 	if assertNoError(t, err) { return }
 	assertEqual(t, out, expectf)

@@ -47,9 +47,6 @@ type valueFormatter func ([]byte) (string, error)
 
 type ValueFormatting struct {
 	settings ValueFormatSettings
-	flags struct {
-		formatFile string
-	}
 	pbMessageTypes map[string]*desc.MessageDescriptor
 	formatters map[[2]string]valueFormatter
 }
@@ -306,10 +303,10 @@ func (self *ValueFormatting) setupPBMessages() error {
 	return nil
 }
 
-func (self *ValueFormatting) setup() error {
+func (self *ValueFormatting) setup(options map[string]string) error {
 	var err error = nil
-	if self.flags.formatFile != "" {
-		err = self.parse(self.flags.formatFile)
+	if options["format-file"] != "" {
+		err = self.parse(options["format-file"])
 	}
 	if err == nil {
 		err = self.setupPBMessages()
