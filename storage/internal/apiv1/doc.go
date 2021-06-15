@@ -35,8 +35,8 @@ import (
 	"context"
 	"os"
 	"runtime"
-	"strings"
 	"strconv"
+	"strings"
 	"unicode"
 
 	"google.golang.org/api/option"
@@ -118,4 +118,3 @@ func versionGo() string {
 	}
 	return "UNKNOWN"
 }
-

@@ -36,62 +36,62 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	DeleteBucketAccessControl []gax.CallOption
-	GetBucketAccessControl []gax.CallOption
-	InsertBucketAccessControl []gax.CallOption
-	ListBucketAccessControls []gax.CallOption
-	UpdateBucketAccessControl []gax.CallOption
-	PatchBucketAccessControl []gax.CallOption
-	DeleteBucket []gax.CallOption
-	GetBucket []gax.CallOption
-	InsertBucket []gax.CallOption
-	ListChannels []gax.CallOption
-	ListBuckets []gax.CallOption
-	LockBucketRetentionPolicy []gax.CallOption
-	GetBucketIamPolicy []gax.CallOption
-	SetBucketIamPolicy []gax.CallOption
-	TestBucketIamPermissions []gax.CallOption
-	PatchBucket []gax.CallOption
-	UpdateBucket []gax.CallOption
-	StopChannel []gax.CallOption
+	DeleteBucketAccessControl        []gax.CallOption
+	GetBucketAccessControl           []gax.CallOption
+	InsertBucketAccessControl        []gax.CallOption
+	ListBucketAccessControls         []gax.CallOption
+	UpdateBucketAccessControl        []gax.CallOption
+	PatchBucketAccessControl         []gax.CallOption
+	DeleteBucket                     []gax.CallOption
+	GetBucket                        []gax.CallOption
+	InsertBucket                     []gax.CallOption
+	ListChannels                     []gax.CallOption
+	ListBuckets                      []gax.CallOption
+	LockBucketRetentionPolicy        []gax.CallOption
+	GetBucketIamPolicy               []gax.CallOption
+	SetBucketIamPolicy               []gax.CallOption
+	TestBucketIamPermissions         []gax.CallOption
+	PatchBucket                      []gax.CallOption
+	UpdateBucket                     []gax.CallOption
+	StopChannel                      []gax.CallOption
 	DeleteDefaultObjectAccessControl []gax.CallOption
-	GetDefaultObjectAccessControl []gax.CallOption
+	GetDefaultObjectAccessControl    []gax.CallOption
 	InsertDefaultObjectAccessControl []gax.CallOption
-	ListDefaultObjectAccessControls []gax.CallOption
-	PatchDefaultObjectAccessControl []gax.CallOption
+	ListDefaultObjectAccessControls  []gax.CallOption
+	PatchDefaultObjectAccessControl  []gax.CallOption
 	UpdateDefaultObjectAccessControl []gax.CallOption
-	DeleteNotification []gax.CallOption
-	GetNotification []gax.CallOption
-	InsertNotification []gax.CallOption
-	ListNotifications []gax.CallOption
-	DeleteObjectAccessControl []gax.CallOption
-	GetObjectAccessControl []gax.CallOption
-	InsertObjectAccessControl []gax.CallOption
-	ListObjectAccessControls []gax.CallOption
-	PatchObjectAccessControl []gax.CallOption
-	UpdateObjectAccessControl []gax.CallOption
-	ComposeObject []gax.CallOption
-	CopyObject []gax.CallOption
-	DeleteObject []gax.CallOption
-	GetObject []gax.CallOption
-	GetObjectMedia []gax.CallOption
-	InsertObject []gax.CallOption
-	ListObjects []gax.CallOption
-	RewriteObject []gax.CallOption
-	StartResumableWrite []gax.CallOption
-	QueryWriteStatus []gax.CallOption
-	PatchObject []gax.CallOption
-	UpdateObject []gax.CallOption
-	GetObjectIamPolicy []gax.CallOption
-	SetObjectIamPolicy []gax.CallOption
-	TestObjectIamPermissions []gax.CallOption
-	WatchAllObjects []gax.CallOption
-	GetServiceAccount []gax.CallOption
-	CreateHmacKey []gax.CallOption
-	DeleteHmacKey []gax.CallOption
-	GetHmacKey []gax.CallOption
-	ListHmacKeys []gax.CallOption
-	UpdateHmacKey []gax.CallOption
+	DeleteNotification               []gax.CallOption
+	GetNotification                  []gax.CallOption
+	InsertNotification               []gax.CallOption
+	ListNotifications                []gax.CallOption
+	DeleteObjectAccessControl        []gax.CallOption
+	GetObjectAccessControl           []gax.CallOption
+	InsertObjectAccessControl        []gax.CallOption
+	ListObjectAccessControls         []gax.CallOption
+	PatchObjectAccessControl         []gax.CallOption
+	UpdateObjectAccessControl        []gax.CallOption
+	ComposeObject                    []gax.CallOption
+	CopyObject                       []gax.CallOption
+	DeleteObject                     []gax.CallOption
+	GetObject                        []gax.CallOption
+	GetObjectMedia                   []gax.CallOption
+	InsertObject                     []gax.CallOption
+	ListObjects                      []gax.CallOption
+	RewriteObject                    []gax.CallOption
+	StartResumableWrite              []gax.CallOption
+	QueryWriteStatus                 []gax.CallOption
+	PatchObject                      []gax.CallOption
+	UpdateObject                     []gax.CallOption
+	GetObjectIamPolicy               []gax.CallOption
+	SetObjectIamPolicy               []gax.CallOption
+	TestObjectIamPermissions         []gax.CallOption
+	WatchAllObjects                  []gax.CallOption
+	GetServiceAccount                []gax.CallOption
+	CreateHmacKey                    []gax.CallOption
+	DeleteHmacKey                    []gax.CallOption
+	GetHmacKey                       []gax.CallOption
+	ListHmacKeys                     []gax.CallOption
+	UpdateHmacKey                    []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -102,7 +102,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
-		grpc.MaxCallRecvMsgSize(math.MaxInt32))),
+			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
 	}
 }
 
@@ -854,7 +854,6 @@ type Client struct {
 
 	// The call options for this service.
 	CallOptions *CallOptions
-
 }
 
 // GRPCClient is a client for interacting with Cloud Storage API over gRPC transport.
@@ -902,11 +901,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &GRPCClient{
-		connPool:    connPool,
+		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		client: storagepb.NewStorageClient(connPool),
-		CallOptions: &client.CallOptions,
-
+		client:           storagepb.NewStorageClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
@@ -941,7 +939,7 @@ func (c *GRPCClient) Close() error {
 // bucket.
 func (c *GRPCClient) DeleteBucketAccessControl(ctx context.Context, req *storagepb.DeleteBucketAccessControlRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -958,7 +956,7 @@ func (c *GRPCClient) DeleteBucketAccessControl(ctx context.Context, req *storage
 // GetBucketAccessControl returns the ACL entry for the specified entity on the specified bucket.
 func (c *GRPCClient) GetBucketAccessControl(ctx context.Context, req *storagepb.GetBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -979,7 +977,7 @@ func (c *GRPCClient) GetBucketAccessControl(ctx context.Context, req *storagepb.
 // InsertBucketAccessControl creates a new ACL entry on the specified bucket.
 func (c *GRPCClient) InsertBucketAccessControl(ctx context.Context, req *storagepb.InsertBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1000,7 +998,7 @@ func (c *GRPCClient) InsertBucketAccessControl(ctx context.Context, req *storage
 // ListBucketAccessControls retrieves ACL entries on the specified bucket.
 func (c *GRPCClient) ListBucketAccessControls(ctx context.Context, req *storagepb.ListBucketAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListBucketAccessControlsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1023,7 +1021,7 @@ func (c *GRPCClient) ListBucketAccessControls(ctx context.Context, req *storagep
 // reset to their default values.
 func (c *GRPCClient) UpdateBucketAccessControl(ctx context.Context, req *storagepb.UpdateBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1044,7 +1042,7 @@ func (c *GRPCClient) UpdateBucketAccessControl(ctx context.Context, req *storage
 // PatchBucketAccessControl updates an ACL entry on the specified bucket.
 func (c *GRPCClient) PatchBucketAccessControl(ctx context.Context, req *storagepb.PatchBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1065,7 +1063,7 @@ func (c *GRPCClient) PatchBucketAccessControl(ctx context.Context, req *storagep
 // DeleteBucket permanently deletes an empty bucket.
 func (c *GRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBucketRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1082,7 +1080,7 @@ func (c *GRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBuck
 // GetBucket returns metadata for the specified bucket.
 func (c *GRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1103,7 +1101,7 @@ func (c *GRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequ
 // InsertBucket creates a new bucket.
 func (c *GRPCClient) InsertBucket(ctx context.Context, req *storagepb.InsertBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1124,7 +1122,7 @@ func (c *GRPCClient) InsertBucket(ctx context.Context, req *storagepb.InsertBuck
 // ListChannels list active object change notification channels for this bucket.
 func (c *GRPCClient) ListChannels(ctx context.Context, req *storagepb.ListChannelsRequest, opts ...gax.CallOption) (*storagepb.ListChannelsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1145,7 +1143,7 @@ func (c *GRPCClient) ListChannels(ctx context.Context, req *storagepb.ListChanne
 // ListBuckets retrieves a list of buckets for a given project.
 func (c *GRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBucketsRequest, opts ...gax.CallOption) (*storagepb.ListBucketsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1166,7 +1164,7 @@ func (c *GRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBuckets
 // LockBucketRetentionPolicy locks retention policy on a bucket.
 func (c *GRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.LockRetentionPolicyRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1187,7 +1185,7 @@ func (c *GRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storage
 // GetBucketIamPolicy gets the IAM policy for the specified bucket.
 func (c *GRPCClient) GetBucketIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1208,7 +1206,7 @@ func (c *GRPCClient) GetBucketIamPolicy(ctx context.Context, req *storagepb.GetI
 // SetBucketIamPolicy updates an IAM policy for the specified bucket.
 func (c *GRPCClient) SetBucketIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1230,7 +1228,7 @@ func (c *GRPCClient) SetBucketIamPolicy(ctx context.Context, req *storagepb.SetI
 // any, are held by the caller.
 func (c *GRPCClient) TestBucketIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1252,7 +1250,7 @@ func (c *GRPCClient) TestBucketIamPermissions(ctx context.Context, req *storagep
 // writing, but configuration changes may take time to propagate.
 func (c *GRPCClient) PatchBucket(ctx context.Context, req *storagepb.PatchBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1277,7 +1275,7 @@ func (c *GRPCClient) PatchBucket(ctx context.Context, req *storagepb.PatchBucket
 // writing, but configuration changes may take time to propagate.
 func (c *GRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1301,7 +1299,7 @@ func (c *GRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBuck
 // are stopped using DeleteNotification.
 func (c *GRPCClient) StopChannel(ctx context.Context, req *storagepb.StopChannelRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1319,7 +1317,7 @@ func (c *GRPCClient) StopChannel(ctx context.Context, req *storagepb.StopChannel
 // on the specified bucket.
 func (c *GRPCClient) DeleteDefaultObjectAccessControl(ctx context.Context, req *storagepb.DeleteDefaultObjectAccessControlRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1337,7 +1335,7 @@ func (c *GRPCClient) DeleteDefaultObjectAccessControl(ctx context.Context, req *
 // specified bucket.
 func (c *GRPCClient) GetDefaultObjectAccessControl(ctx context.Context, req *storagepb.GetDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1358,7 +1356,7 @@ func (c *GRPCClient) GetDefaultObjectAccessControl(ctx context.Context, req *sto
 // InsertDefaultObjectAccessControl creates a new default object ACL entry on the specified bucket.
 func (c *GRPCClient) InsertDefaultObjectAccessControl(ctx context.Context, req *storagepb.InsertDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1379,7 +1377,7 @@ func (c *GRPCClient) InsertDefaultObjectAccessControl(ctx context.Context, req *
 // ListDefaultObjectAccessControls retrieves default object ACL entries on the specified bucket.
 func (c *GRPCClient) ListDefaultObjectAccessControls(ctx context.Context, req *storagepb.ListDefaultObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1400,7 +1398,7 @@ func (c *GRPCClient) ListDefaultObjectAccessControls(ctx context.Context, req *s
 // PatchDefaultObjectAccessControl updates a default object ACL entry on the specified bucket.
 func (c *GRPCClient) PatchDefaultObjectAccessControl(ctx context.Context, req *storagepb.PatchDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1423,7 +1421,7 @@ func (c *GRPCClient) PatchDefaultObjectAccessControl(ctx context.Context, req *s
 // their default values.
 func (c *GRPCClient) UpdateDefaultObjectAccessControl(ctx context.Context, req *storagepb.UpdateDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1446,7 +1444,7 @@ func (c *GRPCClient) UpdateDefaultObjectAccessControl(ctx context.Context, req *
 // deleted using StopChannel instead.
 func (c *GRPCClient) DeleteNotification(ctx context.Context, req *storagepb.DeleteNotificationRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1463,7 +1461,7 @@ func (c *GRPCClient) DeleteNotification(ctx context.Context, req *storagepb.Dele
 // GetNotification view a notification configuration.
 func (c *GRPCClient) GetNotification(ctx context.Context, req *storagepb.GetNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1487,7 +1485,7 @@ func (c *GRPCClient) GetNotification(ctx context.Context, req *storagepb.GetNoti
 // See https://cloud.google.com/storage/docs/pubsub-notifications (at https://cloud.google.com/storage/docs/pubsub-notifications).
 func (c *GRPCClient) InsertNotification(ctx context.Context, req *storagepb.InsertNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1508,7 +1506,7 @@ func (c *GRPCClient) InsertNotification(ctx context.Context, req *storagepb.Inse
 // ListNotifications retrieves a list of notification subscriptions for a given bucket.
 func (c *GRPCClient) ListNotifications(ctx context.Context, req *storagepb.ListNotificationsRequest, opts ...gax.CallOption) (*storagepb.ListNotificationsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1530,7 +1528,7 @@ func (c *GRPCClient) ListNotifications(ctx context.Context, req *storagepb.ListN
 // object.
 func (c *GRPCClient) DeleteObjectAccessControl(ctx context.Context, req *storagepb.DeleteObjectAccessControlRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1547,7 +1545,7 @@ func (c *GRPCClient) DeleteObjectAccessControl(ctx context.Context, req *storage
 // GetObjectAccessControl returns the ACL entry for the specified entity on the specified object.
 func (c *GRPCClient) GetObjectAccessControl(ctx context.Context, req *storagepb.GetObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1568,7 +1566,7 @@ func (c *GRPCClient) GetObjectAccessControl(ctx context.Context, req *storagepb.
 // InsertObjectAccessControl creates a new ACL entry on the specified object.
 func (c *GRPCClient) InsertObjectAccessControl(ctx context.Context, req *storagepb.InsertObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1589,7 +1587,7 @@ func (c *GRPCClient) InsertObjectAccessControl(ctx context.Context, req *storage
 // ListObjectAccessControls retrieves ACL entries on the specified object.
 func (c *GRPCClient) ListObjectAccessControls(ctx context.Context, req *storagepb.ListObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1612,7 +1610,7 @@ func (c *GRPCClient) ListObjectAccessControls(ctx context.Context, req *storagep
 // object_access_control object.  Other fields are unaffected.
 func (c *GRPCClient) PatchObjectAccessControl(ctx context.Context, req *storagepb.PatchObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1633,7 +1631,7 @@ func (c *GRPCClient) PatchObjectAccessControl(ctx context.Context, req *storagep
 // UpdateObjectAccessControl updates an ACL entry on the specified object.
 func (c *GRPCClient) UpdateObjectAccessControl(ctx context.Context, req *storagepb.UpdateObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1655,7 +1653,7 @@ func (c *GRPCClient) UpdateObjectAccessControl(ctx context.Context, req *storage
 // bucket.
 func (c *GRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1677,7 +1675,7 @@ func (c *GRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeOb
 // metadata.
 func (c *GRPCClient) CopyObject(ctx context.Context, req *storagepb.CopyObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1700,7 +1698,7 @@ func (c *GRPCClient) CopyObject(ctx context.Context, req *storagepb.CopyObjectRe
 // is used.
 func (c *GRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1717,7 +1715,7 @@ func (c *GRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObje
 // GetObject retrieves an object’s metadata.
 func (c *GRPCClient) GetObject(ctx context.Context, req *storagepb.GetObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1792,7 +1790,7 @@ func (c *GRPCClient) InsertObject(ctx context.Context, opts ...gax.CallOption) (
 // ListObjects retrieves a list of objects matching the criteria.
 func (c *GRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjectsRequest, opts ...gax.CallOption) (*storagepb.ListObjectsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1814,7 +1812,7 @@ func (c *GRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjects
 // metadata.
 func (c *GRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteObjectRequest, opts ...gax.CallOption) (*storagepb.RewriteResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1837,7 +1835,7 @@ func (c *GRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteOb
 // service-dependent.
 func (c *GRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest, opts ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1870,7 +1868,7 @@ func (c *GRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.Sta
 // non-decreasing.
 func (c *GRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1891,7 +1889,7 @@ func (c *GRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryW
 // PatchObject updates an object’s metadata.
 func (c *GRPCClient) PatchObject(ctx context.Context, req *storagepb.PatchObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1914,7 +1912,7 @@ func (c *GRPCClient) PatchObject(ctx context.Context, req *storagepb.PatchObject
 // unspecified fields to their default values.
 func (c *GRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1935,7 +1933,7 @@ func (c *GRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObje
 // GetObjectIamPolicy gets the IAM policy for the specified object.
 func (c *GRPCClient) GetObjectIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1956,7 +1954,7 @@ func (c *GRPCClient) GetObjectIamPolicy(ctx context.Context, req *storagepb.GetI
 // SetObjectIamPolicy updates an IAM policy for the specified object.
 func (c *GRPCClient) SetObjectIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1978,7 +1976,7 @@ func (c *GRPCClient) SetObjectIamPolicy(ctx context.Context, req *storagepb.SetI
 // any, are held by the caller.
 func (c *GRPCClient) TestObjectIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -1999,7 +1997,7 @@ func (c *GRPCClient) TestObjectIamPermissions(ctx context.Context, req *storagep
 // WatchAllObjects watch for changes on all objects in a bucket.
 func (c *GRPCClient) WatchAllObjects(ctx context.Context, req *storagepb.WatchAllObjectsRequest, opts ...gax.CallOption) (*storagepb.Channel, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -2020,7 +2018,7 @@ func (c *GRPCClient) WatchAllObjects(ctx context.Context, req *storagepb.WatchAl
 // GetServiceAccount retrieves the name of a project’s Google Cloud Storage service account.
 func (c *GRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetProjectServiceAccountRequest, opts ...gax.CallOption) (*storagepb.ServiceAccount, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -2041,7 +2039,7 @@ func (c *GRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetPr
 // CreateHmacKey creates a new HMAC key for the given service account.
 func (c *GRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.CreateHmacKeyResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -2062,7 +2060,7 @@ func (c *GRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHma
 // DeleteHmacKey deletes a given HMAC key.  Key must be in an INACTIVE state.
 func (c *GRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHmacKeyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -2079,7 +2077,7 @@ func (c *GRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHma
 // GetHmacKey gets an existing HMAC key metadata for the given id.
 func (c *GRPCClient) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -2100,7 +2098,7 @@ func (c *GRPCClient) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRe
 // ListHmacKeys lists HMAC keys under a given project with the additional filters provided.
 func (c *GRPCClient) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKeysRequest, opts ...gax.CallOption) (*storagepb.ListHmacKeysResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
@@ -2121,7 +2119,7 @@ func (c *GRPCClient) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKe
 // UpdateHmacKey updates a given HMAC key state between ACTIVE and INACTIVE.
 func (c *GRPCClient) UpdateHmacKey(ctx context.Context, req *storagepb.UpdateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000 * time.Millisecond)
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
 		ctx = cctx
 	}
