@@ -30,13 +30,9 @@ func NewValueFormatFamily() ValueFormatFamily {  // for tests :)
 	return family
 }
 
-type ValueFormatProtocolBufferDefinition struct {
-	Definitions []string
-	Imports []string
-}
-
 type ValueFormatSettings struct {
-	ProtocolBuffer ValueFormatProtocolBufferDefinition `yaml:"protocol_buffer"`
+	ProtocolBufferDefinitions []string `yaml:"protocol_buffer_definitions"`
+	ProtocolBufferPaths []string `yaml:"protocol_buffer_paths"`
 	DefaultEncoding string `yaml:"default_encoding"`
 	DefaultType string `yaml:"default_type"`
 	Columns map[string]ValueFormatColumn
@@ -276,12 +272,12 @@ func (self *ValueFormatting) parse(path string) error {
 }
 
 func (self *ValueFormatting) setupPBMessages() error {
-	if len(self.settings.ProtocolBuffer.Definitions) > 0 {
+	if len(self.settings.ProtocolBufferDefinitions) > 0 {
 		parser := protoparse.Parser{
-			ImportPaths: self.settings.ProtocolBuffer.Imports,
+			ImportPaths: self.settings.ProtocolBufferPaths,
 		}
 		fds, err := parser.ParseFiles(
-			self.settings.ProtocolBuffer.Definitions...)
+			self.settings.ProtocolBufferDefinitions...)
 		if err != nil {
 			return err
 		}

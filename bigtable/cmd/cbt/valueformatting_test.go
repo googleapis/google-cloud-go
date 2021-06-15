@@ -46,10 +46,10 @@ func assertNoError(t *testing.T, err error) bool {
 func TestParseValueFormatSettings(t *testing.T) {
 	want := ValueFormatSettings{
 		DefaultEncoding: "HEX",
-		ProtocolBuffer: ValueFormatProtocolBufferDefinition{
-			Definitions: []string{"MyProto.proto", "MyOtherProto.proto"},
-			Imports: []string{"mycode/stuff", "/home/user/dev/othercode/"},
-		},
+		ProtocolBufferDefinitions:
+		[]string{"MyProto.proto", "MyOtherProto.proto"},
+		ProtocolBufferPaths:
+		[]string{"mycode/stuff", "/home/user/dev/othercode/"},
 		Columns: map[string]ValueFormatColumn{
 			"col3": ValueFormatColumn{
 				Encoding: "P",
@@ -115,17 +115,17 @@ func TestSetupPBMessages(t *testing.T) {
 
 	formatting := NewValueFormatting()
 	
-	formatting.settings.ProtocolBuffer.Imports = append(
-		formatting.settings.ProtocolBuffer.Imports,
+	formatting.settings.ProtocolBufferPaths = append(
+		formatting.settings.ProtocolBufferPaths,
 		"testdata")
-	formatting.settings.ProtocolBuffer.Imports = append(
-		formatting.settings.ProtocolBuffer.Imports,
+	formatting.settings.ProtocolBufferPaths = append(
+		formatting.settings.ProtocolBufferPaths,
 		filepath.Join("testdata", "protoincludes"))
-	formatting.settings.ProtocolBuffer.Definitions = append(
-		formatting.settings.ProtocolBuffer.Definitions,
+	formatting.settings.ProtocolBufferDefinitions = append(
+		formatting.settings.ProtocolBufferDefinitions,
 		"addressbook.proto")
-	formatting.settings.ProtocolBuffer.Definitions = append(
-		formatting.settings.ProtocolBuffer.Definitions,
+	formatting.settings.ProtocolBufferDefinitions = append(
+		formatting.settings.ProtocolBufferDefinitions,
 		"club.proto")
 	err := formatting.setupPBMessages()
 	if err != nil {
@@ -246,8 +246,8 @@ func TestValueFormattingBinaryFormatter(t *testing.T) {
 
 func testValueFormattingPBFormatter(t *testing.T) {
 	formatting := NewValueFormatting()
-	formatting.settings.ProtocolBuffer.Definitions = append(
-		formatting.settings.ProtocolBuffer.Definitions,
+	formatting.settings.ProtocolBufferDefinitions = append(
+		formatting.settings.ProtocolBufferDefinitions,
 		filepath.Join("testdata", "addressbook.proto"))	
 	err := formatting.setupPBMessages()
 	if assertNoError(t, err) { return }
@@ -357,8 +357,8 @@ func TestValueFormattingSetup(t *testing.T) {
 
 func TestValueFormattingFormat(t *testing.T) {
 	formatting := NewValueFormatting()
-	formatting.settings.ProtocolBuffer.Definitions =
-		append(formatting.settings.ProtocolBuffer.Definitions,
+	formatting.settings.ProtocolBufferDefinitions =
+		append(formatting.settings.ProtocolBufferDefinitions,
 			filepath.Join("testdata", "addressbook.proto"))
 	family := NewValueFormatFamily()
 	family.DefaultEncoding="Binary"
@@ -465,7 +465,7 @@ func TestPrintRow(t *testing.T) {
 	defer func() {valueFormatting = oldValueFormatting} ()
 	
 	valueFormatting = NewValueFormatting()
-	valueFormatting.settings.ProtocolBuffer.Definitions =
+	valueFormatting.settings.ProtocolBufferDefinitions =
 		[]string{filepath.Join("testdata", "addressbook.proto")}
 	valueFormatting.settings.Columns["c2"] =
 		ValueFormatColumn{Encoding: "Binary", Type: "int16"}
