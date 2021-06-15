@@ -101,7 +101,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 		},
 	}
 
-	formatting := ValueFormatting{}
+	formatting := NewValueFormatting()
 	
 	err := formatting.parse(filepath.Join("testdata", t.Name() + ".yml"))
 	if err != nil {
@@ -113,7 +113,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 
 func TestSetupPBMessages(t *testing.T) {
 
-	formatting := ValueFormatting{}
+	formatting := NewValueFormatting()
 	
 	formatting.settings.ProtocolBuffer.Imports = append(
 		formatting.settings.ProtocolBuffer.Imports,
@@ -142,14 +142,9 @@ func TestSetupPBMessages(t *testing.T) {
 		t,
 		keys,
 		[]string{
-			"AddressBook",
-			"Equipment",
-			"Person",
 			"addressbook",
 			"equipment",
 			"person",
-			"tutorial.AddressBook",
-			"tutorial.Person",
 			"tutorial.addressbook",
 			"tutorial.person",
 			},
@@ -238,7 +233,7 @@ func TestBinaryValueFormaterFLOAT64(t *testing.T) {
 }
 
 func TestValueFormattingBinaryFormatter(t *testing.T) {
-	formatting := ValueFormatting{}
+	formatting := NewValueFormatting()
 	var formatter = formatting.binaryFormatter("BigEndian", "int32")
 	s, err := formatter(TestBinaryFormaterTestData)
 	assertNoError(t, err)
@@ -250,7 +245,7 @@ func TestValueFormattingBinaryFormatter(t *testing.T) {
 }
 
 func testValueFormattingPBFormatter(t *testing.T) {
-	formatting := ValueFormatting{}
+	formatting := NewValueFormatting()
 	formatting.settings.ProtocolBuffer.Definitions = append(
 		formatting.settings.ProtocolBuffer.Definitions,
 		filepath.Join("testdata", "addressbook.proto"))	

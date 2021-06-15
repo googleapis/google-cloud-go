@@ -145,7 +145,7 @@ func (self *ValueFormatting) binaryFormatter(encoding, type_ string) valueFormat
 }
 
 func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
-	md := self.pbMessageTypes[type_]
+	md := self.pbMessageTypes[strings.ToLower(type_)]
 	return func (in []byte) (string, error) {
 		message := dynamic.NewMessage(md)
 		err := message.Unmarshal(in)
@@ -204,7 +204,7 @@ func (self *ValueFormatting) validateType(
 		if type_ == "" {
 			type_ = cname
 		}
-		_, got = self.pbMessageTypes[type_]
+		_, got = self.pbMessageTypes[strings.ToLower(type_)]
 		if ! got {
 			return type_, fmt.Errorf("Invalid type: %s for encoding: %s",
 				type_, encoding)
@@ -285,16 +285,13 @@ func (self *ValueFormatting) setupPBMessages() error {
 		if err != nil {
 			return err
 		}
-		self.pbMessageTypes = make(map[string]*desc.MessageDescriptor)
 		for _, fd := range fds {
 			prefix := fd.GetPackage()
 			for _, md := range fd.GetMessageTypes() {
 				key := md.GetName()
-				self.pbMessageTypes[key] = md
 				self.pbMessageTypes[strings.ToLower(key)] = md
 				if prefix != "" {
 					key = prefix + "." + key
-					self.pbMessageTypes[key] = md
 					self.pbMessageTypes[strings.ToLower(key)] = md
 				}
 			}		
