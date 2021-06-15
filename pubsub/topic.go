@@ -98,22 +98,15 @@ type PublishSettings struct {
 	Timeout time.Duration
 
 	// The maximum number of bytes that the Bundler will keep in memory before
-	// returning ErrOverflow.
+	// returning ErrOverflow. This is now superseded by FlowControlSettings.MaxOutstandingBytes.
+	// If both are set, this value will be used for both settings.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
+	// Deprecated.
 	BufferedByteLimit int
 
-	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
-	MaxOutstandingMessages int
-
-	// MaxOutstandingBytes is the maximum size of buffered messages to be published.
-	MaxOutstandingBytes int
-
-	// LimitExceededBehavior configures the behavior when trying to publish
-	// additional messages while the flow controller is full. The available options
-	// include Block (default), Ignore (disable), and SignalError (publish
-	// results will return an error).
-	LimitExceededBehavior LimitExceededBehavior
+	// FlowControlSettings defines publisher flow control settings.
+	FlowControlSettings FlowControlSettings
 }
 
 // DefaultPublishSettings holds the default values for topics' PublishSettings.
@@ -126,6 +119,11 @@ var DefaultPublishSettings = PublishSettings{
 	// chosen as a reasonable amount of messages in the worst case whilst still
 	// capping the number to a low enough value to not OOM users.
 	BufferedByteLimit: 10 * MaxPublishRequestBytes,
+	FlowControlSettings: FlowControlSettings{
+		MaxOutstandingMessages: 1000,
+		MaxOutstandingBytes:    10 * 1024 * 1024,
+		LimitExceededBehavior:  FlowControlBlock,
+	},
 }
 
 // CreateTopic creates a new topic.
@@ -529,7 +527,7 @@ func (t *Topic) initBundler() {
 		workers = 25 * runtime.GOMAXPROCS(0)
 	}
 
-	t.fc = newFlowController(t.PublishSettings.MaxOutstandingMessages, t.PublishSettings.MaxOutstandingBytes, t.PublishSettings.LimitExceededBehavior)
+	t.fc = newFlowController(t.PublishSettings.FlowControlSettings)
 
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.

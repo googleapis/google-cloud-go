@@ -35,6 +35,20 @@ const (
 	FlowControlSignalError
 )
 
+type FlowControlSettings struct {
+	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
+	MaxOutstandingMessages int
+
+	// MaxOutstandingBytes is the maximum size of buffered messages to be published.
+	MaxOutstandingBytes int
+
+	// LimitExceededBehavior configures the behavior when trying to publish
+	// additional messages while the flow controller is full. The available options
+	// include Block (default), Ignore (disable), and SignalError (publish
+	// results will return an error).
+	LimitExceededBehavior LimitExceededBehavior
+}
+
 var (
 	ErrFlowControllerMaxOutstandingMessages = errors.New("pubsub: MaxOutstandingMessages flow controller limit exceeded")
 	ErrFlowControllerMaxOutstandingBytes    = errors.New("pubsub: MaxOutstandingBytes flow control limit exceeded")
@@ -59,21 +73,21 @@ type flowController struct {
 // maxCount messages or maxSize bytes are outstanding at once. If maxCount or
 // maxSize is < 1, then an unlimited number of messages or bytes is permitted,
 // respectively.
-func newFlowController(maxCount, maxSize int, behavior LimitExceededBehavior) *flowController {
-	fc := &flowController{
-		maxCount:      maxCount,
-		maxSize:       maxSize,
+func newFlowController(fc FlowControlSettings) *flowController {
+	f := &flowController{
+		maxCount:      fc.MaxOutstandingMessages,
+		maxSize:       fc.MaxOutstandingBytes,
 		semCount:      nil,
 		semSize:       nil,
-		limitBehavior: behavior,
+		limitBehavior: fc.LimitExceededBehavior,
 	}
-	if maxCount > 0 {
-		fc.semCount = semaphore.NewWeighted(int64(maxCount))
+	if fc.MaxOutstandingMessages > 0 {
+		f.semCount = semaphore.NewWeighted(int64(fc.MaxOutstandingMessages))
 	}
-	if maxSize > 0 {
-		fc.semSize = semaphore.NewWeighted(int64(maxSize))
+	if fc.MaxOutstandingBytes > 0 {
+		f.semSize = semaphore.NewWeighted(int64(fc.MaxOutstandingBytes))
 	}
-	return fc
+	return f
 }
 
 // acquire allocates space for a message: the message count and its size.

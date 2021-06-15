@@ -360,9 +360,12 @@ func TestPublishFlowControl_SignalError(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	topic.PublishSettings.MaxOutstandingMessages = 1
-	topic.PublishSettings.MaxOutstandingBytes = 10
-	topic.PublishSettings.LimitExceededBehavior = FlowControlSignalError
+	fc := FlowControlSettings{
+		MaxOutstandingMessages: 1,
+		MaxOutstandingBytes:    10,
+		LimitExceededBehavior:  FlowControlSignalError,
+	}
+	topic.PublishSettings.FlowControlSettings = fc
 
 	// Sending a message that is too large results in an error in SignalError mode.
 	r := publishSingleMessage(ctx, topic, "AAAAAAAAAAA")
@@ -397,7 +400,7 @@ func TestPublishFlowControl_SignalError(t *testing.T) {
 	}
 
 	topic.scheduler = nil
-	topic.PublishSettings.LimitExceededBehavior = FlowControlBlock
+	topic.PublishSettings.FlowControlSettings.LimitExceededBehavior = FlowControlBlock
 	// Publish 11 messages, nothing should fail.
 	res = []*PublishResult{}
 	for i := 0; i < 11; i++ {
@@ -413,7 +416,7 @@ func TestPublishFlowControl_SignalError(t *testing.T) {
 	}
 
 	topic.scheduler = nil
-	topic.PublishSettings.LimitExceededBehavior = FlowControlSignalError
+	topic.PublishSettings.FlowControlSettings.LimitExceededBehavior = FlowControlSignalError
 	// Publish 11 messages, should signal error on the 11th message.
 	res = []*PublishResult{}
 	for i := 0; i < 11; i++ {
