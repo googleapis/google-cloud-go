@@ -14,7 +14,7 @@
 
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
 // Run "go generate" to regenerate.
-//go:generate go run cbt.go gcpolicy.go -o cbtdoc.go doc
+//go:generate go run cbt.go gcpolicy.go valueformatting.go -o cbtdoc.go doc
 
 /*
 The `cbt` tool is a command-line tool that allows you to interact with Cloud Bigtable.
@@ -295,6 +295,7 @@ Usage:
 	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
 	  cells-per-column=<n>                Read only this number of cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
+	  format-file=<path-to-format-file>   The path to a format-configuration file to use for the request
 
 	 Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1
 	 Example: cbt lookup mobile-time-series $'\x41\x42'
@@ -333,6 +334,7 @@ Usage:
 	  count=<n>                           Read only this many rows
 	  cells-per-column=<n>                Read only this many cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
+	  format-file=<path-to-format-file>   The path to a format-configuration file to use for the request
 
 	    Examples: (see 'set' examples to create data to read)
 	      cbt read mobile-time-series prefix=phone columns=stats_summary:os_build,os_name count=10
