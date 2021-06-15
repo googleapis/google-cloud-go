@@ -139,30 +139,23 @@ func (a *assigner) onStreamStatusChange(status streamStatus) {
 }
 
 func (a *assigner) onResponse(response interface{}) {
+	assignment, _ := response.(*pb.PartitionAssignment)
+	err := a.receiveAssignment(newPartitionSet(assignment))
+
 	a.mu.Lock()
 	defer a.mu.Unlock()
-
 	if a.status >= serviceTerminating {
 		return
 	}
-
-	assignment, _ := response.(*pb.PartitionAssignment)
-	if err := a.handleAssignment(assignment); err != nil {
+	if err != nil {
 		a.unsafeInitiateShutdown(serviceTerminated, err)
+		return
 	}
-}
-
-func (a *assigner) handleAssignment(assignment *pb.PartitionAssignment) error {
-	if err := a.receiveAssignment(newPartitionSet(assignment)); err != nil {
-		return err
-	}
-
 	a.stream.Send(&pb.PartitionAssignmentRequest{
 		Request: &pb.PartitionAssignmentRequest_Ack{
 			Ack: &pb.PartitionAssignmentAck{},
 		},
 	})
-	return nil
 }
 
 func (a *assigner) unsafeInitiateShutdown(targetStatus serviceStatus, err error) {
