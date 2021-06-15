@@ -16,6 +16,7 @@ package wire
 import (
 	"context"
 	"sort"
+	"sync"
 	"testing"
 	"time"
 
@@ -244,11 +245,14 @@ func TestMessageDeliveryQueueDiscardMessages(t *testing.T) {
 type testSubscribeStream struct {
 	Receiver *testMessageReceiver
 	t        *testing.T
+	acks     *ackTracker
 	sub      *subscribeStream
+	mu       sync.Mutex
+	resetErr error
 	serviceTestProxy
 }
 
-func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, settings ReceiveSettings, acks *ackTracker) *testSubscribeStream {
+func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, settings ReceiveSettings) *testSubscribeStream {
 	ctx := context.Background()
 	subClient, err := newSubscriberClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
@@ -258,8 +262,9 @@ func newTestSubscribeStream(t *testing.T, subscription subscriptionPartition, se
 	ts := &testSubscribeStream{
 		Receiver: newTestMessageReceiver(t),
 		t:        t,
+		acks:     newAckTracker(),
 	}
-	ts.sub = newSubscribeStream(ctx, subClient, settings, ts.Receiver.onMessage, subscription, acks, true)
+	ts.sub = newSubscribeStream(ctx, subClient, settings, ts.Receiver.onMessage, subscription, ts.acks, ts.handleReset, true)
 	ts.initAndStart(t, ts.sub, "Subscriber", subClient)
 	return ts
 }
@@ -276,9 +281,20 @@ func (ts *testSubscribeStream) PendingFlowControlRequest() *pb.FlowControlReques
 	return ts.sub.flowControl.pendingTokens.ToFlowControlRequest()
 }
 
+func (ts *testSubscribeStream) SetResetErr(err error) {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+	ts.resetErr = err
+}
+
+func (ts *testSubscribeStream) handleReset() error {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+	return ts.resetErr
+}
+
 func TestSubscribeStreamReconnect(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 	msg1 := seqMsgWithOffsetAndSize(67, 200)
 	msg2 := seqMsgWithOffsetAndSize(68, 100)
 	permanentErr := status.Error(codes.FailedPrecondition, "permanent failure")
@@ -286,16 +302,15 @@ func TestSubscribeStreamReconnect(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 
 	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initSubReq(subscription), initSubResp(), nil)
+	stream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	stream1.Push(nil, nil, status.Error(codes.Unavailable, "server unavailable"))
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream1)
 
-	// When reconnected, the subscribeStream should seek to msg2 and have
-	// subtracted flow control tokens.
+	// When reconnected, the subscribeStream should set initial cursor to msg2 and
+	// have subtracted flow control tokens.
 	stream2 := test.NewRPCVerifier(t)
-	stream2.Push(initSubReq(subscription), initSubResp(), nil)
-	stream2.Push(seekReq(68), seekResp(68), nil)
+	stream2.Push(initSubReqCursor(subscription, 68), initSubResp(), nil)
 	stream2.Push(flowControlSubReq(flowControlTokens{Bytes: 800, Messages: 9}), msgSubResp(msg2), nil)
 	// Subscriber should terminate on permanent error.
 	stream2.Push(nil, nil, permanentErr)
@@ -304,7 +319,7 @@ func TestSubscribeStreamReconnect(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr := sub.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -317,14 +332,13 @@ func TestSubscribeStreamReconnect(t *testing.T) {
 
 func TestSubscribeStreamFlowControlBatching(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 	msg1 := seqMsgWithOffsetAndSize(67, 200)
 	msg2 := seqMsgWithOffsetAndSize(68, 100)
 	serverErr := status.Error(codes.InvalidArgument, "verifies flow control received")
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
 	// Batch flow control request expected.
 	stream.Push(flowControlSubReq(flowControlTokens{Bytes: 300, Messages: 2}), nil, serverErr)
@@ -333,7 +347,7 @@ func TestSubscribeStreamFlowControlBatching(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr := sub.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -349,7 +363,6 @@ func TestSubscribeStreamFlowControlBatching(t *testing.T) {
 
 func TestSubscribeStreamExpediteFlowControl(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 	msg1 := seqMsgWithOffsetAndSize(67, 250)
 	// MaxOutstandingBytes = 1000, so msg2 pushes the pending flow control bytes
 	// over the expediteBatchRequestRatio=50% threshold in flowControlBatcher.
@@ -358,7 +371,7 @@ func TestSubscribeStreamExpediteFlowControl(t *testing.T) {
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
 	// Batch flow control request expected.
 	stream.Push(flowControlSubReq(flowControlTokens{Bytes: 501, Messages: 2}), nil, serverErr)
@@ -367,7 +380,7 @@ func TestSubscribeStreamExpediteFlowControl(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr := sub.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -383,7 +396,6 @@ func TestSubscribeStreamExpediteFlowControl(t *testing.T) {
 
 func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 	// MaxOutstandingBytes = 1000, so this pushes the pending flow control bytes
 	// over the expediteBatchRequestRatio=50% threshold in flowControlBatcher.
 	msg := seqMsgWithOffsetAndSize(67, 800)
@@ -393,7 +405,7 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 
 	stream1 := test.NewRPCVerifier(t)
-	stream1.Push(initSubReq(subscription), initSubResp(), nil)
+	stream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream1.Push(initFlowControlReq(), msgSubResp(msg), nil)
 	// Break the stream immediately after sending the message.
 	stream1.Push(nil, nil, retryableErr)
@@ -401,8 +413,7 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 
 	stream2 := test.NewRPCVerifier(t)
 	// The barrier is used to pause in the middle of stream reconnection.
-	barrier := stream2.PushWithBarrier(initSubReq(subscription), initSubResp(), nil)
-	stream2.Push(seekReq(68), seekResp(68), nil)
+	barrier := stream2.PushWithBarrier(initSubReqCursor(subscription, 68), initSubResp(), nil)
 	// Full flow control tokens should be sent after stream has connected.
 	stream2.Push(initFlowControlReq(), nil, serverErr)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream2)
@@ -410,7 +421,7 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr := sub.StartError(); gotErr != nil {
 		t.Errorf("Start() got err: (%v)", gotErr)
 	}
@@ -432,17 +443,16 @@ func TestSubscribeStreamDisableBatchFlowControl(t *testing.T) {
 
 func TestSubscribeStreamInvalidInitialResponse(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), seekResp(0), nil) // Seek instead of init response
+	stream.Push(initSubReqCommit(subscription), seekResp(0), nil) // Seek instead of init response
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr, wantErr := sub.StartError(), errInvalidInitialSubscribeResponse; !test.ErrorEqual(gotErr, wantErr) {
 		t.Errorf("Start got err: (%v), want: (%v)", gotErr, wantErr)
 	}
@@ -450,18 +460,17 @@ func TestSubscribeStreamInvalidInitialResponse(t *testing.T) {
 
 func TestSubscribeStreamDuplicateInitialResponse(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), initSubResp(), nil) // Second initial response
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr, wantErr := sub.FinalError(), errInvalidSubscribeResponse; !test.ErrorEqual(gotErr, wantErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
@@ -469,37 +478,35 @@ func TestSubscribeStreamDuplicateInitialResponse(t *testing.T) {
 
 func TestSubscribeStreamSpuriousSeekResponse(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), seekResp(1), nil) // Seek response with no seek request
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
-	if gotErr, wantErr := sub.FinalError(), errNoInFlightSeek; !test.ErrorEqual(gotErr, wantErr) {
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
+	if gotErr, wantErr := sub.FinalError(), errInvalidSubscribeResponse; !test.ErrorEqual(gotErr, wantErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
 }
 
 func TestSubscribeStreamNoMessages(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), msgSubResp(), nil) // No messages in response
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
 
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	if gotErr, wantErr := sub.FinalError(), errServerNoMessages; !test.ErrorEqual(gotErr, wantErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
 	}
@@ -507,13 +514,12 @@ func TestSubscribeStreamNoMessages(t *testing.T) {
 
 func TestSubscribeStreamMessagesOutOfOrder(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 	msg1 := seqMsgWithOffsetAndSize(56, 100)
 	msg2 := seqMsgWithOffsetAndSize(55, 100) // Offset before msg1
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	stream.Push(nil, msgSubResp(msg2), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
@@ -521,7 +527,7 @@ func TestSubscribeStreamMessagesOutOfOrder(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	sub.Receiver.ValidateMsg(msg1)
 	if gotErr, msg := sub.FinalError(), "start offset = 55, expected >= 57"; !test.ErrorHasMsg(gotErr, msg) {
 		t.Errorf("Final err: (%v), want msg: %q", gotErr, msg)
@@ -530,13 +536,12 @@ func TestSubscribeStreamMessagesOutOfOrder(t *testing.T) {
 
 func TestSubscribeStreamFlowControlOverflow(t *testing.T) {
 	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
-	acks := newAckTracker()
 	msg1 := seqMsgWithOffsetAndSize(56, 900)
 	msg2 := seqMsgWithOffsetAndSize(57, 101) // Overflows ReceiveSettings.MaxOutstandingBytes = 1000
 
 	verifiers := test.NewVerifiers(t)
 	stream := test.NewRPCVerifier(t)
-	stream.Push(initSubReq(subscription), initSubResp(), nil)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	stream.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	stream.Push(nil, msgSubResp(msg2), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
@@ -544,10 +549,37 @@ func TestSubscribeStreamFlowControlOverflow(t *testing.T) {
 	mockServer.OnTestStart(verifiers)
 	defer mockServer.OnTestEnd()
 
-	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings(), acks)
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
 	sub.Receiver.ValidateMsg(msg1)
 	if gotErr, wantErr := sub.FinalError(), errTokenCounterBytesNegative; !test.ErrorEqual(gotErr, wantErr) {
 		t.Errorf("Final err: (%v), want: (%v)", gotErr, wantErr)
+	}
+}
+
+func TestSubscribeStreamHandleResetError(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	msg := seqMsgWithOffsetAndSize(67, 100)
+
+	verifiers := test.NewVerifiers(t)
+	stream := test.NewRPCVerifier(t)
+	stream.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	stream.Push(initFlowControlReq(), msgSubResp(msg), nil)
+	barrier := stream.PushWithBarrier(nil, nil, makeStreamResetSignal())
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, stream)
+	// No reconnect expected because the reset handler func will fail.
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSubscribeStream(t, subscription, testSubscriberSettings())
+	sub.SetResetErr(status.Error(codes.FailedPrecondition, "reset handler failed"))
+	if gotErr := sub.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+	sub.Receiver.ValidateMsg(msg)
+	barrier.Release()
+	if gotErr := sub.FinalError(); gotErr != nil {
+		t.Errorf("Final err: (%v), want: <nil>", gotErr)
 	}
 }
 
@@ -595,7 +627,7 @@ func TestSinglePartitionSubscriberStartStop(t *testing.T) {
 	// Verifies the behavior of the subscribeStream and committer when they are
 	// stopped before any messages are received.
 	subStream := test.NewRPCVerifier(t)
-	subStream.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	barrier := subStream.PushWithBarrier(initFlowControlReq(), nil, nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
 
@@ -626,7 +658,7 @@ func TestSinglePartitionSubscriberSimpleMsgAck(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 
 	subStream := test.NewRPCVerifier(t)
-	subStream.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
 
@@ -661,17 +693,16 @@ func TestSinglePartitionSubscriberMessageQueue(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 
 	subStream1 := test.NewRPCVerifier(t)
-	subStream1.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	subStream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	subStream1.Push(nil, msgSubResp(msg2), nil)
 	subStream1.Push(nil, nil, retryableErr)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
 
-	// When reconnected, the subscribeStream should seek to msg3 and have
-	// subtracted flow control tokens for msg1 and msg2.
+	// When reconnected, the subscribeStream should set initial cursor to msg3 and
+	// have subtracted flow control tokens for msg1 and msg2.
 	subStream2 := test.NewRPCVerifier(t)
-	subStream2.Push(initSubReq(subscription), initSubResp(), nil)
-	subStream2.Push(seekReq(3), nil, nil)
+	subStream2.Push(initSubReqCursor(subscription, 3), initSubResp(), nil)
 	subStream2.Push(flowControlSubReq(flowControlTokens{Bytes: 800, Messages: 8}), msgSubResp(msg3), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream2)
 
@@ -719,7 +750,7 @@ func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
 	verifiers := test.NewVerifiers(t)
 
 	subStream := test.NewRPCVerifier(t)
-	subStream.Push(initSubReq(subscription), initSubResp(), nil)
+	subStream.Push(initSubReqCommit(subscription), initSubResp(), nil)
 	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
 	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
 
@@ -746,6 +777,156 @@ func TestSinglePartitionSubscriberStopDuringReceive(t *testing.T) {
 		t.Errorf("Stop() got err: (%v)", gotErr)
 	}
 	receiver.VerifyNoMsgs() // msg2 should not be received
+}
+
+func TestSinglePartitionSubscriberAdminSeekWhileConnected(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	receiver := newTestMessageReceiver(t)
+	msg1 := seqMsgWithOffsetAndSize(1, 100)
+	msg2 := seqMsgWithOffsetAndSize(2, 100)
+	msg3 := seqMsgWithOffsetAndSize(3, 100)
+
+	verifiers := test.NewVerifiers(t)
+
+	subStream1 := test.NewRPCVerifier(t)
+	subStream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	subStream1.Push(initFlowControlReq(), msgSubResp(msg1, msg2, msg3), nil)
+	// Server disconnects the stream with the RESET signal.
+	barrier := subStream1.PushWithBarrier(nil, nil, makeStreamResetSignal())
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
+
+	subStream2 := test.NewRPCVerifier(t)
+	// Reconnected stream reads from commit cursor.
+	subStream2.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	// Ensure that the subscriber resets state and can handle seeking back to
+	// msg1.
+	subStream2.Push(initFlowControlReq(), msgSubResp(msg1), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream2)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	cmtStream.Push(commitReq(4), commitResp(1), nil)
+	cmtStream.Push(commitReq(2), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	receiver.ValidateMsg(msg1).Ack()
+	receiver.ValidateMsg(msg2).Ack()
+	receiver.ValidateMsg(msg3).Ack()
+	barrier.Release()
+	receiver.ValidateMsg(msg1).Ack()
+
+	sub.Stop()
+	if gotErr := sub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
+}
+
+func TestSinglePartitionSubscriberAdminSeekWhileReconnecting(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	receiver := newTestMessageReceiver(t)
+	msg1 := seqMsgWithOffsetAndSize(1, 100)
+	msg2 := seqMsgWithOffsetAndSize(2, 100)
+	msg3 := seqMsgWithOffsetAndSize(3, 100)
+
+	verifiers := test.NewVerifiers(t)
+
+	subStream1 := test.NewRPCVerifier(t)
+	subStream1.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	subStream1.Push(initFlowControlReq(), msgSubResp(msg1, msg2, msg3), nil)
+	// Normal stream breakage.
+	barrier := subStream1.PushWithBarrier(nil, nil, status.Error(codes.DeadlineExceeded, ""))
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream1)
+
+	subStream2 := test.NewRPCVerifier(t)
+	// The server sends the RESET signal during stream initialization.
+	subStream2.Push(initSubReqCursor(subscription, 4), nil, makeStreamResetSignal())
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream2)
+
+	subStream3 := test.NewRPCVerifier(t)
+	// Reconnected stream reads from commit cursor.
+	subStream3.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	// Ensure that the subscriber resets state and can handle seeking back to
+	// msg1.
+	subStream3.Push(initFlowControlReq(), msgSubResp(msg1), nil)
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream3)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	cmtStream.Push(commitReq(3), commitResp(1), nil)
+	cmtStream.Push(commitReq(2), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	receiver.ValidateMsg(msg1).Ack()
+	receiver.ValidateMsg(msg2).Ack()
+	ack := receiver.ValidateMsg(msg3) // Unacked message discarded
+	barrier.Release()
+	receiver.ValidateMsg(msg1).Ack()
+	ack.Ack() // Should be ignored
+
+	sub.Stop()
+	if gotErr := sub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
+}
+
+func TestSinglePartitionSubscriberStopDuringAdminSeek(t *testing.T) {
+	subscription := subscriptionPartition{"projects/123456/locations/us-central1-b/subscriptions/my-sub", 0}
+	receiver := newTestMessageReceiver(t)
+	msg1 := seqMsgWithOffsetAndSize(1, 100)
+	msg2 := seqMsgWithOffsetAndSize(2, 100)
+
+	verifiers := test.NewVerifiers(t)
+
+	subStream := test.NewRPCVerifier(t)
+	subStream.Push(initSubReqCommit(subscription), initSubResp(), nil)
+	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
+	// Server disconnects the stream with the RESET signal.
+	subBarrier := subStream.PushWithBarrier(nil, nil, makeStreamResetSignal())
+	verifiers.AddSubscribeStream(subscription.Path, subscription.Partition, subStream)
+
+	cmtStream := test.NewRPCVerifier(t)
+	cmtStream.Push(initCommitReq(subscription), initCommitResp(), nil)
+	cmtBarrier := cmtStream.PushWithBarrier(commitReq(3), commitResp(1), nil)
+	verifiers.AddCommitStream(subscription.Path, subscription.Partition, cmtStream)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	sub := newTestSinglePartitionSubscriber(t, receiver.onMessage, subscription)
+	if gotErr := sub.WaitStarted(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+
+	receiver.ValidateMsg(msg1).Ack()
+	receiver.ValidateMsg(msg2).Ack()
+	subBarrier.Release()
+
+	// Ensure that the user is able to call Stop while a reset is in progress.
+	// Verifies that the subscribeStream is not holding mutexes while waiting and
+	// that the subscribe stream is not reconnected.
+	cmtBarrier.ReleaseAfter(func() {
+		sub.Stop()
+	})
+
+	if gotErr := sub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
 }
 
 func newTestMultiPartitionSubscriber(t *testing.T, receiverFunc MessageReceiverFunc, subscriptionPath string, partitions []int) *multiPartitionSubscriber {
@@ -787,7 +968,7 @@ func TestMultiPartitionSubscriberMultipleMessages(t *testing.T) {
 
 	// Partition 1
 	subStream1 := test.NewRPCVerifier(t)
-	subStream1.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subStream1.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
 	subStream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	subStream1.Push(nil, msgSubResp(msg2), nil)
 	verifiers.AddSubscribeStream(subscription, 1, subStream1)
@@ -799,7 +980,7 @@ func TestMultiPartitionSubscriberMultipleMessages(t *testing.T) {
 
 	// Partition 2
 	subStream2 := test.NewRPCVerifier(t)
-	subStream2.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
+	subStream2.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
 	subStream2.Push(initFlowControlReq(), msgSubResp(msg3), nil)
 	subStream2.Push(nil, msgSubResp(msg4), nil)
 	verifiers.AddSubscribeStream(subscription, 2, subStream2)
@@ -835,7 +1016,7 @@ func TestMultiPartitionSubscriberPermanentError(t *testing.T) {
 
 	// Partition 1
 	subStream1 := test.NewRPCVerifier(t)
-	subStream1.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subStream1.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
 	subStream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	msg2Barrier := subStream1.PushWithBarrier(nil, msgSubResp(msg2), nil)
 	verifiers.AddSubscribeStream(subscription, 1, subStream1)
@@ -847,7 +1028,7 @@ func TestMultiPartitionSubscriberPermanentError(t *testing.T) {
 
 	// Partition 2
 	subStream2 := test.NewRPCVerifier(t)
-	subStream2.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
+	subStream2.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
 	subStream2.Push(initFlowControlReq(), msgSubResp(msg3), nil)
 	errorBarrier := subStream2.PushWithBarrier(nil, nil, serverErr)
 	verifiers.AddSubscribeStream(subscription, 2, subStream2)
@@ -960,7 +1141,7 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	// Partition 3
 	subStream3 := test.NewRPCVerifier(t)
-	subStream3.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 3}), initSubResp(), nil)
+	subStream3.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 3}), initSubResp(), nil)
 	subStream3.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	msg2Barrier := subStream3.PushWithBarrier(nil, msgSubResp(msg2), nil)
 	verifiers.AddSubscribeStream(subscription, 3, subStream3)
@@ -973,7 +1154,7 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	// Partition 6
 	subStream6 := test.NewRPCVerifier(t)
-	subStream6.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 6}), initSubResp(), nil)
+	subStream6.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 6}), initSubResp(), nil)
 	subStream6.Push(initFlowControlReq(), msgSubResp(msg3), nil)
 	// msg4 should not be received.
 	msg4Barrier := subStream6.PushWithBarrier(nil, msgSubResp(msg4), nil)
@@ -986,7 +1167,7 @@ func TestAssigningSubscriberAddRemovePartitions(t *testing.T) {
 
 	// Partition 8
 	subStream8 := test.NewRPCVerifier(t)
-	subStream8.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 8}), initSubResp(), nil)
+	subStream8.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 8}), initSubResp(), nil)
 	subStream8.Push(initFlowControlReq(), msgSubResp(msg5), nil)
 	verifiers.AddSubscribeStream(subscription, 8, subStream8)
 
@@ -1047,7 +1228,7 @@ func TestAssigningSubscriberPermanentError(t *testing.T) {
 
 	// Partition 1
 	subStream1 := test.NewRPCVerifier(t)
-	subStream1.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subStream1.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
 	subStream1.Push(initFlowControlReq(), msgSubResp(msg1), nil)
 	verifiers.AddSubscribeStream(subscription, 1, subStream1)
 
@@ -1058,7 +1239,7 @@ func TestAssigningSubscriberPermanentError(t *testing.T) {
 
 	// Partition 2
 	subStream2 := test.NewRPCVerifier(t)
-	subStream2.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
+	subStream2.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 2}), initSubResp(), nil)
 	subStream2.Push(initFlowControlReq(), msgSubResp(msg2), nil)
 	verifiers.AddSubscribeStream(subscription, 2, subStream2)
 
@@ -1101,7 +1282,7 @@ func TestAssigningSubscriberIgnoreOutstandingAcks(t *testing.T) {
 
 	// Partition 1
 	subStream := test.NewRPCVerifier(t)
-	subStream.Push(initSubReq(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
+	subStream.Push(initSubReqCommit(subscriptionPartition{Path: subscription, Partition: 1}), initSubResp(), nil)
 	subStream.Push(initFlowControlReq(), msgSubResp(msg1, msg2), nil)
 	verifiers.AddSubscribeStream(subscription, 1, subStream)
 
