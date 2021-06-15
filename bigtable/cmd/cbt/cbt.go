@@ -406,7 +406,9 @@ var commands = []struct {
 			"  row-key                             String or raw bytes. Raw bytes must be enclosed in single quotes and have a dollar-sign prefix\n" +
 			"  columns=<family>:<qualifier>,...    Read only these columns, comma-separated\n" +
 			"  cells-per-column=<n>                Read only this number of cells per column\n" +
-			"  app-profile=<app-profile-id>        The app profile ID to use for the request\n\n" +
+			"  app-profile=<app-profile-id>        The app profile ID to use for the request\n" +
+			"  format-file=<path-to-format-file>   The path to a format-configuration file to use for the request\n" +
+			"\n" +
 			" Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1\n" +
 			" Example: cbt lookup mobile-time-series $'\\x41\\x42'",
 		Required: cbtconfig.ProjectAndInstanceRequired,
@@ -441,7 +443,9 @@ var commands = []struct {
 			"  columns=<family>:<qualifier>,...    Read only these columns, comma-separated\n" +
 			"  count=<n>                           Read only this many rows\n" +
 			"  cells-per-column=<n>                Read only this many cells per column\n" +
-			"  app-profile=<app-profile-id>        The app profile ID to use for the request\n\n" +
+			"  app-profile=<app-profile-id>        The app profile ID to use for the request\n" +
+			"  format-file=<path-to-format-file>   The path to a format-configuration file to use for the request\n" +
+			"\n" +
 			"    Examples: (see 'set' examples to create data to read)\n" +
 			"      cbt read mobile-time-series prefix=phone columns=stats_summary:os_build,os_name count=10\n" +
 			"      cbt read mobile-time-series start=phone#4c410523#20190501 end=phone#4c410523#20190601\n" +
@@ -896,7 +900,7 @@ var docTemplate = template.Must(template.New("doc").Funcs(template.FuncMap{
 
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
 // Run "go generate" to regenerate.
-//go:generate go run cbt.go gcpolicy.go -o cbtdoc.go doc
+//go:generate go run cbt.go gcpolicy.go valueformatting.go -o cbtdoc.go doc
 
 /*
 ` + docIntroTemplate + `
