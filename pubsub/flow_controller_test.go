@@ -41,7 +41,7 @@ func TestFlowControllerCancel(t *testing.T) {
 	// Control: a context that is not done should always return nil.
 	go func() {
 		time.Sleep(5 * time.Millisecond)
-		fc.release(5)
+		fc.release(ctx, 5)
 	}()
 	if err := fc.acquire(context.Background(), 6); err != nil {
 		t.Errorf("got %v, expected nil", err)
@@ -79,7 +79,7 @@ func TestFlowControllerNoStarve(t *testing.T) {
 				case first <- 1:
 				default:
 				}
-				fc.release(1)
+				fc.release(ctx, 1)
 			}
 		}()
 	}
@@ -162,7 +162,7 @@ func TestFlowControllerSaturation(t *testing.T) {
 					if atomic.AddInt64(&curSize, -int64(test.acquireSize)) < 0 {
 						return errors.New("negative size")
 					}
-					fc.release(test.acquireSize)
+					fc.release(ctx, test.acquireSize)
 				}
 				return success
 			})
@@ -176,28 +176,29 @@ func TestFlowControllerSaturation(t *testing.T) {
 
 func TestFlowControllerTryAcquire(t *testing.T) {
 	t.Parallel()
-	fc := newFlowController(3, 10, FlowControlBlock)
+	fc := newFlowController(3, 10, FlowControlSignalError)
+	ctx := context.Background()
 
-	// Successfully tryAcquire 4 bytes.
-	if !fc.tryAcquire(4) {
-		t.Error("got false, wanted true")
+	// Successfully newAcquire 4 bytes.
+	if err := fc.acquire(ctx, 4); err != nil {
+		t.Errorf("fc.newAcquire got err: %v", err)
 	}
 
-	// Fail to tryAcquire 7 bytes.
-	if fc.tryAcquire(7) {
-		t.Error("got true, wanted false")
+	// Fail to newAcquire 7 bytes.
+	if err := fc.acquire(ctx, 7); err == nil {
+		t.Errorf("got nil, wanted err: %v", ErrFlowControllerMaxOutstandingBytes)
 	}
 
-	// Successfully tryAcquire 6 byte.
-	if !fc.tryAcquire(6) {
-		t.Error("got false, wanted true")
+	// Successfully newAcquire 6 byte.
+	if err := fc.acquire(ctx, 6); err != nil {
+		t.Errorf("fc.newAcquire got err: %v", err)
 	}
 }
 
 func TestFlowControllerUnboundedCount(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	fc := newFlowController(0, 10, FlowControlBlock)
+	fc := newFlowController(0, 10, FlowControlSignalError)
 
 	// Successfully acquire 4 bytes.
 	if err := fc.acquire(ctx, 4); err != nil {
@@ -205,27 +206,27 @@ func TestFlowControllerUnboundedCount(t *testing.T) {
 	}
 
 	// Successfully tryAcquire 4 bytes.
-	if !fc.tryAcquire(4) {
-		t.Error("got false, wanted true")
+	if err := fc.acquire(ctx, 4); err != nil {
+		t.Errorf("got %v, wanted no error", err)
 	}
 
 	// Fail to tryAcquire 3 bytes.
-	if fc.tryAcquire(3) {
-		t.Error("got true, wanted false")
+	if err := fc.acquire(ctx, 3); err == nil {
+		t.Errorf("got nil, wanted %v", ErrFlowControllerMaxOutstandingBytes)
 	}
 }
 
 func TestFlowControllerUnboundedCount2(t *testing.T) {
 	t.Parallel()
 	ctx := context.Background()
-	fc := newFlowController(0, 0, FlowControlBlock)
+	fc := newFlowController(0, 0, FlowControlSignalError)
 	// Successfully acquire 4 bytes.
 	if err := fc.acquire(ctx, 4); err != nil {
 		t.Errorf("got %v, wanted no error", err)
 	}
-	fc.release(1)
-	fc.release(1)
-	fc.release(1)
+	fc.release(ctx, 1)
+	fc.release(ctx, 1)
+	fc.release(ctx, 1)
 	wantCount := int64(-2)
 	c := int64(fc.count())
 	if c != wantCount {
@@ -243,13 +244,13 @@ func TestFlowControllerUnboundedBytes(t *testing.T) {
 		t.Errorf("got %v, wanted no error", err)
 	}
 
-	// Successfully tryAcquire 4GB bytes.
-	if !fc.tryAcquire(4e9) {
-		t.Error("got false, wanted true")
+	// Successfully newAcquire 4GB bytes.
+	if err := fc.acquire(ctx, 4e9); err != nil {
+		t.Errorf("got %v, wanted no error", err)
 	}
 
-	// Fail to tryAcquire a third message.
-	if fc.tryAcquire(3) {
-		t.Error("got true, wanted false")
+	// Fail to newAcquire a third message.
+	if err := fc.acquire(ctx, 3); err == nil {
+		t.Errorf("got nil, wanted %v", ErrFlowControllerMaxOutstandingMessages)
 	}
 }

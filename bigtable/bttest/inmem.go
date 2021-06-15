@@ -67,9 +67,7 @@ const (
 	maxValidMilliSeconds = math.MaxInt64 - math.MaxInt64%1000
 )
 
-var (
-	validLabelTransformer = regexp.MustCompile(`[a-z0-9\-]{1,15}`)
-)
+var validLabelTransformer = regexp.MustCompile(`[a-z0-9\-]{1,15}`)
 
 // Server is an in-memory Cloud Bigtable fake.
 // It is unauthenticated, and only a rough approximation.
@@ -230,6 +228,15 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 				return nil, fmt.Errorf("can't delete unknown family %q", mod.Id)
 			}
 			delete(tbl.families, mod.Id)
+
+			// Purge all data for this column family
+			tbl.rows.Ascend(func(i btree.Item) bool {
+				r := i.(*row)
+				r.mu.Lock()
+				defer r.mu.Unlock()
+				delete(r.families, mod.Id)
+				return true
+			})
 		} else if modify := mod.GetUpdate(); modify != nil {
 			if _, ok := tbl.families[mod.Id]; !ok {
 				return nil, fmt.Errorf("no such family %q", mod.Id)
@@ -254,12 +261,14 @@ func (s *server) ModifyColumnFamilies(ctx context.Context, req *btapb.ModifyColu
 
 func (s *server) DropRowRange(ctx context.Context, req *btapb.DropRowRangeRequest) (*emptypb.Empty, error) {
 	s.mu.Lock()
-	defer s.mu.Unlock()
 	tbl, ok := s.tables[req.Name]
+	s.mu.Unlock()
 	if !ok {
 		return nil, status.Errorf(codes.NotFound, "table %q not found", req.Name)
 	}
 
+	tbl.mu.Lock()
+	defer tbl.mu.Unlock()
 	if req.GetDeleteAllDataFromTable() {
 		tbl.rows = btree.New(btreeDegree)
 	} else {
@@ -326,9 +335,11 @@ func (s *server) SnapshotTable(context.Context, *btapb.SnapshotTableRequest) (*l
 func (s *server) GetSnapshot(context.Context, *btapb.GetSnapshotRequest) (*btapb.Snapshot, error) {
 	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
 }
+
 func (s *server) ListSnapshots(context.Context, *btapb.ListSnapshotsRequest) (*btapb.ListSnapshotsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
 }
+
 func (s *server) DeleteSnapshot(context.Context, *btapb.DeleteSnapshotRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
 }
@@ -481,10 +492,19 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 	// Handle filters that apply beyond just including/excluding cells.
 	switch f := f.Filter.(type) {
 	case *btpb.RowFilter_BlockAllFilter:
-		return !f.BlockAllFilter, nil
+		if !f.BlockAllFilter {
+			return false, status.Errorf(codes.InvalidArgument, "block_all_filter must be true if set")
+		}
+		return false, nil
 	case *btpb.RowFilter_PassAllFilter:
-		return f.PassAllFilter, nil
+		if !f.PassAllFilter {
+			return false, status.Errorf(codes.InvalidArgument, "pass_all_filter must be true if set")
+		}
+		return true, nil
 	case *btpb.RowFilter_Chain_:
+		if len(f.Chain.Filters) < 2 {
+			return false, status.Errorf(codes.InvalidArgument, "Chain must contain at least two RowFilters")
+		}
 		for _, sub := range f.Chain.Filters {
 			match, err := filterRow(sub, r)
 			if err != nil {
@@ -496,6 +516,9 @@ func filterRow(f *btpb.RowFilter, r *row) (bool, error) {
 		}
 		return true, nil
 	case *btpb.RowFilter_Interleave_:
+		if len(f.Interleave.Filters) < 2 {
+			return false, status.Errorf(codes.InvalidArgument, "Interleave must contain at least two RowFilters")
+		}
 		srs := make([]*row, 0, len(f.Interleave.Filters))
 		for _, sub := range f.Interleave.Filters {
 			sr := r.copy()
@@ -747,8 +770,35 @@ func includeCell(f *btpb.RowFilter, fam, col string, cell cell) (bool, error) {
 	}
 }
 
+// escapeUTF is used to escape non-ASCII characters in pattern strings passed
+// to binaryregexp. This makes regexp column and row key matching work more
+// closely to what's seen with the real BigTable.
+func escapeUTF(in []byte) []byte {
+	var toEsc int
+	for _, c := range in {
+		if c > 127 {
+			toEsc++
+		}
+	}
+	if toEsc == 0 {
+		return in
+	}
+	// Each escaped byte becomes 4 bytes (byte a1 becomes \xA1)
+	out := make([]byte, 0, len(in)+3*toEsc)
+	for _, c := range in {
+		if c > 127 {
+			h, l := c>>4, c&0xF
+			const conv = "0123456789ABCDEF"
+			out = append(out, '\\', 'x', conv[h], conv[l])
+		} else {
+			out = append(out, c)
+		}
+	}
+	return out
+}
+
 func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
-	re, err := binaryregexp.Compile("^(?:" + string(pat) + ")$") // match entire target
+	re, err := binaryregexp.Compile("^(?:" + string(escapeUTF(pat)) + ")$") // match entire target
 	if err != nil {
 		log.Printf("Bad pattern %q: %v", pat, err)
 	}

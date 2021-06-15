@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,18 +29,19 @@ func ExampleNewPredictionClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExamplePredictionClient_Predict() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
-
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.PredictRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExamplePredictionClient_Predict() {
 }
 
 func ExamplePredictionClient_BatchPredict() {
-	// import automlpb "google.golang.org/genproto/googleapis/cloud/automl/v1beta1"
-
 	ctx := context.Background()
 	c, err := automl.NewPredictionClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &automlpb.BatchPredictRequest{
 		// TODO: Fill request struct fields.

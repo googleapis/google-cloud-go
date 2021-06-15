@@ -19,8 +19,11 @@ package storage
 import (
 	"context"
 	"errors"
+	"io"
 	"net/url"
 	"testing"
+
+	"golang.org/x/xerrors"
 
 	"google.golang.org/api/googleapi"
 )
@@ -43,6 +46,9 @@ func TestInvoke(t *testing.T) {
 		{2, &googleapi.Error{Code: 518}, nil},
 		{2, &googleapi.Error{Code: 599}, &googleapi.Error{Code: 428}},
 		{1, &url.Error{Op: "blah", URL: "blah", Err: errors.New("connection refused")}, nil},
+		{1, io.ErrUnexpectedEOF, nil},
+		{1, xerrors.Errorf("Test unwrapping of a temporary error: %w", &googleapi.Error{Code: 500}), nil},
+		{0, xerrors.Errorf("Test unwrapping of a non-retriable error: %w", &googleapi.Error{Code: 400}), &googleapi.Error{Code: 400}},
 	} {
 		counter := 0
 		call := func() error {

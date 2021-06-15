@@ -21,6 +21,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"os"
 	"strings"
 	"time"
 
@@ -28,7 +29,6 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/internal/testutil"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/peer"
@@ -36,6 +36,16 @@ import (
 
 var legacyUseProd string
 var integrationConfig IntegrationTestConfig
+
+var (
+	runCreateInstanceTests bool
+	instanceToCreateZone   string
+	instanceToCreateZone2  string
+	blackholeDpv6Cmd       string
+	blackholeDpv4Cmd       string
+	allowDpv6Cmd           string
+	allowDpv4Cmd           string
+)
 
 func init() {
 	c := &integrationConfig
@@ -53,6 +63,18 @@ func init() {
 	// Backwards compat
 	flag.StringVar(&legacyUseProd, "use_prod", "", `DEPRECATED: if set to "proj,instance,table", run integration test against production`)
 
+	// Don't test instance creation by default, as quota is necessary and aborted tests could strand resources.
+	flag.BoolVar(&runCreateInstanceTests, "it.run-create-instance-tests", true,
+		"Run tests that create instances as part of executing. Requires sufficient Cloud Bigtable quota. Requires that it.use-prod is true.")
+	flag.StringVar(&instanceToCreateZone, "it.instance-to-create-zone", "us-central1-b",
+		"The zone in which to create the new test instance.")
+	flag.StringVar(&instanceToCreateZone2, "it.instance-to-create-zone2", "us-east1-c",
+		"The zone in which to create a second cluster in the test instance.")
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 // IntegrationTestConfig contains parameters to pick and setup a IntegrationEnv for testing
@@ -82,7 +104,18 @@ type IntegrationEnv interface {
 
 // NewIntegrationEnv creates a new environment based on the command line args
 func NewIntegrationEnv() (IntegrationEnv, error) {
-	c := integrationConfig
+	c := &integrationConfig
+
+	// Check if config settings aren't set. If not, populate from env vars.
+	if c.Project == "" {
+		c.Project = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
+	}
+	if c.Instance == "" {
+		c.Instance = os.Getenv("GCLOUD_TESTS_BIGTABLE_INSTANCE")
+	}
+	if c.Cluster == "" {
+		c.Cluster = os.Getenv("GCLOUD_TESTS_BIGTABLE_CLUSTER")
+	}
 
 	if legacyUseProd != "" {
 		fmt.Println("WARNING: using legacy commandline arg -use_prod, please switch to -it.*")
@@ -93,10 +126,18 @@ func NewIntegrationEnv() (IntegrationEnv, error) {
 		c.Table = parts[2]
 	}
 
-	if integrationConfig.UseProd {
-		return NewProdEnv(c)
+	if c.Instance != "" || c.Cluster != "" {
+		// If commandline args were specified for a live instance, set UseProd
+		c.UseProd = true
 	}
-	return NewEmulatedEnv(c)
+
+	if integrationConfig.UseProd {
+		if c.Table == "" {
+			c.Table = fmt.Sprintf("it-table-%d", time.Now().Unix())
+		}
+		return NewProdEnv(*c)
+	}
+	return NewEmulatedEnv(*c)
 }
 
 // EmulatedEnv encapsulates the state of an emulator
@@ -220,6 +261,9 @@ func NewProdEnv(config IntegrationTestConfig) (*ProdEnv, error) {
 	if config.Instance == "" {
 		return nil, errors.New("Instance not set")
 	}
+	if config.Cluster == "" {
+		return nil, errors.New("Cluster not set")
+	}
 	if config.Table == "" {
 		return nil, errors.New("Table not set")
 	}
@@ -269,8 +313,6 @@ func (e *ProdEnv) NewClient() (*Client, error) {
 	}
 
 	if e.config.AttemptDirectPath {
-		// TODO(mohanli): Move the EnableDirectPath internal option to bigtable.go after e2e tests are done.
-		clientOpts = append(clientOpts, internaloption.EnableDirectPath(true))
 		// For DirectPath tests, we need to add an interceptor to check the peer IP.
 		clientOpts = append(clientOpts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(e.peerInfo))))
 	}

@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -21,8 +21,8 @@
 // be associated with a Workspace, with a few exceptions as noted on the
 // individual method pages. The table entries below are presented in
 // alphabetical order, not in order of common use. For explanations of the
-// concepts found in the table entries, read the [Cloud Monitoring
-// documentation](https://cloud.google.com/monitoring/docs).
+// concepts found in the table entries, read the Cloud Monitoring
+// documentation (at /monitoring/docs).
 //
 // Use of Context
 //
@@ -33,7 +33,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package monitoring // import "cloud.google.com/go/monitoring/apiv3/v2"
 
 import (
@@ -53,7 +53,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20201211"
+const versionClient = "20210611"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

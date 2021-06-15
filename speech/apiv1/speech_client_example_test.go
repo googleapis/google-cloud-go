@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_Recognize() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.RecognizeRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_Recognize() {
 }
 
 func ExampleClient_LongRunningRecognize() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &speechpb.LongRunningRecognizeRequest{
 		// TODO: Fill request struct fields.
@@ -80,13 +80,12 @@ func ExampleClient_LongRunningRecognize() {
 }
 
 func ExampleClient_StreamingRecognize() {
-	// import speechpb "google.golang.org/genproto/googleapis/cloud/speech/v1"
-
 	ctx := context.Background()
 	c, err := speech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.StreamingRecognize(ctx)
 	if err != nil {
 		// TODO: Handle error.

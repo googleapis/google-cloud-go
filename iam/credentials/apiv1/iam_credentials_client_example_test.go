@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,18 +29,19 @@ func ExampleNewIamCredentialsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleIamCredentialsClient_GenerateAccessToken() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.GenerateAccessTokenRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleIamCredentialsClient_GenerateAccessToken() {
 }
 
 func ExampleIamCredentialsClient_GenerateIdToken() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.GenerateIdTokenRequest{
 		// TODO: Fill request struct fields.
@@ -74,13 +74,12 @@ func ExampleIamCredentialsClient_GenerateIdToken() {
 }
 
 func ExampleIamCredentialsClient_SignBlob() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.SignBlobRequest{
 		// TODO: Fill request struct fields.
@@ -94,13 +93,12 @@ func ExampleIamCredentialsClient_SignBlob() {
 }
 
 func ExampleIamCredentialsClient_SignJwt() {
-	// import credentialspb "google.golang.org/genproto/googleapis/iam/credentials/v1"
-
 	ctx := context.Background()
 	c, err := credentials.NewIamCredentialsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &credentialspb.SignJwtRequest{
 		// TODO: Fill request struct fields.

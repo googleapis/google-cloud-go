@@ -25,6 +25,7 @@ import (
 	"math"
 	"math/big"
 	"os"
+	"os/exec"
 	"reflect"
 	"regexp"
 	"strings"
@@ -39,7 +40,6 @@ import (
 	instance "cloud.google.com/go/spanner/admin/instance/apiv1"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 	instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
 	sppb "google.golang.org/genproto/googleapis/spanner/v1"
@@ -62,6 +62,11 @@ var (
 	// spannerHost specifies the spanner API host used for testing. It can be changed
 	// by setting the environment variable GCLOUD_TESTS_GOLANG_SPANNER_HOST
 	spannerHost = getSpannerHost()
+
+	// instanceConfig specifies the instance config used to create an instance for testing.
+	// It can be changed by setting the environment variable
+	// GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG.
+	instanceConfig = getInstanceConfig()
 
 	dbNameSpace       = uid.NewSpace("gotest", &uid.Options{Sep: '_', Short: true})
 	instanceNameSpace = uid.NewSpace("gotest", &uid.Options{Sep: '-', Short: true})
@@ -168,12 +173,22 @@ var (
 	}
 
 	validInstancePattern = regexp.MustCompile("^projects/(?P<project>[^/]+)/instances/(?P<instance>[^/]+)$")
+
+	blackholeDpv6Cmd string
+	blackholeDpv4Cmd string
+	allowDpv6Cmd     string
+	allowDpv4Cmd     string
 )
 
 func init() {
 	flag.BoolVar(&dpConfig.attemptDirectPath, "it.attempt-directpath", false, "DirectPath integration test flag")
 	flag.BoolVar(&dpConfig.directPathIPv4Only, "it.directpath-ipv4-only", false, "Run DirectPath on a IPv4-only VM")
 	peerInfo = &peer.Peer{}
+	// Use sysctl or iptables to blackhole DirectPath IP for fallback tests.
+	flag.StringVar(&blackholeDpv6Cmd, "it.blackhole-dpv6-cmd", "", "Command to make LB and backend addresses blackholed over dpv6")
+	flag.StringVar(&blackholeDpv4Cmd, "it.blackhole-dpv4-cmd", "", "Command to make LB and backend addresses blackholed over dpv4")
+	flag.StringVar(&allowDpv6Cmd, "it.allow-dpv6-cmd", "", "Command to make LB and backend addresses allowed over dpv6")
+	flag.StringVar(&allowDpv4Cmd, "it.allow-dpv4-cmd", "", "Command to make LB and backend addresses allowed over dpv4")
 }
 
 type directPathTestConfig struct {
@@ -192,6 +207,10 @@ func parseInstanceName(inst string) (project, instance string, err error) {
 
 func getSpannerHost() string {
 	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+}
+
+func getInstanceConfig() string {
+	return os.Getenv("GCLOUD_TESTS_GOLANG_SPANNER_INSTANCE_CONFIG")
 }
 
 const (
@@ -228,8 +247,6 @@ func initIntegrationTests() (cleanup func()) {
 		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
-		// TODO(mohanli): Move EnableDirectPath internal option to client.go when DirectPath is ready for public beta.
-		opts = append(opts, internaloption.EnableDirectPath(true))
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	var err error
@@ -242,17 +259,23 @@ func initIntegrationTests() (cleanup func()) {
 	if err != nil {
 		log.Fatalf("cannot create databaseAdmin client: %v", err)
 	}
-	// Get the list of supported instance configs for the project that is used
-	// for the integration tests. The supported instance configs can differ per
-	// project. The integration tests will use the first instance config that
-	// is returned by Cloud Spanner. This will normally be the regional config
-	// that is physically the closest to where the request is coming from.
-	configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
-		Parent: fmt.Sprintf("projects/%s", testProjectID),
-	})
-	config, err := configIterator.Next()
-	if err != nil {
-		log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+	var configName string
+	if instanceConfig != "" {
+		configName = fmt.Sprintf("projects/%s/instanceConfigs/%s", testProjectID, instanceConfig)
+	} else {
+		// Get the list of supported instance configs for the project that is used
+		// for the integration tests. The supported instance configs can differ per
+		// project. The integration tests will use the first instance config that
+		// is returned by Cloud Spanner. This will normally be the regional config
+		// that is physically the closest to where the request is coming from.
+		configIterator := instanceAdmin.ListInstanceConfigs(ctx, &instancepb.ListInstanceConfigsRequest{
+			Parent: fmt.Sprintf("projects/%s", testProjectID),
+		})
+		config, err := configIterator.Next()
+		if err != nil {
+			log.Fatalf("Cannot get any instance configurations.\nPlease make sure the Cloud Spanner API is enabled for the test project.\nGet error: %v", err)
+		}
+		configName = config.Name
 	}
 
 	// First clean up any old test instances before we start the actual testing
@@ -264,7 +287,7 @@ func initIntegrationTests() (cleanup func()) {
 		Parent:     fmt.Sprintf("projects/%s", testProjectID),
 		InstanceId: testInstanceID,
 		Instance: &instancepb.Instance{
-			Config:      config.Name,
+			Config:      configName,
 			DisplayName: testInstanceID,
 			NodeCount:   1,
 		},
@@ -612,7 +635,10 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
-	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{OptimizerVersion: "1"}}
+	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
+		OptimizerVersion:           "1",
+		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+	}}
 	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
 		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
 		map[string]interface{}{"id1": int64(1), "id3": int64(3), "id4": int64(4)},
@@ -1013,8 +1039,79 @@ func TestIntegration_ReadWriteTransaction(t *testing.T) {
 	verifyDirectPathRemoteAddress(t)
 }
 
+// Test ReadWriteTransactionWithOptions.
+func TestIntegration_ReadWriteTransactionWithOptions(t *testing.T) {
+	t.Parallel()
+	skipEmulatorTest(t)
+
+	// Give a longer deadline because of transaction backoffs.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	readBalance := func(iter *RowIterator) (int64, error) {
+		defer iter.Stop()
+		var bal int64
+		for {
+			row, err := iter.Next()
+			if err == iterator.Done {
+				return bal, nil
+			}
+			if err != nil {
+				return 0, err
+			}
+			if err := row.Column(0, &bal); err != nil {
+				return 0, err
+			}
+		}
+	}
+
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
+	resp, err := client.ReadWriteTransactionWithOptions(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+		// Query Foo's balance and Bar's balance.
+		bf, e := readBalance(tx.Query(ctx,
+			Statement{"SELECT Balance FROM Accounts WHERE AccountId = @id", map[string]interface{}{"id": int64(1)}}))
+		if e != nil {
+			return e
+		}
+		bb, e := readBalance(tx.Read(ctx, "Accounts", KeySets(Key{int64(2)}), []string{"Balance"}))
+		if e != nil {
+			return e
+		}
+		if bf <= 0 {
+			return nil
+		}
+		bf--
+		bb++
+		return tx.BufferWrite([]*Mutation{
+			Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(1), bf}),
+			Update("Accounts", []string{"AccountId", "Balance"}, []interface{}{int64(2), bb}),
+		})
+	}, txOpts)
+	if err != nil {
+		t.Fatalf("Failed to execute transaction: %v", err)
+	}
+	if resp.CommitStats == nil {
+		t.Fatal("Missing commit stats in commit response")
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
+	}
+}
+
 func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	t.Parallel()
+	skipEmulatorTest(t)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
@@ -1102,6 +1199,92 @@ func TestIntegration_ReadWriteTransaction_StatementBased(t *testing.T) {
 	}
 	if !testEqual(got, want) {
 		t.Errorf("\ngot %v\nwant%v", got, want)
+	}
+}
+
+func TestIntegration_ReadWriteTransaction_StatementBasedWithOptions(t *testing.T) {
+	t.Parallel()
+	skipEmulatorTest(t)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, singerDBStatements)
+	defer cleanup()
+
+	// Set up two accounts
+	accounts := []*Mutation{
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(1), "Foo", int64(50)}),
+		Insert("Accounts", []string{"AccountId", "Nickname", "Balance"}, []interface{}{int64(2), "Bar", int64(1)}),
+	}
+	if _, err := client.Apply(ctx, accounts, ApplyAtLeastOnce()); err != nil {
+		t.Fatal(err)
+	}
+
+	getBalance := func(txn *ReadWriteStmtBasedTransaction, key Key) (int64, error) {
+		row, err := txn.ReadRow(ctx, "Accounts", key, []string{"Balance"})
+		if err != nil {
+			return 0, err
+		}
+		var balance int64
+		if err := row.Column(0, &balance); err != nil {
+			return 0, err
+		}
+		return balance, nil
+	}
+
+	statements := func(txn *ReadWriteStmtBasedTransaction) error {
+		outBalance, err := getBalance(txn, Key{1})
+		if err != nil {
+			return err
+		}
+		const transferAmt = 20
+		if outBalance >= transferAmt {
+			inBalance, err := getBalance(txn, Key{2})
+			if err != nil {
+				return err
+			}
+			inBalance += transferAmt
+			outBalance -= transferAmt
+			cols := []string{"AccountId", "Balance"}
+			txn.BufferWrite([]*Mutation{
+				Update("Accounts", cols, []interface{}{1, outBalance}),
+				Update("Accounts", cols, []interface{}{2, inBalance}),
+			})
+		}
+		return nil
+	}
+
+	var resp CommitResponse
+	txOpts := TransactionOptions{CommitOptions: CommitOptions{ReturnCommitStats: true}}
+	for {
+		tx, err := NewReadWriteStmtBasedTransactionWithOptions(ctx, client, txOpts)
+		if err != nil {
+			t.Fatalf("failed to begin a transaction: %v", err)
+		}
+		err = statements(tx)
+		if err != nil && status.Code(err) != codes.Aborted {
+			tx.Rollback(ctx)
+			t.Fatalf("failed to execute statements: %v", err)
+		} else if err == nil {
+			resp, err = tx.CommitWithReturnResp(ctx)
+			if err == nil {
+				break
+			} else if status.Code(err) != codes.Aborted {
+				t.Fatalf("failed to commit a transaction: %v", err)
+			}
+		}
+		// Set a default sleep time if the server delay is absent.
+		delay := 10 * time.Millisecond
+		if serverDelay, hasServerDelay := ExtractRetryDelay(err); hasServerDelay {
+			delay = serverDelay
+		}
+		time.Sleep(delay)
+	}
+	if resp.CommitStats == nil {
+		t.Fatal("Missing commit stats in commit response")
+	}
+	if got, want := resp.CommitStats.MutationCount, int64(8); got != want {
+		t.Errorf("Mismatch mutation count - got: %v, want: %v", got, want)
 	}
 }
 
@@ -1378,22 +1561,21 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 	defer cancel()
 	stmts := singerDBStatements
-	if !isEmulatorEnvSet() {
-		stmts = []string{
-			`CREATE TABLE Singers (
+	stmts = []string{
+		`CREATE TABLE Singers (
 					SingerId	INT64 NOT NULL,
 					FirstName	STRING(1024),
 					LastName	STRING(1024),
 					SingerInfo	BYTES(MAX)
 				) PRIMARY KEY (SingerId)`,
-			`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
-			`CREATE TABLE Accounts (
+		`CREATE INDEX SingerByName ON Singers(FirstName, LastName)`,
+		`CREATE TABLE Accounts (
 					AccountId	INT64 NOT NULL,
 					Nickname	STRING(100),
 					Balance		INT64 NOT NULL,
 				) PRIMARY KEY (AccountId)`,
-			`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
-			`CREATE TABLE Types (
+		`CREATE INDEX AccountByNickname ON Accounts(Nickname) STORING (Balance)`,
+		`CREATE TABLE Types (
 					RowID		INT64 NOT NULL,
 					String		STRING(MAX),
 					StringArray	ARRAY<STRING(MAX)>,
@@ -1412,7 +1594,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 					Numeric		NUMERIC,
 					NumericArray	ARRAY<NUMERIC>
 				) PRIMARY KEY (RowID)`,
-		}
 	}
 	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, stmts)
 	defer cleanup()
@@ -1520,31 +1701,20 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "TimestampArray", val: []time.Time(nil), want: []NullTime(nil)},
 		{col: "TimestampArray", val: []time.Time{}, want: []NullTime{}},
 		{col: "TimestampArray", val: []time.Time{t1, t2, t3}, want: []NullTime{{t1, true}, {t2, true}, {t3, true}}},
-	}
-
-	if !isEmulatorEnvSet() {
-		for _, tc := range []struct {
-			col  string
-			val  interface{}
-			want interface{}
-		}{
-			{col: "Numeric", val: n1},
-			{col: "Numeric", val: n2},
-			{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
-			{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
-			{col: "Numeric", val: NullNumeric{n0, false}},
-			{col: "Numeric", val: nil, want: NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
-			{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
-			{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
-			{col: "NumericArray", val: []NullNumeric(nil)},
-			{col: "NumericArray", val: []NullNumeric{}},
-			{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
-		} {
-			tests = append(tests, tc)
-		}
+		{col: "Numeric", val: n1},
+		{col: "Numeric", val: n2},
+		{col: "Numeric", val: n1, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: n2, want: NullNumeric{n2, true}},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: n1},
+		{col: "Numeric", val: NullNumeric{n1, true}, want: NullNumeric{n1, true}},
+		{col: "Numeric", val: NullNumeric{n0, false}},
+		{col: "Numeric", val: nil, want: NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat(nil), want: []NullNumeric(nil)},
+		{col: "NumericArray", val: []big.Rat{}, want: []NullNumeric{}},
+		{col: "NumericArray", val: []big.Rat{n1, n2}, want: []NullNumeric{{n1, true}, {n2, true}}},
+		{col: "NumericArray", val: []NullNumeric(nil)},
+		{col: "NumericArray", val: []NullNumeric{}},
+		{col: "NumericArray", val: []NullNumeric{{n1, true}, {n2, true}, {}}},
 	}
 
 	// Write rows into table first.
@@ -2957,6 +3127,52 @@ func TestIntegration_StartBackupOperation(t *testing.T) {
 	}
 }
 
+// TestIntegration_DirectPathFallback tests the CFE fallback when the directpath net is blackholed.
+func TestIntegration_DirectPathFallback(t *testing.T) {
+	t.Parallel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	defer cancel()
+	// Set up testing environment.
+	client, _, cleanup := prepareIntegrationTest(ctx, t, DefaultSessionPoolConfig, readDBStatements)
+	defer cleanup()
+
+	if !dpConfig.attemptDirectPath {
+		return
+	}
+	if len(blackholeDpv6Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv6-cmd unset")
+	}
+	if len(blackholeDpv4Cmd) == 0 {
+		t.Fatal("-it.blackhole-dpv4-cmd unset")
+	}
+	if len(allowDpv6Cmd) == 0 {
+		t.Fatal("-it.allowdpv6-cmd unset")
+	}
+	if len(allowDpv4Cmd) == 0 {
+		t.Fatal("-it.allowdpv4-cmd unset")
+	}
+
+	// Precondition: wait for DirectPath to connect.
+	countEnough := examineTraffic(ctx, client /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to observe RPCs over DirectPath")
+	}
+
+	// Enable the blackhole, which will prevent communication with grpclb and thus DirectPath.
+	blackholeOrAllowDirectPath(t /*blackholeDP = */, true)
+	countEnough = examineTraffic(ctx, client /*blackholeDP = */, true)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+
+	// Disable the blackhole, and client should use DirectPath again.
+	blackholeOrAllowDirectPath(t /*blackholeDP = */, false)
+	countEnough = examineTraffic(ctx, client /*blackholeDP = */, false)
+	if !countEnough {
+		t.Fatalf("Failed to fallback to CFE after blackhole DirectPath")
+	}
+}
+
 // Prepare initializes Cloud Spanner testing DB and clients.
 func prepareIntegrationTest(ctx context.Context, t *testing.T, spc SessionPoolConfig, statements []string) (*Client, string, func()) {
 	if databaseAdmin == nil {
@@ -3154,8 +3370,6 @@ func createClient(ctx context.Context, dbPath string, spc SessionPoolConfig) (cl
 		opts = append(opts, option.WithEndpoint(spannerHost))
 	}
 	if dpConfig.attemptDirectPath {
-		// TODO(mohanli): Move EnableDirectPath internal option to client.go when DirectPath is ready for public beta.
-		opts = append(opts, internaloption.EnableDirectPath(true))
 		opts = append(opts, option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.Peer(peerInfo))))
 	}
 	client, err = NewClientWithConfig(ctx, dbPath, ClientConfig{SessionPoolConfig: spc}, opts...)
@@ -3302,4 +3516,57 @@ func isDirectPathRemoteAddress() (_ string, _ bool) {
 	}
 	// DirectPath ipv6 can use either ipv4 or ipv6 traffic.
 	return remoteIP, strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix)
+}
+
+// examineTraffic counts RPCs use DirectPath or CFE traffic.
+func examineTraffic(ctx context.Context, client *Client, expectDP bool) bool {
+	var numCount uint64
+	const (
+		numRPCsToSend  = 20
+		minCompleteRPC = 40
+	)
+	countEnough := false
+	start := time.Now()
+	for !countEnough && time.Since(start) < 2*time.Minute {
+		for i := 0; i < numRPCsToSend; i++ {
+			_, _ = readAllTestTable(client.Single().Read(ctx, testTable, Key{"k1"}, testTableColumns))
+			if _, useDP := isDirectPathRemoteAddress(); useDP != expectDP {
+				numCount++
+			}
+			time.Sleep(100 * time.Millisecond)
+			countEnough = numCount >= minCompleteRPC
+		}
+	}
+	return countEnough
+}
+
+func blackholeOrAllowDirectPath(t *testing.T, blackholeDP bool) {
+	if dpConfig.directPathIPv4Only {
+		if blackholeDP {
+			cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		} else {
+			cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+			out, _ := cmdRes.CombinedOutput()
+			t.Logf(string(out))
+		}
+		return
+	}
+	// DirectPath supports both ipv4 and ipv6
+	if blackholeDP {
+		cmdRes := exec.Command("bash", "-c", blackholeDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", blackholeDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
+	} else {
+		cmdRes := exec.Command("bash", "-c", allowDpv4Cmd)
+		out, _ := cmdRes.CombinedOutput()
+		t.Logf(string(out))
+		cmdRes = exec.Command("bash", "-c", allowDpv6Cmd)
+		out, _ = cmdRes.CombinedOutput()
+		t.Logf(string(out))
+	}
 }

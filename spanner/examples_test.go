@@ -98,9 +98,9 @@ func ExampleClient_ReadWriteTransaction() {
 		}
 		balance -= 10
 		m := spanner.Update("Accounts", []string{"user", "balance"}, []interface{}{"alice", balance})
-		return txn.BufferWrite([]*spanner.Mutation{m})
 		// The buffered mutation will be committed. If the commit fails with an
 		// IsAborted error, this function will be called again.
+		return txn.BufferWrite([]*spanner.Mutation{m})
 	})
 	if err != nil {
 		// TODO: Handle error.

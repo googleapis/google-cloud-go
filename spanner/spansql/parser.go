@@ -47,7 +47,10 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 	"unicode/utf8"
+
+	"cloud.google.com/go/civil"
 )
 
 const debug = false
@@ -780,7 +783,7 @@ func (p *parser) advance() {
 	p.cur.err = nil
 	p.cur.line, p.cur.offset = p.line, p.offset
 	p.cur.typ = unknownToken
-	// TODO: struct, date, timestamp literals
+	// TODO: struct literals
 	switch p.s[0] {
 	case ',', ';', '(', ')', '{', '}', '[', ']', '*', '+', '-':
 		// Single character symbol.
@@ -882,6 +885,13 @@ func (p *parser) next() *token {
 	return &p.cur
 }
 
+// caseEqual reports whether the token is valid, not a quoted identifier, and
+// equal to the provided string under a case insensitive comparison.
+// Use this (or sniff/eat/expect) instead of comparing a string directly for keywords, etc.
+func (t *token) caseEqual(x string) bool {
+	return t.err == nil && t.typ != quotedID && strings.EqualFold(t.value, x)
+}
+
 // sniff reports whether the next N tokens are as specified.
 func (p *parser) sniff(want ...string) bool {
 	// Store current parser state and restore on the way out.
@@ -889,8 +899,7 @@ func (p *parser) sniff(want ...string) bool {
 	defer func() { *p = orig }()
 
 	for _, w := range want {
-		tok := p.next()
-		if tok.err != nil || tok.value != w {
+		if !p.next().caseEqual(w) {
 			return false
 		}
 	}
@@ -904,8 +913,7 @@ func (p *parser) eat(want ...string) bool {
 	orig := *p
 
 	for _, w := range want {
-		tok := p.next()
-		if tok.err != nil || tok.value != w {
+		if !p.next().caseEqual(w) {
 			// Mismatch.
 			*p = orig
 			return false
@@ -919,7 +927,7 @@ func (p *parser) expect(want string) *parseError {
 	if tok.err != nil {
 		return tok.err
 	}
-	if tok.value != want {
+	if !tok.caseEqual(want) {
 		return p.errorf("got %q while expecting %q", tok.value, want)
 	}
 	return nil
@@ -955,18 +963,22 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 		if tok.err != nil {
 			return nil, tok.err
 		}
-		kind := tok.value
-		if kind != "TABLE" && kind != "INDEX" {
-			return nil, p.errorf("got %q, want TABLE or INDEX", kind)
-		}
-		name, err := p.parseTableOrIndexOrColumnName()
-		if err != nil {
-			return nil, err
-		}
-		if kind == "TABLE" {
+		switch {
+		default:
+			return nil, p.errorf("got %q, want TABLE or INDEX", tok.value)
+		case tok.caseEqual("TABLE"):
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
 			return &DropTable{Name: name, Position: pos}, nil
+		case tok.caseEqual("INDEX"):
+			name, err := p.parseTableOrIndexOrColumnName()
+			if err != nil {
+				return nil, err
+			}
+			return &DropIndex{Name: name, Position: pos}, nil
 		}
-		return &DropIndex{Name: name, Position: pos}, nil
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1197,10 +1209,10 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	if tok.err != nil {
 		return nil, tok.err
 	}
-	switch tok.value {
+	switch {
 	default:
 		return nil, p.errorf("got %q, expected ADD or DROP or SET or ALTER", tok.value)
-	case "ADD":
+	case tok.caseEqual("ADD"):
 		if p.sniff("CONSTRAINT") || p.sniff("FOREIGN") || p.sniff("CHECK") {
 			tc, err := p.parseTableConstraint()
 			if err != nil {
@@ -1220,7 +1232,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		}
 		a.Alteration = AddColumn{Def: cd}
 		return a, nil
-	case "DROP":
+	case tok.caseEqual("DROP"):
 		if p.eat("CONSTRAINT") {
 			name, err := p.parseTableOrIndexOrColumnName()
 			if err != nil {
@@ -1240,7 +1252,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		}
 		a.Alteration = DropColumn{Name: name}
 		return a, nil
-	case "SET":
+	case tok.caseEqual("SET"):
 		if err := p.expect("ON"); err != nil {
 			return nil, err
 		}
@@ -1253,7 +1265,7 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 		}
 		a.Alteration = SetOnDelete{Action: od}
 		return a, nil
-	case "ALTER":
+	case tok.caseEqual("ALTER"):
 		// TODO: "COLUMN" is optional.
 		if err := p.expect("COLUMN"); err != nil {
 			return nil, err
@@ -1456,6 +1468,8 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 		return ColumnOptions{}, err
 	}
 
+	// TODO: Figure out if column options are case insensitive.
+	// We ignore case for the key (because it is easier) but not the value.
 	var co ColumnOptions
 	if p.eat("allow_commit_timestamp", "=") {
 		tok := p.next()
@@ -1509,18 +1523,10 @@ func (p *parser) parseKeyPart() (KeyPart, *parseError) {
 
 	kp := KeyPart{Column: name}
 
-	tok := p.next()
-	if tok.err != nil {
-		// End of the key_part.
-		p.back()
-		return kp, nil
-	}
-	switch tok.value {
-	case "ASC":
-	case "DESC":
+	if p.eat("ASC") {
+		// OK.
+	} else if p.eat("DESC") {
 		kp.Desc = true
-	default:
-		p.back()
 	}
 
 	return kp, nil
@@ -1676,7 +1682,7 @@ func (p *parser) parseType() (Type, *parseError) {
 	if tok.err != nil {
 		return Type{}, tok.err
 	}
-	if tok.value == "ARRAY" {
+	if tok.caseEqual("ARRAY") {
 		t.Array = true
 		if err := p.expect("<"); err != nil {
 			return Type{}, err
@@ -1686,7 +1692,7 @@ func (p *parser) parseType() (Type, *parseError) {
 			return Type{}, tok.err
 		}
 	}
-	base, ok := baseTypes[tok.value]
+	base, ok := baseTypes[strings.ToUpper(tok.value)] // baseTypes is keyed by upper case strings.
 	if !ok {
 		return Type{}, p.errorf("got %q, want scalar type", tok.value)
 	}
@@ -1701,7 +1707,7 @@ func (p *parser) parseType() (Type, *parseError) {
 		if tok.err != nil {
 			return Type{}, tok.err
 		}
-		if tok.value == "MAX" {
+		if tok.caseEqual("MAX") {
 			t.Len = MaxLen
 		} else if tok.typ == int64Token {
 			n, err := strconv.ParseInt(tok.value, tok.int64Base, 64)
@@ -1743,7 +1749,6 @@ func (p *parser) parseQuery() (Query, *parseError) {
 
 	// TODO: hints, sub-selects, etc.
 
-	// TODO: use a case-insensitive select.
 	if err := p.expect("SELECT"); err != nil {
 		return Query{}, err
 	}
@@ -1985,7 +1990,7 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		return sf, nil
 	}
 	var hashJoin bool // Special case for "HASH JOIN" syntax.
-	if tok.value == "HASH" {
+	if tok.caseEqual("HASH") {
 		hashJoin = true
 		tok = p.next()
 		if tok.err != nil {
@@ -1993,7 +1998,7 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 		}
 	}
 	var jt JoinType
-	if tok.value == "JOIN" {
+	if tok.caseEqual("JOIN") {
 		// This is implicitly an inner join.
 		jt = InnerJoin
 	} else if j, ok := joinKeywords[tok.value]; ok {
@@ -2100,9 +2105,9 @@ func (p *parser) parseTableSample() (TableSample, *parseError) {
 	switch {
 	case tok.err != nil:
 		return ts, tok.err
-	case tok.value == "BERNOULLI":
+	case tok.caseEqual("BERNOULLI"):
 		ts.Method = Bernoulli
-	case tok.value == "RESERVOIR":
+	case tok.caseEqual("RESERVOIR"):
 		ts.Method = Reservoir
 	default:
 		return ts, p.errorf("got %q, want BERNOULLI or RESERVOIR", tok.value)
@@ -2124,9 +2129,9 @@ func (p *parser) parseTableSample() (TableSample, *parseError) {
 	switch {
 	case tok.err != nil:
 		return ts, tok.err
-	case tok.value == "PERCENT":
+	case tok.caseEqual("PERCENT"):
 		ts.SizeType = PercentTableSample
-	case tok.value == "ROWS":
+	case tok.caseEqual("ROWS"):
 		ts.SizeType = RowsTableSample
 	default:
 		return ts, p.errorf("got %q, want PERCENT or ROWS", tok.value)
@@ -2150,13 +2155,10 @@ func (p *parser) parseOrder() (Order, *parseError) {
 	}
 	o := Order{Expr: expr}
 
-	tok := p.next()
-	switch {
-	case tok.err == nil && tok.value == "ASC":
-	case tok.err == nil && tok.value == "DESC":
+	if p.eat("ASC") {
+		// OK.
+	} else if p.eat("DESC") {
 		o.Desc = true
-	default:
-		p.back()
 	}
 
 	return o, nil
@@ -2349,9 +2351,7 @@ func (p *parser) parseIsOp() (Expr, *parseError) {
 		return nil, err
 	}
 
-	tok := p.next()
-	if tok.err != nil || tok.value != "IS" {
-		p.back()
+	if !p.eat("IS") {
 		return expr, nil
 	}
 
@@ -2360,16 +2360,16 @@ func (p *parser) parseIsOp() (Expr, *parseError) {
 		isOp.Neg = true
 	}
 
-	tok = p.next()
+	tok := p.next()
 	if tok.err != nil {
 		return nil, tok.err
 	}
-	switch tok.value {
-	case "NULL":
+	switch {
+	case tok.caseEqual("NULL"):
 		isOp.RHS = Null
-	case "TRUE":
+	case tok.caseEqual("TRUE"):
 		isOp.RHS = True
-	case "FALSE":
+	case tok.caseEqual("FALSE"):
 		isOp.RHS = False
 	default:
 		return nil, p.errorf("got %q, want NULL or TRUE or FALSE", tok.value)
@@ -2386,15 +2386,12 @@ func (p *parser) parseInOp() (Expr, *parseError) {
 		return nil, err
 	}
 
-	// TODO: do we need to do lookahead?
-
 	inOp := InOp{LHS: expr}
-	if p.eat("NOT") {
+	if p.eat("NOT", "IN") {
 		inOp.Neg = true
-	}
-
-	if !p.eat("IN") {
-		// TODO: push back the "NOT"?
+	} else if p.eat("IN") {
+		// Okay.
+	} else {
 		return expr, nil
 	}
 
@@ -2428,37 +2425,30 @@ func (p *parser) parseComparisonOp() (Expr, *parseError) {
 	}
 
 	for {
-		tok := p.next()
-		if tok.err != nil {
-			p.back()
-			break
-		}
+		// There's a need for two token lookahead.
 		var op ComparisonOperator
-		var ok, rhs2 bool
-		if tok.value == "NOT" {
-			tok := p.next()
-			switch {
-			case tok.err != nil:
-				// TODO: Does this need to push back two?
-				return nil, err
-			case tok.value == "LIKE":
-				op, ok = NotLike, true
-			case tok.value == "BETWEEN":
-				op, ok, rhs2 = NotBetween, true, true
-			default:
-				// TODO: Does this need to push back two?
-				return nil, p.errorf("got %q, want LIKE or BETWEEN", tok.value)
-			}
-		} else if tok.value == "LIKE" {
-			op, ok = Like, true
-		} else if tok.value == "BETWEEN" {
-			op, ok, rhs2 = Between, true, true
+		var rhs2 bool
+		if p.eat("NOT", "LIKE") {
+			op = NotLike
+		} else if p.eat("NOT", "BETWEEN") {
+			op, rhs2 = NotBetween, true
+		} else if p.eat("LIKE") {
+			op = Like
+		} else if p.eat("BETWEEN") {
+			op, rhs2 = Between, true
 		} else {
+			// Check for a symbolic operator.
+			tok := p.next()
+			if tok.err != nil {
+				p.back()
+				break
+			}
+			var ok bool
 			op, ok = symbolicOperators[tok.value]
-		}
-		if !ok {
-			p.back()
-			break
+			if !ok {
+				p.back()
+				break
+			}
 		}
 
 		rhs, err := p.parseArithOp()
@@ -2573,8 +2563,8 @@ func (p *parser) parseLit() (Expr, *parseError) {
 
 	// If the literal was an identifier, and there's an open paren next,
 	// this is a function invocation.
-	// TODO: Case-insensitivity.
-	if name := tok.value; funcs[name] && p.sniff("(") {
+	// The `funcs` map is keyed by upper case strings.
+	if name := strings.ToUpper(tok.value); funcs[name] && p.sniff("(") {
 		list, err := p.parseParenExprList()
 		if err != nil {
 			return nil, err
@@ -2586,28 +2576,33 @@ func (p *parser) parseLit() (Expr, *parseError) {
 	}
 
 	// Handle some reserved keywords and special tokens that become specific values.
-	switch tok.value {
-	case "TRUE":
+	switch {
+	case tok.caseEqual("TRUE"):
 		return True, nil
-	case "FALSE":
+	case tok.caseEqual("FALSE"):
 		return False, nil
-	case "NULL":
+	case tok.caseEqual("NULL"):
 		return Null, nil
-	case "*":
+	case tok.value == "*":
 		return Star, nil
 	default:
-		// TODO: Check IsKeyWord(tok.value), and return a distinguished type,
-		// then only accept that when parsing. That will also permit
-		// case insensitivity for keywords.
+		// TODO: Check IsKeyWord(tok.value), and return a good error?
 	}
 
-	// Handle array literals.
-	if tok.value == "ARRAY" || tok.value == "[" {
+	// Handle typed literals.
+	switch {
+	case tok.caseEqual("ARRAY") || tok.value == "[":
 		p.back()
 		return p.parseArrayLit()
+	case tok.caseEqual("DATE"):
+		p.back()
+		return p.parseDateLit()
+	case tok.caseEqual("TIMESTAMP"):
+		p.back()
+		return p.parseTimestampLit()
 	}
 
-	// TODO: more types of literals (struct, date, timestamp).
+	// TODO: struct literals
 
 	// Try a parameter.
 	// TODO: check character sets.
@@ -2643,6 +2638,76 @@ func (p *parser) parseArrayLit() (Array, *parseError) {
 		return nil
 	})
 	return arr, err
+}
+
+// TODO: There should be exported Parse{Date,Timestamp}Literal package-level funcs
+// to support spannertest coercing plain string literals when used in a typed context.
+// Those should wrap parseDateLit and parseTimestampLit below.
+
+func (p *parser) parseDateLit() (DateLiteral, *parseError) {
+	if err := p.expect("DATE"); err != nil {
+		return DateLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return DateLiteral{}, err
+	}
+	d, perr := civil.ParseDate(string(s))
+	if perr != nil {
+		return DateLiteral{}, p.errorf("bad date literal %q: %v", s, perr)
+	}
+	// TODO: Enforce valid range.
+	return DateLiteral(d), nil
+}
+
+// TODO: A manual parser is probably better than this.
+// There are a lot of variations that this does not handle.
+var timestampFormats = []string{
+	// 'YYYY-[M]M-[D]D [[H]H:[M]M:[S]S[.DDDDDD] [timezone]]'
+	"2006-01-02",
+	"2006-01-02 15:04:05",
+	"2006-01-02 15:04:05.000000",
+	"2006-01-02 15:04:05 -07:00",
+	"2006-01-02 15:04:05.000000 -07:00",
+}
+
+var defaultLocation = func() *time.Location {
+	// The docs say "America/Los_Angeles" is the default.
+	// Use that if we can load it, but fall back on UTC if we don't have timezone data.
+	loc, err := time.LoadLocation("America/Los_Angeles")
+	if err == nil {
+		return loc
+	}
+	return time.UTC
+}()
+
+func (p *parser) parseTimestampLit() (TimestampLiteral, *parseError) {
+	if err := p.expect("TIMESTAMP"); err != nil {
+		return TimestampLiteral{}, err
+	}
+	s, err := p.parseStringLit()
+	if err != nil {
+		return TimestampLiteral{}, err
+	}
+	for _, format := range timestampFormats {
+		t, err := time.ParseInLocation(format, string(s), defaultLocation)
+		if err == nil {
+			// TODO: Enforce valid range.
+			return TimestampLiteral(t), nil
+		}
+	}
+	return TimestampLiteral{}, p.errorf("invalid timestamp literal %q", s)
+}
+
+func (p *parser) parseStringLit() (StringLiteral, *parseError) {
+	tok := p.next()
+	if tok.err != nil {
+		return "", tok.err
+	}
+	if tok.typ != stringToken {
+		return "", p.errorf("got %q, want string literal", tok.value)
+	}
+	return StringLiteral(tok.string), nil
 }
 
 func (p *parser) parsePathExp() (PathExp, *parseError) {
@@ -2717,10 +2782,10 @@ func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 	if tok.err != nil {
 		return 0, tok.err
 	}
-	if tok.value == "CASCADE" {
+	if tok.caseEqual("CASCADE") {
 		return CascadeOnDelete, nil
 	}
-	if tok.value != "NO" {
+	if !tok.caseEqual("NO") {
 		return 0, p.errorf("got %q, want NO or CASCADE", tok.value)
 	}
 	if err := p.expect("ACTION"); err != nil {
@@ -2731,6 +2796,7 @@ func (p *parser) parseOnDelete() (OnDelete, *parseError) {
 
 // parseCommaList parses a comma-separated list enclosed by bra and ket,
 // delegating to f for the individual element parsing.
+// Only invoke this with symbols as bra/ket; they are matched literally, not case insensitively.
 func (p *parser) parseCommaList(bra, ket string, f func(*parser) *parseError) *parseError {
 	if err := p.expect(bra); err != nil {
 		return err

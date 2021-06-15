@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,18 +30,19 @@ func ExampleNewDashboardsClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDashboardsClient_CreateDashboard() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.CreateDashboardRequest{
 		// TODO: Fill request struct fields.
@@ -55,14 +56,12 @@ func ExampleDashboardsClient_CreateDashboard() {
 }
 
 func ExampleDashboardsClient_ListDashboards() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.ListDashboardsRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleDashboardsClient_ListDashboards() {
 }
 
 func ExampleDashboardsClient_GetDashboard() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.GetDashboardRequest{
 		// TODO: Fill request struct fields.
@@ -107,6 +105,7 @@ func ExampleDashboardsClient_DeleteDashboard() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.DeleteDashboardRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +117,12 @@ func ExampleDashboardsClient_DeleteDashboard() {
 }
 
 func ExampleDashboardsClient_UpdateDashboard() {
-	// import dashboardpb "google.golang.org/genproto/googleapis/monitoring/dashboard/v1"
-
 	ctx := context.Background()
 	c, err := dashboard.NewDashboardsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dashboardpb.UpdateDashboardRequest{
 		// TODO: Fill request struct fields.

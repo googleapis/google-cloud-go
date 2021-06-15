@@ -19,6 +19,8 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal"
@@ -166,6 +168,12 @@ func runWithRetry(ctx context.Context, call func() error) error {
 // retryable; these are returned by systems between the client and the BigQuery
 // service.
 func retryableError(err error) bool {
+	if err == nil {
+		return false
+	}
+	if err == io.ErrUnexpectedEOF {
+		return true
+	}
 	// Special case due to http2: https://github.com/googleapis/google-cloud-go/issues/1793
 	// Due to Go's default being higher for streams-per-connection than is accepted by the
 	// BQ backend, it's possible to get streams refused immediately after a connection is
@@ -174,13 +182,32 @@ func retryableError(err error) bool {
 	if err.Error() == "http2: stream closed" {
 		return true
 	}
-	e, ok := err.(*googleapi.Error)
-	if !ok {
-		return false
+
+	switch e := err.(type) {
+	case *googleapi.Error:
+		// We received a structured error from backend.
+		var reason string
+		if len(e.Errors) > 0 {
+			reason = e.Errors[0].Reason
+		}
+		if e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway || reason == "backendError" || reason == "rateLimitExceeded" {
+			return true
+		}
+	case *url.Error:
+		retryable := []string{"connection refused", "connection reset"}
+		for _, s := range retryable {
+			if strings.Contains(e.Error(), s) {
+				return true
+			}
+		}
+	case interface{ Temporary() bool }:
+		if e.Temporary() {
+			return true
+		}
 	}
-	var reason string
-	if len(e.Errors) > 0 {
-		reason = e.Errors[0].Reason
+	// Unwrap is only supported in go1.13.x+
+	if e, ok := err.(interface{ Unwrap() error }); ok {
+		return retryableError(e.Unwrap())
 	}
-	return e.Code == http.StatusServiceUnavailable || e.Code == http.StatusBadGateway || reason == "backendError" || reason == "rateLimitExceeded"
+	return false
 }

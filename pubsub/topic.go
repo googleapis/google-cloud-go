@@ -27,7 +27,6 @@ import (
 	"cloud.google.com/go/iam"
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/pubsub/internal/scheduler"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -464,7 +464,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	if err := t.fc.newAcquire(ctx, msgSize); err != nil {
+	if err := t.fc.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 		return r
@@ -489,6 +489,14 @@ func (t *Topic) Stop() {
 		return
 	}
 	t.scheduler.FlushAndStop()
+}
+
+// Flush blocks until all remaining messages are sent.
+func (t *Topic) Flush() {
+	if t.stopped || t.scheduler == nil {
+		return
+	}
+	t.scheduler.Flush()
 }
 
 type bundledMessage struct {
@@ -590,7 +598,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
-		t.fc.release(bm.size)
+		t.fc.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {

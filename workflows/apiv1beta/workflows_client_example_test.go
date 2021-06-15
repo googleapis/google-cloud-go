@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,19 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListWorkflows() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.ListWorkflowsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleClient_ListWorkflows() {
 }
 
 func ExampleClient_GetWorkflow() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.GetWorkflowRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleClient_GetWorkflow() {
 }
 
 func ExampleClient_CreateWorkflow() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.CreateWorkflowRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleClient_CreateWorkflow() {
 }
 
 func ExampleClient_DeleteWorkflow() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.DeleteWorkflowRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +127,12 @@ func ExampleClient_DeleteWorkflow() {
 }
 
 func ExampleClient_UpdateWorkflow() {
-	// import workflowspb "google.golang.org/genproto/googleapis/cloud/workflows/v1beta"
-
 	ctx := context.Background()
 	c, err := workflows.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &workflowspb.UpdateWorkflowRequest{
 		// TODO: Fill request struct fields.

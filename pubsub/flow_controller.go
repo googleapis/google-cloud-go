@@ -50,6 +50,8 @@ type flowController struct {
 	// small releases.
 	// Atomic.
 	countRemaining int64
+	// Number of outstanding bytes remaining. Atomic.
+	bytesRemaining int64
 	limitBehavior  LimitExceededBehavior
 }
 
@@ -74,61 +76,12 @@ func newFlowController(maxCount, maxSize int, behavior LimitExceededBehavior) *f
 	return fc
 }
 
-// acquire blocks until one message of size bytes can proceed or ctx is done.
-// It returns nil in the first case, or ctx.Err() in the second.
-//
-// acquire allows large messages to proceed by treating a size greater than maxSize
-// as if it were equal to maxSize.
-func (f *flowController) acquire(ctx context.Context, size int) error {
-	if f.limitBehavior == FlowControlIgnore {
-		return nil
-	}
-	if f.semCount != nil {
-		if err := f.semCount.Acquire(ctx, 1); err != nil {
-			return err
-		}
-	}
-	if f.semSize != nil {
-		if err := f.semSize.Acquire(ctx, f.bound(size)); err != nil {
-			if f.semCount != nil {
-				f.semCount.Release(1)
-			}
-			return err
-		}
-	}
-	atomic.AddInt64(&f.countRemaining, 1)
-	return nil
-}
-
-// tryAcquire returns false if acquire would block. Otherwise, it behaves like
-// acquire and returns true.
-//
-// tryAcquire allows large messages to proceed by treating a size greater than
-// maxSize as if it were equal to maxSize.
-// func (f *flowController) tryAcquire(size int) bool {
-// 	if f.semCount != nil {
-// 		if !f.semCount.TryAcquire(1) {
-// 			return false
-// 		}
-// 	}
-// 	if f.semSize != nil {
-// 		if !f.semSize.TryAcquire(f.bound(size)) {
-// 			if f.semCount != nil {
-// 				f.semCount.Release(1)
-// 			}
-// 			return false
-// 		}
-// 	}
-// 	atomic.AddInt64(&f.countRemaining, 1)
-// 	return true
-// }
-
-// newAcquire acquires space for a message: the message count and its size.
+// acquire allocates space for a message: the message count and its size.
 //
 // In FlowControlSignalError mode, large messages greater than maxSize
 // will be result in an error. In other modes, large messages will be treated
 // as if it were equal to maxSize.
-func (f *flowController) newAcquire(ctx context.Context, size int) error {
+func (f *flowController) acquire(ctx context.Context, size int) error {
 	switch f.limitBehavior {
 	case FlowControlIgnore:
 		return nil
@@ -164,15 +117,24 @@ func (f *flowController) newAcquire(ctx context.Context, size int) error {
 		}
 		atomic.AddInt64(&f.countRemaining, 1)
 	}
+	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
+	recordStat(ctx, OutstandingMessages, outstandingMessages)
+	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
+	recordStat(ctx, OutstandingBytes, outstandingBytes)
 	return nil
 }
 
 // release notes that one message of size bytes is no longer outstanding.
-func (f *flowController) release(size int) {
+func (f *flowController) release(ctx context.Context, size int) {
 	if f.limitBehavior == FlowControlIgnore {
 		return
 	}
 	atomic.AddInt64(&f.countRemaining, -1)
+	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
+	recordStat(ctx, OutstandingMessages, outstandingMessages)
+	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
+	recordStat(ctx, OutstandingBytes, outstandingBytes)
+
 	if f.semCount != nil {
 		f.semCount.Release(1)
 	}

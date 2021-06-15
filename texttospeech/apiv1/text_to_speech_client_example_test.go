@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,18 +29,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ListVoices() {
-	// import texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
-
 	ctx := context.Background()
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &texttospeechpb.ListVoicesRequest{
 		// TODO: Fill request struct fields.
@@ -54,13 +55,12 @@ func ExampleClient_ListVoices() {
 }
 
 func ExampleClient_SynthesizeSpeech() {
-	// import texttospeechpb "google.golang.org/genproto/googleapis/cloud/texttospeech/v1"
-
 	ctx := context.Background()
 	c, err := texttospeech.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &texttospeechpb.SynthesizeSpeechRequest{
 		// TODO: Fill request struct fields.

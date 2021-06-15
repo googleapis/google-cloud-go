@@ -21,12 +21,12 @@ by ascending esotericism:
 - NUMERIC
 - more aggregation functions
 - SELECT HAVING
-- case insensitivity
-- alternate literal types (esp. strings)
+- more literal types
 - generated columns
 - expression type casting, coercion
 - multiple joins
 - subselects
+- case insensitivity of table and column names and query aliases
 - transaction simulation
 - FOREIGN KEY and CHECK constraints
 - INSERT DML statements

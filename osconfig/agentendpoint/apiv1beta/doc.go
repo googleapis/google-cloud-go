@@ -1,4 +1,4 @@
-// Copyright 2020 Google LLC
+// Copyright 2021 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@
 // OS management tools that can be used for patch management, patch
 // compliance, and configuration management on VM instances.
 //
+//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
+//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -29,7 +31,7 @@
 // To close the open connection, use the Close() method.
 //
 // For information about setting deadlines, reusing contexts, and more
-// please visit pkg.go.dev/cloud.google.com/go.
+// please visit https://pkg.go.dev/cloud.google.com/go.
 package agentendpoint // import "cloud.google.com/go/osconfig/agentendpoint/apiv1beta"
 
 import (
@@ -49,7 +51,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20201211"
+const versionClient = "20210611"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
