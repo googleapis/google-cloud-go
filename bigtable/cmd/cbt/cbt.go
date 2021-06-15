@@ -46,6 +46,8 @@ import (
 
 var (
 	oFlag = flag.String("o", "", "if set, redirect stdout to this file")
+	tFlag = flag.Duration("timeout", 300e9,
+		"Timeout (e.g. 10s, 100ms, 5m ), with a 5-minute (5m) default")
 
 	config              *cbtconfig.Config
 	client              *bigtable.Client
@@ -150,7 +152,9 @@ func main() {
 		cliUserAgent = config.UserAgent
 	}
 
-	ctx := context.Background()
+	ctx, cancel := context.WithTimeout(context.Background(), *tFlag)
+	defer cancel()
+	
 	if config.AuthToken != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-iam-authorization-token", config.AuthToken)
 	}
