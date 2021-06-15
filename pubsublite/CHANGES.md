@@ -1,5 +1,12 @@
 # Changes
 
+### [0.9.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.1...pubsublite/v0.9.2) (2021-06-15)
+
+
+### Bug Fixes
+
+* **pubsublite:** ack assignment after removed subscribers have terminated ([#4217](https://www.github.com/googleapis/google-cloud-go/issues/4217)) ([0ad3f16](https://www.github.com/googleapis/google-cloud-go/commit/0ad3f168b8525033e6926882059cb0b430d1f350))
+
 ### [0.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.0...pubsublite/v0.9.1) (2021-06-10)
 
 
