@@ -1,5 +1,17 @@
 # Changes
 
+## [0.10.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.1...pubsublite/v0.10.0) (2021-06-15)
+
+
+### Features
+
+* **pubsublite:** support out of band seeks ([#4208](https://www.github.com/googleapis/google-cloud-go/issues/4208)) ([1432e67](https://www.github.com/googleapis/google-cloud-go/commit/1432e678d5510f6a60b5319e7c70b0c15229b88c))
+
+
+### Bug Fixes
+
+* **pubsublite:** ack assignment after removed subscribers have terminated ([#4217](https://www.github.com/googleapis/google-cloud-go/issues/4217)) ([0ad3f16](https://www.github.com/googleapis/google-cloud-go/commit/0ad3f168b8525033e6926882059cb0b430d1f350))
+
 ### [0.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.0...pubsublite/v0.9.1) (2021-06-10)
 
 
