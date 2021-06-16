@@ -31,8 +31,7 @@ import (
 var (
 	errServerNoMessages                = errors.New("pubsublite: server delivered no messages")
 	errInvalidInitialSubscribeResponse = errors.New("pubsublite: first response from server was not an initial response for subscribe")
-	errInvalidSubscribeResponse        = errors.New("pubsublite: received invalid subscribe response from server")
-	errNoInFlightSeek                  = errors.New("pubsublite: received seek response for no in-flight seek")
+	errInvalidSubscribeResponse        = errors.New("pubsublite: received unexpected subscribe response from server")
 )
 
 // ReceivedMessage stores a received Pub/Sub message and AckConsumer for
@@ -126,6 +125,10 @@ func (mq *messageDeliveryQueue) deliverMessages(messagesC chan *ReceivedMessage,
 // The frequency of sending batch flow control requests.
 const batchFlowControlPeriod = 100 * time.Millisecond
 
+// Handles subscriber reset actions that are external to the subscribeStream
+// (e.g. wait for the committer to flush commits).
+type subscriberResetHandler func() error
+
 // subscribeStream directly wraps the subscribe client stream. It passes
 // messages to the message receiver and manages flow control. Flow control
 // tokens are batched and sent to the stream via a periodic background task,
@@ -137,7 +140,7 @@ type subscribeStream struct {
 	subClient    *vkit.SubscriberClient
 	settings     ReceiveSettings
 	subscription subscriptionPartition
-	initialReq   *pb.SubscribeRequest
+	handleReset  subscriberResetHandler
 	metadata     pubsubMetadata
 
 	// Fields below must be guarded with mu.
@@ -146,27 +149,20 @@ type subscribeStream struct {
 	offsetTracker          subscriberOffsetTracker
 	flowControl            flowControlBatcher
 	pollFlowControl        *periodicTask
-	seekInFlight           bool
 	enableBatchFlowControl bool
 
 	abstractService
 }
 
 func newSubscribeStream(ctx context.Context, subClient *vkit.SubscriberClient, settings ReceiveSettings,
-	receiver MessageReceiverFunc, subscription subscriptionPartition, acks *ackTracker, disableTasks bool) *subscribeStream {
+	receiver MessageReceiverFunc, subscription subscriptionPartition, acks *ackTracker,
+	handleReset subscriberResetHandler, disableTasks bool) *subscribeStream {
 
 	s := &subscribeStream{
 		subClient:    subClient,
 		settings:     settings,
 		subscription: subscription,
-		initialReq: &pb.SubscribeRequest{
-			Request: &pb.SubscribeRequest_Initial{
-				Initial: &pb.InitialSubscribeRequest{
-					Subscription: subscription.Path,
-					Partition:    int64(subscription.Partition),
-				},
-			},
-		},
+		handleReset:  handleReset,
 		messageQueue: newMessageDeliveryQueue(acks, receiver, settings.MaxOutstandingMessages),
 		metadata:     newPubsubMetadata(),
 	}
@@ -212,7 +208,18 @@ func (s *subscribeStream) newStream(ctx context.Context) (grpc.ClientStream, err
 }
 
 func (s *subscribeStream) initialRequest() (interface{}, initialResponseRequired) {
-	return s.initialReq, initialResponseRequired(true)
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	initReq := &pb.SubscribeRequest{
+		Request: &pb.SubscribeRequest_Initial{
+			Initial: &pb.InitialSubscribeRequest{
+				Subscription:    s.subscription.Path,
+				Partition:       int64(s.subscription.Partition),
+				InitialLocation: s.offsetTracker.RequestForRestart(),
+			},
+		},
+	}
+	return initReq, initialResponseRequired(true)
 }
 
 func (s *subscribeStream) validateInitialResponse(response interface{}) error {
@@ -231,26 +238,42 @@ func (s *subscribeStream) onStreamStatusChange(status streamStatus) {
 	case streamConnected:
 		s.unsafeUpdateStatus(serviceActive, nil)
 
-		// Reinitialize the offset and flow control tokens when a new subscribe
-		// stream instance is connected.
-		if seekReq := s.offsetTracker.RequestForRestart(); seekReq != nil {
-			if !s.stream.Send(&pb.SubscribeRequest{
-				Request: &pb.SubscribeRequest_Seek{Seek: seekReq},
-			}) {
-				return
-			}
-			s.seekInFlight = true
-		}
+		// Reinitialize the flow control tokens when a new subscribe stream instance
+		// is connected.
 		s.unsafeSendFlowControl(s.flowControl.RequestForRestart())
 		s.enableBatchFlowControl = true
 		s.pollFlowControl.Start()
 
 	case streamReconnecting:
-		s.seekInFlight = false
 		// Ensure no batch flow control tokens are sent until the RequestForRestart
 		// is sent above when a new subscribe stream is initialized.
 		s.enableBatchFlowControl = false
 		s.pollFlowControl.Stop()
+
+	case streamResetState:
+		// Handle out-of-band seek notifications from the server. Committer and
+		// subscriber state are reset.
+
+		s.messageQueue.Stop()
+
+		// Wait for all message receiver callbacks to finish and the committer to
+		// flush pending commits and reset its state. Release the mutex while
+		// waiting.
+		s.mu.Unlock()
+		s.messageQueue.Wait()
+		err := s.handleReset()
+		s.mu.Lock()
+
+		if err != nil {
+			s.unsafeInitiateShutdown(serviceTerminating, nil)
+			return
+		}
+		s.messageQueue.Start()
+		s.offsetTracker.Reset()
+		s.flowControl.Reset(flowControlTokens{
+			Bytes:    int64(s.settings.MaxOutstandingBytes),
+			Messages: int64(s.settings.MaxOutstandingMessages),
+		})
 
 	case streamTerminated:
 		s.unsafeInitiateShutdown(serviceTerminated, s.stream.Error())
@@ -270,22 +293,12 @@ func (s *subscribeStream) onResponse(response interface{}) {
 	switch {
 	case subscribeResponse.GetMessages() != nil:
 		err = s.unsafeOnMessageResponse(subscribeResponse.GetMessages())
-	case subscribeResponse.GetSeek() != nil:
-		err = s.unsafeOnSeekResponse(subscribeResponse.GetSeek())
 	default:
 		err = errInvalidSubscribeResponse
 	}
 	if err != nil {
 		s.unsafeInitiateShutdown(serviceTerminated, err)
 	}
-}
-
-func (s *subscribeStream) unsafeOnSeekResponse(response *pb.SeekResponse) error {
-	if !s.seekInFlight {
-		return errNoInFlightSeek
-	}
-	s.seekInFlight = false
-	return nil
 }
 
 func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) error {
@@ -307,16 +320,11 @@ func (s *subscribeStream) unsafeOnMessageResponse(response *pb.MessageResponse) 
 }
 
 func (s *subscribeStream) onAck(ac *ackConsumer) {
-	// Don't block the user's goroutine with potentially expensive ack processing.
-	go s.onAckAsync(ac.MsgBytes)
-}
-
-func (s *subscribeStream) onAckAsync(msgBytes int64) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
 	if s.status == serviceActive {
-		s.unsafeAllowFlow(flowControlTokens{Bytes: msgBytes, Messages: 1})
+		s.unsafeAllowFlow(flowControlTokens{Bytes: ac.MsgBytes, Messages: 1})
 	}
 }
 
@@ -393,7 +401,7 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 	subscription := subscriptionPartition{Path: f.subscriptionPath, Partition: partition}
 	acks := newAckTracker()
 	commit := newCommitter(f.ctx, f.cursorClient, f.settings, subscription, acks, f.disableTasks)
-	sub := newSubscribeStream(f.ctx, f.subClient, f.settings, f.receiver, subscription, acks, f.disableTasks)
+	sub := newSubscribeStream(f.ctx, f.subClient, f.settings, f.receiver, subscription, acks, commit.BlockingReset, f.disableTasks)
 	ps := &singlePartitionSubscriber{
 		subscriber: sub,
 		committer:  commit,
@@ -407,15 +415,14 @@ func (f *singlePartitionSubscriberFactory) New(partition int) *singlePartitionSu
 // partitions.
 type multiPartitionSubscriber struct {
 	// Immutable after creation.
-	clients     apiClients
 	subscribers []*singlePartitionSubscriber
 
-	compositeService
+	apiClientService
 }
 
 func newMultiPartitionSubscriber(allClients apiClients, subFactory *singlePartitionSubscriberFactory) *multiPartitionSubscriber {
 	ms := &multiPartitionSubscriber{
-		clients: allClients,
+		apiClientService: apiClientService{clients: allClients},
 	}
 	ms.init()
 
@@ -438,18 +445,11 @@ func (ms *multiPartitionSubscriber) Terminate() {
 	}
 }
 
-func (ms *multiPartitionSubscriber) WaitStopped() error {
-	err := ms.compositeService.WaitStopped()
-	ms.clients.Close()
-	return err
-}
-
 // assigningSubscriber uses the Pub/Sub Lite partition assignment service to
 // listen to its assigned partition numbers and dynamically add/remove
 // singlePartitionSubscribers.
 type assigningSubscriber struct {
 	// Immutable after creation.
-	clients    apiClients
 	subFactory *singlePartitionSubscriberFactory
 	assigner   *assigner
 
@@ -457,14 +457,14 @@ type assigningSubscriber struct {
 	// Subscribers keyed by partition number. Updated as assignments change.
 	subscribers map[int]*singlePartitionSubscriber
 
-	compositeService
+	apiClientService
 }
 
 func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.PartitionAssignmentClient, genUUID generateUUIDFunc, subFactory *singlePartitionSubscriberFactory) (*assigningSubscriber, error) {
 	as := &assigningSubscriber{
-		clients:     allClients,
-		subFactory:  subFactory,
-		subscribers: make(map[int]*singlePartitionSubscriber),
+		apiClientService: apiClientService{clients: allClients},
+		subFactory:       subFactory,
+		subscribers:      make(map[int]*singlePartitionSubscriber),
 	}
 	as.init()
 
@@ -478,6 +478,21 @@ func newAssigningSubscriber(allClients apiClients, assignmentClient *vkit.Partit
 }
 
 func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
+	removedSubscribers, err := as.doHandleAssignment(partitions)
+	if err != nil {
+		return err
+	}
+
+	// Wait for removed subscribers to completely stop (which waits for commit
+	// acknowledgments from the server) before acking the assignment. This avoids
+	// commits racing with the new assigned client.
+	for _, subscriber := range removedSubscribers {
+		subscriber.WaitStopped()
+	}
+	return nil
+}
+
+func (as *assigningSubscriber) doHandleAssignment(partitions partitionSet) ([]*singlePartitionSubscriber, error) {
 	as.mu.Lock()
 	defer as.mu.Unlock()
 
@@ -487,18 +502,20 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 			subscriber := as.subFactory.New(partition)
 			if err := as.unsafeAddServices(subscriber); err != nil {
 				// Occurs when the assigningSubscriber is stopping/stopped.
-				return err
+				return nil, err
 			}
 			as.subscribers[partition] = subscriber
 		}
 	}
 
 	// Handle removed partitions.
+	var removedSubscribers []*singlePartitionSubscriber
 	for partition, subscriber := range as.subscribers {
 		if !partitions.Contains(partition) {
 			// Ignore unacked messages from this point on to avoid conflicting with
 			// the commits of the new subscriber that will be assigned this partition.
 			subscriber.Terminate()
+			removedSubscribers = append(removedSubscribers, subscriber)
 
 			as.unsafeRemoveService(subscriber)
 			// Safe to delete map entry during range loop:
@@ -506,7 +523,7 @@ func (as *assigningSubscriber) handleAssignment(partitions partitionSet) error {
 			delete(as.subscribers, partition)
 		}
 	}
-	return nil
+	return removedSubscribers, nil
 }
 
 // Terminate shuts down all singlePartitionSubscribers without waiting for
@@ -518,12 +535,6 @@ func (as *assigningSubscriber) Terminate() {
 	for _, sub := range as.subscribers {
 		sub.Terminate()
 	}
-}
-
-func (as *assigningSubscriber) WaitStopped() error {
-	err := as.compositeService.WaitStopped()
-	as.clients.Close()
-	return err
 }
 
 // Subscriber is the client interface exported from this package for receiving
@@ -544,15 +555,20 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	if err := validateReceiveSettings(settings); err != nil {
 		return nil, err
 	}
+
+	var allClients apiClients
 	subClient, err := newSubscriberClient(ctx, region, opts...)
 	if err != nil {
 		return nil, err
 	}
+	allClients = append(allClients, subClient)
+
 	cursorClient, err := newCursorClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
-	allClients := apiClients{subClient, cursorClient}
+	allClients = append(allClients, cursorClient)
 
 	subFactory := &singlePartitionSubscriberFactory{
 		ctx:              ctx,
@@ -568,6 +584,7 @@ func NewSubscriber(ctx context.Context, settings ReceiveSettings, receiver Messa
 	}
 	partitionClient, err := newPartitionAssignmentClient(ctx, region, opts...)
 	if err != nil {
+		allClients.Close()
 		return nil, err
 	}
 	allClients = append(allClients, partitionClient)
