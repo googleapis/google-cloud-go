@@ -1633,3 +1633,66 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		}
 	}
 }
+
+func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
+	// Create collection with enough documents to have multiple partitions.
+	coll := integrationColl(t)
+	ctx := context.Background()
+
+	documentCount := 2*128 + 127 // Minimum partition size is 128.
+
+	// Create documents in a collection sufficient to trigger multiple partitions.
+	// subtract 1 as initIntegrationTest will make one doc.
+	batch := iClient.Batch()
+	deleteBatch := iClient.Batch()
+	for i := 0; i < documentCount-1; i++ {
+		doc := coll.Doc(fmt.Sprintf("doc%d", i))
+		batch.Create(doc, integrationTestMap)
+		deleteBatch.Delete(doc)
+	}
+	batch.Commit(ctx)
+	defer deleteBatch.Commit(ctx)
+
+	collectionID := coll.collectionID
+	expectedPartitionCount := 4
+
+	colGroup := iClient.CollectionGroup(collectionID)
+
+	// Verify that we retrieve 383 documents for the colGroup (128*2 + 127)
+	docs, err := colGroup.Documents(ctx).GetAll()
+	if err != nil {
+		t.Fatalf("Did not expect error: %v", err)
+	}
+	if got, want := len(docs), documentCount; got != want {
+		docStrs := ""
+		for _, v := range docs {
+			docStrs += v.Ref.ID + " "
+		}
+		t.Errorf("Unexpected number of documents in collection group: got %d, want %d %s", got, want, docStrs)
+	}
+
+	// Get partitions, allow up to 10 to come back, expect less will be returned.
+	partitions, err := colGroup.GetPartitions(ctx, 10)
+	if err != nil {
+		t.Fatalf("Did not expect error: %v", err)
+	}
+	if got, want := len(partitions), expectedPartitionCount; got != want {
+		t.Errorf("Unexpected Partition Count: got %d, want %d", got, want)
+	}
+
+	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
+	totalCount := 0
+	for _, partition := range partitions {
+		query := partition.ToQuery()
+
+		allDocs, err := query.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatalf("Did not expect error: %v", err)
+		}
+		totalCount += len(allDocs)
+	}
+
+	if got, want := totalCount, documentCount; got != want {
+		t.Errorf("Unexpected number of documents across partitions: got %d, want %d", got, want)
+	}
+}

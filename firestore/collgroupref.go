@@ -53,17 +53,19 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 // than the requested number if providing the desired number would result in
 // partitions with very few documents.
 func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount int) ([]QueryPartition, error) {
+	orderedQuery := cgr.query().OrderBy(DocumentID, Asc)
+
 	if partitionCount <= 0 {
 		return nil, errors.New("a positive partitionCount must be provided")
 	} else if partitionCount == 1 {
-		return []QueryPartition{{CollectionGroupQuery: cgr.Query, StartAt: "", EndBefore: ""}}, nil
+		return []QueryPartition{{CollectionGroupQuery: orderedQuery, StartAt: "", EndBefore: ""}}, nil
 	}
 
 	db := cgr.c.path()
 	ctx = withResourceHeader(ctx, db)
 
 	// CollectionGroup Queries need to be ordered by __name__ ASC.
-	query, err := cgr.query().OrderBy(DocumentID, Asc).toProto()
+	query, err := orderedQuery.toProto()
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +107,9 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	for _, cursor := range cursorReferences {
 		cursorRef := cursor.GetReferenceValue()
 		qp := QueryPartition{
-			StartAt:   previousCursor,
-			EndBefore: cursorRef,
+			CollectionGroupQuery: orderedQuery,
+			StartAt:              previousCursor,
+			EndBefore:            cursorRef,
 		}
 		partitionQueries = append(partitionQueries, qp)
 		previousCursor = cursorRef
@@ -115,8 +118,9 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	// In the case there were no partitions, we still add a single partition to
 	// the result, that covers the complete range.
 	lastPart := QueryPartition{
-		StartAt:   "",
-		EndBefore: "",
+		CollectionGroupQuery: orderedQuery,
+		StartAt:              "",
+		EndBefore:            "",
 	}
 	if len(cursorReferences) > 0 {
 		lastPart.StartAt = cursorReferences[len(cursorReferences)-1].GetReferenceValue()
@@ -138,12 +142,14 @@ type QueryPartition struct {
 
 // ToQuery converts a QueryPartition object to a Query object
 func (qp QueryPartition) ToQuery() Query {
-	q := qp.CollectionGroupQuery.query().OrderBy(DocumentID, Asc)
+	q := *qp.CollectionGroupQuery.query()
+
+	// Remove the leading path before calling StartAt, EndBefore
 	if qp.StartAt != "" {
-		q = q.StartAt(qp.StartAt)
+		q = q.StartAt(qp.StartAt[len(q.path)+1:])
 	}
 	if qp.EndBefore != "" {
-		q = q.EndBefore(qp.EndBefore)
+		q = q.EndBefore(qp.EndBefore[len(q.path)+1:])
 	}
 	return q
 }
