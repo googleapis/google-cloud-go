@@ -253,7 +253,11 @@ func TestOffsetTrackerRequestForRestart(t *testing.T) {
 		{
 			desc:    "Uninitialized tracker",
 			tracker: subscriberOffsetTracker{},
-			want:    nil,
+			want: &pb.SeekRequest{
+				Target: &pb.SeekRequest_NamedTarget_{
+					NamedTarget: pb.SeekRequest_COMMITTED_CURSOR,
+				},
+			},
 		},
 		{
 			desc:    "Next offset positive",
