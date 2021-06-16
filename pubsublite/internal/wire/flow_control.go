@@ -160,11 +160,14 @@ func (ot *subscriberOffsetTracker) Reset() {
 }
 
 // RequestForRestart returns the seek request to send when a new subscribe
-// stream reconnects. Returns nil if the subscriber has just started, in which
-// case the server returns the offset of the last committed cursor.
+// stream reconnects.
 func (ot *subscriberOffsetTracker) RequestForRestart() *pb.SeekRequest {
 	if ot.minNextOffset <= 0 {
-		return nil
+		return &pb.SeekRequest{
+			Target: &pb.SeekRequest_NamedTarget_{
+				NamedTarget: pb.SeekRequest_COMMITTED_CURSOR,
+			},
+		}
 	}
 	return &pb.SeekRequest{
 		Target: &pb.SeekRequest_Cursor{
