@@ -17,7 +17,6 @@ package bigquery
 import (
 	"context"
 	"errors"
-	"log"
 	"math"
 	"math/big"
 	"reflect"
@@ -31,11 +30,11 @@ import (
 )
 
 var scalarTests = []struct {
-	val      interface{} // input value sent as query param
-	wantNil  bool        // paramValue desired as nil
-	wantVal  string
+	val      interface{}            // input value sent as query param
+	wantNil  bool                   // whether the value returned in a query field should be nil.
+	wantVal  string                 // the string form of the scalar value in QueryParameterValue.
 	wantType *bq.QueryParameterType // paramType's desired output
-	wantStat interface{}            // val when roundtripped as a backend stat.
+	wantStat interface{}            // val when roundtripped and represented as part of job statistics.
 }{
 	{int64(0), false, "0", int64ParamType, int64(0)},
 	{NullInt64{Int64: 3, Valid: true}, false, "3", int64ParamType, int64(3)},
@@ -117,7 +116,7 @@ var scalarTests = []struct {
 		dateTimeParamType,
 		NullDateTime{Valid: false}},
 	{big.NewRat(12345, 1000), false, "12.345000000", numericParamType, big.NewRat(12345, 1000)},
-	{NullGeography{GeographyVal: "foo", Valid: true}, false, "foo", geographyParamType, "foo"},
+	{NullGeography{GeographyVal: "POINT(-122.335503 47.625536)", Valid: true}, false, "POINT(-122.335503 47.625536)", geographyParamType, "POINT(-122.335503 47.625536)"},
 	{NullGeography{Valid: false}, true, "", geographyParamType, NullGeography{Valid: false}},
 }
 
@@ -177,14 +176,19 @@ func sval(s string) bq.QueryParameterValue {
 }
 
 func TestParamValueScalar(t *testing.T) {
+
+	nilValue := &bq.QueryParameterValue{
+		NullFields: []string{"Value"},
+	}
+
 	for _, test := range scalarTests {
 		got, err := paramValue(reflect.ValueOf(test.val))
 		if err != nil {
 			t.Errorf("%v: got err %v", test.val, err)
 		}
 		if test.wantNil {
-			if got != nil {
-				t.Errorf("%#v: wanted nil, got %v", test.val, got)
+			if !testutil.Equal(got, nilValue) {
+				t.Errorf("%#v: wanted empty QueryParameterValue, got %v", test.val, got)
 			}
 		} else {
 			want := sval(test.wantVal)
@@ -342,16 +346,23 @@ func TestIntegration_ScalarParam(t *testing.T) {
 		func(t time.Time) time.Time { return t.Round(time.Microsecond) })
 	c := getClient(t)
 	for _, test := range scalarTests {
-		log.Printf("val: %T %#v", test.val, test.val)
 		gotData, gotParam, err := paramRoundTrip(c, test.val)
 		if err != nil {
-			t.Fatal(err)
+			t.Errorf("input %#v errored: %v", test.val, err)
 		}
-		if !testutil.Equal(gotData, test.wantVal, roundToMicros) {
-			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotData, gotData, test.val, test.val)
+		// first, check the returned query value
+		if test.wantNil {
+			if gotData != nil {
+				t.Errorf("data value %#v expected nil, got %#v", test.val, gotData)
+			}
+		} else {
+			if !testutil.Equal(gotData, test.wantStat, roundToMicros) {
+				t.Errorf("\ngot data value %#v (%T)\nwant %#v (%T)", gotData, gotData, test.wantStat, test.wantStat)
+			}
 		}
+		// then, check the stat value
 		if !testutil.Equal(gotParam, test.wantStat, roundToMicros) {
-			t.Errorf("\ngot  %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.wantStat, test.wantStat)
+			t.Errorf("\ngot param stat %#v (%T)\nwant %#v (%T)", gotParam, gotParam, test.wantStat, test.wantStat)
 		}
 	}
 }

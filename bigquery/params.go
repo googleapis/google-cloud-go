@@ -18,7 +18,6 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"log"
 	"math/big"
 	"reflect"
 	"regexp"
@@ -240,11 +239,16 @@ func paramValue(v reflect.Value) (*bq.QueryParameterValue, error) {
 		typeOfNullDate,
 		typeOfNullTime,
 		typeOfNullDateTime:
-		// Shared:  If the Null type isn't valid, we're not sending a value.
+		// Shared:  If the Null type isn't valid, we have no value to send.
+		// However, the backend requires us to send the QueryParameterValue with
+		// the fields empty.
 		if !v.FieldByName("Valid").Bool() {
-			return nil, nil
+			// Ensure we don't send a default value by using NullFields in the JSON
+			// serialization.
+			res.NullFields = append(res.NullFields, "Value")
+			return res, nil
 		}
-		// Now, handle each Null type seperately, where we have a value.
+		// For cases where the Null type is valid, populate the scalar value as needed.
 		switch t {
 		case typeOfNullInt64:
 			res.Value = fmt.Sprint(v.FieldByName("Int64").Interface())
@@ -378,7 +382,8 @@ var paramTypeToFieldType = map[string]FieldType{
 }
 
 // Convert a parameter value from the service to a Go value. This is similar to, but
-// not quite the same as, converting data values.
+// not quite the same as, converting data values.  Namely, rather than returning nil
+// directly, we wrap them in the appropriate Null types (NullInt64, etc).
 func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterType) (interface{}, error) {
 	switch qtype.Type {
 	case "ARRAY":
@@ -392,17 +397,17 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 		}
 		return convertParamStruct(qval.StructValues, qtype.StructTypes)
 	case "TIMESTAMP":
-		if qval == nil {
+		if isNullScalar(qval) {
 			return NullTimestamp{Valid: false}, nil
 		}
 		return time.Parse(timestampFormat, qval.Value)
 	case "DATETIME":
-		if qval == nil {
+		if isNullScalar(qval) {
 			return NullDateTime{Valid: false}, nil
 		}
 		return parseCivilDateTime(qval.Value)
 	default:
-		if qval == nil {
+		if isNullScalar(qval) {
 			switch qtype.Type {
 			case "INT64":
 				return NullInt64{Valid: false}, nil
@@ -421,13 +426,22 @@ func convertParamValue(qval *bq.QueryParameterValue, qtype *bq.QueryParameterTyp
 			}
 
 		}
-		// Note: we cannot tell the difference between a null and empty STRING
-		// in the *bq.QueryParameterValue from backend due to how JSON is handled,
-		// so we retain the existing behavior that it's treated an empty string.  We
-		// use the same behavior for GEOGRAPHY.
-		log.Printf("WTF: %v -> %v", qval.Value, qtype.Type)
 		return convertBasicType(qval.Value, paramTypeToFieldType[qtype.Type])
 	}
+}
+
+// isNullScalar determines if the input is meant to represent a null scalar
+// value.
+func isNullScalar(qval *bq.QueryParameterValue) bool {
+	if qval == nil {
+		return true
+	}
+	for _, v := range qval.NullFields {
+		if v == "Value" {
+			return true
+		}
+	}
+	return false
 }
 
 // convertParamArray converts a query parameter array value to a Go value. It
