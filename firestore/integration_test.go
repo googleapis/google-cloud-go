@@ -1643,7 +1643,6 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	ctx := context.Background()
 
 	documentCount := 2*128 + 127 // Minimum partition size is 128.
-	expectedPartitionCount := 4
 
 	// Create documents in a collection sufficient to trigger multiple partitions.
 	batch := iClient.Batch()
@@ -1671,8 +1670,8 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	if err != nil {
 		t.Fatalf("Did not expect error: %v", err)
 	}
-	if got, want := len(partitions), expectedPartitionCount; got != want {
-		t.Errorf("Unexpected Partition Count: got %d, want %d", got, want)
+	if len(partitions) < 2 {
+		t.Errorf("Unexpected Partition Count. Expected 2 or more: got %d, want 2+", len(partitions))
 	}
 
 	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
