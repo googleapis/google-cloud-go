@@ -185,8 +185,6 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 // AddPublishResponse adds a new publish response to the channel used for
 // responding to publish requests.
 func (s *Server) AddPublishResponse(pbr *pb.PublishResponse, err error) {
-	s.GServer.mu.Lock()
-	defer s.GServer.mu.Unlock()
 	pr := &publishResponse{}
 	if err != nil {
 		pr.err = err

@@ -39,8 +39,8 @@ type PublishScheduler struct {
 	BufferedByteLimit    int
 
 	mu          sync.Mutex
-	bundlers    sync.Map
-	outstanding sync.Map
+	bundlers    sync.Map // keys -> *bundler.Bundler.
+	outstanding sync.Map // keys -> num outstanding messages.
 
 	keysMu sync.RWMutex
 	// keysWithErrors tracks ordering keys that cannot accept new messages.
@@ -105,7 +105,7 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	var b *bundler.Bundler
-	b_i, ok := s.bundlers.Load(key)
+	bInterface, ok := s.bundlers.Load(key)
 
 	if !ok {
 		s.outstanding.Store(key, 1)
@@ -116,8 +116,8 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 
 			nlen := reflect.ValueOf(bundle).Len()
 			s.mu.Lock()
-			outstanding_i, _ := s.outstanding.Load(key)
-			s.outstanding.Store(key, outstanding_i.(int)-nlen)
+			outsInterface, _ := s.outstanding.Load(key)
+			s.outstanding.Store(key, outsInterface.(int)-nlen)
 			if v, _ := s.outstanding.Load(key); v == 0 {
 				s.outstanding.Delete(key)
 				s.bundlers.Delete(key)
@@ -145,9 +145,9 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 
 		s.bundlers.Store(key, b)
 	} else {
-		b = b_i.(*bundler.Bundler)
-		o_i, _ := s.outstanding.Load(key)
-		s.outstanding.Store(key, o_i.(int)+1)
+		b = bInterface.(*bundler.Bundler)
+		oi, _ := s.outstanding.Load(key)
+		s.outstanding.Store(key, oi.(int)+1)
 	}
 
 	return b.Add(item, size)
@@ -157,8 +157,8 @@ func (s *PublishScheduler) Add(key string, item interface{}, size int) error {
 // blocks until all items have been flushed.
 func (s *PublishScheduler) FlushAndStop() {
 	close(s.done)
-	s.bundlers.Range(func(_, bundler_i interface{}) bool {
-		bundler_i.(*bundler.Bundler).Flush()
+	s.bundlers.Range(func(_, bi interface{}) bool {
+		bi.(*bundler.Bundler).Flush()
 		return true
 	})
 }
@@ -166,12 +166,12 @@ func (s *PublishScheduler) FlushAndStop() {
 // Flush waits until all bundlers are sent.
 func (s *PublishScheduler) Flush() {
 	var wg sync.WaitGroup
-	s.bundlers.Range(func(_, bundler_i interface{}) bool {
+	s.bundlers.Range(func(_, bi interface{}) bool {
 		wg.Add(1)
 		go func(b *bundler.Bundler) {
 			defer wg.Done()
 			b.Flush()
-		}(bundler_i.(*bundler.Bundler))
+		}(bi.(*bundler.Bundler))
 		return true
 	})
 	wg.Wait()
