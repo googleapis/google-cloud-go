@@ -106,6 +106,11 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 
 	for _, cursor := range cursorReferences {
 		cursorRef := cursor.GetReferenceValue()
+
+		// remove the root path from the reference, as queries take cursors
+		// relative to a collection
+		cursorRef = cursorRef[len(orderedQuery.path)+1:]
+
 		qp := QueryPartition{
 			CollectionGroupQuery: orderedQuery,
 			StartAt:              previousCursor,
@@ -123,7 +128,8 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 		EndBefore:            "",
 	}
 	if len(cursorReferences) > 0 {
-		lastPart.StartAt = cursorReferences[len(cursorReferences)-1].GetReferenceValue()
+		cursorRef := cursorReferences[len(cursorReferences)-1].GetReferenceValue()
+		lastPart.StartAt = cursorRef[len(orderedQuery.path)+1:]
 	}
 	partitionQueries = append(partitionQueries, lastPart)
 
@@ -142,14 +148,14 @@ type QueryPartition struct {
 
 // ToQuery converts a QueryPartition object to a Query object
 func (qp QueryPartition) ToQuery() Query {
-	q := qp.CollectionGroupQuery.query().OrderBy(DocumentID, Asc)
+	q := *qp.CollectionGroupQuery.query() //.OrderBy(DocumentID, Asc)
 
 	// Remove the leading path before calling StartAt, EndBefore
 	if qp.StartAt != "" {
-		q = q.StartAt(qp.StartAt[len(q.path)+1:])
+		q = q.StartAt(qp.StartAt)
 	}
 	if qp.EndBefore != "" {
-		q = q.EndBefore(qp.EndBefore[len(q.path)+1:])
+		q = q.EndBefore(qp.EndBefore)
 	}
 	return q
 }
