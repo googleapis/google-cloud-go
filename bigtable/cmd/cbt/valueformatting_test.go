@@ -183,9 +183,10 @@ var TestBinaryFormaterTestData = []byte{
 	0, 1, 2, 3, 4, 5, 6, 7, 255, 255, 255, 255, 255, 255, 255, 156}
 
 func checkBinaryValueFormater(
-	t *testing.T, type_ string, nbytes int, expect string, order binary.ByteOrder,
+	t *testing.T, ctype string, nbytes int, expect string, order binary.ByteOrder,
 ) {
-	s, err := binaryValueFormatters[type_](TestBinaryFormaterTestData[:nbytes], order)
+	s, err :=
+		binaryValueFormatters[ctype](TestBinaryFormaterTestData[:nbytes], order)
 	if assertNoError(t, err) {
 		return
 	}
