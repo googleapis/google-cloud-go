@@ -138,12 +138,23 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 
 // QueryPartition provides a Collection Group Reference and start and end split
 // points allowing for a section of a collection group to be queried. This is
-// used by GetPartition which, given a CollectionGroupReference returns smaller
+// used by GetPartitions which, given a CollectionGroupReference returns smaller
 // sub-queries or partitions
 type QueryPartition struct {
+	// CollectionGroupQuery is an ordered query on a CollectionGroupReference.
+	// This query must be ordered Asc on __name__.
+	// Example: client.CollectionGroup("collectionID").query().OrderBy(DocumentID, Asc)
 	CollectionGroupQuery Query
-	StartAt              string
-	EndBefore            string
+
+	// StartAt is a document reference value, relative to the collection, not
+	// a complete parent path.
+	// Example: "documents/collectionName/documentName"
+	StartAt string
+
+	// EndBefore is a document reference value, relative to the collection, not
+	// a complete parent path.
+	// Example: "documents/collectionName/documentName"
+	EndBefore string
 }
 
 // ToQuery converts a QueryPartition object to a Query object
