@@ -1205,7 +1205,7 @@ func TestIntegration_RoutineUserTVF(t *testing.T) {
 
 	// Now, compare the input meta to the output meta
 	if diff := testutil.Diff(inMeta, meta, cmpopts.IgnoreFields(RoutineMetadata{}, "CreationTime", "LastModifiedTime", "ETag")); diff != "" {
-		t.Errorf("got=-, want=+\n%s", diff)
+		t.Errorf("routine metadata differs, got=-, want=+\n%s", diff)
 	}
 }
 
