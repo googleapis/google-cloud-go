@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"os"
 	"path/filepath"
+	"regexp"
 	"runtime"
 	"sort"
 	"testing"
@@ -480,15 +481,21 @@ func TestPrintRow(t *testing.T) {
 	expect :=
 		"----------------------------------------\n" +
 			"r1\n" +
-			"  c1                                       @ 1969/12/31-19:00:00.000000\n" +
+			"  c1\n" +
 			"    \"Hello!\"\n" +
-			"  c2                                       @ 1969/12/31-19:00:00.000000\n" +
+			"  c2\n" +
 			"    \"\\x01\\x02\"\n" +
-			"  person                                   @ 1969/12/31-19:00:00.000000\n" +
+			"  person\n" +
 			"    \"\\n\\x03Jim\\x10*\\x1a\\x0fjim@example.com\\\"\\f\\n\\b555-1212\\x10\\x01\"\n" +
 			""
 
-	assertEqual(t, out, expect)
+	timestampsRE := regexp.MustCompile("[ ]+@ [^ \t\n]+")
+
+	stripTimestamps := func (s string) string {
+		return string(timestampsRE.ReplaceAll([]byte(s), []byte("")))
+	}
+	
+	assertEqual(t, stripTimestamps(out), expect)
 
 	oldValueFormatting := globalValueFormatting
 	defer func() { globalValueFormatting = oldValueFormatting }()
@@ -504,11 +511,11 @@ func TestPrintRow(t *testing.T) {
 
 	expectf := ("----------------------------------------\n" +
 		"r1\n" +
-		"  c1                                       @ 1969/12/31-19:00:00.000000\n" +
+		"  c1\n" +
 		"    \"Hello!\"\n" +
-		"  c2                                       @ 1969/12/31-19:00:00.000000\n" +
+		"  c2\n" +
 		"    258\n" +
-		"  person                                   @ 1969/12/31-19:00:00.000000\n" +
+		"  person\n" +
 		"    name: \"Jim\"\n" +
 		"    id: 42\n" +
 		"    email: \"jim@example.com\"\n" +
@@ -522,5 +529,5 @@ func TestPrintRow(t *testing.T) {
 	if assertNoError(t, err) {
 		return
 	}
-	assertEqual(t, out, expectf)
+	assertEqual(t, stripTimestamps(out), expectf)
 }
