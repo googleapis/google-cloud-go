@@ -258,6 +258,8 @@ func bqToSnapshotDefinition(q *bq.SnapshotDefinition, c *Client) *SnapshotDefini
 	sd := &SnapshotDefinition{
 		BaseTableReference: bqToTable(q.BaseTableReference, c),
 	}
+	// It's possible we could fail to populate SnapshotTime if we fail to parse
+	// the backend representation.
 	if t, err := time.Parse(time.RFC3339, q.SnapshotTime); err == nil {
 		sd.SnapshotTime = t
 	}

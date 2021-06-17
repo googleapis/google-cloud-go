@@ -495,7 +495,7 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 		SnapshotTime:       targetTime,
 	}
 	if diff := testutil.Diff(meta.SnapshotDefinition, want, cmp.AllowUnexported(Table{}), cmpopts.IgnoreUnexported(Client{}), cmpopts.EquateApproxTime(time.Millisecond)); diff != "" {
-		t.Fatalf("got=-, want=+:\n%s", diff)
+		t.Fatalf("SnapshotDefinition differs.  got=-, want=+:\n%s", diff)
 	}
 
 	// execute a restore using the snapshot.
@@ -514,16 +514,16 @@ func TestIntegration_SnapshotAndRestore(t *testing.T) {
 		t.Fatalf("restore failed in error: %v", status.Err())
 	}
 
-	meta2, err := dataset.Table(restoreID).Metadata(ctx)
+	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
 	if err != nil {
 		t.Fatalf("couldn't get restored table metadata: %v", err)
 	}
 
-	if meta.NumBytes != meta2.NumBytes {
-		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, meta2.NumBytes)
+	if meta.NumBytes != restoreMeta.NumBytes {
+		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, restoreMeta.NumBytes)
 	}
-	if meta.NumRows != meta2.NumRows {
-		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, meta2.NumRows)
+	if meta.NumRows != restoreMeta.NumRows {
+		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, restoreMeta.NumRows)
 	}
 
 }
