@@ -34,8 +34,8 @@ func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 		path:           "projects/projectID/databases/(default)",
 		parentPath:     "projects/projectID/databases/(default)/documents",
 		collectionID:   "collectionID",
-		startVals:      []interface{}{"projects/projectID/databases/(default)/documents/start/at"},
-		endVals:        []interface{}{"projects/projectID/databases/(default)/documents/end/before"},
+		startVals:      []interface{}{"documents/start/at"},
+		endVals:        []interface{}{"documents/end/before"},
 		startBefore:    true,
 		endBefore:      true,
 		allDescendants: true,
@@ -62,7 +62,11 @@ func TestCGR_TestGetPartitions(t *testing.T) {
 		t.Fatal("Expected 1 QueryPartition")
 	}
 	got := parts[0]
-	want := QueryPartition{CollectionGroupQuery: cgr.Query, StartAt: "", EndBefore: ""}
+	want := QueryPartition{
+		CollectionGroupQuery: cgr.Query.OrderBy(DocumentID, Asc),
+		StartAt:              "",
+		EndBefore:            "",
+	}
 	if !testEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
