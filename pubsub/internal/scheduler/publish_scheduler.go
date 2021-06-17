@@ -39,8 +39,8 @@ type PublishScheduler struct {
 	BufferedByteLimit    int
 
 	mu          sync.Mutex
-	bundlers    sync.Map // keys -> *bundler.Bundler.
-	outstanding sync.Map // keys -> num outstanding messages.
+	bundlers    sync.Map // keys -> *bundler.Bundler
+	outstanding sync.Map // keys -> num outstanding messages
 
 	keysMu sync.RWMutex
 	// keysWithErrors tracks ordering keys that cannot accept new messages.
