@@ -1,45 +1,29 @@
 package main
 
 import (
-	"io/ioutil"
-	"path/filepath"
+	"bytes"
+	"io"
 	"os"
-	"runtime"
-	"testing"
-	
 )
 
-func assertNoError(t *testing.T, err error) bool {
-	if err != nil {
-		_, fpath, lno, ok := runtime.Caller(1)
-		if ok {
-			_, fname := filepath.Split(fpath)
-			t.Errorf("%s:%d: %s", fname, lno, err)
-		} else {
-			t.Error(err)
-		}
-		return true
-	}
-	return false
-}
-
-func captureStdout(f func()) (string, error) {
-	buf := make([]byte, 9999)
-	n := 0
-
+func captureStdout(f func()) string {
 	saved := os.Stdout
+	r, w, _ := os.Pipe()
+	os.Stdout = w
 	defer func() { os.Stdout = saved }()
 
-	tmp, err := ioutil.TempFile("", "test")
-	if err == nil {
-		defer os.Remove(tmp.Name())
-		defer tmp.Close()
-		os.Stdout = tmp
-		f()
-		_, err = tmp.Seek(0, 0)
-	}
-	if err == nil {
-		n, err = tmp.Read(buf)
-	}
-	return string(buf[:n]), err
+	outC := make(chan string)
+	// https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
+	// copy the output in a separate goroutine so printing can't block indefinitely
+	go func() {
+		var buf bytes.Buffer
+		io.Copy(&buf, r)
+		outC <- buf.String()
+	}()
+
+	f()
+
+	// back to normal state
+	w.Close()
+	return <-outC
 }

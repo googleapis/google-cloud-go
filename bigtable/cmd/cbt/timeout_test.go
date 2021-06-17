@@ -29,8 +29,7 @@ func TestTimeout(t *testing.T) {
 	defer func (){table = nil}()
 
 	config := cbtconfig.Config{Creds: "c", Project: "p", Instance: "i"}
-	_, err := captureStdout(func() {doMain(&config, []string{"count", "mytable"})})
-	if assertNoError(t, err) {return}
+	captureStdout(func() {doMain(&config, []string{"count", "mytable"})})
 
 	_, deadline_set := ctxt.ctx.Deadline()
 	if deadline_set {
@@ -39,8 +38,7 @@ func TestTimeout(t *testing.T) {
 
 	config.Timeout = time.Duration(42e9)
 	now := time.Now()
-	_, err = captureStdout(func() {doMain(&config, []string{"count", "mytable"})})
-	if assertNoError(t, err) {return}
+	captureStdout(func() {doMain(&config, []string{"count", "mytable"})})
 
 	deadline, deadline_set := ctxt.ctx.Deadline()
 	if ! deadline_set {
