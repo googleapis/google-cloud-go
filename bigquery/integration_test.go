@@ -1249,8 +1249,8 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("wanted googleapi.Error, got: %v", err)
 	}
-	if e.Code != http.StatusBadRequest {
-		t.Errorf("Wanted HTTP 400, got %d", e.Code)
+	if e.Code != http.StatusBadRequest && e.Code != http.StatusRequestEntityTooLarge {
+		t.Errorf("Wanted HTTP 400 or 413, got %d", e.Code)
 	}
 }
 
