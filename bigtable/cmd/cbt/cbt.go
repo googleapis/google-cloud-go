@@ -60,7 +60,7 @@ var (
 )
 
 type tableLike interface {
-    ReadRows(ctx context.Context, arg bigtable.RowSet, f func(bigtable.Row) bool, opts ...bigtable.ReadOption) (err error)
+	ReadRows(ctx context.Context, arg bigtable.RowSet, f func(bigtable.Row) bool, opts ...bigtable.ReadOption) (err error)
 }
 
 func getCredentialOpts(opts []option.ClientOption) []option.ClientOption {

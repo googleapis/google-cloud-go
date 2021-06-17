@@ -26,26 +26,26 @@ func (ct *ctxTable) ReadRows(
 func TestTimeout(t *testing.T) {
 	ctxt := ctxTable{}
 	table = &ctxt
-	defer func (){table = nil}()
+	defer func() { table = nil }()
 
 	config := cbtconfig.Config{Creds: "c", Project: "p", Instance: "i"}
-	captureStdout(func() {doMain(&config, []string{"count", "mytable"})})
+	captureStdout(func() { doMain(&config, []string{"count", "mytable"}) })
 
-	_, deadline_set := ctxt.ctx.Deadline()
-	if deadline_set {
+	_, deadlineSet := ctxt.ctx.Deadline()
+	if deadlineSet {
 		t.Errorf("Deadline set with no timeout")
 	}
 
 	config.Timeout = time.Duration(42e9)
 	now := time.Now()
-	captureStdout(func() {doMain(&config, []string{"count", "mytable"})})
+	captureStdout(func() { doMain(&config, []string{"count", "mytable"}) })
 
-	deadline, deadline_set := ctxt.ctx.Deadline()
-	if ! deadline_set {
+	deadline, deadlineSet := ctxt.ctx.Deadline()
+	if !deadlineSet {
 		t.Errorf("Deadline set with no timeout")
 	}
 	timeout := deadline.Sub(now).Nanoseconds()
-	if ! (timeout > 42e9 && timeout < 43e9) {
+	if !(timeout > 42e9 && timeout < 43e9) {
 		t.Errorf("Bad actual timeout nanoseconds %d", timeout)
 	}
 }
