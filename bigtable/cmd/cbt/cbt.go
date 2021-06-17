@@ -154,7 +154,7 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), *tFlag)
 	defer cancel()
-	
+
 	if config.AuthToken != "" {
 		ctx = metadata.AppendToOutgoingContext(ctx, "x-goog-iam-authorization-token", config.AuthToken)
 	}
