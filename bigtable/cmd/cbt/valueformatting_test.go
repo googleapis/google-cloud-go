@@ -491,10 +491,10 @@ func TestPrintRow(t *testing.T) {
 
 	timestampsRE := regexp.MustCompile("[ ]+@ [^ \t\n]+")
 
-	stripTimestamps := func (s string) string {
+	stripTimestamps := func(s string) string {
 		return string(timestampsRE.ReplaceAll([]byte(s), []byte("")))
 	}
-	
+
 	assertEqual(t, stripTimestamps(out), expect)
 
 	oldValueFormatting := globalValueFormatting
