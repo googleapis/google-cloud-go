@@ -394,7 +394,7 @@ func (self *ValueFormatting) format(
 	if err == nil {
 		formatted = prefix +
 			strings.TrimSuffix(
-				strings.ReplaceAll(formatted, "\n", "\n"+prefix),
+				strings.Replace(formatted, "\n", "\n"+prefix, 999999),
 				prefix) + "\n"
 	}
 	return formatted, err

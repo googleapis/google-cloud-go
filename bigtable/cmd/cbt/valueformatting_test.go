@@ -50,7 +50,7 @@ func assertNoError(t *testing.T, err error) bool {
 		_, fpath, lno, ok := runtime.Caller(1)
 		if ok {
 			_, fname := filepath.Split(fpath)
-			t.Errorf("%s:%d: %w", fname, lno, err)
+			t.Errorf("%s:%d: %s", fname, lno, err)
 		} else {
 			t.Error(err)
 		}
