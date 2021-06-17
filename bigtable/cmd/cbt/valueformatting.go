@@ -29,50 +29,50 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-type ValueFormatColumn struct {
+type valueFormatColumn struct {
 	Encoding string
 	Type     string
 }
 
-type ValueFormatFamily struct {
+type valueFormatFamily struct {
 	DefaultEncoding string `yaml:"default_encoding"`
 	DefaultType     string `yaml:"default_type"`
-	Columns         map[string]ValueFormatColumn
+	Columns         map[string]valueFormatColumn
 }
 
-func NewValueFormatFamily() ValueFormatFamily { // for tests :)
-	family := ValueFormatFamily{}
-	family.Columns = make(map[string]ValueFormatColumn)
+func newValueFormatFamily() valueFormatFamily { // for tests :)
+	family := valueFormatFamily{}
+	family.Columns = make(map[string]valueFormatColumn)
 	return family
 }
 
-type ValueFormatSettings struct {
+type valueFormatSettings struct {
 	ProtocolBufferDefinitions []string `yaml:"protocol_buffer_definitions"`
 	ProtocolBufferPaths       []string `yaml:"protocol_buffer_paths"`
 	DefaultEncoding           string   `yaml:"default_encoding"`
 	DefaultType               string   `yaml:"default_type"`
-	Columns                   map[string]ValueFormatColumn
-	Families                  map[string]ValueFormatFamily
+	Columns                   map[string]valueFormatColumn
+	Families                  map[string]valueFormatFamily
 }
 
 type valueFormatter func([]byte) (string, error)
 
-type ValueFormatting struct {
-	settings       ValueFormatSettings
+type valueFormatting struct {
+	settings       valueFormatSettings
 	pbMessageTypes map[string]*desc.MessageDescriptor
 	formatters     map[[2]string]valueFormatter
 }
 
-func NewValueFormatting() ValueFormatting {
-	formatting := ValueFormatting{}
-	formatting.settings.Columns = make(map[string]ValueFormatColumn)
-	formatting.settings.Families = make(map[string]ValueFormatFamily)
+func newValueFormatting() valueFormatting {
+	formatting := valueFormatting{}
+	formatting.settings.Columns = make(map[string]valueFormatColumn)
+	formatting.settings.Families = make(map[string]valueFormatFamily)
 	formatting.pbMessageTypes = make(map[string]*desc.MessageDescriptor)
 	formatting.formatters = make(map[[2]string]valueFormatter)
 	return formatting
 }
 
-var valueFormatting = NewValueFormatting()
+var globalValueFormatting = newValueFormatting()
 
 func binaryFormatterHelper(
 	in []byte,
@@ -143,7 +143,9 @@ var binaryValueFormatters = map[string]binaryValueFormatter{
 	},
 }
 
-func (self *ValueFormatting) binaryFormatter(encoding, type_ string) valueFormatter {
+func (formatting *valueFormatting) binaryFormatter(
+	encoding, type_ string,
+) valueFormatter {
 	var byteOrder binary.ByteOrder
 	typeFormatter := binaryValueFormatters[type_]
 	if encoding == "BigEndian" {
@@ -156,8 +158,8 @@ func (self *ValueFormatting) binaryFormatter(encoding, type_ string) valueFormat
 	}
 }
 
-func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
-	md := self.pbMessageTypes[strings.ToLower(type_)]
+func (formatting *valueFormatting) pbFormatter(type_ string) valueFormatter {
+	md := formatting.pbMessageTypes[strings.ToLower(type_)]
 	return func(in []byte) (string, error) {
 		message := dynamic.NewMessage(md)
 		err := message.Unmarshal(in)
@@ -187,7 +189,7 @@ var validValueFormattingEncodings = map[string]string{
 	"":                "",
 }
 
-func (self *ValueFormatting) validateEncoding(encoding string) (string, error) {
+func (formatting *valueFormatting) validateEncoding(encoding string) (string, error) {
 	validEncoding, got := validValueFormattingEncodings[strings.ToLower(encoding)]
 	if !got {
 		return "", fmt.Errorf("Invalid encoding: %s", encoding)
@@ -195,7 +197,7 @@ func (self *ValueFormatting) validateEncoding(encoding string) (string, error) {
 	return validEncoding, nil
 }
 
-func (self *ValueFormatting) validateType(
+func (formatting *valueFormatting) validateType(
 	cname, validEncoding, encoding, type_ string,
 ) (string, error) {
 	var got bool
@@ -216,7 +218,7 @@ func (self *ValueFormatting) validateType(
 		if type_ == "" {
 			type_ = cname
 		}
-		_, got = self.pbMessageTypes[strings.ToLower(type_)]
+		_, got = formatting.pbMessageTypes[strings.ToLower(type_)]
 		if !got {
 			return type_, fmt.Errorf("Invalid type: %s for encoding: %s",
 				type_, encoding)
@@ -225,17 +227,18 @@ func (self *ValueFormatting) validateType(
 	return type_, nil
 }
 
-func (self *ValueFormatting) validateFormat(
+func (formatting *valueFormatting) validateFormat(
 	cname, encoding, type_ string,
 ) (string, string, error) {
-	validEncoding, err := self.validateEncoding(encoding)
+	validEncoding, err := formatting.validateEncoding(encoding)
 	if err == nil {
-		type_, err = self.validateType(cname, validEncoding, encoding, type_)
+		type_, err =
+			formatting.validateType(cname, validEncoding, encoding, type_)
 	}
 	return validEncoding, type_, err
 }
 
-func (self *ValueFormatting) override(old, new string) string {
+func (formatting *valueFormatting) override(old, new string) string {
 	if new != "" {
 		return new
 	} else {
@@ -243,28 +246,28 @@ func (self *ValueFormatting) override(old, new string) string {
 	}
 }
 
-func (self *ValueFormatting) validateColumns() error {
-	encoding := self.settings.DefaultEncoding
-	type_ := self.settings.DefaultType
+func (formatting *valueFormatting) validateColumns() error {
+	encoding := formatting.settings.DefaultEncoding
+	type_ := formatting.settings.DefaultType
 
 	var errs []string
-	for cname, col := range self.settings.Columns {
-		_, _, err := self.validateFormat(
+	for cname, col := range formatting.settings.Columns {
+		_, _, err := formatting.validateFormat(
 			cname,
-			self.override(encoding, col.Encoding),
-			self.override(type_, col.Type))
+			formatting.override(encoding, col.Encoding),
+			formatting.override(type_, col.Type))
 		if err != nil {
 			errs = append(errs, fmt.Sprintf("%s: %s", cname, err))
 		}
 	}
-	for fname, fam := range self.settings.Families {
-		fencoding := self.override(encoding, fam.DefaultEncoding)
-		ftype_ := self.override(type_, fam.DefaultType)
+	for fname, fam := range formatting.settings.Families {
+		fencoding := formatting.override(encoding, fam.DefaultEncoding)
+		ftype_ := formatting.override(type_, fam.DefaultType)
 		for cname, col := range fam.Columns {
-			_, _, err := self.validateFormat(
+			_, _, err := formatting.validateFormat(
 				cname,
-				self.override(fencoding, col.Encoding),
-				self.override(ftype_, col.Type))
+				formatting.override(fencoding, col.Encoding),
+				formatting.override(ftype_, col.Type))
 			if err != nil {
 				errs = append(errs, fmt.Sprintf(
 					"%s:%s: %s", fname, cname, err))
@@ -279,21 +282,21 @@ func (self *ValueFormatting) validateColumns() error {
 	return nil
 }
 
-func (self *ValueFormatting) parse(path string) error {
+func (formatting *valueFormatting) parse(path string) error {
 	data, err := ioutil.ReadFile(path)
 	if err == nil {
-		err = yaml.UnmarshalStrict([]byte(data), &self.settings)
+		err = yaml.UnmarshalStrict([]byte(data), &formatting.settings)
 	}
 	return err
 }
 
-func (self *ValueFormatting) setupPBMessages() error {
-	if len(self.settings.ProtocolBufferDefinitions) > 0 {
+func (formatting *valueFormatting) setupPBMessages() error {
+	if len(formatting.settings.ProtocolBufferDefinitions) > 0 {
 		parser := protoparse.Parser{
-			ImportPaths: self.settings.ProtocolBufferPaths,
+			ImportPaths: formatting.settings.ProtocolBufferPaths,
 		}
 		fds, err := parser.ParseFiles(
-			self.settings.ProtocolBufferDefinitions...)
+			formatting.settings.ProtocolBufferDefinitions...)
 		if err != nil {
 			return err
 		}
@@ -301,10 +304,11 @@ func (self *ValueFormatting) setupPBMessages() error {
 			prefix := fd.GetPackage()
 			for _, md := range fd.GetMessageTypes() {
 				key := md.GetName()
-				self.pbMessageTypes[strings.ToLower(key)] = md
+				formatting.pbMessageTypes[strings.ToLower(key)] = md
 				if prefix != "" {
 					key = prefix + "." + key
-					self.pbMessageTypes[strings.ToLower(key)] = md
+					formatting.pbMessageTypes[
+						strings.ToLower(key)] = md
 				}
 			}
 		}
@@ -312,83 +316,86 @@ func (self *ValueFormatting) setupPBMessages() error {
 	return nil
 }
 
-func (self *ValueFormatting) setup(options map[string]string) error {
+func (formatting *valueFormatting) setup(options map[string]string) error {
 	var err error = nil
 	if options["format-file"] != "" {
-		err = self.parse(options["format-file"])
+		err = formatting.parse(options["format-file"])
 	}
 	if err == nil {
-		err = self.setupPBMessages()
+		err = formatting.setupPBMessages()
 	}
 	if err == nil {
-		err = self.validateColumns()
+		err = formatting.validateColumns()
 	}
 	return err
 }
 
-func (self *ValueFormatting) colEncodingType(family, column string) (string, string) {
-	encoding := self.settings.DefaultEncoding
-	type_ := self.settings.DefaultType
+func (formatting *valueFormatting) colEncodingType(
+	family, column string,
+) (string, string) {
+	encoding := formatting.settings.DefaultEncoding
+	type_ := formatting.settings.DefaultType
 
-	fam, got := self.settings.Families[family]
+	fam, got := formatting.settings.Families[family]
 	if got {
-		fencoding := self.override(encoding, fam.DefaultEncoding)
-		ftype := self.override(type_, fam.DefaultType)
+		fencoding := formatting.override(encoding, fam.DefaultEncoding)
+		ftype := formatting.override(type_, fam.DefaultType)
 		col, got := fam.Columns[column]
 		if got {
-			return self.override(fencoding, col.Encoding),
-				self.override(ftype, col.Type)
+			return formatting.override(fencoding, col.Encoding),
+				formatting.override(ftype, col.Type)
 		} else {
 			return fencoding, ftype
 		}
 	} else {
-		col, got := self.settings.Columns[column]
+		col, got := formatting.settings.Columns[column]
 		if got {
-			return self.override(encoding, col.Encoding),
-				self.override(type_, col.Type)
+			return formatting.override(encoding, col.Encoding),
+				formatting.override(type_, col.Type)
 		} else {
 			return encoding, type_
 		}
 	}
 }
 
-func (self *ValueFormatting) badFormatter(err error) valueFormatter {
+func (formatting *valueFormatting) badFormatter(err error) valueFormatter {
 	return func(in []byte) (string, error) {
 		return "", err
 	}
 }
 
-func (self *ValueFormatting) hexFormatter(in []byte) (string, error) {
+func (formatting *valueFormatting) hexFormatter(in []byte) (string, error) {
 	return fmt.Sprintf("% x", in), nil
 }
 
-func (self *ValueFormatting) defaultFormatter(in []byte) (string, error) {
+func (formatting *valueFormatting) defaultFormatter(in []byte) (string, error) {
 	return fmt.Sprintf("%q", in), nil
 }
 
-func (self *ValueFormatting) format(
+func (formatting *valueFormatting) format(
 	prefix, family, column string, value []byte,
 ) (string, error) {
 	key := [2]string{family, column}
-	formatter, got := self.formatters[key]
+	formatter, got := formatting.formatters[key]
 	if !got {
-		encoding, type_ := self.colEncodingType(family, column)
-		encoding, type_, err := self.validateFormat(column, encoding, type_)
+		encoding, type_ := formatting.colEncodingType(family, column)
+		encoding, type_, err :=
+			formatting.validateFormat(column, encoding, type_)
 		if err != nil {
-			formatter = self.badFormatter(err)
+			formatter = formatting.badFormatter(err)
 		} else {
 			switch encoding {
 			case "BigEndian", "LittleEndian":
-				formatter = self.binaryFormatter(encoding, type_)
+				formatter = formatting.binaryFormatter(encoding, type_)
 			case "Hex":
-				formatter = self.hexFormatter
+				formatter = formatting.hexFormatter
 			case "ProtocolBuffer":
-				formatter = self.pbFormatter(type_)
+				formatter = formatting.pbFormatter(type_)
 			case "":
-				formatter = self.defaultFormatter
+				formatter = formatting.defaultFormatter
 			}
 		}
-		self.formatters[key] = formatter
+		formatting.formatters[key] = formatter
 	}
 	formatted, err := formatter(value)
 	if err == nil {

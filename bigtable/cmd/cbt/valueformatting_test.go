@@ -60,11 +60,11 @@ func assertNoError(t *testing.T, err error) bool {
 }
 
 func TestParseValueFormatSettings(t *testing.T) {
-	want := ValueFormatSettings{
+	want := valueFormatSettings{
 		DefaultEncoding:           "HEX",
 		ProtocolBufferDefinitions: []string{"MyProto.proto", "MyOtherProto.proto"},
 		ProtocolBufferPaths:       []string{"mycode/stuff", "/home/user/dev/othercode/"},
-		Columns: map[string]ValueFormatColumn{
+		Columns: map[string]valueFormatColumn{
 			"col3": {
 				Encoding: "P",
 				Type:     "person",
@@ -74,11 +74,11 @@ func TestParseValueFormatSettings(t *testing.T) {
 				Type:     "hobby",
 			},
 		},
-		Families: map[string]ValueFormatFamily{
+		Families: map[string]valueFormatFamily{
 			"family1": {
 				DefaultEncoding: "BigEndian",
 				DefaultType:     "INT64",
-				Columns: map[string]ValueFormatColumn{
+				Columns: map[string]valueFormatColumn{
 					"address": {
 						Encoding: "PROTO",
 						Type:     "tutorial.Person",
@@ -87,7 +87,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 			},
 
 			"family2": {
-				Columns: map[string]ValueFormatColumn{
+				Columns: map[string]valueFormatColumn{
 					"col1": {
 						Encoding: "B",
 						Type:     "INT32",
@@ -103,7 +103,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 				},
 			},
 			"family3": {
-				Columns: map[string]ValueFormatColumn{
+				Columns: map[string]valueFormatColumn{
 					"proto_col": {
 						Encoding: "PROTO",
 						Type:     "MyProtoMessageType",
@@ -113,7 +113,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 		},
 	}
 
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 
 	err := formatting.parse(filepath.Join("testdata", t.Name()+".yml"))
 	if err != nil {
@@ -125,7 +125,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 
 func TestSetupPBMessages(t *testing.T) {
 
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 
 	formatting.settings.ProtocolBufferPaths = append(
 		formatting.settings.ProtocolBufferPaths,
@@ -251,7 +251,7 @@ func TestBinaryValueFormaterFLOAT64(t *testing.T) {
 }
 
 func TestValueFormattingBinaryFormatter(t *testing.T) {
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 	var formatter = formatting.binaryFormatter("BigEndian", "int32")
 	s, err := formatter(TestBinaryFormaterTestData)
 	assertNoError(t, err)
@@ -263,7 +263,7 @@ func TestValueFormattingBinaryFormatter(t *testing.T) {
 }
 
 func testValueFormattingPBFormatter(t *testing.T) {
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 	formatting.settings.ProtocolBufferDefinitions = append(
 		formatting.settings.ProtocolBufferDefinitions,
 		filepath.Join("testdata", "addressbook.proto"))
@@ -295,15 +295,15 @@ func testValueFormattingPBFormatter(t *testing.T) {
 }
 
 func TestValueFormattingValidateColumns(t *testing.T) {
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 
 	// Typeless encoding:
-	formatting.settings.Columns["c1"] = ValueFormatColumn{Encoding: "HEX"}
+	formatting.settings.Columns["c1"] = valueFormatColumn{Encoding: "HEX"}
 	err := formatting.validateColumns()
 	assertEqual(t, err, nil)
 
 	// Inherit encoding:
-	formatting.settings.Columns["c1"] = ValueFormatColumn{}
+	formatting.settings.Columns["c1"] = valueFormatColumn{}
 	formatting.settings.DefaultEncoding = "H"
 	err = formatting.validateColumns()
 	assertEqual(t, err, nil)
@@ -315,25 +315,25 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 		"Bad encoding and types:\nc1: No type specified for encoding: B")
 
 	// provide a type:
-	formatting.settings.Columns["c1"] = ValueFormatColumn{Type: "INT"}
+	formatting.settings.Columns["c1"] = valueFormatColumn{Type: "INT"}
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\nc1: Invalid type: INT for encoding: B")
 
 	// Fix the type:
-	formatting.settings.Columns["c1"] = ValueFormatColumn{Type: "INT64"}
+	formatting.settings.Columns["c1"] = valueFormatColumn{Type: "INT64"}
 	err = formatting.validateColumns()
 	assertEqual(t, err, nil)
 
 	// Now, do a bunch of this again in a family
-	family := NewValueFormatFamily()
+	family := newValueFormatFamily()
 	formatting.settings.Families["f"] = family
-	formatting.settings.Families["f"].Columns["c2"] = ValueFormatColumn{}
+	formatting.settings.Families["f"].Columns["c2"] = valueFormatColumn{}
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\nf:c2: No type specified for encoding: B")
 	formatting.settings.Families["f"].Columns["c2"] =
-		ValueFormatColumn{Type: "int64"}
+		valueFormatColumn{Type: "int64"}
 	err = formatting.validateColumns()
 	assertEqual(t, err, nil)
 
@@ -345,7 +345,7 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 		"Bad encoding and types:\nf:c2: Invalid type: int64 for encoding: p")
 
 	// clear the type_ to make sure we get that message:
-	formatting.settings.Families["f"].Columns["c2"] = ValueFormatColumn{}
+	formatting.settings.Families["f"].Columns["c2"] = valueFormatColumn{}
 	err = formatting.validateColumns()
 	// we're bad here because no type was specified, so we fall
 	// back to the column name, which doesn't have a
@@ -354,7 +354,7 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 		"Bad encoding and types:\nf:c2: Invalid type: c2 for encoding: p")
 
 	// Look! Multiple errors!
-	formatting.settings.Columns["c1"] = ValueFormatColumn{}
+	formatting.settings.Columns["c1"] = valueFormatColumn{}
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\n"+
@@ -364,7 +364,7 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 	// Fix the protocol-buffer problem:
 	formatting.pbMessageTypes["address"] = &desc.MessageDescriptor{}
 	formatting.settings.Families["f"].Columns["c2"] =
-		ValueFormatColumn{Type: "address"}
+		valueFormatColumn{Type: "address"}
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\n"+
@@ -372,7 +372,7 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 }
 
 func TestValueFormattingSetup(t *testing.T) {
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 	err := formatting.setup(map[string]string{
 		"format-file": filepath.Join("testdata", t.Name()+".yml")})
 	assertEqual(t, fmt.Sprint(err),
@@ -380,21 +380,21 @@ func TestValueFormattingSetup(t *testing.T) {
 }
 
 func TestValueFormattingFormat(t *testing.T) {
-	formatting := NewValueFormatting()
+	formatting := newValueFormatting()
 	formatting.settings.ProtocolBufferDefinitions =
 		append(formatting.settings.ProtocolBufferDefinitions,
 			filepath.Join("testdata", "addressbook.proto"))
-	family := NewValueFormatFamily()
+	family := newValueFormatFamily()
 	family.DefaultEncoding = "Binary"
 	formatting.settings.Families["binaries"] = family
 	formatting.settings.Families["binaries"].Columns["cb"] =
-		ValueFormatColumn{Type: "int16"}
+		valueFormatColumn{Type: "int16"}
 
 	formatting.settings.Columns["hexy"] =
-		ValueFormatColumn{Encoding: "hex"}
+		valueFormatColumn{Encoding: "hex"}
 	formatting.settings.Columns["address"] =
-		ValueFormatColumn{Encoding: "p", Type: "tutorial.Person"}
-	formatting.settings.Columns["person"] = ValueFormatColumn{Encoding: "p"}
+		valueFormatColumn{Encoding: "p", Type: "tutorial.Person"}
+	formatting.settings.Columns["person"] = valueFormatColumn{Encoding: "p"}
 	err := formatting.setup(map[string]string{})
 
 	s, err := formatting.format("", "f1", "c1", []byte("Hello world!"))
@@ -489,17 +489,17 @@ func TestPrintRow(t *testing.T) {
 
 	assertEqual(t, out, expect)
 
-	oldValueFormatting := valueFormatting
-	defer func() { valueFormatting = oldValueFormatting }()
+	oldValueFormatting := globalValueFormatting
+	defer func() { globalValueFormatting = oldValueFormatting }()
 
-	valueFormatting = NewValueFormatting()
-	valueFormatting.settings.ProtocolBufferDefinitions =
+	globalValueFormatting = newValueFormatting()
+	globalValueFormatting.settings.ProtocolBufferDefinitions =
 		[]string{filepath.Join("testdata", "addressbook.proto")}
-	valueFormatting.settings.Columns["c2"] =
-		ValueFormatColumn{Encoding: "Binary", Type: "int16"}
-	valueFormatting.settings.Columns["person"] =
-		ValueFormatColumn{Encoding: "ProtocolBuffer"}
-	valueFormatting.setup(map[string]string{})
+	globalValueFormatting.settings.Columns["c2"] =
+		valueFormatColumn{Encoding: "Binary", Type: "int16"}
+	globalValueFormatting.settings.Columns["person"] =
+		valueFormatColumn{Encoding: "ProtocolBuffer"}
+	globalValueFormatting.setup(map[string]string{})
 
 	expectf := ("----------------------------------------\n" +
 		"r1\n" +

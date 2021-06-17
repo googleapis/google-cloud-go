@@ -1136,7 +1136,7 @@ func doLookup(ctx context.Context, args ...string) {
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
-	err = valueFormatting.setup(parsed)
+	err = globalValueFormatting.setup(parsed)
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
@@ -1161,7 +1161,8 @@ func printRow(r bigtable.Row) {
 				ri.Column,
 				ts.Format("2006/01/02-15:04:05.000000"))
 			formatted, err :=
-				valueFormatting.format("    ", fam, ri.Column, ri.Value)
+				globalValueFormatting.format(
+					"    ", fam, ri.Column, ri.Value)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -1308,7 +1309,7 @@ func doRead(ctx context.Context, args ...string) {
 		opts = append(opts, bigtable.RowFilter(filters[0]))
 	}
 
-	err = valueFormatting.setup(parsed)
+	err = globalValueFormatting.setup(parsed)
 	if err != nil {
 		log.Fatal(err)
 	}
