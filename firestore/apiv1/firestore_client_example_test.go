@@ -31,18 +31,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_GetDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.GetDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -56,14 +57,12 @@ func ExampleClient_GetDocument() {
 }
 
 func ExampleClient_ListDocuments() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.ListDocumentsRequest{
 		// TODO: Fill request struct fields.
@@ -83,13 +82,12 @@ func ExampleClient_ListDocuments() {
 }
 
 func ExampleClient_UpdateDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.UpdateDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -108,6 +106,7 @@ func ExampleClient_DeleteDocument() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.DeleteDocumentRequest{
 		// TODO: Fill request struct fields.
@@ -119,13 +118,12 @@ func ExampleClient_DeleteDocument() {
 }
 
 func ExampleClient_BeginTransaction() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
@@ -139,13 +137,12 @@ func ExampleClient_BeginTransaction() {
 }
 
 func ExampleClient_Commit() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.CommitRequest{
 		// TODO: Fill request struct fields.
@@ -164,6 +161,7 @@ func ExampleClient_Rollback() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.RollbackRequest{
 		// TODO: Fill request struct fields.
@@ -175,14 +173,12 @@ func ExampleClient_Rollback() {
 }
 
 func ExampleClient_PartitionQuery() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
@@ -202,13 +198,12 @@ func ExampleClient_PartitionQuery() {
 }
 
 func ExampleClient_Write() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Write(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -238,13 +233,12 @@ func ExampleClient_Write() {
 }
 
 func ExampleClient_Listen() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Listen(ctx)
 	if err != nil {
 		// TODO: Handle error.
@@ -274,14 +268,12 @@ func ExampleClient_Listen() {
 }
 
 func ExampleClient_ListCollectionIds() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.ListCollectionIdsRequest{
 		// TODO: Fill request struct fields.
@@ -301,13 +293,12 @@ func ExampleClient_ListCollectionIds() {
 }
 
 func ExampleClient_BatchWrite() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.BatchWriteRequest{
 		// TODO: Fill request struct fields.
@@ -321,13 +312,12 @@ func ExampleClient_BatchWrite() {
 }
 
 func ExampleClient_CreateDocument() {
-	// import firestorepb "google.golang.org/genproto/googleapis/firestore/v1"
-
 	ctx := context.Background()
 	c, err := firestore.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &firestorepb.CreateDocumentRequest{
 		// TODO: Fill request struct fields.

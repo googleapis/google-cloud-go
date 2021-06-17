@@ -64,8 +64,9 @@ retry apt-get -y -q install git >/dev/null
 mkdir -p /tmp/gocache
 export GOCACHE=/tmp/gocache
 
-# Install gcc, needed to install go master
-if [ "{{.GoVersion}}" = "master" ]
+# Install gcc, needed to install go master and cgo depencencies when using
+# go1.11.
+if [ "{{.GoVersion}}" = "master" ] || [[ "{{.GoVersion}}" =~ 1.11.* ]]
 then
 retry apt-get -y -q install gcc >/dev/null
 fi
@@ -82,6 +83,9 @@ gimme_retrier() {
 }
 retry gimme_retrier
 
+# Use go modules
+export GO111MODULE="on"
+
 # Set $GOPATH
 export GOPATH="$HOME/go"
 
@@ -89,7 +93,7 @@ export GOCLOUD_HOME=$GOPATH/src/cloud.google.com/go
 mkdir -p $GOCLOUD_HOME
 
 # Install agent
-retry git clone https://code.googlesource.com/gocloud $GOCLOUD_HOME >/dev/null
+retry git clone https://github.com/googleapis/google-cloud-go.git $GOCLOUD_HOME >/dev/null
 cd $GOCLOUD_HOME
 retry git fetch origin {{.Commit}}
 git reset --hard {{.Commit}}

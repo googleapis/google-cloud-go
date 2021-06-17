@@ -249,6 +249,36 @@ func TestIntegration_TableCreate(t *testing.T) {
 	}
 }
 
+func TestIntegration_TableCreateWithConstraints(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	table := dataset.Table("constraints")
+	schema := Schema{
+		{Name: "str_col", Type: StringFieldType, MaxLength: 10},
+		{Name: "bytes_col", Type: BytesFieldType, MaxLength: 150},
+		{Name: "num_col", Type: NumericFieldType, Precision: 20},
+		{Name: "bignumeric_col", Type: BigNumericFieldType, Precision: 30, Scale: 5},
+	}
+	err := table.Create(context.Background(), &TableMetadata{
+		Schema:         schema,
+		ExpirationTime: testTableExpiration.Add(5 * time.Minute),
+	})
+	if err != nil {
+		t.Fatalf("table create error: %v", err)
+	}
+
+	meta, err := table.Metadata(context.Background())
+	if err != nil {
+		t.Fatalf("couldn't get metadata: %v", err)
+	}
+
+	if diff := testutil.Diff(meta.Schema, schema); diff != "" {
+		t.Fatalf("got=-, want=+:\n%s", diff)
+	}
+
+}
+
 func TestIntegration_TableCreateView(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
@@ -2587,6 +2617,29 @@ func TestIntegration_ListJobs(t *testing.T) {
 	// We expect that there is at least one job in the last few months.
 	if len(jobs) == 0 {
 		t.Fatal("did not get any jobs")
+	}
+}
+
+func TestIntegration_DeleteJob(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	q := client.Query("SELECT 17 as foo")
+	q.Location = "us-east1"
+
+	job, err := q.Run(ctx)
+	if err != nil {
+		t.Fatalf("job Run failure: %v", err)
+	}
+	_, err = job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("job completion failure: %v", err)
+	}
+
+	if err := job.Delete(ctx); err != nil {
+		t.Fatalf("job.Delete failed: %v", err)
 	}
 }
 

@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_CreateSession() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.CreateSessionRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_CreateSession() {
 }
 
 func ExampleClient_BatchCreateSessions() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.BatchCreateSessionsRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClient_BatchCreateSessions() {
 }
 
 func ExampleClient_GetSession() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.GetSessionRequest{
 		// TODO: Fill request struct fields.
@@ -95,14 +94,12 @@ func ExampleClient_GetSession() {
 }
 
 func ExampleClient_ListSessions() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.ListSessionsRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleClient_DeleteSession() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.DeleteSessionRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleClient_DeleteSession() {
 }
 
 func ExampleClient_ExecuteSql() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.ExecuteSqlRequest{
 		// TODO: Fill request struct fields.
@@ -158,13 +155,12 @@ func ExampleClient_ExecuteSql() {
 }
 
 func ExampleClient_ExecuteBatchDml() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.ExecuteBatchDmlRequest{
 		// TODO: Fill request struct fields.
@@ -178,13 +174,12 @@ func ExampleClient_ExecuteBatchDml() {
 }
 
 func ExampleClient_Read() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.ReadRequest{
 		// TODO: Fill request struct fields.
@@ -198,13 +193,12 @@ func ExampleClient_Read() {
 }
 
 func ExampleClient_BeginTransaction() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.BeginTransactionRequest{
 		// TODO: Fill request struct fields.
@@ -218,13 +212,12 @@ func ExampleClient_BeginTransaction() {
 }
 
 func ExampleClient_Commit() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.CommitRequest{
 		// TODO: Fill request struct fields.
@@ -243,6 +236,7 @@ func ExampleClient_Rollback() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.RollbackRequest{
 		// TODO: Fill request struct fields.
@@ -254,13 +248,12 @@ func ExampleClient_Rollback() {
 }
 
 func ExampleClient_PartitionQuery() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.PartitionQueryRequest{
 		// TODO: Fill request struct fields.
@@ -274,13 +267,12 @@ func ExampleClient_PartitionQuery() {
 }
 
 func ExampleClient_PartitionRead() {
-	// import spannerpb "google.golang.org/genproto/googleapis/spanner/v1"
-
 	ctx := context.Background()
 	c, err := spanner.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &spannerpb.PartitionReadRequest{
 		// TODO: Fill request struct fields.

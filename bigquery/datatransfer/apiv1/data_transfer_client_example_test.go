@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_GetDataSource() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.GetDataSourceRequest{
 		// TODO: Fill request struct fields.
@@ -55,14 +56,12 @@ func ExampleClient_GetDataSource() {
 }
 
 func ExampleClient_ListDataSources() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.ListDataSourcesRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleClient_ListDataSources() {
 }
 
 func ExampleClient_CreateTransferConfig() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.CreateTransferConfigRequest{
 		// TODO: Fill request struct fields.
@@ -102,13 +100,12 @@ func ExampleClient_CreateTransferConfig() {
 }
 
 func ExampleClient_UpdateTransferConfig() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.UpdateTransferConfigRequest{
 		// TODO: Fill request struct fields.
@@ -127,6 +124,7 @@ func ExampleClient_DeleteTransferConfig() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.DeleteTransferConfigRequest{
 		// TODO: Fill request struct fields.
@@ -138,13 +136,12 @@ func ExampleClient_DeleteTransferConfig() {
 }
 
 func ExampleClient_GetTransferConfig() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.GetTransferConfigRequest{
 		// TODO: Fill request struct fields.
@@ -158,14 +155,12 @@ func ExampleClient_GetTransferConfig() {
 }
 
 func ExampleClient_ListTransferConfigs() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.ListTransferConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -185,13 +180,12 @@ func ExampleClient_ListTransferConfigs() {
 }
 
 func ExampleClient_ScheduleTransferRuns() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.ScheduleTransferRunsRequest{
 		// TODO: Fill request struct fields.
@@ -205,13 +199,12 @@ func ExampleClient_ScheduleTransferRuns() {
 }
 
 func ExampleClient_StartManualTransferRuns() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.StartManualTransferRunsRequest{
 		// TODO: Fill request struct fields.
@@ -225,13 +218,12 @@ func ExampleClient_StartManualTransferRuns() {
 }
 
 func ExampleClient_GetTransferRun() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.GetTransferRunRequest{
 		// TODO: Fill request struct fields.
@@ -250,6 +242,7 @@ func ExampleClient_DeleteTransferRun() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.DeleteTransferRunRequest{
 		// TODO: Fill request struct fields.
@@ -261,14 +254,12 @@ func ExampleClient_DeleteTransferRun() {
 }
 
 func ExampleClient_ListTransferRuns() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.ListTransferRunsRequest{
 		// TODO: Fill request struct fields.
@@ -288,14 +279,12 @@ func ExampleClient_ListTransferRuns() {
 }
 
 func ExampleClient_ListTransferLogs() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.ListTransferLogsRequest{
 		// TODO: Fill request struct fields.
@@ -315,13 +304,12 @@ func ExampleClient_ListTransferLogs() {
 }
 
 func ExampleClient_CheckValidCreds() {
-	// import datatransferpb "google.golang.org/genproto/googleapis/cloud/bigquery/datatransfer/v1"
-
 	ctx := context.Background()
 	c, err := datatransfer.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datatransferpb.CheckValidCredsRequest{
 		// TODO: Fill request struct fields.

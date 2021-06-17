@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import apigatewaypb "google.golang.org/genproto/googleapis/cloud/apigateway/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := apigateway.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &apigatewaypb.ListApisRequest{
 		// TODO: Fill request struct fields.

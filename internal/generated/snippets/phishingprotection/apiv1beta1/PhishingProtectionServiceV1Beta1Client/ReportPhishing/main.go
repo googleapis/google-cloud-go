@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import phishingprotectionpb "google.golang.org/genproto/googleapis/cloud/phishingprotection/v1beta1"
-
 	ctx := context.Background()
 	c, err := phishingprotection.NewPhishingProtectionServiceV1Beta1Client(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &phishingprotectionpb.ReportPhishingRequest{
 		// TODO: Fill request struct fields.

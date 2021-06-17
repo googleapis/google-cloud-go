@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import settingspb "google.golang.org/genproto/googleapis/cloud/securitycenter/settings/v1beta1"
-
 	ctx := context.Background()
 	c, err := settings.NewSecurityCenterSettingsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &settingspb.UpdateComponentSettingsRequest{
 		// TODO: Fill request struct fields.

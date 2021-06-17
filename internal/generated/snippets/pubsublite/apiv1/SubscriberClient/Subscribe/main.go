@@ -25,13 +25,12 @@ import (
 )
 
 func main() {
-	// import pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
-
 	ctx := context.Background()
 	c, err := pubsublite.NewSubscriberClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 	stream, err := c.Subscribe(ctx)
 	if err != nil {
 		// TODO: Handle error.

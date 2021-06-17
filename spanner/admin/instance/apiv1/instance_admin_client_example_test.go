@@ -31,19 +31,19 @@ func ExampleNewInstanceAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleInstanceAdminClient_ListInstanceConfigs() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.ListInstanceConfigsRequest{
 		// TODO: Fill request struct fields.
@@ -63,13 +63,12 @@ func ExampleInstanceAdminClient_ListInstanceConfigs() {
 }
 
 func ExampleInstanceAdminClient_GetInstanceConfig() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.GetInstanceConfigRequest{
 		// TODO: Fill request struct fields.
@@ -83,14 +82,12 @@ func ExampleInstanceAdminClient_GetInstanceConfig() {
 }
 
 func ExampleInstanceAdminClient_ListInstances() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.ListInstancesRequest{
 		// TODO: Fill request struct fields.
@@ -110,13 +107,12 @@ func ExampleInstanceAdminClient_ListInstances() {
 }
 
 func ExampleInstanceAdminClient_GetInstance() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.GetInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +126,12 @@ func ExampleInstanceAdminClient_GetInstance() {
 }
 
 func ExampleInstanceAdminClient_CreateInstance() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.CreateInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +150,12 @@ func ExampleInstanceAdminClient_CreateInstance() {
 }
 
 func ExampleInstanceAdminClient_UpdateInstance() {
-	// import instancepb "google.golang.org/genproto/googleapis/spanner/admin/instance/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.UpdateInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -185,6 +179,7 @@ func ExampleInstanceAdminClient_DeleteInstance() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &instancepb.DeleteInstanceRequest{
 		// TODO: Fill request struct fields.
@@ -196,13 +191,12 @@ func ExampleInstanceAdminClient_DeleteInstance() {
 }
 
 func ExampleInstanceAdminClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -216,13 +210,12 @@ func ExampleInstanceAdminClient_SetIamPolicy() {
 }
 
 func ExampleInstanceAdminClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -236,13 +229,12 @@ func ExampleInstanceAdminClient_GetIamPolicy() {
 }
 
 func ExampleInstanceAdminClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := instance.NewInstanceAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.

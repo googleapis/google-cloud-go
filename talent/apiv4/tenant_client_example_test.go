@@ -30,18 +30,19 @@ func ExampleNewTenantClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleTenantClient_CreateTenant() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewTenantClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.CreateTenantRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleTenantClient_CreateTenant() {
 }
 
 func ExampleTenantClient_GetTenant() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewTenantClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.GetTenantRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleTenantClient_GetTenant() {
 }
 
 func ExampleTenantClient_UpdateTenant() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-
 	ctx := context.Background()
 	c, err := talent.NewTenantClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.UpdateTenantRequest{
 		// TODO: Fill request struct fields.
@@ -100,6 +99,7 @@ func ExampleTenantClient_DeleteTenant() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.DeleteTenantRequest{
 		// TODO: Fill request struct fields.
@@ -111,14 +111,12 @@ func ExampleTenantClient_DeleteTenant() {
 }
 
 func ExampleTenantClient_ListTenants() {
-	// import talentpb "google.golang.org/genproto/googleapis/cloud/talent/v4"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := talent.NewTenantClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &talentpb.ListTenantsRequest{
 		// TODO: Fill request struct fields.

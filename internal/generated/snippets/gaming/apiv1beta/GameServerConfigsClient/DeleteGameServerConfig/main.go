@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import gamingpb "google.golang.org/genproto/googleapis/cloud/gaming/v1beta"
-
 	ctx := context.Background()
 	c, err := gaming.NewGameServerConfigsClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gamingpb.DeleteGameServerConfigRequest{
 		// TODO: Fill request struct fields.

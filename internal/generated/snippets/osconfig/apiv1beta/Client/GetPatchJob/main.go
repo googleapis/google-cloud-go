@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1beta"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetPatchJobRequest{
 		// TODO: Fill request struct fields.

@@ -285,6 +285,40 @@ func TestSchemaConversion(t *testing.T) {
 			},
 		},
 		{
+			// constrained
+			bqSchema: &bq.TableSchema{
+				Fields: []*bq.TableFieldSchema{
+					{
+						Name:      "foo",
+						Type:      "STRING",
+						MaxLength: 0,
+						Precision: 0,
+						Scale:     0,
+					},
+					{
+						Name:      "bar",
+						Type:      "STRING",
+						MaxLength: 1,
+						Precision: 2,
+						Scale:     3,
+					},
+				}},
+			schema: Schema{
+				{Name: "foo",
+					Type:      StringFieldType,
+					MaxLength: 0,
+					Precision: 0,
+					Scale:     0,
+				},
+				{Name: "bar",
+					Type:      StringFieldType,
+					MaxLength: 1,
+					Precision: 2,
+					Scale:     3,
+				},
+			},
+		},
+		{
 			// policy tags
 			bqSchema: &bq.TableSchema{
 				Fields: []*bq.TableFieldSchema{

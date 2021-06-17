@@ -31,19 +31,19 @@ func ExampleNewDatabaseAdminClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleDatabaseAdminClient_ListDatabases() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.ListDatabasesRequest{
 		// TODO: Fill request struct fields.
@@ -63,13 +63,12 @@ func ExampleDatabaseAdminClient_ListDatabases() {
 }
 
 func ExampleDatabaseAdminClient_CreateDatabase() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.CreateDatabaseRequest{
 		// TODO: Fill request struct fields.
@@ -88,13 +87,12 @@ func ExampleDatabaseAdminClient_CreateDatabase() {
 }
 
 func ExampleDatabaseAdminClient_GetDatabase() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.GetDatabaseRequest{
 		// TODO: Fill request struct fields.
@@ -108,13 +106,12 @@ func ExampleDatabaseAdminClient_GetDatabase() {
 }
 
 func ExampleDatabaseAdminClient_UpdateDatabaseDdl() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.UpdateDatabaseDdlRequest{
 		// TODO: Fill request struct fields.
@@ -136,6 +133,7 @@ func ExampleDatabaseAdminClient_DropDatabase() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.DropDatabaseRequest{
 		// TODO: Fill request struct fields.
@@ -147,13 +145,12 @@ func ExampleDatabaseAdminClient_DropDatabase() {
 }
 
 func ExampleDatabaseAdminClient_GetDatabaseDdl() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.GetDatabaseDdlRequest{
 		// TODO: Fill request struct fields.
@@ -167,13 +164,12 @@ func ExampleDatabaseAdminClient_GetDatabaseDdl() {
 }
 
 func ExampleDatabaseAdminClient_SetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -187,13 +183,12 @@ func ExampleDatabaseAdminClient_SetIamPolicy() {
 }
 
 func ExampleDatabaseAdminClient_GetIamPolicy() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -207,13 +202,12 @@ func ExampleDatabaseAdminClient_GetIamPolicy() {
 }
 
 func ExampleDatabaseAdminClient_TestIamPermissions() {
-	// import iampb "google.golang.org/genproto/googleapis/iam/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &iampb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -227,13 +221,12 @@ func ExampleDatabaseAdminClient_TestIamPermissions() {
 }
 
 func ExampleDatabaseAdminClient_CreateBackup() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.CreateBackupRequest{
 		// TODO: Fill request struct fields.
@@ -252,13 +245,12 @@ func ExampleDatabaseAdminClient_CreateBackup() {
 }
 
 func ExampleDatabaseAdminClient_GetBackup() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.GetBackupRequest{
 		// TODO: Fill request struct fields.
@@ -272,13 +264,12 @@ func ExampleDatabaseAdminClient_GetBackup() {
 }
 
 func ExampleDatabaseAdminClient_UpdateBackup() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.UpdateBackupRequest{
 		// TODO: Fill request struct fields.
@@ -297,6 +288,7 @@ func ExampleDatabaseAdminClient_DeleteBackup() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.DeleteBackupRequest{
 		// TODO: Fill request struct fields.
@@ -308,14 +300,12 @@ func ExampleDatabaseAdminClient_DeleteBackup() {
 }
 
 func ExampleDatabaseAdminClient_ListBackups() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.ListBackupsRequest{
 		// TODO: Fill request struct fields.
@@ -335,13 +325,12 @@ func ExampleDatabaseAdminClient_ListBackups() {
 }
 
 func ExampleDatabaseAdminClient_RestoreDatabase() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.RestoreDatabaseRequest{
 		// TODO: Fill request struct fields.
@@ -360,14 +349,12 @@ func ExampleDatabaseAdminClient_RestoreDatabase() {
 }
 
 func ExampleDatabaseAdminClient_ListDatabaseOperations() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.ListDatabaseOperationsRequest{
 		// TODO: Fill request struct fields.
@@ -387,14 +374,12 @@ func ExampleDatabaseAdminClient_ListDatabaseOperations() {
 }
 
 func ExampleDatabaseAdminClient_ListBackupOperations() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.ListBackupOperationsRequest{
 		// TODO: Fill request struct fields.

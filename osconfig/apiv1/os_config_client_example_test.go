@@ -30,18 +30,19 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleClient_ExecutePatchJob() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ExecutePatchJobRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +56,12 @@ func ExampleClient_ExecutePatchJob() {
 }
 
 func ExampleClient_GetPatchJob() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetPatchJobRequest{
 		// TODO: Fill request struct fields.
@@ -75,13 +75,12 @@ func ExampleClient_GetPatchJob() {
 }
 
 func ExampleClient_CancelPatchJob() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.CancelPatchJobRequest{
 		// TODO: Fill request struct fields.
@@ -95,14 +94,12 @@ func ExampleClient_CancelPatchJob() {
 }
 
 func ExampleClient_ListPatchJobs() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchJobsRequest{
 		// TODO: Fill request struct fields.
@@ -122,14 +119,12 @@ func ExampleClient_ListPatchJobs() {
 }
 
 func ExampleClient_ListPatchJobInstanceDetails() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchJobInstanceDetailsRequest{
 		// TODO: Fill request struct fields.
@@ -149,13 +144,12 @@ func ExampleClient_ListPatchJobInstanceDetails() {
 }
 
 func ExampleClient_CreatePatchDeployment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.CreatePatchDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -169,13 +163,12 @@ func ExampleClient_CreatePatchDeployment() {
 }
 
 func ExampleClient_GetPatchDeployment() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.GetPatchDeploymentRequest{
 		// TODO: Fill request struct fields.
@@ -189,14 +182,12 @@ func ExampleClient_GetPatchDeployment() {
 }
 
 func ExampleClient_ListPatchDeployments() {
-	// import osconfigpb "google.golang.org/genproto/googleapis/cloud/osconfig/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := osconfig.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.ListPatchDeploymentsRequest{
 		// TODO: Fill request struct fields.
@@ -221,6 +212,7 @@ func ExampleClient_DeletePatchDeployment() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &osconfigpb.DeletePatchDeploymentRequest{
 		// TODO: Fill request struct fields.

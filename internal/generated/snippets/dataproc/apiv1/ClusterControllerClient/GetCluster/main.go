@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
-
 	ctx := context.Background()
 	c, err := dataproc.NewClusterControllerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &dataprocpb.GetClusterRequest{
 		// TODO: Fill request struct fields.

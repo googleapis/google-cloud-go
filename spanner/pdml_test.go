@@ -145,8 +145,8 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 	for _, tt := range queryOptionsTestCases() {
 		t.Run(tt.name, func(t *testing.T) {
 			if tt.env.Options != nil {
-				os.Setenv("SPANNER_OPTIMIZER_VERSION", tt.env.Options.OptimizerVersion)
-				defer os.Setenv("SPANNER_OPTIMIZER_VERSION", "")
+				unset := setQueryOptionsEnvVars(tt.env.Options)
+				defer unset()
 			}
 
 			ctx := context.Background()

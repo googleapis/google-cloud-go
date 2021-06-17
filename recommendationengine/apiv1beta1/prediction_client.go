@@ -42,7 +42,7 @@ type PredictionCallOptions struct {
 	Predict []gax.CallOption
 }
 
-func defaultPredictionClientOptions() []option.ClientOption {
+func defaultPredictionGRPCClientOptions() []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint("recommendationengine.googleapis.com:443"),
 		internaloption.WithDefaultMTLSEndpoint("recommendationengine.mtls.googleapis.com:443"),
@@ -71,32 +71,82 @@ func defaultPredictionCallOptions() *PredictionCallOptions {
 	}
 }
 
+// internalPredictionClient is an interface that defines the methods availaible from Recommendations AI.
+type internalPredictionClient interface {
+	Close() error
+	setGoogleClientInfo(...string)
+	Connection() *grpc.ClientConn
+	Predict(context.Context, *recommendationenginepb.PredictRequest, ...gax.CallOption) *PredictResponse_PredictionResultIterator
+}
+
 // PredictionClient is a client for interacting with Recommendations AI.
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Service for making recommendation prediction.
+type PredictionClient struct {
+	// The internal transport-dependent client.
+	internalClient internalPredictionClient
+
+	// The call options for this service.
+	CallOptions *PredictionCallOptions
+}
+
+// Wrapper methods routed to the internal client.
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *PredictionClient) Close() error {
+	return c.internalClient.Close()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *PredictionClient) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
+}
+
+// Predict makes a recommendation prediction. If using API Key based authentication,
+// the API Key must be registered using the
+// PredictionApiKeyRegistry
+// service. Learn more (at /recommendations-ai/docs/setting-up#register-key).
+func (c *PredictionClient) Predict(ctx context.Context, req *recommendationenginepb.PredictRequest, opts ...gax.CallOption) *PredictResponse_PredictionResultIterator {
+	return c.internalClient.Predict(ctx, req, opts...)
+}
+
+// predictionGRPCClient is a client for interacting with Recommendations AI over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type PredictionClient struct {
+type predictionGRPCClient struct {
 	// Connection pool of gRPC connections to the service.
 	connPool gtransport.ConnPool
 
 	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
 	disableDeadlines bool
 
+	// Points back to the CallOptions field of the containing PredictionClient
+	CallOptions **PredictionCallOptions
+
 	// The gRPC API client.
 	predictionClient recommendationenginepb.PredictionServiceClient
-
-	// The call options for this service.
-	CallOptions *PredictionCallOptions
 
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
 
-// NewPredictionClient creates a new prediction service client.
+// NewPredictionClient creates a new prediction service client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
 // Service for making recommendation prediction.
 func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*PredictionClient, error) {
-	clientOpts := defaultPredictionClientOptions()
-
+	clientOpts := defaultPredictionGRPCClientOptions()
 	if newPredictionClientHook != nil {
 		hookOpts, err := newPredictionClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -114,48 +164,47 @@ func NewPredictionClient(ctx context.Context, opts ...option.ClientOption) (*Pre
 	if err != nil {
 		return nil, err
 	}
-	c := &PredictionClient{
+	client := PredictionClient{CallOptions: defaultPredictionCallOptions()}
+
+	c := &predictionGRPCClient{
 		connPool:         connPool,
 		disableDeadlines: disableDeadlines,
-		CallOptions:      defaultPredictionCallOptions(),
-
 		predictionClient: recommendationenginepb.NewPredictionServiceClient(connPool),
+		CallOptions:      &client.CallOptions,
 	}
 	c.setGoogleClientInfo()
 
-	return c, nil
+	client.internalClient = c
+
+	return &client, nil
 }
 
 // Connection returns a connection to the API service.
 //
 // Deprecated.
-func (c *PredictionClient) Connection() *grpc.ClientConn {
+func (c *predictionGRPCClient) Connection() *grpc.ClientConn {
 	return c.connPool.Conn()
-}
-
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *PredictionClient) Close() error {
-	return c.connPool.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *PredictionClient) setGoogleClientInfo(keyval ...string) {
+func (c *predictionGRPCClient) setGoogleClientInfo(keyval ...string) {
 	kv := append([]string{"gl-go", versionGo()}, keyval...)
 	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
 	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
 }
 
-// Predict makes a recommendation prediction. If using API Key based authentication,
-// the API Key must be registered using the
-// PredictionApiKeyRegistry
-// service. Learn more (at /recommendations-ai/docs/setting-up#register-key).
-func (c *PredictionClient) Predict(ctx context.Context, req *recommendationenginepb.PredictRequest, opts ...gax.CallOption) *PredictResponse_PredictionResultIterator {
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *predictionGRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *predictionGRPCClient) Predict(ctx context.Context, req *recommendationenginepb.PredictRequest, opts ...gax.CallOption) *PredictResponse_PredictionResultIterator {
 	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
 	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
-	opts = append(c.CallOptions.Predict[0:len(c.CallOptions.Predict):len(c.CallOptions.Predict)], opts...)
+	opts = append((*c.CallOptions).Predict[0:len((*c.CallOptions).Predict):len((*c.CallOptions).Predict)], opts...)
 	it := &PredictResponse_PredictionResultIterator{}
 	req = proto.Clone(req).(*recommendationenginepb.PredictRequest)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*recommendationenginepb.PredictResponse_PredictionResult, string, error) {

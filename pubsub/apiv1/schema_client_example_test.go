@@ -21,6 +21,7 @@ import (
 
 	pubsub "cloud.google.com/go/pubsub/apiv1"
 	"google.golang.org/api/iterator"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 	pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
 )
 
@@ -30,18 +31,19 @@ func ExampleNewSchemaClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleSchemaClient_CreateSchema() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.CreateSchemaRequest{
 		// TODO: Fill request struct fields.
@@ -55,13 +57,12 @@ func ExampleSchemaClient_CreateSchema() {
 }
 
 func ExampleSchemaClient_GetSchema() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.GetSchemaRequest{
 		// TODO: Fill request struct fields.
@@ -75,14 +76,12 @@ func ExampleSchemaClient_GetSchema() {
 }
 
 func ExampleSchemaClient_ListSchemas() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ListSchemasRequest{
 		// TODO: Fill request struct fields.
@@ -107,6 +106,7 @@ func ExampleSchemaClient_DeleteSchema() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.DeleteSchemaRequest{
 		// TODO: Fill request struct fields.
@@ -118,13 +118,12 @@ func ExampleSchemaClient_DeleteSchema() {
 }
 
 func ExampleSchemaClient_ValidateSchema() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ValidateSchemaRequest{
 		// TODO: Fill request struct fields.
@@ -138,18 +137,74 @@ func ExampleSchemaClient_ValidateSchema() {
 }
 
 func ExampleSchemaClient_ValidateMessage() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewSchemaClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.ValidateMessageRequest{
 		// TODO: Fill request struct fields.
 	}
 	resp, err := c.ValidateMessage(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSchemaClient_GetIamPolicy() {
+	ctx := context.Background()
+	c, err := pubsub.NewSchemaClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.GetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSchemaClient_SetIamPolicy() {
+	ctx := context.Background()
+	c, err := pubsub.NewSchemaClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.SetIamPolicyRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.SetIamPolicy(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleSchemaClient_TestIamPermissions() {
+	ctx := context.Background()
+	c, err := pubsub.NewSchemaClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &iampb.TestIamPermissionsRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.TestIamPermissions(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}

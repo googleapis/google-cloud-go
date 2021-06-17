@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import databasepb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
-
 	ctx := context.Background()
 	c, err := database.NewDatabaseAdminClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &databasepb.GetDatabaseDdlRequest{
 		// TODO: Fill request struct fields.

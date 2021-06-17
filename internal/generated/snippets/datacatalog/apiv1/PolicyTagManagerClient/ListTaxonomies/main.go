@@ -25,14 +25,12 @@ import (
 )
 
 func main() {
-	// import datacatalogpb "google.golang.org/genproto/googleapis/cloud/datacatalog/v1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := datacatalog.NewPolicyTagManagerClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &datacatalogpb.ListTaxonomiesRequest{
 		// TODO: Fill request struct fields.

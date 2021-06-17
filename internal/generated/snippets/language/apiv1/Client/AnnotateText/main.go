@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import languagepb "google.golang.org/genproto/googleapis/cloud/language/v1"
-
 	ctx := context.Background()
 	c, err := language.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &languagepb.AnnotateTextRequest{
 		// TODO: Fill request struct fields.

@@ -30,19 +30,19 @@ func ExampleNewGkeHubMembershipClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
 
 func ExampleGkeHubMembershipClient_ListMemberships() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-	// import "google.golang.org/api/iterator"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.ListMembershipsRequest{
 		// TODO: Fill request struct fields.
@@ -62,13 +62,12 @@ func ExampleGkeHubMembershipClient_ListMemberships() {
 }
 
 func ExampleGkeHubMembershipClient_GetMembership() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.GetMembershipRequest{
 		// TODO: Fill request struct fields.
@@ -82,13 +81,12 @@ func ExampleGkeHubMembershipClient_GetMembership() {
 }
 
 func ExampleGkeHubMembershipClient_CreateMembership() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.CreateMembershipRequest{
 		// TODO: Fill request struct fields.
@@ -107,13 +105,12 @@ func ExampleGkeHubMembershipClient_CreateMembership() {
 }
 
 func ExampleGkeHubMembershipClient_DeleteMembership() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.DeleteMembershipRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +127,12 @@ func ExampleGkeHubMembershipClient_DeleteMembership() {
 }
 
 func ExampleGkeHubMembershipClient_UpdateMembership() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.UpdateMembershipRequest{
 		// TODO: Fill request struct fields.
@@ -155,13 +151,12 @@ func ExampleGkeHubMembershipClient_UpdateMembership() {
 }
 
 func ExampleGkeHubMembershipClient_GenerateConnectManifest() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.GenerateConnectManifestRequest{
 		// TODO: Fill request struct fields.
@@ -175,13 +170,12 @@ func ExampleGkeHubMembershipClient_GenerateConnectManifest() {
 }
 
 func ExampleGkeHubMembershipClient_ValidateExclusivity() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.ValidateExclusivityRequest{
 		// TODO: Fill request struct fields.
@@ -195,13 +189,12 @@ func ExampleGkeHubMembershipClient_ValidateExclusivity() {
 }
 
 func ExampleGkeHubMembershipClient_GenerateExclusivityManifest() {
-	// import gkehubpb "google.golang.org/genproto/googleapis/cloud/gkehub/v1beta1"
-
 	ctx := context.Background()
 	c, err := gkehub.NewGkeHubMembershipClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &gkehubpb.GenerateExclusivityManifestRequest{
 		// TODO: Fill request struct fields.

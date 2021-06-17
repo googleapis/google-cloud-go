@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import pubsubpb "google.golang.org/genproto/googleapis/pubsub/v1"
-
 	ctx := context.Background()
 	c, err := pubsub.NewPublisherClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &pubsubpb.UpdateTopicRequest{
 		// TODO: Fill request struct fields.

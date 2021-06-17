@@ -24,13 +24,12 @@ import (
 )
 
 func main() {
-	// import domainspb "google.golang.org/genproto/googleapis/cloud/domains/v1beta1"
-
 	ctx := context.Background()
 	c, err := domains.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &domainspb.ResetAuthorizationCodeRequest{
 		// TODO: Fill request struct fields.
