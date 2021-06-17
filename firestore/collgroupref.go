@@ -148,7 +148,7 @@ type QueryPartition struct {
 
 // ToQuery converts a QueryPartition object to a Query object
 func (qp QueryPartition) ToQuery() Query {
-	q := *qp.CollectionGroupQuery.query() //.OrderBy(DocumentID, Asc)
+	q := *qp.CollectionGroupQuery.query()
 
 	// Remove the leading path before calling StartAt, EndBefore
 	if qp.StartAt != "" {

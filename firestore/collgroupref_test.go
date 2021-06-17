@@ -22,9 +22,9 @@ import (
 func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 	cgr := newCollectionGroupRef(testClient, testClient.path(), "collectionID")
 	qp := QueryPartition{
-		CollectionGroupQuery: cgr.Query,
-		StartAt:              "projects/projectID/databases/(default)/documents/start/at",
-		EndBefore:            "projects/projectID/databases/(default)/documents/end/before",
+		CollectionGroupQuery: cgr.Query.OrderBy(DocumentID, Asc),
+		StartAt:              "documents/start/at",
+		EndBefore:            "documents/end/before",
 	}
 
 	got := qp.ToQuery()
