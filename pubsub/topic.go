@@ -121,7 +121,7 @@ var DefaultPublishSettings = PublishSettings{
 	BufferedByteLimit: 10 * MaxPublishRequestBytes,
 	FlowControlSettings: FlowControlSettings{
 		MaxOutstandingMessages: 1000,
-		MaxOutstandingBytes:    10 * 1024 * 1024,
+		MaxOutstandingBytes:    10 * MaxPublishRequestBytes,
 		LimitExceededBehavior:  FlowControlBlock,
 	},
 }
@@ -439,20 +439,14 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	// Use a PublishRequest with only the Messages field to calculate the size
-	// of an individual message. This accurately calculates the size of the
-	// encoded proto message by accounting for the length of an individual
-	// PubSubMessage and Data/Attributes field.
-	// TODO(hongalex): if this turns out to take significant time, try to approximate it.
-	msgSize := proto.Size(&pb.PublishRequest{
-		Messages: []*pb.PubsubMessage{
-			{
-				Data:        msg.Data,
-				Attributes:  msg.Attributes,
-				OrderingKey: msg.OrderingKey,
-			},
-		},
+	// Calculate the size of the encoded proto message by accounting
+	// for the length of an individual PubSubMessage and Data/Attributes field.
+	msgSize := proto.Size(&pb.PubsubMessage{
+		Data:        msg.Data,
+		Attributes:  msg.Attributes,
+		OrderingKey: msg.OrderingKey,
 	})
+
 	t.initBundler()
 	t.mu.RLock()
 	defer t.mu.RUnlock()
@@ -527,8 +521,6 @@ func (t *Topic) initBundler() {
 		workers = 25 * runtime.GOMAXPROCS(0)
 	}
 
-	t.fc = newFlowController(t.PublishSettings.FlowControlSettings)
-
 	t.scheduler = scheduler.NewPublishScheduler(workers, func(bundle interface{}) {
 		// TODO(jba): use a context detached from the one passed to NewClient.
 		ctx := context.TODO()
@@ -546,13 +538,43 @@ func (t *Topic) initBundler() {
 	}
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
+	fcs := DefaultPublishSettings.FlowControlSettings
+	// FlowControlSettings.MaxOutstandingBytes and BufferedByteLimit have generally
+	// the same behavior, with the latter always returning and error. BufferedByteLimit
+	// is deprecated in favor of MaxOutstandingBytes.
+	//
+	// While we continue to support both, check if either has been set directly, and use
+	// that value. If both have been set, we will respect MaxOutstandingBytes first.
+	var mo, bb bool
+	if t.PublishSettings.BufferedByteLimit > 0 {
+		bb = true
+	}
+	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
+		mo = true
+	}
+	if bb && !mo {
+		fcs.MaxOutstandingBytes = t.PublishSettings.BufferedByteLimit
+	} else if mo {
+		fcs.MaxOutstandingBytes = t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
+	}
+	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
+		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
+	}
+	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
+		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
+	}
+
+	t.fc = newFlowController(fcs)
+
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
 		bufferedByteLimit = t.PublishSettings.BufferedByteLimit
 	}
 	t.scheduler.BufferedByteLimit = bufferedByteLimit
 
-	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name)
+	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
+	fmt.Printf("calcFieldSizeString is: %d\n", calcFieldSizeString(t.name))
+	fmt.Printf("limit is: %d\n", t.scheduler.BundleByteLimit)
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {
@@ -570,8 +592,6 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 			OrderingKey: bm.msg.OrderingKey,
 		}
 		pbMsgs[i] = msg
-		// Calculate size of message for flow control release.
-		bm.size = proto.Size(msg)
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse

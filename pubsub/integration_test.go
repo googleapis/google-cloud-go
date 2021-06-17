@@ -224,92 +224,95 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 }
 
 func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
-	ctx := context.Background()
-	topic, err := client.CreateTopic(ctx, topicIDs.New())
-	if err != nil {
-		t.Errorf("CreateTopic error: %v", err)
-	}
-	defer topic.Stop()
-	exists, err := topic.Exists(ctx)
-	if err != nil {
-		t.Fatalf("TopicExists error: %v", err)
-	}
-	if !exists {
-		t.Errorf("topic %v should exist, but it doesn't", topic)
-	}
-
-	var sub *Subscription
-	if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
-		t.Errorf("CreateSub error: %v", err)
-	}
-	exists, err = sub.Exists(ctx)
-	if err != nil {
-		t.Fatalf("SubExists error: %v", err)
-	}
-	if !exists {
-		t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
-	}
-	var msgs []*Message
-	for i := 0; i < numMsgs; i++ {
-		text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
-		attrs := make(map[string]string)
-		attrs["foo"] = "bar"
-		msgs = append(msgs, &Message{
-			Data:       []byte(text),
-			Attributes: attrs,
-		})
-	}
-
-	// Publish some messages.
-	type pubResult struct {
-		m *Message
-		r *PublishResult
-	}
-	var rs []pubResult
-	for _, m := range msgs {
-		r := topic.Publish(ctx, m)
-		rs = append(rs, pubResult{m, r})
-	}
-	want := make(map[string]messageData)
-	for _, res := range rs {
-		id, err := res.r.Get(ctx)
-		if err != nil {
-			t.Fatal(err)
-		}
-		md := extractMessageData(res.m)
-		md.ID = id
-		want[md.ID] = md
-	}
-
-	sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
-	sub.ReceiveSettings.Synchronous = synchronous
-
-	// Use a timeout to ensure that Pull does not block indefinitely if there are
-	// unexpectedly few messages available.
-	now := time.Now()
-	timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
-	defer cancel()
-	gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
-		m.Ack()
-	})
-	if err != nil {
-		if c := status.Convert(err); c.Code() == codes.Canceled {
-			if time.Since(now) >= time.Minute {
-				t.Fatal("pullN took too long")
+	t.Run(fmt.Sprintf("maxMsgs:%d,synchronous:%t,numMsgs:%d", maxMsgs, synchronous, numMsgs),
+		func(t *testing.T) {
+			ctx := context.Background()
+			topic, err := client.CreateTopic(ctx, topicIDs.New())
+			if err != nil {
+				t.Errorf("CreateTopic error: %v", err)
 			}
-		} else {
-			t.Fatalf("Pull: %v", err)
-		}
-	}
-	got := make(map[string]messageData)
-	for _, m := range gotMsgs {
-		md := extractMessageData(m)
-		got[md.ID] = md
-	}
-	if !testutil.Equal(got, want) {
-		t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
-			maxMsgs, synchronous, got, want)
-	}
+			defer topic.Stop()
+			exists, err := topic.Exists(ctx)
+			if err != nil {
+				t.Fatalf("TopicExists error: %v", err)
+			}
+			if !exists {
+				t.Errorf("topic %v should exist, but it doesn't", topic)
+			}
+
+			var sub *Subscription
+			if sub, err = client.CreateSubscription(ctx, subIDs.New(), SubscriptionConfig{Topic: topic}); err != nil {
+				t.Errorf("CreateSub error: %v", err)
+			}
+			exists, err = sub.Exists(ctx)
+			if err != nil {
+				t.Fatalf("SubExists error: %v", err)
+			}
+			if !exists {
+				t.Errorf("subscription %s should exist, but it doesn't", sub.ID())
+			}
+			var msgs []*Message
+			for i := 0; i < numMsgs; i++ {
+				text := fmt.Sprintf("a message with an index %d - %s", i, strings.Repeat(".", extraBytes))
+				attrs := make(map[string]string)
+				attrs["foo"] = "bar"
+				msgs = append(msgs, &Message{
+					Data:       []byte(text),
+					Attributes: attrs,
+				})
+			}
+
+			// Publish some messages.
+			type pubResult struct {
+				m *Message
+				r *PublishResult
+			}
+			var rs []pubResult
+			for _, m := range msgs {
+				r := topic.Publish(ctx, m)
+				rs = append(rs, pubResult{m, r})
+			}
+			want := make(map[string]messageData)
+			for _, res := range rs {
+				id, err := res.r.Get(ctx)
+				if err != nil {
+					t.Fatal(err)
+				}
+				md := extractMessageData(res.m)
+				md.ID = id
+				want[md.ID] = md
+			}
+
+			sub.ReceiveSettings.MaxOutstandingMessages = maxMsgs
+			sub.ReceiveSettings.Synchronous = synchronous
+
+			// Use a timeout to ensure that Pull does not block indefinitely if there are
+			// unexpectedly few messages available.
+			now := time.Now()
+			timeoutCtx, cancel := context.WithTimeout(ctx, time.Minute)
+			defer cancel()
+			gotMsgs, err := pullN(timeoutCtx, sub, len(want), func(ctx context.Context, m *Message) {
+				m.Ack()
+			})
+			if err != nil {
+				if c := status.Convert(err); c.Code() == codes.Canceled {
+					if time.Since(now) >= time.Minute {
+						t.Fatal("pullN took too long")
+					}
+				} else {
+					t.Fatalf("Pull: %v", err)
+				}
+			}
+			got := make(map[string]messageData)
+			for _, m := range gotMsgs {
+				md := extractMessageData(m)
+				got[md.ID] = md
+			}
+			if !testutil.Equal(got, want) {
+				t.Fatalf("MaxOutstandingMessages=%d, Synchronous=%t, messages got: %+v, messages want: %+v",
+					maxMsgs, synchronous, got, want)
+			}
+		})
 }
 
 // IAM tests.
@@ -413,6 +416,7 @@ func TestIntegration_LargePublishSize(t *testing.T) {
 	msg := &Message{
 		Data: bytes.Repeat([]byte{'A'}, maxLengthSingleMessage),
 	}
+	topic.PublishSettings.FlowControlSettings.LimitExceededBehavior = FlowControlSignalError
 	r := topic.Publish(ctx, msg)
 	if _, err := r.Get(ctx); err != nil {
 		t.Fatalf("Failed to publish max length message: %v", err)

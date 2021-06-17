@@ -27,10 +27,10 @@ import (
 type LimitExceededBehavior int
 
 const (
-	// FlowControlIgnore disables flow control.
-	FlowControlIgnore LimitExceededBehavior = iota
 	// FlowControlBlock signals to wait until the request can be made without exceeding the limit.
-	FlowControlBlock
+	FlowControlBlock LimitExceededBehavior = iota
+	// FlowControlIgnore disables flow control.
+	FlowControlIgnore
 	// FlowControlSignalError signals an error to the caller of acquire.
 	FlowControlSignalError
 )
@@ -144,9 +144,9 @@ func (f *flowController) release(ctx context.Context, size int) {
 		return
 	}
 	atomic.AddInt64(&f.countRemaining, -1)
-	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
+	outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
 	recordStat(ctx, OutstandingMessages, outstandingMessages)
-	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
+	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
 	recordStat(ctx, OutstandingBytes, outstandingBytes)
 
 	if f.semCount != nil {
