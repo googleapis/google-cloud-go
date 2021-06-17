@@ -17,30 +17,30 @@ limitations under the License.
 package main
 
 import (
-	"encoding/binary"
 	"bytes"
+	"encoding/binary"
 	"fmt"
 	"io/ioutil"
 	"strings"
 
 	"github.com/jhump/protoreflect/desc"
-	"github.com/jhump/protoreflect/dynamic"
 	"github.com/jhump/protoreflect/desc/protoparse"
+	"github.com/jhump/protoreflect/dynamic"
 	"gopkg.in/yaml.v2"
 )
 
 type ValueFormatColumn struct {
 	Encoding string
-	Type string
+	Type     string
 }
 
 type ValueFormatFamily struct {
 	DefaultEncoding string `yaml:"default_encoding"`
-	DefaultType string `yaml:"default_type"`
-	Columns map[string]ValueFormatColumn
+	DefaultType     string `yaml:"default_type"`
+	Columns         map[string]ValueFormatColumn
 }
 
-func NewValueFormatFamily() ValueFormatFamily {  // for tests :)
+func NewValueFormatFamily() ValueFormatFamily { // for tests :)
 	family := ValueFormatFamily{}
 	family.Columns = make(map[string]ValueFormatColumn)
 	return family
@@ -48,19 +48,19 @@ func NewValueFormatFamily() ValueFormatFamily {  // for tests :)
 
 type ValueFormatSettings struct {
 	ProtocolBufferDefinitions []string `yaml:"protocol_buffer_definitions"`
-	ProtocolBufferPaths []string `yaml:"protocol_buffer_paths"`
-	DefaultEncoding string `yaml:"default_encoding"`
-	DefaultType string `yaml:"default_type"`
-	Columns map[string]ValueFormatColumn
-	Families map[string]ValueFormatFamily
+	ProtocolBufferPaths       []string `yaml:"protocol_buffer_paths"`
+	DefaultEncoding           string   `yaml:"default_encoding"`
+	DefaultType               string   `yaml:"default_type"`
+	Columns                   map[string]ValueFormatColumn
+	Families                  map[string]ValueFormatFamily
 }
 
-type valueFormatter func ([]byte) (string, error)
+type valueFormatter func([]byte) (string, error)
 
 type ValueFormatting struct {
-	settings ValueFormatSettings
+	settings       ValueFormatSettings
 	pbMessageTypes map[string]*desc.MessageDescriptor
-	formatters map[[2]string]valueFormatter
+	formatters     map[[2]string]valueFormatter
 }
 
 func NewValueFormatting() ValueFormatting {
@@ -92,52 +92,52 @@ func binaryFormatterHelper(
 	if err == nil {
 		s = fmt.Sprint(v)[1:]
 		if len(in) == elemsize {
-			s = s[1:len(s) - 1]
+			s = s[1 : len(s)-1]
 		}
 	}
 	return s, err
 }
 
-type binaryValueFormatter func([]byte, binary.ByteOrder) (string, error) 
+type binaryValueFormatter func([]byte, binary.ByteOrder) (string, error)
 
 var binaryValueFormatters = map[string]binaryValueFormatter{
-	"int8": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"int8": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]int8, len(in))
 		return binaryFormatterHelper(in, byteOrder, 2, &v)
 	},
-	"int16": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"int16": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]int16, len(in)/2)
 		return binaryFormatterHelper(in, byteOrder, 2, &v)
 	},
-	"int32": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"int32": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]int32, len(in)/4)
 		return binaryFormatterHelper(in, byteOrder, 4, &v)
 	},
-	"int64": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"int64": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]int64, len(in)/8)
 		return binaryFormatterHelper(in, byteOrder, 8, &v)
 	},
-	"uint8": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"uint8": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]uint8, len(in))
 		return binaryFormatterHelper(in, byteOrder, 2, &v)
 	},
-	"uint16": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"uint16": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]uint16, len(in)/2)
 		return binaryFormatterHelper(in, byteOrder, 2, &v)
 	},
-	"uint32": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"uint32": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]uint32, len(in)/4)
 		return binaryFormatterHelper(in, byteOrder, 4, &v)
 	},
-	"uint64": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"uint64": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]uint64, len(in)/8)
 		return binaryFormatterHelper(in, byteOrder, 8, &v)
 	},
-	"float32": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"float32": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]float32, len(in)/4)
 		return binaryFormatterHelper(in, byteOrder, 4, &v)
 	},
-	"float64": func (in []byte, byteOrder binary.ByteOrder) (string, error) {
+	"float64": func(in []byte, byteOrder binary.ByteOrder) (string, error) {
 		v := make([]float64, len(in)/8)
 		return binaryFormatterHelper(in, byteOrder, 8, &v)
 	},
@@ -150,15 +150,15 @@ func (self *ValueFormatting) binaryFormatter(encoding, type_ string) valueFormat
 		byteOrder = binary.BigEndian
 	} else {
 		byteOrder = binary.LittleEndian
-	} 
-	return func (in []byte) (string, error) {
+	}
+	return func(in []byte) (string, error) {
 		return typeFormatter(in, byteOrder)
 	}
 }
 
 func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
 	md := self.pbMessageTypes[strings.ToLower(type_)]
-	return func (in []byte) (string, error) {
+	return func(in []byte) (string, error) {
 		message := dynamic.NewMessage(md)
 		err := message.Unmarshal(in)
 		if err == nil {
@@ -172,24 +172,24 @@ func (self *ValueFormatting) pbFormatter(type_ string) valueFormatter {
 }
 
 var validValueFormattingEncodings = map[string]string{
-	"bigendian": "BigEndian",
-	"b": "BigEndian",
-	"binary": "BigEndian",
-	"littleendian": "LittleEndian",
-	"L": "LittleEndian",
-	"hex": "Hex",
-	"h": "Hex",
-	"protocolbuffer": "ProtocolBuffer",
+	"bigendian":       "BigEndian",
+	"b":               "BigEndian",
+	"binary":          "BigEndian",
+	"littleendian":    "LittleEndian",
+	"L":               "LittleEndian",
+	"hex":             "Hex",
+	"h":               "Hex",
+	"protocolbuffer":  "ProtocolBuffer",
 	"protocol-buffer": "ProtocolBuffer",
 	"protocol_buffer": "ProtocolBuffer",
-	"proto": "ProtocolBuffer",
-	"p": "ProtocolBuffer",
-	"": "",
+	"proto":           "ProtocolBuffer",
+	"p":               "ProtocolBuffer",
+	"":                "",
 }
 
 func (self *ValueFormatting) validateEncoding(encoding string) (string, error) {
 	validEncoding, got := validValueFormattingEncodings[strings.ToLower(encoding)]
-	if ! got {
+	if !got {
 		return "", fmt.Errorf("Invalid encoding: %s", encoding)
 	}
 	return validEncoding, nil
@@ -199,7 +199,7 @@ func (self *ValueFormatting) validateType(
 	cname, validEncoding, encoding, type_ string,
 ) (string, error) {
 	var got bool
-	switch validEncoding { 
+	switch validEncoding {
 	case "LittleEndian", "BigEndian":
 		if type_ == "" {
 			return type_, fmt.Errorf(
@@ -207,7 +207,7 @@ func (self *ValueFormatting) validateType(
 				encoding)
 		}
 		_, got = binaryValueFormatters[strings.ToLower(type_)]
-		if ! got {
+		if !got {
 			return type_, fmt.Errorf("Invalid type: %s for encoding: %s",
 				type_, encoding)
 		}
@@ -217,7 +217,7 @@ func (self *ValueFormatting) validateType(
 			type_ = cname
 		}
 		_, got = self.pbMessageTypes[strings.ToLower(type_)]
-		if ! got {
+		if !got {
 			return type_, fmt.Errorf("Invalid type: %s for encoding: %s",
 				type_, encoding)
 		}
@@ -306,7 +306,7 @@ func (self *ValueFormatting) setupPBMessages() error {
 					key = prefix + "." + key
 					self.pbMessageTypes[strings.ToLower(key)] = md
 				}
-			}		
+			}
 		}
 	}
 	return nil
@@ -324,7 +324,7 @@ func (self *ValueFormatting) setup(options map[string]string) error {
 		err = self.validateColumns()
 	}
 	return err
-}	
+}
 
 func (self *ValueFormatting) colEncodingType(family, column string) (string, string) {
 	encoding := self.settings.DefaultEncoding
@@ -353,7 +353,7 @@ func (self *ValueFormatting) colEncodingType(family, column string) (string, str
 }
 
 func (self *ValueFormatting) badFormatter(err error) valueFormatter {
-	return func (in []byte) (string, error) {
+	return func(in []byte) (string, error) {
 		return "", err
 	}
 }
@@ -371,7 +371,7 @@ func (self *ValueFormatting) format(
 ) (string, error) {
 	key := [2]string{family, column}
 	formatter, got := self.formatters[key]
-	if ! got {
+	if !got {
 		encoding, type_ := self.colEncodingType(family, column)
 		encoding, type_, err := self.validateFormat(column, encoding, type_)
 		if err != nil {
@@ -394,10 +394,8 @@ func (self *ValueFormatting) format(
 	if err == nil {
 		formatted = prefix +
 			strings.TrimSuffix(
-				strings.ReplaceAll(formatted, "\n", "\n" + prefix),
+				strings.ReplaceAll(formatted, "\n", "\n"+prefix),
 				prefix) + "\n"
 	}
 	return formatted, err
 }
-
-	

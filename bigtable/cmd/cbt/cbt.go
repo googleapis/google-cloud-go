@@ -223,7 +223,7 @@ const formatHelp = `
 
 You can provide custom formatting information for formatting stored
 data values in the ` + "`" + `lookup` + "`" + ` and ` + "`" + `read` +
-"`" + ` commands.
+	"`" + ` commands.
 
 The formatting data follows a formatting model consisting of an
 encoding and type for each column.
@@ -233,12 +233,12 @@ The available encodings are:
 - ` + "`" + `Hex` + "`" + ` (alias: ` + "`" + `H` + "`" + `)
 
 - ` + "`" + `BigEndian` + "`" + ` (aliases: ` + "`" + `BINARY` + "`" + `, ` +
-"`" + `B` + "`" + `)
+	"`" + `B` + "`" + `)
 
 - ` + "`" + `LittleEndian` + "`" + ` (alias: ` + "`" + `L` + "`" + `)
 
 - ` + "`" + `ProtocolBuffer` + "`" + ` (aliases: ` + "`" + `Proto` + "`" + `, ` +
-"`" + `P` + "`" + `)
+	"`" + `P` + "`" + `)
 
 Encoding names and aliases are case insensitive.
 
@@ -246,11 +246,11 @@ The Hex encoding is type agnostic. Data are displayed as a raw
 hexadecimal representation of the stored data.
 
 The available types for the BigEndian and LittleEndian encodings are ` +
-"`" + `int8` + "`" + `, ` + "`" + `int16` + "`" + `, ` + "`" +
-`int32` + "`" + `, ` + "`" + `int64` + "`" + `, ` + "`" + `uint8` +
-"`" + `, ` + "`" + `uint16` + "`" + `, ` + "`" + `uint32` + "`" + `, ` +
-"`" + `uint64` + "`" + `, ` + "`" + `float32` + "`" + `, and ` + "`" +
-`float64` + "`" + `.  Stored data length must be a multiple of the
+	"`" + `int8` + "`" + `, ` + "`" + `int16` + "`" + `, ` + "`" +
+	`int32` + "`" + `, ` + "`" + `int64` + "`" + `, ` + "`" + `uint8` +
+	"`" + `, ` + "`" + `uint16` + "`" + `, ` + "`" + `uint32` + "`" + `, ` +
+	"`" + `uint64` + "`" + `, ` + "`" + `float32` + "`" + `, and ` + "`" +
+	`float64` + "`" + `.  Stored data length must be a multiple of the
 type sized, in bytes.  Data are displayed as scalars if the stored
 length matches the type size, or as arrays otherwise.  Types names are case
 insensitive.
@@ -271,12 +271,12 @@ Protocol-buffer definition files may be given, as well as directories
 used to search for definition files and and files imported by them. If
 no paths are specified, then the current working directory is used.
 Locations of standard protocol buffer imports (` + "`" +
-`google/protobuf/*` + "`" + `) need not be specified.
+	`google/protobuf/*` + "`" + `) need not be specified.
 
 Format information in YAML format is provided using the ` + "`" +
-`format-file` + "`" + ` option for the ` + "`" + `lookup` + "`" + `
+	`format-file` + "`" + ` option for the ` + "`" + `lookup` + "`" + `
 and ` + "`" + `read` + "`" + ` commands (e.g ` + "`" +
-`format-file=myformat.yml` + "`" + `).
+	`format-file=myformat.yml` + "`" + `).
 
 The YAML file provides an object with optional properties:
 
@@ -1162,7 +1162,7 @@ func printRow(r bigtable.Row) {
 				ts.Format("2006/01/02-15:04:05.000000"))
 			formatted, err :=
 				valueFormatting.format("    ", fam, ri.Column, ri.Value)
-			if err !=nil {
+			if err != nil {
 				log.Fatal(err)
 			}
 			fmt.Print(formatted)
@@ -1312,7 +1312,6 @@ func doRead(ctx context.Context, args ...string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	// TODO(dsymonds): Support filters.
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])

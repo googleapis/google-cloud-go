@@ -26,15 +26,15 @@ import (
 	"sort"
 	"testing"
 
+	"cloud.google.com/go/internal/testutil"
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/dynamic"
-	"cloud.google.com/go/internal/testutil"
 
 	"cloud.google.com/go/bigtable"
 )
 
 func assertEqual(t *testing.T, got, want interface{}) {
-	if ! testutil.Equal(got, want) {
+	if !testutil.Equal(got, want) {
 		_, fpath, lno, ok := runtime.Caller(1)
 		if ok {
 			_, fname := filepath.Split(fpath)
@@ -61,65 +61,61 @@ func assertNoError(t *testing.T, err error) bool {
 
 func TestParseValueFormatSettings(t *testing.T) {
 	want := ValueFormatSettings{
-		DefaultEncoding: "HEX",
-		ProtocolBufferDefinitions:
-		[]string{"MyProto.proto", "MyOtherProto.proto"},
-		ProtocolBufferPaths:
-		[]string{"mycode/stuff", "/home/user/dev/othercode/"},
+		DefaultEncoding:           "HEX",
+		ProtocolBufferDefinitions: []string{"MyProto.proto", "MyOtherProto.proto"},
+		ProtocolBufferPaths:       []string{"mycode/stuff", "/home/user/dev/othercode/"},
 		Columns: map[string]ValueFormatColumn{
-			"col3": ValueFormatColumn{
+			"col3": {
 				Encoding: "P",
-				Type: "person",
+				Type:     "person",
 			},
-			"col4": ValueFormatColumn{
+			"col4": {
 				Encoding: "P",
-				Type: "hobby",
+				Type:     "hobby",
 			},
 		},
 		Families: map[string]ValueFormatFamily{
-			"family1": ValueFormatFamily{
+			"family1": {
 				DefaultEncoding: "BigEndian",
-				DefaultType: "INT64",
+				DefaultType:     "INT64",
 				Columns: map[string]ValueFormatColumn{
-					"address": ValueFormatColumn{
+					"address": {
 						Encoding: "PROTO",
-						Type: "tutorial.Person",
+						Type:     "tutorial.Person",
 					},
 				},
 			},
-			
-			
-			"family2": ValueFormatFamily{
+
+			"family2": {
 				Columns: map[string]ValueFormatColumn{
-					"col1": ValueFormatColumn{
+					"col1": {
 						Encoding: "B",
-						Type: "INT32",
+						Type:     "INT32",
 					},
-					"col2": ValueFormatColumn{
+					"col2": {
 						Encoding: "L",
-						Type: "INT16",
+						Type:     "INT16",
 					},
-					"address": ValueFormatColumn{
+					"address": {
 						Encoding: "PROTO",
-						Type: "tutorial.Person",
+						Type:     "tutorial.Person",
 					},
 				},
 			},
-			"family3": ValueFormatFamily{
+			"family3": {
 				Columns: map[string]ValueFormatColumn{
-					"proto_col": ValueFormatColumn{ 
+					"proto_col": {
 						Encoding: "PROTO",
-						Type: "MyProtoMessageType",
+						Type:     "MyProtoMessageType",
 					},
 				},
 			},
-			
 		},
 	}
 
 	formatting := NewValueFormatting()
-	
-	err := formatting.parse(filepath.Join("testdata", t.Name() + ".yml"))
+
+	err := formatting.parse(filepath.Join("testdata", t.Name()+".yml"))
 	if err != nil {
 		t.Errorf("Parse error: %s", err)
 	}
@@ -130,7 +126,7 @@ func TestParseValueFormatSettings(t *testing.T) {
 func TestSetupPBMessages(t *testing.T) {
 
 	formatting := NewValueFormatting()
-	
+
 	formatting.settings.ProtocolBufferPaths = append(
 		formatting.settings.ProtocolBufferPaths,
 		"testdata")
@@ -150,7 +146,7 @@ func TestSetupPBMessages(t *testing.T) {
 	}
 
 	var keys []string
-	for k := range(formatting.pbMessageTypes) {
+	for k := range formatting.pbMessageTypes {
 		keys = append(keys, k)
 	}
 	sort.Strings(keys)
@@ -163,20 +159,24 @@ func TestSetupPBMessages(t *testing.T) {
 			"person",
 			"tutorial.addressbook",
 			"tutorial.person",
-			},
+		},
 	)
 
 	// Make sure teh message descriptors are usable.
 	message := dynamic.NewMessage(formatting.pbMessageTypes["tutorial.person"])
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if assertNoError(t, err) { return }
+	if assertNoError(t, err) {
+		return
+	}
 	err = message.Unmarshal(in)
-	if assertNoError(t, err) { return }
+	if assertNoError(t, err) {
+		return
+	}
 	assertEqual(
 		t,
 		fmt.Sprint(message),
-		`name:"Jim" id:42 email:"jim@example.com"` +
-		` phones:<number:"555-1212" type:HOME>`)
+		`name:"Jim" id:42 email:"jim@example.com"`+
+			` phones:<number:"555-1212" type:HOME>`)
 }
 
 var TestBinaryFormaterTestData = []byte{
@@ -186,7 +186,9 @@ func checkBinaryValueFormater(
 	t *testing.T, type_ string, nbytes int, expect string, order binary.ByteOrder,
 ) {
 	s, err := binaryValueFormatters[type_](TestBinaryFormaterTestData[:nbytes], order)
-	if assertNoError(t, err) { return }
+	if assertNoError(t, err) {
+		return
+	}
 	assertEqual(t, s, expect)
 }
 
@@ -197,7 +199,7 @@ func TestBinaryValueFormaterINT8(t *testing.T) {
 
 func TestBinaryValueFormaterINT16(t *testing.T) {
 	// Main test that tests special handling of arrays vs scalers, etc.
-	
+
 	checkBinaryValueFormater(
 		t, "int16", 16, "[1 515 1029 1543 -1 -1 -1 -100]", binary.BigEndian)
 	checkBinaryValueFormater(t, "int16", 0, "[]", binary.BigEndian)
@@ -264,20 +266,26 @@ func testValueFormattingPBFormatter(t *testing.T) {
 	formatting := NewValueFormatting()
 	formatting.settings.ProtocolBufferDefinitions = append(
 		formatting.settings.ProtocolBufferDefinitions,
-		filepath.Join("testdata", "addressbook.proto"))	
+		filepath.Join("testdata", "addressbook.proto"))
 	err := formatting.setupPBMessages()
-	if assertNoError(t, err) { return }
+	if assertNoError(t, err) {
+		return
+	}
 
 	formatter := formatting.pbFormatter("person")
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if assertNoError(t, err) { return }
+	if assertNoError(t, err) {
+		return
+	}
 
 	text, err := formatter(in)
-	if assertNoError(t, err) { return }
+	if assertNoError(t, err) {
+		return
+	}
 
-	assertEqual(t, text, 
-		`name:"Jim" id:42 email:"jim@example.com"` +
-		` phones:<number:"555-1212" type:HOME>`)
+	assertEqual(t, text,
+		`name:"Jim" id:42 email:"jim@example.com"`+
+			` phones:<number:"555-1212" type:HOME>`)
 
 	formatter = formatting.pbFormatter("not a thing")
 	text, err = formatter(in)
@@ -311,7 +319,7 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\nc1: Invalid type: INT for encoding: B")
-	
+
 	// Fix the type:
 	formatting.settings.Columns["c1"] = ValueFormatColumn{Type: "INT64"}
 	err = formatting.validateColumns()
@@ -349,9 +357,9 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 	formatting.settings.Columns["c1"] = ValueFormatColumn{}
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
-		"Bad encoding and types:\n" +
-		"c1: No type specified for encoding: B\n" +
-		"f:c2: Invalid type: c2 for encoding: p")
+		"Bad encoding and types:\n"+
+			"c1: No type specified for encoding: B\n"+
+			"f:c2: Invalid type: c2 for encoding: p")
 
 	// Fix the protocol-buffer problem:
 	formatting.pbMessageTypes["address"] = &desc.MessageDescriptor{}
@@ -359,14 +367,14 @@ func TestValueFormattingValidateColumns(t *testing.T) {
 		ValueFormatColumn{Type: "address"}
 	err = formatting.validateColumns()
 	assertEqual(t, fmt.Sprint(err),
-		"Bad encoding and types:\n" +
-		"c1: No type specified for encoding: B")
+		"Bad encoding and types:\n"+
+			"c1: No type specified for encoding: B")
 }
 
 func TestValueFormattingSetup(t *testing.T) {
 	formatting := NewValueFormatting()
 	err := formatting.setup(map[string]string{
-		"format-file": filepath.Join("testdata", t.Name() + ".yml")})
+		"format-file": filepath.Join("testdata", t.Name()+".yml")})
 	assertEqual(t, fmt.Sprint(err),
 		"Bad encoding and types:\ncol1: No type specified for encoding: B")
 }
@@ -377,7 +385,7 @@ func TestValueFormattingFormat(t *testing.T) {
 		append(formatting.settings.ProtocolBufferDefinitions,
 			filepath.Join("testdata", "addressbook.proto"))
 	family := NewValueFormatFamily()
-	family.DefaultEncoding="Binary"
+	family.DefaultEncoding = "Binary"
 	formatting.settings.Families["binaries"] = family
 	formatting.settings.Families["binaries"].Columns["cb"] =
 		ValueFormatColumn{Type: "int16"}
@@ -386,7 +394,7 @@ func TestValueFormattingFormat(t *testing.T) {
 		ValueFormatColumn{Encoding: "hex"}
 	formatting.settings.Columns["address"] =
 		ValueFormatColumn{Encoding: "p", Type: "tutorial.Person"}
-	formatting.settings.Columns["person"] =	ValueFormatColumn{Encoding: "p"}
+	formatting.settings.Columns["person"] = ValueFormatColumn{Encoding: "p"}
 	err := formatting.setup(map[string]string{})
 
 	s, err := formatting.format("", "f1", "c1", []byte("Hello world!"))
@@ -401,15 +409,17 @@ func TestValueFormattingFormat(t *testing.T) {
 	assertEqual(t, s, "    [18533 27756 28448 30575 29292 25633]\n")
 
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if assertNoError(t, err) { return }
-	pbExpect := 
+	if assertNoError(t, err) {
+		return
+	}
+	pbExpect :=
 		"      name: \"Jim\"\n" +
-		"      id: 42\n" +
-		"      email: \"jim@example.com\"\n" +
-		"      phones: <\n" +
-		"        number: \"555-1212\"\n" +
-		"        type: HOME\n" +
-		"      >\n"
+			"      id: 42\n" +
+			"      email: \"jim@example.com\"\n" +
+			"      phones: <\n" +
+			"        number: \"555-1212\"\n" +
+			"        type: HOME\n" +
+			"      >\n"
 
 	for _, col := range []string{"address", "person"} {
 		s, err = formatting.format("      ", "f1", col, in)
@@ -418,12 +428,12 @@ func TestValueFormattingFormat(t *testing.T) {
 	}
 }
 
-func grabStdout(f func ()) (string, error) {
+func grabStdout(f func()) (string, error) {
 	buf := make([]byte, 9999)
 	n := 0
-	
+
 	saved := os.Stdout
-	defer func() {os.Stdout = saved}()
+	defer func() { os.Stdout = saved }()
 
 	tmp, err := ioutil.TempFile("", "test")
 	if err == nil {
@@ -438,48 +448,50 @@ func grabStdout(f func ()) (string, error) {
 	}
 	return string(buf[:n]), err
 }
-	
+
 func TestPrintRow(t *testing.T) {
 	row := bigtable.Row{
 		"f1": {
 			bigtable.ReadItem{
-				Row: "r1",
+				Row:    "r1",
 				Column: "c1",
-				Value: []byte("Hello!"),
+				Value:  []byte("Hello!"),
 			},
 			bigtable.ReadItem{
-				Row: "r2",
+				Row:    "r2",
 				Column: "c2",
-				Value: []byte{1, 2},
+				Value:  []byte{1, 2},
 			},
 		},
 		"f2": {
 			bigtable.ReadItem{
-				Row: "r2",
+				Row:    "r2",
 				Column: "person",
 				Value: []byte("\n\x03Jim\x10*\x1a\x0fjim@example.com\"" +
-					      "\x0c\n\x08555-1212\x10\x01"),
+					"\x0c\n\x08555-1212\x10\x01"),
 			},
 		},
 	}
-	out, err := grabStdout(func () { printRow(row) })
-	if assertNoError(t, err) { return }
-	expect := 
+	out, err := grabStdout(func() { printRow(row) })
+	if assertNoError(t, err) {
+		return
+	}
+	expect :=
 		"----------------------------------------\n" +
-		"r1\n" +
-		"  c1                                       @ 1969/12/31-19:00:00.000000\n" +
-		"    \"Hello!\"\n" +
-		"  c2                                       @ 1969/12/31-19:00:00.000000\n" +
-		"    \"\\x01\\x02\"\n" +
-		"  person                                   @ 1969/12/31-19:00:00.000000\n" +
-		"    \"\\n\\x03Jim\\x10*\\x1a\\x0fjim@example.com\\\"\\f\\n\\b555-1212\\x10\\x01\"\n" +
-                ""
+			"r1\n" +
+			"  c1                                       @ 1969/12/31-19:00:00.000000\n" +
+			"    \"Hello!\"\n" +
+			"  c2                                       @ 1969/12/31-19:00:00.000000\n" +
+			"    \"\\x01\\x02\"\n" +
+			"  person                                   @ 1969/12/31-19:00:00.000000\n" +
+			"    \"\\n\\x03Jim\\x10*\\x1a\\x0fjim@example.com\\\"\\f\\n\\b555-1212\\x10\\x01\"\n" +
+			""
 
 	assertEqual(t, out, expect)
 
 	oldValueFormatting := valueFormatting
-	defer func() {valueFormatting = oldValueFormatting} ()
-	
+	defer func() { valueFormatting = oldValueFormatting }()
+
 	valueFormatting = NewValueFormatting()
 	valueFormatting.settings.ProtocolBufferDefinitions =
 		[]string{filepath.Join("testdata", "addressbook.proto")}
@@ -489,8 +501,7 @@ func TestPrintRow(t *testing.T) {
 		ValueFormatColumn{Encoding: "ProtocolBuffer"}
 	valueFormatting.setup(map[string]string{})
 
-	expectf := (
-		"----------------------------------------\n" +
+	expectf := ("----------------------------------------\n" +
 		"r1\n" +
 		"  c1                                       @ 1969/12/31-19:00:00.000000\n" +
 		"    \"Hello!\"\n" +
@@ -506,7 +517,9 @@ func TestPrintRow(t *testing.T) {
 		"    >\n" +
 		"")
 
-	out, err = grabStdout(func () { printRow(row) })
-	if assertNoError(t, err) { return }
+	out, err = grabStdout(func() { printRow(row) })
+	if assertNoError(t, err) {
+		return
+	}
 	assertEqual(t, out, expectf)
 }
