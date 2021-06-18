@@ -46,10 +46,10 @@ https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#pkg-examples.
 Complete sample programs can be found at
 https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsublite.
 
-The pubsublite/pscompat subpackage contains clients for publishing and receiving
-messages, which have similar interfaces to their pubsub.Topic and
-pubsub.Subscription counterparts in cloud.google.com/go/pubsub. The following
-examples demonstrate how to declare common interfaces:
+The cloud.google.com/go/pubsublite/pscompat subpackage contains clients for
+publishing and receiving messages, which have similar interfaces to their
+pubsub.Topic and pubsub.Subscription counterparts in cloud.google.com/go/pubsub.
+The following examples demonstrate how to declare common interfaces:
 https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#example-NewPublisherClient-Interface
 and
 https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#example-NewSubscriberClient-Interface.
