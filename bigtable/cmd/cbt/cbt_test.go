@@ -21,9 +21,9 @@ import (
 	"testing"
 	"time"
 
-	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/bigtable"
 	"cloud.google.com/go/bigtable/internal/cbtconfig"
+	"cloud.google.com/go/internal/testutil"
 	"github.com/google/go-cmp/cmp"
 )
 
@@ -185,13 +185,13 @@ func TestGetDataFilter(t *testing.T) {
 				bigtable.ChainFilters([]bigtable.Filter{}...))),
 	}
 	type result struct {
-		Opt bigtable.ReadOption
+		Opt      bigtable.ReadOption
 		KeysOnly bool
-		Err string
+		Err      string
 	}
-	
+
 	tests := []struct {
-		args []string
+		args   []string
 		result result
 	}{
 		{[]string{}, result{nil, false, "<nil>"}},
@@ -229,16 +229,18 @@ func TestGetDataFilter(t *testing.T) {
 		{[]string{"columns=columnA", "keys-only=t", "cells-per-column=f"},
 			result{nil, false,
 				"Bad number of cells per column \"f\":" +
-				" strconv.Atoi: parsing \"f\": invalid syntax"}},
+					" strconv.Atoi: parsing \"f\": invalid syntax"}},
 	}
 
 	for _, test := range tests {
 		parsed, err := parseArgs(test.args, valid)
-		if assertNoError(t, err) {continue}
+		if assertNoError(t, err) {
+			continue
+		}
 		opt, keysOnly, err := getDataFilter(parsed)
 		assertEqual(t, result{opt, keysOnly, fmt.Sprint(err)}, test.result, cmpOpts...)
 	}
-}	
+}
 
 type filterTable struct {
 	Opts []bigtable.ReadOption
@@ -268,10 +270,9 @@ var filterTableRows = []bigtable.Row{
 			},
 		},
 	},
-
 }
 
-func (table *filterTable) ReadRows (
+func (table *filterTable) ReadRows(
 	ctx context.Context,
 	rs bigtable.RowSet,
 	f func(bigtable.Row) bool,
@@ -282,11 +283,11 @@ func (table *filterTable) ReadRows (
 	for _, row := range filterTableRows {
 		f(row)
 	}
-	
-	return nil 
+
+	return nil
 }
 
-func (table *filterTable) ReadRow (
+func (table *filterTable) ReadRow(
 	ctx context.Context,
 	row string,
 	opts ...bigtable.ReadOption,
@@ -302,7 +303,7 @@ func stripTimestamps(s string) string {
 }
 
 func TestDoLookup(t *testing.T) {
-	config := cbtconfig.Config{Project: "p", Instance: "i"}
+	config := cbtconfig.Config{Project: "p", Instance: "i", Creds: "c"}
 	cmpOpts := cmp.Options{
 		cmp.AllowUnexported(bigtable.ChainFilters([]bigtable.Filter{}...)),
 		cmp.AllowUnexported(
@@ -312,25 +313,25 @@ func TestDoLookup(t *testing.T) {
 
 	ft := &filterTable{}
 	table = ft
-	defer func() {table = nil} ()
+	defer func() { table = nil }()
 
 	out := captureStdout(func() {
 		doMain(&config, []string{"lookup", "mytable", "r"})
 	})
 
 	assertEqual(t, stripTimestamps(out),
-		"----------------------------------------\n" +
-		"r1\n" +
-		"  c1\n" +
-		"    \"Hello!\"\n" +
-		"  c2\n" +
-		"    \"\\x01\\x02\"\n")
+		"----------------------------------------\n"+
+			"r1\n"+
+			"  c1\n"+
+			"    \"Hello!\"\n"+
+			"  c2\n"+
+			"    \"\\x01\\x02\"\n")
 
-	var inopts []bigtable.ReadOption 
+	var inopts []bigtable.ReadOption
 	expectOpts := func(opts ...bigtable.ReadOption) []bigtable.ReadOption {
 		return opts
-	} (inopts...)
-	
+	}(inopts...)
+
 	assertEqual(t, ft.Opts, expectOpts)
 
 	ft = &filterTable{}
@@ -341,10 +342,10 @@ func TestDoLookup(t *testing.T) {
 	})
 
 	assertEqual(t, stripTimestamps(out),
-		"----------------------------------------\n" +
-		"r1\n" +
-		"  c1\n" +
-		"  c2\n")
+		"----------------------------------------\n"+
+			"r1\n"+
+			"  c1\n"+
+			"  c2\n")
 
 	assertEqual(t, ft.Opts, []bigtable.ReadOption{
 		bigtable.RowFilter(bigtable.StripValueFilter()),
@@ -352,7 +353,7 @@ func TestDoLookup(t *testing.T) {
 }
 
 func TestDoRead(t *testing.T) {
-	config := cbtconfig.Config{Project: "p", Instance: "i"}
+	config := cbtconfig.Config{Project: "p", Instance: "i", Creds: "c"}
 	cmpOpts := cmp.Options{
 		cmp.AllowUnexported(bigtable.ChainFilters([]bigtable.Filter{}...)),
 		cmp.AllowUnexported(
@@ -360,32 +361,31 @@ func TestDoRead(t *testing.T) {
 				bigtable.StripValueFilter())),
 	}
 
-
 	ft := &filterTable{}
 	table = ft
-	defer func() {table = nil} ()
+	defer func() { table = nil }()
 
 	out := captureStdout(func() {
 		doMain(&config, []string{"read", "mytable"})
 	})
 
 	assertEqual(t, stripTimestamps(out),
-		"----------------------------------------\n" +
-		"r1\n" +
-		"  c1\n" +
-		"    \"Hello!\"\n" +
-		"  c2\n" +
-		"    \"\\x01\\x02\"\n" +
-		"----------------------------------------\n" +
-		"r2\n" +
-		"  c1\n" +
-		"    \"Hi!\"\n")
+		"----------------------------------------\n"+
+			"r1\n"+
+			"  c1\n"+
+			"    \"Hello!\"\n"+
+			"  c2\n"+
+			"    \"\\x01\\x02\"\n"+
+			"----------------------------------------\n"+
+			"r2\n"+
+			"  c1\n"+
+			"    \"Hi!\"\n")
 
-	var inopts []bigtable.ReadOption 
+	var inopts []bigtable.ReadOption
 	expectOpts := func(opts ...bigtable.ReadOption) []bigtable.ReadOption {
 		return opts
-	} (inopts...)
-	
+	}(inopts...)
+
 	assertEqual(t, ft.Opts, expectOpts)
 
 	ft = &filterTable{}
@@ -396,13 +396,13 @@ func TestDoRead(t *testing.T) {
 	})
 
 	assertEqual(t, stripTimestamps(out),
-		"----------------------------------------\n" +
-		"r1\n" +
-		"  c1\n" +
-		"  c2\n" +
-		"----------------------------------------\n" +
-		"r2\n" +
-		"  c1\n")
+		"----------------------------------------\n"+
+			"r1\n"+
+			"  c1\n"+
+			"  c2\n"+
+			"----------------------------------------\n"+
+			"r2\n"+
+			"  c1\n")
 
 	assertEqual(t, ft.Opts, []bigtable.ReadOption{
 		bigtable.RowFilter(bigtable.StripValueFilter()),
