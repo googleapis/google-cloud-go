@@ -15,6 +15,7 @@
 package main
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -171,3 +172,70 @@ func TestParseColumnsFilter(t *testing.T) {
 		}
 	}
 }
+
+func TestGetDataFilter(t *testing.T) {
+	valid := []string{"columns", "cells-per-column", "app-profile", "keys-only"}
+	cmpOpts := cmp.Options{
+		cmp.AllowUnexported(bigtable.ChainFilters([]bigtable.Filter{}...)),
+		cmp.AllowUnexported(bigtable.InterleaveFilters([]bigtable.Filter{}...)),
+		cmp.AllowUnexported(
+			bigtable.RowFilter(
+				bigtable.InterleaveFilters([]bigtable.Filter{}...))),
+	}
+	type result struct {
+		Opt bigtable.ReadOption
+		KeysOnly bool
+		Err string
+	}
+	
+	tests := []struct {
+		args []string
+		result result
+	}{
+		{[]string{}, result{nil, false, "<nil>"}},
+		{[]string{"columns=columnA"},
+			result{
+				bigtable.RowFilter(
+					bigtable.ColumnFilter("columnA")),
+				false, "<nil>"}},
+		{[]string{"columns=columnA", "keys-only=f"},
+			result{
+				bigtable.RowFilter(
+					bigtable.ColumnFilter("columnA")),
+				false, "<nil>"}},
+		{[]string{"columns=columnA", "keys-only=fff"},
+			result{nil, false, "Bad value for keys-only: fff"}},
+		{[]string{"columns=columnA", "keys-only=t"},
+			result{
+				bigtable.RowFilter(
+					bigtable.ChainFilters(
+						bigtable.StripValueFilter(),
+						bigtable.ColumnFilter("columnA"),
+					),
+				),
+				true, "<nil>"}},
+		{[]string{"columns=columnA", "keys-only=t", "cells-per-column=42"},
+			result{
+				bigtable.RowFilter(
+					bigtable.ChainFilters(
+						bigtable.LatestNFilter(42),
+						bigtable.StripValueFilter(),
+						bigtable.ColumnFilter("columnA"),
+					),
+				),
+				true, "<nil>"}},
+		{[]string{"columns=columnA", "keys-only=t", "cells-per-column=f"},
+			result{nil, false,
+				"Bad number of cells per column \"f\":" +
+				" strconv.Atoi: parsing \"f\": invalid syntax"}},
+	}
+
+	for _, test := range tests {
+		parsed, err := parseArgs(test.args, valid)
+		if assertNoError(t, err) {continue}
+		opt, keysOnly, err := getDataFilter(parsed)
+		assertEqual(t, result{opt, keysOnly, fmt.Sprint(err)}, test.result, cmpOpts...)
+	}
+}	
+
+	

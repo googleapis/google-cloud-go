@@ -979,49 +979,88 @@ func doListClusters(ctx context.Context, args ...string) {
 	tw.Flush()
 }
 
+func getDataFilter(parsed map[string]string) (bigtable.ReadOption, bool, error) {
+	var filters []bigtable.Filter
+	var err error
+
+	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
+		n, err := strconv.Atoi(cellsPerColumn)
+		if err != nil {
+			return nil, false, fmt.Errorf(
+				"Bad number of cells per column %q: %v",
+				cellsPerColumn, err)
+		}
+		filters = append(filters, bigtable.LatestNFilter(n))
+	}
+	
+	keysOnly := false
+	if keysOnlyS := parsed["keys-only"]; keysOnlyS != "" {
+		keysOnly, err = strconv.ParseBool(keysOnlyS)
+		if err != nil {
+			return nil, false, fmt.Errorf(
+				"Bad value for keys-only: %v", keysOnlyS)
+		}
+		if keysOnly {
+			filters = append(filters, bigtable.StripValueFilter())
+		}
+	}
+
+	if columns := parsed["columns"]; columns != "" {
+		columnFilters, err := parseColumnsFilter(columns)
+		if err != nil {
+			return nil, keysOnly, err
+		}
+		filters = append(filters, columnFilters)
+	}
+
+	var filter bigtable.Filter = nil
+	var option bigtable.ReadOption
+	if len(filters) > 0 {
+		if len(filters) > 1 {
+			filter = bigtable.ChainFilters(filters...)
+		} else if len(filters) == 1 {
+			filter = filters[0]
+		}
+		option = bigtable.RowFilter(filter)
+	}
+
+	return option, keysOnly, nil
+}
+
 func doLookup(ctx context.Context, args ...string) {
 	if len(args) < 2 {
 		log.Fatalf("usage: cbt lookup <table> <row> [columns=<family:qualifier>...] [cells-per-column=<n>] " +
 			"[app-profile=<app profile id>]")
 	}
 
-	parsed, err := parseArgs(args[2:], []string{"columns", "cells-per-column", "app-profile"})
+	parsed, err := parseArgs(
+		args[2:], []string{
+			"columns", "cells-per-column", "app-profile", "keys-only"},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	opt, keysOnly, err := getDataFilter(parsed)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	var opts []bigtable.ReadOption
-	var filters []bigtable.Filter
-	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
-		n, err := strconv.Atoi(cellsPerColumn)
-		if err != nil {
-			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
-		}
-		filters = append(filters, bigtable.LatestNFilter(n))
+	if opt != nil {
+		opts = append(opts, opt)
 	}
-	if columns := parsed["columns"]; columns != "" {
-		columnFilters, err := parseColumnsFilter(columns)
-		if err != nil {
-			log.Fatal(err)
-		}
-		filters = append(filters, columnFilters)
-	}
-
-	if len(filters) > 1 {
-		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
-	} else if len(filters) == 1 {
-		opts = append(opts, bigtable.RowFilter(filters[0]))
-	}
-
+	
 	table, row := args[0], args[1]
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(table)
 	r, err := tbl.ReadRow(ctx, row, opts...)
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
-	printRow(r)
+	printRow(r, keysOnly)
 }
 
-func printRow(r bigtable.Row) {
+func printRow(r bigtable.Row, keysOnly bool) {
 	fmt.Println(strings.Repeat("-", 40))
 	fmt.Println(r.Key())
 
@@ -1035,8 +1074,11 @@ func printRow(r bigtable.Row) {
 		sort.Sort(byColumn(ris))
 		for _, ri := range ris {
 			ts := time.Unix(0, int64(ri.Timestamp)*1e3)
-			fmt.Printf("  %-40s @ %s\n", ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
-			fmt.Printf("    %q\n", ri.Value)
+			fmt.Printf("  %-40s @ %s\n",
+				ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
+			if ! keysOnly {
+				fmt.Printf("    %q\n", ri.Value)
+			}
 		}
 	}
 }
@@ -1118,7 +1160,9 @@ func doRead(ctx context.Context, args ...string) {
 	}
 
 	parsed, err := parseArgs(args[1:], []string{
-		"start", "end", "prefix", "columns", "count", "cells-per-column", "regex", "app-profile", "limit",
+		"start", "end", "prefix", "columns", "count",
+		"cells-per-column", "regex", "app-profile", "limit",
+		"keys-only",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -1178,7 +1222,7 @@ func doRead(ctx context.Context, args ...string) {
 	// TODO(dsymonds): Support filters.
 	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])
 	err = tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
-		printRow(r)
+		printRow(r, false)
 		return true
 	}, opts...)
 	if err != nil {
