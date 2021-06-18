@@ -999,7 +999,7 @@ func getDataFilter(
 		}
 		filters = append(filters, bigtable.LatestNFilter(n))
 	}
-	
+
 	keysOnly := false
 	if keysOnlyS := parsed["keys-only"]; keysOnlyS != "" {
 		keysOnly, err = strconv.ParseBool(keysOnlyS)
@@ -1057,7 +1057,7 @@ func doLookup(ctx context.Context, args ...string) {
 	if opt != nil {
 		opts = append(opts, opt)
 	}
-	
+
 	table, row := args[0], args[1]
 	tbl := getTable(
 		bigtable.ClientConfig{AppProfile: parsed["app-profile"]},
@@ -1085,7 +1085,7 @@ func printRow(r bigtable.Row, keysOnly bool) {
 			ts := time.Unix(0, int64(ri.Timestamp)*1e3)
 			fmt.Printf("  %-40s @ %s\n",
 				ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
-			if ! keysOnly {
+			if !keysOnly {
 				fmt.Printf("    %q\n", ri.Value)
 			}
 		}
