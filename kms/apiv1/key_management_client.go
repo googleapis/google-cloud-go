@@ -556,7 +556,8 @@ func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.
 
 // UpdateCryptoKeyPrimaryVersion update the version of a CryptoKey that will be used in Encrypt.
 //
-// Returns an error if called on an asymmetric key.
+// Returns an error if called on a key whose purpose is not
+// ENCRYPT_DECRYPT.
 func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyPrimaryVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
 	return c.internalClient.UpdateCryptoKeyPrimaryVersion(ctx, req, opts...)
 }
