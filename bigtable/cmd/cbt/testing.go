@@ -29,13 +29,14 @@ import (
 )
 
 func captureStdout(f func()) string {
+	// https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
+
 	saved := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
 	defer func() { os.Stdout = saved }()
 
 	outC := make(chan string)
-	// https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
 	// copy the output in a separate goroutine so printing can't block indefinitely
 	go func() {
 		var buf bytes.Buffer
