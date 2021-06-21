@@ -20,6 +20,7 @@ import (
 	"context"
 
 	documentai "cloud.google.com/go/documentai/apiv1beta3"
+	"google.golang.org/api/iterator"
 	documentaipb "google.golang.org/genproto/googleapis/cloud/documentai/v1beta3"
 )
 
@@ -66,6 +67,139 @@ func ExampleDocumentProcessorClient_BatchProcessDocuments() {
 		// TODO: Fill request struct fields.
 	}
 	op, err := c.BatchProcessDocuments(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDocumentProcessorClient_FetchProcessorTypes() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &documentaipb.FetchProcessorTypesRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.FetchProcessorTypes(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDocumentProcessorClient_ListProcessors() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &documentaipb.ListProcessorsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListProcessors(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExampleDocumentProcessorClient_CreateProcessor() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &documentaipb.CreateProcessorRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreateProcessor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDocumentProcessorClient_DeleteProcessor() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &documentaipb.DeleteProcessorRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DeleteProcessor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExampleDocumentProcessorClient_EnableProcessor() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &documentaipb.EnableProcessorRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.EnableProcessor(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleDocumentProcessorClient_DisableProcessor() {
+	ctx := context.Background()
+	c, err := documentai.NewDocumentProcessorClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &documentaipb.DisableProcessorRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DisableProcessor(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
