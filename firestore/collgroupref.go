@@ -47,6 +47,25 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 	}
 }
 
+// TODO: add a fromProto to compliment toProto for query. With that serialization is
+// very possible. user could also do json.Marshal(toProto())
+
+// GetPartitionedQueries returns a slice of Query objects, each containing a
+// partition of a collection group. partitionCount must be a positive value and
+// the number of returned partitions may be less than the requested number if
+// providing the desired number would result in partitions with very few documents.
+func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partitionCount int) ([]Query, error) {
+	qp, err := cgr.GetPartitions(ctx, partitionCount)
+	if err != nil {
+		return nil, err
+	}
+	queries := make([]Query, len(qp))
+	for _, part := range qp {
+		queries = append(queries, part.ToQuery())
+	}
+	return queries, nil
+}
+
 // GetPartitions returns a slice of QueryPartition objects, describing a start
 // and end range to query a subsection of the collection group. partitionCount
 // must be a positive value and the number of returned partitions may be less
