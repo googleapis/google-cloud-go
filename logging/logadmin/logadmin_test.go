@@ -80,9 +80,6 @@ func TestMain(m *testing.M) {
 			return c
 		}
 	} else {
-		// TODO(enocom): Delete this once we can get these tests to reliably pass.
-		return
-
 		integrationTest = true
 		ts := testutil.TokenSource(ctx, logging.AdminScope)
 		if ts == nil {
@@ -139,9 +136,12 @@ func TestFromLogEntry(t *testing.T) {
 			Latency:                        &durpb.Duration{Seconds: 100},
 			UserAgent:                      "user-agent",
 			RemoteIp:                       "127.0.0.1",
+			ServerIp:                       "127.0.0.1",
 			Referer:                        "referer",
+			CacheLookup:                    true,
 			CacheHit:                       true,
 			CacheValidatedWithOriginServer: true,
+			CacheFillBytes:                 2048,
 		},
 		Labels: map[string]string{
 			"a": "1",
@@ -183,9 +183,12 @@ func TestFromLogEntry(t *testing.T) {
 			Status:                         200,
 			ResponseSize:                   25,
 			Latency:                        100 * time.Second,
+			LocalIP:                        "127.0.0.1",
 			RemoteIP:                       "127.0.0.1",
+			CacheLookup:                    true,
 			CacheHit:                       true,
 			CacheValidatedWithOriginServer: true,
+			CacheFillBytes:                 2048,
 		},
 		SourceLocation: &logpb.LogEntrySourceLocation{
 			File:     "some_file.go",
@@ -259,27 +262,31 @@ func TestFromLogEntry(t *testing.T) {
 }
 
 func TestListLogEntriesRequest(t *testing.T) {
+	dayAgo := time.Now().Add(-24 * time.Hour).UTC().Format(time.RFC3339)
 	for _, test := range []struct {
 		opts          []EntriesOption
 		resourceNames []string
 		filter        string
 		orderBy       string
 	}{
-		// Default is client's project ID, empty filter and orderBy.
-		{nil, []string{"projects/PROJECT_ID"}, "", ""},
+		// Default is client's project ID, 24 hour lookback, and orderBy.
+		{nil, []string{"projects/PROJECT_ID"}, `timestamp >= "` + dayAgo + `"`, ""},
+		// Timestamp default does not override user's filter
+		{[]EntriesOption{NewestFirst(), Filter(`timestamp > "2020-10-30T15:39:09Z"`)},
+			[]string{"projects/PROJECT_ID"}, `timestamp > "2020-10-30T15:39:09Z"`, "timestamp desc"},
 		{[]EntriesOption{NewestFirst(), Filter("f")},
-			[]string{"projects/PROJECT_ID"}, "f", "timestamp desc"},
+			[]string{"projects/PROJECT_ID"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
 		{[]EntriesOption{ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, "", ""},
+			[]string{"projects/foo"}, `timestamp >= "` + dayAgo + `"`, ""},
 		{[]EntriesOption{ResourceNames([]string{"folders/F", "organizations/O"})},
-			[]string{"folders/F", "organizations/O"}, "", ""},
+			[]string{"folders/F", "organizations/O"}, `timestamp >= "` + dayAgo + `"`, ""},
 		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, "f", "timestamp desc"},
+			[]string{"projects/foo"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
 		{[]EntriesOption{NewestFirst(), Filter("f"), ProjectIDs([]string{"foo"})},
-			[]string{"projects/foo"}, "f", "timestamp desc"},
+			[]string{"projects/foo"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
 		// If there are repeats, last one wins.
 		{[]EntriesOption{NewestFirst(), Filter("no"), ProjectIDs([]string{"foo"}), Filter("f")},
-			[]string{"projects/foo"}, "f", "timestamp desc"},
+			[]string{"projects/foo"}, `f AND timestamp >= "` + dayAgo + `"`, "timestamp desc"},
 	} {
 		got := listLogEntriesRequest("projects/PROJECT_ID", test.opts)
 		want := &logpb.ListLogEntriesRequest{

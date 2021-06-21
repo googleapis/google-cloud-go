@@ -27,7 +27,6 @@ import (
 	"cloud.google.com/go/iam"
 	ipubsub "cloud.google.com/go/internal/pubsub"
 	"cloud.google.com/go/pubsub/internal/scheduler"
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats"
 	"go.opencensus.io/tag"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 const (
@@ -472,6 +472,14 @@ func (t *Topic) Stop() {
 		return
 	}
 	t.scheduler.FlushAndStop()
+}
+
+// Flush blocks until all remaining messages are sent.
+func (t *Topic) Flush() {
+	if t.stopped || t.scheduler == nil {
+		return
+	}
+	t.scheduler.Flush()
 }
 
 type bundledMessage struct {

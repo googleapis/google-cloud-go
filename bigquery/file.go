@@ -74,6 +74,9 @@ type FileConfig struct {
 
 	// Additional options for CSV files.
 	CSVOptions
+
+	// Additional options for Parquet files.
+	ParquetOptions *ParquetOptions
 }
 
 func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
@@ -88,6 +91,12 @@ func (fc *FileConfig) populateLoadConfig(conf *bq.JobConfigurationLoad) {
 	conf.MaxBadRecords = fc.MaxBadRecords
 	if fc.Schema != nil {
 		conf.Schema = fc.Schema.toBQ()
+	}
+	if fc.ParquetOptions != nil {
+		conf.ParquetOptions = &bq.ParquetOptions{
+			EnumAsString:        fc.ParquetOptions.EnumAsString,
+			EnableListInference: fc.ParquetOptions.EnableListInference,
+		}
 	}
 	conf.Quote = fc.quote()
 }
@@ -121,6 +130,12 @@ func (fc *FileConfig) populateExternalDataConfig(conf *bq.ExternalDataConfigurat
 	}
 	if format == CSV {
 		fc.CSVOptions.populateExternalDataConfig(conf)
+	}
+	if fc.ParquetOptions != nil {
+		conf.ParquetOptions = &bq.ParquetOptions{
+			EnumAsString:        fc.ParquetOptions.EnumAsString,
+			EnableListInference: fc.ParquetOptions.EnableListInference,
+		}
 	}
 }
 

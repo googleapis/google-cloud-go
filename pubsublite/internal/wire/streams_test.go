@@ -22,6 +22,7 @@ import (
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
+	"golang.org/x/xerrors"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -49,7 +50,7 @@ type testStreamHandler struct {
 
 func newTestStreamHandler(t *testing.T, timeout time.Duration) *testStreamHandler {
 	ctx := context.Background()
-	pubClient, err := newPublisherClient(ctx, "ignored", testClientOpts...)
+	pubClient, err := newPublisherClient(ctx, "ignored", testServer.ClientConn())
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -105,6 +106,11 @@ func (sh *testStreamHandler) initialRequest() (interface{}, initialResponseRequi
 
 func (sh *testStreamHandler) onStreamStatusChange(status streamStatus) {
 	sh.statuses <- status
+
+	// Close connections.
+	if status == streamTerminated {
+		sh.pubClient.Close()
+	}
 }
 
 func (sh *testStreamHandler) onResponse(response interface{}) {
@@ -303,8 +309,8 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	if pub.Stream.currentStream() != nil {
 		t.Error("Client stream should be nil")
 	}
-	if gotErr := pub.Stream.Error(); !test.ErrorEqual(gotErr, wantErr) {
-		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, wantErr)
+	if gotErr := pub.Stream.Error(); !xerrors.Is(gotErr, ErrBackendUnavailable) {
+		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, ErrBackendUnavailable)
 	}
 }
 
@@ -342,6 +348,87 @@ func TestRetryableStreamSendReceive(t *testing.T) {
 	}
 	if gotResp := pub.NextResponse(); !testutil.Equal(gotResp, wantResp) {
 		t.Errorf("Stream response: got %v, want %v", gotResp, wantResp)
+	}
+
+	pub.Stream.Stop()
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if gotErr := pub.Stream.Error(); gotErr != nil {
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
+	}
+}
+
+func TestRetryableStreamConnectReceivesResetSignal(t *testing.T) {
+	pub := newTestStreamHandler(t, defaultStreamTimeout)
+
+	verifiers := test.NewVerifiers(t)
+
+	stream1 := test.NewRPCVerifier(t)
+	// Reset signal received during stream initialization.
+	stream1.Push(pub.InitialReq, nil, makeStreamResetSignal())
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
+
+	stream2 := test.NewRPCVerifier(t)
+	stream2.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamResetState; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	pub.Stream.Stop()
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if gotErr := pub.Stream.Error(); gotErr != nil {
+		t.Errorf("Stream final err: got (%v), want <nil>", gotErr)
+	}
+}
+
+func TestRetryableStreamDisconnectedWithResetSignal(t *testing.T) {
+	pub := newTestStreamHandler(t, defaultStreamTimeout)
+
+	verifiers := test.NewVerifiers(t)
+
+	stream1 := test.NewRPCVerifier(t)
+	stream1.Push(pub.InitialReq, initPubResp(), nil)
+	// Reset signal received after stream is connected.
+	stream1.Push(nil, nil, makeStreamResetSignal())
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
+
+	stream2 := test.NewRPCVerifier(t)
+	stream2.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamResetState; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 
 	pub.Stream.Stop()

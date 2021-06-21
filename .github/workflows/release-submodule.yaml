@@ -20,7 +20,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - id: interrogate
-        uses: actions/github-script@v3
+        uses: actions/github-script@v4
         with:
             github-token: ${{secrets.GITHUB_TOKEN}}
             script: |
@@ -71,11 +71,12 @@ jobs:
            path: ${{ matrix.package }}
            token: ${{ secrets.FORKING_TOKEN }}
            fork: true
-           release-type: go
+           release-type: go-yoshi
+           bump-minor-pre-major: true
            package-name: ${{ matrix.package }}
            monorepo-tags: true
            command: release-pr
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v4
         id: label # Adds the "autorelease: pending" label.
         if: ${{steps.release-please.outputs.pr}}
         with:
@@ -103,13 +104,13 @@ jobs:
           path: ${{ matrix.package }}
           changelog-path: CHANGES.md
           token: ${{ secrets.GITHUB_TOKEN }}
-          release-type: go
+          release-type: go-yoshi
           monorepo-tags: true
           package-name: ${{ matrix.package }}
           command: github-release
       # Add the "autorelease: published" and remove tagged, this allows
       # monitoring to be enabled that detects failed releases:
-      - uses: actions/github-script@v3
+      - uses: actions/github-script@v4
         id: untag-release
         if: ${{steps.tag-release.outputs.pr}}
         with:

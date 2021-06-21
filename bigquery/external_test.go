@@ -80,6 +80,13 @@ func TestExternalDataConfig(t *testing.T) {
 				},
 			},
 		},
+		{
+			SourceFormat: Parquet,
+			Options: &ParquetOptions{
+				EnumAsString:        true,
+				EnableListInference: true,
+			},
+		},
 	} {
 		q := want.toBQ()
 		got, err := bqToExternalDataConfig(&q)
