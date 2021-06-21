@@ -326,22 +326,6 @@ func (s *server) CheckConsistency(ctx context.Context, req *btapb.CheckConsisten
 	}, nil
 }
 
-func (s *server) SnapshotTable(context.Context, *btapb.SnapshotTableRequest) (*longrunning.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
-func (s *server) GetSnapshot(context.Context, *btapb.GetSnapshotRequest) (*btapb.Snapshot, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
-func (s *server) ListSnapshots(context.Context, *btapb.ListSnapshotsRequest) (*btapb.ListSnapshotsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
-func (s *server) DeleteSnapshot(context.Context, *btapb.DeleteSnapshotRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
