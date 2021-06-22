@@ -104,11 +104,10 @@ func (p *partitionCountWatcher) updatePartitionCount() {
 				// Ignore errors after the first update.
 				// TODO: Log the error.
 				return p.partitionCount, nil
-			} else {
-				err = fmt.Errorf("pubsublite: failed to update topic partition count: %v", err)
-				p.unsafeInitiateShutdown(err)
-				return 0, err
 			}
+			err = fmt.Errorf("pubsublite: failed to update topic partition count: %v", err)
+			p.unsafeInitiateShutdown(err)
+			return 0, err
 		}
 		if resp.GetPartitionCount() <= 0 {
 			err := fmt.Errorf("pubsublite: topic has invalid number of partitions %d", resp.GetPartitionCount())
