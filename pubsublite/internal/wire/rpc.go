@@ -110,7 +110,7 @@ func isRetryableStreamError(err error, isEligible func(codes.Code) bool) bool {
 	return isEligible(s.Code())
 }
 
-// Wraps an ordered list of retryers.
+// Wraps an ordered list of retryers. Earlier retryers take precedence.
 type compositeRetryer struct {
 	retryers []gax.Retryer
 }
