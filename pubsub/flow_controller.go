@@ -37,9 +37,11 @@ const (
 
 type FlowControlSettings struct {
 	// MaxOutstandingMessages is the maximum number of bufered messages to be published.
+	// If less than or equal to zero, this is disabled.
 	MaxOutstandingMessages int
 
 	// MaxOutstandingBytes is the maximum size of buffered messages to be published.
+	// If less than or equal to zero, this is disabled.
 	MaxOutstandingBytes int
 
 	// LimitExceededBehavior configures the behavior when trying to publish
@@ -54,7 +56,7 @@ var (
 	ErrFlowControllerMaxOutstandingBytes    = errors.New("pubsub: MaxOutstandingBytes flow control limit exceeded")
 )
 
-// flowController implements flow control for Subscription.Receive.
+// flowController implements flow control for publishing and subscribing.
 type flowController struct {
 	maxCount          int
 	maxSize           int                 // max total size of messages

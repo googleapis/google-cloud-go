@@ -99,10 +99,10 @@ type PublishSettings struct {
 
 	// The maximum number of bytes that the Bundler will keep in memory before
 	// returning ErrOverflow. This is now superseded by FlowControlSettings.MaxOutstandingBytes.
-	// If both are set, this value will be used for both settings.
+	// If MaxOutstandingBytes is set, that value will override BufferedByteLimit.
 	//
 	// Defaults to DefaultPublishSettings.BufferedByteLimit.
-	// Deprecated.
+	// Deprecated: Set `topic.PublishSettings.FlowControlSettings.MaxOutstandingBytes` instead.
 	BufferedByteLimit int
 
 	// FlowControlSettings defines publisher flow control settings.
@@ -540,7 +540,7 @@ func (t *Topic) initBundler() {
 
 	fcs := DefaultPublishSettings.FlowControlSettings
 	// FlowControlSettings.MaxOutstandingBytes and BufferedByteLimit have generally
-	// the same behavior, with the latter always returning and error. BufferedByteLimit
+	// the same behavior, with the latter always returning an error. BufferedByteLimit
 	// is deprecated in favor of MaxOutstandingBytes.
 	//
 	// While we continue to support both, check if either has been set directly, and use
