@@ -137,6 +137,28 @@ func TestCopy(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: &Table{
+				ProjectID: "d-project-id",
+				DatasetID: "d-dataset-id",
+				TableID:   "d-table-id",
+			},
+			srcs: []*Table{
+				{
+					ProjectID: "s-project-id",
+					DatasetID: "s-dataset-id",
+					TableID:   "s-table-id",
+				},
+			},
+			config: CopyConfig{
+				OperationType: SnapshotOperation,
+			},
+			want: func() *bq.Job {
+				j := defaultCopyJob()
+				j.Configuration.Copy.OperationType = "SNAPSHOT"
+				return j
+			}(),
+		},
 	}
 	c := &Client{projectID: "client-project-id"}
 	for i, tc := range testCases {
