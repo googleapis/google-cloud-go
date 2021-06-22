@@ -452,8 +452,6 @@ func (l *linker) linkify(s string) string {
 	return fmt.Sprintf("%s%s.%s", prefix, href(l.toURL(pkgPath, ""), pkg), href(l.toURL(pkgPath, name), name))
 }
 
-// TODO: link to the right baseURL, with the right module name and version
-// pattern.
 func (l *linker) toURL(pkg, name string) string {
 	if pkg == "" {
 		if anchor := l.idToAnchor[""][name]; anchor != "" {
@@ -467,6 +465,7 @@ func (l *linker) toURL(pkg, name string) string {
 			pkgRemainder = pkg[len(mod.Path)+1:] // +1 to skip slash.
 		}
 		// Note: we always link to latest. One day, we'll link to mod.Version.
+		// Also, other packages may have different paths.
 		baseURL := fmt.Sprintf("/go/docs/reference/%v/latest/%v", mod.Path, pkgRemainder)
 		if anchor := l.idToAnchor[pkg][name]; anchor != "" {
 			return fmt.Sprintf("%s#%s", baseURL, anchor)
