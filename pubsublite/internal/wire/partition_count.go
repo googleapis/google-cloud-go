@@ -51,7 +51,7 @@ func newPartitionCountWatcher(ctx context.Context, adminClient *vkit.AdminClient
 		adminClient: adminClient,
 		topicPath:   topicPath,
 		receiver:    receiver,
-		callOption:  retryableReadOnlyCallOption(),
+		callOption:  resourceExhaustedRetryer(),
 	}
 
 	// Polling the topic partition count can be disabled in settings if the period
@@ -100,9 +100,15 @@ func (p *partitionCountWatcher) updatePartitionCount() {
 			return p.partitionCount, nil
 		}
 		if err != nil {
-			err = fmt.Errorf("pubsublite: failed to update topic partition count: %v", err)
-			p.unsafeInitiateShutdown(err)
-			return 0, err
+			if p.partitionCount > 0 {
+				// Ignore errors after the first update.
+				// TODO: Log the error.
+				return p.partitionCount, nil
+			} else {
+				err = fmt.Errorf("pubsublite: failed to update topic partition count: %v", err)
+				p.unsafeInitiateShutdown(err)
+				return 0, err
+			}
 		}
 		if resp.GetPartitionCount() <= 0 {
 			err := fmt.Errorf("pubsublite: topic has invalid number of partitions %d", resp.GetPartitionCount())
