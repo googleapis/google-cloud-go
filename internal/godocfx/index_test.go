@@ -26,7 +26,7 @@ const wantEntries = 5
 
 type fakeIC struct{}
 
-func (f fakeIC) get(prefix string, since time.Time) (entries []indexEntry, last time.Time, err error) {
+func (f fakeIC) get(prefixes []string, since time.Time) (entries []indexEntry, last time.Time, err error) {
 	e := indexEntry{Timestamp: since.Add(24 * time.Hour)}
 	return []indexEntry{e}, e.Timestamp, nil
 }
@@ -49,7 +49,7 @@ func (f *fakeTS) put(context.Context, time.Time) error {
 func TestNewModules(t *testing.T) {
 	ic := fakeIC{}
 	ts := &fakeTS{}
-	entries, err := newModules(context.Background(), ic, ts, "cloud.google.com")
+	entries, err := newModules(context.Background(), ic, ts, []string{"cloud.google.com"})
 	if err != nil {
 		t.Fatalf("newModules got err: %v", err)
 	}
