@@ -438,6 +438,96 @@ func TestIntegration_TableMetadata(t *testing.T) {
 
 }
 
+func TestIntegration_SnapshotAndRestore(t *testing.T) {
+
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// instantiate a base table via a CTAS
+	baseTableID := tableIDs.New()
+	qualified := fmt.Sprintf("`%s`.%s.%s", testutil.ProjID(), dataset.DatasetID, baseTableID)
+	sql := fmt.Sprintf(`
+		CREATE TABLE %s
+		(
+			sample_value INT64,
+			groupid STRING,
+		)
+		AS
+		SELECT
+		CAST(RAND() * 100 AS INT64),
+		CONCAT("group", CAST(CAST(RAND()*10 AS INT64) AS STRING))
+		FROM
+		UNNEST(GENERATE_ARRAY(0,999))
+`, qualified)
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatalf("couldn't instantiate base table: %v", err)
+	}
+
+	// Create a snapshot.  We'll select our snapshot time explicitly to validate the snapshot time is the same.
+	targetTime := time.Now()
+	snapshotID := tableIDs.New()
+	copier := dataset.Table(snapshotID).CopierFrom(dataset.Table(fmt.Sprintf("%s@%d", baseTableID, targetTime.UnixNano()/1e6)))
+	copier.OperationType = SnapshotOperation
+	job, err := copier.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run snapshot: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("polling snapshot failed: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("snapshot failed in error: %v", status.Err())
+	}
+
+	// verify metadata on the snapshot
+	meta, err := dataset.Table(snapshotID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata from snapshot: %v", err)
+	}
+	if meta.Type != Snapshot {
+		t.Errorf("expected snapshot table type, got %s", meta.Type)
+	}
+	want := &SnapshotDefinition{
+		BaseTableReference: dataset.Table(baseTableID),
+		SnapshotTime:       targetTime,
+	}
+	if diff := testutil.Diff(meta.SnapshotDefinition, want, cmp.AllowUnexported(Table{}), cmpopts.IgnoreUnexported(Client{}), cmpopts.EquateApproxTime(time.Millisecond)); diff != "" {
+		t.Fatalf("SnapshotDefinition differs.  got=-, want=+:\n%s", diff)
+	}
+
+	// execute a restore using the snapshot.
+	restoreID := tableIDs.New()
+	restorer := dataset.Table(restoreID).CopierFrom(dataset.Table(snapshotID))
+	restorer.OperationType = RestoreOperation
+	job, err = restorer.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run restore: %v", err)
+	}
+	status, err = job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("polling restore failed: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("restore failed in error: %v", status.Err())
+	}
+
+	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get restored table metadata: %v", err)
+	}
+
+	if meta.NumBytes != restoreMeta.NumBytes {
+		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, restoreMeta.NumBytes)
+	}
+	if meta.NumRows != restoreMeta.NumRows {
+		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, restoreMeta.NumRows)
+	}
+
+}
+
 func TestIntegration_HourTimePartitioning(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
