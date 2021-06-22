@@ -1076,4 +1076,15 @@ func TestPublishResponse(t *testing.T) {
 	if want := "2"; got != want {
 		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
 	}
+
+	go func() {
+		got = srv.Publish("projects/p/topics/t", []byte("msg4"), nil)
+		if want := "3"; got != want {
+			fmt.Printf("srv.Publish(): got %v, want %v", got, want)
+		}
+	}()
+	time.Sleep(5 * time.Second)
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"3"},
+	}, nil)
 }
