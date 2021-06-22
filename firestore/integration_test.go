@@ -1621,7 +1621,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		{collectionID: coll.collectionID, expectedPartitionCount: 1},
 	} {
 		colGroup := iClient.CollectionGroup(tc.collectionID)
-		partitions, err := colGroup.GetPartitions(ctx, 10)
+		partitions, err := colGroup.getPartitions(ctx, 10)
 		if err != nil {
 			t.Fatalf("Did not expect error: %v", err)
 		}
@@ -1663,7 +1663,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	}
 
 	// Get partitions, allow up to 10 to come back, expect less will be returned.
-	partitions, err := colGroup.GetPartitions(ctx, 10)
+	partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
 	if err != nil {
 		t.Fatalf("Did not expect error: %v", err)
 	}
@@ -1673,8 +1673,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
 	totalCount := 0
-	for _, partition := range partitions {
-		query := partition.ToQuery()
+	for _, query := range partitions {
 
 		allDocs, err := query.Documents(ctx).GetAll()
 		if err != nil {

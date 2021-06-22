@@ -21,7 +21,7 @@ import (
 
 func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 	cgr := newCollectionGroupRef(testClient, testClient.path(), "collectionID")
-	qp := QueryPartition{
+	qp := queryPartition{
 		CollectionGroupQuery: cgr.Query.OrderBy(DocumentID, Asc),
 		StartAt:              "documents/start/at",
 		EndBefore:            "documents/end/before",
@@ -49,12 +49,12 @@ func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 
 func TestCGR_TestGetPartitions(t *testing.T) {
 	cgr := newCollectionGroupRef(testClient, testClient.path(), "collectionID")
-	_, err := cgr.GetPartitions(context.Background(), 0)
+	_, err := cgr.getPartitions(context.Background(), 0)
 	if err == nil {
 		t.Error("Expected an error when requested partition count is < 1")
 	}
 
-	parts, err := cgr.GetPartitions(context.Background(), 1)
+	parts, err := cgr.getPartitions(context.Background(), 1)
 	if err != nil {
 		t.Error("Didn't expect an error when requested partition count is 1")
 	}
@@ -62,7 +62,7 @@ func TestCGR_TestGetPartitions(t *testing.T) {
 		t.Fatal("Expected 1 QueryPartition")
 	}
 	got := parts[0]
-	want := QueryPartition{
+	want := queryPartition{
 		CollectionGroupQuery: cgr.Query.OrderBy(DocumentID, Asc),
 		StartAt:              "",
 		EndBefore:            "",

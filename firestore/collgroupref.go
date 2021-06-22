@@ -55,7 +55,7 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 // the number of returned partitions may be less than the requested number if
 // providing the desired number would result in partitions with very few documents.
 func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partitionCount int) ([]Query, error) {
-	qp, err := cgr.GetPartitions(ctx, partitionCount)
+	qp, err := cgr.getPartitions(ctx, partitionCount)
 	if err != nil {
 		return nil, err
 	}
@@ -66,18 +66,18 @@ func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partiti
 	return queries, nil
 }
 
-// GetPartitions returns a slice of QueryPartition objects, describing a start
+// getPartitions returns a slice of QueryPartition objects, describing a start
 // and end range to query a subsection of the collection group. partitionCount
 // must be a positive value and the number of returned partitions may be less
 // than the requested number if providing the desired number would result in
 // partitions with very few documents.
-func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount int) ([]QueryPartition, error) {
+func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount int) ([]queryPartition, error) {
 	orderedQuery := cgr.query().OrderBy(DocumentID, Asc)
 
 	if partitionCount <= 0 {
 		return nil, errors.New("a positive partitionCount must be provided")
 	} else if partitionCount == 1 {
-		return []QueryPartition{{CollectionGroupQuery: orderedQuery, StartAt: "", EndBefore: ""}}, nil
+		return []queryPartition{{CollectionGroupQuery: orderedQuery, StartAt: "", EndBefore: ""}}, nil
 	}
 
 	db := cgr.c.path()
@@ -120,7 +120,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	// lexicographical order by segment (areas between '/').
 	sort.Sort(byFirestoreValue(cursorReferences))
 
-	partitionQueries := make([]QueryPartition, 0, len(cursorReferences))
+	partitionQueries := make([]queryPartition, 0, len(cursorReferences))
 	previousCursor := ""
 
 	for _, cursor := range cursorReferences {
@@ -130,7 +130,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 		// relative to a collection
 		cursorRef = cursorRef[len(orderedQuery.path)+1:]
 
-		qp := QueryPartition{
+		qp := queryPartition{
 			CollectionGroupQuery: orderedQuery,
 			StartAt:              previousCursor,
 			EndBefore:            cursorRef,
@@ -141,7 +141,7 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 
 	// In the case there were no partitions, we still add a single partition to
 	// the result, that covers the complete range.
-	lastPart := QueryPartition{
+	lastPart := queryPartition{
 		CollectionGroupQuery: orderedQuery,
 		StartAt:              "",
 		EndBefore:            "",
@@ -155,11 +155,11 @@ func (cgr CollectionGroupRef) GetPartitions(ctx context.Context, partitionCount 
 	return partitionQueries, nil
 }
 
-// QueryPartition provides a Collection Group Reference and start and end split
+// queryPartition provides a Collection Group Reference and start and end split
 // points allowing for a section of a collection group to be queried. This is
 // used by GetPartitions which, given a CollectionGroupReference returns smaller
 // sub-queries or partitions
-type QueryPartition struct {
+type queryPartition struct {
 	// CollectionGroupQuery is an ordered query on a CollectionGroupReference.
 	// This query must be ordered Asc on __name__.
 	// Example: client.CollectionGroup("collectionID").query().OrderBy(DocumentID, Asc)
@@ -177,7 +177,7 @@ type QueryPartition struct {
 }
 
 // ToQuery converts a QueryPartition object to a Query object
-func (qp QueryPartition) ToQuery() Query {
+func (qp queryPartition) ToQuery() Query {
 	q := *qp.CollectionGroupQuery.query()
 
 	// Remove the leading path before calling StartAt, EndBefore
