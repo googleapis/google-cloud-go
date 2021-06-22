@@ -292,6 +292,70 @@ func ExampleSubscriberClient_Receive_manualPartitionAssignment() {
 	cancel()
 }
 
+// This example illustrates how to declare a common interface for publisher
+// clients from Cloud Pub/Sub (cloud.google.com/go/pubsub) and Pub/Sub Lite
+// (cloud.google.com/go/pubsublite/pscompat).
+func ExampleNewPublisherClient_interface() {
+	// publisherInterface is implemented by both pscompat.PublisherClient and
+	// pubsub.Topic.
+	type publisherInterface interface {
+		Publish(context.Context, *pubsub.Message) *pubsub.PublishResult
+		Stop()
+	}
+
+	publish := func(publisher publisherInterface) {
+		defer publisher.Stop()
+		// TODO: Publish messages.
+	}
+
+	// Create a Pub/Sub Lite publisher client.
+	ctx := context.Background()
+	publisher, err := pscompat.NewPublisherClient(ctx, "projects/my-project/locations/zone/topics/my-topic")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	publish(publisher)
+
+	// Create a Cloud Pub/Sub topic to publish.
+	client, err := pubsub.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	topic := client.Topic("my-topic")
+	publish(topic)
+}
+
+// This example illustrates how to declare a common interface for subscriber
+// clients from Cloud Pub/Sub (cloud.google.com/go/pubsub) and Pub/Sub Lite
+// (cloud.google.com/go/pubsublite/pscompat).
+func ExampleNewSubscriberClient_interface() {
+	// subscriberInterface is implemented by both pscompat.SubscriberClient and
+	// pubsub.Subscription.
+	type subscriberInterface interface {
+		Receive(context.Context, func(context.Context, *pubsub.Message)) error
+	}
+
+	receive := func(subscriber subscriberInterface) {
+		// TODO: Receive messages.
+	}
+
+	// Create a Pub/Sub Lite subscriber client.
+	ctx := context.Background()
+	subscriber, err := pscompat.NewSubscriberClient(ctx, "projects/my-project/locations/zone/subscriptions/my-subscription")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	receive(subscriber)
+
+	// Create a Cloud Pub/Sub subscription to receive.
+	client, err := pubsub.NewClient(ctx, "my-project")
+	if err != nil {
+		// TODO: Handle error.
+	}
+	subscription := client.Subscription("my-subscription")
+	receive(subscription)
+}
+
 func ExampleParseMessageMetadata_publisher() {
 	ctx := context.Background()
 	const topic = "projects/my-project/locations/zone/topics/my-topic"
