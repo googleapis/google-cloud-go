@@ -223,7 +223,7 @@ language: "go"
 name: "google.golang.org/appengine/v2"
 version: "2.0.0"
 language: "go"
-stem: "/appengine/docs/standard/go/reference"
+stem: "/appengine/docs/standard/go/reference/services/bundled"
 `, now.Unix(), now.Nanosecond())
 
 	tests := []struct {

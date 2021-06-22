@@ -267,6 +267,6 @@ language: "go"
 	case "google.golang.org/appengine":
 		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go111/reference\"\n")
 	case "google.golang.org/appengine/v2":
-		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference\"\n")
+		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
 	}
 }
