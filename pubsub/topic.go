@@ -572,9 +572,9 @@ func (t *Topic) initBundler() {
 	}
 	t.scheduler.BufferedByteLimit = bufferedByteLimit
 
+	// Calculate the max limit of a single bundle. 5 comes from the number of bytes
+	// needed to be reserved for encoding the PubsubMessage repeated field.
 	t.scheduler.BundleByteLimit = MaxPublishRequestBytes - calcFieldSizeString(t.name) - 5
-	fmt.Printf("calcFieldSizeString is: %d\n", calcFieldSizeString(t.name))
-	fmt.Printf("limit is: %d\n", t.scheduler.BundleByteLimit)
 }
 
 func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage) {

@@ -226,6 +226,7 @@ func withGoogleClientInfo(ctx context.Context) context.Context {
 func testPublishAndReceive(t *testing.T, client *Client, maxMsgs int, synchronous bool, numMsgs, extraBytes int) {
 	t.Run(fmt.Sprintf("maxMsgs:%d,synchronous:%t,numMsgs:%d", maxMsgs, synchronous, numMsgs),
 		func(t *testing.T) {
+			t.Parallel()
 			ctx := context.Background()
 			topic, err := client.CreateTopic(ctx, topicIDs.New())
 			if err != nil {
