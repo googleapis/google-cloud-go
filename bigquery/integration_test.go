@@ -1291,6 +1291,44 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		it, [][]Value{{int64(10)}})
 }
 
+func TestIntegration_RoutineUserTVF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	inMeta := &RoutineMetadata{
+		Type:     "TABLE_VALUED_FUNCTION",
+		Language: "SQL",
+		Arguments: []*RoutineArgument{
+			{Name: "filter",
+				DataType: &StandardSQLDataType{TypeKind: "INT64"},
+			}},
+		ReturnTableType: &StandardSQLTableType{
+			Columns: []*StandardSQLField{
+				{Name: "x", Type: &StandardSQLDataType{TypeKind: "INT64"}},
+			},
+		},
+		Body: "SELECT x FROM UNNEST([1,2,3]) x WHERE x = filter",
+	}
+	if err := routine.Create(ctx, inMeta); err != nil {
+		t.Fatalf("routine create: %v", err)
+	}
+	defer routine.Delete(ctx)
+
+	meta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Now, compare the input meta to the output meta
+	if diff := testutil.Diff(inMeta, meta, cmpopts.IgnoreFields(RoutineMetadata{}, "CreationTime", "LastModifiedTime", "ETag")); diff != "" {
+		t.Errorf("routine metadata differs, got=-, want=+\n%s", diff)
+	}
+}
+
 func TestIntegration_InsertErrors(t *testing.T) {
 	// This test serves to verify streaming behavior in the face of oversized data.
 	// BigQuery will reject insertAll payloads that exceed a defined limit (10MB).
