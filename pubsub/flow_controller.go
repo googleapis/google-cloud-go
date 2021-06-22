@@ -75,8 +75,8 @@ type flowController struct {
 // maxCount messages or maxSize bytes are outstanding at once. If maxCount or
 // maxSize is < 1, then an unlimited number of messages or bytes is permitted,
 // respectively.
-func newFlowController(fc FlowControlSettings) *flowController {
-	f := &flowController{
+func newFlowController(fc FlowControlSettings) flowController {
+	f := flowController{
 		maxCount:      fc.MaxOutstandingMessages,
 		maxSize:       fc.MaxOutstandingBytes,
 		semCount:      nil,

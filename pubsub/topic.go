@@ -68,7 +68,7 @@ type Topic struct {
 	stopped   bool
 	scheduler *scheduler.PublishScheduler
 
-	fc *flowController
+	flowController
 
 	// EnableMessageOrdering enables delivery of ordered keys.
 	EnableMessageOrdering bool
@@ -456,7 +456,7 @@ func (t *Topic) Publish(ctx context.Context, msg *Message) *PublishResult {
 		return r
 	}
 
-	if err := t.fc.acquire(ctx, msgSize); err != nil {
+	if err := t.flowController.acquire(ctx, msgSize); err != nil {
 		t.scheduler.Pause(msg.OrderingKey)
 		ipubsub.SetPublishResult(r, "", err)
 		return r
@@ -564,7 +564,7 @@ func (t *Topic) initBundler() {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
 	}
 
-	t.fc = newFlowController(fcs)
+	t.flowController = newFlowController(fcs)
 
 	bufferedByteLimit := DefaultPublishSettings.BufferedByteLimit
 	if t.PublishSettings.BufferedByteLimit > 0 {
@@ -586,12 +586,11 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 	var orderingKey string
 	for i, bm := range bms {
 		orderingKey = bm.msg.OrderingKey
-		msg := &pb.PubsubMessage{
+		pbMsgs[i] = &pb.PubsubMessage{
 			Data:        bm.msg.Data,
 			Attributes:  bm.msg.Attributes,
 			OrderingKey: bm.msg.OrderingKey,
 		}
-		pbMsgs[i] = msg
 		bm.msg = nil // release bm.msg for GC
 	}
 	var res *pb.PublishResponse
@@ -616,7 +615,7 @@ func (t *Topic) publishMessageBundle(ctx context.Context, bms []*bundledMessage)
 		PublishLatency.M(float64(end.Sub(start)/time.Millisecond)),
 		PublishedMessages.M(int64(len(bms))))
 	for i, bm := range bms {
-		t.fc.release(ctx, bm.size)
+		t.flowController.release(ctx, bm.size)
 		if err != nil {
 			ipubsub.SetPublishResult(bm.res, "", err)
 		} else {

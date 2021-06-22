@@ -187,19 +187,19 @@ func TestFlowControllerTryAcquire(t *testing.T) {
 	fc := newFlowController(fcSettings(3, 10, FlowControlSignalError))
 	ctx := context.Background()
 
-	// Successfully newAcquire 4 bytes.
+	// Successfully acquired 4 bytes.
 	if err := fc.acquire(ctx, 4); err != nil {
-		t.Errorf("fc.newAcquire got err: %v", err)
+		t.Errorf("fc.acquired got err: %v", err)
 	}
 
-	// Fail to newAcquire 7 bytes.
+	// Fail to acquire 7 bytes.
 	if err := fc.acquire(ctx, 7); err == nil {
 		t.Errorf("got nil, wanted err: %v", ErrFlowControllerMaxOutstandingBytes)
 	}
 
-	// Successfully newAcquire 6 byte.
+	// Successfully acquired 6 byte.
 	if err := fc.acquire(ctx, 6); err != nil {
-		t.Errorf("fc.newAcquire got err: %v", err)
+		t.Errorf("fc.acquired got err: %v", err)
 	}
 }
 
@@ -252,12 +252,12 @@ func TestFlowControllerUnboundedBytes(t *testing.T) {
 		t.Errorf("got %v, wanted no error", err)
 	}
 
-	// Successfully newAcquire 4GB bytes.
+	// Successfully acquired 4GB bytes.
 	if err := fc.acquire(ctx, 4e9); err != nil {
 		t.Errorf("got %v, wanted no error", err)
 	}
 
-	// Fail to newAcquire a third message.
+	// Fail to acquire a third message.
 	if err := fc.acquire(ctx, 3); err == nil {
 		t.Errorf("got nil, wanted %v", ErrFlowControllerMaxOutstandingMessages)
 	}
