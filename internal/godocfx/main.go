@@ -49,6 +49,7 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
 )
 
@@ -245,12 +246,27 @@ func write(outDir string, r *result) error {
 	}
 	defer f.Close()
 	now := time.Now().UTC()
-	fmt.Fprintf(f, `update_time {
-  seconds: %d
-  nanos: %d
+	writeMetadata(f, now, r.module)
+	return nil
+}
+
+func writeMetadata(w io.Writer, now time.Time, module *packages.Module) {
+	fmt.Fprintf(w, `update_time {
+	seconds: %d
+	nanos: %d
 }
 name: %q
 version: %q
-language: "go"`, now.Unix(), now.Nanosecond(), r.module.Path, r.module.Version)
-	return nil
+language: "go"
+`, now.Unix(), now.Nanosecond(), module.Path, module.Version)
+
+	// Some modules specify a different path to serve from.
+	// The URL will be /[stem]/[version]/[pkg path relative to module].
+	// Alternatively, we could plumb this through command line flags.
+	switch module.Path {
+	case "google.golang.org/appengine":
+		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go111/reference\"\n")
+	case "google.golang.org/appengine/v2":
+		fmt.Fprintf(w, "stem: \"/appengine/docs/standard/go/reference/services/bundled\"\n")
+	}
 }
