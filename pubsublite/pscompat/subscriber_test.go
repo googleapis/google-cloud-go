@@ -121,7 +121,7 @@ func (f *mockWireSubscriberFactory) New(receiver wire.MessageReceiverFunc) (wire
 	}, nil
 }
 
-func newTestSubscriberInstance(ctx context.Context, settings ReceiveSettings, receiver MessageReceiverFunc) *subscriberInstance {
+func newTestSubscriberInstance(ctx context.Context, settings ReceiveSettings, receiver messageReceiverFunc) *subscriberInstance {
 	sub, _ := newSubscriberInstance(ctx, new(mockWireSubscriberFactory), settings, receiver)
 	return sub
 }
