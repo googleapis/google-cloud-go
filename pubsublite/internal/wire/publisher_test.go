@@ -1004,14 +1004,16 @@ func TestRoutingPublisherPartitionCountUpdateFails(t *testing.T) {
 	t.Run("Failed update", func(t *testing.T) {
 		pub.pub.partitionWatcher.updatePartitionCount()
 
-		// Failed background update terminates the routingPublisher.
-		if gotErr := pub.WaitStopped(); !test.ErrorHasMsg(gotErr, serverErr.Error()) {
-			t.Errorf("Final error got: (%v), want: (%v)", gotErr, serverErr)
-		}
+		// Failed update ignored.
 		if got, want := pub.NumPartitionPublishers(), initialPartitionCount; got != want {
 			t.Errorf("Num partition publishers: got %d, want %d", got, want)
 		}
 	})
+
+	pub.Stop()
+	if gotErr := pub.WaitStopped(); gotErr != nil {
+		t.Errorf("Stop() got err: (%v)", gotErr)
+	}
 }
 
 func TestNewPublisherValidatesSettings(t *testing.T) {
