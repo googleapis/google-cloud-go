@@ -42,7 +42,10 @@ try3() { eval "$*" || eval "$*" || eval "$*"; }
 try3 go mod download
 go install github.com/jstemmer/go-junit-report
 ./internal/kokoro/vet.sh
-./internal/kokoro/check_incompat_changes.sh
+
+# TODO(noahdietz): The internal/apidiff.go seems to be borked.
+# Need to investigate and fix before reenabling.
+# ./internal/kokoro/check_incompat_changes.sh
 
 set +e # Run all tests, don't stop after the first failure.
 exit_code=0
