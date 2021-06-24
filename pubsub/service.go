@@ -69,6 +69,7 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 		if isGoaway {
 			return r.bo.Pause(), true
 		}
+		return 0, false
 	default:
 		return 0, false
 	}
