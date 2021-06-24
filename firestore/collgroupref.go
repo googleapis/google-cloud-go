@@ -51,6 +51,9 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 // partition of a collection group. partitionCount must be a positive value and
 // the number of returned partitions may be less than the requested number if
 // providing the desired number would result in partitions with very few documents.
+//
+// If a Collection Group Query would return a large number of documents, this
+// can help to subdivide the query to smaller working units that can be distributed.
 func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partitionCount int) ([]Query, error) {
 	qp, err := cgr.getPartitions(ctx, partitionCount)
 	if err != nil {
