@@ -26,16 +26,16 @@ var allowedReleaseLevels = map[string]bool{
 }
 
 var apivExceptions = map[string]bool{
-	"cloud.google.com/go/longrunning/autogen":    true,
-	"cloud.google.com/go/firestore/apiv1/admin":  true,
-	"cloud.google.com/go/cloudbuild/apiv1/v2":    true,
-	"cloud.google.com/go/monitoring/apiv3/v2":    true,
-	"cloud.google.com/go/storage/internal/apiv1": true,
+	"cloud.google.com/go/longrunning/autogen":   true,
+	"cloud.google.com/go/firestore/apiv1/admin": true,
+	"cloud.google.com/go/cloudbuild/apiv1/v2":   true,
+	"cloud.google.com/go/monitoring/apiv3/v2":   true,
 }
 
 var packagePathExceptions = map[string]bool{
-	"cloud.google.com/go/longrunning/autogen":   true,
-	"cloud.google.com/go/firestore/apiv1/admin": true,
+	"cloud.google.com/go/longrunning/autogen":    true,
+	"cloud.google.com/go/firestore/apiv1/admin":  true,
+	"cloud.google.com/go/storage/internal/apiv1": true,
 }
 
 // TestMicrogenConfigs validates config entries.
