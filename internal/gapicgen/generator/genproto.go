@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"os"
 	"path/filepath"
 	"regexp"
 	"strconv"
@@ -57,6 +58,7 @@ type GenprotoGenerator struct {
 	genprotoDir   string
 	googleapisDir string
 	protoSrcDir   string
+	forceAll      bool
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
@@ -65,6 +67,7 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 		genprotoDir:   c.GenprotoDir,
 		googleapisDir: c.GoogleapisDir,
 		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
+		forceAll:      c.ForceAll,
 	}
 }
 
@@ -186,6 +189,9 @@ func (g *GenprotoGenerator) protoc(fileNames []string) error {
 // getUpdatedPackages parses all of the new commits to find what packages need
 // to be regenerated.
 func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[string][]string, error) {
+	if g.forceAll {
+		return g.getAllPackages()
+	}
 	files, err := git.UpdateFilesSinceHash(g.googleapisDir, googleapisHash)
 	if err != nil {
 		return nil, err
@@ -201,6 +207,41 @@ func (g *GenprotoGenerator) getUpdatedPackages(googleapisHash string) (map[strin
 			return nil, err
 		}
 		pkgFiles[pkg] = append(pkgFiles[pkg], path)
+	}
+	return pkgFiles, nil
+}
+
+func (g *GenprotoGenerator) getAllPackages() (map[string][]string, error) {
+	seenFiles := make(map[string]bool)
+	pkgFiles := make(map[string][]string)
+	for _, root := range []string{g.googleapisDir} {
+		walkFn := func(path string, info os.FileInfo, err error) error {
+			if err != nil {
+				return err
+			}
+			if !info.Mode().IsRegular() || !strings.HasSuffix(path, ".proto") {
+				return nil
+			}
+
+			switch rel, err := filepath.Rel(root, path); {
+			case err != nil:
+				return err
+			case seenFiles[rel]:
+				return nil
+			default:
+				seenFiles[rel] = true
+			}
+
+			pkg, err := goPkg(path)
+			if err != nil {
+				return err
+			}
+			pkgFiles[pkg] = append(pkgFiles[pkg], path)
+			return nil
+		}
+		if err := filepath.Walk(root, walkFn); err != nil {
+			return nil, err
+		}
 	}
 	return pkgFiles, nil
 }

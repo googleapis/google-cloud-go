@@ -278,6 +278,30 @@ func ExampleAdminClient_DeleteSubscription() {
 	}
 }
 
+func ExampleAdminClient_SeekSubscription() {
+	ctx := context.Background()
+	c, err := pubsublite.NewAdminClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &pubsublitepb.SeekSubscriptionRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.SeekSubscription(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleAdminClient_CreateReservation() {
 	ctx := context.Background()
 	c, err := pubsublite.NewAdminClient(ctx)

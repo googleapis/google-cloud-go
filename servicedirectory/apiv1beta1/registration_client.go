@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -34,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newRegistrationClientHook clientHook
@@ -366,7 +366,7 @@ func (c *RegistrationClient) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// CreateNamespace creates a namespace, and returns the new Namespace.
+// CreateNamespace creates a namespace, and returns the new namespace.
 func (c *RegistrationClient) CreateNamespace(ctx context.Context, req *servicedirectorypb.CreateNamespaceRequest, opts ...gax.CallOption) (*servicedirectorypb.Namespace, error) {
 	return c.internalClient.CreateNamespace(ctx, req, opts...)
 }
@@ -392,7 +392,7 @@ func (c *RegistrationClient) DeleteNamespace(ctx context.Context, req *servicedi
 	return c.internalClient.DeleteNamespace(ctx, req, opts...)
 }
 
-// CreateService creates a service, and returns the new Service.
+// CreateService creates a service, and returns the new service.
 func (c *RegistrationClient) CreateService(ctx context.Context, req *servicedirectorypb.CreateServiceRequest, opts ...gax.CallOption) (*servicedirectorypb.Service, error) {
 	return c.internalClient.CreateService(ctx, req, opts...)
 }
@@ -418,7 +418,7 @@ func (c *RegistrationClient) DeleteService(ctx context.Context, req *servicedire
 	return c.internalClient.DeleteService(ctx, req, opts...)
 }
 
-// CreateEndpoint creates a endpoint, and returns the new Endpoint.
+// CreateEndpoint creates an endpoint, and returns the new endpoint.
 func (c *RegistrationClient) CreateEndpoint(ctx context.Context, req *servicedirectorypb.CreateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
 	return c.internalClient.CreateEndpoint(ctx, req, opts...)
 }
@@ -428,17 +428,17 @@ func (c *RegistrationClient) ListEndpoints(ctx context.Context, req *servicedire
 	return c.internalClient.ListEndpoints(ctx, req, opts...)
 }
 
-// GetEndpoint gets a endpoint.
+// GetEndpoint gets an endpoint.
 func (c *RegistrationClient) GetEndpoint(ctx context.Context, req *servicedirectorypb.GetEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
 	return c.internalClient.GetEndpoint(ctx, req, opts...)
 }
 
-// UpdateEndpoint updates a endpoint.
+// UpdateEndpoint updates an endpoint.
 func (c *RegistrationClient) UpdateEndpoint(ctx context.Context, req *servicedirectorypb.UpdateEndpointRequest, opts ...gax.CallOption) (*servicedirectorypb.Endpoint, error) {
 	return c.internalClient.UpdateEndpoint(ctx, req, opts...)
 }
 
-// DeleteEndpoint deletes a endpoint.
+// DeleteEndpoint deletes an endpoint.
 func (c *RegistrationClient) DeleteEndpoint(ctx context.Context, req *servicedirectorypb.DeleteEndpointRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEndpoint(ctx, req, opts...)
 }

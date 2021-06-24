@@ -37,6 +37,7 @@ type Config struct {
 	OnlyGenerateGapic bool
 	LocalMode         bool
 	RegenOnly         bool
+	ForceAll          bool
 }
 
 // Generate generates genproto and gapics.
