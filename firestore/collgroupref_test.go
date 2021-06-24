@@ -59,7 +59,7 @@ func TestCGR_TestGetPartitions(t *testing.T) {
 		t.Error("Didn't expect an error when requested partition count is 1")
 	}
 	if len(parts) != 1 {
-		t.Fatal("Expected 1 QueryPartition")
+		t.Fatal("Expected 1 queryPartition")
 	}
 	got := parts[0]
 	want := queryPartition{

@@ -1623,7 +1623,7 @@ func TestIntegration_ColGroupRefPartitions(t *testing.T) {
 		colGroup := iClient.CollectionGroup(tc.collectionID)
 		partitions, err := colGroup.getPartitions(ctx, 10)
 		if err != nil {
-			t.Fatalf("Did not expect error: %v", err)
+			t.Fatalf("getPartitions: received unexpected error: %v", err)
 		}
 		if got, want := len(partitions), tc.expectedPartitionCount; got != want {
 			t.Errorf("Unexpected Partition Count: got %d, want %d", got, want)
@@ -1656,7 +1656,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	colGroup := iClient.CollectionGroup(collectionID)
 	docs, err := colGroup.Documents(ctx).GetAll()
 	if err != nil {
-		t.Fatalf("Did not expect error: %v", err)
+		t.Fatalf("GetAll(): received unexpected error: %v", err)
 	}
 	if got, want := len(docs), documentCount; got != want {
 		t.Errorf("Unexpected number of documents in collection group: got %d, want %d", got, want)
@@ -1665,7 +1665,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	// Get partitions, allow up to 10 to come back, expect less will be returned.
 	partitions, err := colGroup.GetPartitionedQueries(ctx, 10)
 	if err != nil {
-		t.Fatalf("Did not expect error: %v", err)
+		t.Fatalf("GetPartitionedQueries: received unexpected error: %v", err)
 	}
 	if len(partitions) < 2 {
 		t.Errorf("Unexpected Partition Count. Expected 2 or more: got %d, want 2+", len(partitions))
@@ -1677,7 +1677,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 
 		allDocs, err := query.Documents(ctx).GetAll()
 		if err != nil {
-			t.Fatalf("Did not expect error: %v", err)
+			t.Fatalf("GetAll(): received unexpected error: %v", err)
 		}
 		totalCount += len(allDocs)
 	}

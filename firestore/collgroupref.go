@@ -66,7 +66,7 @@ func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partiti
 	return queries, nil
 }
 
-// getPartitions returns a slice of QueryPartition objects, describing a start
+// getPartitions returns a slice of queryPartition objects, describing a start
 // and end range to query a subsection of the collection group. partitionCount
 // must be a positive value and the number of returned partitions may be less
 // than the requested number if providing the desired number would result in
@@ -77,7 +77,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 	if partitionCount <= 0 {
 		return nil, errors.New("a positive partitionCount must be provided")
 	} else if partitionCount == 1 {
-		return []queryPartition{{CollectionGroupQuery: orderedQuery, StartAt: "", EndBefore: ""}}, nil
+		return []queryPartition{{CollectionGroupQuery: orderedQuery}}, nil
 	}
 
 	db := cgr.c.path()
@@ -106,10 +106,9 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 			break
 		}
 		if err != nil {
-
 			return nil, fmt.Errorf("GetPartitions: %v", err)
 		}
-		cursorReferences = append(cursorReferences, cursor.Values...)
+		cursorReferences = append(cursorReferences, cursor.GetValues()...)
 	}
 
 	// From Proto documentation:
@@ -141,11 +140,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 
 	// In the case there were no partitions, we still add a single partition to
 	// the result, that covers the complete range.
-	lastPart := queryPartition{
-		CollectionGroupQuery: orderedQuery,
-		StartAt:              "",
-		EndBefore:            "",
-	}
+	lastPart := queryPartition{CollectionGroupQuery: orderedQuery}
 	if len(cursorReferences) > 0 {
 		cursorRef := cursorReferences[len(cursorReferences)-1].GetReferenceValue()
 		lastPart.StartAt = cursorRef[len(orderedQuery.path)+1:]
@@ -176,7 +171,7 @@ type queryPartition struct {
 	EndBefore string
 }
 
-// ToQuery converts a QueryPartition object to a Query object
+// ToQuery converts a queryPartition object to a Query object
 func (qp queryPartition) ToQuery() Query {
 	q := *qp.CollectionGroupQuery.query()
 
