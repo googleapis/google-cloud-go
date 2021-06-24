@@ -27,7 +27,7 @@ func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 		EndBefore:            "documents/end/before",
 	}
 
-	got := qp.ToQuery()
+	got := qp.toQuery()
 
 	want := Query{
 		c:              testClient,
