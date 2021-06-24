@@ -47,9 +47,6 @@ func newCollectionGroupRef(c *Client, dbPath, collectionID string) *CollectionGr
 	}
 }
 
-// TODO: add a fromProto to compliment toProto for query. With that serialization is
-// very possible. user could also do json.Marshal(toProto())
-
 // GetPartitionedQueries returns a slice of Query objects, each containing a
 // partition of a collection group. partitionCount must be a positive value and
 // the number of returned partitions may be less than the requested number if
