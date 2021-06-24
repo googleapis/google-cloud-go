@@ -55,19 +55,21 @@ var denylist = map[string]bool{
 
 // GenprotoGenerator is used to generate code for googleapis/go-genproto.
 type GenprotoGenerator struct {
-	genprotoDir   string
-	googleapisDir string
-	protoSrcDir   string
-	forceAll      bool
+	genprotoDir        string
+	googleapisDir      string
+	googleapisDiscoDir string
+	protoSrcDir        string
+	forceAll           bool
 }
 
 // NewGenprotoGenerator creates a new GenprotoGenerator.
 func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 	return &GenprotoGenerator{
-		genprotoDir:   c.GenprotoDir,
-		googleapisDir: c.GoogleapisDir,
-		protoSrcDir:   filepath.Join(c.ProtoDir, "/src"),
-		forceAll:      c.ForceAll,
+		genprotoDir:        c.GenprotoDir,
+		googleapisDir:      c.GoogleapisDir,
+		googleapisDiscoDir: c.GoogleapisDiscoDir,
+		protoSrcDir:        filepath.Join(c.ProtoDir, "/src"),
+		forceAll:           c.ForceAll,
 	}
 }
 
@@ -102,7 +104,7 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 	log.Println("regenerating genproto")
 
 	// Create space to put generated .pb.go's.
-	c := execv.Command("mkdir", "generated")
+	c := execv.Command("mkdir", "-p", "generated")
 	c.Dir = g.genprotoDir
 	if err := c.Run(); err != nil {
 		return err
@@ -114,6 +116,10 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
+	// TODO(noahdietz): In local mode, since it clones a shallow copy with 1 commit,
+	// if the last regenerated hash is earlier than the top commit, the git diff-tree
+	// command fails. This is is a bit of a rough edge. Using my local clone of
+	// googleapis rectified the issue.
 	pkgFiles, err := g.getUpdatedPackages(string(lastHash))
 	if err != nil {
 		return err
@@ -132,9 +138,15 @@ func (g *GenprotoGenerator) Regen(ctx context.Context) error {
 		fn := fileNames
 		grp.Go(func() error {
 			log.Println("running protoc on", pk)
-			return g.protoc(fn)
+			return g.protoc(fn, true /* grpc */)
 		})
 	}
+	// TODO(noahdietz): This needs to be generalized to support any proto in googleapis-discovery.
+	// It's hard because the regen.txt contains the committish from googleapis last used to regen.
+	grp.Go(func() error {
+		log.Println("running protoc on compute")
+		return g.protoc([]string{"google/cloud/compute/v1/compute.proto"}, false /* grpc */)
+	})
 	if err := grp.Wait(); err != nil {
 		return err
 	}
@@ -178,8 +190,12 @@ func goPkg(fileName string) (string, error) {
 
 // protoc executes the "protoc" command on files named in fileNames, and outputs
 // to "<genprotoDir>/generated".
-func (g *GenprotoGenerator) protoc(fileNames []string) error {
-	args := []string{"--experimental_allow_proto3_optional", fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir), "-I", g.googleapisDir, "-I", g.protoSrcDir}
+func (g *GenprotoGenerator) protoc(fileNames []string, grpc bool) error {
+	stubs := fmt.Sprintf("--go_out=%s/generated", g.genprotoDir)
+	if grpc {
+		stubs = fmt.Sprintf("--go_out=plugins=grpc:%s/generated", g.genprotoDir)
+	}
+	args := []string{"--experimental_allow_proto3_optional", stubs, "-I", g.googleapisDiscoDir, "-I", g.googleapisDir, "-I", g.protoSrcDir}
 	args = append(args, fileNames...)
 	c := execv.Command("protoc", args...)
 	c.Dir = g.genprotoDir
