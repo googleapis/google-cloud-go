@@ -16,6 +16,7 @@ package bigquery
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -29,6 +30,7 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/transport"
 )
 
 const (
@@ -56,8 +58,20 @@ type Client struct {
 	bqs       *bq.Service
 }
 
+// DetectProjectID is a sentinel value that instructs NewClient to detect the
+// project ID. It is given in place of the projectID argument. NewClient will
+// use the project ID from the given credentials or the default credentials
+// (https://developers.google.com/accounts/docs/application-default-credentials)
+// if no credentials were provided. When providing credentials, not all
+// options will allow NewClient to extract the project ID. Specifically a JWT
+// does not have the project ID encoded.
+const DetectProjectID = "*detect-project-id*"
+
 // NewClient constructs a new Client which can perform BigQuery operations.
 // Operations performed via the client are billed to the specified GCP project.
+//
+// If the project ID is set to DetectProjectID, NewClient will attempt to detect
+// the project ID from credentials.
 func NewClient(ctx context.Context, projectID string, opts ...option.ClientOption) (*Client, error) {
 	o := []option.ClientOption{
 		option.WithScopes(Scope),
@@ -68,6 +82,14 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	if err != nil {
 		return nil, fmt.Errorf("bigquery: constructing client: %v", err)
 	}
+
+	if projectID == DetectProjectID {
+		projectID, err = detectProjectID(ctx, opts...)
+		if err != nil {
+			return nil, fmt.Errorf("failed to detect project: %v", err)
+		}
+	}
+
 	c := &Client{
 		projectID: projectID,
 		bqs:       bqs,
@@ -75,11 +97,28 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	return c, nil
 }
 
+// Project returns the project ID or number for this instance of the client, which may have
+// either been explicitly specified or autodetected.
+func (c *Client) Project() string {
+	return c.projectID
+}
+
 // Close closes any resources held by the client.
 // Close should be called when the client is no longer needed.
 // It need not be called at program exit.
 func (c *Client) Close() error {
 	return nil
+}
+
+func detectProjectID(ctx context.Context, opts ...option.ClientOption) (string, error) {
+	creds, err := transport.Creds(ctx, opts...)
+	if err != nil {
+		return "", fmt.Errorf("fetching creds: %v", err)
+	}
+	if creds.ProjectID == "" {
+		return "", errors.New("credentials did not provide a valid ProjectID")
+	}
+	return creds.ProjectID, nil
 }
 
 // Calls the Jobs.Insert RPC and returns a Job.
