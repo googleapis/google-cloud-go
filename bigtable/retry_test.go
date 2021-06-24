@@ -23,7 +23,6 @@ import (
 
 	"cloud.google.com/go/bigtable/bttest"
 	"cloud.google.com/go/internal/testutil"
-	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
 	"google.golang.org/api/option"
 	btpb "google.golang.org/genproto/googleapis/bigtable/v2"
@@ -31,6 +30,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
 func setupFakeServer(opt ...grpc.ServerOption) (tbl *Table, cleanup func(), err error) {
@@ -435,8 +435,8 @@ func writeReadRowsResponse(ss grpc.ServerStream, rowKeys ...string) error {
 	for _, key := range rowKeys {
 		chunks = append(chunks, &btpb.ReadRowsResponse_CellChunk{
 			RowKey:     []byte(key),
-			FamilyName: &wrappers.StringValue{Value: "fm"},
-			Qualifier:  &wrappers.BytesValue{Value: []byte("col")},
+			FamilyName: &wrapperspb.StringValue{Value: "fm"},
+			Qualifier:  &wrapperspb.BytesValue{Value: []byte("col")},
 			RowStatus:  &btpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: true},
 		})
 	}

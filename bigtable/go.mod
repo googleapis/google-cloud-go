@@ -4,7 +4,6 @@ go 1.11
 
 require (
 	cloud.google.com/go v0.87.0
-	github.com/golang/protobuf v1.5.2
 	github.com/google/btree v1.0.1
 	github.com/google/go-cmp v0.5.6
 	github.com/googleapis/gax-go/v2 v2.0.5
