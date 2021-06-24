@@ -100,6 +100,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("storage.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://storage.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -848,424 +849,121 @@ type internalClient interface {
 
 // Client is a client for interacting with Cloud Storage API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+//
+// Manages Google Cloud Storage resources.
 type Client struct {
 	// The internal transport-dependent client.
-	internalClient
+	internalClient internalClient
 
 	// The call options for this service.
 	CallOptions *CallOptions
 }
 
-// GRPCClient is a client for interacting with Cloud Storage API over gRPC transport.
-//
-// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
-type GRPCClient struct {
-	// Connection pool of gRPC connections to the service.
-	connPool gtransport.ConnPool
+// Wrapper methods routed to the internal client.
 
-	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
-	disableDeadlines bool
-
-	// Points back to the CallOptions field of the containing Client
-	CallOptions **CallOptions
-
-	// The gRPC API client.
-	client storagepb.StorageClient
-
-	// The x-goog-* metadata to be sent with each request.
-	xGoogMetadata metadata.MD
-}
-
-// NewClient creates a new storage client based on gRPC.
-//
-// Manages Google Cloud Storage resources.
-func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
-	clientOpts := defaultGRPCClientOptions()
-	if newClientHook != nil {
-		hookOpts, err := newClientHook(ctx, clientHookParams{})
-		if err != nil {
-			return nil, err
-		}
-		clientOpts = append(clientOpts, hookOpts...)
-	}
-
-	disableDeadlines, err := checkDisableDeadlines()
-	if err != nil {
-		return nil, err
-	}
-
-	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
-	if err != nil {
-		return nil, err
-	}
-	client := Client{CallOptions: defaultCallOptions()}
-
-	c := &GRPCClient{
-		connPool:         connPool,
-		disableDeadlines: disableDeadlines,
-		client:           storagepb.NewStorageClient(connPool),
-		CallOptions:      &client.CallOptions,
-	}
-	c.setGoogleClientInfo()
-
-	client.internalClient = c
-
-	return &client, nil
-}
-
-// Connection returns a connection to the API service.
-//
-// Deprecated.
-func (c *GRPCClient) Connection() *grpc.ClientConn {
-	return c.connPool.Conn()
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *Client) Close() error {
+	return c.internalClient.Close()
 }
 
 // setGoogleClientInfo sets the name and version of the application in
 // the `x-goog-api-client` header passed on each request. Intended for
 // use by Google-written clients.
-func (c *GRPCClient) setGoogleClientInfo(keyval ...string) {
-	kv := append([]string{"gl-go", versionGo()}, keyval...)
-	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
-	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+func (c *Client) setGoogleClientInfo(keyval ...string) {
+	c.internalClient.setGoogleClientInfo(keyval...)
 }
 
-// Close closes the connection to the API service. The user should invoke this when
-// the client is no longer required.
-func (c *GRPCClient) Close() error {
-	return c.connPool.Close()
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *Client) Connection() *grpc.ClientConn {
+	return c.internalClient.Connection()
 }
 
 // DeleteBucketAccessControl permanently deletes the ACL entry for the specified entity on the specified
 // bucket.
-func (c *GRPCClient) DeleteBucketAccessControl(ctx context.Context, req *storagepb.DeleteBucketAccessControlRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).DeleteBucketAccessControl[0:len((*c.CallOptions).DeleteBucketAccessControl):len((*c.CallOptions).DeleteBucketAccessControl)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteBucketAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) DeleteBucketAccessControl(ctx context.Context, req *storagepb.DeleteBucketAccessControlRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBucketAccessControl(ctx, req, opts...)
 }
 
 // GetBucketAccessControl returns the ACL entry for the specified entity on the specified bucket.
-func (c *GRPCClient) GetBucketAccessControl(ctx context.Context, req *storagepb.GetBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetBucketAccessControl[0:len((*c.CallOptions).GetBucketAccessControl):len((*c.CallOptions).GetBucketAccessControl)], opts...)
-	var resp *storagepb.BucketAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetBucketAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetBucketAccessControl(ctx context.Context, req *storagepb.GetBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	return c.internalClient.GetBucketAccessControl(ctx, req, opts...)
 }
 
 // InsertBucketAccessControl creates a new ACL entry on the specified bucket.
-func (c *GRPCClient) InsertBucketAccessControl(ctx context.Context, req *storagepb.InsertBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).InsertBucketAccessControl[0:len((*c.CallOptions).InsertBucketAccessControl):len((*c.CallOptions).InsertBucketAccessControl)], opts...)
-	var resp *storagepb.BucketAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.InsertBucketAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) InsertBucketAccessControl(ctx context.Context, req *storagepb.InsertBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	return c.internalClient.InsertBucketAccessControl(ctx, req, opts...)
 }
 
 // ListBucketAccessControls retrieves ACL entries on the specified bucket.
-func (c *GRPCClient) ListBucketAccessControls(ctx context.Context, req *storagepb.ListBucketAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListBucketAccessControlsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ListBucketAccessControls[0:len((*c.CallOptions).ListBucketAccessControls):len((*c.CallOptions).ListBucketAccessControls)], opts...)
-	var resp *storagepb.ListBucketAccessControlsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListBucketAccessControls(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ListBucketAccessControls(ctx context.Context, req *storagepb.ListBucketAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListBucketAccessControlsResponse, error) {
+	return c.internalClient.ListBucketAccessControls(ctx, req, opts...)
 }
 
 // UpdateBucketAccessControl updates an ACL entry on the specified bucket. Equivalent to
 // PatchBucketAccessControl, but all unspecified fields will be
 // reset to their default values.
-func (c *GRPCClient) UpdateBucketAccessControl(ctx context.Context, req *storagepb.UpdateBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).UpdateBucketAccessControl[0:len((*c.CallOptions).UpdateBucketAccessControl):len((*c.CallOptions).UpdateBucketAccessControl)], opts...)
-	var resp *storagepb.BucketAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.UpdateBucketAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) UpdateBucketAccessControl(ctx context.Context, req *storagepb.UpdateBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	return c.internalClient.UpdateBucketAccessControl(ctx, req, opts...)
 }
 
 // PatchBucketAccessControl updates an ACL entry on the specified bucket.
-func (c *GRPCClient) PatchBucketAccessControl(ctx context.Context, req *storagepb.PatchBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).PatchBucketAccessControl[0:len((*c.CallOptions).PatchBucketAccessControl):len((*c.CallOptions).PatchBucketAccessControl)], opts...)
-	var resp *storagepb.BucketAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.PatchBucketAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) PatchBucketAccessControl(ctx context.Context, req *storagepb.PatchBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	return c.internalClient.PatchBucketAccessControl(ctx, req, opts...)
 }
 
 // DeleteBucket permanently deletes an empty bucket.
-func (c *GRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBucketRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).DeleteBucket[0:len((*c.CallOptions).DeleteBucket):len((*c.CallOptions).DeleteBucket)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteBucket(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) DeleteBucket(ctx context.Context, req *storagepb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteBucket(ctx, req, opts...)
 }
 
 // GetBucket returns metadata for the specified bucket.
-func (c *GRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetBucket[0:len((*c.CallOptions).GetBucket):len((*c.CallOptions).GetBucket)], opts...)
-	var resp *storagepb.Bucket
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetBucket(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetBucket(ctx context.Context, req *storagepb.GetBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	return c.internalClient.GetBucket(ctx, req, opts...)
 }
 
 // InsertBucket creates a new bucket.
-func (c *GRPCClient) InsertBucket(ctx context.Context, req *storagepb.InsertBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).InsertBucket[0:len((*c.CallOptions).InsertBucket):len((*c.CallOptions).InsertBucket)], opts...)
-	var resp *storagepb.Bucket
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.InsertBucket(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) InsertBucket(ctx context.Context, req *storagepb.InsertBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	return c.internalClient.InsertBucket(ctx, req, opts...)
 }
 
 // ListChannels list active object change notification channels for this bucket.
-func (c *GRPCClient) ListChannels(ctx context.Context, req *storagepb.ListChannelsRequest, opts ...gax.CallOption) (*storagepb.ListChannelsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
-	var resp *storagepb.ListChannelsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListChannels(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ListChannels(ctx context.Context, req *storagepb.ListChannelsRequest, opts ...gax.CallOption) (*storagepb.ListChannelsResponse, error) {
+	return c.internalClient.ListChannels(ctx, req, opts...)
 }
 
 // ListBuckets retrieves a list of buckets for a given project.
-func (c *GRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBucketsRequest, opts ...gax.CallOption) (*storagepb.ListBucketsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
-	var resp *storagepb.ListBucketsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListBuckets(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ListBuckets(ctx context.Context, req *storagepb.ListBucketsRequest, opts ...gax.CallOption) (*storagepb.ListBucketsResponse, error) {
+	return c.internalClient.ListBuckets(ctx, req, opts...)
 }
 
 // LockBucketRetentionPolicy locks retention policy on a bucket.
-func (c *GRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.LockRetentionPolicyRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).LockBucketRetentionPolicy[0:len((*c.CallOptions).LockBucketRetentionPolicy):len((*c.CallOptions).LockBucketRetentionPolicy)], opts...)
-	var resp *storagepb.Bucket
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.LockBucketRetentionPolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.LockRetentionPolicyRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	return c.internalClient.LockBucketRetentionPolicy(ctx, req, opts...)
 }
 
 // GetBucketIamPolicy gets the IAM policy for the specified bucket.
-func (c *GRPCClient) GetBucketIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetBucketIamPolicy[0:len((*c.CallOptions).GetBucketIamPolicy):len((*c.CallOptions).GetBucketIamPolicy)], opts...)
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetBucketIamPolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetBucketIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetBucketIamPolicy(ctx, req, opts...)
 }
 
 // SetBucketIamPolicy updates an IAM policy for the specified bucket.
-func (c *GRPCClient) SetBucketIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).SetBucketIamPolicy[0:len((*c.CallOptions).SetBucketIamPolicy):len((*c.CallOptions).SetBucketIamPolicy)], opts...)
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.SetBucketIamPolicy(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) SetBucketIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetBucketIamPolicy(ctx, req, opts...)
 }
 
 // TestBucketIamPermissions tests a set of permissions on the given bucket to see which, if
 // any, are held by the caller.
-func (c *GRPCClient) TestBucketIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).TestBucketIamPermissions[0:len((*c.CallOptions).TestBucketIamPermissions):len((*c.CallOptions).TestBucketIamPermissions)], opts...)
-	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.TestBucketIamPermissions(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) TestBucketIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestBucketIamPermissions(ctx, req, opts...)
 }
 
 // PatchBucket updates a bucket. Changes to the bucket will be readable immediately after
 // writing, but configuration changes may take time to propagate.
-func (c *GRPCClient) PatchBucket(ctx context.Context, req *storagepb.PatchBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).PatchBucket[0:len((*c.CallOptions).PatchBucket):len((*c.CallOptions).PatchBucket)], opts...)
-	var resp *storagepb.Bucket
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.PatchBucket(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) PatchBucket(ctx context.Context, req *storagepb.PatchBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	return c.internalClient.PatchBucket(ctx, req, opts...)
 }
 
 // UpdateBucket updates a bucket. Equivalent to PatchBucket, but always replaces all
@@ -1273,479 +971,137 @@ func (c *GRPCClient) PatchBucket(ctx context.Context, req *storagepb.PatchBucket
 // unspecified fields to their default values.
 // Like PatchBucket, Changes to the bucket will be readable immediately after
 // writing, but configuration changes may take time to propagate.
-func (c *GRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).UpdateBucket[0:len((*c.CallOptions).UpdateBucket):len((*c.CallOptions).UpdateBucket)], opts...)
-	var resp *storagepb.Bucket
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.UpdateBucket(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) UpdateBucket(ctx context.Context, req *storagepb.UpdateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	return c.internalClient.UpdateBucket(ctx, req, opts...)
 }
 
 // StopChannel halts “Object Change Notification” push messagages.
 // See https://cloud.google.com/storage/docs/object-change-notification (at https://cloud.google.com/storage/docs/object-change-notification)
 // Note: this is not related to the newer “Notifications” resource, which
 // are stopped using DeleteNotification.
-func (c *GRPCClient) StopChannel(ctx context.Context, req *storagepb.StopChannelRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).StopChannel[0:len((*c.CallOptions).StopChannel):len((*c.CallOptions).StopChannel)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.StopChannel(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) StopChannel(ctx context.Context, req *storagepb.StopChannelRequest, opts ...gax.CallOption) error {
+	return c.internalClient.StopChannel(ctx, req, opts...)
 }
 
 // DeleteDefaultObjectAccessControl permanently deletes the default object ACL entry for the specified entity
 // on the specified bucket.
-func (c *GRPCClient) DeleteDefaultObjectAccessControl(ctx context.Context, req *storagepb.DeleteDefaultObjectAccessControlRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).DeleteDefaultObjectAccessControl[0:len((*c.CallOptions).DeleteDefaultObjectAccessControl):len((*c.CallOptions).DeleteDefaultObjectAccessControl)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteDefaultObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) DeleteDefaultObjectAccessControl(ctx context.Context, req *storagepb.DeleteDefaultObjectAccessControlRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDefaultObjectAccessControl(ctx, req, opts...)
 }
 
 // GetDefaultObjectAccessControl returns the default object ACL entry for the specified entity on the
 // specified bucket.
-func (c *GRPCClient) GetDefaultObjectAccessControl(ctx context.Context, req *storagepb.GetDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetDefaultObjectAccessControl[0:len((*c.CallOptions).GetDefaultObjectAccessControl):len((*c.CallOptions).GetDefaultObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetDefaultObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetDefaultObjectAccessControl(ctx context.Context, req *storagepb.GetDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.GetDefaultObjectAccessControl(ctx, req, opts...)
 }
 
 // InsertDefaultObjectAccessControl creates a new default object ACL entry on the specified bucket.
-func (c *GRPCClient) InsertDefaultObjectAccessControl(ctx context.Context, req *storagepb.InsertDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).InsertDefaultObjectAccessControl[0:len((*c.CallOptions).InsertDefaultObjectAccessControl):len((*c.CallOptions).InsertDefaultObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.InsertDefaultObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) InsertDefaultObjectAccessControl(ctx context.Context, req *storagepb.InsertDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.InsertDefaultObjectAccessControl(ctx, req, opts...)
 }
 
 // ListDefaultObjectAccessControls retrieves default object ACL entries on the specified bucket.
-func (c *GRPCClient) ListDefaultObjectAccessControls(ctx context.Context, req *storagepb.ListDefaultObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ListDefaultObjectAccessControls[0:len((*c.CallOptions).ListDefaultObjectAccessControls):len((*c.CallOptions).ListDefaultObjectAccessControls)], opts...)
-	var resp *storagepb.ListObjectAccessControlsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListDefaultObjectAccessControls(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ListDefaultObjectAccessControls(ctx context.Context, req *storagepb.ListDefaultObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
+	return c.internalClient.ListDefaultObjectAccessControls(ctx, req, opts...)
 }
 
 // PatchDefaultObjectAccessControl updates a default object ACL entry on the specified bucket.
-func (c *GRPCClient) PatchDefaultObjectAccessControl(ctx context.Context, req *storagepb.PatchDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).PatchDefaultObjectAccessControl[0:len((*c.CallOptions).PatchDefaultObjectAccessControl):len((*c.CallOptions).PatchDefaultObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.PatchDefaultObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) PatchDefaultObjectAccessControl(ctx context.Context, req *storagepb.PatchDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.PatchDefaultObjectAccessControl(ctx, req, opts...)
 }
 
 // UpdateDefaultObjectAccessControl updates a default object ACL entry on the specified bucket. Equivalent to
 // PatchDefaultObjectAccessControl, but modifies all unspecified fields to
 // their default values.
-func (c *GRPCClient) UpdateDefaultObjectAccessControl(ctx context.Context, req *storagepb.UpdateDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).UpdateDefaultObjectAccessControl[0:len((*c.CallOptions).UpdateDefaultObjectAccessControl):len((*c.CallOptions).UpdateDefaultObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.UpdateDefaultObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) UpdateDefaultObjectAccessControl(ctx context.Context, req *storagepb.UpdateDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.UpdateDefaultObjectAccessControl(ctx, req, opts...)
 }
 
 // DeleteNotification permanently deletes a notification subscription.
 // Note: Older, “Object Change Notification” push subscriptions should be
 // deleted using StopChannel instead.
-func (c *GRPCClient) DeleteNotification(ctx context.Context, req *storagepb.DeleteNotificationRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).DeleteNotification[0:len((*c.CallOptions).DeleteNotification):len((*c.CallOptions).DeleteNotification)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteNotification(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) DeleteNotification(ctx context.Context, req *storagepb.DeleteNotificationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteNotification(ctx, req, opts...)
 }
 
 // GetNotification view a notification configuration.
-func (c *GRPCClient) GetNotification(ctx context.Context, req *storagepb.GetNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetNotification[0:len((*c.CallOptions).GetNotification):len((*c.CallOptions).GetNotification)], opts...)
-	var resp *storagepb.Notification
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetNotification(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetNotification(ctx context.Context, req *storagepb.GetNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
+	return c.internalClient.GetNotification(ctx, req, opts...)
 }
 
 // InsertNotification creates a notification subscription for a given bucket.
 // These notifications, when triggered, publish messages to the specified
 // Cloud Pub/Sub topics.
 // See https://cloud.google.com/storage/docs/pubsub-notifications (at https://cloud.google.com/storage/docs/pubsub-notifications).
-func (c *GRPCClient) InsertNotification(ctx context.Context, req *storagepb.InsertNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).InsertNotification[0:len((*c.CallOptions).InsertNotification):len((*c.CallOptions).InsertNotification)], opts...)
-	var resp *storagepb.Notification
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.InsertNotification(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) InsertNotification(ctx context.Context, req *storagepb.InsertNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
+	return c.internalClient.InsertNotification(ctx, req, opts...)
 }
 
 // ListNotifications retrieves a list of notification subscriptions for a given bucket.
-func (c *GRPCClient) ListNotifications(ctx context.Context, req *storagepb.ListNotificationsRequest, opts ...gax.CallOption) (*storagepb.ListNotificationsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ListNotifications[0:len((*c.CallOptions).ListNotifications):len((*c.CallOptions).ListNotifications)], opts...)
-	var resp *storagepb.ListNotificationsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListNotifications(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ListNotifications(ctx context.Context, req *storagepb.ListNotificationsRequest, opts ...gax.CallOption) (*storagepb.ListNotificationsResponse, error) {
+	return c.internalClient.ListNotifications(ctx, req, opts...)
 }
 
 // DeleteObjectAccessControl permanently deletes the ACL entry for the specified entity on the specified
 // object.
-func (c *GRPCClient) DeleteObjectAccessControl(ctx context.Context, req *storagepb.DeleteObjectAccessControlRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).DeleteObjectAccessControl[0:len((*c.CallOptions).DeleteObjectAccessControl):len((*c.CallOptions).DeleteObjectAccessControl)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) DeleteObjectAccessControl(ctx context.Context, req *storagepb.DeleteObjectAccessControlRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteObjectAccessControl(ctx, req, opts...)
 }
 
 // GetObjectAccessControl returns the ACL entry for the specified entity on the specified object.
-func (c *GRPCClient) GetObjectAccessControl(ctx context.Context, req *storagepb.GetObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetObjectAccessControl[0:len((*c.CallOptions).GetObjectAccessControl):len((*c.CallOptions).GetObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetObjectAccessControl(ctx context.Context, req *storagepb.GetObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.GetObjectAccessControl(ctx, req, opts...)
 }
 
 // InsertObjectAccessControl creates a new ACL entry on the specified object.
-func (c *GRPCClient) InsertObjectAccessControl(ctx context.Context, req *storagepb.InsertObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).InsertObjectAccessControl[0:len((*c.CallOptions).InsertObjectAccessControl):len((*c.CallOptions).InsertObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.InsertObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) InsertObjectAccessControl(ctx context.Context, req *storagepb.InsertObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.InsertObjectAccessControl(ctx, req, opts...)
 }
 
 // ListObjectAccessControls retrieves ACL entries on the specified object.
-func (c *GRPCClient) ListObjectAccessControls(ctx context.Context, req *storagepb.ListObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ListObjectAccessControls[0:len((*c.CallOptions).ListObjectAccessControls):len((*c.CallOptions).ListObjectAccessControls)], opts...)
-	var resp *storagepb.ListObjectAccessControlsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ListObjectAccessControls(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ListObjectAccessControls(ctx context.Context, req *storagepb.ListObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
+	return c.internalClient.ListObjectAccessControls(ctx, req, opts...)
 }
 
 // PatchObjectAccessControl patches an ACL entry on the specified object.  Patch is similar to update,
 // but only applies or appends the specified fields in the
 // object_access_control object.  Other fields are unaffected.
-func (c *GRPCClient) PatchObjectAccessControl(ctx context.Context, req *storagepb.PatchObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).PatchObjectAccessControl[0:len((*c.CallOptions).PatchObjectAccessControl):len((*c.CallOptions).PatchObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.PatchObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) PatchObjectAccessControl(ctx context.Context, req *storagepb.PatchObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.PatchObjectAccessControl(ctx, req, opts...)
 }
 
 // UpdateObjectAccessControl updates an ACL entry on the specified object.
-func (c *GRPCClient) UpdateObjectAccessControl(ctx context.Context, req *storagepb.UpdateObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).UpdateObjectAccessControl[0:len((*c.CallOptions).UpdateObjectAccessControl):len((*c.CallOptions).UpdateObjectAccessControl)], opts...)
-	var resp *storagepb.ObjectAccessControl
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.UpdateObjectAccessControl(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) UpdateObjectAccessControl(ctx context.Context, req *storagepb.UpdateObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	return c.internalClient.UpdateObjectAccessControl(ctx, req, opts...)
 }
 
 // ComposeObject concatenates a list of existing objects into a new object in the same
 // bucket.
-func (c *GRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).ComposeObject[0:len((*c.CallOptions).ComposeObject):len((*c.CallOptions).ComposeObject)], opts...)
-	var resp *storagepb.Object
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.ComposeObject(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.ComposeObject(ctx, req, opts...)
 }
 
 // CopyObject copies a source object to a destination object. Optionally overrides
 // metadata.
-func (c *GRPCClient) CopyObject(ctx context.Context, req *storagepb.CopyObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).CopyObject[0:len((*c.CallOptions).CopyObject):len((*c.CallOptions).CopyObject)], opts...)
-	var resp *storagepb.Object
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.CopyObject(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) CopyObject(ctx context.Context, req *storagepb.CopyObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.CopyObject(ctx, req, opts...)
 }
 
 // DeleteObject deletes an object and its metadata. Deletions are permanent if versioning
 // is not enabled for the bucket, or if the generation parameter
 // is used.
-func (c *GRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).DeleteObject[0:len((*c.CallOptions).DeleteObject):len((*c.CallOptions).DeleteObject)], opts...)
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		_, err = c.client.DeleteObject(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	return err
+func (c *Client) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteObject(ctx, req, opts...)
 }
 
 // GetObject retrieves an object’s metadata.
-func (c *GRPCClient) GetObject(ctx context.Context, req *storagepb.GetObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
-	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
-		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
-		defer cancel()
-		ctx = cctx
-	}
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	opts = append((*c.CallOptions).GetObject[0:len((*c.CallOptions).GetObject):len((*c.CallOptions).GetObject)], opts...)
-	var resp *storagepb.Object
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetObject(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetObject(ctx context.Context, req *storagepb.GetObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.GetObject(ctx, req, opts...)
 }
 
 // GetObjectMedia reads an object’s data.
-func (c *GRPCClient) GetObjectMedia(ctx context.Context, req *storagepb.GetObjectMediaRequest, opts ...gax.CallOption) (storagepb.Storage_GetObjectMediaClient, error) {
-	ctx = insertMetadata(ctx, c.xGoogMetadata)
-	var resp storagepb.Storage_GetObjectMediaClient
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = c.client.GetObjectMedia(ctx, req, settings.GRPC...)
-		return err
-	}, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return resp, nil
+func (c *Client) GetObjectMedia(ctx context.Context, req *storagepb.GetObjectMediaRequest, opts ...gax.CallOption) (storagepb.Storage_GetObjectMediaClient, error) {
+	return c.internalClient.GetObjectMedia(ctx, req, opts...)
 }
 
 // InsertObject stores a new object and metadata.
@@ -1772,7 +1128,935 @@ func (c *GRPCClient) GetObjectMedia(ctx context.Context, req *storagepb.GetObjec
 // true will cause an error. The client should check the
 // Object it receives to determine how much data the service was
 // able to commit and whether the service views the object as complete.
-func (c *GRPCClient) InsertObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_InsertObjectClient, error) {
+func (c *Client) InsertObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_InsertObjectClient, error) {
+	return c.internalClient.InsertObject(ctx, opts...)
+}
+
+// ListObjects retrieves a list of objects matching the criteria.
+func (c *Client) ListObjects(ctx context.Context, req *storagepb.ListObjectsRequest, opts ...gax.CallOption) (*storagepb.ListObjectsResponse, error) {
+	return c.internalClient.ListObjects(ctx, req, opts...)
+}
+
+// RewriteObject rewrites a source object to a destination object. Optionally overrides
+// metadata.
+func (c *Client) RewriteObject(ctx context.Context, req *storagepb.RewriteObjectRequest, opts ...gax.CallOption) (*storagepb.RewriteResponse, error) {
+	return c.internalClient.RewriteObject(ctx, req, opts...)
+}
+
+// StartResumableWrite starts a resumable write. How long the write operation remains valid, and
+// what happens when the write operation becomes invalid, are
+// service-dependent.
+func (c *Client) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest, opts ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error) {
+	return c.internalClient.StartResumableWrite(ctx, req, opts...)
+}
+
+// QueryWriteStatus determines the committed_size for an object that is being written, which
+// can then be used as the write_offset for the next Write() call.
+//
+// If the object does not exist (i.e., the object has been deleted, or the
+// first Write() has not yet reached the service), this method returns the
+// error NOT_FOUND.
+//
+// The client may call QueryWriteStatus() at any time to determine how
+// much data has been processed for this object. This is useful if the
+// client is buffering data and needs to know which data can be safely
+// evicted. For any sequence of QueryWriteStatus() calls for a given
+// object name, the sequence of returned committed_size values will be
+// non-decreasing.
+func (c *Client) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
+	return c.internalClient.QueryWriteStatus(ctx, req, opts...)
+}
+
+// PatchObject updates an object’s metadata.
+func (c *Client) PatchObject(ctx context.Context, req *storagepb.PatchObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.PatchObject(ctx, req, opts...)
+}
+
+// UpdateObject updates an object’s metadata. Equivalent to PatchObject, but always
+// replaces all mutatable fields of the bucket with new values, reverting all
+// unspecified fields to their default values.
+func (c *Client) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	return c.internalClient.UpdateObject(ctx, req, opts...)
+}
+
+// GetObjectIamPolicy gets the IAM policy for the specified object.
+func (c *Client) GetObjectIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetObjectIamPolicy(ctx, req, opts...)
+}
+
+// SetObjectIamPolicy updates an IAM policy for the specified object.
+func (c *Client) SetObjectIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetObjectIamPolicy(ctx, req, opts...)
+}
+
+// TestObjectIamPermissions tests a set of permissions on the given object to see which, if
+// any, are held by the caller.
+func (c *Client) TestObjectIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestObjectIamPermissions(ctx, req, opts...)
+}
+
+// WatchAllObjects watch for changes on all objects in a bucket.
+func (c *Client) WatchAllObjects(ctx context.Context, req *storagepb.WatchAllObjectsRequest, opts ...gax.CallOption) (*storagepb.Channel, error) {
+	return c.internalClient.WatchAllObjects(ctx, req, opts...)
+}
+
+// GetServiceAccount retrieves the name of a project’s Google Cloud Storage service account.
+func (c *Client) GetServiceAccount(ctx context.Context, req *storagepb.GetProjectServiceAccountRequest, opts ...gax.CallOption) (*storagepb.ServiceAccount, error) {
+	return c.internalClient.GetServiceAccount(ctx, req, opts...)
+}
+
+// CreateHmacKey creates a new HMAC key for the given service account.
+func (c *Client) CreateHmacKey(ctx context.Context, req *storagepb.CreateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.CreateHmacKeyResponse, error) {
+	return c.internalClient.CreateHmacKey(ctx, req, opts...)
+}
+
+// DeleteHmacKey deletes a given HMAC key.  Key must be in an INACTIVE state.
+func (c *Client) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHmacKeyRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteHmacKey(ctx, req, opts...)
+}
+
+// GetHmacKey gets an existing HMAC key metadata for the given id.
+func (c *Client) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
+	return c.internalClient.GetHmacKey(ctx, req, opts...)
+}
+
+// ListHmacKeys lists HMAC keys under a given project with the additional filters provided.
+func (c *Client) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKeysRequest, opts ...gax.CallOption) (*storagepb.ListHmacKeysResponse, error) {
+	return c.internalClient.ListHmacKeys(ctx, req, opts...)
+}
+
+// UpdateHmacKey updates a given HMAC key state between ACTIVE and INACTIVE.
+func (c *Client) UpdateHmacKey(ctx context.Context, req *storagepb.UpdateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
+	return c.internalClient.UpdateHmacKey(ctx, req, opts...)
+}
+
+// gRPCClient is a client for interacting with Cloud Storage API over gRPC transport.
+//
+// Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
+type gRPCClient struct {
+	// Connection pool of gRPC connections to the service.
+	connPool gtransport.ConnPool
+
+	// flag to opt out of default deadlines via GOOGLE_API_GO_EXPERIMENTAL_DISABLE_DEFAULT_DEADLINE
+	disableDeadlines bool
+
+	// Points back to the CallOptions field of the containing Client
+	CallOptions **CallOptions
+
+	// The gRPC API client.
+	client storagepb.StorageClient
+
+	// The x-goog-* metadata to be sent with each request.
+	xGoogMetadata metadata.MD
+}
+
+// NewClient creates a new storage client based on gRPC.
+// The returned client must be Closed when it is done being used to clean up its underlying connections.
+//
+// Manages Google Cloud Storage resources.
+func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	clientOpts := defaultGRPCClientOptions()
+	if newClientHook != nil {
+		hookOpts, err := newClientHook(ctx, clientHookParams{})
+		if err != nil {
+			return nil, err
+		}
+		clientOpts = append(clientOpts, hookOpts...)
+	}
+
+	disableDeadlines, err := checkDisableDeadlines()
+	if err != nil {
+		return nil, err
+	}
+
+	connPool, err := gtransport.DialPool(ctx, append(clientOpts, opts...)...)
+	if err != nil {
+		return nil, err
+	}
+	client := Client{CallOptions: defaultCallOptions()}
+
+	c := &gRPCClient{
+		connPool:         connPool,
+		disableDeadlines: disableDeadlines,
+		client:           storagepb.NewStorageClient(connPool),
+		CallOptions:      &client.CallOptions,
+	}
+	c.setGoogleClientInfo()
+
+	client.internalClient = c
+
+	return &client, nil
+}
+
+// Connection returns a connection to the API service.
+//
+// Deprecated.
+func (c *gRPCClient) Connection() *grpc.ClientConn {
+	return c.connPool.Conn()
+}
+
+// setGoogleClientInfo sets the name and version of the application in
+// the `x-goog-api-client` header passed on each request. Intended for
+// use by Google-written clients.
+func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
+	kv := append([]string{"gl-go", versionGo()}, keyval...)
+	kv = append(kv, "gapic", versionClient, "gax", gax.Version, "grpc", grpc.Version)
+	c.xGoogMetadata = metadata.Pairs("x-goog-api-client", gax.XGoogHeader(kv...))
+}
+
+// Close closes the connection to the API service. The user should invoke this when
+// the client is no longer required.
+func (c *gRPCClient) Close() error {
+	return c.connPool.Close()
+}
+
+func (c *gRPCClient) DeleteBucketAccessControl(ctx context.Context, req *storagepb.DeleteBucketAccessControlRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteBucketAccessControl[0:len((*c.CallOptions).DeleteBucketAccessControl):len((*c.CallOptions).DeleteBucketAccessControl)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteBucketAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetBucketAccessControl(ctx context.Context, req *storagepb.GetBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetBucketAccessControl[0:len((*c.CallOptions).GetBucketAccessControl):len((*c.CallOptions).GetBucketAccessControl)], opts...)
+	var resp *storagepb.BucketAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBucketAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InsertBucketAccessControl(ctx context.Context, req *storagepb.InsertBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).InsertBucketAccessControl[0:len((*c.CallOptions).InsertBucketAccessControl):len((*c.CallOptions).InsertBucketAccessControl)], opts...)
+	var resp *storagepb.BucketAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InsertBucketAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBucketAccessControls(ctx context.Context, req *storagepb.ListBucketAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListBucketAccessControlsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListBucketAccessControls[0:len((*c.CallOptions).ListBucketAccessControls):len((*c.CallOptions).ListBucketAccessControls)], opts...)
+	var resp *storagepb.ListBucketAccessControlsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListBucketAccessControls(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateBucketAccessControl(ctx context.Context, req *storagepb.UpdateBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).UpdateBucketAccessControl[0:len((*c.CallOptions).UpdateBucketAccessControl):len((*c.CallOptions).UpdateBucketAccessControl)], opts...)
+	var resp *storagepb.BucketAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBucketAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) PatchBucketAccessControl(ctx context.Context, req *storagepb.PatchBucketAccessControlRequest, opts ...gax.CallOption) (*storagepb.BucketAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).PatchBucketAccessControl[0:len((*c.CallOptions).PatchBucketAccessControl):len((*c.CallOptions).PatchBucketAccessControl)], opts...)
+	var resp *storagepb.BucketAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.PatchBucketAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteBucket(ctx context.Context, req *storagepb.DeleteBucketRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteBucket[0:len((*c.CallOptions).DeleteBucket):len((*c.CallOptions).DeleteBucket)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetBucket(ctx context.Context, req *storagepb.GetBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetBucket[0:len((*c.CallOptions).GetBucket):len((*c.CallOptions).GetBucket)], opts...)
+	var resp *storagepb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InsertBucket(ctx context.Context, req *storagepb.InsertBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).InsertBucket[0:len((*c.CallOptions).InsertBucket):len((*c.CallOptions).InsertBucket)], opts...)
+	var resp *storagepb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InsertBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListChannels(ctx context.Context, req *storagepb.ListChannelsRequest, opts ...gax.CallOption) (*storagepb.ListChannelsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListChannels[0:len((*c.CallOptions).ListChannels):len((*c.CallOptions).ListChannels)], opts...)
+	var resp *storagepb.ListChannelsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListChannels(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListBuckets(ctx context.Context, req *storagepb.ListBucketsRequest, opts ...gax.CallOption) (*storagepb.ListBucketsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListBuckets[0:len((*c.CallOptions).ListBuckets):len((*c.CallOptions).ListBuckets)], opts...)
+	var resp *storagepb.ListBucketsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListBuckets(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) LockBucketRetentionPolicy(ctx context.Context, req *storagepb.LockRetentionPolicyRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).LockBucketRetentionPolicy[0:len((*c.CallOptions).LockBucketRetentionPolicy):len((*c.CallOptions).LockBucketRetentionPolicy)], opts...)
+	var resp *storagepb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.LockBucketRetentionPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetBucketIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetBucketIamPolicy[0:len((*c.CallOptions).GetBucketIamPolicy):len((*c.CallOptions).GetBucketIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetBucketIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SetBucketIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).SetBucketIamPolicy[0:len((*c.CallOptions).SetBucketIamPolicy):len((*c.CallOptions).SetBucketIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.SetBucketIamPolicy(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TestBucketIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).TestBucketIamPermissions[0:len((*c.CallOptions).TestBucketIamPermissions):len((*c.CallOptions).TestBucketIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.TestBucketIamPermissions(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) PatchBucket(ctx context.Context, req *storagepb.PatchBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).PatchBucket[0:len((*c.CallOptions).PatchBucket):len((*c.CallOptions).PatchBucket)], opts...)
+	var resp *storagepb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.PatchBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateBucket(ctx context.Context, req *storagepb.UpdateBucketRequest, opts ...gax.CallOption) (*storagepb.Bucket, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).UpdateBucket[0:len((*c.CallOptions).UpdateBucket):len((*c.CallOptions).UpdateBucket)], opts...)
+	var resp *storagepb.Bucket
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateBucket(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) StopChannel(ctx context.Context, req *storagepb.StopChannelRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).StopChannel[0:len((*c.CallOptions).StopChannel):len((*c.CallOptions).StopChannel)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.StopChannel(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteDefaultObjectAccessControl(ctx context.Context, req *storagepb.DeleteDefaultObjectAccessControlRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteDefaultObjectAccessControl[0:len((*c.CallOptions).DeleteDefaultObjectAccessControl):len((*c.CallOptions).DeleteDefaultObjectAccessControl)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteDefaultObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetDefaultObjectAccessControl(ctx context.Context, req *storagepb.GetDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetDefaultObjectAccessControl[0:len((*c.CallOptions).GetDefaultObjectAccessControl):len((*c.CallOptions).GetDefaultObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetDefaultObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InsertDefaultObjectAccessControl(ctx context.Context, req *storagepb.InsertDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).InsertDefaultObjectAccessControl[0:len((*c.CallOptions).InsertDefaultObjectAccessControl):len((*c.CallOptions).InsertDefaultObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InsertDefaultObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListDefaultObjectAccessControls(ctx context.Context, req *storagepb.ListDefaultObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListDefaultObjectAccessControls[0:len((*c.CallOptions).ListDefaultObjectAccessControls):len((*c.CallOptions).ListDefaultObjectAccessControls)], opts...)
+	var resp *storagepb.ListObjectAccessControlsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListDefaultObjectAccessControls(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) PatchDefaultObjectAccessControl(ctx context.Context, req *storagepb.PatchDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).PatchDefaultObjectAccessControl[0:len((*c.CallOptions).PatchDefaultObjectAccessControl):len((*c.CallOptions).PatchDefaultObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.PatchDefaultObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateDefaultObjectAccessControl(ctx context.Context, req *storagepb.UpdateDefaultObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).UpdateDefaultObjectAccessControl[0:len((*c.CallOptions).UpdateDefaultObjectAccessControl):len((*c.CallOptions).UpdateDefaultObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateDefaultObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteNotification(ctx context.Context, req *storagepb.DeleteNotificationRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteNotification[0:len((*c.CallOptions).DeleteNotification):len((*c.CallOptions).DeleteNotification)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteNotification(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetNotification(ctx context.Context, req *storagepb.GetNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetNotification[0:len((*c.CallOptions).GetNotification):len((*c.CallOptions).GetNotification)], opts...)
+	var resp *storagepb.Notification
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetNotification(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InsertNotification(ctx context.Context, req *storagepb.InsertNotificationRequest, opts ...gax.CallOption) (*storagepb.Notification, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).InsertNotification[0:len((*c.CallOptions).InsertNotification):len((*c.CallOptions).InsertNotification)], opts...)
+	var resp *storagepb.Notification
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InsertNotification(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListNotifications(ctx context.Context, req *storagepb.ListNotificationsRequest, opts ...gax.CallOption) (*storagepb.ListNotificationsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListNotifications[0:len((*c.CallOptions).ListNotifications):len((*c.CallOptions).ListNotifications)], opts...)
+	var resp *storagepb.ListNotificationsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListNotifications(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteObjectAccessControl(ctx context.Context, req *storagepb.DeleteObjectAccessControlRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteObjectAccessControl[0:len((*c.CallOptions).DeleteObjectAccessControl):len((*c.CallOptions).DeleteObjectAccessControl)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetObjectAccessControl(ctx context.Context, req *storagepb.GetObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetObjectAccessControl[0:len((*c.CallOptions).GetObjectAccessControl):len((*c.CallOptions).GetObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InsertObjectAccessControl(ctx context.Context, req *storagepb.InsertObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).InsertObjectAccessControl[0:len((*c.CallOptions).InsertObjectAccessControl):len((*c.CallOptions).InsertObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.InsertObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListObjectAccessControls(ctx context.Context, req *storagepb.ListObjectAccessControlsRequest, opts ...gax.CallOption) (*storagepb.ListObjectAccessControlsResponse, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ListObjectAccessControls[0:len((*c.CallOptions).ListObjectAccessControls):len((*c.CallOptions).ListObjectAccessControls)], opts...)
+	var resp *storagepb.ListObjectAccessControlsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ListObjectAccessControls(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) PatchObjectAccessControl(ctx context.Context, req *storagepb.PatchObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).PatchObjectAccessControl[0:len((*c.CallOptions).PatchObjectAccessControl):len((*c.CallOptions).PatchObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.PatchObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateObjectAccessControl(ctx context.Context, req *storagepb.UpdateObjectAccessControlRequest, opts ...gax.CallOption) (*storagepb.ObjectAccessControl, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).UpdateObjectAccessControl[0:len((*c.CallOptions).UpdateObjectAccessControl):len((*c.CallOptions).UpdateObjectAccessControl)], opts...)
+	var resp *storagepb.ObjectAccessControl
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.UpdateObjectAccessControl(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ComposeObject(ctx context.Context, req *storagepb.ComposeObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).ComposeObject[0:len((*c.CallOptions).ComposeObject):len((*c.CallOptions).ComposeObject)], opts...)
+	var resp *storagepb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.ComposeObject(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CopyObject(ctx context.Context, req *storagepb.CopyObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).CopyObject[0:len((*c.CallOptions).CopyObject):len((*c.CallOptions).CopyObject)], opts...)
+	var resp *storagepb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.CopyObject(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteObject(ctx context.Context, req *storagepb.DeleteObjectRequest, opts ...gax.CallOption) error {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).DeleteObject[0:len((*c.CallOptions).DeleteObject):len((*c.CallOptions).DeleteObject)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = c.client.DeleteObject(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetObject(ctx context.Context, req *storagepb.GetObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	opts = append((*c.CallOptions).GetObject[0:len((*c.CallOptions).GetObject):len((*c.CallOptions).GetObject)], opts...)
+	var resp *storagepb.Object
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetObject(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetObjectMedia(ctx context.Context, req *storagepb.GetObjectMediaRequest, opts ...gax.CallOption) (storagepb.Storage_GetObjectMediaClient, error) {
+	ctx = insertMetadata(ctx, c.xGoogMetadata)
+	var resp storagepb.Storage_GetObjectMediaClient
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.client.GetObjectMedia(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) InsertObject(ctx context.Context, opts ...gax.CallOption) (storagepb.Storage_InsertObjectClient, error) {
 	ctx = insertMetadata(ctx, c.xGoogMetadata)
 	var resp storagepb.Storage_InsertObjectClient
 	opts = append((*c.CallOptions).InsertObject[0:len((*c.CallOptions).InsertObject):len((*c.CallOptions).InsertObject)], opts...)
@@ -1787,8 +2071,7 @@ func (c *GRPCClient) InsertObject(ctx context.Context, opts ...gax.CallOption) (
 	return resp, nil
 }
 
-// ListObjects retrieves a list of objects matching the criteria.
-func (c *GRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjectsRequest, opts ...gax.CallOption) (*storagepb.ListObjectsResponse, error) {
+func (c *gRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjectsRequest, opts ...gax.CallOption) (*storagepb.ListObjectsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1808,9 +2091,7 @@ func (c *GRPCClient) ListObjects(ctx context.Context, req *storagepb.ListObjects
 	return resp, nil
 }
 
-// RewriteObject rewrites a source object to a destination object. Optionally overrides
-// metadata.
-func (c *GRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteObjectRequest, opts ...gax.CallOption) (*storagepb.RewriteResponse, error) {
+func (c *gRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteObjectRequest, opts ...gax.CallOption) (*storagepb.RewriteResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1830,10 +2111,7 @@ func (c *GRPCClient) RewriteObject(ctx context.Context, req *storagepb.RewriteOb
 	return resp, nil
 }
 
-// StartResumableWrite starts a resumable write. How long the write operation remains valid, and
-// what happens when the write operation becomes invalid, are
-// service-dependent.
-func (c *GRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest, opts ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error) {
+func (c *gRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.StartResumableWriteRequest, opts ...gax.CallOption) (*storagepb.StartResumableWriteResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1853,20 +2131,7 @@ func (c *GRPCClient) StartResumableWrite(ctx context.Context, req *storagepb.Sta
 	return resp, nil
 }
 
-// QueryWriteStatus determines the committed_size for an object that is being written, which
-// can then be used as the write_offset for the next Write() call.
-//
-// If the object does not exist (i.e., the object has been deleted, or the
-// first Write() has not yet reached the service), this method returns the
-// error NOT_FOUND.
-//
-// The client may call QueryWriteStatus() at any time to determine how
-// much data has been processed for this object. This is useful if the
-// client is buffering data and needs to know which data can be safely
-// evicted. For any sequence of QueryWriteStatus() calls for a given
-// object name, the sequence of returned committed_size values will be
-// non-decreasing.
-func (c *GRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
+func (c *gRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryWriteStatusRequest, opts ...gax.CallOption) (*storagepb.QueryWriteStatusResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1886,8 +2151,7 @@ func (c *GRPCClient) QueryWriteStatus(ctx context.Context, req *storagepb.QueryW
 	return resp, nil
 }
 
-// PatchObject updates an object’s metadata.
-func (c *GRPCClient) PatchObject(ctx context.Context, req *storagepb.PatchObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+func (c *gRPCClient) PatchObject(ctx context.Context, req *storagepb.PatchObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1907,10 +2171,7 @@ func (c *GRPCClient) PatchObject(ctx context.Context, req *storagepb.PatchObject
 	return resp, nil
 }
 
-// UpdateObject updates an object’s metadata. Equivalent to PatchObject, but always
-// replaces all mutatable fields of the bucket with new values, reverting all
-// unspecified fields to their default values.
-func (c *GRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
+func (c *gRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObjectRequest, opts ...gax.CallOption) (*storagepb.Object, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1930,8 +2191,7 @@ func (c *GRPCClient) UpdateObject(ctx context.Context, req *storagepb.UpdateObje
 	return resp, nil
 }
 
-// GetObjectIamPolicy gets the IAM policy for the specified object.
-func (c *GRPCClient) GetObjectIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) GetObjectIamPolicy(ctx context.Context, req *storagepb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1951,8 +2211,7 @@ func (c *GRPCClient) GetObjectIamPolicy(ctx context.Context, req *storagepb.GetI
 	return resp, nil
 }
 
-// SetObjectIamPolicy updates an IAM policy for the specified object.
-func (c *GRPCClient) SetObjectIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+func (c *gRPCClient) SetObjectIamPolicy(ctx context.Context, req *storagepb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1972,9 +2231,7 @@ func (c *GRPCClient) SetObjectIamPolicy(ctx context.Context, req *storagepb.SetI
 	return resp, nil
 }
 
-// TestObjectIamPermissions tests a set of permissions on the given object to see which, if
-// any, are held by the caller.
-func (c *GRPCClient) TestObjectIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+func (c *gRPCClient) TestObjectIamPermissions(ctx context.Context, req *storagepb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -1994,8 +2251,7 @@ func (c *GRPCClient) TestObjectIamPermissions(ctx context.Context, req *storagep
 	return resp, nil
 }
 
-// WatchAllObjects watch for changes on all objects in a bucket.
-func (c *GRPCClient) WatchAllObjects(ctx context.Context, req *storagepb.WatchAllObjectsRequest, opts ...gax.CallOption) (*storagepb.Channel, error) {
+func (c *gRPCClient) WatchAllObjects(ctx context.Context, req *storagepb.WatchAllObjectsRequest, opts ...gax.CallOption) (*storagepb.Channel, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -2015,8 +2271,7 @@ func (c *GRPCClient) WatchAllObjects(ctx context.Context, req *storagepb.WatchAl
 	return resp, nil
 }
 
-// GetServiceAccount retrieves the name of a project’s Google Cloud Storage service account.
-func (c *GRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetProjectServiceAccountRequest, opts ...gax.CallOption) (*storagepb.ServiceAccount, error) {
+func (c *gRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetProjectServiceAccountRequest, opts ...gax.CallOption) (*storagepb.ServiceAccount, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -2036,8 +2291,7 @@ func (c *GRPCClient) GetServiceAccount(ctx context.Context, req *storagepb.GetPr
 	return resp, nil
 }
 
-// CreateHmacKey creates a new HMAC key for the given service account.
-func (c *GRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.CreateHmacKeyResponse, error) {
+func (c *gRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.CreateHmacKeyResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -2057,8 +2311,7 @@ func (c *GRPCClient) CreateHmacKey(ctx context.Context, req *storagepb.CreateHma
 	return resp, nil
 }
 
-// DeleteHmacKey deletes a given HMAC key.  Key must be in an INACTIVE state.
-func (c *GRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHmacKeyRequest, opts ...gax.CallOption) error {
+func (c *gRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHmacKeyRequest, opts ...gax.CallOption) error {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -2074,8 +2327,7 @@ func (c *GRPCClient) DeleteHmacKey(ctx context.Context, req *storagepb.DeleteHma
 	return err
 }
 
-// GetHmacKey gets an existing HMAC key metadata for the given id.
-func (c *GRPCClient) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
+func (c *gRPCClient) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -2095,8 +2347,7 @@ func (c *GRPCClient) GetHmacKey(ctx context.Context, req *storagepb.GetHmacKeyRe
 	return resp, nil
 }
 
-// ListHmacKeys lists HMAC keys under a given project with the additional filters provided.
-func (c *GRPCClient) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKeysRequest, opts ...gax.CallOption) (*storagepb.ListHmacKeysResponse, error) {
+func (c *gRPCClient) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKeysRequest, opts ...gax.CallOption) (*storagepb.ListHmacKeysResponse, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()
@@ -2116,8 +2367,7 @@ func (c *GRPCClient) ListHmacKeys(ctx context.Context, req *storagepb.ListHmacKe
 	return resp, nil
 }
 
-// UpdateHmacKey updates a given HMAC key state between ACTIVE and INACTIVE.
-func (c *GRPCClient) UpdateHmacKey(ctx context.Context, req *storagepb.UpdateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
+func (c *gRPCClient) UpdateHmacKey(ctx context.Context, req *storagepb.UpdateHmacKeyRequest, opts ...gax.CallOption) (*storagepb.HmacKeyMetadata, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 60000*time.Millisecond)
 		defer cancel()

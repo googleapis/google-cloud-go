@@ -29,6 +29,8 @@ func ExampleNewClient() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
+
 	// TODO: Use client.
 	_ = c
 }
@@ -39,6 +41,7 @@ func ExampleClient_DeleteBucketAccessControl() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteBucketAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -50,13 +53,12 @@ func ExampleClient_DeleteBucketAccessControl() {
 }
 
 func ExampleClient_GetBucketAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetBucketAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -70,13 +72,12 @@ func ExampleClient_GetBucketAccessControl() {
 }
 
 func ExampleClient_InsertBucketAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.InsertBucketAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -90,13 +91,12 @@ func ExampleClient_InsertBucketAccessControl() {
 }
 
 func ExampleClient_ListBucketAccessControls() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListBucketAccessControlsRequest{
 		// TODO: Fill request struct fields.
@@ -110,13 +110,12 @@ func ExampleClient_ListBucketAccessControls() {
 }
 
 func ExampleClient_UpdateBucketAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.UpdateBucketAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -130,13 +129,12 @@ func ExampleClient_UpdateBucketAccessControl() {
 }
 
 func ExampleClient_PatchBucketAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.PatchBucketAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -155,6 +153,7 @@ func ExampleClient_DeleteBucket() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteBucketRequest{
 		// TODO: Fill request struct fields.
@@ -166,13 +165,12 @@ func ExampleClient_DeleteBucket() {
 }
 
 func ExampleClient_GetBucket() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetBucketRequest{
 		// TODO: Fill request struct fields.
@@ -186,13 +184,12 @@ func ExampleClient_GetBucket() {
 }
 
 func ExampleClient_InsertBucket() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.InsertBucketRequest{
 		// TODO: Fill request struct fields.
@@ -206,13 +203,12 @@ func ExampleClient_InsertBucket() {
 }
 
 func ExampleClient_ListChannels() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListChannelsRequest{
 		// TODO: Fill request struct fields.
@@ -226,13 +222,12 @@ func ExampleClient_ListChannels() {
 }
 
 func ExampleClient_ListBuckets() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListBucketsRequest{
 		// TODO: Fill request struct fields.
@@ -246,13 +241,12 @@ func ExampleClient_ListBuckets() {
 }
 
 func ExampleClient_LockBucketRetentionPolicy() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.LockRetentionPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -266,13 +260,12 @@ func ExampleClient_LockBucketRetentionPolicy() {
 }
 
 func ExampleClient_GetBucketIamPolicy() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -286,13 +279,12 @@ func ExampleClient_GetBucketIamPolicy() {
 }
 
 func ExampleClient_SetBucketIamPolicy() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -306,13 +298,12 @@ func ExampleClient_SetBucketIamPolicy() {
 }
 
 func ExampleClient_TestBucketIamPermissions() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -326,13 +317,12 @@ func ExampleClient_TestBucketIamPermissions() {
 }
 
 func ExampleClient_PatchBucket() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.PatchBucketRequest{
 		// TODO: Fill request struct fields.
@@ -346,13 +336,12 @@ func ExampleClient_PatchBucket() {
 }
 
 func ExampleClient_UpdateBucket() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.UpdateBucketRequest{
 		// TODO: Fill request struct fields.
@@ -371,6 +360,7 @@ func ExampleClient_StopChannel() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.StopChannelRequest{
 		// TODO: Fill request struct fields.
@@ -387,6 +377,7 @@ func ExampleClient_DeleteDefaultObjectAccessControl() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteDefaultObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -398,13 +389,12 @@ func ExampleClient_DeleteDefaultObjectAccessControl() {
 }
 
 func ExampleClient_GetDefaultObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetDefaultObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -418,13 +408,12 @@ func ExampleClient_GetDefaultObjectAccessControl() {
 }
 
 func ExampleClient_InsertDefaultObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.InsertDefaultObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -438,13 +427,12 @@ func ExampleClient_InsertDefaultObjectAccessControl() {
 }
 
 func ExampleClient_ListDefaultObjectAccessControls() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListDefaultObjectAccessControlsRequest{
 		// TODO: Fill request struct fields.
@@ -458,13 +446,12 @@ func ExampleClient_ListDefaultObjectAccessControls() {
 }
 
 func ExampleClient_PatchDefaultObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.PatchDefaultObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -478,13 +465,12 @@ func ExampleClient_PatchDefaultObjectAccessControl() {
 }
 
 func ExampleClient_UpdateDefaultObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.UpdateDefaultObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -503,6 +489,7 @@ func ExampleClient_DeleteNotification() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteNotificationRequest{
 		// TODO: Fill request struct fields.
@@ -514,13 +501,12 @@ func ExampleClient_DeleteNotification() {
 }
 
 func ExampleClient_GetNotification() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetNotificationRequest{
 		// TODO: Fill request struct fields.
@@ -534,13 +520,12 @@ func ExampleClient_GetNotification() {
 }
 
 func ExampleClient_InsertNotification() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.InsertNotificationRequest{
 		// TODO: Fill request struct fields.
@@ -554,13 +539,12 @@ func ExampleClient_InsertNotification() {
 }
 
 func ExampleClient_ListNotifications() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListNotificationsRequest{
 		// TODO: Fill request struct fields.
@@ -579,6 +563,7 @@ func ExampleClient_DeleteObjectAccessControl() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -590,13 +575,12 @@ func ExampleClient_DeleteObjectAccessControl() {
 }
 
 func ExampleClient_GetObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -610,13 +594,12 @@ func ExampleClient_GetObjectAccessControl() {
 }
 
 func ExampleClient_InsertObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.InsertObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -630,13 +613,12 @@ func ExampleClient_InsertObjectAccessControl() {
 }
 
 func ExampleClient_ListObjectAccessControls() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListObjectAccessControlsRequest{
 		// TODO: Fill request struct fields.
@@ -650,13 +632,12 @@ func ExampleClient_ListObjectAccessControls() {
 }
 
 func ExampleClient_PatchObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.PatchObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -670,13 +651,12 @@ func ExampleClient_PatchObjectAccessControl() {
 }
 
 func ExampleClient_UpdateObjectAccessControl() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.UpdateObjectAccessControlRequest{
 		// TODO: Fill request struct fields.
@@ -690,13 +670,12 @@ func ExampleClient_UpdateObjectAccessControl() {
 }
 
 func ExampleClient_ComposeObject() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ComposeObjectRequest{
 		// TODO: Fill request struct fields.
@@ -710,13 +689,12 @@ func ExampleClient_ComposeObject() {
 }
 
 func ExampleClient_CopyObject() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CopyObjectRequest{
 		// TODO: Fill request struct fields.
@@ -735,6 +713,7 @@ func ExampleClient_DeleteObject() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteObjectRequest{
 		// TODO: Fill request struct fields.
@@ -746,13 +725,12 @@ func ExampleClient_DeleteObject() {
 }
 
 func ExampleClient_GetObject() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetObjectRequest{
 		// TODO: Fill request struct fields.
@@ -766,13 +744,12 @@ func ExampleClient_GetObject() {
 }
 
 func ExampleClient_ListObjects() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListObjectsRequest{
 		// TODO: Fill request struct fields.
@@ -786,13 +763,12 @@ func ExampleClient_ListObjects() {
 }
 
 func ExampleClient_RewriteObject() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.RewriteObjectRequest{
 		// TODO: Fill request struct fields.
@@ -806,13 +782,12 @@ func ExampleClient_RewriteObject() {
 }
 
 func ExampleClient_StartResumableWrite() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.StartResumableWriteRequest{
 		// TODO: Fill request struct fields.
@@ -826,13 +801,12 @@ func ExampleClient_StartResumableWrite() {
 }
 
 func ExampleClient_QueryWriteStatus() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.QueryWriteStatusRequest{
 		// TODO: Fill request struct fields.
@@ -846,13 +820,12 @@ func ExampleClient_QueryWriteStatus() {
 }
 
 func ExampleClient_PatchObject() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.PatchObjectRequest{
 		// TODO: Fill request struct fields.
@@ -866,13 +839,12 @@ func ExampleClient_PatchObject() {
 }
 
 func ExampleClient_UpdateObject() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.UpdateObjectRequest{
 		// TODO: Fill request struct fields.
@@ -886,13 +858,12 @@ func ExampleClient_UpdateObject() {
 }
 
 func ExampleClient_GetObjectIamPolicy() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -906,13 +877,12 @@ func ExampleClient_GetObjectIamPolicy() {
 }
 
 func ExampleClient_SetObjectIamPolicy() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.SetIamPolicyRequest{
 		// TODO: Fill request struct fields.
@@ -926,13 +896,12 @@ func ExampleClient_SetObjectIamPolicy() {
 }
 
 func ExampleClient_TestObjectIamPermissions() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.TestIamPermissionsRequest{
 		// TODO: Fill request struct fields.
@@ -946,13 +915,12 @@ func ExampleClient_TestObjectIamPermissions() {
 }
 
 func ExampleClient_WatchAllObjects() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.WatchAllObjectsRequest{
 		// TODO: Fill request struct fields.
@@ -966,13 +934,12 @@ func ExampleClient_WatchAllObjects() {
 }
 
 func ExampleClient_GetServiceAccount() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetProjectServiceAccountRequest{
 		// TODO: Fill request struct fields.
@@ -986,13 +953,12 @@ func ExampleClient_GetServiceAccount() {
 }
 
 func ExampleClient_CreateHmacKey() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.CreateHmacKeyRequest{
 		// TODO: Fill request struct fields.
@@ -1011,6 +977,7 @@ func ExampleClient_DeleteHmacKey() {
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.DeleteHmacKeyRequest{
 		// TODO: Fill request struct fields.
@@ -1022,13 +989,12 @@ func ExampleClient_DeleteHmacKey() {
 }
 
 func ExampleClient_GetHmacKey() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.GetHmacKeyRequest{
 		// TODO: Fill request struct fields.
@@ -1042,13 +1008,12 @@ func ExampleClient_GetHmacKey() {
 }
 
 func ExampleClient_ListHmacKeys() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.ListHmacKeysRequest{
 		// TODO: Fill request struct fields.
@@ -1062,13 +1027,12 @@ func ExampleClient_ListHmacKeys() {
 }
 
 func ExampleClient_UpdateHmacKey() {
-	// import storagepb "google.golang.org/genproto/googleapis/storage/v1"
-
 	ctx := context.Background()
 	c, err := storage.NewClient(ctx)
 	if err != nil {
 		// TODO: Handle error.
 	}
+	defer c.Close()
 
 	req := &storagepb.UpdateHmacKeyRequest{
 		// TODO: Fill request struct fields.
