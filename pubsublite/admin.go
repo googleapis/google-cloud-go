@@ -29,18 +29,6 @@ var (
 	errNoSubscriptionFieldsUpdated = errors.New("pubsublite: no fields updated for subscription")
 )
 
-// BacklogLocation refers to a location with respect to the message backlog.
-type BacklogLocation int
-
-const (
-	// End refers to the location past all currently published messages. End
-	// skips the entire message backlog.
-	End BacklogLocation = iota + 1
-
-	// Beginning refers to the location of the oldest retained message.
-	Beginning
-)
-
 // AdminClient provides admin operations for Pub/Sub Lite resources within a
 // Google Cloud region. The zone component of resource paths must be within this
 // region. See https://cloud.google.com/pubsub/lite/docs/locations for the list
@@ -229,6 +217,29 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 		return nil, err
 	}
 	return protoToSubscriptionConfig(subspb), nil
+}
+
+// SeekSubscription performs an out-of-band seek for a subscription to a
+// specified target, which may be timestamps or named positions within the
+// message backlog.
+//
+// If an operation is returned, the seek has been registered and subscribers
+// will eventually receive messages from the seek target, as long as the
+// subscriber client supports out-of-band seeks. The seek operation will be
+// aborted for unsupported clients, or if it is superseded by a newer seek
+// invocation for the same subscription.
+//
+// To determine when subscribers react to the seek (or it has been aborted),
+// wait for the returned operation to complete. The operation will succeed and
+// complete once subscribers are receiving messages from the seek target for all
+// partitions of the topic. The operation will not complete until all
+// subscribers come online.
+func (ac *AdminClient) SeekSubscription(ctx context.Context, options SeekSubscriptionOptions) (*SeekSubscriptionOperation, error) {
+	if _, err := wire.ParseSubscriptionPath(options.Name); err != nil {
+		return nil, err
+	}
+	op, err := ac.admin.SeekSubscription(ctx, options.toRequest())
+	return &SeekSubscriptionOperation{op}, err
 }
 
 // DeleteSubscription deletes a subscription. A valid subscription path has the
