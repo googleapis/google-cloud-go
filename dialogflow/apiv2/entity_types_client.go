@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newEntityTypesClientHook clientHook
@@ -254,23 +254,37 @@ func (c *EntityTypesClient) GetEntityType(ctx context.Context, req *dialogflowpb
 }
 
 // CreateEntityType creates an entity type in the specified agent.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) CreateEntityType(ctx context.Context, req *dialogflowpb.CreateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
 	return c.internalClient.CreateEntityType(ctx, req, opts...)
 }
 
 // UpdateEntityType updates the specified entity type.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) UpdateEntityType(ctx context.Context, req *dialogflowpb.UpdateEntityTypeRequest, opts ...gax.CallOption) (*dialogflowpb.EntityType, error) {
 	return c.internalClient.UpdateEntityType(ctx, req, opts...)
 }
 
 // DeleteEntityType deletes the specified entity type.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) DeleteEntityType(ctx context.Context, req *dialogflowpb.DeleteEntityTypeRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteEntityType(ctx, req, opts...)
 }
 
 // BatchUpdateEntityTypes updates/Creates multiple entity types in the specified agent.
 //
-// Operation <response: BatchUpdateEntityTypesResponse>
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) BatchUpdateEntityTypes(ctx context.Context, req *dialogflowpb.BatchUpdateEntityTypesRequest, opts ...gax.CallOption) (*BatchUpdateEntityTypesOperation, error) {
 	return c.internalClient.BatchUpdateEntityTypes(ctx, req, opts...)
 }
@@ -283,7 +297,9 @@ func (c *EntityTypesClient) BatchUpdateEntityTypesOperation(name string) *BatchU
 
 // BatchDeleteEntityTypes deletes entity types in the specified agent.
 //
-// Operation <response: google.protobuf.Empty>
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) BatchDeleteEntityTypes(ctx context.Context, req *dialogflowpb.BatchDeleteEntityTypesRequest, opts ...gax.CallOption) (*BatchDeleteEntityTypesOperation, error) {
 	return c.internalClient.BatchDeleteEntityTypes(ctx, req, opts...)
 }
@@ -296,7 +312,9 @@ func (c *EntityTypesClient) BatchDeleteEntityTypesOperation(name string) *BatchD
 
 // BatchCreateEntities creates multiple new entities in the specified entity type.
 //
-// Operation <response: google.protobuf.Empty>
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) BatchCreateEntities(ctx context.Context, req *dialogflowpb.BatchCreateEntitiesRequest, opts ...gax.CallOption) (*BatchCreateEntitiesOperation, error) {
 	return c.internalClient.BatchCreateEntities(ctx, req, opts...)
 }
@@ -311,7 +329,9 @@ func (c *EntityTypesClient) BatchCreateEntitiesOperation(name string) *BatchCrea
 // method does not affect entities in the entity type that aren’t explicitly
 // specified in the request.
 //
-// Operation <response: google.protobuf.Empty>
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) BatchUpdateEntities(ctx context.Context, req *dialogflowpb.BatchUpdateEntitiesRequest, opts ...gax.CallOption) (*BatchUpdateEntitiesOperation, error) {
 	return c.internalClient.BatchUpdateEntities(ctx, req, opts...)
 }
@@ -324,7 +344,9 @@ func (c *EntityTypesClient) BatchUpdateEntitiesOperation(name string) *BatchUpda
 
 // BatchDeleteEntities deletes entities in the specified entity type.
 //
-// Operation <response: google.protobuf.Empty>
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *EntityTypesClient) BatchDeleteEntities(ctx context.Context, req *dialogflowpb.BatchDeleteEntitiesRequest, opts ...gax.CallOption) (*BatchDeleteEntitiesOperation, error) {
 	return c.internalClient.BatchDeleteEntities(ctx, req, opts...)
 }

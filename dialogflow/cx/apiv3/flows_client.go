@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newFlowsClientHook clientHook
@@ -242,6 +242,10 @@ func (c *FlowsClient) Connection() *grpc.ClientConn {
 }
 
 // CreateFlow creates a flow in the specified agent.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) CreateFlow(ctx context.Context, req *cxpb.CreateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
 	return c.internalClient.CreateFlow(ctx, req, opts...)
 }
@@ -262,12 +266,20 @@ func (c *FlowsClient) GetFlow(ctx context.Context, req *cxpb.GetFlowRequest, opt
 }
 
 // UpdateFlow updates the specified flow.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) UpdateFlow(ctx context.Context, req *cxpb.UpdateFlowRequest, opts ...gax.CallOption) (*cxpb.Flow, error) {
 	return c.internalClient.UpdateFlow(ctx, req, opts...)
 }
 
 // TrainFlow trains the specified flow. Note that only the flow in ‘draft’ environment
 // is trained.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) TrainFlow(ctx context.Context, req *cxpb.TrainFlowRequest, opts ...gax.CallOption) (*TrainFlowOperation, error) {
 	return c.internalClient.TrainFlow(ctx, req, opts...)
 }
@@ -292,6 +304,10 @@ func (c *FlowsClient) GetFlowValidationResult(ctx context.Context, req *cxpb.Get
 }
 
 // ImportFlow imports the specified flow to the specified agent from a binary file.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *FlowsClient) ImportFlow(ctx context.Context, req *cxpb.ImportFlowRequest, opts ...gax.CallOption) (*ImportFlowOperation, error) {
 	return c.internalClient.ImportFlow(ctx, req, opts...)
 }
