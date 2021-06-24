@@ -1,67 +1,67 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.functions.v1",
-  "libraryPackage": "cloud.google.com/go/functions/apiv1",
-  "services": {
-    "CloudFunctionsService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "CloudFunctionsClient",
-          "rpcs": {
-            "CallFunction": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.functions.v1",
+  "libraryPackage":  "cloud.google.com/go/functions/apiv1",
+  "services":  {
+    "CloudFunctionsService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "CloudFunctionsClient",
+          "rpcs":  {
+            "CallFunction":  {
+              "methods":  [
                 "CallFunction"
               ]
             },
-            "CreateFunction": {
-              "methods": [
+            "CreateFunction":  {
+              "methods":  [
                 "CreateFunction"
               ]
             },
-            "DeleteFunction": {
-              "methods": [
+            "DeleteFunction":  {
+              "methods":  [
                 "DeleteFunction"
               ]
             },
-            "GenerateDownloadUrl": {
-              "methods": [
+            "GenerateDownloadUrl":  {
+              "methods":  [
                 "GenerateDownloadUrl"
               ]
             },
-            "GenerateUploadUrl": {
-              "methods": [
+            "GenerateUploadUrl":  {
+              "methods":  [
                 "GenerateUploadUrl"
               ]
             },
-            "GetFunction": {
-              "methods": [
+            "GetFunction":  {
+              "methods":  [
                 "GetFunction"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
+            "GetIamPolicy":  {
+              "methods":  [
                 "GetIamPolicy"
               ]
             },
-            "ListFunctions": {
-              "methods": [
+            "ListFunctions":  {
+              "methods":  [
                 "ListFunctions"
               ]
             },
-            "SetIamPolicy": {
-              "methods": [
+            "SetIamPolicy":  {
+              "methods":  [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions": {
-              "methods": [
+            "TestIamPermissions":  {
+              "methods":  [
                 "TestIamPermissions"
               ]
             },
-            "UpdateFunction": {
-              "methods": [
+            "UpdateFunction":  {
+              "methods":  [
                 "UpdateFunction"
               ]
             }
