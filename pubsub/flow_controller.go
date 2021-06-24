@@ -115,7 +115,6 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 				return err
 			}
 		}
-		atomic.AddInt64(&f.countRemaining, 1)
 	case FlowControlSignalError:
 		if f.semCount != nil {
 			if !f.semCount.TryAcquire(1) {
@@ -131,7 +130,6 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 				return ErrFlowControllerMaxOutstandingBytes
 			}
 		}
-		atomic.AddInt64(&f.countRemaining, 1)
 	}
 	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
 	recordStat(ctx, OutstandingMessages, outstandingMessages)
@@ -145,7 +143,6 @@ func (f *flowController) release(ctx context.Context, size int) {
 	if f.limitBehavior == FlowControlIgnore {
 		return
 	}
-	atomic.AddInt64(&f.countRemaining, -1)
 	outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
 	recordStat(ctx, OutstandingMessages, outstandingMessages)
 	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
