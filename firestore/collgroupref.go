@@ -58,7 +58,7 @@ func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partiti
 	}
 	queries := make([]Query, len(qp))
 	for _, part := range qp {
-		queries = append(queries, part.ToQuery())
+		queries = append(queries, part.toQuery())
 	}
 	return queries, nil
 }
@@ -116,7 +116,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 	// lexicographical order by segment (areas between '/').
 	sort.Sort(byFirestoreValue(cursorReferences))
 
-	partitionQueries := make([]queryPartition, 0, len(cursorReferences))
+	queryPartitions := make([]queryPartition, 0, len(cursorReferences))
 	previousCursor := ""
 
 	for _, cursor := range cursorReferences {
@@ -131,7 +131,7 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 			StartAt:              previousCursor,
 			EndBefore:            cursorRef,
 		}
-		partitionQueries = append(partitionQueries, qp)
+		queryPartitions = append(queryPartitions, qp)
 		previousCursor = cursorRef
 	}
 
@@ -142,9 +142,9 @@ func (cgr CollectionGroupRef) getPartitions(ctx context.Context, partitionCount 
 		cursorRef := cursorReferences[len(cursorReferences)-1].GetReferenceValue()
 		lastPart.StartAt = cursorRef[len(orderedQuery.path)+1:]
 	}
-	partitionQueries = append(partitionQueries, lastPart)
+	queryPartitions = append(queryPartitions, lastPart)
 
-	return partitionQueries, nil
+	return queryPartitions, nil
 }
 
 // queryPartition provides a Collection Group Reference and start and end split
@@ -168,8 +168,8 @@ type queryPartition struct {
 	EndBefore string
 }
 
-// ToQuery converts a queryPartition object to a Query object
-func (qp queryPartition) ToQuery() Query {
+// toQuery converts a queryPartition object to a Query object
+func (qp queryPartition) toQuery() Query {
 	q := *qp.CollectionGroupQuery.query()
 
 	// Remove the leading path before calling StartAt, EndBefore
