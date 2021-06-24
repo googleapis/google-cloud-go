@@ -1,37 +1,37 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.dataproc.v1",
-  "libraryPackage": "cloud.google.com/go/dataproc/apiv1",
-  "services": {
-    "AutoscalingPolicyService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "AutoscalingPolicyClient",
-          "rpcs": {
-            "CreateAutoscalingPolicy": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.dataproc.v1",
+  "libraryPackage":  "cloud.google.com/go/dataproc/apiv1",
+  "services":  {
+    "AutoscalingPolicyService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "AutoscalingPolicyClient",
+          "rpcs":  {
+            "CreateAutoscalingPolicy":  {
+              "methods":  [
                 "CreateAutoscalingPolicy"
               ]
             },
-            "DeleteAutoscalingPolicy": {
-              "methods": [
+            "DeleteAutoscalingPolicy":  {
+              "methods":  [
                 "DeleteAutoscalingPolicy"
               ]
             },
-            "GetAutoscalingPolicy": {
-              "methods": [
+            "GetAutoscalingPolicy":  {
+              "methods":  [
                 "GetAutoscalingPolicy"
               ]
             },
-            "ListAutoscalingPolicies": {
-              "methods": [
+            "ListAutoscalingPolicies":  {
+              "methods":  [
                 "ListAutoscalingPolicies"
               ]
             },
-            "UpdateAutoscalingPolicy": {
-              "methods": [
+            "UpdateAutoscalingPolicy":  {
+              "methods":  [
                 "UpdateAutoscalingPolicy"
               ]
             }
@@ -39,48 +39,48 @@
         }
       }
     },
-    "ClusterController": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "ClusterControllerClient",
-          "rpcs": {
-            "CreateCluster": {
-              "methods": [
+    "ClusterController":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "ClusterControllerClient",
+          "rpcs":  {
+            "CreateCluster":  {
+              "methods":  [
                 "CreateCluster"
               ]
             },
-            "DeleteCluster": {
-              "methods": [
+            "DeleteCluster":  {
+              "methods":  [
                 "DeleteCluster"
               ]
             },
-            "DiagnoseCluster": {
-              "methods": [
+            "DiagnoseCluster":  {
+              "methods":  [
                 "DiagnoseCluster"
               ]
             },
-            "GetCluster": {
-              "methods": [
+            "GetCluster":  {
+              "methods":  [
                 "GetCluster"
               ]
             },
-            "ListClusters": {
-              "methods": [
+            "ListClusters":  {
+              "methods":  [
                 "ListClusters"
               ]
             },
-            "StartCluster": {
-              "methods": [
+            "StartCluster":  {
+              "methods":  [
                 "StartCluster"
               ]
             },
-            "StopCluster": {
-              "methods": [
+            "StopCluster":  {
+              "methods":  [
                 "StopCluster"
               ]
             },
-            "UpdateCluster": {
-              "methods": [
+            "UpdateCluster":  {
+              "methods":  [
                 "UpdateCluster"
               ]
             }
@@ -88,43 +88,43 @@
         }
       }
     },
-    "JobController": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "JobControllerClient",
-          "rpcs": {
-            "CancelJob": {
-              "methods": [
+    "JobController":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "JobControllerClient",
+          "rpcs":  {
+            "CancelJob":  {
+              "methods":  [
                 "CancelJob"
               ]
             },
-            "DeleteJob": {
-              "methods": [
+            "DeleteJob":  {
+              "methods":  [
                 "DeleteJob"
               ]
             },
-            "GetJob": {
-              "methods": [
+            "GetJob":  {
+              "methods":  [
                 "GetJob"
               ]
             },
-            "ListJobs": {
-              "methods": [
+            "ListJobs":  {
+              "methods":  [
                 "ListJobs"
               ]
             },
-            "SubmitJob": {
-              "methods": [
+            "SubmitJob":  {
+              "methods":  [
                 "SubmitJob"
               ]
             },
-            "SubmitJobAsOperation": {
-              "methods": [
+            "SubmitJobAsOperation":  {
+              "methods":  [
                 "SubmitJobAsOperation"
               ]
             },
-            "UpdateJob": {
-              "methods": [
+            "UpdateJob":  {
+              "methods":  [
                 "UpdateJob"
               ]
             }
@@ -132,43 +132,43 @@
         }
       }
     },
-    "WorkflowTemplateService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "WorkflowTemplateClient",
-          "rpcs": {
-            "CreateWorkflowTemplate": {
-              "methods": [
+    "WorkflowTemplateService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "WorkflowTemplateClient",
+          "rpcs":  {
+            "CreateWorkflowTemplate":  {
+              "methods":  [
                 "CreateWorkflowTemplate"
               ]
             },
-            "DeleteWorkflowTemplate": {
-              "methods": [
+            "DeleteWorkflowTemplate":  {
+              "methods":  [
                 "DeleteWorkflowTemplate"
               ]
             },
-            "GetWorkflowTemplate": {
-              "methods": [
+            "GetWorkflowTemplate":  {
+              "methods":  [
                 "GetWorkflowTemplate"
               ]
             },
-            "InstantiateInlineWorkflowTemplate": {
-              "methods": [
+            "InstantiateInlineWorkflowTemplate":  {
+              "methods":  [
                 "InstantiateInlineWorkflowTemplate"
               ]
             },
-            "InstantiateWorkflowTemplate": {
-              "methods": [
+            "InstantiateWorkflowTemplate":  {
+              "methods":  [
                 "InstantiateWorkflowTemplate"
               ]
             },
-            "ListWorkflowTemplates": {
-              "methods": [
+            "ListWorkflowTemplates":  {
+              "methods":  [
                 "ListWorkflowTemplates"
               ]
             },
-            "UpdateWorkflowTemplate": {
-              "methods": [
+            "UpdateWorkflowTemplate":  {
+              "methods":  [
                 "UpdateWorkflowTemplate"
               ]
             }

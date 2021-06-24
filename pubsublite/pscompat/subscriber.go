@@ -86,11 +86,13 @@ func (f *wireSubscriberFactoryImpl) New(receiver wire.MessageReceiverFunc) (wire
 	return wire.NewSubscriber(context.Background(), f.settings, receiver, f.region, f.subscription.String(), f.options...)
 }
 
+type messageReceiverFunc = func(context.Context, *pubsub.Message)
+
 // subscriberInstance wraps an instance of a wire.Subscriber. A new instance is
 // created for each invocation of SubscriberClient.Receive().
 type subscriberInstance struct {
 	settings        ReceiveSettings
-	receiver        MessageReceiverFunc
+	receiver        messageReceiverFunc
 	recvCtx         context.Context    // Context passed to the receiver
 	recvCancel      context.CancelFunc // Corresponding cancel func for recvCtx
 	wireSub         wire.Subscriber
@@ -101,7 +103,7 @@ type subscriberInstance struct {
 	err error
 }
 
-func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, settings ReceiveSettings, receiver MessageReceiverFunc) (*subscriberInstance, error) {
+func newSubscriberInstance(ctx context.Context, factory wireSubscriberFactory, settings ReceiveSettings, receiver messageReceiverFunc) (*subscriberInstance, error) {
 	recvCtx, recvCancel := context.WithCancel(ctx)
 	subInstance := &subscriberInstance{
 		settings:   settings,
@@ -221,17 +223,6 @@ func (si *subscriberInstance) Wait(ctx context.Context) error {
 	return err
 }
 
-// MessageReceiverFunc handles messages sent by the Pub/Sub Lite service.
-//
-// The implementation must arrange for pubsub.Message.Ack() or
-// pubsub.Message.Nack() to be called after processing the message.
-//
-// The receiver func will be called from multiple goroutines if the subscriber
-// is connected to multiple partitions. Only one call from any connected
-// partition will be outstanding at a time, and blocking in this receiver
-// callback will block the delivery of subsequent messages for the partition.
-type MessageReceiverFunc func(context.Context, *pubsub.Message)
-
 // SubscriberClient is a Pub/Sub Lite client to receive messages for a given
 // subscription.
 //
@@ -292,18 +283,20 @@ func NewSubscriberClientWithSettings(ctx context.Context, subscription string, s
 // If there is a fatal service error, Receive returns that error after all of
 // the outstanding calls to f have returned. If ctx is done, Receive returns nil
 // after all of the outstanding calls to f have returned and all messages have
-// been acknowledged.
+// been acknowledged. The context passed to f will be canceled when ctx is Done
+// or there is a fatal service error.
 //
 // Receive calls f concurrently from multiple goroutines if the SubscriberClient
-// is connected to multiple partitions. All messages received by f must be ACKed
-// or NACKed. Failure to do so can prevent Receive from returning.
+// is connected to multiple partitions. Only one call from any connected
+// partition will be outstanding at a time, and blocking in the receiver
+// callback f will block the delivery of subsequent messages for the partition.
 //
-// The context passed to f will be canceled when ctx is Done or there is a fatal
-// service error.
+// All messages received by f must be ACKed or NACKed. Failure to do so can
+// prevent Receive from returning.
 //
 // Each SubscriberClient may have only one invocation of Receive active at a
 // time.
-func (s *SubscriberClient) Receive(ctx context.Context, f MessageReceiverFunc) error {
+func (s *SubscriberClient) Receive(ctx context.Context, f func(context.Context, *pubsub.Message)) error {
 	if err := s.setReceiveActive(true); err != nil {
 		return err
 	}
