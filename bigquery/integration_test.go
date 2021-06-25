@@ -1378,9 +1378,11 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	want := "Request payload size exceeds the limit"
-	if !strings.Contains(e.Message, want) {
-		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	if e.Code != http.StatusRequestEntityTooLarge {
+		want := "Request payload size exceeds the limit"
+		if !strings.Contains(e.Message, want) {
+			t.Errorf("Error didn't contain expected message (%s): %#v", want, e)
+		}
 	}
 	// Case 2: Very Large Request
 	// Request so large it gets rejected by intermediate infra (3x 10MB rows)
