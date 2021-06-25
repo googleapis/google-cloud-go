@@ -1674,10 +1674,20 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 	// Verify that we retrieve 383 documents across all partitions. (128*2 + 127)
 	totalCount := 0
 	for _, query := range partitions {
-
 		allDocs, err := query.Documents(ctx).GetAll()
 		if err != nil {
 			t.Fatalf("GetAll(): received unexpected error: %v", err)
+		}
+		pbStructuredQuery, _ := query.ToProto()
+		q := *iClient.Query()
+		q, e := q.FromProto(pbStructuredQuery)
+		fmt.Println(q, e)
+		allDocs2, err := q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatalf("Did not expect error: %v", err)
+		}
+		if len(allDocs) != len(allDocs2) {
+			t.Fatalf("Did not expect error: %v", err)
 		}
 		totalCount += len(allDocs)
 	}

@@ -16,6 +16,7 @@ package firestore
 
 import (
 	"context"
+	"fmt"
 	"math"
 	"sort"
 	"testing"
@@ -74,7 +75,14 @@ func TestFilterToProto(t *testing.T) {
 	}
 }
 
-func TestQueryToProto(t *testing.T) {
+type toProtoScenario struct {
+	desc string
+	in   Query
+	want *pb.StructuredQuery
+}
+
+// Creates protos used to test toProto, FromProto, ToProto funcs.
+func createTestScenarios(t *testing.T) []toProtoScenario {
 	filtr := func(path []string, op string, val interface{}) *pb.StructuredQuery_Filter {
 		f, err := filter{path, op, val}.toProto()
 		if err != nil {
@@ -92,11 +100,9 @@ func TestQueryToProto(t *testing.T) {
 			Fields: map[string]*pb.Value{"a": intval(7), "b": intval(8), "c": arrayval(intval(1), intval(2))},
 		},
 	}
-	for _, test := range []struct {
-		desc string
-		in   Query
-		want *pb.StructuredQuery
-	}{
+
+	return []toProtoScenario{
+
 		{
 			desc: "q.Select()",
 			in:   q.Select(),
@@ -435,7 +441,11 @@ func TestQueryToProto(t *testing.T) {
 				},
 			},
 		},
-	} {
+	}
+}
+
+func TestQueryToProto(t *testing.T) {
+	for _, test := range createTestScenarios(t) {
 		got, err := test.in.toProto()
 		if err != nil {
 			t.Fatalf("%s: %v", test.desc, err)
@@ -444,6 +454,35 @@ func TestQueryToProto(t *testing.T) {
 		test.want.From = []*pb.StructuredQuery_CollectionSelector{{CollectionId: "C"}}
 		if !testEqual(got, test.want) {
 			t.Fatalf("%s:\ngot\n%v\nwant\n%v", test.desc, pretty.Value(got), pretty.Value(test.want))
+		}
+	}
+}
+
+// Convert a Query to a Proto and back again verifying roundtripping
+func TestQueryFromProtoRoundTrip(t *testing.T) {
+	c := &Client{projectID: "P", databaseID: "DB"}
+
+	for _, test := range createTestScenarios(t) {
+		if len(test.in.filters) > 0 {
+			// TODO: Currently we cannot convert Proto to Query that contain filters
+			// Requires work that isn't currently needed for use.
+			continue
+		}
+		fmt.Println(test.desc)
+		want := test.in
+		proto, err := test.in.ToProto()
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+			continue
+		}
+		got, err := c.Query().FromProto(proto)
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
+			continue
+		}
+
+		if !testEqual(got, want) {
+			t.Fatalf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), testDiff(got, want))
 		}
 	}
 }

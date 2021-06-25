@@ -148,6 +148,11 @@ func (c *Client) Doc(path string) *DocumentRef {
 	return doc
 }
 
+func (c *Client) Query() *Query {
+	q := Query{c: c}
+	return &q
+}
+
 // CollectionGroup creates a reference to a group of collections that include
 // the given ID, regardless of parent document.
 //

@@ -21,6 +21,7 @@ import (
 	"io"
 	"math"
 	"reflect"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/btree"
@@ -249,6 +250,195 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 }
 
 func (q Query) query() *Query { return &q }
+
+func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
+	switch v := vProto.ValueType.(type) {
+	case *pb.Value_ReferenceValue:
+		refVal := vProto.GetReferenceValue()
+		if strings.HasPrefix(refVal, q.path) {
+			refVal = refVal[len(q.path)+1:]
+		}
+		return refVal, nil
+	case *pb.Value_IntegerValue:
+		// TODO: this shouldn't be needed, but tests send things as int, this returns
+		// int64, so diff fails
+		return int(v.IntegerValue), nil
+	default:
+		i, err := createFromProtoValue(vProto, q.c)
+		if err != nil {
+			q.err = err
+			return q, err
+		}
+		return i, nil
+	}
+}
+
+// FromProto creates a new Query object from a RunQueryRequest. This can be used
+// in combintation with ToProto to serialize Query objects.
+func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
+	// Ensure we are starting from an empty query, but with this client.
+	q = *q.c.Query()
+
+	// 	err                    error
+	q.err = nil
+
+	pbq := pbQuery.GetStructuredQuery()
+	if from := pbq.GetFrom(); len(from) > 0 {
+		// collectionID           string
+		q.collectionID = from[0].CollectionId
+		// allDescendants indicates whether this query is for all collections
+		// that match the ID under the specified parentPath.
+		q.allDescendants = from[0].AllDescendants
+	}
+
+	// 	// 	path                   string // path to query (collection)
+	// 	// 	parentPath             string // path of the collection's parent (document)
+	parent := pbQuery.GetParent()
+	q.parentPath = parent
+	// q.path = parent[:len(parent)-len("/documents")]
+	q.path = parent + "/" + q.collectionID
+
+	// 	startVals, endVals     []interface{}
+	// 	startDoc, endDoc       *DocumentSnapshot
+	// 	startBefore, endBefore bool
+	if startAt := pbq.GetStartAt(); startAt != nil {
+		for _, v := range startAt.GetValues() {
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
+			}
+			if startAt.GetBefore() {
+				q = q.StartAt(c)
+			} else {
+				q = q.StartAfter(c)
+			}
+		}
+	}
+	if endAt := pbq.GetEndAt(); endAt != nil {
+		for _, v := range endAt.GetValues() {
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
+			}
+			if endAt.GetBefore() {
+				q = q.EndBefore(c)
+			} else {
+				q = q.EndAt(c)
+			}
+		}
+	}
+
+	// 	selection              []FieldPath
+	if s := pbq.GetSelect(); s != nil {
+		fields := s.GetFields()
+		fieldStrings := make([]string, 0)
+
+		// As part of sending to protos, field paths are escaped. Unescape
+		for _, v := range fields {
+			fieldPath := v.GetFieldPath()
+			if strings.Contains(fieldPath, "`") {
+				fieldPath = strings.ReplaceAll(fieldPath, "`", "")
+			}
+			fieldStrings = append(fieldStrings, fieldPath)
+		}
+
+		// Take Fieldpath strings, and populate selection
+		// Do not use `q.Select` as validation fails things like "*"
+		q.selection = make([]FieldPath, len(fields))
+		for i, v := range fieldStrings {
+			q.selection[i] = FieldPath{v}
+		}
+	}
+
+	// TODO:
+	// 	filters                []filter
+	if w := pbq.GetWhere(); w != nil {
+		// fmt.Println(w.String())
+		// if composite := w.GetCompositeFilter(); composite != nil {
+		// 	fmt.Println("composite:", composite)
+
+		// }
+
+		// if filter := w.GetFieldFilter(); filter != nil {
+		// 	fmt.Println("filter:", filter)
+		// 	fp := filter.GetField().FieldPath
+		// 	op, err := fieldFilterOperatorToString(filter.GetOp())
+		// 	if err != nil {
+		// 		q.err = err
+		// 		return q, q.err
+		// 	}
+		// 	val := filter.GetValue()
+		// 	fmt.Println("fp:", fp, "op:", op, "val:", val)
+		// }
+		q.err = errors.New("FromProto: Deserializing queries with filters is not supported")
+	}
+
+	// 	orders                 []order
+	if orderBy := pbq.GetOrderBy(); orderBy != nil {
+		for _, v := range orderBy {
+			s := strings.ReplaceAll(v.Field.FieldPath, "`", "")
+			fp := FieldPath(strings.Split(s, "."))
+
+			// q.orders = OrderByPathappend(q.copyOrders(), order{FieldPath(fp), Direction(v.Direction)})
+			q = q.OrderByPath(fp, Direction(v.Direction))
+
+		}
+	}
+
+	// 	offset                 int32
+	q.offset = pbq.GetOffset()
+
+	// 	limit                  *wrappers.Int32Value
+	if limit := pbq.GetLimit(); limit != nil {
+		q.limit = limit
+	}
+
+	// NOTE: limit to last isn't part of the proto, this is a clientside idea.
+	// 	limitToLast            bool
+	return q, q.err
+}
+
+// func fieldFilterOperatorToString(p pb.StructuredQuery_FieldFilter_Operator) (string, error) {
+// 	switch p {
+// 	case pb.StructuredQuery_FieldFilter_LESS_THAN:
+// 		return "<", nil
+// 	case pb.StructuredQuery_FieldFilter_LESS_THAN_OR_EQUAL:
+// 		return "<=", nil
+// 	case pb.StructuredQuery_FieldFilter_GREATER_THAN:
+// 		return ">", nil
+// 	case pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL:
+// 		return ">=", nil
+// 	case pb.StructuredQuery_FieldFilter_EQUAL:
+// 		return "==", nil
+// 	case pb.StructuredQuery_FieldFilter_NOT_EQUAL:
+// 		return "!=", nil
+// 	case pb.StructuredQuery_FieldFilter_IN:
+// 		return "in", nil
+// 	case pb.StructuredQuery_FieldFilter_NOT_IN:
+// 		return "not-in", nil
+// 	case pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS:
+// 		return "array-contains", nil
+// 	case pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY:
+// 		return "array-contains-any", nil
+// 	default:
+// 		return "", fmt.Errorf("firestore: invalid operator %q", p)
+// 	}
+// }
+
+func (q Query) ToProto() (*pb.RunQueryRequest, error) {
+	structuredQuery, err := q.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.RunQueryRequest{
+		Parent:    q.parentPath,
+		QueryType: &pb.RunQueryRequest_StructuredQuery{structuredQuery},
+	}
+	return req, nil
+}
 
 func (q Query) toProto() (*pb.StructuredQuery, error) {
 	if q.err != nil {
