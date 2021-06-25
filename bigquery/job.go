@@ -64,7 +64,7 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 }
 
 // Project returns the job's project.
-func (j *Job) Project() string {
+func (j *Job) ProjectID() string {
 	return j.projectID
 }
 
