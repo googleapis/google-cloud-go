@@ -211,12 +211,14 @@ func (rs *retryableStream) unsafeClearStream() {
 	}
 }
 
-func (rs *retryableStream) setCancel(cancel context.CancelFunc) {
+func (rs *retryableStream) newStreamContext() (ctx context.Context, cancel context.CancelFunc) {
 	rs.mu.Lock()
 	defer rs.mu.Unlock()
 
 	rs.unsafeClearStream()
+	ctx, cancel = context.WithCancel(rs.ctx)
 	rs.cancelStream = cancel
+	return
 }
 
 // connectStream attempts to establish a valid connection with the server. Due
@@ -254,7 +256,7 @@ func (rs *retryableStream) connectStream(notifyReset notifyReset) {
 		return
 	}
 
-	newStream, cancelFunc, err := rs.initNewStream()
+	newStream, err := rs.initNewStream()
 	if err != nil {
 		rs.terminate(err)
 		return
@@ -270,7 +272,6 @@ func (rs *retryableStream) connectStream(notifyReset notifyReset) {
 		}
 		rs.status = streamConnected
 		rs.stream = newStream
-		rs.cancelStream = cancelFunc
 		return true
 	}
 	if !connected() {
@@ -285,15 +286,13 @@ func (rs *retryableStream) newInitTimer(cancelFunc func()) *requestTimer {
 	return newRequestTimer(rs.initTimeout, cancelFunc, errStreamInitTimeout)
 }
 
-func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, cancelFunc context.CancelFunc, err error) {
+func (rs *retryableStream) initNewStream() (newStream grpc.ClientStream, err error) {
+	var cancelFunc context.CancelFunc
 	r := newStreamRetryer(rs.connectTimeout)
 	for {
 		backoff, shouldRetry := func() (time.Duration, bool) {
 			var cctx context.Context
-			cctx, cancelFunc = context.WithCancel(rs.ctx)
-			// Store the cancel func to quickly cancel reconnecting if the stream is
-			// terminated.
-			rs.setCancel(cancelFunc)
+			cctx, cancelFunc = rs.newStreamContext()
 			// Bound the duration of the stream initialization attempt.
 			it := rs.newInitTimer(cancelFunc)
 			defer it.Stop()
