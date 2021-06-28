@@ -1,5 +1,25 @@
 # Changes
 
+### [0.10.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.0...pubsublite/v0.10.1) (2021-06-22)
+
+
+### Bug Fixes
+
+* **pubsublite:** fixes for background partition count updates ([#4293](https://www.github.com/googleapis/google-cloud-go/issues/4293)) ([634847b](https://www.github.com/googleapis/google-cloud-go/commit/634847b7499fb58575e3e5001dd8e6da0661fccd))
+* **pubsublite:** make SubscriberClient.Receive identical to pubsub ([#4281](https://www.github.com/googleapis/google-cloud-go/issues/4281)) ([5b5d0f7](https://www.github.com/googleapis/google-cloud-go/commit/5b5d0f782b224f324dcfa13cc4145ee33a395d09))
+
+## [0.10.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.1...pubsublite/v0.10.0) (2021-06-15)
+
+
+### Features
+
+* **pubsublite:** support out of band seeks ([#4208](https://www.github.com/googleapis/google-cloud-go/issues/4208)) ([1432e67](https://www.github.com/googleapis/google-cloud-go/commit/1432e678d5510f6a60b5319e7c70b0c15229b88c))
+
+
+### Bug Fixes
+
+* **pubsublite:** ack assignment after removed subscribers have terminated ([#4217](https://www.github.com/googleapis/google-cloud-go/issues/4217)) ([0ad3f16](https://www.github.com/googleapis/google-cloud-go/commit/0ad3f168b8525033e6926882059cb0b430d1f350))
+
 ### [0.9.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.0...pubsublite/v0.9.1) (2021-06-10)
 
 

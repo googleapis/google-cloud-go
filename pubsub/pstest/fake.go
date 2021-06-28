@@ -60,6 +60,11 @@ type ServerReactorOption struct {
 	Reactor  Reactor
 }
 
+type publishResponse struct {
+	resp *pb.PublishResponse
+	err  error
+}
+
 // For testing. Note that even though changes to the now variable are atomic, a call
 // to the stored function can race with a change to that function. This could be a
 // problem if tests are run in parallel, or even if concurrent parts of the same test
@@ -98,6 +103,13 @@ type GServer struct {
 	streamTimeout  time.Duration
 	timeNowFunc    func() time.Time
 	reactorOptions ReactorOptions
+
+	// PublishResponses is a channel of responses to use for Publish.
+	publishResponses chan *publishResponse
+	// autoPublishResponse enables the server to automatically generate
+	// PublishResponse when publish is called. Otherwise, responses
+	// are generated from the publishResponses channel.
+	autoPublishResponse bool
 }
 
 // NewServer creates a new fake server running in the current process.
@@ -114,11 +126,13 @@ func NewServer(opts ...ServerReactorOption) *Server {
 		srv:  srv,
 		Addr: srv.Addr,
 		GServer: GServer{
-			topics:         map[string]*topic{},
-			subs:           map[string]*subscription{},
-			msgsByID:       map[string]*Message{},
-			timeNowFunc:    timeNow,
-			reactorOptions: reactorOptions,
+			topics:              map[string]*topic{},
+			subs:                map[string]*subscription{},
+			msgsByID:            map[string]*Message{},
+			timeNowFunc:         timeNow,
+			reactorOptions:      reactorOptions,
+			publishResponses:    make(chan *publishResponse, 100),
+			autoPublishResponse: true,
 		},
 	}
 	pb.RegisterPublisherServer(srv.Gsrv, &s.GServer)
@@ -166,6 +180,35 @@ func (s *Server) PublishOrdered(topic string, data []byte, attrs map[string]stri
 		panic(fmt.Sprintf("pstest.Server.Publish: %v", err))
 	}
 	return res.MessageIds[0]
+}
+
+// AddPublishResponse adds a new publish response to the channel used for
+// responding to publish requests.
+func (s *Server) AddPublishResponse(pbr *pb.PublishResponse, err error) {
+	pr := &publishResponse{}
+	if err != nil {
+		pr.err = err
+	} else {
+		pr.resp = pbr
+	}
+	s.GServer.publishResponses <- pr
+}
+
+// SetAutoPublishResponse controls whether to automatically respond
+// to messages published or to use user-added responses from the
+// publishResponses channel.
+func (s *Server) SetAutoPublishResponse(autoPublishResponse bool) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	s.GServer.autoPublishResponse = autoPublishResponse
+}
+
+// ResetPublishResponses resets the buffered publishResponses channel
+// with a new buffered channel with the given size.
+func (s *Server) ResetPublishResponses(size int) {
+	s.GServer.mu.Lock()
+	defer s.GServer.mu.Unlock()
+	s.GServer.publishResponses = make(chan *publishResponse, size)
 }
 
 // SetStreamTimeout sets the amount of time a stream will be active before it shuts
@@ -613,6 +656,15 @@ func (s *GServer) Publish(_ context.Context, req *pb.PublishRequest) (*pb.Publis
 	if top == nil {
 		return nil, status.Errorf(codes.NotFound, "topic %q", req.Topic)
 	}
+
+	if !s.autoPublishResponse {
+		r := <-s.publishResponses
+		if r.err != nil {
+			return nil, r.err
+		}
+		return r.resp, nil
+	}
+
 	var ids []string
 	for _, pm := range req.Messages {
 		id := fmt.Sprintf("m%d", s.nextID)
