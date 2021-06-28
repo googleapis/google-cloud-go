@@ -52,6 +52,7 @@ import (
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
 	"google.golang.org/api/option"
+	iampb "google.golang.org/genproto/googleapis/iam/v1"
 )
 
 const (
@@ -572,6 +573,87 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 	})
 	if err != nil {
 		t.Fatal(err)
+	}
+}
+
+func TestIntegration_PublicAccessPrevention(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+	h := testHelper{t}
+
+	// Create a bucket with PublicAccessPrevention enforced.
+	bkt := client.Bucket(uidSpace.New())
+	h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{PublicAccessPrevention: PublicAccessPreventionEnforced})
+	defer h.mustDeleteBucket(bkt)
+
+	// Making bucket public should fail.
+	policy, err := bkt.IAM().V3().Policy(ctx)
+	if err != nil {
+		t.Fatalf("fetching bucket IAM policy: %v", err)
+	}
+	policy.Bindings = append(policy.Bindings, &iampb.Binding{
+		Role:    "roles/storage.objectViewer",
+		Members: []string{iam.AllUsers},
+	})
+	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err == nil {
+		t.Error("SetPolicy: expected adding AllUsers policy to bucket should fail")
+	}
+
+	// Making object public via ACL should fail.
+	o := bkt.Object("publicAccessPrevention")
+	defer func() {
+		if err := o.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+	wc := o.NewWriter(ctx)
+	wc.ContentType = "text/plain"
+	h.mustWrite(wc, []byte("test"))
+	a := o.ACL()
+	if err := a.Set(ctx, AllUsers, RoleReader); err == nil {
+		t.Error("ACL.Set: expected adding AllUsers ACL to object should fail")
+	}
+
+	// Update PAP setting to unspecified should work and not affect UBLA setting.
+	attrs, err := bkt.Update(ctx, BucketAttrsToUpdate{PublicAccessPrevention: PublicAccessPreventionUnspecified})
+	if err != nil {
+		t.Fatalf("updating PublicAccessPrevention failed: %v", err)
+	}
+	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
+		t.Errorf("updating PublicAccessPrevention: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
+	}
+	if attrs.UniformBucketLevelAccess.Enabled || attrs.BucketPolicyOnly.Enabled {
+		t.Error("updating PublicAccessPrevention changed UBLA setting")
+	}
+
+	// Now, making object public or making bucket public should succeed.
+	a = o.ACL()
+	if err := a.Set(ctx, AllUsers, RoleReader); err != nil {
+		t.Errorf("ACL.Set: making object public failed: %v", err)
+	}
+	policy, err = bkt.IAM().V3().Policy(ctx)
+	if err != nil {
+		t.Fatalf("fetching bucket IAM policy: %v", err)
+	}
+	policy.Bindings = append(policy.Bindings, &iampb.Binding{
+		Role:    "roles/storage.objectViewer",
+		Members: []string{iam.AllUsers},
+	})
+	if err := bkt.IAM().V3().SetPolicy(ctx, policy); err != nil {
+		t.Errorf("SetPolicy: making bucket public failed: %v", err)
+	}
+
+	// Updating UBLA should not affect PAP setting.
+	attrs, err = bkt.Update(ctx, BucketAttrsToUpdate{UniformBucketLevelAccess: &UniformBucketLevelAccess{Enabled: true}})
+	if err != nil {
+		t.Fatalf("updating UBLA failed: %v", err)
+	}
+	if !attrs.UniformBucketLevelAccess.Enabled {
+		t.Error("updating UBLA: got UBLA not enabled, want enabled")
+	}
+	if attrs.PublicAccessPrevention != PublicAccessPreventionUnspecified {
+		t.Errorf("updating UBLA: got %s, want %s", attrs.PublicAccessPrevention, PublicAccessPreventionUnspecified)
 	}
 }
 
