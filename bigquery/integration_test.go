@@ -228,6 +228,24 @@ func initTestState(client *Client, t time.Time) func() {
 	}
 }
 
+func TestIntegration_DetectProjectID(t *testing.T) {
+	ctx := context.Background()
+	testCreds := testutil.Credentials(ctx)
+	if testCreds == nil {
+		t.Skip("test credentials not present, skipping")
+	}
+
+	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds)); err != nil {
+		t.Errorf("test NewClient: %v", err)
+	}
+
+	badTS := testutil.ErroringTokenSource{}
+
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.Project())
+	}
+}
+
 func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
@@ -434,6 +452,96 @@ func TestIntegration_TableMetadata(t *testing.T) {
 				t.Errorf("metadata.Clustering: got %v, want %v", got, want)
 			}
 		}
+	}
+
+}
+
+func TestIntegration_SnapshotAndRestore(t *testing.T) {
+
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	// instantiate a base table via a CTAS
+	baseTableID := tableIDs.New()
+	qualified := fmt.Sprintf("`%s`.%s.%s", testutil.ProjID(), dataset.DatasetID, baseTableID)
+	sql := fmt.Sprintf(`
+		CREATE TABLE %s
+		(
+			sample_value INT64,
+			groupid STRING,
+		)
+		AS
+		SELECT
+		CAST(RAND() * 100 AS INT64),
+		CONCAT("group", CAST(CAST(RAND()*10 AS INT64) AS STRING))
+		FROM
+		UNNEST(GENERATE_ARRAY(0,999))
+`, qualified)
+	if err := runQueryJob(ctx, sql); err != nil {
+		t.Fatalf("couldn't instantiate base table: %v", err)
+	}
+
+	// Create a snapshot.  We'll select our snapshot time explicitly to validate the snapshot time is the same.
+	targetTime := time.Now()
+	snapshotID := tableIDs.New()
+	copier := dataset.Table(snapshotID).CopierFrom(dataset.Table(fmt.Sprintf("%s@%d", baseTableID, targetTime.UnixNano()/1e6)))
+	copier.OperationType = SnapshotOperation
+	job, err := copier.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run snapshot: %v", err)
+	}
+	status, err := job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("polling snapshot failed: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("snapshot failed in error: %v", status.Err())
+	}
+
+	// verify metadata on the snapshot
+	meta, err := dataset.Table(snapshotID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get metadata from snapshot: %v", err)
+	}
+	if meta.Type != Snapshot {
+		t.Errorf("expected snapshot table type, got %s", meta.Type)
+	}
+	want := &SnapshotDefinition{
+		BaseTableReference: dataset.Table(baseTableID),
+		SnapshotTime:       targetTime,
+	}
+	if diff := testutil.Diff(meta.SnapshotDefinition, want, cmp.AllowUnexported(Table{}), cmpopts.IgnoreUnexported(Client{}), cmpopts.EquateApproxTime(time.Millisecond)); diff != "" {
+		t.Fatalf("SnapshotDefinition differs.  got=-, want=+:\n%s", diff)
+	}
+
+	// execute a restore using the snapshot.
+	restoreID := tableIDs.New()
+	restorer := dataset.Table(restoreID).CopierFrom(dataset.Table(snapshotID))
+	restorer.OperationType = RestoreOperation
+	job, err = restorer.Run(ctx)
+	if err != nil {
+		t.Fatalf("couldn't run restore: %v", err)
+	}
+	status, err = job.Wait(ctx)
+	if err != nil {
+		t.Fatalf("polling restore failed: %v", err)
+	}
+	if status.Err() != nil {
+		t.Fatalf("restore failed in error: %v", status.Err())
+	}
+
+	restoreMeta, err := dataset.Table(restoreID).Metadata(ctx)
+	if err != nil {
+		t.Fatalf("couldn't get restored table metadata: %v", err)
+	}
+
+	if meta.NumBytes != restoreMeta.NumBytes {
+		t.Errorf("bytes mismatch.  snap had %d bytes, restore had %d bytes", meta.NumBytes, restoreMeta.NumBytes)
+	}
+	if meta.NumRows != restoreMeta.NumRows {
+		t.Errorf("row counts mismatch.  snap had %d rows, restore had %d rows", meta.NumRows, restoreMeta.NumRows)
 	}
 
 }
@@ -1201,6 +1309,44 @@ func TestIntegration_RoutineStoredProcedure(t *testing.T) {
 		it, [][]Value{{int64(10)}})
 }
 
+func TestIntegration_RoutineUserTVF(t *testing.T) {
+	if client == nil {
+		t.Skip("Integration tests skipped")
+	}
+	ctx := context.Background()
+
+	routineID := routineIDs.New()
+	routine := dataset.Routine(routineID)
+	inMeta := &RoutineMetadata{
+		Type:     "TABLE_VALUED_FUNCTION",
+		Language: "SQL",
+		Arguments: []*RoutineArgument{
+			{Name: "filter",
+				DataType: &StandardSQLDataType{TypeKind: "INT64"},
+			}},
+		ReturnTableType: &StandardSQLTableType{
+			Columns: []*StandardSQLField{
+				{Name: "x", Type: &StandardSQLDataType{TypeKind: "INT64"}},
+			},
+		},
+		Body: "SELECT x FROM UNNEST([1,2,3]) x WHERE x = filter",
+	}
+	if err := routine.Create(ctx, inMeta); err != nil {
+		t.Fatalf("routine create: %v", err)
+	}
+	defer routine.Delete(ctx)
+
+	meta, err := routine.Metadata(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Now, compare the input meta to the output meta
+	if diff := testutil.Diff(inMeta, meta, cmpopts.IgnoreFields(RoutineMetadata{}, "CreationTime", "LastModifiedTime", "ETag")); diff != "" {
+		t.Errorf("routine metadata differs, got=-, want=+\n%s", diff)
+	}
+}
+
 func TestIntegration_InsertErrors(t *testing.T) {
 	// This test serves to verify streaming behavior in the face of oversized data.
 	// BigQuery will reject insertAll payloads that exceed a defined limit (10MB).
@@ -1232,9 +1378,11 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	want := "Request payload size exceeds the limit"
-	if !strings.Contains(e.Message, want) {
-		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	if e.Code != http.StatusRequestEntityTooLarge {
+		want := "Request payload size exceeds the limit"
+		if !strings.Contains(e.Message, want) {
+			t.Errorf("Error didn't contain expected message (%s): %#v", want, e)
+		}
 	}
 	// Case 2: Very Large Request
 	// Request so large it gets rejected by intermediate infra (3x 10MB rows)
@@ -1249,8 +1397,8 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("wanted googleapi.Error, got: %v", err)
 	}
-	if e.Code != http.StatusBadRequest {
-		t.Errorf("Wanted HTTP 400, got %d", e.Code)
+	if e.Code != http.StatusBadRequest && e.Code != http.StatusRequestEntityTooLarge {
+		t.Errorf("Wanted HTTP 400 or 413, got %d", e.Code)
 	}
 }
 

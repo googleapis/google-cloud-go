@@ -113,7 +113,7 @@ func (ms *mockWireSubscriber) WaitStopped() error {
 
 type mockWireSubscriberFactory struct{}
 
-func (f *mockWireSubscriberFactory) New(receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
+func (f *mockWireSubscriberFactory) New(ctx context.Context, receiver wire.MessageReceiverFunc) (wire.Subscriber, error) {
 	return &mockWireSubscriber{
 		receiver: receiver,
 		msgsC:    make(chan *wire.ReceivedMessage, 10),
@@ -121,8 +121,8 @@ func (f *mockWireSubscriberFactory) New(receiver wire.MessageReceiverFunc) (wire
 	}, nil
 }
 
-func newTestSubscriberInstance(ctx context.Context, settings ReceiveSettings, receiver MessageReceiverFunc) *subscriberInstance {
-	sub, _ := newSubscriberInstance(ctx, new(mockWireSubscriberFactory), settings, receiver)
+func newTestSubscriberInstance(ctx context.Context, settings ReceiveSettings, receiver messageReceiverFunc) *subscriberInstance {
+	sub, _ := newSubscriberInstance(ctx, context.Background(), new(mockWireSubscriberFactory), settings, receiver)
 	return sub
 }
 

@@ -1,87 +1,87 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "grafeas.v1beta1",
-  "libraryPackage": "cloud.google.com/go/containeranalysis/apiv1beta1",
-  "services": {
-    "GrafeasV1Beta1": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "GrafeasV1Beta1Client",
-          "rpcs": {
-            "BatchCreateNotes": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "grafeas.v1beta1",
+  "libraryPackage":  "cloud.google.com/go/containeranalysis/apiv1beta1",
+  "services":  {
+    "GrafeasV1Beta1":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "GrafeasV1Beta1Client",
+          "rpcs":  {
+            "BatchCreateNotes":  {
+              "methods":  [
                 "BatchCreateNotes"
               ]
             },
-            "BatchCreateOccurrences": {
-              "methods": [
+            "BatchCreateOccurrences":  {
+              "methods":  [
                 "BatchCreateOccurrences"
               ]
             },
-            "CreateNote": {
-              "methods": [
+            "CreateNote":  {
+              "methods":  [
                 "CreateNote"
               ]
             },
-            "CreateOccurrence": {
-              "methods": [
+            "CreateOccurrence":  {
+              "methods":  [
                 "CreateOccurrence"
               ]
             },
-            "DeleteNote": {
-              "methods": [
+            "DeleteNote":  {
+              "methods":  [
                 "DeleteNote"
               ]
             },
-            "DeleteOccurrence": {
-              "methods": [
+            "DeleteOccurrence":  {
+              "methods":  [
                 "DeleteOccurrence"
               ]
             },
-            "GetNote": {
-              "methods": [
+            "GetNote":  {
+              "methods":  [
                 "GetNote"
               ]
             },
-            "GetOccurrence": {
-              "methods": [
+            "GetOccurrence":  {
+              "methods":  [
                 "GetOccurrence"
               ]
             },
-            "GetOccurrenceNote": {
-              "methods": [
+            "GetOccurrenceNote":  {
+              "methods":  [
                 "GetOccurrenceNote"
               ]
             },
-            "GetVulnerabilityOccurrencesSummary": {
-              "methods": [
+            "GetVulnerabilityOccurrencesSummary":  {
+              "methods":  [
                 "GetVulnerabilityOccurrencesSummary"
               ]
             },
-            "ListNoteOccurrences": {
-              "methods": [
+            "ListNoteOccurrences":  {
+              "methods":  [
                 "ListNoteOccurrences"
               ]
             },
-            "ListNotes": {
-              "methods": [
+            "ListNotes":  {
+              "methods":  [
                 "ListNotes"
               ]
             },
-            "ListOccurrences": {
-              "methods": [
+            "ListOccurrences":  {
+              "methods":  [
                 "ListOccurrences"
               ]
             },
-            "UpdateNote": {
-              "methods": [
+            "UpdateNote":  {
+              "methods":  [
                 "UpdateNote"
               ]
             },
-            "UpdateOccurrence": {
-              "methods": [
+            "UpdateOccurrence":  {
+              "methods":  [
                 "UpdateOccurrence"
               ]
             }

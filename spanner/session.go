@@ -404,7 +404,8 @@ type SessionPoolConfig struct {
 	// Defaults to 100.
 	MinOpened uint64
 
-	// MaxIdle is the maximum number of idle sessions, pool is allowed to keep.
+	// MaxIdle is the maximum number of idle sessions that are allowed in the
+	// session pool.
 	//
 	// Defaults to 0.
 	MaxIdle uint64
