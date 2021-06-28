@@ -192,7 +192,7 @@ $ gcloud kms keyrings create $MY_KEYRING --location $MY_SINGLE_LOCATION
 $ gcloud kms keys create key1 --keyring $MY_KEYRING --location $MY_SINGLE_LOCATION --purpose encryption
 # Sets the GCLOUD_TESTS_BIGTABLE_KEYRING environment variable.
 $ export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/$GCLOUD_TESTS_GOLANG_PROJECT_ID/locations/$MY_SINGLE_LOCATION/keyRings/$MY_KEYRING
-# Create a service agent:
+# Create a service agent, https://cloud.google.com/bigtable/docs/use-cmek#gcloud:
 gcloud beta services identity create \
     --service=bigtableadmin.googleapis.com \
     --project $GCLOUD_TESTS_GOLANG_PROJECT_ID
