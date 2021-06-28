@@ -16,6 +16,9 @@ package wire
 import (
 	"context"
 	"fmt"
+	"time"
+
+	"golang.org/x/xerrors"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	gax "github.com/googleapis/gax-go/v2"
@@ -30,11 +33,13 @@ type partitionCountReceiver func(partitionCount int)
 // topic and notifies a receiver if it changes.
 type partitionCountWatcher struct {
 	// Immutable after creation.
-	ctx         context.Context
-	adminClient *vkit.AdminClient
-	topicPath   string
-	receiver    partitionCountReceiver
-	callOption  gax.CallOption
+	ctx            context.Context
+	adminClient    *vkit.AdminClient
+	topicPath      string
+	receiver       partitionCountReceiver
+	callOption     gax.CallOption
+	initialTimeout time.Duration
+	pollPeriod     time.Duration
 
 	// Fields below must be guarded with mu.
 	partitionCount int
@@ -47,11 +52,13 @@ func newPartitionCountWatcher(ctx context.Context, adminClient *vkit.AdminClient
 	settings PublishSettings, topicPath string, receiver partitionCountReceiver) *partitionCountWatcher {
 
 	p := &partitionCountWatcher{
-		ctx:         ctx,
-		adminClient: adminClient,
-		topicPath:   topicPath,
-		receiver:    receiver,
-		callOption:  resourceExhaustedRetryer(),
+		ctx:            ctx,
+		adminClient:    adminClient,
+		topicPath:      topicPath,
+		receiver:       receiver,
+		callOption:     resourceExhaustedRetryer(),
+		initialTimeout: settings.Timeout,
+		pollPeriod:     settings.ConfigPollPeriod,
 	}
 
 	// Polling the topic partition count can be disabled in settings if the period
@@ -88,8 +95,17 @@ func (p *partitionCountWatcher) updatePartitionCount() {
 	p.mu.Unlock()
 
 	newPartitionCount, err := func() (int, error) {
+		// Ensure the first update respects PublishSettings.Timeout.
+		timeout := p.initialTimeout
+		if prevPartitionCount > 0 {
+			timeout = p.pollPeriod
+		}
+		cctx, cancel := context.WithCancel(p.ctx)
+		rt := newRequestTimer(timeout, cancel, ErrBackendUnavailable)
+
 		req := &pb.GetTopicPartitionsRequest{Name: p.topicPath}
-		resp, err := p.adminClient.GetTopicPartitions(p.ctx, req, p.callOption)
+		resp, err := p.adminClient.GetTopicPartitions(cctx, req, p.callOption)
+		rt.Stop()
 
 		p.mu.Lock()
 		defer p.mu.Unlock()
@@ -105,7 +121,7 @@ func (p *partitionCountWatcher) updatePartitionCount() {
 				// TODO: Log the error.
 				return p.partitionCount, nil
 			}
-			err = fmt.Errorf("pubsublite: failed to update topic partition count: %v", err)
+			err = xerrors.Errorf("pubsublite: failed to update topic partition count: %w", rt.ResolveError(err))
 			p.unsafeInitiateShutdown(err)
 			return 0, err
 		}
