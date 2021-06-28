@@ -23,16 +23,19 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	pubsublitepb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	longrunningpb "google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAdminClientHook clientHook
@@ -51,6 +54,7 @@ type AdminCallOptions struct {
 	ListSubscriptions      []gax.CallOption
 	UpdateSubscription     []gax.CallOption
 	DeleteSubscription     []gax.CallOption
+	SeekSubscription       []gax.CallOption
 	CreateReservation      []gax.CallOption
 	GetReservation         []gax.CallOption
 	ListReservations       []gax.CallOption
@@ -253,6 +257,21 @@ func defaultAdminCallOptions() *AdminCallOptions {
 				})
 			}),
 		},
+		SeekSubscription: []gax.CallOption{
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.DeadlineExceeded,
+					codes.Unavailable,
+					codes.Aborted,
+					codes.Internal,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		CreateReservation: []gax.CallOption{
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -363,6 +382,8 @@ type internalAdminClient interface {
 	ListSubscriptions(context.Context, *pubsublitepb.ListSubscriptionsRequest, ...gax.CallOption) *SubscriptionIterator
 	UpdateSubscription(context.Context, *pubsublitepb.UpdateSubscriptionRequest, ...gax.CallOption) (*pubsublitepb.Subscription, error)
 	DeleteSubscription(context.Context, *pubsublitepb.DeleteSubscriptionRequest, ...gax.CallOption) error
+	SeekSubscription(context.Context, *pubsublitepb.SeekSubscriptionRequest, ...gax.CallOption) (*SeekSubscriptionOperation, error)
+	SeekSubscriptionOperation(name string) *SeekSubscriptionOperation
 	CreateReservation(context.Context, *pubsublitepb.CreateReservationRequest, ...gax.CallOption) (*pubsublitepb.Reservation, error)
 	GetReservation(context.Context, *pubsublitepb.GetReservationRequest, ...gax.CallOption) (*pubsublitepb.Reservation, error)
 	ListReservations(context.Context, *pubsublitepb.ListReservationsRequest, ...gax.CallOption) *ReservationIterator
@@ -382,6 +403,11 @@ type AdminClient struct {
 
 	// The call options for this service.
 	CallOptions *AdminCallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
@@ -466,6 +492,37 @@ func (c *AdminClient) DeleteSubscription(ctx context.Context, req *pubsublitepb.
 	return c.internalClient.DeleteSubscription(ctx, req, opts...)
 }
 
+// SeekSubscription performs an out-of-band seek for a subscription to a specified target,
+// which may be timestamps or named positions within the message backlog.
+// Seek translates these targets to cursors for each partition and
+// orchestrates subscribers to start consuming messages from these seek
+// cursors.
+//
+// If an operation is returned, the seek has been registered and subscribers
+// will eventually receive messages from the seek cursors (i.e. eventual
+// consistency), as long as they are using a minimum supported client library
+// version and not a system that tracks cursors independently of Pub/Sub Lite
+// (e.g. Apache Beam, Dataflow, Spark). The seek operation will fail for
+// unsupported clients.
+//
+// If clients would like to know when subscribers react to the seek (or not),
+// they can poll the operation. The seek operation will succeed and complete
+// once subscribers are ready to receive messages from the seek cursors for
+// all partitions of the topic. This means that the seek operation will not
+// complete until all subscribers come online.
+//
+// If the previous seek operation has not yet completed, it will be aborted
+// and the new invocation of seek will supersede it.
+func (c *AdminClient) SeekSubscription(ctx context.Context, req *pubsublitepb.SeekSubscriptionRequest, opts ...gax.CallOption) (*SeekSubscriptionOperation, error) {
+	return c.internalClient.SeekSubscription(ctx, req, opts...)
+}
+
+// SeekSubscriptionOperation returns a new SeekSubscriptionOperation from a given name.
+// The name must be that of a previously created SeekSubscriptionOperation, possibly from a different process.
+func (c *AdminClient) SeekSubscriptionOperation(name string) *SeekSubscriptionOperation {
+	return c.internalClient.SeekSubscriptionOperation(name)
+}
+
 // CreateReservation creates a new reservation.
 func (c *AdminClient) CreateReservation(ctx context.Context, req *pubsublitepb.CreateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
 	return c.internalClient.CreateReservation(ctx, req, opts...)
@@ -512,6 +569,11 @@ type adminGRPCClient struct {
 	// The gRPC API client.
 	adminClient pubsublitepb.AdminServiceClient
 
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogMetadata metadata.MD
 }
@@ -552,6 +614,17 @@ func NewAdminClient(ctx context.Context, opts ...option.ClientOption) (*AdminCli
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -878,6 +951,29 @@ func (c *adminGRPCClient) DeleteSubscription(ctx context.Context, req *pubsublit
 	return err
 }
 
+func (c *adminGRPCClient) SeekSubscription(ctx context.Context, req *pubsublitepb.SeekSubscriptionRequest, opts ...gax.CallOption) (*SeekSubscriptionOperation, error) {
+	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
+		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
+		defer cancel()
+		ctx = cctx
+	}
+	md := metadata.Pairs("x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName())))
+	ctx = insertMetadata(ctx, c.xGoogMetadata, md)
+	opts = append((*c.CallOptions).SeekSubscription[0:len((*c.CallOptions).SeekSubscription):len((*c.CallOptions).SeekSubscription)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = c.adminClient.SeekSubscription(ctx, req, settings.GRPC...)
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &SeekSubscriptionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *adminGRPCClient) CreateReservation(ctx context.Context, req *pubsublitepb.CreateReservationRequest, opts ...gax.CallOption) (*pubsublitepb.Reservation, error) {
 	if _, ok := ctx.Deadline(); !ok && !c.disableDeadlines {
 		cctx, cancel := context.WithTimeout(ctx, 600000*time.Millisecond)
@@ -1036,6 +1132,75 @@ func (c *adminGRPCClient) ListReservationTopics(ctx context.Context, req *pubsub
 	it.pageInfo.MaxSize = int(req.GetPageSize())
 	it.pageInfo.Token = req.GetPageToken()
 	return it
+}
+
+// SeekSubscriptionOperation manages a long-running operation from SeekSubscription.
+type SeekSubscriptionOperation struct {
+	lro *longrunning.Operation
+}
+
+// SeekSubscriptionOperation returns a new SeekSubscriptionOperation from a given name.
+// The name must be that of a previously created SeekSubscriptionOperation, possibly from a different process.
+func (c *adminGRPCClient) SeekSubscriptionOperation(name string) *SeekSubscriptionOperation {
+	return &SeekSubscriptionOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SeekSubscriptionOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*pubsublitepb.SeekSubscriptionResponse, error) {
+	var resp pubsublitepb.SeekSubscriptionResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SeekSubscriptionOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*pubsublitepb.SeekSubscriptionResponse, error) {
+	var resp pubsublitepb.SeekSubscriptionResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SeekSubscriptionOperation) Metadata() (*pubsublitepb.OperationMetadata, error) {
+	var meta pubsublitepb.OperationMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SeekSubscriptionOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SeekSubscriptionOperation) Name() string {
+	return op.lro.Name()
 }
 
 // ReservationIterator manages a stream of *pubsublitepb.Reservation.

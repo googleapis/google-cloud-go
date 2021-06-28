@@ -144,7 +144,8 @@ const (
 // RoutineMetadata represents details of a given BigQuery Routine.
 type RoutineMetadata struct {
 	ETag string
-	// Type indicates the type of routine, such as SCALAR_FUNCTION or PROCEDURE.
+	// Type indicates the type of routine, such as SCALAR_FUNCTION, PROCEDURE,
+	// or TABLE_VALUED_FUNCTION.
 	Type         string
 	CreationTime time.Time
 	Description  string
@@ -156,6 +157,9 @@ type RoutineMetadata struct {
 	// The list of arguments for the the routine.
 	Arguments  []*RoutineArgument
 	ReturnType *StandardSQLDataType
+
+	// Set only if the routine type is TABLE_VALUED_FUNCTION.
+	ReturnTableType *StandardSQLTableType
 	// For javascript routines, this indicates the paths for imported libraries.
 	ImportedLibraries []string
 	// Body contains the routine's body.
@@ -184,7 +188,13 @@ func (rm *RoutineMetadata) toBQ() (*bq.Routine, error) {
 		return nil, err
 	}
 	r.ReturnType = rt
-
+	if rm.ReturnTableType != nil {
+		tt, err := rm.ReturnTableType.toBQ()
+		if err != nil {
+			return nil, fmt.Errorf("couldn't convert return table type: %v", err)
+		}
+		r.ReturnTableType = tt
+	}
 	var args []*bq.Argument
 	for _, v := range rm.Arguments {
 		bqa, err := v.toBQ()
@@ -301,6 +311,7 @@ type RoutineMetadataToUpdate struct {
 	Body              optional.String
 	ImportedLibraries []string
 	ReturnType        *StandardSQLDataType
+	ReturnTableType   *StandardSQLTableType
 }
 
 func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
@@ -370,6 +381,14 @@ func (rm *RoutineMetadataToUpdate) toBQ() (*bq.Routine, error) {
 		r.ReturnType = dt
 		forceSend("ReturnType")
 	}
+	if rm.ReturnTableType != nil {
+		tt, err := rm.ReturnTableType.toBQ()
+		if err != nil {
+			return nil, err
+		}
+		r.ReturnTableType = tt
+		forceSend("ReturnTableType")
+	}
 	return r, nil
 }
 
@@ -395,5 +414,10 @@ func bqToRoutineMetadata(r *bq.Routine) (*RoutineMetadata, error) {
 		return nil, err
 	}
 	meta.ReturnType = ret
+	tt, err := bqToStandardSQLTableType(r.ReturnTableType)
+	if err != nil {
+		return nil, err
+	}
+	meta.ReturnTableType = tt
 	return meta, nil
 }

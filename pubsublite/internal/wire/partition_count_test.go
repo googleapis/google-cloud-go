@@ -122,3 +122,26 @@ func TestPartitionCountWatcherPartitionCountUnchanged(t *testing.T) {
 	watcher.VerifyCounts([]int{wantPartitionCount1, wantPartitionCount2})
 	watcher.StopVerifyNoError()
 }
+
+func TestPartitionCountWatcherIgnoreUpdateErrors(t *testing.T) {
+	const topic = "projects/123456/locations/us-central1-b/topics/my-topic"
+	wantPartitionCount := 4
+
+	verifiers := test.NewVerifiers(t)
+	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), topicPartitionsResp(wantPartitionCount), nil)
+	verifiers.GlobalVerifier.Push(topicPartitionsReq(topic), nil, status.Error(codes.FailedPrecondition, ""))
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	watcher := newTestPartitionCountWatcher(t, topic, testPublishSettings())
+	if gotErr := watcher.StartError(); gotErr != nil {
+		t.Errorf("Start() got err: (%v)", gotErr)
+	}
+	watcher.VerifyCounts([]int{wantPartitionCount}) // Initial count
+
+	// Although the next update is a permanent error, do not terminate.
+	watcher.UpdatePartitionCount()
+	watcher.VerifyCounts([]int{wantPartitionCount})
+	watcher.StopVerifyNoError()
+}
