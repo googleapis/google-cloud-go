@@ -23,6 +23,11 @@ import (
 )
 
 func captureStdout(f func()) string {
+	/*
+	   Capture standard output to facilitate testing code that prints
+
+	   or useless print output in running tests.
+	*/
 	saved := os.Stdout
 	r, w, _ := os.Pipe()
 	os.Stdout = w
