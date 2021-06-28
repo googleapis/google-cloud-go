@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -33,6 +32,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newTransitionRouteGroupsClientHook clientHook
@@ -175,16 +175,28 @@ func (c *TransitionRouteGroupsClient) GetTransitionRouteGroup(ctx context.Contex
 }
 
 // CreateTransitionRouteGroup creates an TransitionRouteGroup in the specified flow.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *TransitionRouteGroupsClient) CreateTransitionRouteGroup(ctx context.Context, req *cxpb.CreateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.CreateTransitionRouteGroup(ctx, req, opts...)
 }
 
 // UpdateTransitionRouteGroup updates the specified TransitionRouteGroup.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *TransitionRouteGroupsClient) UpdateTransitionRouteGroup(ctx context.Context, req *cxpb.UpdateTransitionRouteGroupRequest, opts ...gax.CallOption) (*cxpb.TransitionRouteGroup, error) {
 	return c.internalClient.UpdateTransitionRouteGroup(ctx, req, opts...)
 }
 
 // DeleteTransitionRouteGroup deletes the specified TransitionRouteGroup.
+//
+// Note: You should always train a flow prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/cx/docs/concept/training).
 func (c *TransitionRouteGroupsClient) DeleteTransitionRouteGroup(ctx context.Context, req *cxpb.DeleteTransitionRouteGroupRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTransitionRouteGroup(ctx, req, opts...)
 }

@@ -19,7 +19,10 @@ This package is designed to compatible with the Cloud Pub/Sub library:
 https://pkg.go.dev/cloud.google.com/go/pubsub. If interfaces are defined by the
 client application, PublisherClient and SubscriberClient can be used as
 substitutions for pubsub.Topic.Publish() and pubsub.Subscription.Receive(),
-respectively, from the pubsub package.
+respectively, from the pubsub package. See the following examples:
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#example-NewPublisherClient-Interface
+and
+https://pkg.go.dev/cloud.google.com/go/pubsublite/pscompat#example-NewSubscriberClient-Interface.
 
 The Cloud Pub/Sub and Pub/Sub Lite services have some differences:
   - Pub/Sub Lite does not support NACK for messages. By default, this will
@@ -41,6 +44,9 @@ https://cloud.google.com/pubsub/lite.
 
 Information about choosing between Cloud Pub/Sub vs Pub/Sub Lite is available at
 https://cloud.google.com/pubsub/docs/choosing-pubsub-or-lite.
+
+Complete sample programs can be found at
+https://github.com/GoogleCloudPlatform/golang-samples/tree/master/pubsublite.
 
 See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.

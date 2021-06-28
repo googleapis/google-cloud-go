@@ -3178,6 +3178,54 @@ func TestIntegration_ReaderAttrs(t *testing.T) {
 	}
 }
 
+// Test that context cancellation correctly stops a download before completion.
+func TestIntegration_ReaderCancel(t *testing.T) {
+	ctx := context.Background()
+	client := testConfig(ctx, t)
+	defer client.Close()
+
+	bkt := client.Bucket(bucketName)
+
+	// Upload a 1MB object.
+	obj := bkt.Object("reader-cancel-obj")
+	w := obj.NewWriter(ctx)
+	c := randomContents()
+	for i := 0; i < 62500; i++ {
+		if _, err := w.Write(c); err != nil {
+			t.Fatalf("writer.Write: %v", err)
+		}
+
+	}
+	w.Close()
+
+	// Create a reader (which makes a GET request to GCS and opens the body to
+	// read the object) and then cancel the context before reading.
+	readerCtx, cancel := context.WithCancel(ctx)
+	r, err := obj.NewReader(readerCtx)
+	if err != nil {
+		t.Fatalf("obj.NewReader: %v", err)
+	}
+	defer r.Close()
+
+	cancel()
+
+	// Read the object 1KB a time. We cannot guarantee that Reads will return a
+	// context canceled error immediately, but they should always do so before we
+	// reach EOF.
+	var readErr error
+	for i := 0; i < 1000; i++ {
+		buf := make([]byte, 1000)
+		_, readErr = r.Read(buf)
+		if readErr != nil {
+			if readErr == context.Canceled {
+				return
+			}
+			break
+		}
+	}
+	t.Fatalf("Reader.Read: got %v, want context.Canceled", readErr)
+}
+
 // Ensures that a file stored with a:
 // * Content-Encoding of "gzip"
 // * Content-Type of "text/plain"

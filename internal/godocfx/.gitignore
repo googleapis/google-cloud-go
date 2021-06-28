@@ -1,4 +1,4 @@
 obj/
 site/
-docfxgen
+godocfx
 testdata/out/
