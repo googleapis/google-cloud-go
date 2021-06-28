@@ -369,3 +369,16 @@ func (ec emulatorCreds) GetRequestMetadata(ctx context.Context, uri ...string) (
 func (ec emulatorCreds) RequireTransportSecurity() bool {
 	return false
 }
+
+// NewDocumentSnapshotFromProto generates a new DocumentSnapshot from a protobuf Document
+func (c *Client) NewDocumentSnapshotFromProto(proto *pb.Document) (*DocumentSnapshot, error) {
+	docRef, err := pathToDoc(proto.Name, c)
+	if err != nil {
+		return nil, err
+	}
+	doc, err := newDocumentSnapshot(docRef, proto, c, proto.UpdateTime)
+	if err != nil {
+		return nil, err
+	}
+	return doc, nil
+}
