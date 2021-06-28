@@ -1,5 +1,12 @@
 # Changes
 
+### [1.4.3](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.2...logging/v1.4.3) (2021-06-28)
+
+
+### Bug Fixes
+
+* **logging:** Support numbers when unmarshaling Severity ([#4216](https://www.github.com/googleapis/google-cloud-go/issues/4216)) ([a08b97d](https://www.github.com/googleapis/google-cloud-go/commit/a08b97df5de0ae14c1d7e2653ecf219956919857))
+
 ### [1.4.2](https://www.github.com/googleapis/google-cloud-go/compare/logging/v1.4.1...logging/v1.4.2) (2021-05-20)
 
 
