@@ -284,6 +284,7 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	// Set a very low timeout to ensure no retries.
 	timeout := time.Millisecond
 	pub := newTestStreamHandler(t, timeout)
+	pub.Stream.initTimeout = defaultInitTimeout
 	wantErr := status.Error(codes.DeadlineExceeded, "timeout")
 
 	verifiers := test.NewVerifiers(t)
@@ -311,6 +312,46 @@ func TestRetryableStreamConnectTimeout(t *testing.T) {
 	}
 	if gotErr := pub.Stream.Error(); !xerrors.Is(gotErr, ErrBackendUnavailable) {
 		t.Errorf("Stream final err: got (%v), want (%v)", gotErr, ErrBackendUnavailable)
+	}
+}
+
+func TestRetryableStreamInitTimeout(t *testing.T) {
+	const streamInitTimeout = 50 * time.Millisecond
+	const streamResponseDelay = 75 * time.Millisecond
+
+	pub := newTestStreamHandler(t, defaultStreamTimeout)
+	pub.Stream.initTimeout = streamInitTimeout
+
+	verifiers := test.NewVerifiers(t)
+
+	// First stream will have a delayed response.
+	stream1 := test.NewRPCVerifier(t)
+	barrier := stream1.PushWithBarrier(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream1)
+
+	// Second stream should succeed.
+	stream2 := test.NewRPCVerifier(t)
+	stream2.Push(pub.InitialReq, initPubResp(), nil)
+	verifiers.AddPublishStream(pub.Topic.Path, pub.Topic.Partition, stream2)
+
+	mockServer.OnTestStart(verifiers)
+	defer mockServer.OnTestEnd()
+
+	pub.Stream.Start()
+	if got, want := pub.NextStatus(), streamReconnecting; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	barrier.ReleaseAfter(func() {
+		time.Sleep(streamResponseDelay)
+	})
+	if got, want := pub.NextStatus(), streamConnected; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
+	}
+
+	pub.Stream.Stop()
+	if got, want := pub.NextStatus(), streamTerminated; got != want {
+		t.Errorf("Stream status change: got %d, want %d", got, want)
 	}
 }
 
