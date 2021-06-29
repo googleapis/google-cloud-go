@@ -1,117 +1,117 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.devtools.artifactregistry.v1beta2",
-  "libraryPackage": "cloud.google.com/go/artifactregistry/apiv1beta2",
-  "services": {
-    "ArtifactRegistry": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "Client",
-          "rpcs": {
-            "CreateRepository": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.devtools.artifactregistry.v1beta2",
+  "libraryPackage":  "cloud.google.com/go/artifactregistry/apiv1beta2",
+  "services":  {
+    "ArtifactRegistry":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "Client",
+          "rpcs":  {
+            "CreateRepository":  {
+              "methods":  [
                 "CreateRepository"
               ]
             },
-            "CreateTag": {
-              "methods": [
+            "CreateTag":  {
+              "methods":  [
                 "CreateTag"
               ]
             },
-            "DeletePackage": {
-              "methods": [
+            "DeletePackage":  {
+              "methods":  [
                 "DeletePackage"
               ]
             },
-            "DeleteRepository": {
-              "methods": [
+            "DeleteRepository":  {
+              "methods":  [
                 "DeleteRepository"
               ]
             },
-            "DeleteTag": {
-              "methods": [
+            "DeleteTag":  {
+              "methods":  [
                 "DeleteTag"
               ]
             },
-            "DeleteVersion": {
-              "methods": [
+            "DeleteVersion":  {
+              "methods":  [
                 "DeleteVersion"
               ]
             },
-            "GetFile": {
-              "methods": [
+            "GetFile":  {
+              "methods":  [
                 "GetFile"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
+            "GetIamPolicy":  {
+              "methods":  [
                 "GetIamPolicy"
               ]
             },
-            "GetPackage": {
-              "methods": [
+            "GetPackage":  {
+              "methods":  [
                 "GetPackage"
               ]
             },
-            "GetRepository": {
-              "methods": [
+            "GetRepository":  {
+              "methods":  [
                 "GetRepository"
               ]
             },
-            "GetTag": {
-              "methods": [
+            "GetTag":  {
+              "methods":  [
                 "GetTag"
               ]
             },
-            "GetVersion": {
-              "methods": [
+            "GetVersion":  {
+              "methods":  [
                 "GetVersion"
               ]
             },
-            "ListFiles": {
-              "methods": [
+            "ListFiles":  {
+              "methods":  [
                 "ListFiles"
               ]
             },
-            "ListPackages": {
-              "methods": [
+            "ListPackages":  {
+              "methods":  [
                 "ListPackages"
               ]
             },
-            "ListRepositories": {
-              "methods": [
+            "ListRepositories":  {
+              "methods":  [
                 "ListRepositories"
               ]
             },
-            "ListTags": {
-              "methods": [
+            "ListTags":  {
+              "methods":  [
                 "ListTags"
               ]
             },
-            "ListVersions": {
-              "methods": [
+            "ListVersions":  {
+              "methods":  [
                 "ListVersions"
               ]
             },
-            "SetIamPolicy": {
-              "methods": [
+            "SetIamPolicy":  {
+              "methods":  [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions": {
-              "methods": [
+            "TestIamPermissions":  {
+              "methods":  [
                 "TestIamPermissions"
               ]
             },
-            "UpdateRepository": {
-              "methods": [
+            "UpdateRepository":  {
+              "methods":  [
                 "UpdateRepository"
               ]
             },
-            "UpdateTag": {
-              "methods": [
+            "UpdateTag":  {
+              "methods":  [
                 "UpdateTag"
               ]
             }

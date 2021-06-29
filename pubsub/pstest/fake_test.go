@@ -1045,3 +1045,46 @@ func TestErrorInjection(t *testing.T) {
 		}
 	}
 }
+
+func TestPublishResponse(t *testing.T) {
+	ctx := context.Background()
+	_, _, srv, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	// By default, autoPublishResponse is true so this should succeed immediately.
+	got := srv.Publish("projects/p/topics/t", []byte("msg1"), nil)
+	if want := "m0"; got != want {
+		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
+	}
+
+	// After disabling autoPublishResponse, publish() operations
+	// will read from the channel instead of auto generating messages.
+	srv.SetAutoPublishResponse(false)
+
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"1"},
+	}, nil)
+	got = srv.Publish("projects/p/topics/t", []byte("msg2"), nil)
+	if want := "1"; got != want {
+		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
+	}
+
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"2"},
+	}, nil)
+	got = srv.Publish("projects/p/topics/t", []byte("msg3"), nil)
+	if want := "2"; got != want {
+		t.Fatalf("srv.Publish(): got %v, want %v", got, want)
+	}
+
+	go func() {
+		got = srv.Publish("projects/p/topics/t", []byte("msg4"), nil)
+		if want := "3"; got != want {
+			fmt.Printf("srv.Publish(): got %v, want %v", got, want)
+		}
+	}()
+	time.Sleep(5 * time.Second)
+	srv.AddPublishResponse(&pb.PublishResponse{
+		MessageIds: []string{"3"},
+	}, nil)
+}

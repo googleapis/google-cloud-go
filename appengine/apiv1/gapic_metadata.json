@@ -1,32 +1,32 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.appengine.v1",
-  "libraryPackage": "cloud.google.com/go/appengine/apiv1",
-  "services": {
-    "Applications": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "ApplicationsClient",
-          "rpcs": {
-            "CreateApplication": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.appengine.v1",
+  "libraryPackage":  "cloud.google.com/go/appengine/apiv1",
+  "services":  {
+    "Applications":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "ApplicationsClient",
+          "rpcs":  {
+            "CreateApplication":  {
+              "methods":  [
                 "CreateApplication"
               ]
             },
-            "GetApplication": {
-              "methods": [
+            "GetApplication":  {
+              "methods":  [
                 "GetApplication"
               ]
             },
-            "RepairApplication": {
-              "methods": [
+            "RepairApplication":  {
+              "methods":  [
                 "RepairApplication"
               ]
             },
-            "UpdateApplication": {
-              "methods": [
+            "UpdateApplication":  {
+              "methods":  [
                 "UpdateApplication"
               ]
             }
@@ -34,33 +34,33 @@
         }
       }
     },
-    "AuthorizedCertificates": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "AuthorizedCertificatesClient",
-          "rpcs": {
-            "CreateAuthorizedCertificate": {
-              "methods": [
+    "AuthorizedCertificates":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "AuthorizedCertificatesClient",
+          "rpcs":  {
+            "CreateAuthorizedCertificate":  {
+              "methods":  [
                 "CreateAuthorizedCertificate"
               ]
             },
-            "DeleteAuthorizedCertificate": {
-              "methods": [
+            "DeleteAuthorizedCertificate":  {
+              "methods":  [
                 "DeleteAuthorizedCertificate"
               ]
             },
-            "GetAuthorizedCertificate": {
-              "methods": [
+            "GetAuthorizedCertificate":  {
+              "methods":  [
                 "GetAuthorizedCertificate"
               ]
             },
-            "ListAuthorizedCertificates": {
-              "methods": [
+            "ListAuthorizedCertificates":  {
+              "methods":  [
                 "ListAuthorizedCertificates"
               ]
             },
-            "UpdateAuthorizedCertificate": {
-              "methods": [
+            "UpdateAuthorizedCertificate":  {
+              "methods":  [
                 "UpdateAuthorizedCertificate"
               ]
             }
@@ -68,13 +68,13 @@
         }
       }
     },
-    "AuthorizedDomains": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "AuthorizedDomainsClient",
-          "rpcs": {
-            "ListAuthorizedDomains": {
-              "methods": [
+    "AuthorizedDomains":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "AuthorizedDomainsClient",
+          "rpcs":  {
+            "ListAuthorizedDomains":  {
+              "methods":  [
                 "ListAuthorizedDomains"
               ]
             }
@@ -82,33 +82,33 @@
         }
       }
     },
-    "DomainMappings": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "DomainMappingsClient",
-          "rpcs": {
-            "CreateDomainMapping": {
-              "methods": [
+    "DomainMappings":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "DomainMappingsClient",
+          "rpcs":  {
+            "CreateDomainMapping":  {
+              "methods":  [
                 "CreateDomainMapping"
               ]
             },
-            "DeleteDomainMapping": {
-              "methods": [
+            "DeleteDomainMapping":  {
+              "methods":  [
                 "DeleteDomainMapping"
               ]
             },
-            "GetDomainMapping": {
-              "methods": [
+            "GetDomainMapping":  {
+              "methods":  [
                 "GetDomainMapping"
               ]
             },
-            "ListDomainMappings": {
-              "methods": [
+            "ListDomainMappings":  {
+              "methods":  [
                 "ListDomainMappings"
               ]
             },
-            "UpdateDomainMapping": {
-              "methods": [
+            "UpdateDomainMapping":  {
+              "methods":  [
                 "UpdateDomainMapping"
               ]
             }
@@ -116,38 +116,38 @@
         }
       }
     },
-    "Firewall": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "FirewallClient",
-          "rpcs": {
-            "BatchUpdateIngressRules": {
-              "methods": [
+    "Firewall":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "FirewallClient",
+          "rpcs":  {
+            "BatchUpdateIngressRules":  {
+              "methods":  [
                 "BatchUpdateIngressRules"
               ]
             },
-            "CreateIngressRule": {
-              "methods": [
+            "CreateIngressRule":  {
+              "methods":  [
                 "CreateIngressRule"
               ]
             },
-            "DeleteIngressRule": {
-              "methods": [
+            "DeleteIngressRule":  {
+              "methods":  [
                 "DeleteIngressRule"
               ]
             },
-            "GetIngressRule": {
-              "methods": [
+            "GetIngressRule":  {
+              "methods":  [
                 "GetIngressRule"
               ]
             },
-            "ListIngressRules": {
-              "methods": [
+            "ListIngressRules":  {
+              "methods":  [
                 "ListIngressRules"
               ]
             },
-            "UpdateIngressRule": {
-              "methods": [
+            "UpdateIngressRule":  {
+              "methods":  [
                 "UpdateIngressRule"
               ]
             }
@@ -155,28 +155,28 @@
         }
       }
     },
-    "Instances": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "InstancesClient",
-          "rpcs": {
-            "DebugInstance": {
-              "methods": [
+    "Instances":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "InstancesClient",
+          "rpcs":  {
+            "DebugInstance":  {
+              "methods":  [
                 "DebugInstance"
               ]
             },
-            "DeleteInstance": {
-              "methods": [
+            "DeleteInstance":  {
+              "methods":  [
                 "DeleteInstance"
               ]
             },
-            "GetInstance": {
-              "methods": [
+            "GetInstance":  {
+              "methods":  [
                 "GetInstance"
               ]
             },
-            "ListInstances": {
-              "methods": [
+            "ListInstances":  {
+              "methods":  [
                 "ListInstances"
               ]
             }
@@ -184,28 +184,28 @@
         }
       }
     },
-    "Services": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "ServicesClient",
-          "rpcs": {
-            "DeleteService": {
-              "methods": [
+    "Services":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "ServicesClient",
+          "rpcs":  {
+            "DeleteService":  {
+              "methods":  [
                 "DeleteService"
               ]
             },
-            "GetService": {
-              "methods": [
+            "GetService":  {
+              "methods":  [
                 "GetService"
               ]
             },
-            "ListServices": {
-              "methods": [
+            "ListServices":  {
+              "methods":  [
                 "ListServices"
               ]
             },
-            "UpdateService": {
-              "methods": [
+            "UpdateService":  {
+              "methods":  [
                 "UpdateService"
               ]
             }
@@ -213,33 +213,33 @@
         }
       }
     },
-    "Versions": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "VersionsClient",
-          "rpcs": {
-            "CreateVersion": {
-              "methods": [
+    "Versions":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "VersionsClient",
+          "rpcs":  {
+            "CreateVersion":  {
+              "methods":  [
                 "CreateVersion"
               ]
             },
-            "DeleteVersion": {
-              "methods": [
+            "DeleteVersion":  {
+              "methods":  [
                 "DeleteVersion"
               ]
             },
-            "GetVersion": {
-              "methods": [
+            "GetVersion":  {
+              "methods":  [
                 "GetVersion"
               ]
             },
-            "ListVersions": {
-              "methods": [
+            "ListVersions":  {
+              "methods":  [
                 "ListVersions"
               ]
             },
-            "UpdateVersion": {
-              "methods": [
+            "UpdateVersion":  {
+              "methods":  [
                 "UpdateVersion"
               ]
             }

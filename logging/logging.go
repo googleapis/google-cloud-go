@@ -464,10 +464,14 @@ func (v Severity) String() string {
 // Severity.
 func (v *Severity) UnmarshalJSON(data []byte) error {
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
-		return err
+	var i int
+	if strErr := json.Unmarshal(data, &s); strErr == nil {
+		*v = ParseSeverity(s)
+	} else if intErr := json.Unmarshal(data, &i); intErr == nil {
+		*v = Severity(i)
+	} else {
+		return fmt.Errorf("%v; %v", strErr, intErr)
 	}
-	*v = ParseSeverity(s)
 	return nil
 }
 

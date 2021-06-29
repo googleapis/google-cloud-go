@@ -23,7 +23,6 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/golang/protobuf/proto"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
@@ -34,6 +33,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newKeyManagementClientHook clientHook
@@ -556,7 +556,8 @@ func (c *KeyManagementClient) AsymmetricDecrypt(ctx context.Context, req *kmspb.
 
 // UpdateCryptoKeyPrimaryVersion update the version of a CryptoKey that will be used in Encrypt.
 //
-// Returns an error if called on an asymmetric key.
+// Returns an error if called on a key whose purpose is not
+// ENCRYPT_DECRYPT.
 func (c *KeyManagementClient) UpdateCryptoKeyPrimaryVersion(ctx context.Context, req *kmspb.UpdateCryptoKeyPrimaryVersionRequest, opts ...gax.CallOption) (*kmspb.CryptoKey, error) {
 	return c.internalClient.UpdateCryptoKeyPrimaryVersion(ctx, req, opts...)
 }

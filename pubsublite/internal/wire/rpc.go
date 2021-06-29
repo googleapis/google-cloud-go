@@ -110,24 +110,49 @@ func isRetryableStreamError(err error, isEligible func(codes.Code) bool) bool {
 	return isEligible(s.Code())
 }
 
-// retryableReadOnlyCallOption returns a call option that retries with backoff
-// for ResourceExhausted in addition to other default retryable codes for
-// Pub/Sub. Suitable for read-only operations which are subject to only QPS
+// Wraps an ordered list of retryers. Earlier retryers take precedence.
+type compositeRetryer struct {
+	retryers []gax.Retryer
+}
+
+func (cr *compositeRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
+	for _, r := range cr.retryers {
+		pause, shouldRetry = r.Retry(err)
+		if shouldRetry {
+			return
+		}
+	}
+	return 0, false
+}
+
+// resourceExhaustedRetryer returns a call option that retries slowly with
+// backoff for ResourceExhausted in addition to other default retryable codes
+// for Pub/Sub. Suitable for read-only operations which are subject to only QPS
 // quota limits.
-func retryableReadOnlyCallOption() gax.CallOption {
+func resourceExhaustedRetryer() gax.CallOption {
 	return gax.WithRetry(func() gax.Retryer {
-		return gax.OnCodes([]codes.Code{
-			codes.Aborted,
-			codes.DeadlineExceeded,
-			codes.Internal,
-			codes.ResourceExhausted,
-			codes.Unavailable,
-			codes.Unknown,
-		}, gax.Backoff{
-			Initial:    100 * time.Millisecond,
-			Max:        60 * time.Second,
-			Multiplier: 1.3,
-		})
+		return &compositeRetryer{
+			retryers: []gax.Retryer{
+				gax.OnCodes([]codes.Code{
+					codes.ResourceExhausted,
+				}, gax.Backoff{
+					Initial:    time.Second,
+					Max:        60 * time.Second,
+					Multiplier: 3,
+				}),
+				gax.OnCodes([]codes.Code{
+					codes.Aborted,
+					codes.DeadlineExceeded,
+					codes.Internal,
+					codes.Unavailable,
+					codes.Unknown,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60 * time.Second,
+					Multiplier: 1.3,
+				}),
+			},
+		}
 	})
 }
 

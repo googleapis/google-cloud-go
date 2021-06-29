@@ -63,6 +63,11 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return bqToJob(bqjob, c)
 }
 
+// Project returns the job's project.
+func (j *Job) Project() string {
+	return j.projectID
+}
+
 // ID returns the job's ID.
 func (j *Job) ID() string {
 	return j.jobID
@@ -229,6 +234,23 @@ func (j *Job) Cancel(ctx context.Context) error {
 	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() error {
 		_, err := call.Do()
+		return err
+	})
+}
+
+// Delete deletes the job.
+func (j *Job) Delete(ctx context.Context) (err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Job.Delete")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	call := j.c.bqs.Jobs.Delete(j.projectID, j.jobID).Context(ctx)
+	if j.location != "" {
+		call = call.Location(j.location)
+	}
+	setClientHeader(call.Header())
+
+	return runWithRetry(ctx, func() (err error) {
+		err = call.Do()
 		return err
 	})
 }
