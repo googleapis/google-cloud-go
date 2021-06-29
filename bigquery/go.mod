@@ -10,7 +10,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.0.5
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.49.0
-	google.golang.org/genproto v0.0.0-20210624174822-c5cf32407d0a
+	google.golang.org/genproto v0.0.0-20210629200056-84d6f6074151
 	google.golang.org/grpc v1.38.0
 	google.golang.org/protobuf v1.27.1
 )
