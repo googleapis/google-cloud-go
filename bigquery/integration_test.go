@@ -228,6 +228,24 @@ func initTestState(client *Client, t time.Time) func() {
 	}
 }
 
+func TestIntegration_DetectProjectID(t *testing.T) {
+	ctx := context.Background()
+	testCreds := testutil.Credentials(ctx)
+	if testCreds == nil {
+		t.Skip("test credentials not present, skipping")
+	}
+
+	if _, err := NewClient(ctx, DetectProjectID, option.WithCredentials(testCreds)); err != nil {
+		t.Errorf("test NewClient: %v", err)
+	}
+
+	badTS := testutil.ErroringTokenSource{}
+
+	if badClient, err := NewClient(ctx, DetectProjectID, option.WithTokenSource(badTS)); err == nil {
+		t.Errorf("expected error from bad token source, NewClient succeeded with project: %s", badClient.Project())
+	}
+}
+
 func TestIntegration_TableCreate(t *testing.T) {
 	// Check that creating a record field with an empty schema is an error.
 	if client == nil {
@@ -1360,9 +1378,11 @@ func TestIntegration_InsertErrors(t *testing.T) {
 	if !ok {
 		t.Errorf("Wanted googleapi.Error, got: %v", err)
 	}
-	want := "Request payload size exceeds the limit"
-	if !strings.Contains(e.Message, want) {
-		t.Errorf("Error didn't contain expected message (%s): %s", want, e.Message)
+	if e.Code != http.StatusRequestEntityTooLarge {
+		want := "Request payload size exceeds the limit"
+		if !strings.Contains(e.Message, want) {
+			t.Errorf("Error didn't contain expected message (%s): %#v", want, e)
+		}
 	}
 	// Case 2: Very Large Request
 	// Request so large it gets rejected by intermediate infra (3x 10MB rows)

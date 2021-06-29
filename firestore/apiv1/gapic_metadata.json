@@ -1,87 +1,87 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.firestore.v1",
-  "libraryPackage": "cloud.google.com/go/firestore/apiv1",
-  "services": {
-    "Firestore": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "Client",
-          "rpcs": {
-            "BatchGetDocuments": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.firestore.v1",
+  "libraryPackage":  "cloud.google.com/go/firestore/apiv1",
+  "services":  {
+    "Firestore":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "Client",
+          "rpcs":  {
+            "BatchGetDocuments":  {
+              "methods":  [
                 "BatchGetDocuments"
               ]
             },
-            "BatchWrite": {
-              "methods": [
+            "BatchWrite":  {
+              "methods":  [
                 "BatchWrite"
               ]
             },
-            "BeginTransaction": {
-              "methods": [
+            "BeginTransaction":  {
+              "methods":  [
                 "BeginTransaction"
               ]
             },
-            "Commit": {
-              "methods": [
+            "Commit":  {
+              "methods":  [
                 "Commit"
               ]
             },
-            "CreateDocument": {
-              "methods": [
+            "CreateDocument":  {
+              "methods":  [
                 "CreateDocument"
               ]
             },
-            "DeleteDocument": {
-              "methods": [
+            "DeleteDocument":  {
+              "methods":  [
                 "DeleteDocument"
               ]
             },
-            "GetDocument": {
-              "methods": [
+            "GetDocument":  {
+              "methods":  [
                 "GetDocument"
               ]
             },
-            "ListCollectionIds": {
-              "methods": [
+            "ListCollectionIds":  {
+              "methods":  [
                 "ListCollectionIds"
               ]
             },
-            "ListDocuments": {
-              "methods": [
+            "ListDocuments":  {
+              "methods":  [
                 "ListDocuments"
               ]
             },
-            "Listen": {
-              "methods": [
+            "Listen":  {
+              "methods":  [
                 "Listen"
               ]
             },
-            "PartitionQuery": {
-              "methods": [
+            "PartitionQuery":  {
+              "methods":  [
                 "PartitionQuery"
               ]
             },
-            "Rollback": {
-              "methods": [
+            "Rollback":  {
+              "methods":  [
                 "Rollback"
               ]
             },
-            "RunQuery": {
-              "methods": [
+            "RunQuery":  {
+              "methods":  [
                 "RunQuery"
               ]
             },
-            "UpdateDocument": {
-              "methods": [
+            "UpdateDocument":  {
+              "methods":  [
                 "UpdateDocument"
               ]
             },
-            "Write": {
-              "methods": [
+            "Write":  {
+              "methods":  [
                 "Write"
               ]
             }

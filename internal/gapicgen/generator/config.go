@@ -46,10 +46,28 @@ type microgenConfig struct {
 	// disableMetadata is used to toggle generation of the gapic_metadata.json
 	// file for the client library.
 	disableMetadata bool
+
+	// transports is a list of transports to generate a client for. Acceptable
+	// values are 'grpc' and 'rest'
+	transports []string
+
+	// googleapisDiscovery indicates if the protos reside in googleapis-discovery
+	// or not. Default is false, and will be looked up in googleapis.
+	googleapisDiscovery bool
 }
 
 var microgenGapicConfigs = []*microgenConfig{
 	// Cloud APIs
+	{
+		inputDirectoryPath:   "google/cloud/compute/v1",
+		pkg:                  "compute",
+		importPath:           "cloud.google.com/go/compute/apiv1",
+		apiServiceConfigPath: "google/cloud/compute/v1/compute_v1.yaml",
+		transports:           []string{"rest"},
+		// TODO(dovs): Change to "ga" when ready.
+		releaseLevel:        "alpha",
+		googleapisDiscovery: true,
+	},
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
 		pkg:                   "texttospeech",
@@ -1021,6 +1039,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		gRPCServiceConfigPath: "google/cloud/recommendationengine/v1beta1/recommendationengine_grpc_service_config.json",
 		apiServiceConfigPath:  "google/cloud/recommendationengine/v1beta1/recommendationengine_v1beta1.yaml",
 		releaseLevel:          "beta",
+		stopGeneration:        true,
 	},
 	{
 		inputDirectoryPath:    "google/cloud/gkehub/v1beta1",
@@ -1202,5 +1221,13 @@ var microgenGapicConfigs = []*microgenConfig{
 		apiServiceConfigPath:  "google/cloud/gsuiteaddons/v1/gsuiteaddons_v1.yaml",
 		// GA after 2021/06/10
 		releaseLevel: "beta",
+	},
+	{
+		inputDirectoryPath:    "google/storage/v1",
+		pkg:                   "storage",
+		importPath:            "cloud.google.com/go/storage/internal/apiv1",
+		gRPCServiceConfigPath: "google/storage/v1/storage_grpc_service_config.json",
+		apiServiceConfigPath:  "google/storage/v1/storage_v1.yaml",
+		releaseLevel:          "alpha",
 	},
 }
