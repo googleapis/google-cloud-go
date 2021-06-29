@@ -46,10 +46,28 @@ type microgenConfig struct {
 	// disableMetadata is used to toggle generation of the gapic_metadata.json
 	// file for the client library.
 	disableMetadata bool
+
+	// transports is a list of transports to generate a client for. Acceptable
+	// values are 'grpc' and 'rest'
+	transports []string
+
+	// googleapisDiscovery indicates if the protos reside in googleapis-discovery
+	// or not. Default is false, and will be looked up in googleapis.
+	googleapisDiscovery bool
 }
 
 var microgenGapicConfigs = []*microgenConfig{
 	// Cloud APIs
+	{
+		inputDirectoryPath:   "google/cloud/compute/v1",
+		pkg:                  "compute",
+		importPath:           "cloud.google.com/go/compute/apiv1",
+		apiServiceConfigPath: "google/cloud/compute/v1/compute_v1.yaml",
+		transports:           []string{"rest"},
+		// TODO(dovs): Change to "ga" when ready.
+		releaseLevel:        "alpha",
+		googleapisDiscovery: true,
+	},
 	{
 		inputDirectoryPath:    "google/cloud/texttospeech/v1",
 		pkg:                   "texttospeech",
