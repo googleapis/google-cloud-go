@@ -32,27 +32,29 @@ import (
 
 // GapicGenerator is used to regenerate gapic libraries.
 type GapicGenerator struct {
-	googleapisDir     string
-	protoDir          string
-	googleCloudDir    string
-	genprotoDir       string
-	gapicToGenerate   string
-	regenOnly         bool
-	onlyGenerateGapic bool
-	modifiedPkgs      []string
+	googleapisDir      string
+	googleapisDiscoDir string
+	protoDir           string
+	googleCloudDir     string
+	genprotoDir        string
+	gapicToGenerate    string
+	regenOnly          bool
+	onlyGenerateGapic  bool
+	modifiedPkgs       []string
 }
 
 // NewGapicGenerator creates a GapicGenerator.
 func NewGapicGenerator(c *Config, modifiedPkgs []string) *GapicGenerator {
 	return &GapicGenerator{
-		googleapisDir:     c.GoogleapisDir,
-		protoDir:          c.ProtoDir,
-		googleCloudDir:    c.GapicDir,
-		genprotoDir:       c.GenprotoDir,
-		gapicToGenerate:   c.GapicToGenerate,
-		regenOnly:         c.RegenOnly,
-		onlyGenerateGapic: c.OnlyGenerateGapic,
-		modifiedPkgs:      modifiedPkgs,
+		googleapisDir:      c.GoogleapisDir,
+		googleapisDiscoDir: c.GoogleapisDiscoDir,
+		protoDir:           c.ProtoDir,
+		googleCloudDir:     c.GapicDir,
+		genprotoDir:        c.GenprotoDir,
+		gapicToGenerate:    c.GapicToGenerate,
+		regenOnly:          c.RegenOnly,
+		onlyGenerateGapic:  c.OnlyGenerateGapic,
+		modifiedPkgs:       modifiedPkgs,
 	}
 }
 
@@ -267,13 +269,20 @@ find . -name '*.backup' -delete
 // microgen runs the microgenerator on a single microgen config.
 func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	log.Println("microgen generating", conf.pkg)
+	dir := g.googleapisDir
+	if conf.googleapisDiscovery {
+		dir = g.googleapisDiscoDir
+	}
 
 	var protoFiles []string
-	if err := filepath.Walk(g.googleapisDir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
+	if err := filepath.Walk(dir+"/"+conf.inputDirectoryPath, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		if strings.Contains(info.Name(), ".proto") {
+		// Ignore compute_small.proto which is just for testing and would cause a collision if used in generation.
+		//
+		// TODO(noahdietz): Remove this when it is no longer needed.
+		if strings.Contains(info.Name(), ".proto") && !strings.Contains(info.Name(), "compute_small.proto") {
 			protoFiles = append(protoFiles, path)
 		}
 		return nil
@@ -282,6 +291,7 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	}
 
 	args := []string{"-I", g.googleapisDir,
+		"-I", g.googleapisDiscoDir,
 		"--experimental_allow_proto3_optional",
 		"-I", g.protoDir,
 		"--go_gapic_out", g.googleCloudDir,
@@ -297,9 +307,12 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 	if !conf.disableMetadata {
 		args = append(args, "--go_gapic_opt", "metadata")
 	}
+	if len(conf.transports) > 0 {
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("transport=%s", strings.Join(conf.transports, "+")))
+	}
 	args = append(args, protoFiles...)
 	c := execv.Command("protoc", args...)
-	c.Dir = g.googleapisDir
+	c.Dir = dir
 	return c.Run()
 }
 
