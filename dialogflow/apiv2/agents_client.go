@@ -25,7 +25,6 @@ import (
 
 	"cloud.google.com/go/longrunning"
 	lroauto "cloud.google.com/go/longrunning/autogen"
-	"github.com/golang/protobuf/proto"
 	structpb "github.com/golang/protobuf/ptypes/struct"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/iterator"
@@ -37,6 +36,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/protobuf/proto"
 )
 
 var newAgentsClientHook clientHook
@@ -235,6 +235,10 @@ func (c *AgentsClient) GetAgent(ctx context.Context, req *dialogflowpb.GetAgentR
 }
 
 // SetAgent creates/updates the specified agent.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *AgentsClient) SetAgent(ctx context.Context, req *dialogflowpb.SetAgentRequest, opts ...gax.CallOption) (*dialogflowpb.Agent, error) {
 	return c.internalClient.SetAgent(ctx, req, opts...)
 }
@@ -257,7 +261,9 @@ func (c *AgentsClient) SearchAgents(ctx context.Context, req *dialogflowpb.Searc
 
 // TrainAgent trains the specified agent.
 //
-// Operation <response: google.protobuf.Empty>
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *AgentsClient) TrainAgent(ctx context.Context, req *dialogflowpb.TrainAgentRequest, opts ...gax.CallOption) (*TrainAgentOperation, error) {
 	return c.internalClient.TrainAgent(ctx, req, opts...)
 }
@@ -269,8 +275,6 @@ func (c *AgentsClient) TrainAgentOperation(name string) *TrainAgentOperation {
 }
 
 // ExportAgent exports the specified agent to a ZIP file.
-//
-// Operation <response: ExportAgentResponse>
 func (c *AgentsClient) ExportAgent(ctx context.Context, req *dialogflowpb.ExportAgentRequest, opts ...gax.CallOption) (*ExportAgentOperation, error) {
 	return c.internalClient.ExportAgent(ctx, req, opts...)
 }
@@ -291,9 +295,12 @@ func (c *AgentsClient) ExportAgentOperation(name string) *ExportAgentOperation {
 // call TrainAgent and wait for the operation it returns in order to train
 // explicitly.
 //
-// Operation <response: google.protobuf.Empty>
 // An operation which tracks when importing is complete. It only tracks
 // when the draft agent is updated not when it is done training.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *AgentsClient) ImportAgent(ctx context.Context, req *dialogflowpb.ImportAgentRequest, opts ...gax.CallOption) (*ImportAgentOperation, error) {
 	return c.internalClient.ImportAgent(ctx, req, opts...)
 }
@@ -313,9 +320,12 @@ func (c *AgentsClient) ImportAgentOperation(name string) *ImportAgentOperation {
 // completed yet. Please call TrainAgent and wait for the operation it
 // returns in order to train explicitly.
 //
-// Operation <response: google.protobuf.Empty>
 // An operation which tracks when restoring is complete. It only tracks
 // when the draft agent is updated not when it is done training.
+//
+// Note: You should always train an agent prior to sending it queries. See the
+// training
+// documentation (at https://cloud.google.com/dialogflow/es/docs/training).
 func (c *AgentsClient) RestoreAgent(ctx context.Context, req *dialogflowpb.RestoreAgentRequest, opts ...gax.CallOption) (*RestoreAgentOperation, error) {
 	return c.internalClient.RestoreAgent(ctx, req, opts...)
 }
