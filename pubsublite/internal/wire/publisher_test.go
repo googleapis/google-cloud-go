@@ -34,8 +34,9 @@ func testPublishSettings() PublishSettings {
 	// Send messages with minimal delay to speed up tests.
 	settings.DelayThreshold = time.Millisecond
 	settings.Timeout = 5 * time.Second
-	// Disable topic partition count background polling.
-	settings.ConfigPollPeriod = 0
+	// Set long poll period to prevent background update, but still have non-zero
+	// request timeout.
+	settings.ConfigPollPeriod = 1 * time.Minute
 	return settings
 }
 

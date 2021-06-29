@@ -1,87 +1,87 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.secrets.v1beta1",
-  "libraryPackage": "cloud.google.com/go/secretmanager/apiv1beta1",
-  "services": {
-    "SecretManagerService": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "Client",
-          "rpcs": {
-            "AccessSecretVersion": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.secrets.v1beta1",
+  "libraryPackage":  "cloud.google.com/go/secretmanager/apiv1beta1",
+  "services":  {
+    "SecretManagerService":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "Client",
+          "rpcs":  {
+            "AccessSecretVersion":  {
+              "methods":  [
                 "AccessSecretVersion"
               ]
             },
-            "AddSecretVersion": {
-              "methods": [
+            "AddSecretVersion":  {
+              "methods":  [
                 "AddSecretVersion"
               ]
             },
-            "CreateSecret": {
-              "methods": [
+            "CreateSecret":  {
+              "methods":  [
                 "CreateSecret"
               ]
             },
-            "DeleteSecret": {
-              "methods": [
+            "DeleteSecret":  {
+              "methods":  [
                 "DeleteSecret"
               ]
             },
-            "DestroySecretVersion": {
-              "methods": [
+            "DestroySecretVersion":  {
+              "methods":  [
                 "DestroySecretVersion"
               ]
             },
-            "DisableSecretVersion": {
-              "methods": [
+            "DisableSecretVersion":  {
+              "methods":  [
                 "DisableSecretVersion"
               ]
             },
-            "EnableSecretVersion": {
-              "methods": [
+            "EnableSecretVersion":  {
+              "methods":  [
                 "EnableSecretVersion"
               ]
             },
-            "GetIamPolicy": {
-              "methods": [
+            "GetIamPolicy":  {
+              "methods":  [
                 "GetIamPolicy"
               ]
             },
-            "GetSecret": {
-              "methods": [
+            "GetSecret":  {
+              "methods":  [
                 "GetSecret"
               ]
             },
-            "GetSecretVersion": {
-              "methods": [
+            "GetSecretVersion":  {
+              "methods":  [
                 "GetSecretVersion"
               ]
             },
-            "ListSecretVersions": {
-              "methods": [
+            "ListSecretVersions":  {
+              "methods":  [
                 "ListSecretVersions"
               ]
             },
-            "ListSecrets": {
-              "methods": [
+            "ListSecrets":  {
+              "methods":  [
                 "ListSecrets"
               ]
             },
-            "SetIamPolicy": {
-              "methods": [
+            "SetIamPolicy":  {
+              "methods":  [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions": {
-              "methods": [
+            "TestIamPermissions":  {
+              "methods":  [
                 "TestIamPermissions"
               ]
             },
-            "UpdateSecret": {
-              "methods": [
+            "UpdateSecret":  {
+              "methods":  [
                 "UpdateSecret"
               ]
             }

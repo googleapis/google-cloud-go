@@ -1,47 +1,47 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.cloud.binaryauthorization.v1beta1",
-  "libraryPackage": "cloud.google.com/go/binaryauthorization/apiv1beta1",
-  "services": {
-    "BinauthzManagementServiceV1Beta1": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "BinauthzManagementServiceV1Beta1Client",
-          "rpcs": {
-            "CreateAttestor": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.cloud.binaryauthorization.v1beta1",
+  "libraryPackage":  "cloud.google.com/go/binaryauthorization/apiv1beta1",
+  "services":  {
+    "BinauthzManagementServiceV1Beta1":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "BinauthzManagementServiceV1Beta1Client",
+          "rpcs":  {
+            "CreateAttestor":  {
+              "methods":  [
                 "CreateAttestor"
               ]
             },
-            "DeleteAttestor": {
-              "methods": [
+            "DeleteAttestor":  {
+              "methods":  [
                 "DeleteAttestor"
               ]
             },
-            "GetAttestor": {
-              "methods": [
+            "GetAttestor":  {
+              "methods":  [
                 "GetAttestor"
               ]
             },
-            "GetPolicy": {
-              "methods": [
+            "GetPolicy":  {
+              "methods":  [
                 "GetPolicy"
               ]
             },
-            "ListAttestors": {
-              "methods": [
+            "ListAttestors":  {
+              "methods":  [
                 "ListAttestors"
               ]
             },
-            "UpdateAttestor": {
-              "methods": [
+            "UpdateAttestor":  {
+              "methods":  [
                 "UpdateAttestor"
               ]
             },
-            "UpdatePolicy": {
-              "methods": [
+            "UpdatePolicy":  {
+              "methods":  [
                 "UpdatePolicy"
               ]
             }
