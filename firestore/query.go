@@ -262,7 +262,7 @@ func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
 	case *pb.Value_IntegerValue:
 		// TODO: this shouldn't be needed, but tests send things as int, this returns
 		// int64, so diff fails
-		return int(v.IntegerValue), nil
+		return v.IntegerValue, nil //(v.IntegerValue), nil
 	default:
 		i, err := createFromProtoValue(vProto, q.c)
 		if err != nil {
@@ -302,31 +302,65 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	startDoc, endDoc       *DocumentSnapshot
 	// 	startBefore, endBefore bool
 	if startAt := pbq.GetStartAt(); startAt != nil {
+		// if startAt.GetBefore() {
+		// 	q.startBefore = true
+		// }
+		if startAt.GetBefore() {
+			q.startBefore = true
+		}
 		for _, v := range startAt.GetValues() {
-			c, err := getSafeCursorValue(v, q)
-			if err != nil {
-				q.err = err
-				return q, err
-			}
-			if startAt.GetBefore() {
-				q = q.StartAt(c)
+			refVal := v.GetReferenceValue()
+			fmt.Println(refVal)
+
+			if refVal != "" {
+				refDoc, err := pathToDoc(refVal, q.c)
+				if err != nil {
+					q.err = err
+					return q, err
+				}
+				fmt.Println(refDoc)
+
+				ds := &DocumentSnapshot{
+					Ref: refDoc, c: q.c}
+				q.startDoc = ds
 			} else {
-				q = q.StartAfter(c)
+
+				c, err := getSafeCursorValue(v, q)
+				if err != nil {
+					q.err = err
+					return q, err
+				}
+
+				var newQ Query
+				if startAt.GetBefore() {
+					newQ = q.StartAt(c)
+					q.startBefore = true
+				} else {
+					newQ = q.StartAfter(c)
+				}
+
+				q.startVals = append(q.startVals, newQ.startVals...)
 			}
 		}
 	}
 	if endAt := pbq.GetEndAt(); endAt != nil {
+
 		for _, v := range endAt.GetValues() {
 			c, err := getSafeCursorValue(v, q)
 			if err != nil {
 				q.err = err
 				return q, err
 			}
+
+			var newQ Query
 			if endAt.GetBefore() {
-				q = q.EndBefore(c)
+				newQ = q.EndBefore(c)
+				q.endBefore = true
 			} else {
-				q = q.EndAt(c)
+				newQ = q.EndAt(c)
 			}
+			q.endVals = append(q.endVals, newQ.endVals...)
+
 		}
 	}
 
