@@ -1057,14 +1057,17 @@ func (s *inMemSpannerServer) PartitionQuery(ctx context.Context, req *spannerpb.
 }
 
 func (s *inMemSpannerServer) PartitionRead(ctx context.Context, req *spannerpb.PartitionReadRequest) (*spannerpb.PartitionResponse, error) {
-	s.mu.Lock()
-	if s.stopped {
-		s.mu.Unlock()
-		return nil, gstatus.Error(codes.Unavailable, "server has been stopped")
-	}
-	s.receivedRequests <- req
-	s.mu.Unlock()
-	return nil, gstatus.Error(codes.Unimplemented, "Method not yet implemented")
+	return s.PartitionQuery(ctx, &spannerpb.PartitionQueryRequest{
+		Session:          req.Session,
+		Transaction:      req.Transaction,
+		PartitionOptions: req.PartitionOptions,
+		// KeySet is currently ignored.
+		Sql: fmt.Sprintf(
+			"SELECT %s FROM %s",
+			strings.Join(req.Columns, ", "),
+			req.Table,
+		),
+	})
 }
 
 // EncodeResumeToken return mock resume token encoding for an uint64 integer.
