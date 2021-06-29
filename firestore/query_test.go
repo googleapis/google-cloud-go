@@ -22,10 +22,11 @@ import (
 	"testing"
 
 	"cloud.google.com/go/internal/pretty"
-	"cloud.google.com/go/internal/testutil"
 	tspb "github.com/golang/protobuf/ptypes/timestamp"
+	"github.com/golang/protobuf/ptypes/wrappers"
 	"github.com/google/go-cmp/cmp"
 	pb "google.golang.org/genproto/googleapis/firestore/v1"
+	"google.golang.org/protobuf/testing/protocmp"
 )
 
 func TestFilterToProto(t *testing.T) {
@@ -103,232 +104,231 @@ func createTestScenarios(t *testing.T) []toProtoScenario {
 	}
 
 	return []toProtoScenario{
-
-		// {
-		// 	desc: "q.Select()",
-		// 	in:   q.Select(),
-		// 	want: &pb.StructuredQuery{
-		// 		Select: &pb.StructuredQuery_Projection{
-		// 			Fields: []*pb.StructuredQuery_FieldReference{fref1("__name__")},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.Select("a", "b")`,
-		// 	in:   q.Select("a", "b"),
-		// 	want: &pb.StructuredQuery{
-		// 		Select: &pb.StructuredQuery_Projection{
-		// 			Fields: []*pb.StructuredQuery_FieldReference{fref1("a"), fref1("b")},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.Select("a", "b").Select("c")`,
-		// 	in:   q.Select("a", "b").Select("c"), // last wins
-		// 	want: &pb.StructuredQuery{
-		// 		Select: &pb.StructuredQuery_Projection{
-		// 			Fields: []*pb.StructuredQuery_FieldReference{fref1("c")},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.SelectPaths([]string{"*"}, []string{"/"})`,
-		// 	in:   q.SelectPaths([]string{"*"}, []string{"/"}),
-		// 	want: &pb.StructuredQuery{
-		// 		Select: &pb.StructuredQuery_Projection{
-		// 			Fields: []*pb.StructuredQuery_FieldReference{fref1("*"), fref1("/")},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.Where("a", ">", 5)`,
-		// 	in:   q.Where("a", ">", 5),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"a"}, ">", 5)},
-		// },
-		// {
-		// 	desc: `q.Where("a", "==", NaN)`,
-		// 	in:   q.Where("a", "==", float32(math.NaN())),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
-		// },
-		// {
-		// 	desc: `q.Where("a", "!=", 3)`,
-		// 	in:   q.Where("a", "!=", 3),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "!=", 3)},
-		// },
-		// {
-		// 	desc: `q.Where("a", "in", []int{7, 8})`,
-		// 	in:   q.Where("a", "in", []int{7, 8}),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "in", []int{7, 8})},
-		// },
-		// {
-		// 	desc: `q.Where("a", "not-in", []int{9})`,
-		// 	in:   q.Where("a", "not-in", []int{9}),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "not-in", []int{9})},
-		// },
-		// {
-		// 	desc: `q.Where("c", "array-contains", 1)`,
-		// 	in:   q.Where("c", "array-contains", 1),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
-		// },
-		// {
-		// 	desc: `q.Where("c", "array-contains-any", []int{1, 2})`,
-		// 	in:   q.Where("c", "array-contains-any", []int{1, 2}),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
-		// },
-		// {
-		// 	desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,
-		// 	in:   q.Where("a", ">", 5).Where("b", "<", "foo"),
-		// 	want: &pb.StructuredQuery{
-		// 		Where: &pb.StructuredQuery_Filter{
-		// 			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
-		// 				&pb.StructuredQuery_CompositeFilter{
-		// 					Op: pb.StructuredQuery_CompositeFilter_AND,
-		// 					Filters: []*pb.StructuredQuery_Filter{
-		// 						filtr([]string{"a"}, ">", 5), filtr([]string{"b"}, "<", "foo"),
-		// 					},
-		// 				},
-		// 			},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `  q.WherePath([]string{"/", "*"}, ">", 5)`,
-		// 	in:   q.WherePath([]string{"/", "*"}, ">", 5),
-		// 	want: &pb.StructuredQuery{Where: filtr([]string{"/", "*"}, ">", 5)},
-		// },
-		// {
-		// 	desc: `q.OrderBy("b", Asc).OrderBy("a", Desc).OrderByPath([]string{"~"}, Asc)`,
-		// 	in:   q.OrderBy("b", Asc).OrderBy("a", Desc).OrderByPath([]string{"~"}, Asc),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("b"), Direction: pb.StructuredQuery_ASCENDING},
-		// 			{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
-		// 			{Field: fref1("~"), Direction: pb.StructuredQuery_ASCENDING},
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.Offset(2).Limit(3)`,
-		// 	in:   q.Offset(2).Limit(3),
-		// 	want: &pb.StructuredQuery{
-		// 		Offset: 2,
-		// 		Limit:  &wrappers.Int32Value{Value: 3},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.Offset(2).Limit(3).Limit(4).Offset(5)`,
-		// 	in:   q.Offset(2).Limit(3).Limit(4).Offset(5), // last wins
-		// 	want: &pb.StructuredQuery{
-		// 		Offset: 5,
-		// 		Limit:  &wrappers.Int32Value{Value: 4},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.OrderBy("a", Asc).StartAt(7).EndBefore(9)`,
-		// 	in:   q.OrderBy("a", Asc).StartAt(7).EndBefore(9),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-		// 		},
-		// 		StartAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(7)},
-		// 			Before: true,
-		// 		},
-		// 		EndAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(9)},
-		// 			Before: true,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.OrderBy("a", Asc).StartAt(7).EndAt(9)`,
-		// 	in:   q.OrderBy("a", Asc).StartAt(7).EndAt(9),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-		// 		},
-		// 		StartAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(7)},
-		// 			Before: true,
-		// 		},
-		// 		EndAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(9)},
-		// 			Before: false,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.OrderBy("a", Asc).StartAfter(7).EndAt(9)`,
-		// 	in:   q.OrderBy("a", Asc).StartAfter(7).EndAt(9),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-		// 		},
-		// 		StartAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(7)},
-		// 			Before: false,
-		// 		},
-		// 		EndAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(9)},
-		// 			Before: false,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.OrderBy(DocumentID, Asc).StartAfter("foo").EndBefore("bar")`,
-		// 	in:   q.OrderBy(DocumentID, Asc).StartAfter("foo").EndBefore("bar"),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
-		// 		},
-		// 		StartAt: &pb.Cursor{
-		// 			Values: []*pb.Value{refval(coll.parentPath + "/C/foo")},
-		// 			Before: false,
-		// 		},
-		// 		EndAt: &pb.Cursor{
-		// 			Values: []*pb.Value{refval(coll.parentPath + "/C/bar")},
-		// 			Before: true,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	desc: `q.OrderBy("a", Asc).OrderBy("b", Desc).StartAfter(7, 8).EndAt(9, 10)`,
-		// 	in:   q.OrderBy("a", Asc).OrderBy("b", Desc).StartAfter(7, 8).EndAt(9, 10),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-		// 			{Field: fref1("b"), Direction: pb.StructuredQuery_DESCENDING},
-		// 		},
-		// 		StartAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(7), intval(8)},
-		// 			Before: false,
-		// 		},
-		// 		EndAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(9), intval(10)},
-		// 			Before: false,
-		// 		},
-		// 	},
-		// },
-		// {
-		// 	// last of StartAt/After wins, same for End
-		// 	desc: `q.OrderBy("a", Asc).StartAfter(1).StartAt(2).EndAt(3).EndBefore(4)`,
-		// 	in: q.OrderBy("a", Asc).
-		// 		StartAfter(1).StartAt(2).
-		// 		EndAt(3).EndBefore(4),
-		// 	want: &pb.StructuredQuery{
-		// 		OrderBy: []*pb.StructuredQuery_Order{
-		// 			{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
-		// 		},
-		// 		StartAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(2)},
-		// 			Before: true,
-		// 		},
-		// 		EndAt: &pb.Cursor{
-		// 			Values: []*pb.Value{intval(4)},
-		// 			Before: true,
-		// 		},
-		// 	},
-		// },
+		{
+			desc: "q.Select()",
+			in:   q.Select(),
+			want: &pb.StructuredQuery{
+				Select: &pb.StructuredQuery_Projection{
+					Fields: []*pb.StructuredQuery_FieldReference{fref1("__name__")},
+				},
+			},
+		},
+		{
+			desc: `q.Select("a", "b")`,
+			in:   q.Select("a", "b"),
+			want: &pb.StructuredQuery{
+				Select: &pb.StructuredQuery_Projection{
+					Fields: []*pb.StructuredQuery_FieldReference{fref1("a"), fref1("b")},
+				},
+			},
+		},
+		{
+			desc: `q.Select("a", "b").Select("c")`,
+			in:   q.Select("a", "b").Select("c"), // last wins
+			want: &pb.StructuredQuery{
+				Select: &pb.StructuredQuery_Projection{
+					Fields: []*pb.StructuredQuery_FieldReference{fref1("c")},
+				},
+			},
+		},
+		{
+			desc: `q.SelectPaths([]string{"*"}, []string{"/"})`,
+			in:   q.SelectPaths([]string{"*"}, []string{"/"}),
+			want: &pb.StructuredQuery{
+				Select: &pb.StructuredQuery_Projection{
+					Fields: []*pb.StructuredQuery_FieldReference{fref1("*"), fref1("/")},
+				},
+			},
+		},
+		{
+			desc: `q.Where("a", ">", 5)`,
+			in:   q.Where("a", ">", 5),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, ">", 5)},
+		},
+		{
+			desc: `q.Where("a", "==", NaN)`,
+			in:   q.Where("a", "==", float32(math.NaN())),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "==", math.NaN())},
+		},
+		{
+			desc: `q.Where("a", "!=", 3)`,
+			in:   q.Where("a", "!=", 3),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "!=", 3)},
+		},
+		{
+			desc: `q.Where("a", "in", []int{7, 8})`,
+			in:   q.Where("a", "in", []int{7, 8}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "in", []int{7, 8})},
+		},
+		{
+			desc: `q.Where("a", "not-in", []int{9})`,
+			in:   q.Where("a", "not-in", []int{9}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"a"}, "not-in", []int{9})},
+		},
+		{
+			desc: `q.Where("c", "array-contains", 1)`,
+			in:   q.Where("c", "array-contains", 1),
+			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains", 1)},
+		},
+		{
+			desc: `q.Where("c", "array-contains-any", []int{1, 2})`,
+			in:   q.Where("c", "array-contains-any", []int{1, 2}),
+			want: &pb.StructuredQuery{Where: filtr([]string{"c"}, "array-contains-any", []int{1, 2})},
+		},
+		{
+			desc: `q.Where("a", ">", 5).Where("b", "<", "foo")`,
+			in:   q.Where("a", ">", 5).Where("b", "<", "foo"),
+			want: &pb.StructuredQuery{
+				Where: &pb.StructuredQuery_Filter{
+					FilterType: &pb.StructuredQuery_Filter_CompositeFilter{
+						&pb.StructuredQuery_CompositeFilter{
+							Op: pb.StructuredQuery_CompositeFilter_AND,
+							Filters: []*pb.StructuredQuery_Filter{
+								filtr([]string{"a"}, ">", 5), filtr([]string{"b"}, "<", "foo"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc: `  q.WherePath([]string{"/", "*"}, ">", 5)`,
+			in:   q.WherePath([]string{"/", "*"}, ">", 5),
+			want: &pb.StructuredQuery{Where: filtr([]string{"/", "*"}, ">", 5)},
+		},
+		{
+			desc: `q.OrderBy("b", Asc).OrderBy("a", Desc).OrderByPath([]string{"~"}, Asc)`,
+			in:   q.OrderBy("b", Asc).OrderBy("a", Desc).OrderByPath([]string{"~"}, Asc),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("b"), Direction: pb.StructuredQuery_ASCENDING},
+					{Field: fref1("a"), Direction: pb.StructuredQuery_DESCENDING},
+					{Field: fref1("~"), Direction: pb.StructuredQuery_ASCENDING},
+				},
+			},
+		},
+		{
+			desc: `q.Offset(2).Limit(3)`,
+			in:   q.Offset(2).Limit(3),
+			want: &pb.StructuredQuery{
+				Offset: 2,
+				Limit:  &wrappers.Int32Value{Value: 3},
+			},
+		},
+		{
+			desc: `q.Offset(2).Limit(3).Limit(4).Offset(5)`,
+			in:   q.Offset(2).Limit(3).Limit(4).Offset(5), // last wins
+			want: &pb.StructuredQuery{
+				Offset: 5,
+				Limit:  &wrappers.Int32Value{Value: 4},
+			},
+		},
+		{
+			desc: `q.OrderBy("a", Asc).StartAt(7).EndBefore(9)`,
+			in:   q.OrderBy("a", Asc).StartAt(7).EndBefore(9),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+				},
+				StartAt: &pb.Cursor{
+					Values: []*pb.Value{intval(7)},
+					Before: true,
+				},
+				EndAt: &pb.Cursor{
+					Values: []*pb.Value{intval(9)},
+					Before: true,
+				},
+			},
+		},
+		{
+			desc: `q.OrderBy("a", Asc).StartAt(7).EndAt(9)`,
+			in:   q.OrderBy("a", Asc).StartAt(7).EndAt(9),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+				},
+				StartAt: &pb.Cursor{
+					Values: []*pb.Value{intval(7)},
+					Before: true,
+				},
+				EndAt: &pb.Cursor{
+					Values: []*pb.Value{intval(9)},
+					Before: false,
+				},
+			},
+		},
+		{
+			desc: `q.OrderBy("a", Asc).StartAfter(7).EndAt(9)`,
+			in:   q.OrderBy("a", Asc).StartAfter(7).EndAt(9),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+				},
+				StartAt: &pb.Cursor{
+					Values: []*pb.Value{intval(7)},
+					Before: false,
+				},
+				EndAt: &pb.Cursor{
+					Values: []*pb.Value{intval(9)},
+					Before: false,
+				},
+			},
+		},
+		{
+			desc: `q.OrderBy(DocumentID, Asc).StartAfter("foo").EndBefore("bar")`,
+			in:   q.OrderBy(DocumentID, Asc).StartAfter("foo").EndBefore("bar"),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("__name__"), Direction: pb.StructuredQuery_ASCENDING},
+				},
+				StartAt: &pb.Cursor{
+					Values: []*pb.Value{refval(coll.parentPath + "/C/foo")},
+					Before: false,
+				},
+				EndAt: &pb.Cursor{
+					Values: []*pb.Value{refval(coll.parentPath + "/C/bar")},
+					Before: true,
+				},
+			},
+		},
+		{
+			desc: `q.OrderBy("a", Asc).OrderBy("b", Desc).StartAfter(7, 8).EndAt(9, 10)`,
+			in:   q.OrderBy("a", Asc).OrderBy("b", Desc).StartAfter(7, 8).EndAt(9, 10),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+					{Field: fref1("b"), Direction: pb.StructuredQuery_DESCENDING},
+				},
+				StartAt: &pb.Cursor{
+					Values: []*pb.Value{intval(7), intval(8)},
+					Before: false,
+				},
+				EndAt: &pb.Cursor{
+					Values: []*pb.Value{intval(9), intval(10)},
+					Before: false,
+				},
+			},
+		},
+		{
+			// last of StartAt/After wins, same for End
+			desc: `q.OrderBy("a", Asc).StartAfter(1).StartAt(2).EndAt(3).EndBefore(4)`,
+			in: q.OrderBy("a", Asc).
+				StartAfter(1).StartAt(2).
+				EndAt(3).EndBefore(4),
+			want: &pb.StructuredQuery{
+				OrderBy: []*pb.StructuredQuery_Order{
+					{Field: fref1("a"), Direction: pb.StructuredQuery_ASCENDING},
+				},
+				StartAt: &pb.Cursor{
+					Values: []*pb.Value{intval(2)},
+					Before: true,
+				},
+				EndAt: &pb.Cursor{
+					Values: []*pb.Value{intval(4)},
+					Before: true,
+				},
+			},
+		},
 		// Start/End with DocumentSnapshot
 		// These tests are from the "Document Snapshot Cursors" doc.
 		{
@@ -482,55 +482,20 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 			continue
 		}
 
-		// gotProto, err := got.toProto()
-		// if err != nil {
-		// 	t.Fatalf("%s: %v", test.desc, err)
-		// 	continue
-		// }
-
-		toInt64 := func(x interface{}) int64 {
-			switch t := x.(type) {
-			case int64:
-				return int64(t)
-			case int32:
-				return int64(t)
-			case int16:
-				return int64(t)
-			case int8:
-				return int64(t)
-			case int:
-				return int64(t)
-			}
-			return 0
-		}
-
-		allInts := cmp.FilterValues(func(x interface{}, y interface{}) bool {
-			switch x.(type) {
-			case int64, int32, int16, int8, int:
-				fmt.Println("detected int compare", x, y)
-				return true
-			default:
-				return false
-			}
-		},
-
-			cmp.Comparer(func(x, y interface{}) bool {
-				return toInt64(x) == toInt64(y)
-			},
-			),
-		)
 		want := test.in
-		// due to ways docSnapshots do order fixes right before toproto, and our from proto will be correct, patch up the object
-		want.orders = want.adjustOrders()
-		if !testutil.Equal(got, want, append(cmpOpts, allInts)...) {
-			//if !testEqual(got, want) {
-			//fmt.Println("Expected the query doesn't match")
-			t.Fatalf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), testDiff(got, want))
+		gotProto, err := got.ToProto()
+		fmt.Println(gotProto)
+		if err != nil {
+			t.Fatalf("%s: %v", test.desc, err)
 		}
-		// if !testEqual(gotProto, proto) {
-		// 	t.Fatalf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(gotProto), pretty.Value(proto), testDiff(gotProto, proto))
-		// }
 
+		// Compare protos, not query. This is due to subtle non-reversible bits.
+		// For instance query has a snapshot, but query proto converts to reference values.
+		// we can convert back to a query with values, but not a document snapshot.
+		// despite this difference, we should be able to go proto -> query -> proto.
+		if diff := cmp.Diff(gotProto, proto, protocmp.Transform()); diff != "" {
+			t.Errorf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), diff)
+		}
 	}
 }
 

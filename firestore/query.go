@@ -302,49 +302,27 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	startDoc, endDoc       *DocumentSnapshot
 	// 	startBefore, endBefore bool
 	if startAt := pbq.GetStartAt(); startAt != nil {
-		// if startAt.GetBefore() {
-		// 	q.startBefore = true
-		// }
 		if startAt.GetBefore() {
 			q.startBefore = true
 		}
 		for _, v := range startAt.GetValues() {
-			refVal := v.GetReferenceValue()
-			fmt.Println(refVal)
-
-			if refVal != "" {
-				refDoc, err := pathToDoc(refVal, q.c)
-				if err != nil {
-					q.err = err
-					return q, err
-				}
-				fmt.Println(refDoc)
-
-				ds := &DocumentSnapshot{
-					Ref: refDoc, c: q.c}
-				q.startDoc = ds
-			} else {
-
-				c, err := getSafeCursorValue(v, q)
-				if err != nil {
-					q.err = err
-					return q, err
-				}
-
-				var newQ Query
-				if startAt.GetBefore() {
-					newQ = q.StartAt(c)
-					q.startBefore = true
-				} else {
-					newQ = q.StartAfter(c)
-				}
-
-				q.startVals = append(q.startVals, newQ.startVals...)
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
 			}
+
+			var newQ Query
+			if startAt.GetBefore() {
+				newQ = q.StartAt(c)
+			} else {
+				newQ = q.StartAfter(c)
+			}
+
+			q.startVals = append(q.startVals, newQ.startVals...)
 		}
 	}
 	if endAt := pbq.GetEndAt(); endAt != nil {
-
 		for _, v := range endAt.GetValues() {
 			c, err := getSafeCursorValue(v, q)
 			if err != nil {
@@ -389,23 +367,6 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// TODO:
 	// 	filters                []filter
 	if w := pbq.GetWhere(); w != nil {
-		// fmt.Println(w.String())
-		// if composite := w.GetCompositeFilter(); composite != nil {
-		// 	fmt.Println("composite:", composite)
-
-		// }
-
-		// if filter := w.GetFieldFilter(); filter != nil {
-		// 	fmt.Println("filter:", filter)
-		// 	fp := filter.GetField().FieldPath
-		// 	op, err := fieldFilterOperatorToString(filter.GetOp())
-		// 	if err != nil {
-		// 		q.err = err
-		// 		return q, q.err
-		// 	}
-		// 	val := filter.GetValue()
-		// 	fmt.Println("fp:", fp, "op:", op, "val:", val)
-		// }
 		q.err = errors.New("FromProto: Deserializing queries with filters is not supported")
 	}
 
@@ -414,10 +375,7 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		for _, v := range orderBy {
 			s := strings.ReplaceAll(v.Field.FieldPath, "`", "")
 			fp := FieldPath(strings.Split(s, "."))
-
-			// q.orders = OrderByPathappend(q.copyOrders(), order{FieldPath(fp), Direction(v.Direction)})
 			q = q.OrderByPath(fp, Direction(v.Direction))
-
 		}
 	}
 
@@ -433,33 +391,6 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	limitToLast            bool
 	return q, q.err
 }
-
-// func fieldFilterOperatorToString(p pb.StructuredQuery_FieldFilter_Operator) (string, error) {
-// 	switch p {
-// 	case pb.StructuredQuery_FieldFilter_LESS_THAN:
-// 		return "<", nil
-// 	case pb.StructuredQuery_FieldFilter_LESS_THAN_OR_EQUAL:
-// 		return "<=", nil
-// 	case pb.StructuredQuery_FieldFilter_GREATER_THAN:
-// 		return ">", nil
-// 	case pb.StructuredQuery_FieldFilter_GREATER_THAN_OR_EQUAL:
-// 		return ">=", nil
-// 	case pb.StructuredQuery_FieldFilter_EQUAL:
-// 		return "==", nil
-// 	case pb.StructuredQuery_FieldFilter_NOT_EQUAL:
-// 		return "!=", nil
-// 	case pb.StructuredQuery_FieldFilter_IN:
-// 		return "in", nil
-// 	case pb.StructuredQuery_FieldFilter_NOT_IN:
-// 		return "not-in", nil
-// 	case pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS:
-// 		return "array-contains", nil
-// 	case pb.StructuredQuery_FieldFilter_ARRAY_CONTAINS_ANY:
-// 		return "array-contains-any", nil
-// 	default:
-// 		return "", fmt.Errorf("firestore: invalid operator %q", p)
-// 	}
-// }
 
 func (q Query) ToProto() (*pb.RunQueryRequest, error) {
 	structuredQuery, err := q.toProto()
