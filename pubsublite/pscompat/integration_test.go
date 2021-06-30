@@ -808,13 +808,7 @@ func validateNewSeekOperation(t *testing.T, subscription wire.SubscriptionPath, 
 		t.Errorf("Operation.Metadata() got err: %v", err)
 		return
 	}
-	if len(m.Target) == 0 {
-		t.Error("Metadata.Target missing")
-	}
-	if m.CreateTime.IsZero() {
-		t.Error("Metadata.CreateTime missing")
-	}
-	t.Logf("Seek operation: %s, metadata: %v", seekOp.Name(), m)
+	t.Logf("Seek operation initiated: %s, metadata: %v", seekOp.Name(), m)
 }
 
 func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscription wire.SubscriptionPath, seekOp *pubsublite.SeekSubscriptionOperation) {
@@ -837,12 +831,16 @@ func validateCompleteSeekOperation(ctx context.Context, t *testing.T, subscripti
 	if len(m.Target) == 0 {
 		t.Error("Metadata.Target missing")
 	}
+	if len(m.Verb) == 0 {
+		t.Error("Metadata.Verb missing")
+	}
 	if m.CreateTime.IsZero() {
 		t.Error("Metadata.CreateTime missing")
 	}
 	if m.EndTime.IsZero() {
 		t.Error("Metadata.EndTime missing")
 	}
+	t.Logf("Seek operation complete: %s, metadata: %v", seekOp.Name(), m)
 }
 
 func TestIntegration_SeekSubscription(t *testing.T) {

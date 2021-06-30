@@ -105,6 +105,9 @@ type OperationMetadata struct {
 	// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID"
 	Target string
 
+	// The verb describing the kind of operation.
+	Verb string
+
 	// The time the operation was created.
 	CreateTime time.Time
 
@@ -119,6 +122,7 @@ func protoToOperationMetadata(o *pb.OperationMetadata) (*OperationMetadata, erro
 	}
 	metadata := &OperationMetadata{
 		Target:     o.Target,
+		Verb:       o.Verb,
 		CreateTime: o.GetCreateTime().AsTime(),
 	}
 	if o.GetEndTime() != nil {

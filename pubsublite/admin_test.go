@@ -532,11 +532,13 @@ func TestAdminSeekSubscription(t *testing.T) {
 				Done: false,
 				Metadata: test.MakeAny(&pb.OperationMetadata{
 					Target:     subscriptionPath,
+					Verb:       "seek",
 					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
 				}),
 			}
 			wantInitialMetadata := &OperationMetadata{
 				Target:     subscriptionPath,
+				Verb:       "seek",
 				CreateTime: time.Unix(123456, 700),
 			}
 
@@ -560,6 +562,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 				Done: true,
 				Metadata: test.MakeAny(&pb.OperationMetadata{
 					Target:     subscriptionPath,
+					Verb:       "seek",
 					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
 					EndTime:    &tspb.Timestamp{Seconds: 234567, Nanos: 800},
 				}),
@@ -569,6 +572,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 			}
 			wantCompleteMetadata := &OperationMetadata{
 				Target:     subscriptionPath,
+				Verb:       "seek",
 				CreateTime: time.Unix(123456, 700),
 				EndTime:    time.Unix(234567, 800),
 			}

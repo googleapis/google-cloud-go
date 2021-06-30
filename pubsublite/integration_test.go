@@ -139,6 +139,9 @@ func validateNewSeekOperation(t *testing.T, subscription string, seekOp *SeekSub
 	if got, want := m.Target, subscription; !SubscriptionPathsEqual(got, want) {
 		t.Errorf("Metadata.Target got: %v, want: %v", got, want)
 	}
+	if len(m.Verb) == 0 {
+		t.Error("Metadata.Verb missing")
+	}
 	if m.CreateTime.IsZero() {
 		t.Error("Metadata.CreateTime missing")
 	}
