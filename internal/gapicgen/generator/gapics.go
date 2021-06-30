@@ -491,7 +491,11 @@ func (g *GapicGenerator) manifest(confs []*microgenConfig) error {
 		entries[manual.DistributionName] = manual
 	}
 	for _, conf := range confs {
-		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		dir := g.googleapisDir
+		if conf.googleapisDiscovery {
+			dir = g.googleapisDiscoDir
+		}
+		yamlPath := filepath.Join(dir, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return err
@@ -535,7 +539,11 @@ func (g *GapicGenerator) copyMicrogenFiles() error {
 func (g *GapicGenerator) parseAPIShortnames(confs []*microgenConfig, manualEntries []manifestEntry) (map[string]string, error) {
 	shortnames := map[string]string{}
 	for _, conf := range confs {
-		yamlPath := filepath.Join(g.googleapisDir, conf.apiServiceConfigPath)
+		dir := g.googleapisDir
+		if conf.googleapisDiscovery {
+			dir = g.googleapisDiscoDir
+		}
+		yamlPath := filepath.Join(dir, conf.apiServiceConfigPath)
 		yamlFile, err := os.Open(yamlPath)
 		if err != nil {
 			return nil, err
