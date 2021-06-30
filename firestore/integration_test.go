@@ -1678,18 +1678,22 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		if err != nil {
 			t.Fatalf("GetAll(): received unexpected error: %v", err)
 		}
+		totalCount += len(allDocs)
+
+		// Check that the same results are returned evenv if we use the proto converted query
 		pbStructuredQuery, _ := query.ToProto()
 		q := *iClient.Query()
-		q, e := q.FromProto(pbStructuredQuery)
-		fmt.Println(q, e)
-		allDocs2, err := q.Documents(ctx).GetAll()
+		q, err = q.FromProto(pbStructuredQuery)
 		if err != nil {
-			t.Fatalf("Did not expect error: %v", err)
+			t.Fatalf("FromProto error: %v", err)
 		}
-		if len(allDocs) != len(allDocs2) {
-			t.Fatalf("Did not expect error: %v", err)
+		protoReturnedDocs, err := q.Documents(ctx).GetAll()
+		if err != nil {
+			t.Fatalf("GetAll error: %v", err)
 		}
-		totalCount += len(allDocs)
+		if len(allDocs) != len(protoReturnedDocs) {
+			t.Fatalf("Expected document count to be the same on both query runs: %v", err)
+		}
 	}
 
 	if got, want := totalCount, documentCount; got != want {
