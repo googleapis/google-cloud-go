@@ -165,14 +165,14 @@ type createSubscriptionSettings struct {
 
 // CreateSubscriptionOption is an option for AdminClient.CreateSubscription.
 type CreateSubscriptionOption interface {
-	Apply(*createSubscriptionSettings)
+	apply(*createSubscriptionSettings)
 }
 
 type startingOffset struct {
 	backlogLocation BacklogLocation
 }
 
-func (so startingOffset) Apply(settings *createSubscriptionSettings) {
+func (so startingOffset) apply(settings *createSubscriptionSettings) {
 	settings.backlogLocation = so.backlogLocation
 }
 
@@ -190,7 +190,7 @@ func StartingOffset(location BacklogLocation) CreateSubscriptionOption {
 func (ac *AdminClient) CreateSubscription(ctx context.Context, config SubscriptionConfig, opts ...CreateSubscriptionOption) (*SubscriptionConfig, error) {
 	var settings createSubscriptionSettings
 	for _, opt := range opts {
-		opt.Apply(&settings)
+		opt.apply(&settings)
 	}
 
 	subsPath, err := wire.ParseSubscriptionPath(config.Name)
