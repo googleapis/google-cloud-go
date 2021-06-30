@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// package managedwriter will be a thick client around the storage API's BigQueryWriteClient.
+// Package managedwriter will be a thick client around the storage API's BigQueryWriteClient.
 //
 // It is EXPERIMENTAL and subject to change or removal without notice.
 //
