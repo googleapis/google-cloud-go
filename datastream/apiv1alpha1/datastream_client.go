@@ -214,7 +214,7 @@ func defaultCallOptions() *CallOptions {
 	}
 }
 
-// internalClient is an interface that defines the methods availaible from DataStream API.
+// internalClient is an interface that defines the methods availaible from Datastream API.
 type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -253,7 +253,7 @@ type internalClient interface {
 	DeleteRouteOperation(name string) *DeleteRouteOperation
 }
 
-// Client is a client for interacting with DataStream API.
+// Client is a client for interacting with Datastream API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Datastream service
@@ -472,7 +472,7 @@ func (c *Client) DeleteRouteOperation(name string) *DeleteRouteOperation {
 	return c.internalClient.DeleteRouteOperation(name)
 }
 
-// gRPCClient is a client for interacting with DataStream API over gRPC transport.
+// gRPCClient is a client for interacting with Datastream API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type gRPCClient struct {
