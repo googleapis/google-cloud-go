@@ -12,6 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-// Package conversionutils adds functionality related to converting bigquery representations
+// Package adapt adds functionality related to converting bigquery representations
 // like schema and data type representations.
-package conversionutils
+//
+// It is EXPERIMENTAL and subject to change or removal without notice.
+package adapt

@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-package conversionutils
+package adapt
 
 import (
 	"fmt"
@@ -49,7 +49,7 @@ func bqFieldToProto(in *bigquery.FieldSchema) (*storagepb.TableFieldSchema, erro
 	// Type conversion.
 	typ, ok := fieldTypeMap[in.Type]
 	if !ok {
-		return nil, fmt.Errorf("Could not convert field (%s) due to unknown type value: %s", in.Name, in.Type)
+		return nil, fmt.Errorf("could not convert field (%s) due to unknown type value: %s", in.Name, in.Type)
 	}
 	out.Type = typ
 
