@@ -291,11 +291,10 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		q.allDescendants = from[0].AllDescendants
 	}
 
-	// 	// 	path                   string // path to query (collection)
-	// 	// 	parentPath             string // path of the collection's parent (document)
+	// 	path                   string // path to query (collection)
+	// 	parentPath             string // path of the collection's parent (document)
 	parent := pbQuery.GetParent()
 	q.parentPath = parent
-	// q.path = parent[:len(parent)-len("/documents")]
 	q.path = parent + "/" + q.collectionID
 
 	// 	startVals, endVals     []interface{}
