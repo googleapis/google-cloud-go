@@ -31,7 +31,9 @@ import (
 	"cloud.google.com/go/pubsublite/internal/wire"
 	"github.com/google/go-cmp/cmp/cmpopts"
 	"golang.org/x/sync/errgroup"
+	"golang.org/x/xerrors"
 	"google.golang.org/api/option"
+	"google.golang.org/grpc/codes"
 
 	vkit "cloud.google.com/go/pubsublite/apiv1"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
@@ -168,7 +170,7 @@ func partitionNumbers(partitionCount int) []int {
 
 func publishMessages(t *testing.T, settings PublishSettings, topic wire.TopicPath, msgs ...*pubsub.Message) {
 	ctx := context.Background()
-	publisher := publisherClient(ctx, t, settings, topic)
+	publisher := publisherClient(context.Background(), t, settings, topic)
 	defer publisher.Stop()
 
 	var pubResults []*pubsub.PublishResult
@@ -180,7 +182,7 @@ func publishMessages(t *testing.T, settings PublishSettings, topic wire.TopicPat
 
 func publishPrefixedMessages(t *testing.T, settings PublishSettings, topic wire.TopicPath, msgPrefix string, msgCount, msgSize int) []string {
 	ctx := context.Background()
-	publisher := publisherClient(ctx, t, settings, topic)
+	publisher := publisherClient(context.Background(), t, settings, topic)
 	defer publisher.Stop()
 
 	orderingSender := test.NewOrderingSender()
@@ -306,7 +308,7 @@ func receiveAllMessages(t *testing.T, msgTracker *test.MsgTracker, settings Rece
 		}
 	}
 
-	subscriber := subscriberClient(cctx, t, settings, subscription)
+	subscriber := subscriberClient(context.Background(), t, settings, subscription)
 	if err := subscriber.Receive(cctx, messageReceiver); err != nil {
 		t.Errorf("Receive() got err: %v", err)
 	}
@@ -334,7 +336,7 @@ func receiveAndVerifyMessage(t *testing.T, want *pubsub.Message, settings Receiv
 		}
 	}
 
-	subscriber := subscriberClient(cctx, t, settings, subscription)
+	subscriber := subscriberClient(context.Background(), t, settings, subscription)
 	if err := subscriber.Receive(cctx, messageReceiver); err != nil {
 		t.Errorf("Receive() got err: %v", err)
 	}
@@ -419,7 +421,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			}
 			got.Nack()
 		}
-		subscriber := subscriberClient(cctx, t, recvSettings, subscriptionPath)
+		subscriber := subscriberClient(context.Background(), t, recvSettings, subscriptionPath)
 		if gotErr := subscriber.Receive(cctx, messageReceiver1); !test.ErrorEqual(gotErr, errNackCalled) {
 			t.Errorf("Receive() got err: (%v), want err: (%v)", gotErr, errNackCalled)
 		}
@@ -436,7 +438,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			}
 			return fmt.Errorf("Received unexpected message: %q", truncateMsg(string(msg.Data)))
 		}
-		subscriber = subscriberClient(cctx, t, customSettings, subscriptionPath)
+		subscriber = subscriberClient(context.Background(), t, customSettings, subscriptionPath)
 
 		messageReceiver2 := func(ctx context.Context, got *pubsub.Message) {
 			got.Nack()
@@ -470,7 +472,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			got.Ack()
 			stopSubscriber()
 		}
-		subscriber := subscriberClient(cctx, t, recvSettings, subscriptionPath)
+		subscriber := subscriberClient(context.Background(), t, recvSettings, subscriptionPath)
 
 		// The message receiver stops the subscriber after receiving the first
 		// message. However, the subscriber isn't guaranteed to immediately stop, so
@@ -521,7 +523,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 			// next test, which would receive an incorrect message.
 			got.Ack()
 		}
-		subscriber := subscriberClient(cctx, t, recvSettings, subscriptionPath)
+		subscriber := subscriberClient(context.Background(), t, recvSettings, subscriptionPath)
 
 		if err := subscriber.Receive(cctx, messageReceiver); err != nil {
 			t.Errorf("Receive() got err: %v", err)
@@ -575,6 +577,44 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
 	})
 
+	// Verifies that cancelling the context passed to NewPublisherClient can shut
+	// down the publisher.
+	t.Run("CancelPublisherContext", func(t *testing.T) {
+		cctx, cancel := context.WithCancel(context.Background())
+		publisher := publisherClient(cctx, t, DefaultPublishSettings, topicPath)
+
+		cancel()
+
+		wantCode := codes.Canceled
+		result := publisher.Publish(ctx, &pubsub.Message{Data: []byte("cancel_publisher_context")})
+		if _, err := result.Get(ctx); !test.ErrorHasCode(err, wantCode) {
+			t.Errorf("Publish() got err: %v, want code: %v", err, wantCode)
+		}
+		if err := xerrors.Unwrap(publisher.Error()); !test.ErrorHasCode(err, wantCode) {
+			t.Errorf("Error() got err: %v, want code: %v", err, wantCode)
+		}
+		publisher.Stop()
+	})
+
+	// Verifies that cancelling the context passed to NewSubscriberClient can shut
+	// down the subscriber.
+	t.Run("CancelSubscriberContext", func(t *testing.T) {
+		msg := &pubsub.Message{Data: []byte("cancel_subscriber_context")}
+		publishMessages(t, DefaultPublishSettings, topicPath, msg)
+
+		cctx, cancel := context.WithCancel(context.Background())
+		subscriber := subscriberClient(cctx, t, recvSettings, subscriptionPath)
+
+		subsErr := subscriber.Receive(context.Background(), func(ctx context.Context, got *pubsub.Message) {
+			got.Ack()
+			cancel()
+		})
+
+		if err, wantCode := xerrors.Unwrap(subsErr), codes.Canceled; !test.ErrorHasCode(err, wantCode) {
+			t.Errorf("Receive() got err: %v, want code: %v", err, wantCode)
+		}
+	})
+
 	// NOTE: This should be the last test case.
 	// Verifies that increasing the number of topic partitions is handled
 	// correctly by publishers.
@@ -583,7 +623,7 @@ func TestIntegration_PublishSubscribeSinglePartition(t *testing.T) {
 		const pollPeriod = 5 * time.Second
 		pubSettings := DefaultPublishSettings
 		pubSettings.configPollPeriod = pollPeriod // Poll updates more frequently
-		publisher := publisherClient(ctx, t, pubSettings, topicPath)
+		publisher := publisherClient(context.Background(), t, pubSettings, topicPath)
 		defer publisher.Stop()
 
 		// Update the number of partitions.
@@ -696,7 +736,7 @@ func TestIntegration_PublishSubscribeMultiPartition(t *testing.T) {
 		for i := 0; i < subscriberCount; i++ {
 			// Subscribers must be started in a goroutine as Receive() blocks.
 			g.Go(func() error {
-				subscriber := subscriberClient(cctx, t, DefaultReceiveSettings, subscriptionPath)
+				subscriber := subscriberClient(context.Background(), t, DefaultReceiveSettings, subscriptionPath)
 				err := subscriber.Receive(cctx, messageReceiver)
 				if err != nil {
 					t.Errorf("Receive() got err: %v", err)

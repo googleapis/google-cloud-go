@@ -75,7 +75,7 @@ const (
 	DefaultEntryCountThreshold = 1000
 
 	// DefaultEntryByteThreshold is the default value for the EntryByteThreshold LoggerOption.
-	DefaultEntryByteThreshold = 1 << 20 // 1MiB
+	DefaultEntryByteThreshold = 1 << 23 // 8MiB
 
 	// DefaultBufferedByteLimit is the default value for the BufferedByteLimit LoggerOption.
 	DefaultBufferedByteLimit = 1 << 30 // 1GiB
