@@ -70,6 +70,7 @@ func defaultConfigGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("logging.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://logging.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
