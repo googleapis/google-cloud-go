@@ -2665,6 +2665,54 @@ func TestClient_Apply_Tagging(t *testing.T) {
 	checkCommitForExpectedRequestOptions(t, server.TestSpanner, sppb.RequestOptions{TransactionTag: "tx-tag"})
 }
 
+func TestClient_PartitionQuery_RequestOptions(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, qo := range []QueryOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_LOW},
+		{RequestTag: "batch-query-tag"},
+		{Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "batch-query-with-medium-prio"},
+	} {
+		ctx := context.Background()
+		txn, _ := client.BatchReadOnlyTransaction(ctx, StrongRead())
+		partitions, _ := txn.PartitionQueryWithOptions(ctx, NewStatement(SelectFooFromBar), PartitionOptions{MaxPartitions: 10}, qo)
+		for _, p := range partitions {
+			iter := txn.Execute(ctx, p)
+			iter.Next()
+			iter.Stop()
+		}
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), sppb.RequestOptions{RequestTag: qo.RequestTag, Priority: qo.Priority})
+	}
+}
+
+func TestClient_PartitionRead_RequestOptions(t *testing.T) {
+	t.Parallel()
+
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	for _, ro := range []ReadOptions{
+		{},
+		{Priority: sppb.RequestOptions_PRIORITY_LOW},
+		{RequestTag: "batch-read-tag"},
+		{Priority: sppb.RequestOptions_PRIORITY_MEDIUM, RequestTag: "batch-read-with-medium-prio"},
+	} {
+		ctx := context.Background()
+		txn, _ := client.BatchReadOnlyTransaction(ctx, StrongRead())
+		partitions, _ := txn.PartitionReadWithOptions(ctx, "Albums", KeySets(Key{"foo"}), []string{"SingerId", "AlbumId", "AlbumTitle"}, PartitionOptions{MaxPartitions: 10}, ro)
+		for _, p := range partitions {
+			iter := txn.Execute(ctx, p)
+			iter.Next()
+			iter.Stop()
+		}
+		checkRequestsForExpectedRequestOptions(t, server.TestSpanner, len(partitions), sppb.RequestOptions{RequestTag: ro.RequestTag, Priority: ro.Priority})
+	}
+}
+
 func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerServer, reqCount int, ro sppb.RequestOptions) {
 	reqs := drainRequestsFromServer(server)
 	reqOptions := []*sppb.RequestOptions{}
@@ -2686,12 +2734,10 @@ func checkRequestsForExpectedRequestOptions(t *testing.T, server InMemSpannerSer
 	}
 
 	for _, opts := range reqOptions {
-		var got sppb.RequestOptions_Priority
-		if opts != nil {
-			got = opts.Priority
+		if opts == nil {
+			opts = &sppb.RequestOptions{}
 		}
-		want := ro.Priority
-		if got != want {
+		if got, want := opts.Priority, ro.Priority; got != want {
 			t.Fatalf("Request priority mismatch\nGot: %v\nWant: %v", got, want)
 		}
 		if got, want := opts.RequestTag, ro.RequestTag; got != want {
