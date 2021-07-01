@@ -294,6 +294,18 @@ func (s *mockLiteServer) doSubscriptionResponse(ctx context.Context, req interfa
 	return resp, nil
 }
 
+func (s *mockLiteServer) doReservationResponse(ctx context.Context, req interface{}) (*pb.Reservation, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.Reservation)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
+	}
+	return resp, nil
+}
+
 func (s *mockLiteServer) doEmptyResponse(ctx context.Context, req interface{}) (*emptypb.Empty, error) {
 	retResponse, retErr := s.popGlobalVerifiers(req)
 	if retErr != nil {
@@ -350,6 +362,22 @@ func (s *mockLiteServer) DeleteSubscription(ctx context.Context, req *pb.DeleteS
 	return s.doEmptyResponse(ctx, req)
 }
 
+func (s *mockLiteServer) CreateReservation(ctx context.Context, req *pb.CreateReservationRequest) (*pb.Reservation, error) {
+	return s.doReservationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) GetReservation(ctx context.Context, req *pb.GetReservationRequest) (*pb.Reservation, error) {
+	return s.doReservationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) UpdateReservation(ctx context.Context, req *pb.UpdateReservationRequest) (*pb.Reservation, error) {
+	return s.doReservationResponse(ctx, req)
+}
+
+func (s *mockLiteServer) DeleteReservation(ctx context.Context, req *pb.DeleteReservationRequest) (*emptypb.Empty, error) {
+	return s.doEmptyResponse(ctx, req)
+}
+
 func (s *mockLiteServer) ListTopics(ctx context.Context, req *pb.ListTopicsRequest) (*pb.ListTopicsResponse, error) {
 	retResponse, retErr := s.popGlobalVerifiers(req)
 	if retErr != nil {
@@ -382,6 +410,30 @@ func (s *mockLiteServer) ListSubscriptions(ctx context.Context, req *pb.ListSubs
 	resp, ok := retResponse.(*pb.ListSubscriptionsResponse)
 	if !ok {
 		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %v", reflect.TypeOf(retResponse))
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) ListReservations(ctx context.Context, req *pb.ListReservationsRequest) (*pb.ListReservationsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListReservationsResponse)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
+	}
+	return resp, nil
+}
+
+func (s *mockLiteServer) ListReservationTopics(ctx context.Context, req *pb.ListReservationTopicsRequest) (*pb.ListReservationTopicsResponse, error) {
+	retResponse, retErr := s.popGlobalVerifiers(req)
+	if retErr != nil {
+		return nil, retErr
+	}
+	resp, ok := retResponse.(*pb.ListReservationTopicsResponse)
+	if !ok {
+		return nil, status.Errorf(codes.FailedPrecondition, "mockserver: invalid response type %T", retResponse)
 	}
 	return resp, nil
 }
