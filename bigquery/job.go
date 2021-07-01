@@ -63,6 +63,11 @@ func (c *Client) JobFromIDLocation(ctx context.Context, id, location string) (j 
 	return bqToJob(bqjob, c)
 }
 
+// ProjectID returns the job's associated project.
+func (j *Job) ProjectID() string {
+	return j.projectID
+}
+
 // ID returns the job's ID.
 func (j *Job) ID() string {
 	return j.jobID

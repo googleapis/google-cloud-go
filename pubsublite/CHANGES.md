@@ -1,5 +1,21 @@
 # Changes
 
+### [0.10.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.1...pubsublite/v0.10.2) (2021-06-29)
+
+
+### Bug Fixes
+
+* **pubsublite:** ensure timeout settings are respected ([#4329](https://www.github.com/googleapis/google-cloud-go/issues/4329)) ([e75262c](https://www.github.com/googleapis/google-cloud-go/commit/e75262cf5eba845271965eab3c28c0a23bec14c4))
+* **pubsublite:** wire user context to api clients ([#4318](https://www.github.com/googleapis/google-cloud-go/issues/4318)) ([ae34396](https://www.github.com/googleapis/google-cloud-go/commit/ae34396b1a2a970a0d871cd5496527294f3310d4))
+
+### [0.10.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.0...pubsublite/v0.10.1) (2021-06-22)
+
+
+### Bug Fixes
+
+* **pubsublite:** fixes for background partition count updates ([#4293](https://www.github.com/googleapis/google-cloud-go/issues/4293)) ([634847b](https://www.github.com/googleapis/google-cloud-go/commit/634847b7499fb58575e3e5001dd8e6da0661fccd))
+* **pubsublite:** make SubscriberClient.Receive identical to pubsub ([#4281](https://www.github.com/googleapis/google-cloud-go/issues/4281)) ([5b5d0f7](https://www.github.com/googleapis/google-cloud-go/commit/5b5d0f782b224f324dcfa13cc4145ee33a395d09))
+
 ## [0.10.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.9.1...pubsublite/v0.10.0) (2021-06-15)
 
 

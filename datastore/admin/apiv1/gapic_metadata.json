@@ -1,42 +1,42 @@
 {
-  "schema": "1.0",
-  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language": "go",
-  "protoPackage": "google.datastore.admin.v1",
-  "libraryPackage": "cloud.google.com/go/datastore/admin/apiv1",
-  "services": {
-    "DatastoreAdmin": {
-      "clients": {
-        "grpc": {
-          "libraryClient": "DatastoreAdminClient",
-          "rpcs": {
-            "CreateIndex": {
-              "methods": [
+  "schema":  "1.0",
+  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language":  "go",
+  "protoPackage":  "google.datastore.admin.v1",
+  "libraryPackage":  "cloud.google.com/go/datastore/admin/apiv1",
+  "services":  {
+    "DatastoreAdmin":  {
+      "clients":  {
+        "grpc":  {
+          "libraryClient":  "DatastoreAdminClient",
+          "rpcs":  {
+            "CreateIndex":  {
+              "methods":  [
                 "CreateIndex"
               ]
             },
-            "DeleteIndex": {
-              "methods": [
+            "DeleteIndex":  {
+              "methods":  [
                 "DeleteIndex"
               ]
             },
-            "ExportEntities": {
-              "methods": [
+            "ExportEntities":  {
+              "methods":  [
                 "ExportEntities"
               ]
             },
-            "GetIndex": {
-              "methods": [
+            "GetIndex":  {
+              "methods":  [
                 "GetIndex"
               ]
             },
-            "ImportEntities": {
-              "methods": [
+            "ImportEntities":  {
+              "methods":  [
                 "ImportEntities"
               ]
             },
-            "ListIndexes": {
-              "methods": [
+            "ListIndexes":  {
+              "methods":  [
                 "ListIndexes"
               ]
             }
