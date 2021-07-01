@@ -329,7 +329,7 @@ Family objects have properties:
 
 Here's an example of a format file:` + "\n```" + `
 
-  default_encoding: P
+  default_encoding: ProtocolBuffer
 
   protocol_buffer_definitions:
     - MyProto.proto
@@ -338,7 +338,7 @@ Here's an example of a format file:` + "\n```" + `
     contact:
       type: person
     size:
-      encoding: B
+      encoding: BigEndian
       type: uint32
 
 ` + "```" + `
