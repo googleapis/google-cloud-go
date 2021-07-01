@@ -462,15 +462,12 @@ func TestAdminSeekSubscription(t *testing.T) {
 
 	for _, tc := range []struct {
 		desc    string
-		options SeekSubscriptionOptions
+		target  SeekTarget
 		wantReq *pb.SeekSubscriptionRequest
 	}{
 		{
-			desc: "Beginning",
-			options: SeekSubscriptionOptions{
-				Name:   subscriptionPath,
-				Target: BacklogLocationSeekTarget{Beginning},
-			},
+			desc:   "Beginning",
+			target: BacklogLocationSeekTarget{Beginning},
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
@@ -479,11 +476,8 @@ func TestAdminSeekSubscription(t *testing.T) {
 			},
 		},
 		{
-			desc: "End",
-			options: SeekSubscriptionOptions{
-				Name:   subscriptionPath,
-				Target: BacklogLocationSeekTarget{End},
-			},
+			desc:   "End",
+			target: BacklogLocationSeekTarget{End},
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
@@ -492,11 +486,8 @@ func TestAdminSeekSubscription(t *testing.T) {
 			},
 		},
 		{
-			desc: "PublishTime",
-			options: SeekSubscriptionOptions{
-				Name:   subscriptionPath,
-				Target: PublishTimeSeekTarget{time.Unix(1234, 0)},
-			},
+			desc:   "PublishTime",
+			target: PublishTimeSeekTarget{time.Unix(1234, 0)},
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_TimeTarget{
@@ -509,11 +500,8 @@ func TestAdminSeekSubscription(t *testing.T) {
 			},
 		},
 		{
-			desc: "EventTime",
-			options: SeekSubscriptionOptions{
-				Name:   subscriptionPath,
-				Target: EventTimeSeekTarget{time.Unix(2345, 0)},
-			},
+			desc:   "EventTime",
+			target: EventTimeSeekTarget{time.Unix(2345, 0)},
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_TimeTarget{
@@ -596,7 +584,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 			defer admin.Close()
 
 			// Seek 1 - Successful operation.
-			op, err := admin.SeekSubscription(ctx, tc.options)
+			op, err := admin.SeekSubscription(ctx, subscriptionPath, tc.target)
 			if err != nil {
 				t.Fatalf("SeekSubscription() got err: %v", err)
 			}
@@ -627,7 +615,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 			}
 
 			// Seek 2 - Failed operation.
-			op, err = admin.SeekSubscription(ctx, tc.options)
+			op, err = admin.SeekSubscription(ctx, subscriptionPath, tc.target)
 			if err != nil {
 				t.Fatalf("SeekSubscription() got err: %v", err)
 			}
@@ -658,7 +646,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 			}
 
 			// Seek 3 - Failed seek.
-			if _, gotErr := admin.SeekSubscription(ctx, tc.options); !test.ErrorEqual(gotErr, seekErr) {
+			if _, gotErr := admin.SeekSubscription(ctx, subscriptionPath, tc.target); !test.ErrorEqual(gotErr, seekErr) {
 				t.Errorf("SeekSubscription() got err: %v, want err: %v", gotErr, seekErr)
 			}
 		})

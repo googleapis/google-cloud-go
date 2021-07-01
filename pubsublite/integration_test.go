@@ -324,10 +324,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	}
 
 	// Seek subscription.
-	if seekOp, err := admin.SeekSubscription(ctx, SeekSubscriptionOptions{
-		Name:   subscriptionPath,
-		Target: BacklogLocationSeekTarget{Beginning},
-	}); err != nil {
+	if seekOp, err := admin.SeekSubscription(ctx, subscriptionPath, BacklogLocationSeekTarget{Beginning}); err != nil {
 		t.Errorf("SeekSubscription() got err: %v", err)
 	} else {
 		validateNewSeekOperation(t, subscriptionPath, seekOp)

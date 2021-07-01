@@ -219,9 +219,10 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 	return protoToSubscriptionConfig(subspb), nil
 }
 
-// SeekSubscription performs an out-of-band seek for a subscription to a
+// SeekSubscription initiates an out-of-band seek for a subscription to a
 // specified target, which may be timestamps or named positions within the
-// message backlog.
+// message backlog. A valid subscription path has the format:
+// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
 //
 // If an operation is returned, the seek has been registered and subscribers
 // will eventually receive messages from the seek target, as long as the
@@ -234,11 +235,13 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 // complete once subscribers are receiving messages from the seek target for all
 // partitions of the topic. The operation will not complete until all
 // subscribers come online.
-func (ac *AdminClient) SeekSubscription(ctx context.Context, options SeekSubscriptionOptions) (*SeekSubscriptionOperation, error) {
-	if _, err := wire.ParseSubscriptionPath(options.Name); err != nil {
+func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string, target SeekTarget) (*SeekSubscriptionOperation, error) {
+	if _, err := wire.ParseSubscriptionPath(subscription); err != nil {
 		return nil, err
 	}
-	op, err := ac.admin.SeekSubscription(ctx, options.toRequest())
+	req := &pb.SeekSubscriptionRequest{Name: subscription}
+	target.setRequest(req)
+	op, err := ac.admin.SeekSubscription(ctx, req)
 	return &SeekSubscriptionOperation{op}, err
 }
 

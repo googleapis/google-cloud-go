@@ -34,6 +34,12 @@ const (
 	Beginning
 )
 
+// SeekTarget is the target location to seek a subscription to. Implemented by
+// BacklogLocationSeekTarget, PublishTimeSeekTarget, EventTimeSeekTarget.
+type SeekTarget interface {
+	setRequest(req *pb.SeekSubscriptionRequest)
+}
+
 // BacklogLocationSeekTarget is a seek target to a location with respect to the
 // message backlog.
 type BacklogLocationSeekTarget struct {
@@ -74,28 +80,6 @@ func (p EventTimeSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
 			Time: &pb.TimeTarget_EventTime{tspb.New(p.Time)},
 		},
 	}
-}
-
-// SeekTarget is the target location to seek a subscription to. Implemented by
-// BacklogLocationSeekTarget, PublishTimeSeekTarget, EventTimeSeekTarget.
-type SeekTarget interface {
-	setRequest(req *pb.SeekSubscriptionRequest)
-}
-
-// SeekSubscriptionOptions specifies the parameters for seeking a subscription.
-type SeekSubscriptionOptions struct {
-	// The full path of the subscription to seek, in the format:
-	// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
-	Name string
-
-	// The target location to seek to.
-	Target SeekTarget
-}
-
-func (s *SeekSubscriptionOptions) toRequest() *pb.SeekSubscriptionRequest {
-	req := &pb.SeekSubscriptionRequest{Name: s.Name}
-	s.Target.setRequest(req)
-	return req
 }
 
 // Metadata for long-running operations.

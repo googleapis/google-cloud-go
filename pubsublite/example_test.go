@@ -183,11 +183,9 @@ func ExampleAdminClient_SeekSubscription() {
 		// TODO: Handle error.
 	}
 
-	options := pubsublite.SeekSubscriptionOptions{
-		Name: "projects/my-project/locations/zone/subscriptions/my-subscription",
-		Target: pubsublite.BacklogLocationSeekTarget{pubsublite.Beginning},
-	}
-	seekOp, err := admin.SeekSubscription(ctx, options)
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	seekOp, err := admin.SeekSubscription(ctx, subscription,
+		pubsublite.BacklogLocationSeekTarget{pubsublite.Beginning})
 	if err != nil {
 		// TODO: Handle error.
 	}
