@@ -1,97 +1,97 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.clouddms.v1",
-  "libraryPackage":  "cloud.google.com/go/clouddms/apiv1",
-  "services":  {
-    "DataMigrationService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "DataMigrationClient",
-          "rpcs":  {
-            "CreateConnectionProfile":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.clouddms.v1",
+  "libraryPackage": "cloud.google.com/go/clouddms/apiv1",
+  "services": {
+    "DataMigrationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataMigrationClient",
+          "rpcs": {
+            "CreateConnectionProfile": {
+              "methods": [
                 "CreateConnectionProfile"
               ]
             },
-            "CreateMigrationJob":  {
-              "methods":  [
+            "CreateMigrationJob": {
+              "methods": [
                 "CreateMigrationJob"
               ]
             },
-            "DeleteConnectionProfile":  {
-              "methods":  [
+            "DeleteConnectionProfile": {
+              "methods": [
                 "DeleteConnectionProfile"
               ]
             },
-            "DeleteMigrationJob":  {
-              "methods":  [
+            "DeleteMigrationJob": {
+              "methods": [
                 "DeleteMigrationJob"
               ]
             },
-            "GenerateSshScript":  {
-              "methods":  [
+            "GenerateSshScript": {
+              "methods": [
                 "GenerateSshScript"
               ]
             },
-            "GetConnectionProfile":  {
-              "methods":  [
+            "GetConnectionProfile": {
+              "methods": [
                 "GetConnectionProfile"
               ]
             },
-            "GetMigrationJob":  {
-              "methods":  [
+            "GetMigrationJob": {
+              "methods": [
                 "GetMigrationJob"
               ]
             },
-            "ListConnectionProfiles":  {
-              "methods":  [
+            "ListConnectionProfiles": {
+              "methods": [
                 "ListConnectionProfiles"
               ]
             },
-            "ListMigrationJobs":  {
-              "methods":  [
+            "ListMigrationJobs": {
+              "methods": [
                 "ListMigrationJobs"
               ]
             },
-            "PromoteMigrationJob":  {
-              "methods":  [
+            "PromoteMigrationJob": {
+              "methods": [
                 "PromoteMigrationJob"
               ]
             },
-            "RestartMigrationJob":  {
-              "methods":  [
+            "RestartMigrationJob": {
+              "methods": [
                 "RestartMigrationJob"
               ]
             },
-            "ResumeMigrationJob":  {
-              "methods":  [
+            "ResumeMigrationJob": {
+              "methods": [
                 "ResumeMigrationJob"
               ]
             },
-            "StartMigrationJob":  {
-              "methods":  [
+            "StartMigrationJob": {
+              "methods": [
                 "StartMigrationJob"
               ]
             },
-            "StopMigrationJob":  {
-              "methods":  [
+            "StopMigrationJob": {
+              "methods": [
                 "StopMigrationJob"
               ]
             },
-            "UpdateConnectionProfile":  {
-              "methods":  [
+            "UpdateConnectionProfile": {
+              "methods": [
                 "UpdateConnectionProfile"
               ]
             },
-            "UpdateMigrationJob":  {
-              "methods":  [
+            "UpdateMigrationJob": {
+              "methods": [
                 "UpdateMigrationJob"
               ]
             },
-            "VerifyMigrationJob":  {
-              "methods":  [
+            "VerifyMigrationJob": {
+              "methods": [
                 "VerifyMigrationJob"
               ]
             }
