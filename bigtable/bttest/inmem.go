@@ -811,7 +811,7 @@ func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*bt
 			codes.InvalidArgument,
 			"No mutations provided",
 		)
-	}	
+	}
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()

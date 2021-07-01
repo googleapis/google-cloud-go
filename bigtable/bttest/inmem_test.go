@@ -1992,7 +1992,7 @@ func TestMutateRowEmptyMutationErrors(t *testing.T) {
 	resp, err := srv.MutateRow(ctx, req)
 	if resp != nil ||
 		fmt.Sprint(err) !=
-			"rpc error: code = InvalidArgument" +
+			"rpc error: code = InvalidArgument"+
 				" desc = No mutations provided" {
 		t.Fatalf("Failed to error %s", err)
 	}
@@ -2018,7 +2018,7 @@ func TestMutateRowsEmptyMutationErrors(t *testing.T) {
 
 	err := srv.MutateRows(req, &bigtableTestingMutateRowsServer{})
 	if fmt.Sprint(err) !=
-		"rpc error: code = InvalidArgument " +
+		"rpc error: code = InvalidArgument "+
 			"desc = No mutations provided" {
 		t.Fatalf("Failed to error %s", err)
 	}
