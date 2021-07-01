@@ -46,18 +46,16 @@ func assertEqual(t *testing.T, got, want interface{}) {
 	}
 }
 
-func assertNoError(t *testing.T, err error) bool {
+func assertNoError(t *testing.T, err error) {
 	if err != nil {
 		_, fpath, lno, ok := runtime.Caller(1)
 		if ok {
 			_, fname := filepath.Split(fpath)
-			t.Errorf("%s:%d: %s", fname, lno, err)
+			t.Fatalf("%s:%d: %s", fname, lno, err)
 		} else {
-			t.Error(err)
+			t.Fatal(err)
 		}
-		return true
 	}
-	return false
 }
 
 func TestParseValueFormatSettings(t *testing.T) {
@@ -163,16 +161,12 @@ func TestSetupPBMessages(t *testing.T) {
 		},
 	)
 
-	// Make sure teh message descriptors are usable.
+	// Make sure the message descriptors are usable.
 	message := dynamic.NewMessage(formatting.pbMessageTypes["tutorial.person"])
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 	err = message.Unmarshal(in)
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 	assertEqual(
 		t,
 		fmt.Sprint(message),
@@ -188,9 +182,7 @@ func checkBinaryValueFormater(
 ) {
 	s, err :=
 		binaryValueFormatters[ctype](TestBinaryFormaterTestData[:nbytes], order)
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 	assertEqual(t, s, expect)
 }
 
@@ -270,20 +262,14 @@ func testValueFormattingPBFormatter(t *testing.T) {
 		formatting.settings.ProtocolBufferDefinitions,
 		filepath.Join("testdata", "addressbook.proto"))
 	err := formatting.setupPBMessages()
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 
 	formatter := formatting.pbFormatter("person")
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 
 	text, err := formatter(in)
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 
 	assertEqual(t, text,
 		`name:"Jim" id:42 email:"jim@example.com"`+
@@ -411,9 +397,7 @@ func TestValueFormattingFormat(t *testing.T) {
 	assertEqual(t, s, "    [18533 27756 28448 30575 29292 25633]\n")
 
 	in, err := ioutil.ReadFile(filepath.Join("testdata", "person.bin"))
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 	pbExpect :=
 		"      name: \"Jim\"\n" +
 			"      id: 42\n" +
@@ -475,9 +459,7 @@ func TestPrintRow(t *testing.T) {
 		},
 	}
 	out, err := grabStdout(func() { printRow(row) })
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 	expect :=
 		"----------------------------------------\n" +
 			"r1\n" +
@@ -526,8 +508,6 @@ func TestPrintRow(t *testing.T) {
 		"")
 
 	out, err = grabStdout(func() { printRow(row) })
-	if assertNoError(t, err) {
-		return
-	}
+	assertNoError(t, err)
 	assertEqual(t, stripTimestamps(out), expectf)
 }
