@@ -1,142 +1,142 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.kms.v1",
-  "libraryPackage":  "cloud.google.com/go/kms/apiv1",
-  "services":  {
-    "KeyManagementService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "KeyManagementClient",
-          "rpcs":  {
-            "AsymmetricDecrypt":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.kms.v1",
+  "libraryPackage": "cloud.google.com/go/kms/apiv1",
+  "services": {
+    "KeyManagementService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "KeyManagementClient",
+          "rpcs": {
+            "AsymmetricDecrypt": {
+              "methods": [
                 "AsymmetricDecrypt"
               ]
             },
-            "AsymmetricSign":  {
-              "methods":  [
+            "AsymmetricSign": {
+              "methods": [
                 "AsymmetricSign"
               ]
             },
-            "CreateCryptoKey":  {
-              "methods":  [
+            "CreateCryptoKey": {
+              "methods": [
                 "CreateCryptoKey"
               ]
             },
-            "CreateCryptoKeyVersion":  {
-              "methods":  [
+            "CreateCryptoKeyVersion": {
+              "methods": [
                 "CreateCryptoKeyVersion"
               ]
             },
-            "CreateImportJob":  {
-              "methods":  [
+            "CreateImportJob": {
+              "methods": [
                 "CreateImportJob"
               ]
             },
-            "CreateKeyRing":  {
-              "methods":  [
+            "CreateKeyRing": {
+              "methods": [
                 "CreateKeyRing"
               ]
             },
-            "Decrypt":  {
-              "methods":  [
+            "Decrypt": {
+              "methods": [
                 "Decrypt"
               ]
             },
-            "DestroyCryptoKeyVersion":  {
-              "methods":  [
+            "DestroyCryptoKeyVersion": {
+              "methods": [
                 "DestroyCryptoKeyVersion"
               ]
             },
-            "Encrypt":  {
-              "methods":  [
+            "Encrypt": {
+              "methods": [
                 "Encrypt"
               ]
             },
-            "GetCryptoKey":  {
-              "methods":  [
+            "GetCryptoKey": {
+              "methods": [
                 "GetCryptoKey"
               ]
             },
-            "GetCryptoKeyVersion":  {
-              "methods":  [
+            "GetCryptoKeyVersion": {
+              "methods": [
                 "GetCryptoKeyVersion"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetImportJob":  {
-              "methods":  [
+            "GetImportJob": {
+              "methods": [
                 "GetImportJob"
               ]
             },
-            "GetKeyRing":  {
-              "methods":  [
+            "GetKeyRing": {
+              "methods": [
                 "GetKeyRing"
               ]
             },
-            "GetPublicKey":  {
-              "methods":  [
+            "GetPublicKey": {
+              "methods": [
                 "GetPublicKey"
               ]
             },
-            "ImportCryptoKeyVersion":  {
-              "methods":  [
+            "ImportCryptoKeyVersion": {
+              "methods": [
                 "ImportCryptoKeyVersion"
               ]
             },
-            "ListCryptoKeyVersions":  {
-              "methods":  [
+            "ListCryptoKeyVersions": {
+              "methods": [
                 "ListCryptoKeyVersions"
               ]
             },
-            "ListCryptoKeys":  {
-              "methods":  [
+            "ListCryptoKeys": {
+              "methods": [
                 "ListCryptoKeys"
               ]
             },
-            "ListImportJobs":  {
-              "methods":  [
+            "ListImportJobs": {
+              "methods": [
                 "ListImportJobs"
               ]
             },
-            "ListKeyRings":  {
-              "methods":  [
+            "ListKeyRings": {
+              "methods": [
                 "ListKeyRings"
               ]
             },
-            "RestoreCryptoKeyVersion":  {
-              "methods":  [
+            "RestoreCryptoKeyVersion": {
+              "methods": [
                 "RestoreCryptoKeyVersion"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdateCryptoKey":  {
-              "methods":  [
+            "UpdateCryptoKey": {
+              "methods": [
                 "UpdateCryptoKey"
               ]
             },
-            "UpdateCryptoKeyPrimaryVersion":  {
-              "methods":  [
+            "UpdateCryptoKeyPrimaryVersion": {
+              "methods": [
                 "UpdateCryptoKeyPrimaryVersion"
               ]
             },
-            "UpdateCryptoKeyVersion":  {
-              "methods":  [
+            "UpdateCryptoKeyVersion": {
+              "methods": [
                 "UpdateCryptoKeyVersion"
               ]
             }

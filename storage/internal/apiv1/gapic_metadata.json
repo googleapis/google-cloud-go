@@ -1,292 +1,292 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.storage.v1",
-  "libraryPackage":  "cloud.google.com/go/storage/internal/apiv1",
-  "services":  {
-    "Storage":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "ComposeObject":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.storage.v1",
+  "libraryPackage": "cloud.google.com/go/storage/internal/apiv1",
+  "services": {
+    "Storage": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ComposeObject": {
+              "methods": [
                 "ComposeObject"
               ]
             },
-            "CopyObject":  {
-              "methods":  [
+            "CopyObject": {
+              "methods": [
                 "CopyObject"
               ]
             },
-            "CreateHmacKey":  {
-              "methods":  [
+            "CreateHmacKey": {
+              "methods": [
                 "CreateHmacKey"
               ]
             },
-            "DeleteBucket":  {
-              "methods":  [
+            "DeleteBucket": {
+              "methods": [
                 "DeleteBucket"
               ]
             },
-            "DeleteBucketAccessControl":  {
-              "methods":  [
+            "DeleteBucketAccessControl": {
+              "methods": [
                 "DeleteBucketAccessControl"
               ]
             },
-            "DeleteDefaultObjectAccessControl":  {
-              "methods":  [
+            "DeleteDefaultObjectAccessControl": {
+              "methods": [
                 "DeleteDefaultObjectAccessControl"
               ]
             },
-            "DeleteHmacKey":  {
-              "methods":  [
+            "DeleteHmacKey": {
+              "methods": [
                 "DeleteHmacKey"
               ]
             },
-            "DeleteNotification":  {
-              "methods":  [
+            "DeleteNotification": {
+              "methods": [
                 "DeleteNotification"
               ]
             },
-            "DeleteObject":  {
-              "methods":  [
+            "DeleteObject": {
+              "methods": [
                 "DeleteObject"
               ]
             },
-            "DeleteObjectAccessControl":  {
-              "methods":  [
+            "DeleteObjectAccessControl": {
+              "methods": [
                 "DeleteObjectAccessControl"
               ]
             },
-            "GetBucket":  {
-              "methods":  [
+            "GetBucket": {
+              "methods": [
                 "GetBucket"
               ]
             },
-            "GetBucketAccessControl":  {
-              "methods":  [
+            "GetBucketAccessControl": {
+              "methods": [
                 "GetBucketAccessControl"
               ]
             },
-            "GetBucketIamPolicy":  {
-              "methods":  [
+            "GetBucketIamPolicy": {
+              "methods": [
                 "GetBucketIamPolicy"
               ]
             },
-            "GetDefaultObjectAccessControl":  {
-              "methods":  [
+            "GetDefaultObjectAccessControl": {
+              "methods": [
                 "GetDefaultObjectAccessControl"
               ]
             },
-            "GetHmacKey":  {
-              "methods":  [
+            "GetHmacKey": {
+              "methods": [
                 "GetHmacKey"
               ]
             },
-            "GetNotification":  {
-              "methods":  [
+            "GetNotification": {
+              "methods": [
                 "GetNotification"
               ]
             },
-            "GetObject":  {
-              "methods":  [
+            "GetObject": {
+              "methods": [
                 "GetObject"
               ]
             },
-            "GetObjectAccessControl":  {
-              "methods":  [
+            "GetObjectAccessControl": {
+              "methods": [
                 "GetObjectAccessControl"
               ]
             },
-            "GetObjectIamPolicy":  {
-              "methods":  [
+            "GetObjectIamPolicy": {
+              "methods": [
                 "GetObjectIamPolicy"
               ]
             },
-            "GetObjectMedia":  {
-              "methods":  [
+            "GetObjectMedia": {
+              "methods": [
                 "GetObjectMedia"
               ]
             },
-            "GetServiceAccount":  {
-              "methods":  [
+            "GetServiceAccount": {
+              "methods": [
                 "GetServiceAccount"
               ]
             },
-            "InsertBucket":  {
-              "methods":  [
+            "InsertBucket": {
+              "methods": [
                 "InsertBucket"
               ]
             },
-            "InsertBucketAccessControl":  {
-              "methods":  [
+            "InsertBucketAccessControl": {
+              "methods": [
                 "InsertBucketAccessControl"
               ]
             },
-            "InsertDefaultObjectAccessControl":  {
-              "methods":  [
+            "InsertDefaultObjectAccessControl": {
+              "methods": [
                 "InsertDefaultObjectAccessControl"
               ]
             },
-            "InsertNotification":  {
-              "methods":  [
+            "InsertNotification": {
+              "methods": [
                 "InsertNotification"
               ]
             },
-            "InsertObject":  {
-              "methods":  [
+            "InsertObject": {
+              "methods": [
                 "InsertObject"
               ]
             },
-            "InsertObjectAccessControl":  {
-              "methods":  [
+            "InsertObjectAccessControl": {
+              "methods": [
                 "InsertObjectAccessControl"
               ]
             },
-            "ListBucketAccessControls":  {
-              "methods":  [
+            "ListBucketAccessControls": {
+              "methods": [
                 "ListBucketAccessControls"
               ]
             },
-            "ListBuckets":  {
-              "methods":  [
+            "ListBuckets": {
+              "methods": [
                 "ListBuckets"
               ]
             },
-            "ListChannels":  {
-              "methods":  [
+            "ListChannels": {
+              "methods": [
                 "ListChannels"
               ]
             },
-            "ListDefaultObjectAccessControls":  {
-              "methods":  [
+            "ListDefaultObjectAccessControls": {
+              "methods": [
                 "ListDefaultObjectAccessControls"
               ]
             },
-            "ListHmacKeys":  {
-              "methods":  [
+            "ListHmacKeys": {
+              "methods": [
                 "ListHmacKeys"
               ]
             },
-            "ListNotifications":  {
-              "methods":  [
+            "ListNotifications": {
+              "methods": [
                 "ListNotifications"
               ]
             },
-            "ListObjectAccessControls":  {
-              "methods":  [
+            "ListObjectAccessControls": {
+              "methods": [
                 "ListObjectAccessControls"
               ]
             },
-            "ListObjects":  {
-              "methods":  [
+            "ListObjects": {
+              "methods": [
                 "ListObjects"
               ]
             },
-            "LockBucketRetentionPolicy":  {
-              "methods":  [
+            "LockBucketRetentionPolicy": {
+              "methods": [
                 "LockBucketRetentionPolicy"
               ]
             },
-            "PatchBucket":  {
-              "methods":  [
+            "PatchBucket": {
+              "methods": [
                 "PatchBucket"
               ]
             },
-            "PatchBucketAccessControl":  {
-              "methods":  [
+            "PatchBucketAccessControl": {
+              "methods": [
                 "PatchBucketAccessControl"
               ]
             },
-            "PatchDefaultObjectAccessControl":  {
-              "methods":  [
+            "PatchDefaultObjectAccessControl": {
+              "methods": [
                 "PatchDefaultObjectAccessControl"
               ]
             },
-            "PatchObject":  {
-              "methods":  [
+            "PatchObject": {
+              "methods": [
                 "PatchObject"
               ]
             },
-            "PatchObjectAccessControl":  {
-              "methods":  [
+            "PatchObjectAccessControl": {
+              "methods": [
                 "PatchObjectAccessControl"
               ]
             },
-            "QueryWriteStatus":  {
-              "methods":  [
+            "QueryWriteStatus": {
+              "methods": [
                 "QueryWriteStatus"
               ]
             },
-            "RewriteObject":  {
-              "methods":  [
+            "RewriteObject": {
+              "methods": [
                 "RewriteObject"
               ]
             },
-            "SetBucketIamPolicy":  {
-              "methods":  [
+            "SetBucketIamPolicy": {
+              "methods": [
                 "SetBucketIamPolicy"
               ]
             },
-            "SetObjectIamPolicy":  {
-              "methods":  [
+            "SetObjectIamPolicy": {
+              "methods": [
                 "SetObjectIamPolicy"
               ]
             },
-            "StartResumableWrite":  {
-              "methods":  [
+            "StartResumableWrite": {
+              "methods": [
                 "StartResumableWrite"
               ]
             },
-            "StopChannel":  {
-              "methods":  [
+            "StopChannel": {
+              "methods": [
                 "StopChannel"
               ]
             },
-            "TestBucketIamPermissions":  {
-              "methods":  [
+            "TestBucketIamPermissions": {
+              "methods": [
                 "TestBucketIamPermissions"
               ]
             },
-            "TestObjectIamPermissions":  {
-              "methods":  [
+            "TestObjectIamPermissions": {
+              "methods": [
                 "TestObjectIamPermissions"
               ]
             },
-            "UpdateBucket":  {
-              "methods":  [
+            "UpdateBucket": {
+              "methods": [
                 "UpdateBucket"
               ]
             },
-            "UpdateBucketAccessControl":  {
-              "methods":  [
+            "UpdateBucketAccessControl": {
+              "methods": [
                 "UpdateBucketAccessControl"
               ]
             },
-            "UpdateDefaultObjectAccessControl":  {
-              "methods":  [
+            "UpdateDefaultObjectAccessControl": {
+              "methods": [
                 "UpdateDefaultObjectAccessControl"
               ]
             },
-            "UpdateHmacKey":  {
-              "methods":  [
+            "UpdateHmacKey": {
+              "methods": [
                 "UpdateHmacKey"
               ]
             },
-            "UpdateObject":  {
-              "methods":  [
+            "UpdateObject": {
+              "methods": [
                 "UpdateObject"
               ]
             },
-            "UpdateObjectAccessControl":  {
-              "methods":  [
+            "UpdateObjectAccessControl": {
+              "methods": [
                 "UpdateObjectAccessControl"
               ]
             },
-            "WatchAllObjects":  {
-              "methods":  [
+            "WatchAllObjects": {
+              "methods": [
                 "WatchAllObjects"
               ]
             }
