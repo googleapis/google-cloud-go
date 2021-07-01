@@ -21,8 +21,6 @@
 // semi-structured documents using state-of-the-art Google AI such as natural
 // language, computer vision, translation, and AutoML.
 //
-//   NOTE: This package is in beta. It is not stable, and may be subject to changes.
-//
 // Use of Context
 //
 // The ctx passed to NewClient is used for authentication requests and
@@ -52,7 +50,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210624"
+const versionClient = "20210701"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)

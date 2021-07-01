@@ -17,8 +17,8 @@
 // Package servicecontrol is an auto-generated package for the
 // Service Control API.
 //
-// Provides control plane functionality to managed services, such as logging,
-// monitoring, and status checks.
+// Provides admission control and telemetry reporting for services integrated
+// with Service Infrastructure.
 //
 // Use of Context
 //
@@ -49,7 +49,7 @@ import (
 type clientHookParams struct{}
 type clientHook func(context.Context, clientHookParams) ([]option.ClientOption, error)
 
-const versionClient = "20210624"
+const versionClient = "20210701"
 
 func insertMetadata(ctx context.Context, mds ...metadata.MD) context.Context {
 	out, _ := metadata.FromOutgoingContext(ctx)
