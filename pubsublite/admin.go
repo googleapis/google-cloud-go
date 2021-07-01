@@ -235,7 +235,7 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 // complete once subscribers are receiving messages from the seek target for all
 // partitions of the topic. The operation will not complete until all
 // subscribers come online.
-func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string, target SeekTarget) (*SeekSubscriptionOperation, error) {
+func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string, target SeekTarget, opts ...SeekSubscriptionOption) (*SeekSubscriptionOperation, error) {
 	if _, err := wire.ParseSubscriptionPath(subscription); err != nil {
 		return nil, err
 	}

@@ -82,6 +82,9 @@ func (p EventTimeSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
 	}
 }
 
+// SeekSubscriptionOption is reserved for future options.
+type SeekSubscriptionOption interface{}
+
 // Metadata for long-running operations.
 type OperationMetadata struct {
 	// The target of the operation. For example, targets of seeks are
