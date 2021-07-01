@@ -314,6 +314,15 @@
     "release_level": "beta",
     "library_type": ""
   },
+  "cloud.google.com/go/compute/apiv1": {
+    "distribution_name": "cloud.google.com/go/compute/apiv1",
+    "description": "Google Compute Engine API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/compute/apiv1",
+    "release_level": "alpha",
+    "library_type": ""
+  },
   "cloud.google.com/go/compute/metadata": {
     "distribution_name": "cloud.google.com/go/compute/metadata",
     "description": "Service Metadata API",
