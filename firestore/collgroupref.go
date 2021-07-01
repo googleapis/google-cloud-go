@@ -60,8 +60,8 @@ func (cgr CollectionGroupRef) GetPartitionedQueries(ctx context.Context, partiti
 		return nil, err
 	}
 	queries := make([]Query, len(qp))
-	for _, part := range qp {
-		queries = append(queries, part.toQuery())
+	for i, part := range qp {
+		queries[i] = part.toQuery()
 	}
 	return queries, nil
 }
