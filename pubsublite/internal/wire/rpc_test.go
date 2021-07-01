@@ -16,10 +16,10 @@ package wire
 import (
 	"encoding/base64"
 	"errors"
-	"log"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/pubsublite/internal/test"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -30,18 +30,10 @@ import (
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 )
 
-func makeAny(msg proto.Message) *anypb.Any {
-	any, err := anypb.New(msg)
-	if err != nil {
-		log.Fatalf("Failed to make Any: %v", err)
-	}
-	return any
-}
-
 func makeStreamResetSignal() error {
 	statuspb := &spb.Status{
 		Code: int32(codes.Aborted),
-		Details: []*anypb.Any{makeAny(&errdetails.ErrorInfo{
+		Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{
 			Reason: "RESET", Domain: "pubsublite.googleapis.com",
 		})},
 	}
@@ -63,7 +55,7 @@ func TestIsStreamResetSignal(t *testing.T) {
 			desc: "non-retryable code",
 			err: status.ErrorProto(&spb.Status{
 				Code:    int32(codes.FailedPrecondition),
-				Details: []*anypb.Any{makeAny(&errdetails.ErrorInfo{Reason: "RESET", Domain: "pubsublite.googleapis.com"})},
+				Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{Reason: "RESET", Domain: "pubsublite.googleapis.com"})},
 			}),
 			want: false,
 		},
@@ -71,7 +63,7 @@ func TestIsStreamResetSignal(t *testing.T) {
 			desc: "wrong domain",
 			err: status.ErrorProto(&spb.Status{
 				Code:    int32(codes.Aborted),
-				Details: []*anypb.Any{makeAny(&errdetails.ErrorInfo{Reason: "RESET"})},
+				Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{Reason: "RESET"})},
 			}),
 			want: false,
 		},
@@ -79,7 +71,7 @@ func TestIsStreamResetSignal(t *testing.T) {
 			desc: "wrong reason",
 			err: status.ErrorProto(&spb.Status{
 				Code:    int32(codes.Aborted),
-				Details: []*anypb.Any{makeAny(&errdetails.ErrorInfo{Domain: "pubsublite.googleapis.com"})},
+				Details: []*anypb.Any{test.MakeAny(&errdetails.ErrorInfo{Domain: "pubsublite.googleapis.com"})},
 			}),
 			want: false,
 		},
