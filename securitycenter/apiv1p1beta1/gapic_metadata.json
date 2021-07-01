@@ -1,127 +1,127 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.securitycenter.v1p1beta1",
-  "libraryPackage":  "cloud.google.com/go/securitycenter/apiv1p1beta1",
-  "services":  {
-    "SecurityCenter":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "CreateFinding":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.securitycenter.v1p1beta1",
+  "libraryPackage": "cloud.google.com/go/securitycenter/apiv1p1beta1",
+  "services": {
+    "SecurityCenter": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateFinding": {
+              "methods": [
                 "CreateFinding"
               ]
             },
-            "CreateNotificationConfig":  {
-              "methods":  [
+            "CreateNotificationConfig": {
+              "methods": [
                 "CreateNotificationConfig"
               ]
             },
-            "CreateSource":  {
-              "methods":  [
+            "CreateSource": {
+              "methods": [
                 "CreateSource"
               ]
             },
-            "DeleteNotificationConfig":  {
-              "methods":  [
+            "DeleteNotificationConfig": {
+              "methods": [
                 "DeleteNotificationConfig"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetNotificationConfig":  {
-              "methods":  [
+            "GetNotificationConfig": {
+              "methods": [
                 "GetNotificationConfig"
               ]
             },
-            "GetOrganizationSettings":  {
-              "methods":  [
+            "GetOrganizationSettings": {
+              "methods": [
                 "GetOrganizationSettings"
               ]
             },
-            "GetSource":  {
-              "methods":  [
+            "GetSource": {
+              "methods": [
                 "GetSource"
               ]
             },
-            "GroupAssets":  {
-              "methods":  [
+            "GroupAssets": {
+              "methods": [
                 "GroupAssets"
               ]
             },
-            "GroupFindings":  {
-              "methods":  [
+            "GroupFindings": {
+              "methods": [
                 "GroupFindings"
               ]
             },
-            "ListAssets":  {
-              "methods":  [
+            "ListAssets": {
+              "methods": [
                 "ListAssets"
               ]
             },
-            "ListFindings":  {
-              "methods":  [
+            "ListFindings": {
+              "methods": [
                 "ListFindings"
               ]
             },
-            "ListNotificationConfigs":  {
-              "methods":  [
+            "ListNotificationConfigs": {
+              "methods": [
                 "ListNotificationConfigs"
               ]
             },
-            "ListSources":  {
-              "methods":  [
+            "ListSources": {
+              "methods": [
                 "ListSources"
               ]
             },
-            "RunAssetDiscovery":  {
-              "methods":  [
+            "RunAssetDiscovery": {
+              "methods": [
                 "RunAssetDiscovery"
               ]
             },
-            "SetFindingState":  {
-              "methods":  [
+            "SetFindingState": {
+              "methods": [
                 "SetFindingState"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdateFinding":  {
-              "methods":  [
+            "UpdateFinding": {
+              "methods": [
                 "UpdateFinding"
               ]
             },
-            "UpdateNotificationConfig":  {
-              "methods":  [
+            "UpdateNotificationConfig": {
+              "methods": [
                 "UpdateNotificationConfig"
               ]
             },
-            "UpdateOrganizationSettings":  {
-              "methods":  [
+            "UpdateOrganizationSettings": {
+              "methods": [
                 "UpdateOrganizationSettings"
               ]
             },
-            "UpdateSecurityMarks":  {
-              "methods":  [
+            "UpdateSecurityMarks": {
+              "methods": [
                 "UpdateSecurityMarks"
               ]
             },
-            "UpdateSource":  {
-              "methods":  [
+            "UpdateSource": {
+              "methods": [
                 "UpdateSource"
               ]
             }
