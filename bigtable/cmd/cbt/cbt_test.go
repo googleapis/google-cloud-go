@@ -234,9 +234,7 @@ func TestGetDataFilter(t *testing.T) {
 
 	for _, test := range tests {
 		parsed, err := parseArgs(test.args, valid)
-		if assertNoError(t, err) {
-			continue
-		}
+		assertNoError(t, err)
 		opt, keysOnly, err := getDataFilter(parsed)
 		assertEqual(t, result{opt, keysOnly, fmt.Sprint(err)}, test.result, cmpOpts...)
 	}

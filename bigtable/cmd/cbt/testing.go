@@ -64,16 +64,14 @@ func assertEqual(t *testing.T, got, want interface{}, opts ...cmp.Option) {
 	}
 }
 
-func assertNoError(t *testing.T, err error) bool {
+func assertNoError(t *testing.T, err error) {
 	if err != nil {
 		_, fpath, lno, ok := runtime.Caller(1)
 		if ok {
 			_, fname := filepath.Split(fpath)
-			t.Errorf("%s:%d: %s", fname, lno, err)
+			t.Fatalf("%s:%d: %s", fname, lno, err)
 		} else {
-			t.Error(err)
+			t.Fatal(err)
 		}
-		return true
 	}
-	return false
 }
