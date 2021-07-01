@@ -1,72 +1,72 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.pubsub.v1",
-  "libraryPackage":  "cloud.google.com/go/pubsub/apiv1",
-  "services":  {
-    "Publisher":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "PublisherClient",
-          "rpcs":  {
-            "CreateTopic":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.pubsub.v1",
+  "libraryPackage": "cloud.google.com/go/pubsub/apiv1",
+  "services": {
+    "Publisher": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PublisherClient",
+          "rpcs": {
+            "CreateTopic": {
+              "methods": [
                 "CreateTopic"
               ]
             },
-            "DeleteTopic":  {
-              "methods":  [
+            "DeleteTopic": {
+              "methods": [
                 "DeleteTopic"
               ]
             },
-            "DetachSubscription":  {
-              "methods":  [
+            "DetachSubscription": {
+              "methods": [
                 "DetachSubscription"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetTopic":  {
-              "methods":  [
+            "GetTopic": {
+              "methods": [
                 "GetTopic"
               ]
             },
-            "ListTopicSnapshots":  {
-              "methods":  [
+            "ListTopicSnapshots": {
+              "methods": [
                 "ListTopicSnapshots"
               ]
             },
-            "ListTopicSubscriptions":  {
-              "methods":  [
+            "ListTopicSubscriptions": {
+              "methods": [
                 "ListTopicSubscriptions"
               ]
             },
-            "ListTopics":  {
-              "methods":  [
+            "ListTopics": {
+              "methods": [
                 "ListTopics"
               ]
             },
-            "Publish":  {
-              "methods":  [
+            "Publish": {
+              "methods": [
                 "Publish"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdateTopic":  {
-              "methods":  [
+            "UpdateTopic": {
+              "methods": [
                 "UpdateTopic"
               ]
             }
@@ -74,53 +74,53 @@
         }
       }
     },
-    "SchemaService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "SchemaClient",
-          "rpcs":  {
-            "CreateSchema":  {
-              "methods":  [
+    "SchemaService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SchemaClient",
+          "rpcs": {
+            "CreateSchema": {
+              "methods": [
                 "CreateSchema"
               ]
             },
-            "DeleteSchema":  {
-              "methods":  [
+            "DeleteSchema": {
+              "methods": [
                 "DeleteSchema"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetSchema":  {
-              "methods":  [
+            "GetSchema": {
+              "methods": [
                 "GetSchema"
               ]
             },
-            "ListSchemas":  {
-              "methods":  [
+            "ListSchemas": {
+              "methods": [
                 "ListSchemas"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "ValidateMessage":  {
-              "methods":  [
+            "ValidateMessage": {
+              "methods": [
                 "ValidateMessage"
               ]
             },
-            "ValidateSchema":  {
-              "methods":  [
+            "ValidateSchema": {
+              "methods": [
                 "ValidateSchema"
               ]
             }
@@ -128,103 +128,103 @@
         }
       }
     },
-    "Subscriber":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "SubscriberClient",
-          "rpcs":  {
-            "Acknowledge":  {
-              "methods":  [
+    "Subscriber": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SubscriberClient",
+          "rpcs": {
+            "Acknowledge": {
+              "methods": [
                 "Acknowledge"
               ]
             },
-            "CreateSnapshot":  {
-              "methods":  [
+            "CreateSnapshot": {
+              "methods": [
                 "CreateSnapshot"
               ]
             },
-            "CreateSubscription":  {
-              "methods":  [
+            "CreateSubscription": {
+              "methods": [
                 "CreateSubscription"
               ]
             },
-            "DeleteSnapshot":  {
-              "methods":  [
+            "DeleteSnapshot": {
+              "methods": [
                 "DeleteSnapshot"
               ]
             },
-            "DeleteSubscription":  {
-              "methods":  [
+            "DeleteSubscription": {
+              "methods": [
                 "DeleteSubscription"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "GetSnapshot":  {
-              "methods":  [
+            "GetSnapshot": {
+              "methods": [
                 "GetSnapshot"
               ]
             },
-            "GetSubscription":  {
-              "methods":  [
+            "GetSubscription": {
+              "methods": [
                 "GetSubscription"
               ]
             },
-            "ListSnapshots":  {
-              "methods":  [
+            "ListSnapshots": {
+              "methods": [
                 "ListSnapshots"
               ]
             },
-            "ListSubscriptions":  {
-              "methods":  [
+            "ListSubscriptions": {
+              "methods": [
                 "ListSubscriptions"
               ]
             },
-            "ModifyAckDeadline":  {
-              "methods":  [
+            "ModifyAckDeadline": {
+              "methods": [
                 "ModifyAckDeadline"
               ]
             },
-            "ModifyPushConfig":  {
-              "methods":  [
+            "ModifyPushConfig": {
+              "methods": [
                 "ModifyPushConfig"
               ]
             },
-            "Pull":  {
-              "methods":  [
+            "Pull": {
+              "methods": [
                 "Pull"
               ]
             },
-            "Seek":  {
-              "methods":  [
+            "Seek": {
+              "methods": [
                 "Seek"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "StreamingPull":  {
-              "methods":  [
+            "StreamingPull": {
+              "methods": [
                 "StreamingPull"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdateSnapshot":  {
-              "methods":  [
+            "UpdateSnapshot": {
+              "methods": [
                 "UpdateSnapshot"
               ]
             },
-            "UpdateSubscription":  {
-              "methods":  [
+            "UpdateSubscription": {
+              "methods": [
                 "UpdateSubscription"
               ]
             }

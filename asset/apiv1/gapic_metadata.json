@@ -1,72 +1,72 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.asset.v1",
-  "libraryPackage":  "cloud.google.com/go/asset/apiv1",
-  "services":  {
-    "AssetService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "AnalyzeIamPolicy":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.asset.v1",
+  "libraryPackage": "cloud.google.com/go/asset/apiv1",
+  "services": {
+    "AssetService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "AnalyzeIamPolicy": {
+              "methods": [
                 "AnalyzeIamPolicy"
               ]
             },
-            "AnalyzeIamPolicyLongrunning":  {
-              "methods":  [
+            "AnalyzeIamPolicyLongrunning": {
+              "methods": [
                 "AnalyzeIamPolicyLongrunning"
               ]
             },
-            "BatchGetAssetsHistory":  {
-              "methods":  [
+            "BatchGetAssetsHistory": {
+              "methods": [
                 "BatchGetAssetsHistory"
               ]
             },
-            "CreateFeed":  {
-              "methods":  [
+            "CreateFeed": {
+              "methods": [
                 "CreateFeed"
               ]
             },
-            "DeleteFeed":  {
-              "methods":  [
+            "DeleteFeed": {
+              "methods": [
                 "DeleteFeed"
               ]
             },
-            "ExportAssets":  {
-              "methods":  [
+            "ExportAssets": {
+              "methods": [
                 "ExportAssets"
               ]
             },
-            "GetFeed":  {
-              "methods":  [
+            "GetFeed": {
+              "methods": [
                 "GetFeed"
               ]
             },
-            "ListAssets":  {
-              "methods":  [
+            "ListAssets": {
+              "methods": [
                 "ListAssets"
               ]
             },
-            "ListFeeds":  {
-              "methods":  [
+            "ListFeeds": {
+              "methods": [
                 "ListFeeds"
               ]
             },
-            "SearchAllIamPolicies":  {
-              "methods":  [
+            "SearchAllIamPolicies": {
+              "methods": [
                 "SearchAllIamPolicies"
               ]
             },
-            "SearchAllResources":  {
-              "methods":  [
+            "SearchAllResources": {
+              "methods": [
                 "SearchAllResources"
               ]
             },
-            "UpdateFeed":  {
-              "methods":  [
+            "UpdateFeed": {
+              "methods": [
                 "UpdateFeed"
               ]
             }
