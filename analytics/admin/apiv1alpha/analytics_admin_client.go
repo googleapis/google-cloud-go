@@ -115,6 +115,7 @@ func defaultAnalyticsAdminGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("analyticsadmin.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://analyticsadmin.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),

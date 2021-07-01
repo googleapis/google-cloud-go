@@ -49,6 +49,7 @@ func defaultGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("workflowexecutions.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://workflowexecutions.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),

@@ -1,97 +1,97 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.spanner.admin.database.v1",
-  "libraryPackage":  "cloud.google.com/go/spanner/admin/database/apiv1",
-  "services":  {
-    "DatabaseAdmin":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "DatabaseAdminClient",
-          "rpcs":  {
-            "CreateBackup":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.spanner.admin.database.v1",
+  "libraryPackage": "cloud.google.com/go/spanner/admin/database/apiv1",
+  "services": {
+    "DatabaseAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DatabaseAdminClient",
+          "rpcs": {
+            "CreateBackup": {
+              "methods": [
                 "CreateBackup"
               ]
             },
-            "CreateDatabase":  {
-              "methods":  [
+            "CreateDatabase": {
+              "methods": [
                 "CreateDatabase"
               ]
             },
-            "DeleteBackup":  {
-              "methods":  [
+            "DeleteBackup": {
+              "methods": [
                 "DeleteBackup"
               ]
             },
-            "DropDatabase":  {
-              "methods":  [
+            "DropDatabase": {
+              "methods": [
                 "DropDatabase"
               ]
             },
-            "GetBackup":  {
-              "methods":  [
+            "GetBackup": {
+              "methods": [
                 "GetBackup"
               ]
             },
-            "GetDatabase":  {
-              "methods":  [
+            "GetDatabase": {
+              "methods": [
                 "GetDatabase"
               ]
             },
-            "GetDatabaseDdl":  {
-              "methods":  [
+            "GetDatabaseDdl": {
+              "methods": [
                 "GetDatabaseDdl"
               ]
             },
-            "GetIamPolicy":  {
-              "methods":  [
+            "GetIamPolicy": {
+              "methods": [
                 "GetIamPolicy"
               ]
             },
-            "ListBackupOperations":  {
-              "methods":  [
+            "ListBackupOperations": {
+              "methods": [
                 "ListBackupOperations"
               ]
             },
-            "ListBackups":  {
-              "methods":  [
+            "ListBackups": {
+              "methods": [
                 "ListBackups"
               ]
             },
-            "ListDatabaseOperations":  {
-              "methods":  [
+            "ListDatabaseOperations": {
+              "methods": [
                 "ListDatabaseOperations"
               ]
             },
-            "ListDatabases":  {
-              "methods":  [
+            "ListDatabases": {
+              "methods": [
                 "ListDatabases"
               ]
             },
-            "RestoreDatabase":  {
-              "methods":  [
+            "RestoreDatabase": {
+              "methods": [
                 "RestoreDatabase"
               ]
             },
-            "SetIamPolicy":  {
-              "methods":  [
+            "SetIamPolicy": {
+              "methods": [
                 "SetIamPolicy"
               ]
             },
-            "TestIamPermissions":  {
-              "methods":  [
+            "TestIamPermissions": {
+              "methods": [
                 "TestIamPermissions"
               ]
             },
-            "UpdateBackup":  {
-              "methods":  [
+            "UpdateBackup": {
+              "methods": [
                 "UpdateBackup"
               ]
             },
-            "UpdateDatabaseDdl":  {
-              "methods":  [
+            "UpdateDatabaseDdl": {
+              "methods": [
                 "UpdateDatabaseDdl"
               ]
             }

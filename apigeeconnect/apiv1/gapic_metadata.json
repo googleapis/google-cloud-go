@@ -1,17 +1,17 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.apigeeconnect.v1",
-  "libraryPackage":  "cloud.google.com/go/apigeeconnect/apiv1",
-  "services":  {
-    "ConnectionService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "ConnectionClient",
-          "rpcs":  {
-            "ListConnections":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.apigeeconnect.v1",
+  "libraryPackage": "cloud.google.com/go/apigeeconnect/apiv1",
+  "services": {
+    "ConnectionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ConnectionClient",
+          "rpcs": {
+            "ListConnections": {
+              "methods": [
                 "ListConnections"
               ]
             }
@@ -19,13 +19,13 @@
         }
       }
     },
-    "Tether":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "TetherClient",
-          "rpcs":  {
-            "Egress":  {
-              "methods":  [
+    "Tether": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TetherClient",
+          "rpcs": {
+            "Egress": {
+              "methods": [
                 "Egress"
               ]
             }
