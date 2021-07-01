@@ -147,6 +147,9 @@ func (formatting *valueFormatting) binaryFormatter(
 	encoding, ctype string,
 ) valueFormatter {
 	var byteOrder binary.ByteOrder
+	// We don't check the get below because it's checked in
+	// validateType, which is called by validateFormat, which is
+	// called by format before calling this. :)
 	typeFormatter := binaryValueFormatters[ctype]
 	if encoding == "BigEndian" {
 		byteOrder = binary.BigEndian
@@ -159,6 +162,9 @@ func (formatting *valueFormatting) binaryFormatter(
 }
 
 func (formatting *valueFormatting) pbFormatter(ctype string) valueFormatter {
+	// We don't check the get below because it's checked in
+	// validateType, which is called by validateFormat, which is
+	// called by format before calling this. :)
 	md := formatting.pbMessageTypes[strings.ToLower(ctype)]
 	return func(in []byte) (string, error) {
 		message := dynamic.NewMessage(md)
