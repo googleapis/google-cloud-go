@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -128,8 +127,8 @@ func NewRegionDiskTypesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultRegionDiskTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -161,16 +160,10 @@ func (c *regionDiskTypesRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the specified regional disk type. Gets a list of available disk types by making a list() request.
 func (c *regionDiskTypesRESTClient) Get(ctx context.Context, req *computepb.GetRegionDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/diskTypes/%v", req.GetProject(), req.GetRegion(), req.GetDiskType())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -204,12 +197,6 @@ func (c *regionDiskTypesRESTClient) Get(ctx context.Context, req *computepb.GetR
 
 // List retrieves a list of regional disk types available to the specified project.
 func (c *regionDiskTypesRESTClient) List(ctx context.Context, req *computepb.ListRegionDiskTypesRequest, opts ...gax.CallOption) (*computepb.RegionDiskTypeList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/diskTypes", req.GetProject(), req.GetRegion())
 
@@ -232,7 +219,7 @@ func (c *regionDiskTypesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

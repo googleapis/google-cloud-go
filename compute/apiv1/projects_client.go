@@ -205,8 +205,8 @@ func NewProjectsRESTClient(ctx context.Context, opts ...option.ClientOption) (*P
 
 func defaultProjectsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -238,12 +238,6 @@ func (c *projectsRESTClient) Connection() *grpc.ClientConn {
 
 // DisableXpnHost disable this project as a shared VPC host project.
 func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.DisableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/disableXpnHost", req.GetProject())
 
@@ -254,7 +248,7 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -339,12 +333,6 @@ func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *comput
 
 // EnableXpnHost enable this project as a shared VPC host project.
 func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.EnableXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/enableXpnHost", req.GetProject())
 
@@ -355,7 +343,7 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -440,16 +428,10 @@ func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *compute
 
 // Get returns the specified Project resource.
 func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v", req.GetProject())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -483,16 +465,10 @@ func (c *projectsRESTClient) Get(ctx context.Context, req *computepb.GetProjectR
 
 // GetXpnHost gets the shared VPC host project that this project links to. May be empty if no link exists.
 func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetXpnHostProjectRequest, opts ...gax.CallOption) (*computepb.Project, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnHost", req.GetProject())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -526,12 +502,6 @@ func (c *projectsRESTClient) GetXpnHost(ctx context.Context, req *computepb.GetX
 
 // GetXpnResources gets service resources (a.k.a service project) associated with this host project.
 func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb.GetXpnResourcesProjectsRequest, opts ...gax.CallOption) (*computepb.ProjectsGetXpnResources, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/getXpnResources", req.GetProject())
 
@@ -554,7 +524,7 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
