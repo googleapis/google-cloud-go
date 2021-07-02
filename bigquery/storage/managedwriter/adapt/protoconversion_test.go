@@ -15,11 +15,11 @@
 package adapt
 
 import (
+	"bytes"
 	"testing"
 
 	"cloud.google.com/go/internal/testutil"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
-	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -44,17 +44,59 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			want: &descriptorpb.DescriptorProto{
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
-					{Name: proto.String("foo"), Number: proto.Int32(1), Type: descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
-					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REQUIRED.Enum()},
+					{
+						Name:     proto.String("foo"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.StringValue"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
 					{Name: proto.String("baz"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
+				},
+			},
+		},
+		{
+			description: "nested",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "curdate", Type: storagepb.TableFieldSchema_DATE, Mode: storagepb.TableFieldSchema_NULLABLE},
+					{
+						Name: "rec",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Fields: []*storagepb.TableFieldSchema{
+							{Name: "userid", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
+							{Name: "location", Type: storagepb.TableFieldSchema_GEOGRAPHY, Mode: storagepb.TableFieldSchema_NULLABLE},
+						},
+					},
+				},
+			},
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("curdate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.Int32Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rec"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__rec"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
 				},
 			},
 		},
 	}
 	for _, tc := range testCases {
-		d, err := StorageSchemaToFileDescriptorSet(tc.bq, "root", nil)
+		depMap := make(map[*storagepb.TableSchema]protoreflect.Descriptor)
+		d, err := StorageSchemaToDescriptor(tc.bq, "root", depMap)
 		if err != nil {
-			t.Errorf("case (%s) failed conversion: %v", tc.description, err)
+			t.Fatalf("case (%s) failed conversion: %v", tc.description, err)
 		}
 
 		// convert it to DP form
@@ -73,13 +115,13 @@ func TestSchemaToProtoConversion(t *testing.T) {
 func TestProtoManipulation(t *testing.T) {
 	in := &storagepb.TableSchema{
 		Fields: []*storagepb.TableFieldSchema{
-			{Name: "foo", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
+			{Name: "foo", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
 			{Name: "bar", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
 			{Name: "baz", Type: storagepb.TableFieldSchema_DOUBLE, Mode: storagepb.TableFieldSchema_REPEATED},
 		}}
 
 	rootName := "root"
-	d, err := StorageSchemaToFileDescriptorSet(in, rootName, nil)
+	d, err := StorageSchemaToDescriptor(in, rootName, nil)
 	if err != nil {
 		t.Fatalf("StorageSchemaToFileDescriptorSet: %v", err)
 	}
@@ -112,16 +154,15 @@ func TestProtoManipulation(t *testing.T) {
 	list.Append(protoreflect.ValueOfFloat64(1.2))
 	list.Append(protoreflect.ValueOfFloat64(2.4))
 
-	b, err := protojson.Marshal(m)
+	// serialize to bytes
+	got, err := proto.Marshal(m)
 	if err != nil {
-		t.Fatalf("couldn't Marshall as textproto: %v", err)
+		t.Fatalf("failed to Marshal proto: %v", err)
 	}
 
-	got := string(b)
-	want := `{"foo":"hello","bar":"123","baz":[1.2,2.4]}`
-
-	if got != want {
-		t.Fatalf("json representation differs:  got %s, want %s", got, want)
+	want := []byte("\n\x05hello\x10{\x1a\x10333333\xf3?333333\x03@")
+	if !bytes.Equal(got, want) {
+		t.Fatalf("json representation differs:  got \n%q\n, want \n%q\n", got, want)
 	}
 
 }
