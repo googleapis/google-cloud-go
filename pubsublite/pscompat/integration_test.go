@@ -872,8 +872,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	})
 
 	t.Run("SeekToBeginning", func(t *testing.T) {
-		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(),
-			pubsublite.BacklogLocationSeekTarget{pubsublite.Beginning})
+		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.Beginning)
 		if err != nil {
 			t.Errorf("SeekSubscription() got err: %v", err)
 		} else {
@@ -896,8 +895,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	})
 
 	t.Run("SeekToEnd", func(t *testing.T) {
-		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(),
-			pubsublite.BacklogLocationSeekTarget{pubsublite.End})
+		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.End)
 		if err != nil {
 			t.Errorf("SeekSubscription() got err: %v", err)
 		} else {
@@ -918,8 +916,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 
 	t.Run("SeekToPublishTime", func(t *testing.T) {
 		// Seek to the beginning of batch 3.
-		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(),
-			pubsublite.PublishTimeSeekTarget{publishTimes3.Min()})
+		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.PublishTime(publishTimes3.Min()))
 		if err != nil {
 			t.Errorf("SeekSubscription() got err: %v", err)
 		} else {
