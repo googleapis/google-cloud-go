@@ -1680,7 +1680,7 @@ func TestIntegration_ColGroupRefPartitionsLarge(t *testing.T) {
 		}
 		totalCount += len(allDocs)
 
-		// Check that the same results are returned evenv if we use the proto converted query
+		// Check that the same results are returned even if we use the proto converted query
 		pbStructuredQuery, _ := query.ToProto()
 		q := *iClient.Query()
 		q, err = q.FromProto(pbStructuredQuery)

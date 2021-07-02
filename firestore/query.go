@@ -50,6 +50,11 @@ type Query struct {
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
 	err                    error
+	// TODO: look at https://github.com/googleapis/java-firestore/commit/3eab9f48777500dd3054bd0c563b43b6ae9fc3dc
+	// stop storing the fields, instead apply with each method.
+	// this means deserialization is a nop.
+	stucturedQueryProto  *pb.StructuredQuery
+	runQueryRequestProto *pb.RunQueryRequest
 
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
