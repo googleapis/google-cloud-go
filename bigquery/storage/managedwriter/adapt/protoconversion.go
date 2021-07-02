@@ -72,30 +72,45 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 // filename used by well known types proto
 var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
-func getFileDescriptorFromDependencyMap(depMap map[*storagepb.TableSchema]protoreflect.Descriptor, leafFields []*storagepb.TableFieldSchema) protoreflect.Descriptor {
+func getFileDescriptorFromDependencyMap(depMap map[string]protoreflect.Descriptor, schema *storagepb.TableSchema) protoreflect.Descriptor {
 	if depMap == nil {
 		return nil
 	}
 
 	// we're comparing based on the leaf fields, but we wrap them in the outer TableSchema message.
-	ts := &storagepb.TableSchema{
-		Fields: leafFields,
+	b, err := proto.Marshal(schema)
+	if err != nil {
+		return nil
 	}
-	if desc, ok := depMap[ts]; ok {
+	if desc, ok := depMap[string(b)]; ok {
 		return desc
 	}
 	return nil
 }
 
+func saveFileDescriptorToDependencyMap(depMap map[string]protoreflect.Descriptor, schema *storagepb.TableSchema, desc protoreflect.Descriptor) error {
+	if depMap == nil {
+		return fmt.Errorf("dependency map is nil")
+	}
+	b, err := proto.Marshal(schema)
+	if err != nil {
+		return fmt.Errorf("failed to serialize tableschema: %v", err)
+	}
+	depMap[string(b)] = desc
+	return nil
+}
+
 // StorageSchemaToDescriptor builds a protoreflect.Descriptor for a given table schema.
 //
-func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, dependencyMap map[*storagepb.TableSchema]protoreflect.Descriptor) (protoreflect.Descriptor, error) {
+func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, dependencyMap map[string]protoreflect.Descriptor) (protoreflect.Descriptor, error) {
 	if inSchema == nil {
 		return nil, fmt.Errorf("no input schema provided")
 	}
-	if dependencyMap == nil {
-		dependencyMap = make(map[*storagepb.TableSchema]protoreflect.Descriptor)
-	}
+	/*
+		if dependencyMap == nil {
+			dependencyMap = make(map[*storagepb.TableSchema]protoreflect.Descriptor)
+		}
+	*/
 
 	var fields []*descriptorpb.FieldDescriptorProto
 	var deps []protoreflect.FileDescriptor
@@ -108,10 +123,22 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 		// As multiple submessages may share the same type definition, we use a dependency cache
 		// and interrogate it / populate it as we're going.
 		if f.Type == storagepb.TableFieldSchema_STRUCT {
-			foundDesc := getFileDescriptorFromDependencyMap(dependencyMap, f.GetFields())
+			foundDesc := getFileDescriptorFromDependencyMap(dependencyMap, &storagepb.TableSchema{Fields: f.GetFields()})
 			if foundDesc != nil {
-				deps = append(deps, foundDesc.ParentFile())
-				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.Name()))
+				// check to see if we already have this in current dependency list
+				haveDep := false
+				for _, curDep := range deps {
+					if foundDesc.ParentFile().FullName() == curDep.FullName() {
+						haveDep = true
+						break
+					}
+				}
+				// if dep is missing, add to current dependencies
+				if !haveDep {
+					deps = append(deps, foundDesc.ParentFile())
+				}
+				// construct field descriptor for the message
+				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()))
 				if err != nil {
 					return nil, fmt.Errorf("couldn't convert to FieldDescriptorProto (%s): %v", currentScope, err)
 				}
@@ -128,7 +155,7 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
 				// as inserting it into the depMap cache for reuse elsewhere.s
 				deps = append(deps, desc.ParentFile())
-				dependencyMap[ts] = desc
+				saveFileDescriptorToDependencyMap(dependencyMap, ts, desc)
 
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope)
 				if err != nil {

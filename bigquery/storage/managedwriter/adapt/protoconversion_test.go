@@ -15,14 +15,15 @@
 package adapt
 
 import (
-	"bytes"
 	"testing"
 
-	"cloud.google.com/go/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/protobuf/encoding/protojson"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/reflect/protodesc"
 	"google.golang.org/protobuf/reflect/protoreflect"
+	"google.golang.org/protobuf/testing/protocmp"
 	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/dynamicpb"
 )
@@ -56,6 +57,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 			},
 		},
 		{
+			// exercise construct of a submessage
 			description: "nested",
 			bq: &storagepb.TableSchema{
 				Fields: []*storagepb.TableFieldSchema{
@@ -91,9 +93,62 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				},
 			},
 		},
+		{
+			// We expect to re-use the submessage twice, as the schema contains two identical structs.
+			description: "nested w/duplicate submessage",
+			bq: &storagepb.TableSchema{
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "curdate", Type: storagepb.TableFieldSchema_DATE, Mode: storagepb.TableFieldSchema_NULLABLE},
+					{
+						Name: "rec1",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Fields: []*storagepb.TableFieldSchema{
+							{Name: "userid", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
+							{Name: "location", Type: storagepb.TableFieldSchema_GEOGRAPHY, Mode: storagepb.TableFieldSchema_NULLABLE},
+						},
+					},
+					{
+						Name: "rec2",
+						Type: storagepb.TableFieldSchema_STRUCT,
+						Mode: storagepb.TableFieldSchema_NULLABLE,
+						Fields: []*storagepb.TableFieldSchema{
+							{Name: "userid", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
+							{Name: "location", Type: storagepb.TableFieldSchema_GEOGRAPHY, Mode: storagepb.TableFieldSchema_NULLABLE},
+						},
+					},
+				},
+			},
+			want: &descriptorpb.DescriptorProto{
+				Name: proto.String("root"),
+				Field: []*descriptorpb.FieldDescriptorProto{
+					{
+						Name:     proto.String("curdate"),
+						Number:   proto.Int32(1),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".google.protobuf.Int32Value"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rec1"),
+						Number:   proto.Int32(2),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__rec1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+					{
+						Name:     proto.String("rec2"),
+						Number:   proto.Int32(3),
+						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+						TypeName: proto.String(".root__rec1"),
+						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+					},
+				},
+			},
+		},
 	}
 	for _, tc := range testCases {
-		depMap := make(map[*storagepb.TableSchema]protoreflect.Descriptor)
+		depMap := make(map[string]protoreflect.Descriptor)
 		d, err := StorageSchemaToDescriptor(tc.bq, "root", depMap)
 		if err != nil {
 			t.Fatalf("case (%s) failed conversion: %v", tc.description, err)
@@ -106,7 +161,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		}
 		gotDP := protodesc.ToDescriptorProto(mDesc)
 
-		if diff := testutil.Diff(gotDP, tc.want); diff != "" {
+		if diff := cmp.Diff(gotDP, tc.want, protocmp.Transform()); diff != "" {
 			t.Fatalf("%s: -got, +want:\n%s", tc.description, diff)
 		}
 	}
@@ -154,15 +209,17 @@ func TestProtoManipulation(t *testing.T) {
 	list.Append(protoreflect.ValueOfFloat64(1.2))
 	list.Append(protoreflect.ValueOfFloat64(2.4))
 
-	// serialize to bytes
-	got, err := proto.Marshal(m)
+	// TODO: why is binary serialization non-deterministic?
+	b, err := protojson.Marshal(m)
 	if err != nil {
-		t.Fatalf("failed to Marshal proto: %v", err)
+		t.Fatalf("couldn't marshal using protojson: %v", err)
 	}
 
-	want := []byte("\n\x05hello\x10{\x1a\x10333333\xf3?333333\x03@")
-	if !bytes.Equal(got, want) {
-		t.Fatalf("json representation differs:  got \n%q\n, want \n%q\n", got, want)
+	got := string(b)
+	want := `{"foo":"hello","bar":"123","baz":[1.2,2.4]}`
+
+	if got != want {
+		t.Fatalf("json serialization differs:  got %s want %s", got, want)
 	}
 
 }
