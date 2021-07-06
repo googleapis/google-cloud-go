@@ -45,6 +45,7 @@ func defaultServiceControllerGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("servicecontrol.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://servicecontrol.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -70,7 +71,7 @@ type internalServiceControllerClient interface {
 // ServiceControllerClient is a client for interacting with Service Control API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Service Control API (at https://cloud.google.com/service-control/overview)
+// Google Service Control API (at /service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -115,7 +116,8 @@ func (c *ServiceControllerClient) Connection() *grpc.ClientConn {
 // propagation, therefore callers MUST NOT depend on the Check method having
 // the latest policy information.
 //
-// NOTE: the CheckRequest has the size limit of 64KB.
+// NOTE: the CheckRequest has
+// the size limit (wire-format byte size) of 1MB.
 //
 // This method requires the servicemanagement.services.check permission
 // on the specified service. For more information, see
@@ -133,8 +135,8 @@ func (c *ServiceControllerClient) Check(ctx context.Context, req *servicecontrol
 // the aggregation time window to avoid data loss risk more than 0.01%
 // for business and compliance reasons.
 //
-// NOTE: the ReportRequest has the size limit (wire-format byte size) of
-// 1MB.
+// NOTE: the ReportRequest has
+// the size limit (wire-format byte size) of 1MB.
 //
 // This method requires the servicemanagement.services.report permission
 // on the specified service. For more information, see
@@ -166,7 +168,7 @@ type serviceControllerGRPCClient struct {
 // NewServiceControllerClient creates a new service controller client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Service Control API (at https://cloud.google.com/service-control/overview)
+// Google Service Control API (at /service-control/overview)
 //
 // Lets clients check and report operations against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).

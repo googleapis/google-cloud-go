@@ -166,3 +166,15 @@ func TestPartitionedUpdate_QueryOptions(t *testing.T) {
 		})
 	}
 }
+
+func TestPartitionedUpdate_Tagging(t *testing.T) {
+	ctx := context.Background()
+	server, client, teardown := setupMockedTestServer(t)
+	defer teardown()
+
+	_, err := client.PartitionedUpdateWithOptions(ctx, NewStatement(UpdateBarSetFoo), QueryOptions{RequestTag: "pdml-tag"})
+	if err != nil {
+		t.Fatalf("expect no errors, but got %v", err)
+	}
+	checkRequestsForExpectedRequestOptions(t, server.TestSpanner, 1, sppb.RequestOptions{RequestTag: "pdml-tag"})
+}
