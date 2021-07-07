@@ -1,117 +1,117 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.datastream.v1alpha1",
-  "libraryPackage":  "cloud.google.com/go/datastream/apiv1alpha1",
-  "services":  {
-    "Datastream":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "CreateConnectionProfile":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.datastream.v1alpha1",
+  "libraryPackage": "cloud.google.com/go/datastream/apiv1alpha1",
+  "services": {
+    "Datastream": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateConnectionProfile": {
+              "methods": [
                 "CreateConnectionProfile"
               ]
             },
-            "CreatePrivateConnection":  {
-              "methods":  [
+            "CreatePrivateConnection": {
+              "methods": [
                 "CreatePrivateConnection"
               ]
             },
-            "CreateRoute":  {
-              "methods":  [
+            "CreateRoute": {
+              "methods": [
                 "CreateRoute"
               ]
             },
-            "CreateStream":  {
-              "methods":  [
+            "CreateStream": {
+              "methods": [
                 "CreateStream"
               ]
             },
-            "DeleteConnectionProfile":  {
-              "methods":  [
+            "DeleteConnectionProfile": {
+              "methods": [
                 "DeleteConnectionProfile"
               ]
             },
-            "DeletePrivateConnection":  {
-              "methods":  [
+            "DeletePrivateConnection": {
+              "methods": [
                 "DeletePrivateConnection"
               ]
             },
-            "DeleteRoute":  {
-              "methods":  [
+            "DeleteRoute": {
+              "methods": [
                 "DeleteRoute"
               ]
             },
-            "DeleteStream":  {
-              "methods":  [
+            "DeleteStream": {
+              "methods": [
                 "DeleteStream"
               ]
             },
-            "DiscoverConnectionProfile":  {
-              "methods":  [
+            "DiscoverConnectionProfile": {
+              "methods": [
                 "DiscoverConnectionProfile"
               ]
             },
-            "FetchErrors":  {
-              "methods":  [
+            "FetchErrors": {
+              "methods": [
                 "FetchErrors"
               ]
             },
-            "FetchStaticIps":  {
-              "methods":  [
+            "FetchStaticIps": {
+              "methods": [
                 "FetchStaticIps"
               ]
             },
-            "GetConnectionProfile":  {
-              "methods":  [
+            "GetConnectionProfile": {
+              "methods": [
                 "GetConnectionProfile"
               ]
             },
-            "GetPrivateConnection":  {
-              "methods":  [
+            "GetPrivateConnection": {
+              "methods": [
                 "GetPrivateConnection"
               ]
             },
-            "GetRoute":  {
-              "methods":  [
+            "GetRoute": {
+              "methods": [
                 "GetRoute"
               ]
             },
-            "GetStream":  {
-              "methods":  [
+            "GetStream": {
+              "methods": [
                 "GetStream"
               ]
             },
-            "ListConnectionProfiles":  {
-              "methods":  [
+            "ListConnectionProfiles": {
+              "methods": [
                 "ListConnectionProfiles"
               ]
             },
-            "ListPrivateConnections":  {
-              "methods":  [
+            "ListPrivateConnections": {
+              "methods": [
                 "ListPrivateConnections"
               ]
             },
-            "ListRoutes":  {
-              "methods":  [
+            "ListRoutes": {
+              "methods": [
                 "ListRoutes"
               ]
             },
-            "ListStreams":  {
-              "methods":  [
+            "ListStreams": {
+              "methods": [
                 "ListStreams"
               ]
             },
-            "UpdateConnectionProfile":  {
-              "methods":  [
+            "UpdateConnectionProfile": {
+              "methods": [
                 "UpdateConnectionProfile"
               ]
             },
-            "UpdateStream":  {
-              "methods":  [
+            "UpdateStream": {
+              "methods": [
                 "UpdateStream"
               ]
             }
