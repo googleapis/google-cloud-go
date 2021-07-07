@@ -149,8 +149,7 @@ func TestSchemaToProtoConversion(t *testing.T) {
 		},
 	}
 	for _, tc := range testCases {
-		depMap := make(map[string]protoreflect.Descriptor)
-		d, err := StorageSchemaToDescriptor(tc.bq, "root", depMap)
+		d, err := StorageSchemaToDescriptor(tc.bq, "root")
 		if err != nil {
 			t.Fatalf("case (%s) failed conversion: %v", tc.description, err)
 		}
@@ -185,7 +184,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 		},
 	}
 
-	descriptor, err := StorageSchemaToDescriptor(sourceSchema, "root", nil)
+	descriptor, err := StorageSchemaToDescriptor(sourceSchema, "root")
 	if err != nil {
 		t.Fatalf("failed to construct descriptor")
 	}

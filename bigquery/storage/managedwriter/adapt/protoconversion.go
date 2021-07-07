@@ -15,6 +15,7 @@
 package adapt
 
 import (
+	"encoding/base64"
 	"fmt"
 	"strings"
 
@@ -72,45 +73,51 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 // filename used by well known types proto
 var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 
-func getFileDescriptorFromDependencyMap(depMap map[string]protoreflect.Descriptor, schema *storagepb.TableSchema) protoreflect.Descriptor {
-	if depMap == nil {
+// dependencyCache is used to reduce the number of unique messages we generate by caching based on the tableschema.
+//
+// keys are based on the base64-encoded serialized tableschema value.
+type dependencyCache map[string]protoreflect.Descriptor
+
+func (dm *dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descriptor {
+	if dm == nil {
 		return nil
 	}
-
-	// we're comparing based on the leaf fields, but we wrap them in the outer TableSchema message.
 	b, err := proto.Marshal(schema)
 	if err != nil {
 		return nil
 	}
-	if desc, ok := depMap[string(b)]; ok {
+	encoded := base64.StdEncoding.EncodeToString(b)
+	// TODO: should we
+	if desc, ok := (*dm)[encoded]; ok {
 		return desc
 	}
 	return nil
 }
 
-func saveFileDescriptorToDependencyMap(depMap map[string]protoreflect.Descriptor, schema *storagepb.TableSchema, desc protoreflect.Descriptor) error {
-	if depMap == nil {
-		return fmt.Errorf("dependency map is nil")
+func (dm *dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.Descriptor) error {
+	if dm == nil {
+		return fmt.Errorf("cache is nil")
 	}
 	b, err := proto.Marshal(schema)
 	if err != nil {
 		return fmt.Errorf("failed to serialize tableschema: %v", err)
 	}
-	depMap[string(b)] = desc
+	encoded := base64.StdEncoding.EncodeToString(b)
+	(*dm)[encoded] = descriptor
 	return nil
 }
 
 // StorageSchemaToDescriptor builds a protoreflect.Descriptor for a given table schema.
-//
-func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, dependencyMap map[string]protoreflect.Descriptor) (protoreflect.Descriptor, error) {
+func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
+	dc := make(dependencyCache)
+	return storageSchemaToDescriptorInternal(inSchema, scope, &dc)
+}
+
+// internal implementation of the conversion code.
+func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache) (protoreflect.Descriptor, error) {
 	if inSchema == nil {
 		return nil, fmt.Errorf("no input schema provided")
 	}
-	/*
-		if dependencyMap == nil {
-			dependencyMap = make(map[*storagepb.TableSchema]protoreflect.Descriptor)
-		}
-	*/
 
 	var fields []*descriptorpb.FieldDescriptorProto
 	var deps []protoreflect.FileDescriptor
@@ -123,7 +130,7 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 		// As multiple submessages may share the same type definition, we use a dependency cache
 		// and interrogate it / populate it as we're going.
 		if f.Type == storagepb.TableFieldSchema_STRUCT {
-			foundDesc := getFileDescriptorFromDependencyMap(dependencyMap, &storagepb.TableSchema{Fields: f.GetFields()})
+			foundDesc := cache.get(&storagepb.TableSchema{Fields: f.GetFields()})
 			if foundDesc != nil {
 				// check to see if we already have this in current dependency list
 				haveDep := false
@@ -148,15 +155,17 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 				ts := &storagepb.TableSchema{
 					Fields: f.GetFields(),
 				}
-				desc, err := StorageSchemaToDescriptor(ts, currentScope, dependencyMap)
+				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't compile (%s): %v", currentScope, err)
 				}
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
-				// as inserting it into the depMap cache for possible reuse elsewhere.
+				// as inserting it into the cache for possible reuse elsewhere.
 				deps = append(deps, desc.ParentFile())
-				saveFileDescriptorToDependencyMap(dependencyMap, ts, desc)
-
+				err = cache.add(ts, desc)
+				if err != nil {
+					return nil, fmt.Errorf("failed to add descriptor to cache: %v", err)
+				}
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't compute field schema (%s): %v", currentScope, err)
@@ -205,7 +214,7 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 		fds.File = append(fds.File, protodesc.ToFileDescriptorProto(d))
 	}
 
-	// Load the set into a registy, then interrogate it for the descriptor corresponding to the top level message.
+	// Load the set into a registry, then interrogate it for the descriptor corresponding to the top level message.
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
 		return nil, fmt.Errorf("protodesc.NewFiles: %v", err)
@@ -230,7 +239,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 		}, nil
 	}
 
-	// For non-NULLABLE fields, we use the expected scalar types, but the proto is
+	// For (REQUIRED||REPEATED) fields, we use the expected scalar types, but the proto is
 	// still marked OPTIONAL (proto3 semantics).
 	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE {
 		return &descriptorpb.FieldDescriptorProto{
