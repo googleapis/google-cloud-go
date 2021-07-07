@@ -198,8 +198,8 @@ func NewSubnetworksRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultSubnetworksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -231,12 +231,6 @@ func (c *subnetworksRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of subnetworks.
 func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListSubnetworksRequest, opts ...gax.CallOption) (*computepb.SubnetworkAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks", req.GetProject())
 
@@ -262,7 +256,7 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -296,12 +290,6 @@ func (c *subnetworksRESTClient) AggregatedList(ctx context.Context, req *compute
 
 // Delete deletes the specified subnetwork.
 func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.DeleteSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
@@ -312,7 +300,7 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -397,16 +385,10 @@ func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *comp
 
 // Get returns the specified subnetwork. Gets a list of available subnetworks list() request.
 func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubnetworkRequest, opts ...gax.CallOption) (*computepb.Subnetwork, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v", req.GetProject(), req.GetRegion(), req.GetSubnetwork())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -440,12 +422,6 @@ func (c *subnetworksRESTClient) Get(ctx context.Context, req *computepb.GetSubne
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
@@ -456,7 +432,7 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -541,12 +517,6 @@ func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 // List retrieves a list of subnetworks available to the specified project.
 func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSubnetworksRequest, opts ...gax.CallOption) (*computepb.SubnetworkList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/subnetworks", req.GetProject(), req.GetRegion())
 
@@ -569,7 +539,7 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -603,12 +573,6 @@ func (c *subnetworksRESTClient) List(ctx context.Context, req *computepb.ListSub
 
 // ListUsable retrieves an aggregated list of all usable subnetworks in the project.
 func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.ListUsableSubnetworksRequest, opts ...gax.CallOption) (*computepb.UsableSubnetworksAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/subnetworks/listUsable", req.GetProject())
 
@@ -631,7 +595,7 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
