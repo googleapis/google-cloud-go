@@ -22,7 +22,14 @@ import (
 	tspb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
+// SeekTarget is the target location to seek a subscription to. Implemented by
+// BacklogLocation, PublishTime, EventTime.
+type SeekTarget interface {
+	setRequest(req *pb.SeekSubscriptionRequest)
+}
+
 // BacklogLocation refers to a location with respect to the message backlog.
+// It implements the SeekTarget interface.
 type BacklogLocation int
 
 const (
@@ -34,21 +41,9 @@ const (
 	Beginning
 )
 
-// SeekTarget is the target location to seek a subscription to. Implemented by
-// BacklogLocationSeekTarget, PublishTimeSeekTarget, EventTimeSeekTarget.
-type SeekTarget interface {
-	setRequest(req *pb.SeekSubscriptionRequest)
-}
-
-// BacklogLocationSeekTarget is a seek target to a location with respect to the
-// message backlog.
-type BacklogLocationSeekTarget struct {
-	Location BacklogLocation
-}
-
-func (b BacklogLocationSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
+func (b BacklogLocation) setRequest(req *pb.SeekSubscriptionRequest) {
 	target := pb.SeekSubscriptionRequest_TAIL
-	if b.Location == End {
+	if b == End {
 		target = pb.SeekSubscriptionRequest_HEAD
 	}
 	req.Target = &pb.SeekSubscriptionRequest_NamedTarget_{
@@ -56,28 +51,26 @@ func (b BacklogLocationSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
 	}
 }
 
-// PublishTimeSeekTarget is a seek target to a message publish timestamp.
-type PublishTimeSeekTarget struct {
-	Time time.Time
-}
+// PublishTime is a message publish timestamp. It implements the SeekTarget
+// interface.
+type PublishTime time.Time
 
-func (p PublishTimeSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
+func (p PublishTime) setRequest(req *pb.SeekSubscriptionRequest) {
 	req.Target = &pb.SeekSubscriptionRequest_TimeTarget{
 		TimeTarget: &pb.TimeTarget{
-			Time: &pb.TimeTarget_PublishTime{tspb.New(p.Time)},
+			Time: &pb.TimeTarget_PublishTime{tspb.New(time.Time(p))},
 		},
 	}
 }
 
-// EventTimeSeekTarget is a seek target to a message event timestamp.
-type EventTimeSeekTarget struct {
-	Time time.Time
-}
+// EventTime is a message event timestamp. It implements the SeekTarget
+// interface.
+type EventTime time.Time
 
-func (p EventTimeSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
+func (e EventTime) setRequest(req *pb.SeekSubscriptionRequest) {
 	req.Target = &pb.SeekSubscriptionRequest_TimeTarget{
 		TimeTarget: &pb.TimeTarget{
-			Time: &pb.TimeTarget_EventTime{tspb.New(p.Time)},
+			Time: &pb.TimeTarget_EventTime{tspb.New(time.Time(e))},
 		},
 	}
 }
@@ -85,7 +78,7 @@ func (p EventTimeSeekTarget) setRequest(req *pb.SeekSubscriptionRequest) {
 // SeekSubscriptionOption is reserved for future options.
 type SeekSubscriptionOption interface{}
 
-// Metadata for long-running operations.
+// OperationMetadata stores metadata for long-running operations.
 type OperationMetadata struct {
 	// The target of the operation. For example, targets of seeks are
 	// subscriptions, structured like:

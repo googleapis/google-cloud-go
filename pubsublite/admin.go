@@ -224,17 +224,7 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 // message backlog. A valid subscription path has the format:
 // "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
 //
-// If an operation is returned, the seek has been registered and subscribers
-// will eventually receive messages from the seek target, as long as the
-// subscriber client supports out-of-band seeks. The seek operation will be
-// aborted for unsupported clients, or if it is superseded by a newer seek
-// invocation for the same subscription.
-//
-// To determine when subscribers react to the seek (or it has been aborted),
-// wait for the returned operation to complete. The operation will succeed and
-// complete once subscribers are receiving messages from the seek target for all
-// partitions of the topic. The operation will not complete until all
-// subscribers come online.
+// See https://cloud.google.com/pubsub/lite/docs/seek for more information.
 func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string, target SeekTarget, opts ...SeekSubscriptionOption) (*SeekSubscriptionOperation, error) {
 	if _, err := wire.ParseSubscriptionPath(subscription); err != nil {
 		return nil, err
@@ -242,6 +232,9 @@ func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string
 	req := &pb.SeekSubscriptionRequest{Name: subscription}
 	target.setRequest(req)
 	op, err := ac.admin.SeekSubscription(ctx, req)
+	if err != nil {
+		return nil, err
+	}
 	return &SeekSubscriptionOperation{op}, err
 }
 

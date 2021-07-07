@@ -184,13 +184,12 @@ func ExampleAdminClient_SeekSubscription() {
 	}
 
 	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
-	seekOp, err := admin.SeekSubscription(ctx, subscription,
-		pubsublite.BacklogLocationSeekTarget{pubsublite.Beginning})
+	seekOp, err := admin.SeekSubscription(ctx, subscription, pubsublite.Beginning)
 	if err != nil {
 		// TODO: Handle error.
 	}
 
-	// Optionally wait for the seek operation to complete, which indicates when
+	// Optional: Wait for the seek operation to complete, which indicates when
 	// subscribers for all partitions are receiving messages from the seek target.
 	err = seekOp.Wait(ctx)
 	if err != nil {

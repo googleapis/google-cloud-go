@@ -467,7 +467,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 	}{
 		{
 			desc:   "Beginning",
-			target: BacklogLocationSeekTarget{Beginning},
+			target: Beginning,
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
@@ -477,7 +477,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 		},
 		{
 			desc:   "End",
-			target: BacklogLocationSeekTarget{End},
+			target: End,
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
@@ -487,7 +487,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 		},
 		{
 			desc:   "PublishTime",
-			target: PublishTimeSeekTarget{time.Unix(1234, 0)},
+			target: PublishTime(time.Unix(1234, 0)),
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_TimeTarget{
@@ -501,7 +501,7 @@ func TestAdminSeekSubscription(t *testing.T) {
 		},
 		{
 			desc:   "EventTime",
-			target: EventTimeSeekTarget{time.Unix(2345, 0)},
+			target: EventTime(time.Unix(2345, 0)),
 			wantReq: &pb.SeekSubscriptionRequest{
 				Name: subscriptionPath,
 				Target: &pb.SeekSubscriptionRequest_TimeTarget{
