@@ -32,5 +32,5 @@ require (
 	cloud.google.com/go/pubsublite v0.84.0
 	cloud.google.com/go/spanner v0.84.0
 	google.golang.org/api v0.50.0
-	google.golang.org/genproto v0.0.0-20210701133433-6b8dcf568a95
+	google.golang.org/genproto v0.0.0-20210707141755-0f065b0b1eb9
 )
