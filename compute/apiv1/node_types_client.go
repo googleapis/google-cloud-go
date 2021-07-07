@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -135,8 +134,8 @@ func NewNodeTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultNodeTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -168,12 +167,6 @@ func (c *nodeTypesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of node types.
 func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTypesRequest, opts ...gax.CallOption) (*computepb.NodeTypeAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/nodeTypes", req.GetProject())
 
@@ -199,7 +192,7 @@ func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -233,16 +226,10 @@ func (c *nodeTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 // Get returns the specified node type. Gets a list of available node types by making a list() request.
 func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTypeRequest, opts ...gax.CallOption) (*computepb.NodeType, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeTypes/%v", req.GetProject(), req.GetZone(), req.GetNodeType())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -276,12 +263,6 @@ func (c *nodeTypesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTyp
 
 // List retrieves a list of node types available to the specified project.
 func (c *nodeTypesRESTClient) List(ctx context.Context, req *computepb.ListNodeTypesRequest, opts ...gax.CallOption) (*computepb.NodeTypeList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeTypes", req.GetProject(), req.GetZone())
 
@@ -304,7 +285,7 @@ func (c *nodeTypesRESTClient) List(ctx context.Context, req *computepb.ListNodeT
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
