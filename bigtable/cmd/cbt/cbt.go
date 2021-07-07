@@ -268,7 +268,7 @@ defaults or need to specify different formats for columns of the same
 name in different families.
 
 Protocol-buffer definition files may be given, as well as directories
-used to search for definition files and and files imported by them. If
+used to search for definition files and files imported by them. If
 no paths are specified, then the current working directory is used.
 Locations of standard protocol buffer imports (` + "`" +
 	`google/protobuf/*` + "`" + `) need not be specified.
