@@ -1,102 +1,102 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.automl.v1",
-  "libraryPackage":  "cloud.google.com/go/automl/apiv1",
-  "services":  {
-    "AutoMl":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "CreateDataset":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.automl.v1",
+  "libraryPackage": "cloud.google.com/go/automl/apiv1",
+  "services": {
+    "AutoMl": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateDataset": {
+              "methods": [
                 "CreateDataset"
               ]
             },
-            "CreateModel":  {
-              "methods":  [
+            "CreateModel": {
+              "methods": [
                 "CreateModel"
               ]
             },
-            "DeleteDataset":  {
-              "methods":  [
+            "DeleteDataset": {
+              "methods": [
                 "DeleteDataset"
               ]
             },
-            "DeleteModel":  {
-              "methods":  [
+            "DeleteModel": {
+              "methods": [
                 "DeleteModel"
               ]
             },
-            "DeployModel":  {
-              "methods":  [
+            "DeployModel": {
+              "methods": [
                 "DeployModel"
               ]
             },
-            "ExportData":  {
-              "methods":  [
+            "ExportData": {
+              "methods": [
                 "ExportData"
               ]
             },
-            "ExportModel":  {
-              "methods":  [
+            "ExportModel": {
+              "methods": [
                 "ExportModel"
               ]
             },
-            "GetAnnotationSpec":  {
-              "methods":  [
+            "GetAnnotationSpec": {
+              "methods": [
                 "GetAnnotationSpec"
               ]
             },
-            "GetDataset":  {
-              "methods":  [
+            "GetDataset": {
+              "methods": [
                 "GetDataset"
               ]
             },
-            "GetModel":  {
-              "methods":  [
+            "GetModel": {
+              "methods": [
                 "GetModel"
               ]
             },
-            "GetModelEvaluation":  {
-              "methods":  [
+            "GetModelEvaluation": {
+              "methods": [
                 "GetModelEvaluation"
               ]
             },
-            "ImportData":  {
-              "methods":  [
+            "ImportData": {
+              "methods": [
                 "ImportData"
               ]
             },
-            "ListDatasets":  {
-              "methods":  [
+            "ListDatasets": {
+              "methods": [
                 "ListDatasets"
               ]
             },
-            "ListModelEvaluations":  {
-              "methods":  [
+            "ListModelEvaluations": {
+              "methods": [
                 "ListModelEvaluations"
               ]
             },
-            "ListModels":  {
-              "methods":  [
+            "ListModels": {
+              "methods": [
                 "ListModels"
               ]
             },
-            "UndeployModel":  {
-              "methods":  [
+            "UndeployModel": {
+              "methods": [
                 "UndeployModel"
               ]
             },
-            "UpdateDataset":  {
-              "methods":  [
+            "UpdateDataset": {
+              "methods": [
                 "UpdateDataset"
               ]
             },
-            "UpdateModel":  {
-              "methods":  [
+            "UpdateModel": {
+              "methods": [
                 "UpdateModel"
               ]
             }
@@ -104,18 +104,18 @@
         }
       }
     },
-    "PredictionService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "PredictionClient",
-          "rpcs":  {
-            "BatchPredict":  {
-              "methods":  [
+    "PredictionService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PredictionClient",
+          "rpcs": {
+            "BatchPredict": {
+              "methods": [
                 "BatchPredict"
               ]
             },
-            "Predict":  {
-              "methods":  [
+            "Predict": {
+              "methods": [
                 "Predict"
               ]
             }
