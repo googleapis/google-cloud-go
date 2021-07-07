@@ -217,7 +217,7 @@ func (c *securityPoliciesRESTClient) Connection() *grpc.ClientConn {
 
 // AddRule inserts a rule into a security policy.
 func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -386,7 +386,7 @@ func (c *securityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 
 // Insert creates a new policy in the specified project using the data included in the request.
 func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -549,7 +549,7 @@ func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context
 
 // Patch patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -600,7 +600,7 @@ func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 
 // PatchRule patches a rule at the specified priority.
 func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

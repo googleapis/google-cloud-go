@@ -307,7 +307,7 @@ func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *compu
 
 // Insert creates a Interconnect in the specified project using the data included in the request.
 func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.InsertInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -414,7 +414,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 
 // Patch updates the specified interconnect with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *interconnectsRESTClient) Patch(ctx context.Context, req *computepb.PatchInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInterconnectResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

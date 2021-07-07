@@ -450,7 +450,7 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 
 // Insert creates a Router resource in the specified project and region using the data included in the request.
 func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -557,7 +557,7 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -608,7 +608,7 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 
 // Preview preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
 func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewRouterRequest, opts ...gax.CallOption) (*computepb.RoutersPreviewResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -652,7 +652,7 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 
 // Update updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
 func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
