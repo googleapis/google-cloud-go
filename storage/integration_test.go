@@ -627,9 +627,14 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 		t.Error("updating PublicAccessPrevention changed UBLA setting")
 	}
 
-	// Now, making object public or making bucket public should succeed.
-	a = o.ACL()
-	if err := a.Set(ctx, AllUsers, RoleReader); err != nil {
+	// Now, making object public or making bucket public should succeed. Run with
+	// retry because ACL settings may take time to propagate.
+	if err := retry(ctx,
+		func() error {
+			a = o.ACL()
+			return a.Set(ctx, AllUsers, RoleReader)
+		},
+		nil); err != nil {
 		t.Errorf("ACL.Set: making object public failed: %v", err)
 	}
 	policy, err = bkt.IAM().V3().Policy(ctx)

@@ -1,157 +1,157 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.security.privateca.v1",
-  "libraryPackage":  "cloud.google.com/go/security/privateca/apiv1",
-  "services":  {
-    "CertificateAuthorityService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "CertificateAuthorityClient",
-          "rpcs":  {
-            "ActivateCertificateAuthority":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.security.privateca.v1",
+  "libraryPackage": "cloud.google.com/go/security/privateca/apiv1",
+  "services": {
+    "CertificateAuthorityService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CertificateAuthorityClient",
+          "rpcs": {
+            "ActivateCertificateAuthority": {
+              "methods": [
                 "ActivateCertificateAuthority"
               ]
             },
-            "CreateCaPool":  {
-              "methods":  [
+            "CreateCaPool": {
+              "methods": [
                 "CreateCaPool"
               ]
             },
-            "CreateCertificate":  {
-              "methods":  [
+            "CreateCertificate": {
+              "methods": [
                 "CreateCertificate"
               ]
             },
-            "CreateCertificateAuthority":  {
-              "methods":  [
+            "CreateCertificateAuthority": {
+              "methods": [
                 "CreateCertificateAuthority"
               ]
             },
-            "CreateCertificateTemplate":  {
-              "methods":  [
+            "CreateCertificateTemplate": {
+              "methods": [
                 "CreateCertificateTemplate"
               ]
             },
-            "DeleteCaPool":  {
-              "methods":  [
+            "DeleteCaPool": {
+              "methods": [
                 "DeleteCaPool"
               ]
             },
-            "DeleteCertificateAuthority":  {
-              "methods":  [
+            "DeleteCertificateAuthority": {
+              "methods": [
                 "DeleteCertificateAuthority"
               ]
             },
-            "DeleteCertificateTemplate":  {
-              "methods":  [
+            "DeleteCertificateTemplate": {
+              "methods": [
                 "DeleteCertificateTemplate"
               ]
             },
-            "DisableCertificateAuthority":  {
-              "methods":  [
+            "DisableCertificateAuthority": {
+              "methods": [
                 "DisableCertificateAuthority"
               ]
             },
-            "EnableCertificateAuthority":  {
-              "methods":  [
+            "EnableCertificateAuthority": {
+              "methods": [
                 "EnableCertificateAuthority"
               ]
             },
-            "FetchCaCerts":  {
-              "methods":  [
+            "FetchCaCerts": {
+              "methods": [
                 "FetchCaCerts"
               ]
             },
-            "FetchCertificateAuthorityCsr":  {
-              "methods":  [
+            "FetchCertificateAuthorityCsr": {
+              "methods": [
                 "FetchCertificateAuthorityCsr"
               ]
             },
-            "GetCaPool":  {
-              "methods":  [
+            "GetCaPool": {
+              "methods": [
                 "GetCaPool"
               ]
             },
-            "GetCertificate":  {
-              "methods":  [
+            "GetCertificate": {
+              "methods": [
                 "GetCertificate"
               ]
             },
-            "GetCertificateAuthority":  {
-              "methods":  [
+            "GetCertificateAuthority": {
+              "methods": [
                 "GetCertificateAuthority"
               ]
             },
-            "GetCertificateRevocationList":  {
-              "methods":  [
+            "GetCertificateRevocationList": {
+              "methods": [
                 "GetCertificateRevocationList"
               ]
             },
-            "GetCertificateTemplate":  {
-              "methods":  [
+            "GetCertificateTemplate": {
+              "methods": [
                 "GetCertificateTemplate"
               ]
             },
-            "ListCaPools":  {
-              "methods":  [
+            "ListCaPools": {
+              "methods": [
                 "ListCaPools"
               ]
             },
-            "ListCertificateAuthorities":  {
-              "methods":  [
+            "ListCertificateAuthorities": {
+              "methods": [
                 "ListCertificateAuthorities"
               ]
             },
-            "ListCertificateRevocationLists":  {
-              "methods":  [
+            "ListCertificateRevocationLists": {
+              "methods": [
                 "ListCertificateRevocationLists"
               ]
             },
-            "ListCertificateTemplates":  {
-              "methods":  [
+            "ListCertificateTemplates": {
+              "methods": [
                 "ListCertificateTemplates"
               ]
             },
-            "ListCertificates":  {
-              "methods":  [
+            "ListCertificates": {
+              "methods": [
                 "ListCertificates"
               ]
             },
-            "RevokeCertificate":  {
-              "methods":  [
+            "RevokeCertificate": {
+              "methods": [
                 "RevokeCertificate"
               ]
             },
-            "UndeleteCertificateAuthority":  {
-              "methods":  [
+            "UndeleteCertificateAuthority": {
+              "methods": [
                 "UndeleteCertificateAuthority"
               ]
             },
-            "UpdateCaPool":  {
-              "methods":  [
+            "UpdateCaPool": {
+              "methods": [
                 "UpdateCaPool"
               ]
             },
-            "UpdateCertificate":  {
-              "methods":  [
+            "UpdateCertificate": {
+              "methods": [
                 "UpdateCertificate"
               ]
             },
-            "UpdateCertificateAuthority":  {
-              "methods":  [
+            "UpdateCertificateAuthority": {
+              "methods": [
                 "UpdateCertificateAuthority"
               ]
             },
-            "UpdateCertificateRevocationList":  {
-              "methods":  [
+            "UpdateCertificateRevocationList": {
+              "methods": [
                 "UpdateCertificateRevocationList"
               ]
             },
-            "UpdateCertificateTemplate":  {
-              "methods":  [
+            "UpdateCertificateTemplate": {
+              "methods": [
                 "UpdateCertificateTemplate"
               ]
             }

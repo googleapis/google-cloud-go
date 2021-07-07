@@ -1,67 +1,67 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.tpu.v1",
-  "libraryPackage":  "cloud.google.com/go/tpu/apiv1",
-  "services":  {
-    "Tpu":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "CreateNode":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.tpu.v1",
+  "libraryPackage": "cloud.google.com/go/tpu/apiv1",
+  "services": {
+    "Tpu": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateNode": {
+              "methods": [
                 "CreateNode"
               ]
             },
-            "DeleteNode":  {
-              "methods":  [
+            "DeleteNode": {
+              "methods": [
                 "DeleteNode"
               ]
             },
-            "GetAcceleratorType":  {
-              "methods":  [
+            "GetAcceleratorType": {
+              "methods": [
                 "GetAcceleratorType"
               ]
             },
-            "GetNode":  {
-              "methods":  [
+            "GetNode": {
+              "methods": [
                 "GetNode"
               ]
             },
-            "GetTensorFlowVersion":  {
-              "methods":  [
+            "GetTensorFlowVersion": {
+              "methods": [
                 "GetTensorFlowVersion"
               ]
             },
-            "ListAcceleratorTypes":  {
-              "methods":  [
+            "ListAcceleratorTypes": {
+              "methods": [
                 "ListAcceleratorTypes"
               ]
             },
-            "ListNodes":  {
-              "methods":  [
+            "ListNodes": {
+              "methods": [
                 "ListNodes"
               ]
             },
-            "ListTensorFlowVersions":  {
-              "methods":  [
+            "ListTensorFlowVersions": {
+              "methods": [
                 "ListTensorFlowVersions"
               ]
             },
-            "ReimageNode":  {
-              "methods":  [
+            "ReimageNode": {
+              "methods": [
                 "ReimageNode"
               ]
             },
-            "StartNode":  {
-              "methods":  [
+            "StartNode": {
+              "methods": [
                 "StartNode"
               ]
             },
-            "StopNode":  {
-              "methods":  [
+            "StopNode": {
+              "methods": [
                 "StopNode"
               ]
             }

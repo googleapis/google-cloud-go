@@ -1,57 +1,57 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.redis.v1beta1",
-  "libraryPackage":  "cloud.google.com/go/redis/apiv1beta1",
-  "services":  {
-    "CloudRedis":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "CloudRedisClient",
-          "rpcs":  {
-            "CreateInstance":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.redis.v1beta1",
+  "libraryPackage": "cloud.google.com/go/redis/apiv1beta1",
+  "services": {
+    "CloudRedis": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudRedisClient",
+          "rpcs": {
+            "CreateInstance": {
+              "methods": [
                 "CreateInstance"
               ]
             },
-            "DeleteInstance":  {
-              "methods":  [
+            "DeleteInstance": {
+              "methods": [
                 "DeleteInstance"
               ]
             },
-            "ExportInstance":  {
-              "methods":  [
+            "ExportInstance": {
+              "methods": [
                 "ExportInstance"
               ]
             },
-            "FailoverInstance":  {
-              "methods":  [
+            "FailoverInstance": {
+              "methods": [
                 "FailoverInstance"
               ]
             },
-            "GetInstance":  {
-              "methods":  [
+            "GetInstance": {
+              "methods": [
                 "GetInstance"
               ]
             },
-            "ImportInstance":  {
-              "methods":  [
+            "ImportInstance": {
+              "methods": [
                 "ImportInstance"
               ]
             },
-            "ListInstances":  {
-              "methods":  [
+            "ListInstances": {
+              "methods": [
                 "ListInstances"
               ]
             },
-            "UpdateInstance":  {
-              "methods":  [
+            "UpdateInstance": {
+              "methods": [
                 "UpdateInstance"
               ]
             },
-            "UpgradeInstance":  {
-              "methods":  [
+            "UpgradeInstance": {
+              "methods": [
                 "UpgradeInstance"
               ]
             }
