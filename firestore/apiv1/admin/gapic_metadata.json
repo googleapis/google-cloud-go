@@ -1,57 +1,57 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.firestore.admin.v1",
-  "libraryPackage":  "cloud.google.com/go/firestore/apiv1/admin",
-  "services":  {
-    "FirestoreAdmin":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "FirestoreAdminClient",
-          "rpcs":  {
-            "CreateIndex":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.firestore.admin.v1",
+  "libraryPackage": "cloud.google.com/go/firestore/apiv1/admin",
+  "services": {
+    "FirestoreAdmin": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FirestoreAdminClient",
+          "rpcs": {
+            "CreateIndex": {
+              "methods": [
                 "CreateIndex"
               ]
             },
-            "DeleteIndex":  {
-              "methods":  [
+            "DeleteIndex": {
+              "methods": [
                 "DeleteIndex"
               ]
             },
-            "ExportDocuments":  {
-              "methods":  [
+            "ExportDocuments": {
+              "methods": [
                 "ExportDocuments"
               ]
             },
-            "GetField":  {
-              "methods":  [
+            "GetField": {
+              "methods": [
                 "GetField"
               ]
             },
-            "GetIndex":  {
-              "methods":  [
+            "GetIndex": {
+              "methods": [
                 "GetIndex"
               ]
             },
-            "ImportDocuments":  {
-              "methods":  [
+            "ImportDocuments": {
+              "methods": [
                 "ImportDocuments"
               ]
             },
-            "ListFields":  {
-              "methods":  [
+            "ListFields": {
+              "methods": [
                 "ListFields"
               ]
             },
-            "ListIndexes":  {
-              "methods":  [
+            "ListIndexes": {
+              "methods": [
                 "ListIndexes"
               ]
             },
-            "UpdateField":  {
-              "methods":  [
+            "UpdateField": {
+              "methods": [
                 "UpdateField"
               ]
             }

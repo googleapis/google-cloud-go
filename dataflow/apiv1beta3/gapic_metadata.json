@@ -1,17 +1,17 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.dataflow.v1beta3",
-  "libraryPackage":  "cloud.google.com/go/dataflow/apiv1beta3",
-  "services":  {
-    "FlexTemplatesService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "FlexTemplatesClient",
-          "rpcs":  {
-            "LaunchFlexTemplate":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.dataflow.v1beta3",
+  "libraryPackage": "cloud.google.com/go/dataflow/apiv1beta3",
+  "services": {
+    "FlexTemplatesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FlexTemplatesClient",
+          "rpcs": {
+            "LaunchFlexTemplate": {
+              "methods": [
                 "LaunchFlexTemplate"
               ]
             }
@@ -19,43 +19,43 @@
         }
       }
     },
-    "JobsV1Beta3":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "JobsV1Beta3Client",
-          "rpcs":  {
-            "AggregatedListJobs":  {
-              "methods":  [
+    "JobsV1Beta3": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "JobsV1Beta3Client",
+          "rpcs": {
+            "AggregatedListJobs": {
+              "methods": [
                 "AggregatedListJobs"
               ]
             },
-            "CheckActiveJobs":  {
-              "methods":  [
+            "CheckActiveJobs": {
+              "methods": [
                 "CheckActiveJobs"
               ]
             },
-            "CreateJob":  {
-              "methods":  [
+            "CreateJob": {
+              "methods": [
                 "CreateJob"
               ]
             },
-            "GetJob":  {
-              "methods":  [
+            "GetJob": {
+              "methods": [
                 "GetJob"
               ]
             },
-            "ListJobs":  {
-              "methods":  [
+            "ListJobs": {
+              "methods": [
                 "ListJobs"
               ]
             },
-            "SnapshotJob":  {
-              "methods":  [
+            "SnapshotJob": {
+              "methods": [
                 "SnapshotJob"
               ]
             },
-            "UpdateJob":  {
-              "methods":  [
+            "UpdateJob": {
+              "methods": [
                 "UpdateJob"
               ]
             }
@@ -63,13 +63,13 @@
         }
       }
     },
-    "MessagesV1Beta3":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "MessagesV1Beta3Client",
-          "rpcs":  {
-            "ListJobMessages":  {
-              "methods":  [
+    "MessagesV1Beta3": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MessagesV1Beta3Client",
+          "rpcs": {
+            "ListJobMessages": {
+              "methods": [
                 "ListJobMessages"
               ]
             }
@@ -77,23 +77,23 @@
         }
       }
     },
-    "MetricsV1Beta3":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "MetricsV1Beta3Client",
-          "rpcs":  {
-            "GetJobExecutionDetails":  {
-              "methods":  [
+    "MetricsV1Beta3": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "MetricsV1Beta3Client",
+          "rpcs": {
+            "GetJobExecutionDetails": {
+              "methods": [
                 "GetJobExecutionDetails"
               ]
             },
-            "GetJobMetrics":  {
-              "methods":  [
+            "GetJobMetrics": {
+              "methods": [
                 "GetJobMetrics"
               ]
             },
-            "GetStageExecutionDetails":  {
-              "methods":  [
+            "GetStageExecutionDetails": {
+              "methods": [
                 "GetStageExecutionDetails"
               ]
             }
@@ -101,23 +101,23 @@
         }
       }
     },
-    "SnapshotsV1Beta3":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "SnapshotsV1Beta3Client",
-          "rpcs":  {
-            "DeleteSnapshot":  {
-              "methods":  [
+    "SnapshotsV1Beta3": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SnapshotsV1Beta3Client",
+          "rpcs": {
+            "DeleteSnapshot": {
+              "methods": [
                 "DeleteSnapshot"
               ]
             },
-            "GetSnapshot":  {
-              "methods":  [
+            "GetSnapshot": {
+              "methods": [
                 "GetSnapshot"
               ]
             },
-            "ListSnapshots":  {
-              "methods":  [
+            "ListSnapshots": {
+              "methods": [
                 "ListSnapshots"
               ]
             }
@@ -125,23 +125,23 @@
         }
       }
     },
-    "TemplatesService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "TemplatesClient",
-          "rpcs":  {
-            "CreateJobFromTemplate":  {
-              "methods":  [
+    "TemplatesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TemplatesClient",
+          "rpcs": {
+            "CreateJobFromTemplate": {
+              "methods": [
                 "CreateJobFromTemplate"
               ]
             },
-            "GetTemplate":  {
-              "methods":  [
+            "GetTemplate": {
+              "methods": [
                 "GetTemplate"
               ]
             },
-            "LaunchTemplate":  {
-              "methods":  [
+            "LaunchTemplate": {
+              "methods": [
                 "LaunchTemplate"
               ]
             }
