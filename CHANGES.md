@@ -1,5 +1,12 @@
 # Changes
 
+## [0.86.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.85.0...v0.86.0) (2021-07-01)
+
+
+### Features
+
+* **bigquery managedwriter:** schema conversion support ([#4357](https://www.github.com/googleapis/google-cloud-go/issues/4357)) ([f2b20f4](https://www.github.com/googleapis/google-cloud-go/commit/f2b20f493e2ed5a883ce42fa65695c03c574feb5))
+
 ## [0.85.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.84.0...v0.85.0) (2021-06-30)
 
 
