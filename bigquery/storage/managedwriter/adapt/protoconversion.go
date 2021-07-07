@@ -144,7 +144,7 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 				}
 				fields = append(fields, fdp)
 			} else {
-				// Wrap the current struct's fields in a TableSchema outer message, and then build a the submessage.
+				// Wrap the current struct's fields in a TableSchema outer message, and then build the submessage.
 				ts := &storagepb.TableSchema{
 					Fields: f.GetFields(),
 				}
@@ -153,7 +153,7 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string, de
 					return nil, fmt.Errorf("couldn't compile (%s): %v", currentScope, err)
 				}
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
-				// as inserting it into the depMap cache for reuse elsewhere.s
+				// as inserting it into the depMap cache for possible reuse elsewhere.
 				deps = append(deps, desc.ParentFile())
 				saveFileDescriptorToDependencyMap(dependencyMap, ts, desc)
 

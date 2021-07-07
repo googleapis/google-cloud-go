@@ -15,6 +15,7 @@
 package adapt
 
 import (
+	"bytes"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -167,59 +168,110 @@ func TestSchemaToProtoConversion(t *testing.T) {
 	}
 }
 
-func TestProtoManipulation(t *testing.T) {
-	in := &storagepb.TableSchema{
+func TestProtoJSONSerialization(t *testing.T) {
+
+	sourceSchema := &storagepb.TableSchema{
 		Fields: []*storagepb.TableFieldSchema{
-			{Name: "foo", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
-			{Name: "bar", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_REQUIRED},
-			{Name: "baz", Type: storagepb.TableFieldSchema_DOUBLE, Mode: storagepb.TableFieldSchema_REPEATED},
-		}}
-
-	rootName := "root"
-	d, err := StorageSchemaToDescriptor(in, rootName, nil)
-	if err != nil {
-		t.Fatalf("StorageSchemaToFileDescriptorSet: %v", err)
+			{Name: "record_id", Type: storagepb.TableFieldSchema_INT64, Mode: storagepb.TableFieldSchema_NULLABLE},
+			{
+				Name: "details",
+				Type: storagepb.TableFieldSchema_STRUCT,
+				Mode: storagepb.TableFieldSchema_REPEATED,
+				Fields: []*storagepb.TableFieldSchema{
+					{Name: "key", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_REQUIRED},
+					{Name: "value", Type: storagepb.TableFieldSchema_STRING, Mode: storagepb.TableFieldSchema_NULLABLE},
+				},
+			},
+		},
 	}
 
-	md, ok := d.(protoreflect.MessageDescriptor)
+	descriptor, err := StorageSchemaToDescriptor(sourceSchema, "root", nil)
+	if err != nil {
+		t.Fatalf("failed to construct descriptor")
+	}
+
+	sampleRecord := []byte(`{"record_id":"12345", "details":[{"key":"name", "value":"jimmy"}, {"key":"title", "value":"clown"}]}`)
+
+	messageDescriptor, ok := descriptor.(protoreflect.MessageDescriptor)
 	if !ok {
-		t.Fatalf("descriptor not messagedescriptor, was %T", d)
+		t.Fatalf("StorageSchemaToDescriptor didn't yield a valid message descriptor, got %T", descriptor)
 	}
 
-	// build a dynamic message
-	m := dynamicpb.NewMessage(md)
-	fd := md.Fields().ByName(protoreflect.Name("foo"))
-	if fd == nil {
-		t.Fatalf("couldn't find field foo")
+	// First, ensure we got the expected descriptors.  Check both outer and inner messages.
+	gotOuterDP := protodesc.ToDescriptorProto(messageDescriptor)
+
+	innerField := messageDescriptor.Fields().ByName("details")
+	if innerField == nil {
+		t.Fatalf("couldn't get inner descriptor for details")
 	}
-	m.Set(fd, protoreflect.ValueOfString("hello"))
+	gotInnerDP := protodesc.ToDescriptorProto(innerField.Message())
 
-	fd = md.Fields().ByName(protoreflect.Name("bar"))
-	if fd == nil {
-		t.Fatalf("couldn't find field bar")
+	wantOuterDP := &descriptorpb.DescriptorProto{
+		Name: proto.String("root"),
+		Field: []*descriptorpb.FieldDescriptorProto{
+			{
+				Name:     proto.String("record_id"),
+				Number:   proto.Int32(1),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(".google.protobuf.StringValue"),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			},
+			{
+				Name:     proto.String("details"),
+				Number:   proto.Int32(2),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(".root__details"),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum(),
+			},
+		},
 	}
-	m.Set(fd, protoreflect.ValueOfInt64(123))
 
-	fd = md.Fields().ByName(protoreflect.Name("baz"))
-	if fd == nil {
-		t.Fatalf("couldn't find field baz")
+	wantInnerDP := &descriptorpb.DescriptorProto{
+		Name: proto.String("root__details"),
+		Field: []*descriptorpb.FieldDescriptorProto{
+			{
+				Name:   proto.String("key"),
+				Number: proto.Int32(1),
+				Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			},
+			{
+				Name:     proto.String("value"),
+				Number:   proto.Int32(2),
+				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
+				TypeName: proto.String(".google.protobuf.StringValue"),
+				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+			},
+		},
 	}
 
-	list := m.Mutable(fd).List()
-	list.Append(protoreflect.ValueOfFloat64(1.2))
-	list.Append(protoreflect.ValueOfFloat64(2.4))
+	if outerDiff := cmp.Diff(gotOuterDP, wantOuterDP, protocmp.Transform()); outerDiff != "" {
+		t.Fatalf("DescriptorProto for outer message differs.\n-got, +want:\n%s", outerDiff)
+	}
+	if innerDiff := cmp.Diff(gotInnerDP, wantInnerDP, protocmp.Transform()); innerDiff != "" {
+		t.Fatalf("DescriptorProto for inner message differs.\n-got, +want:\n%s", innerDiff)
+	}
 
-	// TODO: why is binary serialization non-deterministic?
-	b, err := protojson.Marshal(m)
+	message := dynamicpb.NewMessage(messageDescriptor)
+
+	// Attempt to serialize json record into proto message.
+	err = protojson.Unmarshal(sampleRecord, message)
 	if err != nil {
-		t.Fatalf("couldn't marshal using protojson: %v", err)
+		t.Fatalf("failed to Unmarshal json message: %v", err)
 	}
 
-	got := string(b)
-	want := `{"foo":"hello","bar":"123","baz":[1.2,2.4]}`
+	// Serialize message back to json bytes.  We must use options for idempotency, otherwise
+	// we'll serialize using the Go name rather than the proto name (recordId vs record_id).
+	options := protojson.MarshalOptions{
+		UseProtoNames: true,
+	}
+	gotBytes, err := options.Marshal(message)
+	if err != nil {
+		t.Fatalf("failed to marshal message: %v", err)
+	}
 
-	if got != want {
-		t.Fatalf("json serialization differs:  got %s want %s", got, want)
+	if !bytes.Equal(gotBytes, sampleRecord) {
+		t.Fatalf("mismatched json: got\n%q\nwant\n%q", gotBytes, sampleRecord)
 	}
 
 }
