@@ -1,182 +1,182 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.channel.v1",
-  "libraryPackage":  "cloud.google.com/go/channel/apiv1",
-  "services":  {
-    "CloudChannelService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "CloudChannelClient",
-          "rpcs":  {
-            "ActivateEntitlement":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.channel.v1",
+  "libraryPackage": "cloud.google.com/go/channel/apiv1",
+  "services": {
+    "CloudChannelService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CloudChannelClient",
+          "rpcs": {
+            "ActivateEntitlement": {
+              "methods": [
                 "ActivateEntitlement"
               ]
             },
-            "CancelEntitlement":  {
-              "methods":  [
+            "CancelEntitlement": {
+              "methods": [
                 "CancelEntitlement"
               ]
             },
-            "ChangeOffer":  {
-              "methods":  [
+            "ChangeOffer": {
+              "methods": [
                 "ChangeOffer"
               ]
             },
-            "ChangeParameters":  {
-              "methods":  [
+            "ChangeParameters": {
+              "methods": [
                 "ChangeParameters"
               ]
             },
-            "ChangeRenewalSettings":  {
-              "methods":  [
+            "ChangeRenewalSettings": {
+              "methods": [
                 "ChangeRenewalSettings"
               ]
             },
-            "CheckCloudIdentityAccountsExist":  {
-              "methods":  [
+            "CheckCloudIdentityAccountsExist": {
+              "methods": [
                 "CheckCloudIdentityAccountsExist"
               ]
             },
-            "CreateChannelPartnerLink":  {
-              "methods":  [
+            "CreateChannelPartnerLink": {
+              "methods": [
                 "CreateChannelPartnerLink"
               ]
             },
-            "CreateCustomer":  {
-              "methods":  [
+            "CreateCustomer": {
+              "methods": [
                 "CreateCustomer"
               ]
             },
-            "CreateEntitlement":  {
-              "methods":  [
+            "CreateEntitlement": {
+              "methods": [
                 "CreateEntitlement"
               ]
             },
-            "DeleteCustomer":  {
-              "methods":  [
+            "DeleteCustomer": {
+              "methods": [
                 "DeleteCustomer"
               ]
             },
-            "GetChannelPartnerLink":  {
-              "methods":  [
+            "GetChannelPartnerLink": {
+              "methods": [
                 "GetChannelPartnerLink"
               ]
             },
-            "GetCustomer":  {
-              "methods":  [
+            "GetCustomer": {
+              "methods": [
                 "GetCustomer"
               ]
             },
-            "GetEntitlement":  {
-              "methods":  [
+            "GetEntitlement": {
+              "methods": [
                 "GetEntitlement"
               ]
             },
-            "ListChannelPartnerLinks":  {
-              "methods":  [
+            "ListChannelPartnerLinks": {
+              "methods": [
                 "ListChannelPartnerLinks"
               ]
             },
-            "ListCustomers":  {
-              "methods":  [
+            "ListCustomers": {
+              "methods": [
                 "ListCustomers"
               ]
             },
-            "ListEntitlements":  {
-              "methods":  [
+            "ListEntitlements": {
+              "methods": [
                 "ListEntitlements"
               ]
             },
-            "ListOffers":  {
-              "methods":  [
+            "ListOffers": {
+              "methods": [
                 "ListOffers"
               ]
             },
-            "ListProducts":  {
-              "methods":  [
+            "ListProducts": {
+              "methods": [
                 "ListProducts"
               ]
             },
-            "ListPurchasableOffers":  {
-              "methods":  [
+            "ListPurchasableOffers": {
+              "methods": [
                 "ListPurchasableOffers"
               ]
             },
-            "ListPurchasableSkus":  {
-              "methods":  [
+            "ListPurchasableSkus": {
+              "methods": [
                 "ListPurchasableSkus"
               ]
             },
-            "ListSkus":  {
-              "methods":  [
+            "ListSkus": {
+              "methods": [
                 "ListSkus"
               ]
             },
-            "ListSubscribers":  {
-              "methods":  [
+            "ListSubscribers": {
+              "methods": [
                 "ListSubscribers"
               ]
             },
-            "ListTransferableOffers":  {
-              "methods":  [
+            "ListTransferableOffers": {
+              "methods": [
                 "ListTransferableOffers"
               ]
             },
-            "ListTransferableSkus":  {
-              "methods":  [
+            "ListTransferableSkus": {
+              "methods": [
                 "ListTransferableSkus"
               ]
             },
-            "LookupOffer":  {
-              "methods":  [
+            "LookupOffer": {
+              "methods": [
                 "LookupOffer"
               ]
             },
-            "ProvisionCloudIdentity":  {
-              "methods":  [
+            "ProvisionCloudIdentity": {
+              "methods": [
                 "ProvisionCloudIdentity"
               ]
             },
-            "RegisterSubscriber":  {
-              "methods":  [
+            "RegisterSubscriber": {
+              "methods": [
                 "RegisterSubscriber"
               ]
             },
-            "StartPaidService":  {
-              "methods":  [
+            "StartPaidService": {
+              "methods": [
                 "StartPaidService"
               ]
             },
-            "SuspendEntitlement":  {
-              "methods":  [
+            "SuspendEntitlement": {
+              "methods": [
                 "SuspendEntitlement"
               ]
             },
-            "TransferEntitlements":  {
-              "methods":  [
+            "TransferEntitlements": {
+              "methods": [
                 "TransferEntitlements"
               ]
             },
-            "TransferEntitlementsToGoogle":  {
-              "methods":  [
+            "TransferEntitlementsToGoogle": {
+              "methods": [
                 "TransferEntitlementsToGoogle"
               ]
             },
-            "UnregisterSubscriber":  {
-              "methods":  [
+            "UnregisterSubscriber": {
+              "methods": [
                 "UnregisterSubscriber"
               ]
             },
-            "UpdateChannelPartnerLink":  {
-              "methods":  [
+            "UpdateChannelPartnerLink": {
+              "methods": [
                 "UpdateChannelPartnerLink"
               ]
             },
-            "UpdateCustomer":  {
-              "methods":  [
+            "UpdateCustomer": {
+              "methods": [
                 "UpdateCustomer"
               ]
             }

@@ -183,9 +183,11 @@ func isStreamResetSignal(err error) bool {
 func defaultClientOptions(region string) []option.ClientOption {
 	return []option.ClientOption{
 		internaloption.WithDefaultEndpoint(region + pubsubLiteDefaultEndpoint),
-		// Keep inactive connections alive.
+		// Detect if transport is still alive if there is inactivity.
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{
-			Time: 5 * time.Minute,
+			Time:                1 * time.Minute,
+			Timeout:             1 * time.Minute,
+			PermitWithoutStream: true,
 		})),
 	}
 }
