@@ -189,7 +189,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 		t.Fatalf("failed to construct descriptor")
 	}
 
-	sampleRecord := []byte(`{"record_id":"12345", "details":[{"key":"name", "value":"jimmy"}, {"key":"title", "value":"clown"}]}`)
+	sampleRecord := []byte(`{"record_id":"12345","details":[{"key":"name","value":"jimmy"},{"key":"title","value":"clown"}]}`)
 
 	messageDescriptor, ok := descriptor.(protoreflect.MessageDescriptor)
 	if !ok {
@@ -212,7 +212,7 @@ func TestProtoJSONSerialization(t *testing.T) {
 				Name:     proto.String("record_id"),
 				Number:   proto.Int32(1),
 				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-				TypeName: proto.String(".google.protobuf.StringValue"),
+				TypeName: proto.String(".google.protobuf.Int64Value"),
 				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			},
 			{

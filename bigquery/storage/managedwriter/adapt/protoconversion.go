@@ -63,7 +63,7 @@ var bqTypeToWrapperMap = map[storagepb.TableFieldSchema_Type]string{
 	storagepb.TableFieldSchema_DATETIME:   ".google.protobuf.Int64Value",
 	storagepb.TableFieldSchema_DOUBLE:     ".google.protobuf.DoubleValue",
 	storagepb.TableFieldSchema_GEOGRAPHY:  ".google.protobuf.StringValue",
-	storagepb.TableFieldSchema_INT64:      ".google.protobuf.StringValue",
+	storagepb.TableFieldSchema_INT64:      ".google.protobuf.Int64Value",
 	storagepb.TableFieldSchema_NUMERIC:    ".google.protobuf.BytesValue",
 	storagepb.TableFieldSchema_STRING:     ".google.protobuf.StringValue",
 	storagepb.TableFieldSchema_TIME:       ".google.protobuf.Int64Value",
