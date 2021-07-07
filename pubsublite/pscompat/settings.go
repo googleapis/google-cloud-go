@@ -65,7 +65,8 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
+	// DefaultPublishSettings.Timeout. Otherwise must be > 0. It is not
+	// recommended to set this below 2 minutes.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -184,7 +185,8 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
+	// DefaultReceiveSettings.Timeout. Otherwise must be > 0. It is not
+	// recommended to set this below 2 minutes.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
