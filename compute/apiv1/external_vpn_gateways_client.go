@@ -156,8 +156,8 @@ func NewExternalVpnGatewaysRESTClient(ctx context.Context, opts ...option.Client
 
 func defaultExternalVpnGatewaysRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *externalVpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified externalVpnGateway.
 func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteExternalVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways/%v", req.GetProject(), req.GetExternalVpnGateway())
 
@@ -205,7 +199,7 @@ func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *externalVpnGatewaysRESTClient) Delete(ctx context.Context, req *compute
 
 // Get returns the specified externalVpnGateway. Get a list of available externalVpnGateways by making a list() request.
 func (c *externalVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetExternalVpnGatewayRequest, opts ...gax.CallOption) (*computepb.ExternalVpnGateway, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways/%v", req.GetProject(), req.GetExternalVpnGateway())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -333,12 +321,6 @@ func (c *externalVpnGatewaysRESTClient) Insert(ctx context.Context, req *compute
 
 // List retrieves the list of ExternalVpnGateway available to the specified project.
 func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListExternalVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.ExternalVpnGatewayList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/externalVpnGateways", req.GetProject())
 
@@ -361,7 +343,7 @@ func (c *externalVpnGatewaysRESTClient) List(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

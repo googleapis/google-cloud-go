@@ -163,8 +163,8 @@ func NewRegionUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption
 
 func defaultRegionUrlMapsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *regionUrlMapsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified UrlMap resource.
 func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
@@ -212,7 +206,7 @@ func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -246,16 +240,10 @@ func (c *regionUrlMapsRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 // Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
 func (c *regionUrlMapsRESTClient) Get(ctx context.Context, req *computepb.GetRegionUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMap, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -340,12 +328,6 @@ func (c *regionUrlMapsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 
 // List retrieves the list of UrlMap resources available to the specified project in the specified region.
 func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListRegionUrlMapsRequest, opts ...gax.CallOption) (*computepb.UrlMapList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps", req.GetProject(), req.GetRegion())
 
@@ -368,7 +350,7 @@ func (c *regionUrlMapsRESTClient) List(ctx context.Context, req *computepb.ListR
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
