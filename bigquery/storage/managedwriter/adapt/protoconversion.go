@@ -87,7 +87,6 @@ func (dm *dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descr
 		return nil
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
-	// TODO: should we
 	if desc, ok := (*dm)[encoded]; ok {
 		return desc
 	}
