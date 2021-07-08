@@ -142,8 +142,8 @@ func NewRegionInstanceGroupsRESTClient(ctx context.Context, opts ...option.Clien
 
 func defaultRegionInstanceGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -175,16 +175,10 @@ func (c *regionInstanceGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the specified instance group resource.
 func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetRegionInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups/%v", req.GetProject(), req.GetRegion(), req.GetInstanceGroup())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -218,12 +212,6 @@ func (c *regionInstanceGroupsRESTClient) Get(ctx context.Context, req *computepb
 
 // List retrieves the list of instance group resources contained within the specified region.
 func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListRegionInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.RegionInstanceGroupList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/instanceGroups", req.GetProject(), req.GetRegion())
 
@@ -246,7 +234,7 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

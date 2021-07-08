@@ -205,8 +205,8 @@ func NewDisksRESTClient(ctx context.Context, opts ...option.ClientOption) (*Disk
 
 func defaultDisksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -289,12 +289,6 @@ func (c *disksRESTClient) AddResourcePolicies(ctx context.Context, req *computep
 
 // AggregatedList retrieves an aggregated list of persistent disks.
 func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDisksRequest, opts ...gax.CallOption) (*computepb.DiskAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/disks", req.GetProject())
 
@@ -320,7 +314,7 @@ func (c *disksRESTClient) AggregatedList(ctx context.Context, req *computepb.Agg
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -408,12 +402,6 @@ func (c *disksRESTClient) CreateSnapshot(ctx context.Context, req *computepb.Cre
 
 // Delete deletes the specified persistent disk. Deleting a disk removes its data permanently and is irreversible. However, deleting a disk does not delete any snapshots previously made from the disk. You must separately delete snapshots.
 func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk())
 
@@ -424,7 +412,7 @@ func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskR
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -458,16 +446,10 @@ func (c *disksRESTClient) Delete(ctx context.Context, req *computepb.DeleteDiskR
 
 // Get returns a specified persistent disk. Gets a list of available persistent disks by making a list() request.
 func (c *disksRESTClient) Get(ctx context.Context, req *computepb.GetDiskRequest, opts ...gax.CallOption) (*computepb.Disk, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v", req.GetProject(), req.GetZone(), req.GetDisk())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -501,12 +483,6 @@ func (c *disksRESTClient) Get(ctx context.Context, req *computepb.GetDiskRequest
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyDiskRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -517,7 +493,7 @@ func (c *disksRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIa
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -605,12 +581,6 @@ func (c *disksRESTClient) Insert(ctx context.Context, req *computepb.InsertDiskR
 
 // List retrieves a list of persistent disks contained within the specified zone.
 func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequest, opts ...gax.CallOption) (*computepb.DiskList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/disks", req.GetProject(), req.GetZone())
 
@@ -633,7 +603,7 @@ func (c *disksRESTClient) List(ctx context.Context, req *computepb.ListDisksRequ
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
