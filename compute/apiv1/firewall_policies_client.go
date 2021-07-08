@@ -273,7 +273,7 @@ func (c *firewallPoliciesRESTClient) Connection() *grpc.ClientConn {
 
 // AddAssociation inserts an association for the specified firewall policy.
 func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *computepb.AddAssociationFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyAssociationResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -327,7 +327,7 @@ func (c *firewallPoliciesRESTClient) AddAssociation(ctx context.Context, req *co
 
 // AddRule inserts a rule into a firewall policy.
 func (c *firewallPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -638,7 +638,7 @@ func (c *firewallPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 
 // Insert creates a new policy in the specified project using the data included in the request.
 func (c *firewallPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -842,7 +842,7 @@ func (c *firewallPoliciesRESTClient) Move(ctx context.Context, req *computepb.Mo
 
 // Patch patches the specified policy with the data included in the request.
 func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -893,7 +893,7 @@ func (c *firewallPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 
 // PatchRule patches a rule of the specified priority.
 func (c *firewallPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1041,7 +1041,7 @@ func (c *firewallPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalOrganizationSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1085,7 +1085,7 @@ func (c *firewallPoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *firewallPoliciesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsFirewallPolicyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

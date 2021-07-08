@@ -224,7 +224,7 @@ func (c *networksRESTClient) Connection() *grpc.ClientConn {
 
 // AddPeering adds a peering to the specified network.
 func (c *networksRESTClient) AddPeering(ctx context.Context, req *computepb.AddPeeringNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksAddPeeringRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -393,7 +393,7 @@ func (c *networksRESTClient) GetEffectiveFirewalls(ctx context.Context, req *com
 
 // Insert creates a network in the specified project using the data included in the request.
 func (c *networksRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -565,7 +565,7 @@ func (c *networksRESTClient) ListPeeringRoutes(ctx context.Context, req *compute
 
 // Patch patches the specified network with the data included in the request. Only the following fields can be modified: routingConfig.routingMode.
 func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -616,7 +616,7 @@ func (c *networksRESTClient) Patch(ctx context.Context, req *computepb.PatchNetw
 
 // RemovePeering removes a peering from the specified network.
 func (c *networksRESTClient) RemovePeering(ctx context.Context, req *computepb.RemovePeeringNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksRemovePeeringRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -711,7 +711,7 @@ func (c *networksRESTClient) SwitchToCustomMode(ctx context.Context, req *comput
 
 // UpdatePeering updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes
 func (c *networksRESTClient) UpdatePeering(ctx context.Context, req *computepb.UpdatePeeringNetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworksUpdatePeeringRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

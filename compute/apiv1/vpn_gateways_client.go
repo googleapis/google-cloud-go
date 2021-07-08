@@ -380,7 +380,7 @@ func (c *vpnGatewaysRESTClient) GetStatus(ctx context.Context, req *computepb.Ge
 
 // Insert creates a VPN gateway in the specified project and region using the data included in the request.
 func (c *vpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetVpnGatewayResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -487,7 +487,7 @@ func (c *vpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListVpn
 
 // SetLabels sets the labels on a VpnGateway. To learn more about labels, read the Labeling Resources documentation.
 func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -538,7 +538,7 @@ func (c *vpnGatewaysRESTClient) SetLabels(ctx context.Context, req *computepb.Se
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *vpnGatewaysRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsVpnGatewayRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

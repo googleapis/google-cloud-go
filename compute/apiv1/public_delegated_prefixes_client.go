@@ -329,7 +329,7 @@ func (c *publicDelegatedPrefixesRESTClient) Get(ctx context.Context, req *comput
 
 // Insert creates a PublicDelegatedPrefix in the specified project in the given region using the parameters that are included in the request.
 func (c *publicDelegatedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -436,7 +436,7 @@ func (c *publicDelegatedPrefixesRESTClient) List(ctx context.Context, req *compu
 
 // Patch patches the specified PublicDelegatedPrefix resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *publicDelegatedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicDelegatedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicDelegatedPrefixResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
