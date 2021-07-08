@@ -302,7 +302,7 @@ func (g *GapicGenerator) microgen(conf *microgenConfig) error {
 		args = append(args, "--go_gapic_opt", fmt.Sprintf("release-level=%s", conf.releaseLevel))
 	}
 	if conf.gRPCServiceConfigPath != "" {
-		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", filepath.Join(conf.inputDirectoryPath, conf.inputDirectoryPath, conf.gRPCServiceConfigPath)))
+		args = append(args, "--go_gapic_opt", fmt.Sprintf("grpc-service-config=%s", filepath.Join(conf.inputDirectoryPath, conf.gRPCServiceConfigPath)))
 	}
 	if !conf.disableMetadata {
 		args = append(args, "--go_gapic_opt", "metadata")
