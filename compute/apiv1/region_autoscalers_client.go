@@ -270,7 +270,7 @@ func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates an autoscaler in the specified project using the data included in the request.
 func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -377,7 +377,7 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 
 // Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -431,7 +431,7 @@ func (c *regionAutoscalersRESTClient) Patch(ctx context.Context, req *computepb.
 
 // Update updates an autoscaler in the specified project using the data included in the request.
 func (c *regionAutoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

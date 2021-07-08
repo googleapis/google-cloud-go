@@ -263,7 +263,7 @@ func (c *targetGrpcProxiesRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a TargetGrpcProxy in the specified project in the given scope using the parameters that are included in the request.
 func (c *targetGrpcProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetGrpcProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -370,7 +370,7 @@ func (c *targetGrpcProxiesRESTClient) List(ctx context.Context, req *computepb.L
 
 // Patch patches the specified TargetGrpcProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *targetGrpcProxiesRESTClient) Patch(ctx context.Context, req *computepb.PatchTargetGrpcProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetGrpcProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

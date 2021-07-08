@@ -321,7 +321,7 @@ func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *com
 
 // Insert creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
 func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceTemplateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -428,7 +428,7 @@ func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.L
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -472,7 +472,7 @@ func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *com
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *instanceTemplatesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
