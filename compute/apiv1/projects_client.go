@@ -282,7 +282,7 @@ func (c *projectsRESTClient) DisableXpnHost(ctx context.Context, req *computepb.
 
 // DisableXpnResource disable a service resource (also known as service project) associated with this host project.
 func (c *projectsRESTClient) DisableXpnResource(ctx context.Context, req *computepb.DisableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsDisableXpnResourceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -377,7 +377,7 @@ func (c *projectsRESTClient) EnableXpnHost(ctx context.Context, req *computepb.E
 
 // EnableXpnResource enable service resource (a.k.a service project) for a host project, so that subnets in the host project can be used by instances in the service project.
 func (c *projectsRESTClient) EnableXpnResource(ctx context.Context, req *computepb.EnableXpnResourceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsEnableXpnResourceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -558,7 +558,7 @@ func (c *projectsRESTClient) GetXpnResources(ctx context.Context, req *computepb
 
 // ListXpnHosts lists all shared VPC host projects visible to the user in an organization.
 func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.ListXpnHostsProjectsRequest, opts ...gax.CallOption) (*computepb.XpnHostList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsListXpnHostsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -621,7 +621,7 @@ func (c *projectsRESTClient) ListXpnHosts(ctx context.Context, req *computepb.Li
 
 // MoveDisk moves a persistent disk from one zone to another.
 func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDiskProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDiskMoveRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -672,7 +672,7 @@ func (c *projectsRESTClient) MoveDisk(ctx context.Context, req *computepb.MoveDi
 
 // MoveInstance moves an instance and its attached persistent disks from one zone to another.
 func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.MoveInstanceProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceMoveRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -723,7 +723,7 @@ func (c *projectsRESTClient) MoveInstance(ctx context.Context, req *computepb.Mo
 
 // SetCommonInstanceMetadata sets metadata common to all instances within the specified project using the data included in the request.
 func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req *computepb.SetCommonInstanceMetadataProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -774,7 +774,7 @@ func (c *projectsRESTClient) SetCommonInstanceMetadata(ctx context.Context, req 
 
 // SetDefaultNetworkTier sets the default network tier of the project. The default network tier is used when an address/forwardingRule/instance is created without specifying the network tier field.
 func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *computepb.SetDefaultNetworkTierProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetProjectsSetDefaultNetworkTierRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -825,7 +825,7 @@ func (c *projectsRESTClient) SetDefaultNetworkTier(ctx context.Context, req *com
 
 // SetUsageExportBucket enables the usage export feature and sets the usage export bucket where reports are stored. If you provide an empty request body using this method, the usage export feature will be disabled.
 func (c *projectsRESTClient) SetUsageExportBucket(ctx context.Context, req *computepb.SetUsageExportBucketProjectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUsageExportLocationResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

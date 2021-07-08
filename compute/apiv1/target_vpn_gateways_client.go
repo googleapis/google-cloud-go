@@ -322,7 +322,7 @@ func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a target VPN gateway in the specified project and region using the data included in the request.
 func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetVpnGatewayResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

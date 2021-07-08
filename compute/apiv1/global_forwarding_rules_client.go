@@ -277,7 +277,7 @@ func (c *globalForwardingRulesRESTClient) Get(ctx context.Context, req *computep
 
 // Insert creates a GlobalForwardingRule resource in the specified project using the data included in the request.
 func (c *globalForwardingRulesRESTClient) Insert(ctx context.Context, req *computepb.InsertGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -384,7 +384,7 @@ func (c *globalForwardingRulesRESTClient) List(ctx context.Context, req *compute
 
 // Patch updates the specified forwarding rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. Currently, you can only patch the network_tier field.
 func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *computepb.PatchGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetForwardingRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -435,7 +435,7 @@ func (c *globalForwardingRulesRESTClient) Patch(ctx context.Context, req *comput
 
 // SetLabels sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -479,7 +479,7 @@ func (c *globalForwardingRulesRESTClient) SetLabels(ctx context.Context, req *co
 
 // SetTarget changes target URL for the GlobalForwardingRule resource. The new target should be of the same type as the old target.
 func (c *globalForwardingRulesRESTClient) SetTarget(ctx context.Context, req *computepb.SetTargetGlobalForwardingRuleRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
