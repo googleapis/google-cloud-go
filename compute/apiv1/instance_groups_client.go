@@ -216,7 +216,7 @@ func (c *instanceGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
 func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsAddInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -409,7 +409,7 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 
 // Insert creates an instance group in the specified project using the parameters that are included in the request.
 func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -518,7 +518,7 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 
 // ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported.
 func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.InstanceGroupsListInstances, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsListInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -583,7 +583,7 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsRemoveInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -634,7 +634,7 @@ func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *com
 
 // SetNamedPorts sets the named ports for the specified instance group.
 func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsSetNamedPortsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

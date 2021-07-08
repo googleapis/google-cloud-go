@@ -394,7 +394,7 @@ func (c *reservationsRESTClient) GetIamPolicy(ctx context.Context, req *computep
 
 // Insert creates a new reservation. For more information, read Reserving zonal resources.
 func (c *reservationsRESTClient) Insert(ctx context.Context, req *computepb.InsertReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -501,7 +501,7 @@ func (c *reservationsRESTClient) List(ctx context.Context, req *computepb.ListRe
 
 // Resize resizes the reservation (applicable to standalone reservations only). For more information, read Modifying reservations.
 func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.ResizeReservationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetReservationsResizeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -552,7 +552,7 @@ func (c *reservationsRESTClient) Resize(ctx context.Context, req *computepb.Resi
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyReservationRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -596,7 +596,7 @@ func (c *reservationsRESTClient) SetIamPolicy(ctx context.Context, req *computep
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *reservationsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsReservationRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
