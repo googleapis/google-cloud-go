@@ -270,7 +270,7 @@ func (c *targetTcpProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // Insert creates a TargetTcpProxy resource in the specified project using the data included in the request.
 func (c *targetTcpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -377,7 +377,7 @@ func (c *targetTcpProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // SetBackendService changes the BackendService for TargetTcpProxy.
 func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxiesSetBackendServiceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -428,7 +428,7 @@ func (c *targetTcpProxiesRESTClient) SetBackendService(ctx context.Context, req 
 
 // SetProxyHeader changes the ProxyHeaderType for TargetTcpProxy.
 func (c *targetTcpProxiesRESTClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetTcpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetTcpProxiesSetProxyHeaderRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

@@ -256,7 +256,7 @@ func (c *regionNotificationEndpointsRESTClient) Get(ctx context.Context, req *co
 
 // Insert create a NotificationEndpoint in the specified project in the given region using the parameters that are included in the request.
 func (c *regionNotificationEndpointsRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionNotificationEndpointRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNotificationEndpointResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
