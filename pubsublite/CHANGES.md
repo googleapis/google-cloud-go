@@ -3,10 +3,6 @@
 ## [1.0.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsublite/v0.10.2...pubsublite/v1.0.0) (2021-07-08)
 
 
-### ⚠ BREAKING CHANGES
-
-* **pubsublite:** hide CreateSubscriptionOption.apply (#4344)
-
 ### Bug Fixes
 
 * **pubsublite:** hide CreateSubscriptionOption.apply ([#4344](https://www.github.com/googleapis/google-cloud-go/issues/4344)) ([f31fac6](https://www.github.com/googleapis/google-cloud-go/commit/f31fac6c2674a1bb9180a75ae7dbeda55721482d))
