@@ -322,7 +322,7 @@ func (c *addressesRESTClient) Get(ctx context.Context, req *computepb.GetAddress
 
 // Insert creates an address resource in the specified project by using the data included in the request.
 func (c *addressesRESTClient) Insert(ctx context.Context, req *computepb.InsertAddressRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAddressResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

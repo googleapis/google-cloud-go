@@ -270,7 +270,7 @@ func (c *sslPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSslPo
 
 // Insert returns the specified SSL policy resource. Gets a list of available SSL policies by making a list() request.
 func (c *sslPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -433,7 +433,7 @@ func (c *sslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context, req *
 
 // Patch patches the specified SSL policy with the data included in the request.
 func (c *sslPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSslPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
