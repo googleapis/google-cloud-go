@@ -228,7 +228,7 @@ func (c *backendServicesRESTClient) Connection() *grpc.ClientConn {
 
 // AddSignedUrlKey adds a key for validating requests with signed URLs for this backend service.
 func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -470,7 +470,7 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 //
 // { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
 func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -514,7 +514,7 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 
 // Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
 func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -621,7 +621,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -672,7 +672,7 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 
 // SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
 func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -723,7 +723,7 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 
 // Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
 func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
