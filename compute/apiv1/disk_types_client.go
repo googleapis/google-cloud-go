@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -135,8 +134,8 @@ func NewDiskTypesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultDiskTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -168,12 +167,6 @@ func (c *diskTypesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of disk types.
 func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListDiskTypesRequest, opts ...gax.CallOption) (*computepb.DiskTypeAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/diskTypes", req.GetProject())
 
@@ -199,7 +192,7 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -233,16 +226,10 @@ func (c *diskTypesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 // Get returns the specified disk type. Gets a list of available disk types by making a list() request.
 func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTypeRequest, opts ...gax.CallOption) (*computepb.DiskType, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/diskTypes/%v", req.GetProject(), req.GetZone(), req.GetDiskType())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -276,12 +263,6 @@ func (c *diskTypesRESTClient) Get(ctx context.Context, req *computepb.GetDiskTyp
 
 // List retrieves a list of disk types available to the specified project.
 func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskTypesRequest, opts ...gax.CallOption) (*computepb.DiskTypeList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/diskTypes", req.GetProject(), req.GetZone())
 
@@ -304,7 +285,7 @@ func (c *diskTypesRESTClient) List(ctx context.Context, req *computepb.ListDiskT
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

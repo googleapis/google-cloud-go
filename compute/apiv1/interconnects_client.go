@@ -156,8 +156,8 @@ func NewInterconnectsRESTClient(ctx context.Context, opts ...option.ClientOption
 
 func defaultInterconnectsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *interconnectsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified interconnect.
 func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInterconnectRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
@@ -205,7 +199,7 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *interconnectsRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 // Get returns the specified interconnect. Get a list of available interconnects by making a list() request.
 func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectRequest, opts ...gax.CallOption) (*computepb.Interconnect, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v", req.GetProject(), req.GetInterconnect())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,16 +270,10 @@ func (c *interconnectsRESTClient) Get(ctx context.Context, req *computepb.GetInt
 
 // GetDiagnostics returns the interconnectDiagnostics for the specified interconnect.
 func (c *interconnectsRESTClient) GetDiagnostics(ctx context.Context, req *computepb.GetDiagnosticsInterconnectRequest, opts ...gax.CallOption) (*computepb.InterconnectsGetDiagnosticsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects/%v/getDiagnostics", req.GetProject(), req.GetInterconnect())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -376,12 +358,6 @@ func (c *interconnectsRESTClient) Insert(ctx context.Context, req *computepb.Ins
 
 // List retrieves the list of interconnect available to the specified project.
 func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectsRequest, opts ...gax.CallOption) (*computepb.InterconnectList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnects", req.GetProject())
 
@@ -404,7 +380,7 @@ func (c *interconnectsRESTClient) List(ctx context.Context, req *computepb.ListI
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

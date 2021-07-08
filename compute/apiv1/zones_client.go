@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -128,8 +127,8 @@ func NewZonesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Zone
 
 func defaultZonesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -161,16 +160,10 @@ func (c *zonesRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the specified Zone resource. Gets a list of available zones by making a list() request.
 func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest, opts ...gax.CallOption) (*computepb.Zone, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v", req.GetProject(), req.GetZone())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -204,12 +197,6 @@ func (c *zonesRESTClient) Get(ctx context.Context, req *computepb.GetZoneRequest
 
 // List retrieves the list of Zone resources available to the specified project.
 func (c *zonesRESTClient) List(ctx context.Context, req *computepb.ListZonesRequest, opts ...gax.CallOption) (*computepb.ZoneList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones", req.GetProject())
 
@@ -232,7 +219,7 @@ func (c *zonesRESTClient) List(ctx context.Context, req *computepb.ListZonesRequ
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
