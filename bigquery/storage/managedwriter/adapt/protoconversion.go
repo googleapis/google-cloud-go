@@ -78,7 +78,7 @@ var wellKnownTypesWrapperName = "google/protobuf/wrappers.proto"
 // keys are based on the base64-encoded serialized tableschema value.
 type dependencyCache map[string]protoreflect.Descriptor
 
-func (dm *dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descriptor {
+func (dm dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descriptor {
 	if dm == nil {
 		return nil
 	}
@@ -87,13 +87,13 @@ func (dm *dependencyCache) get(schema *storagepb.TableSchema) protoreflect.Descr
 		return nil
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
-	if desc, ok := (*dm)[encoded]; ok {
+	if desc, ok := (dm)[encoded]; ok {
 		return desc
 	}
 	return nil
 }
 
-func (dm *dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.Descriptor) error {
+func (dm dependencyCache) add(schema *storagepb.TableSchema, descriptor protoreflect.Descriptor) error {
 	if dm == nil {
 		return fmt.Errorf("cache is nil")
 	}
@@ -102,18 +102,19 @@ func (dm *dependencyCache) add(schema *storagepb.TableSchema, descriptor protore
 		return fmt.Errorf("failed to serialize tableschema: %v", err)
 	}
 	encoded := base64.StdEncoding.EncodeToString(b)
-	(*dm)[encoded] = descriptor
+	(dm)[encoded] = descriptor
 	return nil
 }
 
 // StorageSchemaToDescriptor builds a protoreflect.Descriptor for a given table schema.
 func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string) (protoreflect.Descriptor, error) {
 	dc := make(dependencyCache)
-	return storageSchemaToDescriptorInternal(inSchema, scope, &dc)
+	// TODO: b/193064992 tracks support for wrapper types.  In the interim, disable wrapper usage.
+	return storageSchemaToDescriptorInternal(inSchema, scope, &dc, false)
 }
 
 // internal implementation of the conversion code.
-func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache) (protoreflect.Descriptor, error) {
+func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, allowWrapperTypes bool) (protoreflect.Descriptor, error) {
 	if inSchema == nil {
 		return nil, fmt.Errorf("no input schema provided")
 	}
@@ -144,7 +145,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 					deps = append(deps, foundDesc.ParentFile())
 				}
 				// construct field descriptor for the message
-				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()))
+				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), allowWrapperTypes)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't convert to FieldDescriptorProto (%s): %v", currentScope, err)
 				}
@@ -154,7 +155,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				ts := &storagepb.TableSchema{
 					Fields: f.GetFields(),
 				}
-				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache)
+				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, allowWrapperTypes)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't compile (%s): %v", currentScope, err)
 				}
@@ -165,14 +166,14 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				if err != nil {
 					return nil, fmt.Errorf("failed to add descriptor to cache: %v", err)
 				}
-				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope)
+				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, allowWrapperTypes)
 				if err != nil {
 					return nil, fmt.Errorf("couldn't compute field schema (%s): %v", currentScope, err)
 				}
 				fields = append(fields, fdp)
 			}
 		} else {
-			fd, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope)
+			fd, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, allowWrapperTypes)
 			if err != nil {
 				return nil, err
 			}
@@ -216,7 +217,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 	// Load the set into a registry, then interrogate it for the descriptor corresponding to the top level message.
 	files, err := protodesc.NewFiles(fds)
 	if err != nil {
-		return nil, fmt.Errorf("protodesc.NewFiles: %v", err)
+		return nil, err
 	}
 	return files.FindDescriptorByName(protoreflect.FullName(scope))
 }
@@ -227,7 +228,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 // well-known wrapper types.
 //
 // Messages are always nullable, and repeated fields are as well.
-func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string) (*descriptorpb.FieldDescriptorProto, error) {
+func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, idx int32, scope string, allowWrapperTypes bool) (*descriptorpb.FieldDescriptorProto, error) {
 	name := strings.ToLower(field.GetName())
 	if field.GetType() == storagepb.TableFieldSchema_STRUCT {
 		return &descriptorpb.FieldDescriptorProto{
@@ -240,7 +241,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 
 	// For (REQUIRED||REPEATED) fields, we use the expected scalar types, but the proto is
 	// still marked OPTIONAL (proto3 semantics).
-	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE {
+	if field.GetMode() != storagepb.TableFieldSchema_NULLABLE || !allowWrapperTypes {
 		return &descriptorpb.FieldDescriptorProto{
 			Name:   proto.String(name),
 			Number: proto.Int32(idx),
@@ -248,7 +249,7 @@ func tableFieldSchemaToFieldDescriptorProto(field *storagepb.TableFieldSchema, i
 			Label:  bqModeToFieldLabelMap[field.GetMode()].Enum(),
 		}, nil
 	}
-	// For NULLABLE, we use the wrapper types.
+	// For NULLABLE, optionally use wrapper types.
 	return &descriptorpb.FieldDescriptorProto{
 		Name:     proto.String(name),
 		Number:   proto.Int32(idx),

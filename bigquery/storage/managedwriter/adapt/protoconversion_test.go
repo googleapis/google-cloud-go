@@ -47,11 +47,10 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
-						Name:     proto.String("foo"),
-						Number:   proto.Int32(1),
-						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".google.protobuf.StringValue"),
-						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
+						Name:   proto.String("foo"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
 					{Name: proto.String("bar"), Number: proto.Int32(2), Type: descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum()},
 					{Name: proto.String("baz"), Number: proto.Int32(3), Type: descriptorpb.FieldDescriptorProto_TYPE_BYTES.Enum(), Label: descriptorpb.FieldDescriptorProto_LABEL_REPEATED.Enum()},
 				},
@@ -78,11 +77,10 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
-						Name:     proto.String("curdate"),
-						Number:   proto.Int32(1),
-						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".google.protobuf.Int32Value"),
-						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+						Name:   proto.String("curdate"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 					{
 						Name:     proto.String("rec"),
@@ -124,11 +122,10 @@ func TestSchemaToProtoConversion(t *testing.T) {
 				Name: proto.String("root"),
 				Field: []*descriptorpb.FieldDescriptorProto{
 					{
-						Name:     proto.String("curdate"),
-						Number:   proto.Int32(1),
-						Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-						TypeName: proto.String(".google.protobuf.Int32Value"),
-						Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+						Name:   proto.String("curdate"),
+						Number: proto.Int32(1),
+						Type:   descriptorpb.FieldDescriptorProto_TYPE_INT32.Enum(),
+						Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 					},
 					{
 						Name:     proto.String("rec1"),
@@ -209,11 +206,10 @@ func TestProtoJSONSerialization(t *testing.T) {
 		Name: proto.String("root"),
 		Field: []*descriptorpb.FieldDescriptorProto{
 			{
-				Name:     proto.String("record_id"),
-				Number:   proto.Int32(1),
-				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-				TypeName: proto.String(".google.protobuf.Int64Value"),
-				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+				Name:   proto.String("record_id"),
+				Number: proto.Int32(1),
+				Type:   descriptorpb.FieldDescriptorProto_TYPE_INT64.Enum(),
+				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			},
 			{
 				Name:     proto.String("details"),
@@ -235,11 +231,10 @@ func TestProtoJSONSerialization(t *testing.T) {
 				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			},
 			{
-				Name:     proto.String("value"),
-				Number:   proto.Int32(2),
-				Type:     descriptorpb.FieldDescriptorProto_TYPE_MESSAGE.Enum(),
-				TypeName: proto.String(".google.protobuf.StringValue"),
-				Label:    descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
+				Name:   proto.String("value"),
+				Number: proto.Int32(2),
+				Type:   descriptorpb.FieldDescriptorProto_TYPE_STRING.Enum(),
+				Label:  descriptorpb.FieldDescriptorProto_LABEL_OPTIONAL.Enum(),
 			},
 		},
 	}
