@@ -387,7 +387,7 @@ func (c *nodeTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *compute
 
 // Insert creates a NodeTemplate resource in the specified project using the data included in the request.
 func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeTemplateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -494,7 +494,7 @@ func (c *nodeTemplatesRESTClient) List(ctx context.Context, req *computepb.ListN
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *nodeTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -538,7 +538,7 @@ func (c *nodeTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *compute
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *nodeTemplatesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsNodeTemplateRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
