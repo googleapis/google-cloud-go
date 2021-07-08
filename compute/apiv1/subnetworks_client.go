@@ -334,7 +334,7 @@ func (c *subnetworksRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 // ExpandIpCidrRange expands the IP CIDR range of the subnetwork to a specified value.
 func (c *subnetworksRESTClient) ExpandIpCidrRange(ctx context.Context, req *computepb.ExpandIpCidrRangeSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksExpandIpCidrRangeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -466,7 +466,7 @@ func (c *subnetworksRESTClient) GetIamPolicy(ctx context.Context, req *computepb
 
 // Insert creates a subnetwork in the specified project using the data included in the request.
 func (c *subnetworksRESTClient) Insert(ctx context.Context, req *computepb.InsertSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -629,7 +629,7 @@ func (c *subnetworksRESTClient) ListUsable(ctx context.Context, req *computepb.L
 
 // Patch patches the specified subnetwork with the data included in the request. Only certain fields can be updated with a patch request as indicated in the field descriptions. You must specify the current fingerprint of the subnetwork resource being patched.
 func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworkResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -683,7 +683,7 @@ func (c *subnetworksRESTClient) Patch(ctx context.Context, req *computepb.PatchS
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySubnetworkRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -727,7 +727,7 @@ func (c *subnetworksRESTClient) SetIamPolicy(ctx context.Context, req *computepb
 
 // SetPrivateIpGoogleAccess set whether VMs in this subnet can access Google services without assigning external IP addresses through Private Google Access.
 func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, req *computepb.SetPrivateIpGoogleAccessSubnetworkRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSubnetworksSetPrivateIpGoogleAccessRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -778,7 +778,7 @@ func (c *subnetworksRESTClient) SetPrivateIpGoogleAccess(ctx context.Context, re
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *subnetworksRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsSubnetworkRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

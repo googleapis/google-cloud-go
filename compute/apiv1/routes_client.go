@@ -256,7 +256,7 @@ func (c *routesRESTClient) Get(ctx context.Context, req *computepb.GetRouteReque
 
 // Insert creates a Route resource in the specified project using the data included in the request.
 func (c *routesRESTClient) Insert(ctx context.Context, req *computepb.InsertRouteRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouteResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

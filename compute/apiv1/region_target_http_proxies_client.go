@@ -263,7 +263,7 @@ func (c *regionTargetHttpProxiesRESTClient) Get(ctx context.Context, req *comput
 
 // Insert creates a TargetHttpProxy resource in the specified project and region using the data included in the request.
 func (c *regionTargetHttpProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -370,7 +370,7 @@ func (c *regionTargetHttpProxiesRESTClient) List(ctx context.Context, req *compu
 
 // SetUrlMap changes the URL map for TargetHttpProxy.
 func (c *regionTargetHttpProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

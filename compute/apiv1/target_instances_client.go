@@ -322,7 +322,7 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 
 // Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
 func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetInstanceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
