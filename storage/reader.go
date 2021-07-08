@@ -122,7 +122,6 @@ func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		if err != nil {
 			return nil, err
 		}
-		fmt.Printf("Opened a new stream with %+v\n", req)
 		return res, nil
 	}
 
@@ -465,12 +464,10 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		}
 
 		content := msg.GetChecksummedData().GetContent()
-		fmt.Printf("Received %d bytes", len(content))
 		cp := copy(p[n:], content)
 		if cp != len(content) {
 			// wasn't able to copy all of the data in the message
 			// TODO: what do we do here, just toss out the data?
-			fmt.Println("Unable to copy all data received")
 		}
 		n += cp
 		r.seen += int64(cp)
