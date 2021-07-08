@@ -65,8 +65,7 @@ type PublishSettings struct {
 
 	// The maximum time that the client will attempt to open a publish stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultPublishSettings.Timeout. Otherwise must be > 0. It is not
-	// recommended to set this below 2 minutes.
+	// DefaultPublishSettings.Timeout. Otherwise must be > 0.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
@@ -74,6 +73,8 @@ type PublishSettings struct {
 	// details of the last error that occurred while trying to reconnect to
 	// backends. Note that if the timeout duration is long, ErrOverflow may occur
 	// first.
+	//
+	// It is not recommended to set Timeout below 2 minutes.
 	Timeout time.Duration
 
 	// The maximum number of bytes that the publisher will keep in memory before
@@ -185,14 +186,15 @@ type ReceiveSettings struct {
 
 	// The maximum time that the client will attempt to open a subscribe stream
 	// to the server. If Timeout is 0, it will be treated as
-	// DefaultReceiveSettings.Timeout. Otherwise must be > 0. It is not
-	// recommended to set this below 2 minutes.
+	// DefaultReceiveSettings.Timeout. Otherwise must be > 0.
 	//
 	// If your application has a low tolerance to backend unavailability, set
 	// Timeout to a lower duration to detect and handle. When the timeout is
 	// exceeded, the SubscriberClient will terminate with ErrBackendUnavailable
 	// and details of the last error that occurred while trying to reconnect to
 	// backends.
+	//
+	// It is not recommended to set Timeout below 2 minutes.
 	Timeout time.Duration
 
 	// The topic partition numbers (zero-indexed) to receive messages from.
