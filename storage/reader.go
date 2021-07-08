@@ -413,7 +413,11 @@ func (r *Reader) Close() error {
 
 func (r *Reader) Read(p []byte) (int, error) {
 	if r.reopenWithGRPC != nil {
-		return r.readWithGRPC(p)
+		n, err := r.readWithGRPC(p)
+		if r.remain != -1 {
+			r.remain -= int64(n)
+		}
+		return n, err
 	}
 
 	n, err := r.readWithRetry(p)
