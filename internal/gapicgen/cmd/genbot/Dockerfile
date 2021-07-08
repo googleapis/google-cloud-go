@@ -28,7 +28,7 @@ RUN GO111MODULE=on go get \
     golang.org/x/lint/golint@latest \
     golang.org/x/tools/cmd/goimports@latest \
     honnef.co/go/tools/cmd/staticcheck@latest \
-    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.21.5
+    github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic@v0.21.7
 ENV PATH="${PATH}:/root/go/bin"
 
 # Source: http://debuggable.com/posts/disable-strict-host-checking-for-git-clone:49896ff3-0ac0-4263-9703-1eae4834cda3

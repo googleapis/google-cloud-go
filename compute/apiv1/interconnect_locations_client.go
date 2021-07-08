@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -128,8 +127,8 @@ func NewInterconnectLocationsRESTClient(ctx context.Context, opts ...option.Clie
 
 func defaultInterconnectLocationsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -161,16 +160,10 @@ func (c *interconnectLocationsRESTClient) Connection() *grpc.ClientConn {
 
 // Get returns the details for the specified interconnect location. Gets a list of available interconnect locations by making a list() request.
 func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computepb.GetInterconnectLocationRequest, opts ...gax.CallOption) (*computepb.InterconnectLocation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectLocations/%v", req.GetProject(), req.GetInterconnectLocation())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -204,12 +197,6 @@ func (c *interconnectLocationsRESTClient) Get(ctx context.Context, req *computep
 
 // List retrieves the list of interconnect locations available to the specified project.
 func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *computepb.ListInterconnectLocationsRequest, opts ...gax.CallOption) (*computepb.InterconnectLocationList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/interconnectLocations", req.GetProject())
 
@@ -232,7 +219,7 @@ func (c *interconnectLocationsRESTClient) List(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

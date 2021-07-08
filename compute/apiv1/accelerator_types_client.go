@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -139,8 +138,8 @@ func NewAcceleratorTypesRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultAcceleratorTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -172,12 +171,6 @@ func (c *acceleratorTypesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of accelerator types.
 func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAcceleratorTypesRequest, opts ...gax.CallOption) (*computepb.AcceleratorTypeAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/acceleratorTypes", req.GetProject())
 
@@ -203,7 +196,7 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -237,16 +230,10 @@ func (c *acceleratorTypesRESTClient) AggregatedList(ctx context.Context, req *co
 
 // Get returns the specified accelerator type.
 func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.GetAcceleratorTypeRequest, opts ...gax.CallOption) (*computepb.AcceleratorType, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorTypes/%v", req.GetProject(), req.GetZone(), req.GetAcceleratorType())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -280,12 +267,6 @@ func (c *acceleratorTypesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // List retrieves a list of accelerator types that are available to the specified project.
 func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.ListAcceleratorTypesRequest, opts ...gax.CallOption) (*computepb.AcceleratorTypeList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/acceleratorTypes", req.GetProject(), req.GetZone())
 
@@ -308,7 +289,7 @@ func (c *acceleratorTypesRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
