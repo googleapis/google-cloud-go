@@ -116,7 +116,7 @@ func StorageSchemaToDescriptor(inSchema *storagepb.TableSchema, scope string) (p
 // internal implementation of the conversion code.
 func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope string, cache *dependencyCache, allowWrapperTypes bool) (protoreflect.Descriptor, error) {
 	if inSchema == nil {
-		return nil, fmt.Errorf("no input schema provided")
+		return nil, newConversionError(scope, fmt.Errorf("no input schema was provided"))
 	}
 
 	var fields []*descriptorpb.FieldDescriptorProto
@@ -147,7 +147,7 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				// construct field descriptor for the message
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, string(foundDesc.FullName()), allowWrapperTypes)
 				if err != nil {
-					return nil, fmt.Errorf("couldn't convert to FieldDescriptorProto (%s): %v", currentScope, err)
+					return nil, newConversionError(scope, fmt.Errorf("couldn't convert field to FieldDescriptorProto: %v", err))
 				}
 				fields = append(fields, fdp)
 			} else {
@@ -157,25 +157,25 @@ func storageSchemaToDescriptorInternal(inSchema *storagepb.TableSchema, scope st
 				}
 				desc, err := storageSchemaToDescriptorInternal(ts, currentScope, cache, allowWrapperTypes)
 				if err != nil {
-					return nil, fmt.Errorf("couldn't compile (%s): %v", currentScope, err)
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't convert message: %v", err))
 				}
 				// Now that we have the submessage definition, we append it both to the local dependencies, as well
 				// as inserting it into the cache for possible reuse elsewhere.
 				deps = append(deps, desc.ParentFile())
 				err = cache.add(ts, desc)
 				if err != nil {
-					return nil, fmt.Errorf("failed to add descriptor to cache: %v", err)
+					return nil, newConversionError(currentScope, fmt.Errorf("failed to add descriptor to dependency cache: %v", err))
 				}
 				fdp, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, allowWrapperTypes)
 				if err != nil {
-					return nil, fmt.Errorf("couldn't compute field schema (%s): %v", currentScope, err)
+					return nil, newConversionError(currentScope, fmt.Errorf("couldn't compute field schema : %v", err))
 				}
 				fields = append(fields, fdp)
 			}
 		} else {
 			fd, err := tableFieldSchemaToFieldDescriptorProto(f, fNumber, currentScope, allowWrapperTypes)
 			if err != nil {
-				return nil, err
+				return nil, newConversionError(currentScope, err)
 			}
 			fields = append(fields, fd)
 		}
