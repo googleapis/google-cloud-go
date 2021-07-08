@@ -29,6 +29,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
+	storagepb "google.golang.org/genproto/googleapis/storage/v1"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -77,7 +78,63 @@ type ReaderObjectAttrs struct {
 //
 // The caller must call Close on the returned Reader when done reading.
 func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
+	if o.c.gc != nil {
+		return o.NewRangeReaderWithGRPC(ctx, 0, 0)
+	}
 	return o.NewRangeReader(ctx, 0, -1)
+}
+
+func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReaderWithGRPC")
+	defer func() { trace.EndSpan(ctx, err) }()
+
+	if o.c.gc == nil {
+		err = fmt.Errorf("handle doesn't have a gRPC client initialized")
+		return
+	}
+	if err = o.validate(); err != nil {
+		return
+	}
+	if length < 0 {
+		err = fmt.Errorf("length must be non-negative")
+		return
+	}
+
+	req := &storagepb.GetObjectMediaRequest{
+		Bucket: o.bucket,
+		Object: o.object,
+	}
+
+	// Define a function that initiates a Read with offset and length, assuming we
+	// have already read seen bytes.
+	reopen := func(seen int64) (storagepb.Storage_GetObjectMediaClient, error) {
+		// If the context has already expired, return immediately without making a
+		// call.
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+
+		start := offset + seen
+		req.ReadLimit = length - seen
+		req.ReadOffset = start
+
+		res, err := o.c.gc.GetObjectMedia(ctx, req)
+		if err != nil {
+			return nil, err
+		}
+		fmt.Printf("Opened a new stream with %+v\n", req)
+		return res, nil
+	}
+
+	res, err := reopen(0)
+	if err != nil {
+		return nil, err
+	}
+
+	return &Reader{
+		stream:         res,
+		reopenWithGRPC: reopen,
+	}, nil
 }
 
 // NewRangeReader reads part of an object, reading at most length bytes
@@ -340,14 +397,26 @@ type Reader struct {
 	wantCRC            uint32 // the CRC32c value the server sent in the header
 	gotCRC             uint32 // running crc
 	reopen             func(seen int64) (*http.Response, error)
+
+	stream         storagepb.Storage_GetObjectMediaClient
+	reopenWithGRPC func(seen int64) (storagepb.Storage_GetObjectMediaClient, error)
 }
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
+	if r.stream != nil {
+		// Drop the stream client referenced so it and its resources are GC'd.
+		r.stream = nil
+		return nil
+	}
 	return r.body.Close()
 }
 
 func (r *Reader) Read(p []byte) (int, error) {
+	if r.reopenWithGRPC != nil {
+		return r.readWithGRPC(p)
+	}
+
 	n, err := r.readWithRetry(p)
 	if r.remain != -1 {
 		r.remain -= int64(n)
@@ -365,6 +434,49 @@ func (r *Reader) Read(p []byte) (int, error) {
 		}
 	}
 	return n, err
+}
+
+func (r *Reader) readWithGRPC(p []byte) (int, error) {
+	// No stream to read from, either never initiliazed or Close was called.
+	if r.stream == nil {
+		return 0, nil
+	}
+
+	n := 0
+	for len(p[n:]) > 0 {
+		msg, err := r.stream.Recv()
+		if err != nil {
+			if err == io.EOF {
+				return n, nil
+			}
+
+			// TODO: how many times do we try to read before stopping?
+			// TODO: backoff?
+
+			// initialize new stream
+			r.stream, err = r.reopenWithGRPC(r.seen)
+			if err != nil {
+				// cannot reinstantiate the stream so we bail
+				return n, err
+			}
+
+			// try again
+			continue
+		}
+
+		content := msg.GetChecksummedData().GetContent()
+		fmt.Printf("Received %d bytes", len(content))
+		cp := copy(p[n:], content)
+		if cp != len(content) {
+			// wasn't able to copy all of the data in the message
+			// TODO: what do we do here, just toss out the data?
+			fmt.Println("Unable to copy all data received")
+		}
+		n += cp
+		r.seen += int64(cp)
+	}
+
+	return n, nil
 }
 
 func (r *Reader) readWithRetry(p []byte) (int, error) {
