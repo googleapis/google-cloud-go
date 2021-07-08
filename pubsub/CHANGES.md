@@ -1,5 +1,17 @@
 # Changes
 
+## [1.13.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.1...pubsub/v1.13.0) (2021-07-08)
+
+
+### Features
+
+* **pubsub:** Add method signature for Subscriber.Pull without the deprecated return_immediately field. ([652d7c2](https://www.github.com/googleapis/google-cloud-go/commit/652d7c277da2f6774729064ab65d557875c81567))
+
+
+### Bug Fixes
+
+* **pubsub:** retry all goaway errors ([#4384](https://www.github.com/googleapis/google-cloud-go/issues/4384)) ([1eae86f](https://www.github.com/googleapis/google-cloud-go/commit/1eae86f1882660d901b9fb0e8dab6f138a048dbb)), refs [#4257](https://www.github.com/googleapis/google-cloud-go/issues/4257)
+
 ### [1.12.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.0...pubsub/v1.12.1) (2021-07-01)
 
 
