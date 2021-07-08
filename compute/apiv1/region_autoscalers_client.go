@@ -156,8 +156,8 @@ func NewRegionAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOp
 
 func defaultRegionAutoscalersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *regionAutoscalersRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified autoscaler.
 func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
@@ -205,7 +199,7 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *regionAutoscalersRESTClient) Delete(ctx context.Context, req *computepb
 
 // Get returns the specified autoscaler.
 func (c *regionAutoscalersRESTClient) Get(ctx context.Context, req *computepb.GetRegionAutoscalerRequest, opts ...gax.CallOption) (*computepb.Autoscaler, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers/%v", req.GetProject(), req.GetRegion(), req.GetAutoscaler())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -333,12 +321,6 @@ func (c *regionAutoscalersRESTClient) Insert(ctx context.Context, req *computepb
 
 // List retrieves a list of autoscalers contained within the specified region.
 func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.ListRegionAutoscalersRequest, opts ...gax.CallOption) (*computepb.RegionAutoscalerList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/autoscalers", req.GetProject(), req.GetRegion())
 
@@ -361,7 +343,7 @@ func (c *regionAutoscalersRESTClient) List(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
