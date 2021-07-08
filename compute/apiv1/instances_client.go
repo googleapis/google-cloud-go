@@ -408,8 +408,8 @@ func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultInstancesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -441,7 +441,7 @@ func (c *instancesRESTClient) Connection() *grpc.ClientConn {
 
 // AddAccessConfig adds an access config to an instance’s network interface.
 func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computepb.AddAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAccessConfigResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -495,7 +495,7 @@ func (c *instancesRESTClient) AddAccessConfig(ctx context.Context, req *computep
 
 // AddResourcePolicies adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
 func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *computepb.AddResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesAddResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -546,12 +546,6 @@ func (c *instancesRESTClient) AddResourcePolicies(ctx context.Context, req *comp
 
 // AggregatedList retrieves aggregated list of all of the instances in your project across all regions and zones.
 func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instances", req.GetProject())
 
@@ -577,7 +571,7 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -611,7 +605,7 @@ func (c *instancesRESTClient) AggregatedList(ctx context.Context, req *computepb
 
 // AttachDisk attaches an existing Disk resource to an instance. You must first create the disk before you can attach it. It is not possible to create and attach a disk at the same time. For more information, read Adding a persistent disk to your instance.
 func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.AttachDiskInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAttachedDiskResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -665,7 +659,7 @@ func (c *instancesRESTClient) AttachDisk(ctx context.Context, req *computepb.Att
 
 // BulkInsert creates multiple instances. Count specifies the number of instances to create.
 func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -716,12 +710,6 @@ func (c *instancesRESTClient) BulkInsert(ctx context.Context, req *computepb.Bul
 
 // Delete deletes the specified Instance resource. For more information, see Deleting an instance.
 func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -732,7 +720,7 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -766,12 +754,6 @@ func (c *instancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteI
 
 // DeleteAccessConfig deletes an access config from an instance’s network interface.
 func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *computepb.DeleteAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/deleteAccessConfig", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -788,7 +770,7 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -822,12 +804,6 @@ func (c *instancesRESTClient) DeleteAccessConfig(ctx context.Context, req *compu
 
 // DetachDisk detaches a disk from an instance.
 func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.DetachDiskInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/detachDisk", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -841,7 +817,7 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -875,16 +851,10 @@ func (c *instancesRESTClient) DetachDisk(ctx context.Context, req *computepb.Det
 
 // Get returns the specified Instance resource. Gets a list of available instances by making a list() request.
 func (c *instancesRESTClient) Get(ctx context.Context, req *computepb.GetInstanceRequest, opts ...gax.CallOption) (*computepb.Instance, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -918,12 +888,6 @@ func (c *instancesRESTClient) Get(ctx context.Context, req *computepb.GetInstanc
 
 // GetEffectiveFirewalls returns effective firewalls applied to an interface of the instance.
 func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *computepb.GetEffectiveFirewallsInstanceRequest, opts ...gax.CallOption) (*computepb.InstancesGetEffectiveFirewallsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getEffectiveFirewalls", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -934,7 +898,7 @@ func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -968,12 +932,6 @@ func (c *instancesRESTClient) GetEffectiveFirewalls(ctx context.Context, req *co
 
 // GetGuestAttributes returns the specified guest attributes entry.
 func (c *instancesRESTClient) GetGuestAttributes(ctx context.Context, req *computepb.GetGuestAttributesInstanceRequest, opts ...gax.CallOption) (*computepb.GuestAttributes, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getGuestAttributes", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -987,7 +945,7 @@ func (c *instancesRESTClient) GetGuestAttributes(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1021,12 +979,6 @@ func (c *instancesRESTClient) GetGuestAttributes(ctx context.Context, req *compu
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *instancesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -1037,7 +989,7 @@ func (c *instancesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1071,16 +1023,10 @@ func (c *instancesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 
 // GetScreenshot returns the screenshot from the specified instance.
 func (c *instancesRESTClient) GetScreenshot(ctx context.Context, req *computepb.GetScreenshotInstanceRequest, opts ...gax.CallOption) (*computepb.Screenshot, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/screenshot", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1114,12 +1060,6 @@ func (c *instancesRESTClient) GetScreenshot(ctx context.Context, req *computepb.
 
 // GetSerialPortOutput returns the last 1 MB of serial port output from the specified instance.
 func (c *instancesRESTClient) GetSerialPortOutput(ctx context.Context, req *computepb.GetSerialPortOutputInstanceRequest, opts ...gax.CallOption) (*computepb.SerialPortOutput, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/serialPort", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -1133,7 +1073,7 @@ func (c *instancesRESTClient) GetSerialPortOutput(ctx context.Context, req *comp
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1167,16 +1107,10 @@ func (c *instancesRESTClient) GetSerialPortOutput(ctx context.Context, req *comp
 
 // GetShieldedInstanceIdentity returns the Shielded Instance Identity of an instance
 func (c *instancesRESTClient) GetShieldedInstanceIdentity(ctx context.Context, req *computepb.GetShieldedInstanceIdentityInstanceRequest, opts ...gax.CallOption) (*computepb.ShieldedInstanceIdentity, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/getShieldedInstanceIdentity", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1210,7 +1144,7 @@ func (c *instancesRESTClient) GetShieldedInstanceIdentity(ctx context.Context, r
 
 // Insert creates an instance resource in the specified project using the data included in the request.
 func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1264,12 +1198,6 @@ func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertI
 
 // List retrieves the list of instances contained within the specified zone.
 func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances", req.GetProject(), req.GetZone())
 
@@ -1292,7 +1220,7 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1326,12 +1254,6 @@ func (c *instancesRESTClient) List(ctx context.Context, req *computepb.ListInsta
 
 // ListReferrers retrieves a list of resources that refer to the VM instance specified in the request. For example, if the VM instance is part of a managed or unmanaged instance group, the referrers list includes the instance group. For more information, read Viewing referrers to VM instances.
 func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) (*computepb.InstanceListReferrers, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/referrers", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -1354,7 +1276,7 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1388,7 +1310,7 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 
 // RemoveResourcePolicies removes resource policies from an instance.
 func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *computepb.RemoveResourcePoliciesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesRemoveResourcePoliciesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1439,12 +1361,6 @@ func (c *instancesRESTClient) RemoveResourcePolicies(ctx context.Context, req *c
 
 // Reset performs a reset on the instance. This is a hard reset the VM does not do a graceful shutdown. For more information, see Resetting an instance.
 func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/reset", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -1455,7 +1371,7 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1489,12 +1405,6 @@ func (c *instancesRESTClient) Reset(ctx context.Context, req *computepb.ResetIns
 
 // SetDeletionProtection sets deletion protection on the instance.
 func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *computepb.SetDeletionProtectionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDeletionProtection", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -1508,7 +1418,7 @@ func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1542,12 +1452,6 @@ func (c *instancesRESTClient) SetDeletionProtection(ctx context.Context, req *co
 
 // SetDiskAutoDelete sets the auto-delete flag for a disk attached to an instance.
 func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *computepb.SetDiskAutoDeleteInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/setDiskAutoDelete", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -1564,7 +1468,7 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1598,7 +1502,7 @@ func (c *instancesRESTClient) SetDiskAutoDelete(ctx context.Context, req *comput
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1642,7 +1546,7 @@ func (c *instancesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 
 // SetLabels sets labels on an instance. To learn more about labels, read the Labeling Resources documentation.
 func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1693,7 +1597,7 @@ func (c *instancesRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 
 // SetMachineResources changes the number and/or type of accelerator for a stopped instance to the values specified in the request.
 func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *computepb.SetMachineResourcesInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMachineResourcesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1744,7 +1648,7 @@ func (c *instancesRESTClient) SetMachineResources(ctx context.Context, req *comp
 
 // SetMachineType changes the machine type for a stopped instance to the machine type specified in the request.
 func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb.SetMachineTypeInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMachineTypeRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1795,7 +1699,7 @@ func (c *instancesRESTClient) SetMachineType(ctx context.Context, req *computepb
 
 // SetMetadata sets metadata for the specified instance to the data included in the request.
 func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.SetMetadataInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetMetadataResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1846,7 +1750,7 @@ func (c *instancesRESTClient) SetMetadata(ctx context.Context, req *computepb.Se
 
 // SetMinCpuPlatform changes the minimum CPU platform that this instance should use. This method can only be called on a stopped instance. For more information, read Specifying a Minimum CPU Platform.
 func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *computepb.SetMinCpuPlatformInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetMinCpuPlatformRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1897,7 +1801,7 @@ func (c *instancesRESTClient) SetMinCpuPlatform(ctx context.Context, req *comput
 
 // SetScheduling sets an instance’s scheduling options. You can only call this method on a stopped instance, that is, a VM instance that is in a TERMINATED state. See Instance Life Cycle for more information on the possible instance states.
 func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.SetSchedulingInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSchedulingResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1948,7 +1852,7 @@ func (c *instancesRESTClient) SetScheduling(ctx context.Context, req *computepb.
 
 // SetServiceAccount sets the service account on the instance. For more information, read Changing the service account and access scopes for an instance.
 func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *computepb.SetServiceAccountInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesSetServiceAccountRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1999,7 +1903,7 @@ func (c *instancesRESTClient) SetServiceAccount(ctx context.Context, req *comput
 
 // SetShieldedInstanceIntegrityPolicy sets the Shielded Instance integrity policy for an instance. You can only use this method on a running instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Context, req *computepb.SetShieldedInstanceIntegrityPolicyInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedInstanceIntegrityPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2050,7 +1954,7 @@ func (c *instancesRESTClient) SetShieldedInstanceIntegrityPolicy(ctx context.Con
 
 // SetTags sets network tags for the specified instance to the data included in the request.
 func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTagsInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTagsResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2101,16 +2005,10 @@ func (c *instancesRESTClient) SetTags(ctx context.Context, req *computepb.SetTag
 
 // SimulateMaintenanceEvent simulates a maintenance event on the instance.
 func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req *computepb.SimulateMaintenanceEventInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/simulateMaintenanceEvent", req.GetProject(), req.GetZone(), req.GetInstance())
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -2144,12 +2042,6 @@ func (c *instancesRESTClient) SimulateMaintenanceEvent(ctx context.Context, req 
 
 // Start starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/start", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -2160,7 +2052,7 @@ func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartIns
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -2194,7 +2086,7 @@ func (c *instancesRESTClient) Start(ctx context.Context, req *computepb.StartIns
 
 // StartWithEncryptionKey starts an instance that was stopped using the instances().stop method. For more information, see Restart an instance.
 func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *computepb.StartWithEncryptionKeyInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstancesStartWithEncryptionKeyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2245,12 +2137,6 @@ func (c *instancesRESTClient) StartWithEncryptionKey(ctx context.Context, req *c
 
 // Stop stops a running instance, shutting it down cleanly, and allows you to restart the instance at a later time. Stopped instances do not incur VM usage charges while they are stopped. However, resources that the VM is using, such as persistent disks and static IP addresses, will continue to be charged until they are deleted. For more information, see Stopping an instance.
 func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v/stop", req.GetProject(), req.GetZone(), req.GetInstance())
 
@@ -2261,7 +2147,7 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -2295,7 +2181,7 @@ func (c *instancesRESTClient) Stop(ctx context.Context, req *computepb.StopInsta
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *instancesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsInstanceRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2339,7 +2225,7 @@ func (c *instancesRESTClient) TestIamPermissions(ctx context.Context, req *compu
 
 // Update updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See  Updating a running instance for a list of updatable instance properties.
 func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2405,7 +2291,7 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 
 // UpdateAccessConfig updates the specified access config from an instance’s network interface with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *computepb.UpdateAccessConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAccessConfigResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2459,7 +2345,7 @@ func (c *instancesRESTClient) UpdateAccessConfig(ctx context.Context, req *compu
 
 // UpdateDisplayDevice updates the Display config for a VM instance. You can only use this method on a stopped VM instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *computepb.UpdateDisplayDeviceInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDisplayDeviceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2510,7 +2396,7 @@ func (c *instancesRESTClient) UpdateDisplayDevice(ctx context.Context, req *comp
 
 // UpdateNetworkInterface updates an instance’s network interface. This method can only update an interface’s alias IP range and attached network. See Modifying alias IP ranges for an existing instance for instructions on changing alias IP ranges. See Migrating a VM between networks for instructions on migrating an interface. This method follows PATCH semantics.
 func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *computepb.UpdateNetworkInterfaceInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkInterfaceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -2564,7 +2450,7 @@ func (c *instancesRESTClient) UpdateNetworkInterface(ctx context.Context, req *c
 
 // UpdateShieldedInstanceConfig updates the Shielded Instance config for an instance. You can only use this method on a stopped instance. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *instancesRESTClient) UpdateShieldedInstanceConfig(ctx context.Context, req *computepb.UpdateShieldedInstanceConfigInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetShieldedInstanceConfigResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

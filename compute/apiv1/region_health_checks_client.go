@@ -156,8 +156,8 @@ func NewRegionHealthChecksRESTClient(ctx context.Context, opts ...option.ClientO
 
 func defaultRegionHealthChecksRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *regionHealthChecksRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified HealthCheck resource.
 func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
@@ -205,7 +199,7 @@ func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *regionHealthChecksRESTClient) Delete(ctx context.Context, req *computep
 
 // Get returns the specified HealthCheck resource. Gets a list of available health checks by making a list() request.
 func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.GetRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.HealthCheck, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +270,7 @@ func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.G
 
 // Insert creates a HealthCheck resource in the specified project using the data included in the request.
 func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,12 +321,6 @@ func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computep
 
 // List retrieves the list of HealthCheck resources available to the specified project.
 func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.ListRegionHealthChecksRequest, opts ...gax.CallOption) (*computepb.HealthCheckList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthChecks", req.GetProject(), req.GetRegion())
 
@@ -361,7 +343,7 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -395,7 +377,7 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 
 // Patch updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -446,7 +428,7 @@ func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb
 
 // Update updates a HealthCheck resource in the specified project using the data included in the request.
 func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

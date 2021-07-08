@@ -165,8 +165,8 @@ func NewSnapshotsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultSnapshotsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -200,12 +200,6 @@ func (c *snapshotsRESTClient) Connection() *grpc.ClientConn {
 //
 // For more information, see Deleting snapshots.
 func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
@@ -216,7 +210,7 @@ func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteS
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -250,16 +244,10 @@ func (c *snapshotsRESTClient) Delete(ctx context.Context, req *computepb.DeleteS
 
 // Get returns the specified Snapshot resource. Gets a list of available snapshots by making a list() request.
 func (c *snapshotsRESTClient) Get(ctx context.Context, req *computepb.GetSnapshotRequest, opts ...gax.CallOption) (*computepb.Snapshot, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v", req.GetProject(), req.GetSnapshot())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -293,12 +281,6 @@ func (c *snapshotsRESTClient) Get(ctx context.Context, req *computepb.GetSnapsho
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
@@ -309,7 +291,7 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -343,12 +325,6 @@ func (c *snapshotsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.G
 
 // List retrieves the list of Snapshot resources contained within the specified project.
 func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnapshotsRequest, opts ...gax.CallOption) (*computepb.SnapshotList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/snapshots", req.GetProject())
 
@@ -371,7 +347,7 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -405,7 +381,7 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -449,7 +425,7 @@ func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 
 // SetLabels sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -493,7 +469,7 @@ func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *snapshotsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsSnapshotRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

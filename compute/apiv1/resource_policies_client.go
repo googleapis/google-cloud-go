@@ -170,8 +170,8 @@ func NewResourcePoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultResourcePoliciesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -203,12 +203,6 @@ func (c *resourcePoliciesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of resource policies.
 func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListResourcePoliciesRequest, opts ...gax.CallOption) (*computepb.ResourcePolicyAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/resourcePolicies", req.GetProject())
 
@@ -234,7 +228,7 @@ func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,12 +262,6 @@ func (c *resourcePoliciesRESTClient) AggregatedList(ctx context.Context, req *co
 
 // Delete deletes the specified resource policy.
 func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy())
 
@@ -284,7 +272,7 @@ func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -318,16 +306,10 @@ func (c *resourcePoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get retrieves all information of the specified resource policy.
 func (c *resourcePoliciesRESTClient) Get(ctx context.Context, req *computepb.GetResourcePolicyRequest, opts ...gax.CallOption) (*computepb.ResourcePolicy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies/%v", req.GetProject(), req.GetRegion(), req.GetResourcePolicy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -361,12 +343,6 @@ func (c *resourcePoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
@@ -377,7 +353,7 @@ func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -411,7 +387,7 @@ func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 
 // Insert creates a new resource policy.
 func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourcePolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -462,12 +438,6 @@ func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 
 // List a list all the resource policies that have been configured for the specified project in specified region.
 func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.ListResourcePoliciesRequest, opts ...gax.CallOption) (*computepb.ResourcePolicyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/resourcePolicies", req.GetProject(), req.GetRegion())
 
@@ -490,7 +460,7 @@ func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -524,7 +494,7 @@ func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -568,7 +538,7 @@ func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *resourcePoliciesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsResourcePolicyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

@@ -170,8 +170,8 @@ func NewTargetSslProxiesRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultTargetSslProxiesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -203,12 +203,6 @@ func (c *targetSslProxiesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified TargetSslProxy resource.
 func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v", req.GetProject(), req.GetTargetSslProxy())
 
@@ -219,7 +213,7 @@ func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -253,16 +247,10 @@ func (c *targetSslProxiesRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get returns the specified TargetSslProxy resource. Gets a list of available target SSL proxies by making a list() request.
 func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.GetTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.TargetSslProxy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies/%v", req.GetProject(), req.GetTargetSslProxy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -296,7 +284,7 @@ func (c *targetSslProxiesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // Insert creates a TargetSslProxy resource in the specified project using the data included in the request.
 func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetSslProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -347,12 +335,6 @@ func (c *targetSslProxiesRESTClient) Insert(ctx context.Context, req *computepb.
 
 // List retrieves the list of TargetSslProxy resources available to the specified project.
 func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.ListTargetSslProxiesRequest, opts ...gax.CallOption) (*computepb.TargetSslProxyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/targetSslProxies", req.GetProject())
 
@@ -375,7 +357,7 @@ func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -409,7 +391,7 @@ func (c *targetSslProxiesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // SetBackendService changes the BackendService for TargetSslProxy.
 func (c *targetSslProxiesRESTClient) SetBackendService(ctx context.Context, req *computepb.SetBackendServiceTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetSslProxiesSetBackendServiceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -460,7 +442,7 @@ func (c *targetSslProxiesRESTClient) SetBackendService(ctx context.Context, req 
 
 // SetProxyHeader changes the ProxyHeaderType for TargetSslProxy.
 func (c *targetSslProxiesRESTClient) SetProxyHeader(ctx context.Context, req *computepb.SetProxyHeaderTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetSslProxiesSetProxyHeaderRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -511,7 +493,7 @@ func (c *targetSslProxiesRESTClient) SetProxyHeader(ctx context.Context, req *co
 
 // SetSslCertificates changes SslCertificates for TargetSslProxy.
 func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetSslProxiesSetSslCertificatesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -562,7 +544,7 @@ func (c *targetSslProxiesRESTClient) SetSslCertificates(ctx context.Context, req
 
 // SetSslPolicy sets the SSL policy for TargetSslProxy. The SSL policy specifies the server-side support for SSL features. This affects connections between clients and the SSL proxy load balancer. They do not affect the connection between the load balancer and the backends.
 func (c *targetSslProxiesRESTClient) SetSslPolicy(ctx context.Context, req *computepb.SetSslPolicyTargetSslProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslPolicyReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

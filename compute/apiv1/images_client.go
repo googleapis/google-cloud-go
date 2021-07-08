@@ -193,8 +193,8 @@ func NewImagesRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ima
 
 func defaultImagesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -226,12 +226,6 @@ func (c *imagesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified image.
 func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
@@ -242,7 +236,7 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -278,7 +272,7 @@ func (c *imagesRESTClient) Delete(ctx context.Context, req *computepb.DeleteImag
 //
 // If an empty request body is given, clears the deprecation status instead.
 func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.DeprecateImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetDeprecationStatusResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -329,16 +323,10 @@ func (c *imagesRESTClient) Deprecate(ctx context.Context, req *computepb.Depreca
 
 // Get returns the specified image. Gets a list of available images by making a list() request.
 func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v", req.GetProject(), req.GetImage())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -372,16 +360,10 @@ func (c *imagesRESTClient) Get(ctx context.Context, req *computepb.GetImageReque
 
 // GetFromFamily returns the latest image that is part of an image family and is not deprecated.
 func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.GetFromFamilyImageRequest, opts ...gax.CallOption) (*computepb.Image, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/family/%v", req.GetProject(), req.GetFamily())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -415,12 +397,6 @@ func (c *imagesRESTClient) GetFromFamily(ctx context.Context, req *computepb.Get
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
@@ -431,7 +407,7 @@ func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -465,7 +441,7 @@ func (c *imagesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetI
 
 // Insert creates an image in the specified project using the data included in the request.
 func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetImageResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -519,12 +495,6 @@ func (c *imagesRESTClient) Insert(ctx context.Context, req *computepb.InsertImag
 
 // List retrieves the list of custom images available to the specified project. Custom images are images you create that belong to your project. This method does not get any images that belong to other projects, including publicly-available images, like Debian 8. If you want to get a list of publicly-available images, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.
 func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRequest, opts ...gax.CallOption) (*computepb.ImageList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/images", req.GetProject())
 
@@ -547,7 +517,7 @@ func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRe
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -581,7 +551,7 @@ func (c *imagesRESTClient) List(ctx context.Context, req *computepb.ListImagesRe
 
 // Patch patches the specified image with the data included in the request. Only the following fields can be modified: family, description, deprecation status.
 func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetImageResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -632,7 +602,7 @@ func (c *imagesRESTClient) Patch(ctx context.Context, req *computepb.PatchImageR
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyImageRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -676,7 +646,7 @@ func (c *imagesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetI
 
 // SetLabels sets the labels on an image. To learn more about labels, read the Labeling Resources documentation.
 func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsImageRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -720,7 +690,7 @@ func (c *imagesRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabe
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *imagesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsImageRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

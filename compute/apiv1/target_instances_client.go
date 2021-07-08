@@ -149,8 +149,8 @@ func NewTargetInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultTargetInstancesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *targetInstancesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of target instances.
 func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetInstancesRequest, opts ...gax.CallOption) (*computepb.TargetInstanceAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetInstances", req.GetProject())
 
@@ -213,7 +207,7 @@ func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *com
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -247,12 +241,6 @@ func (c *targetInstancesRESTClient) AggregatedList(ctx context.Context, req *com
 
 // Delete deletes the specified TargetInstance resource.
 func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/targetInstances/%v", req.GetProject(), req.GetZone(), req.GetTargetInstance())
 
@@ -263,7 +251,7 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -297,16 +285,10 @@ func (c *targetInstancesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 // Get returns the specified TargetInstance resource. Gets a list of available target instances by making a list() request.
 func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetTargetInstanceRequest, opts ...gax.CallOption) (*computepb.TargetInstance, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/targetInstances/%v", req.GetProject(), req.GetZone(), req.GetTargetInstance())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -340,7 +322,7 @@ func (c *targetInstancesRESTClient) Get(ctx context.Context, req *computepb.GetT
 
 // Insert creates a TargetInstance resource in the specified project and zone using the data included in the request.
 func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetInstanceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -391,12 +373,6 @@ func (c *targetInstancesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 // List retrieves a list of TargetInstance resources available to the specified project and zone.
 func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.ListTargetInstancesRequest, opts ...gax.CallOption) (*computepb.TargetInstanceList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/targetInstances", req.GetProject(), req.GetZone())
 
@@ -419,7 +395,7 @@ func (c *targetInstancesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

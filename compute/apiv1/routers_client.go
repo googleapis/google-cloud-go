@@ -184,8 +184,8 @@ func NewRoutersRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 
 func defaultRoutersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -217,12 +217,6 @@ func (c *routersRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of routers.
 func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListRoutersRequest, opts ...gax.CallOption) (*computepb.RouterAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/routers", req.GetProject())
 
@@ -248,7 +242,7 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,12 +276,6 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 
 // Delete deletes the specified Router resource.
 func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
@@ -298,7 +286,7 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -332,16 +320,10 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 
 // Get returns the specified Router resource. Gets a list of available routers by making a list() request.
 func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterRequest, opts ...gax.CallOption) (*computepb.Router, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -375,12 +357,6 @@ func (c *routersRESTClient) Get(ctx context.Context, req *computepb.GetRouterReq
 
 // GetNatMappingInfo retrieves runtime Nat mapping information of VM endpoints.
 func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computepb.GetNatMappingInfoRoutersRequest, opts ...gax.CallOption) (*computepb.VmEndpointNatMappingsList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getNatMappingInfo", req.GetProject(), req.GetRegion(), req.GetRouter())
 
@@ -403,7 +379,7 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -437,16 +413,10 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 
 // GetRouterStatus retrieves runtime information of the specified router.
 func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.GetRouterStatusRouterRequest, opts ...gax.CallOption) (*computepb.RouterStatusResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v/getRouterStatus", req.GetProject(), req.GetRegion(), req.GetRouter())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -480,7 +450,7 @@ func (c *routersRESTClient) GetRouterStatus(ctx context.Context, req *computepb.
 
 // Insert creates a Router resource in the specified project and region using the data included in the request.
 func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -531,12 +501,6 @@ func (c *routersRESTClient) Insert(ctx context.Context, req *computepb.InsertRou
 
 // List retrieves a list of Router resources available to the specified project.
 func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRoutersRequest, opts ...gax.CallOption) (*computepb.RouterList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers", req.GetProject(), req.GetRegion())
 
@@ -559,7 +523,7 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -593,7 +557,7 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -644,7 +608,7 @@ func (c *routersRESTClient) Patch(ctx context.Context, req *computepb.PatchRoute
 
 // Preview preview fields auto-generated during router create and update operations. Calling this method does NOT create or update the router.
 func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewRouterRequest, opts ...gax.CallOption) (*computepb.RoutersPreviewResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -688,7 +652,7 @@ func (c *routersRESTClient) Preview(ctx context.Context, req *computepb.PreviewR
 
 // Update updates the specified Router resource with the data included in the request. This method conforms to PUT semantics, which requests that the state of the target resource be created or replaced with the state defined by the representation enclosed in the request message payload.
 func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRouterRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRouterResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

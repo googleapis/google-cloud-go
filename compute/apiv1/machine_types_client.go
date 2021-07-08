@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -135,8 +134,8 @@ func NewMachineTypesRESTClient(ctx context.Context, opts ...option.ClientOption)
 
 func defaultMachineTypesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -168,12 +167,6 @@ func (c *machineTypesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of machine types.
 func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListMachineTypesRequest, opts ...gax.CallOption) (*computepb.MachineTypeAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/machineTypes", req.GetProject())
 
@@ -199,7 +192,7 @@ func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -233,16 +226,10 @@ func (c *machineTypesRESTClient) AggregatedList(ctx context.Context, req *comput
 
 // Get returns the specified machine type. Gets a list of available machine types by making a list() request.
 func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMachineTypeRequest, opts ...gax.CallOption) (*computepb.MachineType, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/machineTypes/%v", req.GetProject(), req.GetZone(), req.GetMachineType())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -276,12 +263,6 @@ func (c *machineTypesRESTClient) Get(ctx context.Context, req *computepb.GetMach
 
 // List retrieves a list of machine types available to the specified project.
 func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMachineTypesRequest, opts ...gax.CallOption) (*computepb.MachineTypeList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/machineTypes", req.GetProject(), req.GetZone())
 
@@ -304,7 +285,7 @@ func (c *machineTypesRESTClient) List(ctx context.Context, req *computepb.ListMa
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

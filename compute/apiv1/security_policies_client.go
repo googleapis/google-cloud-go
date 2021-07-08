@@ -184,8 +184,8 @@ func NewSecurityPoliciesRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultSecurityPoliciesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -217,7 +217,7 @@ func (c *securityPoliciesRESTClient) Connection() *grpc.ClientConn {
 
 // AddRule inserts a rule into a security policy.
 func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb.AddRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -261,12 +261,6 @@ func (c *securityPoliciesRESTClient) AddRule(ctx context.Context, req *computepb
 
 // Delete deletes the specified policy.
 func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.DeleteSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v", req.GetProject(), req.GetSecurityPolicy())
 
@@ -277,7 +271,7 @@ func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -311,16 +305,10 @@ func (c *securityPoliciesRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get list all of the ordered rules present in a single specified policy.
 func (c *securityPoliciesRESTClient) Get(ctx context.Context, req *computepb.GetSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v", req.GetProject(), req.GetSecurityPolicy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -354,12 +342,6 @@ func (c *securityPoliciesRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // GetRule gets a rule at the specified priority.
 func (c *securityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb.GetRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyRule, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v/getRule", req.GetProject(), req.GetSecurityPolicy())
 
@@ -370,7 +352,7 @@ func (c *securityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -404,7 +386,7 @@ func (c *securityPoliciesRESTClient) GetRule(ctx context.Context, req *computepb
 
 // Insert creates a new policy in the specified project using the data included in the request.
 func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -455,12 +437,6 @@ func (c *securityPoliciesRESTClient) Insert(ctx context.Context, req *computepb.
 
 // List list all the policies that have been configured for the specified project.
 func (c *securityPoliciesRESTClient) List(ctx context.Context, req *computepb.ListSecurityPoliciesRequest, opts ...gax.CallOption) (*computepb.SecurityPolicyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies", req.GetProject())
 
@@ -483,7 +459,7 @@ func (c *securityPoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -517,12 +493,6 @@ func (c *securityPoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // ListPreconfiguredExpressionSets gets the current list of preconfigured Web Application Firewall (WAF) expressions.
 func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context.Context, req *computepb.ListPreconfiguredExpressionSetsSecurityPoliciesRequest, opts ...gax.CallOption) (*computepb.SecurityPoliciesListPreconfiguredExpressionSetsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/listPreconfiguredExpressionSets", req.GetProject())
 
@@ -545,7 +515,7 @@ func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -579,7 +549,7 @@ func (c *securityPoliciesRESTClient) ListPreconfiguredExpressionSets(ctx context
 
 // Patch patches the specified policy with the data included in the request. This cannot be used to be update the rules in the policy. Please use the per rule methods like addRule, patchRule, and removeRule instead.
 func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.PatchSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -630,7 +600,7 @@ func (c *securityPoliciesRESTClient) Patch(ctx context.Context, req *computepb.P
 
 // PatchRule patches a rule at the specified priority.
 func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *computepb.PatchRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -681,12 +651,6 @@ func (c *securityPoliciesRESTClient) PatchRule(ctx context.Context, req *compute
 
 // RemoveRule deletes a rule at the specified priority.
 func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *computepb.RemoveRuleSecurityPolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/securityPolicies/%v/removeRule", req.GetProject(), req.GetSecurityPolicy())
 
@@ -697,7 +661,7 @@ func (c *securityPoliciesRESTClient) RemoveRule(ctx context.Context, req *comput
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

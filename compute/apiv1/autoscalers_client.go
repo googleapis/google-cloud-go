@@ -163,8 +163,8 @@ func NewAutoscalersRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultAutoscalersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *autoscalersRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of autoscalers.
 func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListAutoscalersRequest, opts ...gax.CallOption) (*computepb.AutoscalerAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/autoscalers", req.GetProject())
 
@@ -227,7 +221,7 @@ func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -261,12 +255,6 @@ func (c *autoscalersRESTClient) AggregatedList(ctx context.Context, req *compute
 
 // Delete deletes the specified autoscaler.
 func (c *autoscalersRESTClient) Delete(ctx context.Context, req *computepb.DeleteAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/autoscalers/%v", req.GetProject(), req.GetZone(), req.GetAutoscaler())
 
@@ -277,7 +265,7 @@ func (c *autoscalersRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -311,16 +299,10 @@ func (c *autoscalersRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 // Get returns the specified autoscaler resource. Gets a list of available autoscalers by making a list() request.
 func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutoscalerRequest, opts ...gax.CallOption) (*computepb.Autoscaler, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/autoscalers/%v", req.GetProject(), req.GetZone(), req.GetAutoscaler())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -354,7 +336,7 @@ func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutos
 
 // Insert creates an autoscaler in the specified project using the data included in the request.
 func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -405,12 +387,6 @@ func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 // List retrieves a list of autoscalers contained within the specified zone.
 func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAutoscalersRequest, opts ...gax.CallOption) (*computepb.AutoscalerList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())
 
@@ -433,7 +409,7 @@ func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAut
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -467,7 +443,7 @@ func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAut
 
 // Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -521,7 +497,7 @@ func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchA
 
 // Update updates an autoscaler in the specified project using the data included in the request.
 func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

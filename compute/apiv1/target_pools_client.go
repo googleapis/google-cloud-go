@@ -191,8 +191,8 @@ func NewTargetPoolsRESTClient(ctx context.Context, opts ...option.ClientOption) 
 
 func defaultTargetPoolsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -224,7 +224,7 @@ func (c *targetPoolsRESTClient) Connection() *grpc.ClientConn {
 
 // AddHealthCheck adds health check URLs to a target pool.
 func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *computepb.AddHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsAddHealthCheckRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -275,7 +275,7 @@ func (c *targetPoolsRESTClient) AddHealthCheck(ctx context.Context, req *compute
 
 // AddInstance adds an instance to a target pool.
 func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.AddInstanceTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsAddInstanceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -326,12 +326,6 @@ func (c *targetPoolsRESTClient) AddInstance(ctx context.Context, req *computepb.
 
 // AggregatedList retrieves an aggregated list of target pools.
 func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetPoolsRequest, opts ...gax.CallOption) (*computepb.TargetPoolAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetPools", req.GetProject())
 
@@ -357,7 +351,7 @@ func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -391,12 +385,6 @@ func (c *targetPoolsRESTClient) AggregatedList(ctx context.Context, req *compute
 
 // Delete deletes the specified target pool.
 func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetPools/%v", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
@@ -407,7 +395,7 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -441,16 +429,10 @@ func (c *targetPoolsRESTClient) Delete(ctx context.Context, req *computepb.Delet
 
 // Get returns the specified target pool. Gets a list of available target pools by making a list() request.
 func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPool, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetPools/%v", req.GetProject(), req.GetRegion(), req.GetTargetPool())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -484,7 +466,7 @@ func (c *targetPoolsRESTClient) Get(ctx context.Context, req *computepb.GetTarge
 
 // GetHealth gets the most recent health check results for each IP for the instance that is referenced by the given target pool.
 func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthTargetPoolRequest, opts ...gax.CallOption) (*computepb.TargetPoolInstanceHealth, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -528,7 +510,7 @@ func (c *targetPoolsRESTClient) GetHealth(ctx context.Context, req *computepb.Ge
 
 // Insert creates a target pool in the specified project and region using the data included in the request.
 func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -579,12 +561,6 @@ func (c *targetPoolsRESTClient) Insert(ctx context.Context, req *computepb.Inser
 
 // List retrieves a list of target pools available to the specified project and region.
 func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTargetPoolsRequest, opts ...gax.CallOption) (*computepb.TargetPoolList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetPools", req.GetProject(), req.GetRegion())
 
@@ -607,7 +583,7 @@ func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTar
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -641,7 +617,7 @@ func (c *targetPoolsRESTClient) List(ctx context.Context, req *computepb.ListTar
 
 // RemoveHealthCheck removes health check URL from a target pool.
 func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *computepb.RemoveHealthCheckTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsRemoveHealthCheckRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -692,7 +668,7 @@ func (c *targetPoolsRESTClient) RemoveHealthCheck(ctx context.Context, req *comp
 
 // RemoveInstance removes instance URL from a target pool.
 func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *computepb.RemoveInstanceTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetPoolsRemoveInstanceRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -743,7 +719,7 @@ func (c *targetPoolsRESTClient) RemoveInstance(ctx context.Context, req *compute
 
 // SetBackup changes a backup target pool’s configurations.
 func (c *targetPoolsRESTClient) SetBackup(ctx context.Context, req *computepb.SetBackupTargetPoolRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

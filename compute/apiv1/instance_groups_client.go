@@ -183,8 +183,8 @@ func NewInstanceGroupsRESTClient(ctx context.Context, opts ...option.ClientOptio
 
 func defaultInstanceGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -216,7 +216,7 @@ func (c *instanceGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // AddInstances adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
 func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *computepb.AddInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsAddInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -267,12 +267,6 @@ func (c *instanceGroupsRESTClient) AddInstances(ctx context.Context, req *comput
 
 // AggregatedList retrieves the list of instance groups and sorts them by zone.
 func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.InstanceGroupAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instanceGroups", req.GetProject())
 
@@ -298,7 +292,7 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -332,12 +326,6 @@ func (c *instanceGroupsRESTClient) AggregatedList(ctx context.Context, req *comp
 
 // Delete deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read  Deleting an instance group for more information.
 func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
@@ -348,7 +336,7 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -384,16 +372,10 @@ func (c *instanceGroupsRESTClient) Delete(ctx context.Context, req *computepb.De
 //
 // For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
 func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetInstanceGroupRequest, opts ...gax.CallOption) (*computepb.InstanceGroup, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroup())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -427,7 +409,7 @@ func (c *instanceGroupsRESTClient) Get(ctx context.Context, req *computepb.GetIn
 
 // Insert creates an instance group in the specified project using the parameters that are included in the request.
 func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -480,12 +462,6 @@ func (c *instanceGroupsRESTClient) Insert(ctx context.Context, req *computepb.In
 //
 // For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
 func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.InstanceGroupList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroups", req.GetProject(), req.GetZone())
 
@@ -508,7 +484,7 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -542,7 +518,7 @@ func (c *instanceGroupsRESTClient) List(ctx context.Context, req *computepb.List
 
 // ListInstances lists the instances in the specified instance group. The orderBy query parameter is not supported.
 func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.InstanceGroupsListInstances, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsListInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -607,7 +583,7 @@ func (c *instanceGroupsRESTClient) ListInstances(ctx context.Context, req *compu
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *computepb.RemoveInstancesInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsRemoveInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -658,7 +634,7 @@ func (c *instanceGroupsRESTClient) RemoveInstances(ctx context.Context, req *com
 
 // SetNamedPorts sets the named ports for the specified instance group.
 func (c *instanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupsSetNamedPortsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

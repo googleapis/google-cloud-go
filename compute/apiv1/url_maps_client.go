@@ -179,8 +179,8 @@ func NewUrlMapsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ur
 
 func defaultUrlMapsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -212,12 +212,6 @@ func (c *urlMapsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves the list of all UrlMap resources, regional and global, available to the specified project.
 func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListUrlMapsRequest, opts ...gax.CallOption) (*computepb.UrlMapsAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/urlMaps", req.GetProject())
 
@@ -243,7 +237,7 @@ func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -277,12 +271,6 @@ func (c *urlMapsRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 
 // Delete deletes the specified UrlMap resource.
 func (c *urlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/urlMaps/%v", req.GetProject(), req.GetUrlMap())
 
@@ -293,7 +281,7 @@ func (c *urlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteUrl
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -327,16 +315,10 @@ func (c *urlMapsRESTClient) Delete(ctx context.Context, req *computepb.DeleteUrl
 
 // Get returns the specified UrlMap resource. Gets a list of available URL maps by making a list() request.
 func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMap, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/urlMaps/%v", req.GetProject(), req.GetUrlMap())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -370,7 +352,7 @@ func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapReq
 
 // Insert creates a UrlMap resource in the specified project using the data included in the request.
 func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -423,7 +405,7 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 //
 // For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
 func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCacheInvalidationRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -474,12 +456,6 @@ func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.
 
 // List retrieves the list of UrlMap resources available to the specified project.
 func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMapsRequest, opts ...gax.CallOption) (*computepb.UrlMapList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/urlMaps", req.GetProject())
 
@@ -502,7 +478,7 @@ func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMaps
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -536,7 +512,7 @@ func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMaps
 
 // Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -587,7 +563,7 @@ func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMa
 
 // Update updates the specified UrlMap resource with the data included in the request.
 func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -644,7 +620,7 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 
 // Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 func (c *urlMapsRESTClient) Validate(ctx context.Context, req *computepb.ValidateUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapsValidateRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

@@ -156,8 +156,8 @@ func NewRegionTargetHttpsProxiesRESTClient(ctx context.Context, opts ...option.C
 
 func defaultRegionTargetHttpsProxiesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *regionTargetHttpsProxiesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified TargetHttpsProxy resource.
 func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
@@ -205,7 +199,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *regionTargetHttpsProxiesRESTClient) Delete(ctx context.Context, req *co
 
 // Get returns the specified TargetHttpsProxy resource in the specified region. Gets a list of available target HTTP proxies by making a list() request.
 func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *computepb.GetRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.TargetHttpsProxy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies/%v", req.GetProject(), req.GetRegion(), req.GetTargetHttpsProxy())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +270,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *compu
 
 // Insert creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
 func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,12 +321,6 @@ func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *co
 
 // List retrieves the list of TargetHttpsProxy resources available to the specified project in the specified region.
 func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *computepb.ListRegionTargetHttpsProxiesRequest, opts ...gax.CallOption) (*computepb.TargetHttpsProxyList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetHttpsProxies", req.GetProject(), req.GetRegion())
 
@@ -361,7 +343,7 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -395,7 +377,7 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
 func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionTargetHttpsProxiesSetSslCertificatesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -446,7 +428,7 @@ func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Cont
 
 // SetUrlMap changes the URL map for TargetHttpsProxy.
 func (c *regionTargetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

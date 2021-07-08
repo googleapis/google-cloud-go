@@ -149,8 +149,8 @@ func NewPublicAdvertisedPrefixesRESTClient(ctx context.Context, opts ...option.C
 
 func defaultPublicAdvertisedPrefixesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *publicAdvertisedPrefixesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified PublicAdvertisedPrefix
 func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *computepb.DeletePublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
@@ -198,7 +192,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -232,16 +226,10 @@ func (c *publicAdvertisedPrefixesRESTClient) Delete(ctx context.Context, req *co
 
 // Get returns the specified PublicAdvertisedPrefix resource.
 func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *computepb.GetPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.PublicAdvertisedPrefix, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes/%v", req.GetProject(), req.GetPublicAdvertisedPrefix())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +263,7 @@ func (c *publicAdvertisedPrefixesRESTClient) Get(ctx context.Context, req *compu
 
 // Insert creates a PublicAdvertisedPrefix in the specified project using the parameters that are included in the request.
 func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *computepb.InsertPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -326,12 +314,6 @@ func (c *publicAdvertisedPrefixesRESTClient) Insert(ctx context.Context, req *co
 
 // List lists the PublicAdvertisedPrefixes for a project.
 func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *computepb.ListPublicAdvertisedPrefixesRequest, opts ...gax.CallOption) (*computepb.PublicAdvertisedPrefixList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/publicAdvertisedPrefixes", req.GetProject())
 
@@ -354,7 +336,7 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -388,7 +370,7 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 
 // Patch patches the specified Router resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *publicAdvertisedPrefixesRESTClient) Patch(ctx context.Context, req *computepb.PatchPublicAdvertisedPrefixeRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPublicAdvertisedPrefixResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

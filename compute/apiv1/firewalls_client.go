@@ -156,8 +156,8 @@ func NewFirewallsRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 func defaultFirewallsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -189,12 +189,6 @@ func (c *firewallsRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified firewall.
 func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
@@ -205,7 +199,7 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -239,16 +233,10 @@ func (c *firewallsRESTClient) Delete(ctx context.Context, req *computepb.DeleteF
 
 // Get returns the specified firewall.
 func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewallRequest, opts ...gax.CallOption) (*computepb.Firewall, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -282,7 +270,7 @@ func (c *firewallsRESTClient) Get(ctx context.Context, req *computepb.GetFirewal
 
 // Insert creates a firewall rule in the specified project using the data included in the request.
 func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,12 +321,6 @@ func (c *firewallsRESTClient) Insert(ctx context.Context, req *computepb.InsertF
 
 // List retrieves the list of firewall rules available to the specified project.
 func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirewallsRequest, opts ...gax.CallOption) (*computepb.FirewallList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls", req.GetProject())
 
@@ -361,7 +343,7 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -395,7 +377,7 @@ func (c *firewallsRESTClient) List(ctx context.Context, req *computepb.ListFirew
 
 // Patch updates the specified firewall rule with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -446,7 +428,7 @@ func (c *firewallsRESTClient) Patch(ctx context.Context, req *computepb.PatchFir
 
 // Update updates the specified firewall rule with the data included in the request. Note that all fields will be updated if using PUT, even fields that are not specified. To update individual fields, please use PATCH instead.
 func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateFirewallRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetFirewallResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

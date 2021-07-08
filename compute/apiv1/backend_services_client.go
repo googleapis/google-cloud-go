@@ -195,8 +195,8 @@ func NewBackendServicesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultBackendServicesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -228,7 +228,7 @@ func (c *backendServicesRESTClient) Connection() *grpc.ClientConn {
 
 // AddSignedUrlKey adds a key for validating requests with signed URLs for this backend service.
 func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -279,12 +279,6 @@ func (c *backendServicesRESTClient) AddSignedUrlKey(ctx context.Context, req *co
 
 // AggregatedList retrieves the list of all BackendService resources, regional and global, available to the specified project.
 func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/backendServices", req.GetProject())
 
@@ -310,7 +304,7 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -344,12 +338,6 @@ func (c *backendServicesRESTClient) AggregatedList(ctx context.Context, req *com
 
 // Delete deletes the specified BackendService resource.
 func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
@@ -360,7 +348,7 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -394,12 +382,6 @@ func (c *backendServicesRESTClient) Delete(ctx context.Context, req *computepb.D
 
 // DeleteSignedUrlKey deletes a key for validating requests with signed URLs for this backend service.
 func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req *computepb.DeleteSignedUrlKeyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v/deleteSignedUrlKey", req.GetProject(), req.GetBackendService())
 
@@ -413,7 +395,7 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -447,16 +429,10 @@ func (c *backendServicesRESTClient) DeleteSignedUrlKey(ctx context.Context, req 
 
 // Get returns the specified BackendService resource. Gets a list of available backend services.
 func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendService, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -494,7 +470,7 @@ func (c *backendServicesRESTClient) Get(ctx context.Context, req *computepb.GetB
 //
 // { “group”: “/zones/us-east1-b/instanceGroups/lb-backend-example” }
 func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -538,7 +514,7 @@ func (c *backendServicesRESTClient) GetHealth(ctx context.Context, req *computep
 
 // Insert creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
 func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -589,12 +565,6 @@ func (c *backendServicesRESTClient) Insert(ctx context.Context, req *computepb.I
 
 // List retrieves the list of BackendService resources available to the specified project.
 func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.ListBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices", req.GetProject())
 
@@ -617,7 +587,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -651,7 +621,7 @@ func (c *backendServicesRESTClient) List(ctx context.Context, req *computepb.Lis
 
 // Patch patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -702,7 +672,7 @@ func (c *backendServicesRESTClient) Patch(ctx context.Context, req *computepb.Pa
 
 // SetSecurityPolicy sets the Google Cloud Armor security policy for the specified backend service. For more information, see Google Cloud Armor Overview
 func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *computepb.SetSecurityPolicyBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSecurityPolicyReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -753,7 +723,7 @@ func (c *backendServicesRESTClient) SetSecurityPolicy(ctx context.Context, req *
 
 // Update updates the specified BackendService resource with the data included in the request. For more information, see Backend services overview.
 func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

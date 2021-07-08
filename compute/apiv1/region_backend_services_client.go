@@ -163,8 +163,8 @@ func NewRegionBackendServicesRESTClient(ctx context.Context, opts ...option.Clie
 
 func defaultRegionBackendServicesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *regionBackendServicesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified regional BackendService resource.
 func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *computepb.DeleteRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService())
 
@@ -212,7 +206,7 @@ func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -246,16 +240,10 @@ func (c *regionBackendServicesRESTClient) Delete(ctx context.Context, req *compu
 
 // Get returns the specified regional BackendService resource.
 func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computepb.GetRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendService, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -289,7 +277,7 @@ func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computep
 
 // GetHealth gets the most recent health check results for this regional BackendService.
 func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -333,7 +321,7 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 
 // Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
 func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -384,12 +372,6 @@ func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *compu
 
 // List retrieves the list of regional BackendService resources available to the specified project in the given region.
 func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *computepb.ListRegionBackendServicesRequest, opts ...gax.CallOption) (*computepb.BackendServiceList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendServices", req.GetProject(), req.GetRegion())
 
@@ -412,7 +394,7 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -446,7 +428,7 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 
 // Patch updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -497,7 +479,7 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 
 // Update updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
 func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

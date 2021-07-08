@@ -149,8 +149,8 @@ func NewTargetVpnGatewaysRESTClient(ctx context.Context, opts ...option.ClientOp
 
 func defaultTargetVpnGatewaysRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -182,12 +182,6 @@ func (c *targetVpnGatewaysRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of target VPN gateways.
 func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListTargetVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.TargetVpnGatewayAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/targetVpnGateways", req.GetProject())
 
@@ -213,7 +207,7 @@ func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -247,12 +241,6 @@ func (c *targetVpnGatewaysRESTClient) AggregatedList(ctx context.Context, req *c
 
 // Delete deletes the specified target VPN gateway.
 func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb.DeleteTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetVpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetTargetVpnGateway())
 
@@ -263,7 +251,7 @@ func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -297,16 +285,10 @@ func (c *targetVpnGatewaysRESTClient) Delete(ctx context.Context, req *computepb
 
 // Get returns the specified target VPN gateway. Gets a list of available target VPN gateways by making a list() request.
 func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.GetTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.TargetVpnGateway, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetVpnGateways/%v", req.GetProject(), req.GetRegion(), req.GetTargetVpnGateway())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -340,7 +322,7 @@ func (c *targetVpnGatewaysRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // Insert creates a target VPN gateway in the specified project and region using the data included in the request.
 func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb.InsertTargetVpnGatewayRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetVpnGatewayResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -391,12 +373,6 @@ func (c *targetVpnGatewaysRESTClient) Insert(ctx context.Context, req *computepb
 
 // List retrieves a list of target VPN gateways available to the specified project and region.
 func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.ListTargetVpnGatewaysRequest, opts ...gax.CallOption) (*computepb.TargetVpnGatewayList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/targetVpnGateways", req.GetProject(), req.GetRegion())
 
@@ -419,7 +395,7 @@ func (c *targetVpnGatewaysRESTClient) List(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}

@@ -66,7 +66,7 @@ for i in $(find . -name go.mod); do
   go mod edit -replace cloud.google.com/go/spanner=$gcwd/spanner
   go mod edit -replace cloud.google.com/go/storage=$gcwd/storage
   echo "Downloading modules"
-  go mod download
+  go mod tidy
   echo "Building module $i"
   go build ./...
   popd

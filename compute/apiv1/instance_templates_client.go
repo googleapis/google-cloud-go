@@ -163,8 +163,8 @@ func NewInstanceTemplatesRESTClient(ctx context.Context, opts ...option.ClientOp
 
 func defaultInstanceTemplatesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -196,12 +196,6 @@ func (c *instanceTemplatesRESTClient) Connection() *grpc.ClientConn {
 
 // Delete deletes the specified instance template. Deleting an instance template is permanent and cannot be undone. It is not possible to delete templates that are already in use by a managed instance group.
 func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
@@ -212,7 +206,7 @@ func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -246,16 +240,10 @@ func (c *instanceTemplatesRESTClient) Delete(ctx context.Context, req *computepb
 
 // Get returns the specified instance template. Gets a list of available instance templates by making a list() request.
 func (c *instanceTemplatesRESTClient) Get(ctx context.Context, req *computepb.GetInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.InstanceTemplate, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v", req.GetProject(), req.GetInstanceTemplate())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -289,12 +277,6 @@ func (c *instanceTemplatesRESTClient) Get(ctx context.Context, req *computepb.Ge
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates/%v/getIamPolicy", req.GetProject(), req.GetResource())
 
@@ -305,7 +287,7 @@ func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *com
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -339,7 +321,7 @@ func (c *instanceTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *com
 
 // Insert creates an instance template in the specified project using the data that is included in the request. If you are creating a new template to update an existing instance group, your new instance template must use the same network or, if applicable, the same subnetwork as the original template.
 func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceTemplateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -390,12 +372,6 @@ func (c *instanceTemplatesRESTClient) Insert(ctx context.Context, req *computepb
 
 // List retrieves a list of instance templates that are contained within the specified project.
 func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.ListInstanceTemplatesRequest, opts ...gax.CallOption) (*computepb.InstanceTemplateList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/instanceTemplates", req.GetProject())
 
@@ -418,7 +394,7 @@ func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.L
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -452,7 +428,7 @@ func (c *instanceTemplatesRESTClient) List(ctx context.Context, req *computepb.L
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -496,7 +472,7 @@ func (c *instanceTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *com
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *instanceTemplatesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsInstanceTemplateRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

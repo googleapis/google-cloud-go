@@ -121,8 +121,8 @@ func NewRegionInstancesRESTClient(ctx context.Context, opts ...option.ClientOpti
 
 func defaultRegionInstancesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -154,7 +154,7 @@ func (c *regionInstancesRESTClient) Connection() *grpc.ClientConn {
 
 // BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
 func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

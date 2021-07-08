@@ -205,8 +205,8 @@ func NewNodeGroupsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 
 func defaultNodeGroupsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -238,7 +238,7 @@ func (c *nodeGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // AddNodes adds specified number of nodes to the node group.
 func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsAddNodesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -289,12 +289,6 @@ func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddN
 
 // AggregatedList retrieves an aggregated list of node groups. Note: use nodeGroups.listNodes for more details about each group.
 func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeGroupsRequest, opts ...gax.CallOption) (*computepb.NodeGroupAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/nodeGroups", req.GetProject())
 
@@ -320,7 +314,7 @@ func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computep
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -354,12 +348,6 @@ func (c *nodeGroupsRESTClient) AggregatedList(ctx context.Context, req *computep
 
 // Delete deletes the specified NodeGroup resource.
 func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.DeleteNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
@@ -370,7 +358,7 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -404,7 +392,7 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 
 // DeleteNodes deletes specified nodes from the node group.
 func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.DeleteNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsDeleteNodesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -455,16 +443,10 @@ func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.D
 
 // Get returns the specified NodeGroup. Get a list of available NodeGroups by making a list() request. Note: the “nodes” field should not be used. Use nodeGroups.listNodes instead.
 func (c *nodeGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNodeGroupRequest, opts ...gax.CallOption) (*computepb.NodeGroup, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -498,12 +480,6 @@ func (c *nodeGroupsRESTClient) Get(ctx context.Context, req *computepb.GetNodeGr
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNodeGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/getIamPolicy", req.GetProject(), req.GetZone(), req.GetResource())
 
@@ -514,7 +490,7 @@ func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -548,7 +524,7 @@ func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.
 
 // Insert creates a NodeGroup resource in the specified project using the data included in the request.
 func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -602,12 +578,6 @@ func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.Insert
 
 // List retrieves a list of node groups available to the specified project. Note: use nodeGroups.listNodes for more details about each group.
 func (c *nodeGroupsRESTClient) List(ctx context.Context, req *computepb.ListNodeGroupsRequest, opts ...gax.CallOption) (*computepb.NodeGroupList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups", req.GetProject(), req.GetZone())
 
@@ -630,7 +600,7 @@ func (c *nodeGroupsRESTClient) List(ctx context.Context, req *computepb.ListNode
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -664,12 +634,6 @@ func (c *nodeGroupsRESTClient) List(ctx context.Context, req *computepb.ListNode
 
 // ListNodes lists nodes in the node group.
 func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.ListNodesNodeGroupsRequest, opts ...gax.CallOption) (*computepb.NodeGroupsListNodes, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/nodeGroups/%v/listNodes", req.GetProject(), req.GetZone(), req.GetNodeGroup())
 
@@ -692,7 +656,7 @@ func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.Lis
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -726,7 +690,7 @@ func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.Lis
 
 // Patch updates the specified node group.
 func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -777,7 +741,7 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNodeGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -821,7 +785,7 @@ func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.
 
 // SetNodeTemplate updates the node template of the node group.
 func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsSetNodeTemplateRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -872,7 +836,7 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *nodeGroupsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsNodeGroupRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

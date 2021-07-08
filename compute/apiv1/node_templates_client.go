@@ -170,8 +170,8 @@ func NewNodeTemplatesRESTClient(ctx context.Context, opts ...option.ClientOption
 
 func defaultNodeTemplatesRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -203,12 +203,6 @@ func (c *nodeTemplatesRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of node templates.
 func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListNodeTemplatesRequest, opts ...gax.CallOption) (*computepb.NodeTemplateAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/nodeTemplates", req.GetProject())
 
@@ -234,7 +228,7 @@ func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -268,12 +262,6 @@ func (c *nodeTemplatesRESTClient) AggregatedList(ctx context.Context, req *compu
 
 // Delete deletes the specified NodeTemplate resource.
 func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.DeleteNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v", req.GetProject(), req.GetRegion(), req.GetNodeTemplate())
 
@@ -284,7 +272,7 @@ func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -318,16 +306,10 @@ func (c *nodeTemplatesRESTClient) Delete(ctx context.Context, req *computepb.Del
 
 // Get returns the specified node template. Gets a list of available node templates by making a list() request.
 func (c *nodeTemplatesRESTClient) Get(ctx context.Context, req *computepb.GetNodeTemplateRequest, opts ...gax.CallOption) (*computepb.NodeTemplate, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v", req.GetProject(), req.GetRegion(), req.GetNodeTemplate())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -361,12 +343,6 @@ func (c *nodeTemplatesRESTClient) Get(ctx context.Context, req *computepb.GetNod
 
 // GetIamPolicy gets the access control policy for a resource. May be empty if no such policy or resource exists.
 func (c *nodeTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.GetIamPolicyNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates/%v/getIamPolicy", req.GetProject(), req.GetRegion(), req.GetResource())
 
@@ -377,7 +353,7 @@ func (c *nodeTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -411,7 +387,7 @@ func (c *nodeTemplatesRESTClient) GetIamPolicy(ctx context.Context, req *compute
 
 // Insert creates a NodeTemplate resource in the specified project using the data included in the request.
 func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeTemplateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -462,12 +438,6 @@ func (c *nodeTemplatesRESTClient) Insert(ctx context.Context, req *computepb.Ins
 
 // List retrieves a list of node templates available to the specified project.
 func (c *nodeTemplatesRESTClient) List(ctx context.Context, req *computepb.ListNodeTemplatesRequest, opts ...gax.CallOption) (*computepb.NodeTemplateList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/nodeTemplates", req.GetProject(), req.GetRegion())
 
@@ -490,7 +460,7 @@ func (c *nodeTemplatesRESTClient) List(ctx context.Context, req *computepb.ListN
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -524,7 +494,7 @@ func (c *nodeTemplatesRESTClient) List(ctx context.Context, req *computepb.ListN
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *nodeTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNodeTemplateRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -568,7 +538,7 @@ func (c *nodeTemplatesRESTClient) SetIamPolicy(ctx context.Context, req *compute
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *nodeTemplatesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsNodeTemplateRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

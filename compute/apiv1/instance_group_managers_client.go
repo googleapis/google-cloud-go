@@ -276,8 +276,8 @@ func NewInstanceGroupManagersRESTClient(ctx context.Context, opts ...option.Clie
 
 func defaultInstanceGroupManagersRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -313,7 +313,7 @@ func (c *instanceGroupManagersRESTClient) Connection() *grpc.ClientConn {
 //
 // You can specify a maximum of 1000 instances with this method per request.
 func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, req *computepb.AbandonInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersAbandonInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -364,12 +364,6 @@ func (c *instanceGroupManagersRESTClient) AbandonInstances(ctx context.Context, 
 
 // AggregatedList retrieves the list of managed instance groups and groups them by zone.
 func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListInstanceGroupManagersRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManagerAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/instanceGroupManagers", req.GetProject())
 
@@ -395,7 +389,7 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -429,7 +423,7 @@ func (c *instanceGroupManagersRESTClient) AggregatedList(ctx context.Context, re
 
 // ApplyUpdatesToInstances applies changes to selected instances on the managed instance group. This method can be used to apply new overrides and/or new versions.
 func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Context, req *computepb.ApplyUpdatesToInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersApplyUpdatesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -473,7 +467,7 @@ func (c *instanceGroupManagersRESTClient) ApplyUpdatesToInstances(ctx context.Co
 
 // CreateInstances creates instances with per-instance configs in this managed instance group. Instances are created using the current instance template. The create instances operation is marked DONE if the createInstances request is successful. The underlying actions take additional time. You must separately verify the status of the creating or actions with the listmanagedinstances method.
 func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, req *computepb.CreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersCreateInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -524,12 +518,6 @@ func (c *instanceGroupManagersRESTClient) CreateInstances(ctx context.Context, r
 
 // Delete deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
 func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *computepb.DeleteInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -540,7 +528,7 @@ func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -578,7 +566,7 @@ func (c *instanceGroupManagersRESTClient) Delete(ctx context.Context, req *compu
 //
 // You can specify a maximum of 1000 instances with this method per request.
 func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, req *computepb.DeleteInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersDeleteInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -629,7 +617,7 @@ func (c *instanceGroupManagersRESTClient) DeleteInstances(ctx context.Context, r
 
 // DeletePerInstanceConfigs deletes selected per-instance configs for the managed instance group.
 func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.Context, req *computepb.DeletePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersDeletePerInstanceConfigsReqResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -673,16 +661,10 @@ func (c *instanceGroupManagersRESTClient) DeletePerInstanceConfigs(ctx context.C
 
 // Get returns all of the details about the specified managed instance group. Gets a list of available managed instance groups by making a list() request.
 func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computepb.GetInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManager, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -718,7 +700,7 @@ func (c *instanceGroupManagersRESTClient) Get(ctx context.Context, req *computep
 //
 // A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
 func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -769,12 +751,6 @@ func (c *instanceGroupManagersRESTClient) Insert(ctx context.Context, req *compu
 
 // List retrieves a list of managed instance groups that are contained within the specified project and zone.
 func (c *instanceGroupManagersRESTClient) List(ctx context.Context, req *computepb.ListInstanceGroupManagersRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManagerList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers", req.GetProject(), req.GetZone())
 
@@ -797,7 +773,7 @@ func (c *instanceGroupManagersRESTClient) List(ctx context.Context, req *compute
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -831,12 +807,6 @@ func (c *instanceGroupManagersRESTClient) List(ctx context.Context, req *compute
 
 // ListErrors lists all errors thrown by actions on instances for a given managed instance group. The filter and orderBy query parameters are not supported.
 func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *computepb.ListErrorsInstanceGroupManagersRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManagersListErrorsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v/listErrors", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -859,7 +829,7 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -893,12 +863,6 @@ func (c *instanceGroupManagersRESTClient) ListErrors(ctx context.Context, req *c
 
 // ListManagedInstances lists all of the instances in the managed instance group. Each instance in the list has a currentAction, which indicates the action that the managed instance group is performing on the instance. For example, if the group is still creating an instance, the currentAction is CREATING. If a previous action failed, the list displays the errors for that failed action. The orderBy query parameter is not supported.
 func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Context, req *computepb.ListManagedInstancesInstanceGroupManagersRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManagersListManagedInstancesResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v/listManagedInstances", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -921,7 +885,7 @@ func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Conte
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -955,12 +919,6 @@ func (c *instanceGroupManagersRESTClient) ListManagedInstances(ctx context.Conte
 
 // ListPerInstanceConfigs lists all of the per-instance configs defined for the managed instance group. The orderBy query parameter is not supported.
 func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Context, req *computepb.ListPerInstanceConfigsInstanceGroupManagersRequest, opts ...gax.CallOption) (*computepb.InstanceGroupManagersListPerInstanceConfigsResp, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v/listPerInstanceConfigs", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -983,7 +941,7 @@ func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Con
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1017,7 +975,7 @@ func (c *instanceGroupManagersRESTClient) ListPerInstanceConfigs(ctx context.Con
 
 // Patch updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *computepb.PatchInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1068,7 +1026,7 @@ func (c *instanceGroupManagersRESTClient) Patch(ctx context.Context, req *comput
 
 // PatchPerInstanceConfigs inserts or patches per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
 func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Context, req *computepb.PatchPerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersPatchPerInstanceConfigsReqResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1123,7 +1081,7 @@ func (c *instanceGroupManagersRESTClient) PatchPerInstanceConfigs(ctx context.Co
 //
 // You can specify a maximum of 1000 instances with this method per request.
 func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context, req *computepb.RecreateInstancesInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersRecreateInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1182,12 +1140,6 @@ func (c *instanceGroupManagersRESTClient) RecreateInstances(ctx context.Context,
 //
 // If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *computepb.ResizeInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instanceGroupManagers/%v/resize", req.GetProject(), req.GetZone(), req.GetInstanceGroupManager())
 
@@ -1201,7 +1153,7 @@ func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *compu
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -1235,7 +1187,7 @@ func (c *instanceGroupManagersRESTClient) Resize(ctx context.Context, req *compu
 
 // SetInstanceTemplate specifies the instance template to use when creating new instances in this group. The templates for existing instances in the group do not change unless you run recreateInstances, run applyUpdatesToInstances, or set the group’s updatePolicy.type to PROACTIVE.
 func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Context, req *computepb.SetInstanceTemplateInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersSetInstanceTemplateRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1286,7 +1238,7 @@ func (c *instanceGroupManagersRESTClient) SetInstanceTemplate(ctx context.Contex
 
 // SetTargetPools modifies the target pools to which all instances in this managed instance group are assigned. The target pools automatically apply to all of the instances in the managed instance group. This operation is marked DONE when you make the request even if the instances have not yet been added to their target pools. The change might take some time to apply to all of the instances in the group depending on the size of the group.
 func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, req *computepb.SetTargetPoolsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersSetTargetPoolsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -1337,7 +1289,7 @@ func (c *instanceGroupManagersRESTClient) SetTargetPools(ctx context.Context, re
 
 // UpdatePerInstanceConfigs inserts or updates per-instance configs for the managed instance group. perInstanceConfig.name (at http://perInstanceConfig.name) serves as a key used to distinguish whether to perform insert or patch.
 func (c *instanceGroupManagersRESTClient) UpdatePerInstanceConfigs(ctx context.Context, req *computepb.UpdatePerInstanceConfigsInstanceGroupManagerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetInstanceGroupManagersUpdatePerInstanceConfigsReqResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
