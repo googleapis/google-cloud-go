@@ -270,7 +270,7 @@ func (c *regionTargetHttpsProxiesRESTClient) Get(ctx context.Context, req *compu
 
 // Insert creates a TargetHttpsProxy resource in the specified project and region using the data included in the request.
 func (c *regionTargetHttpsProxiesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTargetHttpsProxyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -377,7 +377,7 @@ func (c *regionTargetHttpsProxiesRESTClient) List(ctx context.Context, req *comp
 
 // SetSslCertificates replaces SslCertificates for TargetHttpsProxy.
 func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Context, req *computepb.SetSslCertificatesRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionTargetHttpsProxiesSetSslCertificatesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -428,7 +428,7 @@ func (c *regionTargetHttpsProxiesRESTClient) SetSslCertificates(ctx context.Cont
 
 // SetUrlMap changes the URL map for TargetHttpsProxy.
 func (c *regionTargetHttpsProxiesRESTClient) SetUrlMap(ctx context.Context, req *computepb.SetUrlMapRegionTargetHttpsProxyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

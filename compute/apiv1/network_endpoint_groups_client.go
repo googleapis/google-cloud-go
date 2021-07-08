@@ -269,7 +269,7 @@ func (c *networkEndpointGroupsRESTClient) AggregatedList(ctx context.Context, re
 
 // AttachNetworkEndpoints attach a list of network endpoints to the specified network endpoint group.
 func (c *networkEndpointGroupsRESTClient) AttachNetworkEndpoints(ctx context.Context, req *computepb.AttachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupsAttachEndpointsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -364,7 +364,7 @@ func (c *networkEndpointGroupsRESTClient) Delete(ctx context.Context, req *compu
 
 // DetachNetworkEndpoints detach a list of network endpoints from the specified network endpoint group.
 func (c *networkEndpointGroupsRESTClient) DetachNetworkEndpoints(ctx context.Context, req *computepb.DetachNetworkEndpointsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupsDetachEndpointsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -452,7 +452,7 @@ func (c *networkEndpointGroupsRESTClient) Get(ctx context.Context, req *computep
 
 // Insert creates a network endpoint group in the specified project using the parameters that are included in the request.
 func (c *networkEndpointGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -559,7 +559,7 @@ func (c *networkEndpointGroupsRESTClient) List(ctx context.Context, req *compute
 
 // ListNetworkEndpoints lists the network endpoints in the specified network endpoint group.
 func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Context, req *computepb.ListNetworkEndpointsNetworkEndpointGroupsRequest, opts ...gax.CallOption) (*computepb.NetworkEndpointGroupsListNetworkEndpoints, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNetworkEndpointGroupsListEndpointsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -622,7 +622,7 @@ func (c *networkEndpointGroupsRESTClient) ListNetworkEndpoints(ctx context.Conte
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *networkEndpointGroupsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsNetworkEndpointGroupRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

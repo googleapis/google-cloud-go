@@ -268,7 +268,7 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 
 // ListInstances lists the instances in the specified instance group and displays information about the named ports. Depending on the specified options, this method can list all instances or only the instances that are running. The orderBy query parameter is not supported.
 func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req *computepb.ListInstancesRegionInstanceGroupsRequest, opts ...gax.CallOption) (*computepb.RegionInstanceGroupsListInstances, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupsListInstancesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -331,7 +331,7 @@ func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req 
 
 // SetNamedPorts sets the named ports for the specified regional instance group.
 func (c *regionInstanceGroupsRESTClient) SetNamedPorts(ctx context.Context, req *computepb.SetNamedPortsRegionInstanceGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionInstanceGroupsSetNamedPortsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

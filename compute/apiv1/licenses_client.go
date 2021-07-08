@@ -321,7 +321,7 @@ func (c *licensesRESTClient) GetIamPolicy(ctx context.Context, req *computepb.Ge
 
 // Insert create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) Insert(ctx context.Context, req *computepb.InsertLicenseRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetLicenseResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -428,7 +428,7 @@ func (c *licensesRESTClient) List(ctx context.Context, req *computepb.ListLicens
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyLicenseRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -472,7 +472,7 @@ func (c *licensesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.Se
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
 func (c *licensesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsLicenseRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
