@@ -387,7 +387,7 @@ func (c *resourcePoliciesRESTClient) GetIamPolicy(ctx context.Context, req *comp
 
 // Insert creates a new resource policy.
 func (c *resourcePoliciesRESTClient) Insert(ctx context.Context, req *computepb.InsertResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourcePolicyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -494,7 +494,7 @@ func (c *resourcePoliciesRESTClient) List(ctx context.Context, req *computepb.Li
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyResourcePolicyRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetRegionSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -538,7 +538,7 @@ func (c *resourcePoliciesRESTClient) SetIamPolicy(ctx context.Context, req *comp
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *resourcePoliciesRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsResourcePolicyRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

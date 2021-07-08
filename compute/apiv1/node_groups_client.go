@@ -238,7 +238,7 @@ func (c *nodeGroupsRESTClient) Connection() *grpc.ClientConn {
 
 // AddNodes adds specified number of nodes to the node group.
 func (c *nodeGroupsRESTClient) AddNodes(ctx context.Context, req *computepb.AddNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsAddNodesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -392,7 +392,7 @@ func (c *nodeGroupsRESTClient) Delete(ctx context.Context, req *computepb.Delete
 
 // DeleteNodes deletes specified nodes from the node group.
 func (c *nodeGroupsRESTClient) DeleteNodes(ctx context.Context, req *computepb.DeleteNodesNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsDeleteNodesRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -524,7 +524,7 @@ func (c *nodeGroupsRESTClient) GetIamPolicy(ctx context.Context, req *computepb.
 
 // Insert creates a NodeGroup resource in the specified project using the data included in the request.
 func (c *nodeGroupsRESTClient) Insert(ctx context.Context, req *computepb.InsertNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -690,7 +690,7 @@ func (c *nodeGroupsRESTClient) ListNodes(ctx context.Context, req *computepb.Lis
 
 // Patch updates the specified node group.
 func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -741,7 +741,7 @@ func (c *nodeGroupsRESTClient) Patch(ctx context.Context, req *computepb.PatchNo
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicyNodeGroupRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetZoneSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -785,7 +785,7 @@ func (c *nodeGroupsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.
 
 // SetNodeTemplate updates the node template of the node group.
 func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *computepb.SetNodeTemplateNodeGroupRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetNodeGroupsSetNodeTemplateRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -836,7 +836,7 @@ func (c *nodeGroupsRESTClient) SetNodeTemplate(ctx context.Context, req *compute
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *nodeGroupsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsNodeGroupRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

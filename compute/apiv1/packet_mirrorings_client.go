@@ -336,7 +336,7 @@ func (c *packetMirroringsRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // Insert creates a PacketMirroring resource in the specified project and region using the data included in the request.
 func (c *packetMirroringsRESTClient) Insert(ctx context.Context, req *computepb.InsertPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -443,7 +443,7 @@ func (c *packetMirroringsRESTClient) List(ctx context.Context, req *computepb.Li
 
 // Patch patches the specified PacketMirroring resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.PatchPacketMirroringRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetPacketMirroringResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -494,7 +494,7 @@ func (c *packetMirroringsRESTClient) Patch(ctx context.Context, req *computepb.P
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *packetMirroringsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsPacketMirroringRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

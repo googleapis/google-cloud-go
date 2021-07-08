@@ -322,7 +322,7 @@ func (c *sslCertificatesRESTClient) Get(ctx context.Context, req *computepb.GetS
 
 // Insert creates a SslCertificate resource in the specified project using the data included in the request.
 func (c *sslCertificatesRESTClient) Insert(ctx context.Context, req *computepb.InsertSslCertificateRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSslCertificateResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

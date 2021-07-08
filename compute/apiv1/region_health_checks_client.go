@@ -270,7 +270,7 @@ func (c *regionHealthChecksRESTClient) Get(ctx context.Context, req *computepb.G
 
 // Insert creates a HealthCheck resource in the specified project using the data included in the request.
 func (c *regionHealthChecksRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -377,7 +377,7 @@ func (c *regionHealthChecksRESTClient) List(ctx context.Context, req *computepb.
 
 // Patch updates a HealthCheck resource in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -428,7 +428,7 @@ func (c *regionHealthChecksRESTClient) Patch(ctx context.Context, req *computepb
 
 // Update updates a HealthCheck resource in the specified project using the data included in the request.
 func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionHealthCheckRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetHealthCheckResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

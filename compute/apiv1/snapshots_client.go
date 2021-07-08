@@ -381,7 +381,7 @@ func (c *snapshotsRESTClient) List(ctx context.Context, req *computepb.ListSnaps
 
 // SetIamPolicy sets the access control policy on the specified resource. Replaces any existing policy.
 func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.SetIamPolicySnapshotRequest, opts ...gax.CallOption) (*computepb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetPolicyRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -425,7 +425,7 @@ func (c *snapshotsRESTClient) SetIamPolicy(ctx context.Context, req *computepb.S
 
 // SetLabels sets the labels on a snapshot. To learn more about labels, read the Labeling Resources documentation.
 func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetLabelsSnapshotRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetGlobalSetLabelsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -469,7 +469,7 @@ func (c *snapshotsRESTClient) SetLabels(ctx context.Context, req *computepb.SetL
 
 // TestIamPermissions returns permissions that a caller has on the specified resource.
 func (c *snapshotsRESTClient) TestIamPermissions(ctx context.Context, req *computepb.TestIamPermissionsSnapshotRequest, opts ...gax.CallOption) (*computepb.TestPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetTestPermissionsRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
