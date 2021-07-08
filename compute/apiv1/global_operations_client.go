@@ -17,7 +17,6 @@
 package compute
 
 import (
-	"bytes"
 	"context"
 	"fmt"
 	"io/ioutil"
@@ -155,8 +154,8 @@ func NewGlobalOperationsRESTClient(ctx context.Context, opts ...option.ClientOpt
 
 func defaultGlobalOperationsRESTClientOptions() []option.ClientOption {
 	return []option.ClientOption{
-		internaloption.WithDefaultEndpoint("compute.googleapis.com"),
-		internaloption.WithDefaultMTLSEndpoint("compute.mtls.googleapis.com"),
+		internaloption.WithDefaultEndpoint("https://compute.googleapis.com"),
+		internaloption.WithDefaultMTLSEndpoint("https://compute.mtls.googleapis.com"),
 		internaloption.WithDefaultAudience("https://compute.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 	}
@@ -188,12 +187,6 @@ func (c *globalOperationsRESTClient) Connection() *grpc.ClientConn {
 
 // AggregatedList retrieves an aggregated list of all operations.
 func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *computepb.AggregatedListGlobalOperationsRequest, opts ...gax.CallOption) (*computepb.OperationAggregatedList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/aggregated/operations", req.GetProject())
 
@@ -219,7 +212,7 @@ func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *co
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -253,16 +246,10 @@ func (c *globalOperationsRESTClient) AggregatedList(ctx context.Context, req *co
 
 // Delete deletes the specified Operations resource.
 func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.DeleteGlobalOperationRequest, opts ...gax.CallOption) (*computepb.DeleteGlobalOperationResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v", req.GetProject(), req.GetOperation())
 
-	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -296,16 +283,10 @@ func (c *globalOperationsRESTClient) Delete(ctx context.Context, req *computepb.
 
 // Get retrieves the specified Operations resource. Gets a list of operations by making a list() request.
 func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.GetGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v", req.GetProject(), req.GetOperation())
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -339,12 +320,6 @@ func (c *globalOperationsRESTClient) Get(ctx context.Context, req *computepb.Get
 
 // List retrieves a list of Operation resources contained within the specified project.
 func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.ListGlobalOperationsRequest, opts ...gax.CallOption) (*computepb.OperationList, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations", req.GetProject())
 
@@ -367,7 +342,7 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 
 	baseUrl.RawQuery = params.Encode()
 
-	httpReq, err := http.NewRequest("GET", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -407,16 +382,10 @@ func (c *globalOperationsRESTClient) List(ctx context.Context, req *computepb.Li
 //
 //   If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not DONE.
 func (c *globalOperationsRESTClient) Wait(ctx context.Context, req *computepb.WaitGlobalOperationRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
 	baseUrl, _ := url.Parse(c.endpoint)
 	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/operations/%v/wait", req.GetProject(), req.GetOperation())
 
-	httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+	httpReq, err := http.NewRequest("POST", baseUrl.String(), nil)
 	if err != nil {
 		return nil, err
 	}
