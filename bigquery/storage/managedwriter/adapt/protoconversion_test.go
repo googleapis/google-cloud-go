@@ -15,7 +15,8 @@
 package adapt
 
 import (
-	"bytes"
+	"encoding/json"
+	"reflect"
 	"testing"
 
 	"github.com/google/go-cmp/cmp"
@@ -264,7 +265,14 @@ func TestProtoJSONSerialization(t *testing.T) {
 		t.Fatalf("failed to marshal message: %v", err)
 	}
 
-	if !bytes.Equal(gotBytes, sampleRecord) {
+	var got, want interface{}
+	if err := json.Unmarshal(gotBytes, &got); err != nil {
+		t.Fatalf("couldn't marshal gotBytes: %v", err)
+	}
+	if err := json.Unmarshal(sampleRecord, &want); err != nil {
+		t.Fatalf("couldn't marshal sampleRecord: %v", err)
+	}
+	if !reflect.DeepEqual(got, want) {
 		t.Fatalf("mismatched json: got\n%q\nwant\n%q", gotBytes, sampleRecord)
 	}
 
