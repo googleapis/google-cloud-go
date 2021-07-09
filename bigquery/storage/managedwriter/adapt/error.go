@@ -25,7 +25,7 @@ func (ce *conversionError) Error() string {
 	if ce.Location == "" {
 		return ce.Details.Error()
 	}
-	return fmt.Sprintf("location %q: %v", ce.Location, ce.Details)
+	return fmt.Sprintf("conversion error in location %q: %v", ce.Location, ce.Details)
 }
 
 func newConversionError(loc string, err error) *conversionError {
