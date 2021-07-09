@@ -16,20 +16,20 @@ package adapt
 
 import "fmt"
 
-type ConversionError struct {
+type conversionError struct {
 	Location string
 	Details  error
 }
 
-func (ce *ConversionError) Error() string {
+func (ce *conversionError) Error() string {
 	if ce.Location == "" {
 		return ce.Details.Error()
 	}
-	return fmt.Sprintf("Location: %s, Error: %v", ce.Location, ce.Details)
+	return fmt.Sprintf("location %q: %v", ce.Location, ce.Details)
 }
 
-func newConversionError(loc string, err error) *ConversionError {
-	return &ConversionError{
+func newConversionError(loc string, err error) *conversionError {
+	return &conversionError{
 		Location: loc,
 		Details:  err,
 	}
