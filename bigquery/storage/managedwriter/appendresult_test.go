@@ -99,6 +99,9 @@ func TestPendingWrite(t *testing.T) {
 		if ar.offset != reportedOffset+int64(k) {
 			t.Errorf("mismatch on completed AppendResult offset: got %d want %d", ar.offset, reportedOffset+int64(k))
 		}
+		if ar.err != wantErr {
+			t.Errorf("mismatch in errors, got %v want %v", ar.err, wantErr)
+		}
 	}
 
 }
