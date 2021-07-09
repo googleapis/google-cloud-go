@@ -18,7 +18,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"log"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -29,13 +28,14 @@ import (
 func TestFlowControllerCancel(t *testing.T) {
 	// Test canceling a flow controller's context.
 	t.Parallel()
-	fc := newFlowController(3, 10)
+	wantInsertBytes := 10
+	fc := newFlowController(3, wantInsertBytes)
 	if fc.maxInsertBytes != 10 {
+		t.Fatalf("maxInsertBytes mismatch, got %d want %d", fc.maxInsertBytes, wantInsertBytes)
 	}
 	if err := fc.acquire(context.Background(), 5); err != nil {
 		t.Fatal(err)
 	}
-	log.Printf("count: %d", fc.count())
 	// Experiment: a context that times out should always return an error.
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Millisecond)
 	defer cancel()

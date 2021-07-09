@@ -32,7 +32,6 @@ type flowController struct {
 	semInsertCount, semInsertBytes *semaphore.Weighted
 
 	countRemaining int64 // Atomic.
-	//TODO: do we want request bytes remaining?
 }
 
 func newFlowController(maxInserts, maxInsertBytes int) *flowController {
