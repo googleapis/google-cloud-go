@@ -669,10 +669,14 @@ func bqToScriptStackFrame(bsf *bq.ScriptStackFrame) *ScriptStackFrame {
 	}
 }
 
+// DMLStats contains counts of row mutations triggered by a DML query statement.
 type DMLStats struct {
+	// Rows added by the statement.
 	InsertedRowCount int64
-	DeletedRowCount  int64
-	UpdatedRowCount  int64
+	// Rows removed by the statement.
+	DeletedRowCount int64
+	// Rows changed by the statement.
+	UpdatedRowCount int64
 }
 
 func bqToDMLStats(q *bq.DmlStatistics) *DMLStats {
