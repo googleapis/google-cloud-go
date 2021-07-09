@@ -159,29 +159,29 @@ func (ad AlterDatabase) SQL() string {
 	return "ALTER DATABASE " + ad.Name.SQL() + " " + ad.Alteration.SQL()
 }
 
-func (sco SetDatabaseOptions) SQL() string {
-	return "SET " + sco.Options.SQL()
+func (sdo SetDatabaseOptions) SQL() string {
+	return "SET " + sdo.Options.SQL()
 }
 
-func (co DatabaseOptions) SQL() string {
+func (do DatabaseOptions) SQL() string {
 	str := "OPTIONS ("
-	if co.OptimizerVersion != nil {
-		if *co.OptimizerVersion == 0 {
+	if do.OptimizerVersion != nil {
+		if *do.OptimizerVersion == 0 {
 			str += "optimizer_version=null, "
 
 		} else {
-			str += fmt.Sprintf("optimizer_version=%v, ", *co.OptimizerVersion)
+			str += fmt.Sprintf("optimizer_version=%v, ", *do.OptimizerVersion)
 		}
 	}
-	if co.VersionRetentionPeriod != nil {
-		if *co.VersionRetentionPeriod == "" {
+	if do.VersionRetentionPeriod != nil {
+		if *do.VersionRetentionPeriod == "" {
 			str += "version_retention_period=null, "
 		} else {
-			str += fmt.Sprintf("version_retention_period='%s', ", *co.VersionRetentionPeriod)
+			str += fmt.Sprintf("version_retention_period='%s', ", *do.VersionRetentionPeriod)
 		}
 	}
-	if co.EnableKeyVisualizer != nil {
-		if *co.EnableKeyVisualizer {
+	if do.EnableKeyVisualizer != nil {
+		if *do.EnableKeyVisualizer {
 			str += "enable_key_visualizer=true, "
 		} else {
 			str += "enable_key_visualizer=null, "

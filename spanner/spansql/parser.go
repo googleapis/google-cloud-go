@@ -1310,11 +1310,11 @@ func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
 		return nil, err
 	}
 	// The following method is also valid for database names.
-	tname, err := p.parseTableOrIndexOrColumnName()
+	dbname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
 	}
-	a := &AlterDatabase{Name: tname, Position: pos}
+	a := &AlterDatabase{Name: dbname, Position: pos}
 
 	tok := p.next()
 	if tok.err != nil {
@@ -1559,7 +1559,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 	}
 
 	// We ignore case for the key (because it is easier) but not the value.
-	var co DatabaseOptions
+	var opts DatabaseOptions
 	for {
 		if p.eat("enable_key_visualizer", "=") {
 			tok := p.next()
@@ -1575,7 +1575,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 			default:
 				return DatabaseOptions{}, p.errorf("invalid enable_key_visualizer_value: %v", tok.value)
 			}
-			co.EnableKeyVisualizer = enableKeyVisualizer
+			opts.EnableKeyVisualizer = enableKeyVisualizer
 		} else if p.eat("optimizer_version", "=") {
 			tok := p.next()
 			if tok.err != nil {
@@ -1595,7 +1595,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				}
 				optimizerVersion = &version
 			}
-			co.OptimizerVersion = optimizerVersion
+			opts.OptimizerVersion = optimizerVersion
 		} else if p.eat("version_retention_period", "=") {
 			tok := p.next()
 			if tok.err != nil {
@@ -1611,7 +1611,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				}
 				retentionPeriod = &tok.string
 			}
-			co.VersionRetentionPeriod = retentionPeriod
+			opts.VersionRetentionPeriod = retentionPeriod
 		} else {
 			tok := p.next()
 			return DatabaseOptions{}, p.errorf("unknown database option: %v", tok.value)
@@ -1631,7 +1631,7 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 		return DatabaseOptions{}, err
 	}
 
-	return co, nil
+	return opts, nil
 }
 
 func (p *parser) parseKeyPartList() ([]KeyPart, *parseError) {
