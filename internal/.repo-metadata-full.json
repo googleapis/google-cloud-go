@@ -959,7 +959,7 @@
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/pubsublite/apiv1": {
@@ -968,7 +968,7 @@
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/pubsublite/apiv1",
-    "release_level": "beta",
+    "release_level": "ga",
     "library_type": ""
   },
   "cloud.google.com/go/recaptchaenterprise/apiv1": {
