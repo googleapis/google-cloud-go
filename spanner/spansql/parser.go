@@ -979,6 +979,9 @@ func (p *parser) parseDDLStmt() (DDLStmt, *parseError) {
 			}
 			return &DropIndex{Name: name, Position: pos}, nil
 		}
+	} else if p.sniff("ALTER", "DATABASE") {
+		a, err := p.parseAlterDatabase()
+		return a, err
 	}
 
 	return nil, p.errorf("unknown DDL statement")
@@ -1286,6 +1289,50 @@ func (p *parser) parseAlterTable() (*AlterTable, *parseError) {
 	}
 }
 
+func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
+	debugf("parseAlterDatabase: %v", p)
+
+	/*
+			ALTER DATABASE database_id
+		    	action
+
+			action:
+		    SET OPTIONS ( optimizer_version = { 1 ...  2 | null },
+		                  version_retention_period = { 'duration' | null },
+		                  enable_key_visualizer = { true | false | null } )
+	*/
+
+	if err := p.expect("ALTER"); err != nil {
+		return nil, err
+	}
+	pos := p.Pos()
+	if err := p.expect("DATABASE"); err != nil {
+		return nil, err
+	}
+	// The following method is also valid for database names.
+	tname, err := p.parseTableOrIndexOrColumnName()
+	if err != nil {
+		return nil, err
+	}
+	a := &AlterDatabase{Name: tname, Position: pos}
+
+	tok := p.next()
+	if tok.err != nil {
+		return nil, tok.err
+	}
+	switch {
+	default:
+		return nil, p.errorf("got %q, expected SET", tok.value)
+	case tok.caseEqual("SET"):
+		options, err := p.parseDatabaseOptions()
+		if err != nil {
+			return nil, err
+		}
+		a.Alteration = SetDatabaseOptions{Options: options}
+		return a, nil
+	}
+}
+
 func (p *parser) parseDMLStmt() (DMLStmt, *parseError) {
 	debugf("parseDMLStmt: %v", p)
 
@@ -1490,6 +1537,98 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 
 	if err := p.expect(")"); err != nil {
 		return ColumnOptions{}, err
+	}
+
+	return co, nil
+}
+
+func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
+	debugf("parseDatabaseOptions: %v", p)
+	/*
+			options_def:
+				OPTIONS (enable_key_visualizer = { true | null },
+		                 optimizer_version = { 1 ... 2 | null },
+		                 version_retention_period = { 'duration' | null })
+	*/
+
+	if err := p.expect("OPTIONS"); err != nil {
+		return DatabaseOptions{}, err
+	}
+	if err := p.expect("("); err != nil {
+		return DatabaseOptions{}, err
+	}
+
+	// We ignore case for the key (because it is easier) but not the value.
+	var co DatabaseOptions
+	for {
+		if p.eat("enable_key_visualizer", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			enableKeyVisualizer := new(bool)
+			switch tok.value {
+			case "true":
+				*enableKeyVisualizer = true
+			case "null":
+				*enableKeyVisualizer = false
+			default:
+				return DatabaseOptions{}, p.errorf("invalid enable_key_visualizer_value: %v", tok.value)
+			}
+			co.EnableKeyVisualizer = enableKeyVisualizer
+		} else if p.eat("optimizer_version", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			optimizerVersion := new(int)
+			switch tok.value {
+			case "null":
+				*optimizerVersion = 0
+			default:
+				if tok.typ != int64Token {
+					return DatabaseOptions{}, p.errorf("invalid optimizer_version value: %v", tok.value)
+				}
+				version, err := strconv.Atoi(tok.value)
+				if err != nil {
+					return DatabaseOptions{}, p.errorf("invalid optimizer_version value: %v", tok.value)
+				}
+				optimizerVersion = &version
+			}
+			co.OptimizerVersion = optimizerVersion
+		} else if p.eat("version_retention_period", "=") {
+			tok := p.next()
+			if tok.err != nil {
+				return DatabaseOptions{}, tok.err
+			}
+			retentionPeriod := new(string)
+			switch tok.value {
+			case "null":
+				*retentionPeriod = ""
+			default:
+				if tok.typ != stringToken {
+					return DatabaseOptions{}, p.errorf("invalid version_retention_period: %v", tok.value)
+				}
+				retentionPeriod = &tok.string
+			}
+			co.VersionRetentionPeriod = retentionPeriod
+		} else {
+			tok := p.next()
+			return DatabaseOptions{}, p.errorf("unknown database option: %v", tok.value)
+		}
+		if p.sniff(",", ")") {
+			p.eat(",")
+			break
+		}
+		if p.sniff(")") {
+			break
+		}
+		if !p.eat(",") {
+			return DatabaseOptions{}, p.errorf("missing ',' in options list")
+		}
+	}
+	if err := p.expect(")"); err != nil {
+		return DatabaseOptions{}, err
 	}
 
 	return co, nil
