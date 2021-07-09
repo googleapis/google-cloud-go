@@ -32,9 +32,6 @@ https://cloud.google.com/pubsub/lite.
 See https://pkg.go.dev/cloud.google.com/go for authentication, timeouts,
 connection pooling and similar aspects of this package.
 
-Note: This library is in BETA. Backwards-incompatible changes may be made before
-stable v1.0.0 is released.
-
 
 Introduction
 
