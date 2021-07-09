@@ -436,9 +436,9 @@ type QueryStatistics struct {
 	// statements INSERT, UPDATE or DELETE.
 	NumDMLAffectedRows int64
 
-	// DMLStatistics provides statistics about the row mutations performed by
+	// DMLStats provides statistics about the row mutations performed by
 	// DML statements.
-	DMLStats *DMLStats
+	DMLStats *DMLStatistics
 
 	// Describes a timeline of job execution.
 	Timeline []*QueryTimelineSample
@@ -669,8 +669,8 @@ func bqToScriptStackFrame(bsf *bq.ScriptStackFrame) *ScriptStackFrame {
 	}
 }
 
-// DMLStats contains counts of row mutations triggered by a DML query statement.
-type DMLStats struct {
+// DMLStatistics contains counts of row mutations triggered by a DML query statement.
+type DMLStatistics struct {
 	// Rows added by the statement.
 	InsertedRowCount int64
 	// Rows removed by the statement.
@@ -679,11 +679,11 @@ type DMLStats struct {
 	UpdatedRowCount int64
 }
 
-func bqToDMLStats(q *bq.DmlStatistics) *DMLStats {
+func bqToDMLStatistics(q *bq.DmlStatistics) *DMLStatistics {
 	if q == nil {
 		return nil
 	}
-	return &DMLStats{
+	return &DMLStatistics{
 		InsertedRowCount: q.InsertedRowCount,
 		DeletedRowCount:  q.DeletedRowCount,
 		UpdatedRowCount:  q.UpdatedRowCount,
@@ -913,7 +913,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 			TotalBytesProcessed:           s.Query.TotalBytesProcessed,
 			TotalBytesProcessedAccuracy:   s.Query.TotalBytesProcessedAccuracy,
 			NumDMLAffectedRows:            s.Query.NumDmlAffectedRows,
-			DMLStats:                      bqToDMLStats(s.Query.DmlStats),
+			DMLStats:                      bqToDMLStatistics(s.Query.DmlStats),
 			QueryPlan:                     queryPlanFromProto(s.Query.QueryPlan),
 			Schema:                        bqToSchema(s.Query.Schema),
 			SlotMillis:                    s.Query.TotalSlotMs,
