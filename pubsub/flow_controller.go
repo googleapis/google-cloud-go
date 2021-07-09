@@ -135,10 +135,14 @@ func (f *flowController) acquire(ctx context.Context, size int) error {
 			}
 		}
 	}
-	outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
-	recordStat(ctx, OutstandingMessages, outstandingMessages)
-	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
-	recordStat(ctx, OutstandingBytes, outstandingBytes)
+	if f.semCount != nil {
+		outstandingMessages := atomic.AddInt64(&f.countRemaining, 1)
+		recordStat(ctx, OutstandingMessages, outstandingMessages)
+	}
+	if f.semSize != nil {
+		outstandingBytes := atomic.AddInt64(&f.bytesRemaining, f.bound(size))
+		recordStat(ctx, OutstandingBytes, outstandingBytes)
+	}
 	return nil
 }
 
@@ -147,15 +151,15 @@ func (f *flowController) release(ctx context.Context, size int) {
 	if f.limitBehavior == FlowControlIgnore {
 		return
 	}
-	outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
-	recordStat(ctx, OutstandingMessages, outstandingMessages)
-	outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
-	recordStat(ctx, OutstandingBytes, outstandingBytes)
 
 	if f.semCount != nil {
+		outstandingMessages := atomic.AddInt64(&f.countRemaining, -1)
+		recordStat(ctx, OutstandingMessages, outstandingMessages)
 		f.semCount.Release(1)
 	}
 	if f.semSize != nil {
+		outstandingBytes := atomic.AddInt64(&f.bytesRemaining, -1*f.bound(size))
+		recordStat(ctx, OutstandingBytes, outstandingBytes)
 		f.semSize.Release(f.bound(size))
 	}
 }
