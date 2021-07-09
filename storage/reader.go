@@ -115,7 +115,10 @@ func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		}
 
 		start := offset + seen
-		req.ReadLimit = length - seen
+		// Only set a ReadLimit if length is non-zero, because zero means read it all.
+		if length > 0 {
+			req.ReadLimit = length - seen
+		}
 		req.ReadOffset = start
 
 		res, err := o.c.gc.GetObjectMedia(ctx, req)
@@ -399,6 +402,7 @@ type Reader struct {
 
 	stream         storagepb.Storage_GetObjectMediaClient
 	reopenWithGRPC func(seen int64) (storagepb.Storage_GetObjectMediaClient, error)
+	leftovers      []byte
 }
 
 // Close closes the Reader. It must be called when done reading.
@@ -414,9 +418,6 @@ func (r *Reader) Close() error {
 func (r *Reader) Read(p []byte) (int, error) {
 	if r.reopenWithGRPC != nil {
 		n, err := r.readWithGRPC(p)
-		if r.remain != -1 {
-			r.remain -= int64(n)
-		}
 		return n, err
 	}
 
@@ -446,10 +447,38 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	}
 
 	n := 0
+	var usedLeftovers bool
+
+	if len(r.leftovers) > 0 {
+		cp := copy(p, r.leftovers)
+		r.seen += int64(cp)
+		r.remain -= int64(cp)
+		r.leftovers = r.leftovers[cp:]
+
+		if len(p[cp:]) == 0 || r.remain == 0 {
+			return cp, nil
+		}
+
+		usedLeftovers = true
+		n = cp
+	}
+
+	var err error
 	for len(p[n:]) > 0 {
+		if usedLeftovers {
+			// Free up the previously opened stream so we can create a new one
+			// starting at the offset after reading the leftovers.
+			r.stream = nil
+			r.stream, err = r.reopenWithGRPC(r.seen)
+			if err != nil {
+				return n, err
+			}
+		}
 		msg, err := r.stream.Recv()
 		if err != nil {
-			if err == io.EOF {
+			if err == io.EOF && r.remain == 0 {
+				// Free the stream once we've reached EOF and nothing remains.
+				r.stream = nil
 				return n, nil
 			}
 
@@ -467,14 +496,22 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			continue
 		}
 
+		if r.size == 0 {
+			r.size = msg.GetMetadata().GetSize()
+			r.remain = r.size
+		}
+
 		content := msg.GetChecksummedData().GetContent()
 		cp := copy(p[n:], content)
-		if cp != len(content) {
+		leftover := len(content) - cp
+		if leftover > 0 {
 			// wasn't able to copy all of the data in the message
-			// TODO: what do we do here, just toss out the data?
+			r.leftovers = make([]byte, leftover)
+			copy(r.leftovers, content[cp:])
 		}
 		n += cp
 		r.seen += int64(cp)
+		r.remain -= int64(cp)
 	}
 
 	return n, nil
