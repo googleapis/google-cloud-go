@@ -18,21 +18,23 @@ package compute
 
 import (
 	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	"context"
 	"fmt"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
-	"math/rand"
 	"testing"
-	"time"
 )
 
 var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
 
 func TestCreateGetListInstance(t *testing.T) {
-	rand.Seed(time.Now().UTC().UnixNano())
-	name := fmt.Sprintf("gotest%d", rand.Int())
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	space := uid.NewSpace("gogapic", nil)
+	name := space.New()
 	description := "тест"
 	machineType := fmt.Sprintf(
 		"https://www.googleapis.com/compute/v1/projects/%s/zones/%s/machineTypes/n1-standard-1",
@@ -156,8 +158,11 @@ func ForceDeleteInstance(ctx context.Context, name string, client *InstancesClie
 }
 
 func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
-	rand.Seed(time.Now().UTC().UnixNano())
-	name := fmt.Sprintf("gotest%d", rand.Int())
+	if testing.Short() {
+		t.Skip("skipping smoke test in short mode")
+	}
+	space := uid.NewSpace("gogapic", nil)
+	name := space.New()
 	ctx := context.Background()
 	c, err := NewSecurityPoliciesRESTClient(ctx)
 	if err != nil {
