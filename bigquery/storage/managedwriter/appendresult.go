@@ -22,9 +22,9 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-// NoOffset is a sentinel value for signalling we're not tracking
+// NoStreamOffset is a sentinel value for signalling we're not tracking
 // stream offset (e.g. a default stream which allows simultaneous append streams).
-const NoOffset int64 = -1
+const NoStreamOffset int64 = -1
 
 // AppendResult tracks the status of a single row of data.
 type AppendResult struct {
