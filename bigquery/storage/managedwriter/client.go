@@ -46,7 +46,7 @@ var (
 	BufferedStream StreamType = "BUFFERED"
 
 	// PendingStream is a stream in which no data is made visible to
-	// readers until the stream is finalized.
+	// readers until the stream is finalized and committed explicitly.
 	PendingStream StreamType = "PENDING"
 )
 
@@ -101,7 +101,7 @@ func NewManagedWriteClient(ctx context.Context, client *storage.BigQueryWriteCli
 	}
 
 	if mw.streamSettings.streamID == "" && mw.streamSettings.streamType == "" {
-		return nil, fmt.Errorf("TODO insufficient config?")
+		return nil, fmt.Errorf("TODO insufficient validation")
 	}
 	if mw.streamSettings.streamID == "" {
 		// not instantiated with a stream, construct one.
