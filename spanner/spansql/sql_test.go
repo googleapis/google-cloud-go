@@ -231,6 +231,32 @@ func TestSQL(t *testing.T) {
 			reparseDDL,
 		},
 		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					VersionRetentionPeriod: func(s string) *string { return &s }("7d"),
+					OptimizerVersion:       func(i int) *int { return &i }(2),
+					EnableKeyVisualizer:    func(b bool) *bool { return &b }(true),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)",
+			reparseDDL,
+		},
+		{
+			&AlterDatabase{
+				Name: "dbname",
+				Alteration: SetDatabaseOptions{Options: DatabaseOptions{
+					VersionRetentionPeriod: func(s string) *string { return &s }(""),
+					OptimizerVersion:       func(i int) *int { return &i }(0),
+					EnableKeyVisualizer:    func(b bool) *bool { return &b }(false),
+				}},
+				Position: line(1),
+			},
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)",
+			reparseDDL,
+		},
+		{
 			&Delete{
 				Table: "Ta",
 				Where: ComparisonOp{

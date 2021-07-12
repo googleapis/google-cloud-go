@@ -561,7 +561,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "apiv1",
 		importPath:            "cloud.google.com/go/firestore/apiv1/admin",
 		gRPCServiceConfigPath: "firestore_admin_grpc_service_config.json",
-		apiServiceConfigPath:  "firestore_admin_v1.yaml",
+		apiServiceConfigPath:  "firestore_v1.yaml",
 		releaseLevel:          "ga",
 	},
 	{
@@ -634,8 +634,8 @@ var microgenGapicConfigs = []*microgenConfig{
 		inputDirectoryPath:    "google/devtools/containeranalysis/v1beta1/grafeas",
 		pkg:                   "containeranalysis",
 		importPath:            "cloud.google.com/go/containeranalysis/apiv1beta1",
-		gRPCServiceConfigPath: "containeranalysis_grpc_service_config.json",
-		apiServiceConfigPath:  "containeranalysis_v1beta1.yaml",
+		gRPCServiceConfigPath: "../containeranalysis_grpc_service_config.json",
+		apiServiceConfigPath:  "../containeranalysis_v1beta1.yaml",
 		releaseLevel:          "beta",
 	},
 	{
@@ -651,7 +651,7 @@ var microgenGapicConfigs = []*microgenConfig{
 		pkg:                   "videointelligence",
 		importPath:            "cloud.google.com/go/videointelligence/apiv1beta2",
 		gRPCServiceConfigPath: "videointelligence_grpc_service_config.json",
-		apiServiceConfigPath:  "videointelligence_v1beta2.yaml",
+		apiServiceConfigPath:  "../videointelligence_v1beta2.yaml",
 		releaseLevel:          "beta",
 	},
 	{
