@@ -20,7 +20,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
 	"math/rand"
@@ -31,7 +30,7 @@ import (
 var projectId = testutil.ProjID()
 var defaultZone = "us-central1-a"
 
-func TestCreateGetListInstance(t *testing.T){
+func TestCreateGetListInstance(t *testing.T) {
 	rand.Seed(time.Now().UTC().UnixNano())
 	name := fmt.Sprintf("gotest%d", rand.Int())
 	description := "тест"
@@ -51,7 +50,7 @@ func TestCreateGetListInstance(t *testing.T){
 	accessConfig := computepb.AccessConfig{
 		Name: &configName,
 	}
-	configs := []*computepb.AccessConfig {
+	configs := []*computepb.AccessConfig{
 		&accessConfig,
 	}
 	networkInterface := computepb.NetworkInterface{
@@ -66,37 +65,36 @@ func TestCreateGetListInstance(t *testing.T){
 	}
 	diskType := computepb.AttachedDisk_PERSISTENT
 	disk := computepb.AttachedDisk{
-		AutoDelete: proto.Bool(true),
-		Boot: proto.Bool(true),
-		Type: &diskType,
+		AutoDelete:       proto.Bool(true),
+		Boot:             proto.Bool(true),
+		Type:             &diskType,
 		InitializeParams: initializeParams,
 	}
-	disks := []*computepb.AttachedDisk {
+	disks := []*computepb.AttachedDisk{
 		&disk,
 	}
 	instance := &computepb.Instance{
-		Name: &name,
-		Description: &description,
-		MachineType: &machineType,
-		Disks: disks,
+		Name:              &name,
+		Description:       &description,
+		MachineType:       &machineType,
+		Disks:             disks,
 		NetworkInterfaces: interfaces,
 	}
 
 	createRequest := &computepb.InsertInstanceRequest{
-		Project: projectId,
-		Zone: defaultZone,
+		Project:          projectId,
+		Zone:             defaultZone,
 		InstanceResource: instance,
 	}
 
 	insert, err := c.Insert(ctx, createRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 
 	waitZonalRequest := &computepb.WaitZoneOperationRequest{
-		Project: projectId,
-		Zone: defaultZone,
+		Project:   projectId,
+		Zone:      defaultZone,
 		Operation: insert.GetName(),
 	}
 	_, err = zonesClient.Wait(ctx, waitZonalRequest)
@@ -104,29 +102,26 @@ func TestCreateGetListInstance(t *testing.T){
 		return
 	}
 	fmt.Printf("Inserted instance named %s\n", name)
-	defer ForceDeleteInstance(name, ctx, c)
+	defer ForceDeleteInstance(ctx, name, c)
 
 	getRequest := &computepb.GetInstanceRequest{
-		Project: projectId,
-		Zone: defaultZone,
+		Project:  projectId,
+		Zone:     defaultZone,
 		Instance: name,
 	}
 	get, err := c.Get(ctx, getRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
-	assert.Equal(t, name, get.GetName())
-	assert.Equal(t, "тест", get.GetDescription())
-
+	testutil.Equal(name, get.GetName())
+	testutil.Equal("тест", get.GetDescription())
 	listRequest := &computepb.ListInstancesRequest{
 		Project: projectId,
-		Zone: defaultZone,
+		Zone:    defaultZone,
 	}
 
 	list, err := c.List(ctx, listRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 	items := list.GetItems()
@@ -136,34 +131,31 @@ func TestCreateGetListInstance(t *testing.T){
 			found = true
 		}
 	}
-	if found == false{
+	if !found {
 		t.Error("Couldn't find the instance in list response")
 	}
 
 	deleteInstanceRequest := &computepb.DeleteInstanceRequest{
-		Project: projectId,
-		Zone: defaultZone,
+		Project:  projectId,
+		Zone:     defaultZone,
 		Instance: name,
 	}
 	_, err = c.Delete(ctx, deleteInstanceRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 }
 
-func ForceDeleteInstance(name string, ctx context.Context, client *InstancesClient){
+func ForceDeleteInstance(ctx context.Context, name string, client *InstancesClient) {
 	deleteInstanceRequest := &computepb.DeleteInstanceRequest{
-		Project: projectId,
-		Zone: defaultZone,
+		Project:  projectId,
+		Zone:     defaultZone,
 		Instance: name,
 	}
-	_, err := client.Delete(ctx, deleteInstanceRequest)
-	if err != nil {}
-
+	client.Delete(ctx, deleteInstanceRequest)
 }
 
-func TestCreateGetRemoveSecurityPolicies(t *testing.T){
+func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	rand.Seed(time.Now().UTC().UnixNano())
 	name := fmt.Sprintf("gotest%d", rand.Int())
 	ctx := context.Background()
@@ -177,7 +169,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T){
 	}
 	defaultDescription := "default rule"
 	description := "test rule"
-	defaultPriority  := int32(2147483647)
+	defaultPriority := int32(2147483647)
 	priority := int32(0)
 	action := "allow"
 
@@ -189,20 +181,20 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T){
 	}
 	versionExpr := computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1
 	matcher := &computepb.SecurityPolicyRuleMatcher{
-		Config: config,
+		Config:        config,
 		VersionedExpr: &versionExpr,
 	}
 	securityPolicyRule := &computepb.SecurityPolicyRule{
-		Action: &action,
-		Priority: &priority,
+		Action:      &action,
+		Priority:    &priority,
 		Description: &description,
-		Match: matcher,
+		Match:       matcher,
 	}
 	securityPolicyRuleDefault := &computepb.SecurityPolicyRule{
-		Action: &action,
-		Priority: &defaultPriority,
+		Action:      &action,
+		Priority:    &defaultPriority,
 		Description: &defaultDescription,
-		Match: matcher,
+		Match:       matcher,
 	}
 
 	rules := []*computepb.SecurityPolicyRule{
@@ -211,80 +203,73 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T){
 	}
 
 	securityPolicy := &computepb.SecurityPolicy{
-		Name: &name,
+		Name:  &name,
 		Rules: rules,
 	}
 
 	insertRequest := &computepb.InsertSecurityPolicyRequest{
-		Project: projectId,
+		Project:                projectId,
 		SecurityPolicyResource: securityPolicy,
 	}
 	insert, err := c.Insert(ctx, insertRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 
 	waitGlobalRequest := &computepb.WaitGlobalOperationRequest{
-		Project: projectId,
+		Project:   projectId,
 		Operation: insert.GetName(),
 	}
 	_, err = globalCLient.Wait(ctx, waitGlobalRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 	fmt.Printf("Inserted security policy named %s\n", name)
-	defer ForceDeleteSecurityPolicy(name, ctx, c)
+	defer ForceDeleteSecurityPolicy(ctx, name, c)
 
 	removeRuleRequest := &computepb.RemoveRuleSecurityPolicyRequest{
-		Priority: &priority,
-		Project: projectId,
+		Priority:       &priority,
+		Project:        projectId,
 		SecurityPolicy: name,
 	}
 
 	rule, err := c.RemoveRule(ctx, removeRuleRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 	waitGlobalRequestRemove := &computepb.WaitGlobalOperationRequest{
-		Project: projectId,
+		Project:   projectId,
 		Operation: rule.GetName(),
 	}
 	_, err = globalCLient.Wait(ctx, waitGlobalRequestRemove)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 
 	getRequest := &computepb.GetSecurityPolicyRequest{
-		Project: projectId,
+		Project:        projectId,
 		SecurityPolicy: name,
 	}
 	get, err := c.Get(ctx, getRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
-	assert.Equal(t, 1, len(get.GetRules()))
+	testutil.Equal(1, len(get.GetRules()))
 
 	deleteRequest := &computepb.DeleteSecurityPolicyRequest{
-		Project: projectId,
+		Project:        projectId,
 		SecurityPolicy: name,
 	}
 	_, err = c.Delete(ctx, deleteRequest)
 	if err != nil {
-		fmt.Println(err)
 		t.Error(err)
 	}
 }
 
-func ForceDeleteSecurityPolicy(name string, ctx context.Context, client *SecurityPoliciesClient){
+func ForceDeleteSecurityPolicy(ctx context.Context, name string, client *SecurityPoliciesClient) {
 	deleteRequest := &computepb.DeleteSecurityPolicyRequest{
-		Project: projectId,
+		Project:        projectId,
 		SecurityPolicy: name,
 	}
-	_, err := client.Delete(ctx, deleteRequest)
-	if err != nil {}
+	client.Delete(ctx, deleteRequest)
 }
