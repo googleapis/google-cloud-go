@@ -99,7 +99,7 @@ func TestCreateGetListInstance(t *testing.T) {
 	}
 	_, err = zonesClient.Wait(ctx, waitZonalRequest)
 	if err != nil {
-		return
+		t.Error(err)
 	}
 	fmt.Printf("Inserted instance named %s\n", name)
 	defer ForceDeleteInstance(ctx, name, c)
