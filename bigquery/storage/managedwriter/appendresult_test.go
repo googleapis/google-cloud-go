@@ -41,9 +41,18 @@ func TestPendingWrite(t *testing.T) {
 	var wantOffset int64 = 99
 
 	// first, verify no offset behavior
-	pending := newPendingWrite(wantRowData, noOffsetSpecified)
+	pending := newPendingWrite(wantRowData, NoOffset)
 	if pending.request.GetOffset() != nil {
 		t.Errorf("request should have no offset, but is present: %q", pending.request.GetOffset().GetValue())
+	}
+	pending.markDone(NoOffset, nil)
+	for k, ar := range pending.results {
+		if ar.offset != NoOffset {
+			t.Errorf("mismatch on completed AppendResult(%d) without offset: got %d want %d", k, ar.offset, NoOffset)
+		}
+		if ar.err != nil {
+			t.Errorf("mismatch in error on AppendResult(%d), got %v want nil", k, ar.err)
+		}
 	}
 
 	// now, verify behavior with a valid offset

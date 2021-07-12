@@ -22,6 +22,10 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
+// NoOffset is a sentinel value for signalling we're not tracking
+// stream offset (e.g. a default stream which allows simultaneous append streams).
+const NoOffset int64 = -1
+
 // AppendResult tracks the status of a single row of data.
 type AppendResult struct {
 	// rowData contains the serialized row data.
@@ -49,12 +53,6 @@ func (ar *AppendResult) Ready() <-chan struct{} { return ar.ready }
 // GetResult returns the optional offset of this row, or the associated
 // error.
 func (ar *AppendResult) GetResult(ctx context.Context) (int64, error) {
-	select {
-	case <-ar.Ready():
-		return ar.offset, ar.err
-	default:
-	}
-
 	select {
 	case <-ctx.Done():
 		return 0, ctx.Err()
@@ -105,10 +103,6 @@ func newPendingWrite(appends [][]byte, offset int64) *pendingWrite {
 	pw.reqSize = proto.Size(pw.request)
 	return pw
 }
-
-// noOffsetSpecified is a sentinel value for signalling we're not tracking
-// stream offset (e.g. a default stream which allows simultaneous append streams).
-var noOffsetSpecified int64 = -1
 
 // markDone propagates finalization of an append request to associated
 // AppendResult references.
