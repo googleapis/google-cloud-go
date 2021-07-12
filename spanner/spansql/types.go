@@ -208,6 +208,37 @@ const (
 	CascadeOnDelete
 )
 
+// AlterDatabase represents an ALTER DATABASE statement.
+// https://cloud.google.com/spanner/docs/data-definition-language#alter-database
+type AlterDatabase struct {
+	Name       ID
+	Alteration DatabaseAlteration
+
+	Position Position // position of the "ALTER" token
+}
+
+func (ad *AlterDatabase) String() string { return fmt.Sprintf("%#v", ad) }
+func (*AlterDatabase) isDDLStmt()        {}
+func (ad *AlterDatabase) Pos() Position  { return ad.Position }
+func (ad *AlterDatabase) clearOffset()   { ad.Position.Offset = 0 }
+
+type DatabaseAlteration interface {
+	isDatabaseAlteration()
+	SQL() string
+}
+
+type SetDatabaseOptions struct{ Options DatabaseOptions }
+
+func (SetDatabaseOptions) isDatabaseAlteration() {}
+
+// DatabaseOptions represents options on a database as part of a
+// ALTER DATABASE statement.
+type DatabaseOptions struct {
+	OptimizerVersion       *int
+	VersionRetentionPeriod *string
+	EnableKeyVisualizer    *bool
+}
+
 // Delete represents a DELETE statement.
 // https://cloud.google.com/spanner/docs/dml-syntax#delete-statement
 type Delete struct {
