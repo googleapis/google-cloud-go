@@ -568,7 +568,7 @@
   },
   "cloud.google.com/go/firestore/apiv1/admin": {
     "distribution_name": "cloud.google.com/go/firestore/apiv1/admin",
-    "description": "Google Cloud Firestore Admin API",
+    "description": "Cloud Firestore API",
     "language": "Go",
     "client_library_type": "generated",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/firestore/apiv1/admin",
@@ -959,7 +959,7 @@
     "language": "Go",
     "client_library_type": "manual",
     "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/pubsublite/latest",
-    "release_level": "ga",
+    "release_level": "beta",
     "library_type": "GAPIC_MANUAL"
   },
   "cloud.google.com/go/pubsublite/apiv1": {
