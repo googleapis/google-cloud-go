@@ -1293,13 +1293,15 @@ func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
 	debugf("parseAlterDatabase: %v", p)
 
 	/*
-			ALTER DATABASE database_id
-		    	action
+		ALTER DATABASE database_id
+			action
 
-			action:
-		    SET OPTIONS ( optimizer_version = { 1 ...  2 | null },
-		                  version_retention_period = { 'duration' | null },
-		                  enable_key_visualizer = { true | false | null } )
+		where database_id is:
+			{a—z}[{a—z|0—9|_|-}+]{a—z|0—9}
+
+		and action is:
+			SET OPTIONS ( optimizer_version = { 1 ...  2 | null },
+						  version_retention_period = { 'duration' | null } )
 	*/
 
 	if err := p.expect("ALTER"); err != nil {
@@ -1309,7 +1311,10 @@ func (p *parser) parseAlterDatabase() (*AlterDatabase, *parseError) {
 	if err := p.expect("DATABASE"); err != nil {
 		return nil, err
 	}
-	// The following method is also valid for database names.
+	// This is not 100% correct as database identifiers have slightly more
+	// restrictions than table names, but the restrictions are currently not
+	// applied in the spansql parser.
+	// TODO: Apply restrictions for all identifiers.
 	dbname, err := p.parseTableOrIndexOrColumnName()
 	if err != nil {
 		return nil, err
@@ -1545,10 +1550,10 @@ func (p *parser) parseColumnOptions() (ColumnOptions, *parseError) {
 func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 	debugf("parseDatabaseOptions: %v", p)
 	/*
-			options_def:
-				OPTIONS (enable_key_visualizer = { true | null },
-		                 optimizer_version = { 1 ... 2 | null },
-		                 version_retention_period = { 'duration' | null })
+		options_def:
+			OPTIONS (enable_key_visualizer = { true | null },
+					 optimizer_version = { 1 ... 2 | null },
+					 version_retention_period = { 'duration' | null })
 	*/
 
 	if err := p.expect("OPTIONS"); err != nil {
@@ -1582,10 +1587,9 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				return DatabaseOptions{}, tok.err
 			}
 			optimizerVersion := new(int)
-			switch tok.value {
-			case "null":
+			if tok.value == "null" {
 				*optimizerVersion = 0
-			default:
+			} else {
 				if tok.typ != int64Token {
 					return DatabaseOptions{}, p.errorf("invalid optimizer_version value: %v", tok.value)
 				}
@@ -1602,10 +1606,9 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 				return DatabaseOptions{}, tok.err
 			}
 			retentionPeriod := new(string)
-			switch tok.value {
-			case "null":
+			if tok.value == "null" {
 				*retentionPeriod = ""
-			default:
+			} else {
 				if tok.typ != stringToken {
 					return DatabaseOptions{}, p.errorf("invalid version_retention_period: %v", tok.value)
 				}
@@ -1615,10 +1618,6 @@ func (p *parser) parseDatabaseOptions() (DatabaseOptions, *parseError) {
 		} else {
 			tok := p.next()
 			return DatabaseOptions{}, p.errorf("unknown database option: %v", tok.value)
-		}
-		if p.sniff(",", ")") {
-			p.eat(",")
-			break
 		}
 		if p.sniff(")") {
 			break

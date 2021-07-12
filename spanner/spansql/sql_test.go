@@ -240,7 +240,7 @@ func TestSQL(t *testing.T) {
 				}},
 				Position: line(1),
 			},
-			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true, )",
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=2, version_retention_period='7d', enable_key_visualizer=true)",
 			reparseDDL,
 		},
 		{
@@ -253,7 +253,7 @@ func TestSQL(t *testing.T) {
 				}},
 				Position: line(1),
 			},
-			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null, )",
+			"ALTER DATABASE dbname SET OPTIONS (optimizer_version=null, version_retention_period=null, enable_key_visualizer=null)",
 			reparseDDL,
 		},
 		{

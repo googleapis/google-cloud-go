@@ -165,26 +165,36 @@ func (sdo SetDatabaseOptions) SQL() string {
 
 func (do DatabaseOptions) SQL() string {
 	str := "OPTIONS ("
+	hasOpt := false
 	if do.OptimizerVersion != nil {
+		hasOpt = true
 		if *do.OptimizerVersion == 0 {
-			str += "optimizer_version=null, "
+			str += "optimizer_version=null"
 
 		} else {
-			str += fmt.Sprintf("optimizer_version=%v, ", *do.OptimizerVersion)
+			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
 		}
 	}
 	if do.VersionRetentionPeriod != nil {
+		hasOpt = true
+		if hasOpt {
+			str += ", "
+		}
 		if *do.VersionRetentionPeriod == "" {
-			str += "version_retention_period=null, "
+			str += "version_retention_period=null"
 		} else {
-			str += fmt.Sprintf("version_retention_period='%s', ", *do.VersionRetentionPeriod)
+			str += fmt.Sprintf("version_retention_period='%s'", *do.VersionRetentionPeriod)
 		}
 	}
 	if do.EnableKeyVisualizer != nil {
+		hasOpt = true
+		if hasOpt {
+			str += ", "
+		}
 		if *do.EnableKeyVisualizer {
-			str += "enable_key_visualizer=true, "
+			str += "enable_key_visualizer=true"
 		} else {
-			str += "enable_key_visualizer=null, "
+			str += "enable_key_visualizer=null"
 		}
 	}
 	str += ")"

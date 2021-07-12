@@ -227,9 +227,9 @@ type DatabaseAlteration interface {
 	SQL() string
 }
 
-func (SetDatabaseOptions) isDatabaseAlteration() {}
-
 type SetDatabaseOptions struct{ Options DatabaseOptions }
+
+func (SetDatabaseOptions) isDatabaseAlteration() {}
 
 // DatabaseOptions represents options on a database as part of a
 // ALTER DATABASE statement.
