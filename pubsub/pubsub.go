@@ -60,8 +60,14 @@ type ClientConfig struct {
 }
 
 // mergePublisherCallOptions merges two PublisherCallOptions into one and the first argument has
-// a lower order of precedence than the second one.
+// a lower order of precedence than the second one. If either is nil, return the other.
 func mergePublisherCallOptions(a *vkit.PublisherCallOptions, b *vkit.PublisherCallOptions) *vkit.PublisherCallOptions {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
 	res := &vkit.PublisherCallOptions{}
 	resVal := reflect.ValueOf(res).Elem()
 	aVal := reflect.ValueOf(a).Elem()
@@ -82,8 +88,14 @@ func mergePublisherCallOptions(a *vkit.PublisherCallOptions, b *vkit.PublisherCa
 }
 
 // mergeSubscribercallOptions merges two SubscriberCallOptions into one and the first argument has
-// a lower order of precedence than the second one.
+// a lower order of precedence than the second one. If either is nil, the other is used.
 func mergeSubscriberCallOptions(a *vkit.SubscriberCallOptions, b *vkit.SubscriberCallOptions) *vkit.SubscriberCallOptions {
+	if a == nil {
+		return b
+	}
+	if b == nil {
+		return a
+	}
 	res := &vkit.SubscriberCallOptions{}
 	resVal := reflect.ValueOf(res).Elem()
 	aVal := reflect.ValueOf(a).Elem()
