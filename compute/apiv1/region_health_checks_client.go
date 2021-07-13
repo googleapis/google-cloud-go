@@ -436,18 +436,9 @@ func (c *regionHealthChecksRESTClient) Update(ctx context.Context, req *computep
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/healthChecks/%v", req.GetProject(), req.GetRegion(), req.GetHealthCheck())
 
 	params := url.Values{}
-	if req.GetHealthCheck() != "" {
-		params.Add("healthCheck", fmt.Sprintf("%v", req.GetHealthCheck()))
-	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
-	if req.GetRegion() != "" {
-		params.Add("region", fmt.Sprintf("%v", req.GetRegion()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
