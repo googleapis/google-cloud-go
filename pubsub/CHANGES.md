@@ -1,5 +1,19 @@
 # Changes
 
+### [1.12.2](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.1...pubsub/v1.12.2) (2021-07-08)
+
+
+### Bug Fixes
+
+* **pubsub:** retry all goaway errors ([#4384](https://www.github.com/googleapis/google-cloud-go/issues/4384)) ([1eae86f](https://www.github.com/googleapis/google-cloud-go/commit/1eae86f1882660d901b9fb0e8dab6f138a048dbb)), refs [#4257](https://www.github.com/googleapis/google-cloud-go/issues/4257)
+
+### [1.12.1](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.12.0...pubsub/v1.12.1) (2021-07-01)
+
+
+### Bug Fixes
+
+* **pubsub:** retry GOAWAY errors ([#4313](https://www.github.com/googleapis/google-cloud-go/issues/4313)) ([7076fef](https://www.github.com/googleapis/google-cloud-go/commit/7076fef5fef81cce47dbfbab3d7257cc7d3776bc))
+
 ## [1.12.0](https://www.github.com/googleapis/google-cloud-go/compare/pubsub/v1.11.0...pubsub/v1.12.0) (2021-06-23)
 
 
