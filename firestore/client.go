@@ -148,6 +148,7 @@ func (c *Client) Doc(path string) *DocumentRef {
 	return doc
 }
 
+// Query creates a query object related to this client.
 func (c *Client) Query() *Query {
 	q := Query{c: c}
 	return &q
