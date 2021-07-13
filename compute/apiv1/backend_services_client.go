@@ -731,15 +731,9 @@ func (c *backendServicesRESTClient) Update(ctx context.Context, req *computepb.U
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendServices/%v", req.GetProject(), req.GetBackendService())
 
 	params := url.Values{}
-	if req.GetBackendService() != "" {
-		params.Add("backendService", fmt.Sprintf("%v", req.GetBackendService()))
-	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

@@ -12,7 +12,7 @@ To install the packages on your system, *do not clone the repo*. Instead:
 
 1. Change to your project directory:
 
-   ```
+   ```bash
    cd /my/cloud/project
    ```
 1. Get the package you want to use. Some products have their own module, so it's
