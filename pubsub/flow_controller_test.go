@@ -214,7 +214,7 @@ func TestFlowControllerUnboundedCount2(t *testing.T) {
 	fc.release(ctx, 1)
 	fc.release(ctx, 1)
 	fc.release(ctx, 1)
-	wantCount := int64(-2)
+	wantCount := int64(0)
 	c := int64(fc.count())
 	if c != wantCount {
 		t.Fatalf("got count %d, want %d", c, wantCount)

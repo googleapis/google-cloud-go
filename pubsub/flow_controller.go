@@ -171,6 +171,8 @@ func (f *flowController) bound(size int) int64 {
 	return int64(size)
 }
 
+// count returns the number of outstanding messages.
+// if maxCount is 0, this will always return 0.
 func (f *flowController) count() int {
 	return int(atomic.LoadInt64(&f.countRemaining))
 }

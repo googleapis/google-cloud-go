@@ -121,7 +121,7 @@ var DefaultPublishSettings = PublishSettings{
 	BufferedByteLimit: 10 * MaxPublishRequestBytes,
 	FlowControlSettings: FlowControlSettings{
 		MaxOutstandingMessages: 1000,
-		MaxOutstandingBytes:    10 * MaxPublishRequestBytes,
+		MaxOutstandingBytes:    -1,
 		LimitExceededBehavior:  FlowControlBlock,
 	},
 }
@@ -539,26 +539,11 @@ func (t *Topic) initBundler() {
 	t.scheduler.BundleByteThreshold = t.PublishSettings.ByteThreshold
 
 	fcs := DefaultPublishSettings.FlowControlSettings
-	// FlowControlSettings.MaxOutstandingBytes and BufferedByteLimit have generally
-	// the same behavior, with the latter always returning an error. BufferedByteLimit
-	// is deprecated in favor of MaxOutstandingBytes.
-	//
-	// While we continue to support both, check if either has been set directly, and use
-	// that value. If both have been set, we will respect MaxOutstandingBytes first.
-	var mo, bb bool
-	if t.PublishSettings.BufferedByteLimit > 0 {
-		bb = true
-	}
-	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
-		mo = true
-	}
-	if bb && !mo {
-		fcs.MaxOutstandingBytes = t.PublishSettings.BufferedByteLimit
-	} else if mo {
-		fcs.MaxOutstandingBytes = t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
-	}
 	if t.PublishSettings.FlowControlSettings.LimitExceededBehavior != FlowControlBlock {
 		fcs.LimitExceededBehavior = t.PublishSettings.FlowControlSettings.LimitExceededBehavior
+	}
+	if t.PublishSettings.FlowControlSettings.MaxOutstandingBytes > 0 {
+		fcs.MaxOutstandingBytes = t.PublishSettings.FlowControlSettings.MaxOutstandingBytes
 	}
 	if t.PublishSettings.FlowControlSettings.MaxOutstandingMessages > 0 {
 		fcs.MaxOutstandingMessages = t.PublishSettings.FlowControlSettings.MaxOutstandingMessages
