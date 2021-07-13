@@ -40,7 +40,7 @@ type Query struct {
 	path                   string // path to query (collection)
 	parentPath             string // path of the collection's parent (document)
 	collectionID           string
-	selection              []FieldPath
+	selection              []*pb.StructuredQuery_FieldReference
 	filters                []filter
 	orders                 []order
 	offset                 int32
@@ -86,10 +86,26 @@ func (q Query) Select(paths ...string) Query {
 //
 // An empty SelectPaths call will produce a query that returns only document IDs.
 func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
+
 	if len(fieldPaths) == 0 {
-		q.selection = []FieldPath{{DocumentID}}
+		ref, err := fref(FieldPath{DocumentID})
+		if err != nil {
+			q.err = err
+			return q
+		}
+		q.selection = []*pb.StructuredQuery_FieldReference{
+			ref,
+		}
 	} else {
-		q.selection = fieldPaths
+		q.selection = make([]*pb.StructuredQuery_FieldReference, len(fieldPaths))
+		for i, fieldPath := range fieldPaths {
+			ref, err := fref(fieldPath)
+			if err != nil {
+				q.err = err
+				return q
+			}
+			q.selection[i] = ref
+		}
 	}
 	return q
 }
@@ -365,9 +381,14 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 
 		// Take Fieldpath strings, and populate selection
 		// Do not use `q.Select` as validation fails things like "*"
-		q.selection = make([]FieldPath, len(fields))
+		q.selection = make([]*pb.StructuredQuery_FieldReference, len(fields))
 		for i, v := range fieldStrings {
-			q.selection[i] = FieldPath{v}
+			ref, err := fref(FieldPath{v})
+			if err != nil {
+				q.err = err
+				return q, err
+			}
+			q.selection[i] = ref
 		}
 	}
 
@@ -460,12 +481,13 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	}
 	if len(q.selection) > 0 {
 		p.Select = &pb.StructuredQuery_Projection{}
-		for _, fp := range q.selection {
-			if err := fp.validate(); err != nil {
-				return nil, err
-			}
-			p.Select.Fields = append(p.Select.Fields, fref(fp))
-		}
+		// for _, fp := range q.selection {
+		// 	if err := fp.validate(); err != nil {
+		// 		return nil, err
+		// 	}
+		// 	p.Select.Fields = append(p.Select.Fields, fref(fp))
+		// }
+		p.Select.Fields = q.selection
 	}
 	// If there is only filter, use it directly. Otherwise, construct
 	// a CompositeFilter.
@@ -666,11 +688,15 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		if f.op != "==" {
 			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.value)
 		}
+		ref, err := fref(f.fieldPath)
+		if err != nil {
+			return nil, err
+		}
 		return &pb.StructuredQuery_Filter{
 			FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
 				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
 					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
-						Field: fref(f.fieldPath),
+						Field: ref,
 					},
 					Op: uop,
 				},
@@ -709,10 +735,14 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if sawTransform {
 		return nil, errors.New("firestore: transforms disallowed in query value")
 	}
+	ref, err := fref(f.fieldPath)
+	if err != nil {
+		return nil, err
+	}
 	return &pb.StructuredQuery_Filter{
 		FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 			FieldFilter: &pb.StructuredQuery_FieldFilter{
-				Field: fref(f.fieldPath),
+				Field: ref,
 				Op:    op,
 				Value: val,
 			},
@@ -763,11 +793,10 @@ func (r order) toProto() (*pb.StructuredQuery_Order, error) {
 		}, nil
 	}
 
-	if err := r.fieldPath.validate(); err != nil {
+	field, err := fref(r.fieldPath)
+	if err != nil {
 		return nil, err
 	}
-
-	field := fref(r.fieldPath)
 
 	return &pb.StructuredQuery_Order{
 		Field:     field,
@@ -775,8 +804,12 @@ func (r order) toProto() (*pb.StructuredQuery_Order, error) {
 	}, nil
 }
 
-func fref(fp FieldPath) *pb.StructuredQuery_FieldReference {
-	return &pb.StructuredQuery_FieldReference{FieldPath: fp.toServiceFieldPath()}
+func fref(fp FieldPath) (*pb.StructuredQuery_FieldReference, error) {
+	err := fp.validate()
+	if err != nil {
+		return &pb.StructuredQuery_FieldReference{}, err
+	}
+	return &pb.StructuredQuery_FieldReference{FieldPath: fp.toServiceFieldPath()}, nil
 }
 
 func trunc32(i int) int32 {

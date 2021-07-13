@@ -500,7 +500,8 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 }
 
 func fref1(s string) *pb.StructuredQuery_FieldReference {
-	return fref([]string{s})
+	ref, _ := fref([]string{s})
+	return ref
 }
 
 func TestQueryToProtoErrors(t *testing.T) {
@@ -619,13 +620,16 @@ func TestQueryFromCollectionRef(t *testing.T) {
 	c := &Client{projectID: "P", databaseID: "D"}
 	coll := c.Collection("C")
 	got := coll.Select("x").Offset(8)
+	ref, _ := fref(FieldPath{"x"})
 	want := Query{
 		c:            c,
 		parentPath:   c.path() + "/documents",
 		path:         "projects/P/databases/D/documents/C",
 		collectionID: "C",
-		selection:    []FieldPath{{"x"}},
-		offset:       8,
+		selection: []*pb.StructuredQuery_FieldReference{
+			ref,
+		},
+		offset: 8,
 	}
 	if !testEqual(got, want) {
 		t.Fatalf("\ngot  %+v, \nwant %+v", got, want)
