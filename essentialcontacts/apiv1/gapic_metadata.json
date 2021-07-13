@@ -1,47 +1,47 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.essentialcontacts.v1",
-  "libraryPackage":  "cloud.google.com/go/essentialcontacts/apiv1",
-  "services":  {
-    "EssentialContactsService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "Client",
-          "rpcs":  {
-            "ComputeContacts":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.essentialcontacts.v1",
+  "libraryPackage": "cloud.google.com/go/essentialcontacts/apiv1",
+  "services": {
+    "EssentialContactsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "ComputeContacts": {
+              "methods": [
                 "ComputeContacts"
               ]
             },
-            "CreateContact":  {
-              "methods":  [
+            "CreateContact": {
+              "methods": [
                 "CreateContact"
               ]
             },
-            "DeleteContact":  {
-              "methods":  [
+            "DeleteContact": {
+              "methods": [
                 "DeleteContact"
               ]
             },
-            "GetContact":  {
-              "methods":  [
+            "GetContact": {
+              "methods": [
                 "GetContact"
               ]
             },
-            "ListContacts":  {
-              "methods":  [
+            "ListContacts": {
+              "methods": [
                 "ListContacts"
               ]
             },
-            "SendTestMessage":  {
-              "methods":  [
+            "SendTestMessage": {
+              "methods": [
                 "SendTestMessage"
               ]
             },
-            "UpdateContact":  {
-              "methods":  [
+            "UpdateContact": {
+              "methods": [
                 "UpdateContact"
               ]
             }

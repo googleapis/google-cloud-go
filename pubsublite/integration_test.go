@@ -130,7 +130,7 @@ func TestIntegration_ResourceAdminOperations(t *testing.T) {
 	region, _ := wire.ZoneToRegion(zone)
 	resourceID := resourceIDs.New()
 
-	locationPath := wire.LocationPath{Project: proj, Zone: zone}.String()
+	locationPath := wire.LocationPath{Project: proj, Location: zone}.String()
 	topicPath := wire.TopicPath{Project: proj, Zone: zone, TopicID: resourceID}.String()
 	subscriptionPath := wire.SubscriptionPath{Project: proj, Zone: zone, SubscriptionID: resourceID}.String()
 	t.Logf("Topic path: %s", topicPath)

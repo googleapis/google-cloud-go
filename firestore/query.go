@@ -285,15 +285,7 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 
 	// 	err                    error
 	q.err = nil
-
 	pbq := pbQuery.GetStructuredQuery()
-
-	// 	path                   string // path to query (collection)
-	// 	parentPath             string // path of the collection's parent (document)
-	parent := pbQuery.GetParent()
-	q.parentPath = parent
-	q.path = parent + "/" + q.collectionID
-
 	if from := pbq.GetFrom(); len(from) > 0 {
 		if len(from) > 1 {
 			err := errors.New("can only deserialize query with exactly one collection selector")
@@ -308,74 +300,11 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		q.allDescendants = from[0].AllDescendants
 	}
 
-	// 	filters                []filter
-	if w := pbq.GetWhere(); w != nil {
-		fieldFilters := make([]filter, 0)
-
-		if cf := w.GetCompositeFilter(); cf != nil {
-			for _, v := range cf.GetFilters() {
-				f, err := filter{}.fromProto(v)
-				if err != nil {
-					q.err = err
-					return q, err
-				}
-				fieldFilters = append(fieldFilters, f)
-
-			}
-		} else {
-			f, err := filter{}.fromProto(w)
-			if err != nil {
-				q.err = err
-				return q, err
-
-			}
-			fieldFilters = append(fieldFilters, f)
-		}
-		q.filters = fieldFilters
-	}
-
-	// 	orders                 []order
-	if orderBy := pbq.GetOrderBy(); orderBy != nil {
-		for _, v := range orderBy {
-			fp := FieldPath{v.GetField().GetFieldPath()}
-			q.orders = append(q.orders, order{fp, Direction(v.GetDirection())})
-		}
-	}
-
-	// 	limit                  *wrappers.Int32Value
-	if limit := pbq.GetLimit(); limit != nil {
-		q.limit = limit
-	}
-
-	// 	offset                 int32
-	q.offset = pbq.GetOffset()
-
-	// TODO: fromProto
-	//     if (structuredQuery.hasSelect()) {
-	//       queryOptions.setFieldProjections(
-	//           ImmutableList.copyOf(structuredQuery.getSelect().getFieldsList()));
-	//     }
-	// 	selection              []FieldPath
-	if s := pbq.GetSelect(); s != nil {
-		fields := s.GetFields()
-		fieldStrings := make([]string, 0)
-
-		// As part of sending to protos, field paths are escaped. Unescape
-		for _, v := range fields {
-			fieldPath := v.GetFieldPath()
-			if strings.Contains(fieldPath, "`") {
-				fieldPath = strings.ReplaceAll(fieldPath, "`", "")
-			}
-			fieldStrings = append(fieldStrings, fieldPath)
-		}
-
-		// Take Fieldpath strings, and populate selection
-		// Do not use `q.Select` as validation fails things like "*"
-		q.selection = make([]FieldPath, len(fields))
-		for i, v := range fieldStrings {
-			q.selection[i] = FieldPath{v}
-		}
-	}
+	// 	path                   string // path to query (collection)
+	// 	parentPath             string // path of the collection's parent (document)
+	parent := pbQuery.GetParent()
+	q.parentPath = parent
+	q.path = parent + "/" + q.collectionID
 
 	// 	startVals, endVals     []interface{}
 	// 	startDoc, endDoc       *DocumentSnapshot
@@ -419,6 +348,82 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 			q.endVals = append(q.endVals, newQ.endVals...)
 
 		}
+	}
+
+	// TODO: fromProto
+	//     if (structuredQuery.hasSelect()) {
+	//       queryOptions.setFieldProjections(
+	//           ImmutableList.copyOf(structuredQuery.getSelect().getFieldsList()));
+	//     }
+	// 	selection              []FieldPath
+	if s := pbq.GetSelect(); s != nil {
+		fields := s.GetFields()
+		fieldStrings := make([]string, 0)
+
+		// As part of sending to protos, field paths are escaped. Unescape
+		for _, v := range fields {
+			fieldPath := v.GetFieldPath()
+			if strings.Contains(fieldPath, "`") {
+				fieldPath = strings.ReplaceAll(fieldPath, "`", "")
+			}
+			fieldStrings = append(fieldStrings, fieldPath)
+		}
+
+		// Take Fieldpath strings, and populate selection
+		// Do not use `q.Select` as validation fails things like "*"
+		q.selection = make([]FieldPath, len(fields))
+		for i, v := range fieldStrings {
+			q.selection[i] = FieldPath{v}
+		}
+	}
+
+	// 	filters                []filter
+	if w := pbq.GetWhere(); w != nil {
+		fieldFilters := make([]filter, 0)
+
+		if cf := w.GetCompositeFilter(); cf != nil {
+			for _, v := range cf.GetFilters() {
+				f, err := filter{}.fromProto(v)
+				if err != nil {
+					q.err = err
+					return q, err
+				}
+				fieldFilters = append(fieldFilters, f)
+
+			}
+		} else {
+			f, err := filter{}.fromProto(w)
+			if err != nil {
+				q.err = err
+				return q, err
+
+			}
+			fieldFilters = append(fieldFilters, f)
+		}
+		q.filters = fieldFilters
+	}
+
+	// 	orders                 []order
+	if orderBy := pbq.GetOrderBy(); orderBy != nil {
+		for _, v := range orderBy {
+			fp := FieldPath{v.GetField().GetFieldPath()}
+			q.orders = append(q.orders, order{fp, Direction(v.GetDirection())})
+		}
+	}
+	// if orderBy := pbq.GetOrderBy(); orderBy != nil {
+	// 	for _, v := range orderBy {
+	// 		s := strings.ReplaceAll(v.Field.FieldPath, "`", "")
+	// 		fp := FieldPath(strings.Split(s, "."))
+	// 		q = q.OrderByPath(fp, Direction(v.Direction))
+	// 	}
+	// }
+
+	// 	offset                 int32
+	q.offset = pbq.GetOffset()
+
+	// 	limit                  *wrappers.Int32Value
+	if limit := pbq.GetLimit(); limit != nil {
+		q.limit = limit
 	}
 
 	// NOTE: limit to last isn't part of the proto, this is a clientside idea.

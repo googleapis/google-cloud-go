@@ -1,37 +1,37 @@
 {
-  "schema":  "1.0",
-  "comment":  "This file maps proto services/RPCs to the corresponding library clients/methods.",
-  "language":  "go",
-  "protoPackage":  "google.cloud.talent.v4beta1",
-  "libraryPackage":  "cloud.google.com/go/talent/apiv4beta1",
-  "services":  {
-    "ApplicationService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "ApplicationClient",
-          "rpcs":  {
-            "CreateApplication":  {
-              "methods":  [
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.talent.v4beta1",
+  "libraryPackage": "cloud.google.com/go/talent/apiv4beta1",
+  "services": {
+    "ApplicationService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ApplicationClient",
+          "rpcs": {
+            "CreateApplication": {
+              "methods": [
                 "CreateApplication"
               ]
             },
-            "DeleteApplication":  {
-              "methods":  [
+            "DeleteApplication": {
+              "methods": [
                 "DeleteApplication"
               ]
             },
-            "GetApplication":  {
-              "methods":  [
+            "GetApplication": {
+              "methods": [
                 "GetApplication"
               ]
             },
-            "ListApplications":  {
-              "methods":  [
+            "ListApplications": {
+              "methods": [
                 "ListApplications"
               ]
             },
-            "UpdateApplication":  {
-              "methods":  [
+            "UpdateApplication": {
+              "methods": [
                 "UpdateApplication"
               ]
             }
@@ -39,33 +39,33 @@
         }
       }
     },
-    "CompanyService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "CompanyClient",
-          "rpcs":  {
-            "CreateCompany":  {
-              "methods":  [
+    "CompanyService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CompanyClient",
+          "rpcs": {
+            "CreateCompany": {
+              "methods": [
                 "CreateCompany"
               ]
             },
-            "DeleteCompany":  {
-              "methods":  [
+            "DeleteCompany": {
+              "methods": [
                 "DeleteCompany"
               ]
             },
-            "GetCompany":  {
-              "methods":  [
+            "GetCompany": {
+              "methods": [
                 "GetCompany"
               ]
             },
-            "ListCompanies":  {
-              "methods":  [
+            "ListCompanies": {
+              "methods": [
                 "ListCompanies"
               ]
             },
-            "UpdateCompany":  {
-              "methods":  [
+            "UpdateCompany": {
+              "methods": [
                 "UpdateCompany"
               ]
             }
@@ -73,13 +73,13 @@
         }
       }
     },
-    "Completion":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "CompletionClient",
-          "rpcs":  {
-            "CompleteQuery":  {
-              "methods":  [
+    "Completion": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "CompletionClient",
+          "rpcs": {
+            "CompleteQuery": {
+              "methods": [
                 "CompleteQuery"
               ]
             }
@@ -87,13 +87,13 @@
         }
       }
     },
-    "EventService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "EventClient",
-          "rpcs":  {
-            "CreateClientEvent":  {
-              "methods":  [
+    "EventService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "EventClient",
+          "rpcs": {
+            "CreateClientEvent": {
+              "methods": [
                 "CreateClientEvent"
               ]
             }
@@ -101,58 +101,58 @@
         }
       }
     },
-    "JobService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "JobClient",
-          "rpcs":  {
-            "BatchCreateJobs":  {
-              "methods":  [
+    "JobService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "JobClient",
+          "rpcs": {
+            "BatchCreateJobs": {
+              "methods": [
                 "BatchCreateJobs"
               ]
             },
-            "BatchDeleteJobs":  {
-              "methods":  [
+            "BatchDeleteJobs": {
+              "methods": [
                 "BatchDeleteJobs"
               ]
             },
-            "BatchUpdateJobs":  {
-              "methods":  [
+            "BatchUpdateJobs": {
+              "methods": [
                 "BatchUpdateJobs"
               ]
             },
-            "CreateJob":  {
-              "methods":  [
+            "CreateJob": {
+              "methods": [
                 "CreateJob"
               ]
             },
-            "DeleteJob":  {
-              "methods":  [
+            "DeleteJob": {
+              "methods": [
                 "DeleteJob"
               ]
             },
-            "GetJob":  {
-              "methods":  [
+            "GetJob": {
+              "methods": [
                 "GetJob"
               ]
             },
-            "ListJobs":  {
-              "methods":  [
+            "ListJobs": {
+              "methods": [
                 "ListJobs"
               ]
             },
-            "SearchJobs":  {
-              "methods":  [
+            "SearchJobs": {
+              "methods": [
                 "SearchJobs"
               ]
             },
-            "SearchJobsForAlert":  {
-              "methods":  [
+            "SearchJobsForAlert": {
+              "methods": [
                 "SearchJobsForAlert"
               ]
             },
-            "UpdateJob":  {
-              "methods":  [
+            "UpdateJob": {
+              "methods": [
                 "UpdateJob"
               ]
             }
@@ -160,38 +160,38 @@
         }
       }
     },
-    "ProfileService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "ProfileClient",
-          "rpcs":  {
-            "CreateProfile":  {
-              "methods":  [
+    "ProfileService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ProfileClient",
+          "rpcs": {
+            "CreateProfile": {
+              "methods": [
                 "CreateProfile"
               ]
             },
-            "DeleteProfile":  {
-              "methods":  [
+            "DeleteProfile": {
+              "methods": [
                 "DeleteProfile"
               ]
             },
-            "GetProfile":  {
-              "methods":  [
+            "GetProfile": {
+              "methods": [
                 "GetProfile"
               ]
             },
-            "ListProfiles":  {
-              "methods":  [
+            "ListProfiles": {
+              "methods": [
                 "ListProfiles"
               ]
             },
-            "SearchProfiles":  {
-              "methods":  [
+            "SearchProfiles": {
+              "methods": [
                 "SearchProfiles"
               ]
             },
-            "UpdateProfile":  {
-              "methods":  [
+            "UpdateProfile": {
+              "methods": [
                 "UpdateProfile"
               ]
             }
@@ -199,33 +199,33 @@
         }
       }
     },
-    "TenantService":  {
-      "clients":  {
-        "grpc":  {
-          "libraryClient":  "TenantClient",
-          "rpcs":  {
-            "CreateTenant":  {
-              "methods":  [
+    "TenantService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "TenantClient",
+          "rpcs": {
+            "CreateTenant": {
+              "methods": [
                 "CreateTenant"
               ]
             },
-            "DeleteTenant":  {
-              "methods":  [
+            "DeleteTenant": {
+              "methods": [
                 "DeleteTenant"
               ]
             },
-            "GetTenant":  {
-              "methods":  [
+            "GetTenant": {
+              "methods": [
                 "GetTenant"
               ]
             },
-            "ListTenants":  {
-              "methods":  [
+            "ListTenants": {
+              "methods": [
                 "ListTenants"
               ]
             },
-            "UpdateTenant":  {
-              "methods":  [
+            "UpdateTenant": {
+              "methods": [
                 "UpdateTenant"
               ]
             }

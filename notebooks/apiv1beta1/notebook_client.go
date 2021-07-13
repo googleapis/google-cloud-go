@@ -68,6 +68,7 @@ func defaultNotebookGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultMTLSEndpoint("notebooks.mtls.googleapis.com:443"),
 		internaloption.WithDefaultAudience("https://notebooks.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
+		internaloption.EnableJwtWithScope(),
 		option.WithGRPCDialOption(grpc.WithDisableServiceConfig()),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
