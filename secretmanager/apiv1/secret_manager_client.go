@@ -84,11 +84,11 @@ func defaultCallOptions() *CallOptions {
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
 					codes.Unavailable,
-					codes.Unknown,
+					codes.ResourceExhausted,
 				}, gax.Backoff{
-					Initial:    1000 * time.Millisecond,
+					Initial:    2000 * time.Millisecond,
 					Max:        60000 * time.Millisecond,
-					Multiplier: 1.30,
+					Multiplier: 2.00,
 				})
 			}),
 		},

@@ -505,20 +505,14 @@ func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.Updat
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
 	if req != nil && req.Autoscaler != nil {
 		params.Add("autoscaler", fmt.Sprintf("%v", req.GetAutoscaler()))
 	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetZone() != "" {
-		params.Add("zone", fmt.Sprintf("%v", req.GetZone()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
