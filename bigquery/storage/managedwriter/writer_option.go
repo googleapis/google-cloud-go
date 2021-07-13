@@ -14,7 +14,7 @@
 
 package managedwriter
 
-// WriterOptions are used to configure a ManagedWriteClient.
+// WriterOption is used to configure a ManagedWriteClient.
 type WriterOption func(*ManagedWriteClient)
 
 // WithType sets the write type of the new writer.

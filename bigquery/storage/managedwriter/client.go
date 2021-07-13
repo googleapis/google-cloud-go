@@ -88,7 +88,7 @@ func defaultStreamSettings() *streamSettings {
 	}
 }
 
-// NewManagedWriter instantiates a new managed writer.
+// NewManagedWriteClient instantiates a new managed writer.
 func NewManagedWriteClient(ctx context.Context, client *storage.BigQueryWriteClient, table *bigquery.Table, opts ...WriterOption) (*ManagedWriteClient, error) {
 	mw := &ManagedWriteClient{
 		streamSettings: defaultStreamSettings(),
