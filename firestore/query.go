@@ -50,9 +50,7 @@ type Query struct {
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
 	err                    error
-	// TODO: look at https://github.com/googleapis/java-firestore/commit/3eab9f48777500dd3054bd0c563b43b6ae9fc3dc
-	// stop storing the fields, instead apply with each method.
-	// this means deserialization is a nop.
+
 	structuredQueryProto *pb.StructuredQuery
 
 	// allDescendants indicates whether this query is for all collections
@@ -146,7 +144,7 @@ func (q Query) OrderBy(path string, dir Direction) Query {
 		q.err = err
 		return q
 	}
-	q.orders = append(q.copyOrders(), order{fp, dir})
+	q.orders = append(q.copyOrders(), order{fp, nil, dir})
 	return q
 }
 
@@ -154,7 +152,7 @@ func (q Query) OrderBy(path string, dir Direction) Query {
 // returned. A Query can have multiple OrderBy/OrderByPath specifications.
 // OrderByPath appends the specification to the list of existing ones.
 func (q Query) OrderByPath(fp FieldPath, dir Direction) Query {
-	q.orders = append(q.copyOrders(), order{fp, dir})
+	q.orders = append(q.copyOrders(), order{fp, nil, dir})
 	return q
 }
 
@@ -256,17 +254,13 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 func (q Query) query() *Query { return &q }
 
 func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
-	switch v := vProto.ValueType.(type) {
+	switch vProto.ValueType.(type) {
 	case *pb.Value_ReferenceValue:
 		refVal := vProto.GetReferenceValue()
 		if strings.HasPrefix(refVal, q.path) {
 			refVal = refVal[len(q.path)+1:]
 		}
 		return refVal, nil
-	case *pb.Value_IntegerValue:
-		// TODO: this shouldn't be needed, but tests send things as int, this returns
-		// int64, so diff fails
-		return v.IntegerValue, nil //(v.IntegerValue), nil
 	default:
 		i, err := createFromProtoValue(vProto, q.c)
 		if err != nil {
@@ -406,17 +400,10 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	orders                 []order
 	if orderBy := pbq.GetOrderBy(); orderBy != nil {
 		for _, v := range orderBy {
-			fp := FieldPath{v.GetField().GetFieldPath()}
-			q.orders = append(q.orders, order{fp, Direction(v.GetDirection())})
+			fp := v.GetField()
+			q.orders = append(q.orders, order{nil, fp, Direction(v.GetDirection())})
 		}
 	}
-	// if orderBy := pbq.GetOrderBy(); orderBy != nil {
-	// 	for _, v := range orderBy {
-	// 		s := strings.ReplaceAll(v.Field.FieldPath, "`", "")
-	// 		fp := FieldPath(strings.Split(s, "."))
-	// 		q = q.OrderByPath(fp, Direction(v.Direction))
-	// 	}
-	// }
 
 	// 	offset                 int32
 	q.offset = pbq.GetOffset()
@@ -632,7 +619,7 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	if len(q.orders) > 0 {
 		lastDir = q.orders[len(q.orders)-1].dir
 	}
-	orders := append(q.copyOrders(), order{[]string{DocumentID}, lastDir})
+	orders := append(q.copyOrders(), order{[]string{DocumentID}, nil, lastDir})
 	return func(d1, d2 *DocumentSnapshot) (int, error) {
 		for _, ord := range orders {
 			var cmp int
@@ -756,20 +743,34 @@ func isNaN(x interface{}) bool {
 }
 
 type order struct {
-	fieldPath FieldPath
-	dir       Direction
+	fieldPath      FieldPath
+	fieldReference *pb.StructuredQuery_FieldReference
+	dir            Direction
 }
 
 func (r order) isDocumentID() bool {
+	if r.fieldReference != nil {
+		return r.fieldReference.GetFieldPath() == DocumentID
+	}
 	return len(r.fieldPath) == 1 && r.fieldPath[0] == DocumentID
 }
 
 func (r order) toProto() (*pb.StructuredQuery_Order, error) {
+	if r.fieldReference != nil {
+		return &pb.StructuredQuery_Order{
+			Field:     r.fieldReference,
+			Direction: pb.StructuredQuery_Direction(r.dir),
+		}, nil
+	}
+
 	if err := r.fieldPath.validate(); err != nil {
 		return nil, err
 	}
+
+	field := fref(r.fieldPath)
+
 	return &pb.StructuredQuery_Order{
-		Field:     fref(r.fieldPath),
+		Field:     field,
 		Direction: pb.StructuredQuery_Direction(r.dir),
 	}, nil
 }
