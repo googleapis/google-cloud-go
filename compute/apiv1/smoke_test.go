@@ -35,10 +35,6 @@ func TestCreateGetListInstance(t *testing.T) {
 	}
 	space := uid.NewSpace("gogapic", nil)
 	name := space.New()
-	description := "тест"
-	machineType := fmt.Sprintf(
-		"https://www.googleapis.com/compute/v1/projects/%s/zones/%s/machineTypes/n1-standard-1",
-		projectId, defaultZone)
 	ctx := context.Background()
 	c, err := NewInstancesRESTClient(ctx)
 	if err != nil {
@@ -48,41 +44,31 @@ func TestCreateGetListInstance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	configName := "default"
-	accessConfig := computepb.AccessConfig{
-		Name: &configName,
-	}
-	configs := []*computepb.AccessConfig{
-		&accessConfig,
-	}
-	networkInterface := computepb.NetworkInterface{
-		AccessConfigs: configs,
-	}
-	interfaces := []*computepb.NetworkInterface{
-		&networkInterface,
-	}
-	sourceImage := "projects/debian-cloud/global/images/family/debian-10"
-	initializeParams := &computepb.AttachedDiskInitializeParams{
-		SourceImage: &sourceImage,
-	}
 	diskType := computepb.AttachedDisk_PERSISTENT
-	disk := computepb.AttachedDisk{
-		AutoDelete:       proto.Bool(true),
-		Boot:             proto.Bool(true),
-		Type:             &diskType,
-		InitializeParams: initializeParams,
-	}
-	disks := []*computepb.AttachedDisk{
-		&disk,
-	}
 	instance := &computepb.Instance{
-		Name:              &name,
-		Description:       &description,
-		MachineType:       &machineType,
-		Disks:             disks,
-		NetworkInterfaces: interfaces,
+		Name:        &name,
+		Description: proto.String("тест"),
+		MachineType: proto.String(fmt.Sprintf("https://www.googleapis.com/compute/v1/projects/%s/zones/%s/machineTypes/n1-standard-1", projectId, defaultZone)),
+		Disks: []*computepb.AttachedDisk{
+			{
+				AutoDelete: proto.Bool(true),
+				Boot:       proto.Bool(true),
+				Type:       &diskType,
+				InitializeParams: &computepb.AttachedDiskInitializeParams{
+					SourceImage: proto.String("projects/debian-cloud/global/images/family/debian-10"),
+				},
+			},
+		},
+		NetworkInterfaces: []*computepb.NetworkInterface{
+			{
+				AccessConfigs: []*computepb.AccessConfig{
+					{
+						Name: proto.String("default"),
+					},
+				},
+			},
+		},
 	}
-
 	createRequest := &computepb.InsertInstanceRequest{
 		Project:          projectId,
 		Zone:             defaultZone,
@@ -172,44 +158,35 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defaultDescription := "default rule"
-	description := "test rule"
-	defaultPriority := int32(2147483647)
-	priority := int32(0)
 	action := "allow"
-
-	srcIpRanges := []string{
-		"*",
-	}
-	config := &computepb.SecurityPolicyRuleMatcherConfig{
-		SrcIpRanges: srcIpRanges,
-	}
 	versionExpr := computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1
 	matcher := &computepb.SecurityPolicyRuleMatcher{
-		Config:        config,
+		Config: &computepb.SecurityPolicyRuleMatcherConfig{
+			SrcIpRanges: []string{
+				"*",
+			},
+		},
 		VersionedExpr: &versionExpr,
 	}
 	securityPolicyRule := &computepb.SecurityPolicyRule{
 		Action:      &action,
-		Priority:    &priority,
-		Description: &description,
+		Priority:    proto.Int32(0),
+		Description: proto.String("test rule"),
 		Match:       matcher,
 	}
 	securityPolicyRuleDefault := &computepb.SecurityPolicyRule{
 		Action:      &action,
-		Priority:    &defaultPriority,
-		Description: &defaultDescription,
+		Priority:    proto.Int32(2147483647),
+		Description: proto.String("default rule"),
 		Match:       matcher,
 	}
 
-	rules := []*computepb.SecurityPolicyRule{
-		securityPolicyRule,
-		securityPolicyRuleDefault,
-	}
-
 	securityPolicy := &computepb.SecurityPolicy{
-		Name:  &name,
-		Rules: rules,
+		Name: &name,
+		Rules: []*computepb.SecurityPolicyRule{
+			securityPolicyRule,
+			securityPolicyRuleDefault,
+		},
 	}
 
 	insertRequest := &computepb.InsertSecurityPolicyRequest{
@@ -233,7 +210,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	defer ForceDeleteSecurityPolicy(ctx, name, c)
 
 	removeRuleRequest := &computepb.RemoveRuleSecurityPolicyRequest{
-		Priority:       &priority,
+		Priority:       proto.Int32(0),
 		Project:        projectId,
 		SecurityPolicy: name,
 	}
