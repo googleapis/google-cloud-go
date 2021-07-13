@@ -120,7 +120,7 @@ func TestParseLocationPath(t *testing.T) {
 		{
 			desc:     "valid: location path",
 			input:    "projects/987654321/locations/europe-west1-d",
-			wantPath: LocationPath{Project: "987654321", Zone: "europe-west1-d"},
+			wantPath: LocationPath{Project: "987654321", Location: "europe-west1-d"},
 		},
 		{
 			desc:    "invalid: zone",
@@ -266,6 +266,63 @@ func TestParseSubscriptionPath(t *testing.T) {
 			gotPath, gotErr := ParseSubscriptionPath(tc.input)
 			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
 				t.Errorf("ParseSubscriptionPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
+			}
+		})
+	}
+}
+
+func TestParseReservationPath(t *testing.T) {
+	for _, tc := range []struct {
+		desc     string
+		input    string
+		wantPath ReservationPath
+		wantErr  bool
+	}{
+		{
+			desc:     "valid: reservation path",
+			input:    "projects/987654321/locations/europe-west1/reservations/my-reservation",
+			wantPath: ReservationPath{Project: "987654321", Region: "europe-west1", ReservationID: "my-reservation"},
+		},
+		{
+			desc:    "invalid: region only",
+			input:   "europe-west1",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: topic path",
+			input:   "projects/987654321/locations/europe-west1-d/topics/my-topic",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing project",
+			input:   "projects//locations/europe-west1/reservations/my-reservation",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing region",
+			input:   "projects/987654321/locations//reservations/my-reservation",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: missing reservation id",
+			input:   "projects/987654321/locations/europe-west1/reservations/",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has prefix",
+			input:   "prefix/projects/987654321/locations/europe-west1/reservations/my-reservation",
+			wantErr: true,
+		},
+		{
+			desc:    "invalid: has suffix",
+			input:   "projects/my-project/locations/us-west1/reservations/my-reservation/subresource/desc",
+			wantErr: true,
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			gotPath, gotErr := ParseReservationPath(tc.input)
+			if gotPath != tc.wantPath || (gotErr != nil) != tc.wantErr {
+				t.Errorf("ParseReservationPath(%q) = (%v, %v), want (%v, err=%v)", tc.input, gotPath, gotErr, tc.wantPath, tc.wantErr)
 			}
 		})
 	}
