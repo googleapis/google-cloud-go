@@ -571,17 +571,11 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/urlMaps/%v", req.GetProject(), req.GetUrlMap())
 
 	params := url.Values{}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetUrlMap() != "" {
-		params.Add("urlMap", fmt.Sprintf("%v", req.GetUrlMap()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

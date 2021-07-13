@@ -502,15 +502,9 @@ func (c *healthChecksRESTClient) Update(ctx context.Context, req *computepb.Upda
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/healthChecks/%v", req.GetProject(), req.GetHealthCheck())
 
 	params := url.Values{}
-	if req.GetHealthCheck() != "" {
-		params.Add("healthCheck", fmt.Sprintf("%v", req.GetHealthCheck()))
-	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

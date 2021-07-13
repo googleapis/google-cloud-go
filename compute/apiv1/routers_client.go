@@ -660,20 +660,11 @@ func (c *routersRESTClient) Update(ctx context.Context, req *computepb.UpdateRou
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
-	if req.GetRegion() != "" {
-		params.Add("region", fmt.Sprintf("%v", req.GetRegion()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetRouter() != "" {
-		params.Add("router", fmt.Sprintf("%v", req.GetRouter()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
