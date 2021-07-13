@@ -25,50 +25,50 @@ func TestWriterOptions(t *testing.T) {
 	testCases := []struct {
 		desc    string
 		options []WriterOption
-		want    *ManagedWriteClient
+		want    *ManagedStream
 	}{
 		{
 			desc:    "WithType",
 			options: []WriterOption{WithType(BufferedStream)},
-			want: func() *ManagedWriteClient {
-				mw := &ManagedWriteClient{
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				mw.streamSettings.streamType = BufferedStream
-				return mw
+				ms.streamSettings.streamType = BufferedStream
+				return ms
 			}(),
 		},
 		{
 			desc:    "WithMaxInflightRequests",
 			options: []WriterOption{WithMaxInflightRequests(2)},
-			want: func() *ManagedWriteClient {
-				mw := &ManagedWriteClient{
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				mw.streamSettings.MaxInflightRequests = 2
-				return mw
+				ms.streamSettings.MaxInflightRequests = 2
+				return ms
 			}(),
 		},
 		{
 			desc:    "WithMaxInflightBytes",
 			options: []WriterOption{WithMaxInflightBytes(5)},
-			want: func() *ManagedWriteClient {
-				mw := &ManagedWriteClient{
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				mw.streamSettings.MaxInflightBytes = 5
-				return mw
+				ms.streamSettings.MaxInflightBytes = 5
+				return ms
 			}(),
 		},
 		{
 			desc:    "WithTracePrefix",
 			options: []WriterOption{WithTracePrefix("foo")},
-			want: func() *ManagedWriteClient {
-				mw := &ManagedWriteClient{
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				mw.streamSettings.TracePrefix = "foo"
-				return mw
+				ms.streamSettings.TracePrefix = "foo"
+				return ms
 			}(),
 		},
 		{
@@ -78,20 +78,20 @@ func TestWriterOptions(t *testing.T) {
 				WithMaxInflightBytes(5),
 				WithTracePrefix("pre"),
 			},
-			want: func() *ManagedWriteClient {
-				mw := &ManagedWriteClient{
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
 					streamSettings: defaultStreamSettings(),
 				}
-				mw.streamSettings.MaxInflightBytes = 5
-				mw.streamSettings.streamType = PendingStream
-				mw.streamSettings.TracePrefix = "pre"
-				return mw
+				ms.streamSettings.MaxInflightBytes = 5
+				ms.streamSettings.streamType = PendingStream
+				ms.streamSettings.TracePrefix = "pre"
+				return ms
 			}(),
 		},
 	}
 
 	for _, tc := range testCases {
-		got := &ManagedWriteClient{
+		got := &ManagedStream{
 			streamSettings: defaultStreamSettings(),
 		}
 		for _, o := range tc.options {
@@ -99,7 +99,7 @@ func TestWriterOptions(t *testing.T) {
 		}
 
 		if diff := cmp.Diff(got, tc.want,
-			cmp.AllowUnexported(ManagedWriteClient{}, streamSettings{})); diff != "" {
+			cmp.AllowUnexported(ManagedStream{}, streamSettings{})); diff != "" {
 			t.Errorf("diff in case (%s):\n%v", tc.desc, diff)
 		}
 	}

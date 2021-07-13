@@ -15,12 +15,12 @@
 package managedwriter
 
 // WriterOption is used to configure a ManagedWriteClient.
-type WriterOption func(*ManagedWriteClient)
+type WriterOption func(*ManagedStream)
 
 // WithType sets the write type of the new writer.
 func WithType(st StreamType) WriterOption {
-	return func(mw *ManagedWriteClient) {
-		mw.streamSettings.streamType = st
+	return func(ms *ManagedStream) {
+		ms.streamSettings.streamType = st
 	}
 }
 
@@ -31,29 +31,29 @@ func WithType(st StreamType) WriterOption {
 // Caveat: It is possible to specify stream name and type explicitly, which
 // is not validated for correctness.  In such cases, behavior is indeterminate.
 func WithStreamName(name string) WriterOption {
-	return func(mw *ManagedWriteClient) {
-		mw.streamSettings.streamID = name
+	return func(ms *ManagedStream) {
+		ms.streamSettings.streamID = name
 	}
 }
 
 // WithMaxInflightRequests bounds the inflight appends on the write connection.
 func WithMaxInflightRequests(n int) WriterOption {
-	return func(mw *ManagedWriteClient) {
-		mw.streamSettings.MaxInflightRequests = n
+	return func(ms *ManagedStream) {
+		ms.streamSettings.MaxInflightRequests = n
 	}
 }
 
 // WithMaxInflightBytes bounds the inflight append request bytes on the write connection.
 func WithMaxInflightBytes(n int) WriterOption {
-	return func(mw *ManagedWriteClient) {
-		mw.streamSettings.MaxInflightBytes = n
+	return func(ms *ManagedStream) {
+		ms.streamSettings.MaxInflightBytes = n
 	}
 }
 
 // WithTracePrefix allows instruments requests to the service with a custom trace prefix.
 // This is generally for diagnostic purposes only.
 func WithTracePrefix(prefix string) WriterOption {
-	return func(mw *ManagedWriteClient) {
-		mw.streamSettings.TracePrefix = prefix
+	return func(ms *ManagedStream) {
+		ms.streamSettings.TracePrefix = prefix
 	}
 }
