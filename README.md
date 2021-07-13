@@ -35,7 +35,7 @@ make backwards-incompatible changes.
 | [Bigtable][cloud-bigtable]                      | stable | [`cloud.google.com/go/bigtable`](https://pkg.go.dev/cloud.google.com/go/bigtable)                                             |
 | [Cloudbuild][cloud-build]                       | stable | [`cloud.google.com/go/cloudbuild/apiv1`](https://pkg.go.dev/cloud.google.com/go/cloudbuild/apiv1)                             |
 | [Cloudtasks][cloud-tasks]                       | stable | [`cloud.google.com/go/cloudtasks/apiv2`](https://pkg.go.dev/cloud.google.com/go/cloudtasks/apiv2)                             |
-| [Compute Engine][cloud-compute]                 | beta   | [`cloud.google.com/go/compute/apiv1`](https://pkg.go.dev/cloud.google.com/go/compute/apiv1)                                                                                      |
+| [Compute Engine][cloud-compute]                 | alpha  | [`cloud.google.com/go/compute/apiv1`](https://pkg.go.dev/cloud.google.com/go/compute/apiv1)                                   |
 | [Container][cloud-container]                    | stable | [`cloud.google.com/go/container/apiv1`](https://pkg.go.dev/cloud.google.com/go/container/apiv1)                               |
 | [ContainerAnalysis][cloud-containeranalysis]    | beta   | [`cloud.google.com/go/containeranalysis/apiv1`](https://pkg.go.dev/cloud.google.com/go/containeranalysis/apiv1)               |
 | [Dataproc][cloud-dataproc]                      | stable | [`cloud.google.com/go/dataproc/apiv1`](https://pkg.go.dev/cloud.google.com/go/dataproc/apiv1)                                 |
