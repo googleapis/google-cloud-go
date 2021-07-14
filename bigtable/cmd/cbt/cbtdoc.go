@@ -14,7 +14,7 @@
 
 // DO NOT EDIT. THIS IS AUTOMATICALLY GENERATED.
 // Run "go generate" to regenerate.
-//go:generate go run cbt.go gcpolicy.go -o cbtdoc.go doc
+//go:generate go run cbt.go gcpolicy.go valueformatting.go -o cbtdoc.go doc
 
 /*
 The `cbt` tool is a command-line tool that allows you to interact with Cloud Bigtable.
@@ -102,6 +102,122 @@ options to your ~/.cbtrc file in the following format:
     auth-token = AJAvW039NO1nDcijk_J6_rFXG_...
 
 All values are optional and can be overridden at the command prompt.
+
+
+
+## Custom data formatting for the `lookup` and `read` commands.
+
+You can provide custom formatting information for formatting stored
+data values in the `lookup` and `read` commands.
+
+The formatting data follows a formatting model consisting of an
+encoding and type for each column.
+
+The available encodings are:
+
+- `Hex` (alias: `H`)
+
+- `BigEndian` (aliases: `BINARY`, `B`)
+
+- `LittleEndian` (alias: `L`)
+
+- `ProtocolBuffer` (aliases: `Proto`, `P`)
+
+Encoding names and aliases are case insensitive.
+
+The Hex encoding is type agnostic. Data are displayed as a raw
+hexadecimal representation of the stored data.
+
+The available types for the BigEndian and LittleEndian encodings are `int8`, `int16`, `int32`, `int64`, `uint8`, `uint16`, `uint32`, `uint64`, `float32`, and `float64`.  Stored data length must be a multiple of the
+type sized, in bytes.  Data are displayed as scalars if the stored
+length matches the type size, or as arrays otherwise.  Types names are case
+insensitive.
+
+The types given for the `ProtocolBuffer` encoding
+must case-insensitively match message types defined in provided
+protocol-buffer definition files.  If no type is specified, it
+defaults to the column name for the column data being displayed.
+
+Encoding and type are provided at the column level.  Default encodings
+and types may be provided overall and at the column-family level.  You
+don't need to define column formatting at the family level unless you
+have multiple column families and want to provide family-specific
+defaults or need to specify different formats for columns of the same
+name in different families.
+
+Protocol-buffer definition files may be given, as well as directories
+used to search for definition files and and files imported by them. If
+no paths are specified, then the current working directory is used.
+Locations of standard protocol buffer imports (`google/protobuf/*`) need not be specified.
+
+Format information in YAML format is provided using the `format-file` option for the `lookup`
+and `read` commands (e.g `format-file=myformat.yml`).
+
+The YAML file provides an object with optional properties:
+
+`default_encoding`
+: The name of the overall default encoding
+
+`default_type`
+: The name of the overall default type
+
+`protocol_buffer_definitions`
+: A list of protocol-buffer files defining
+: available message types.
+
+`protocol_buffer_paths`
+: A list of directories to search for definition
+: files and imports. If not provided, the current
+: working directory will be used. Locations
+: need not be provided for standard
+: protocol-buffer imports.
+
+`columns`
+: A mapping from column names to column objects.
+
+`families`
+: A mapping from family names to family objects.
+
+Column objects have two properties:
+
+`encoding`
+: The encoding to be used for the column
+: (overriding the default encoding, if any)
+
+`type`
+: The data type to be used for the column
+: (overriding the default type, if any)
+
+Family objects have properties:
+
+`default_encoding`
+: The name of the default encoding for columns in
+: the family
+
+`default_type`
+: The name of the default type for columns in the
+: family
+
+`columns`
+: A mapping from column names to column objects for
+: columns in the family.
+
+Here's an example of a format file:
+```
+
+  default_encoding: P
+
+  protocol_buffer_definitions:
+    - MyProto.proto
+
+  columns:
+    contact:
+      type: person
+    size:
+      encoding: B
+      type: uint32
+
+```
 
 
 
@@ -295,6 +411,7 @@ Usage:
 	  columns=<family>:<qualifier>,...    Read only these columns, comma-separated
 	  cells-per-column=<n>                Read only this number of cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
+	  format-file=<path-to-format-file>   The path to a format-configuration file to use for the request
 
 	 Example: cbt lookup mobile-time-series phone#4c410523#20190501 columns=stats_summary:os_build,os_name cells-per-column=1
 	 Example: cbt lookup mobile-time-series $'\x41\x42'
@@ -333,6 +450,7 @@ Usage:
 	  count=<n>                           Read only this many rows
 	  cells-per-column=<n>                Read only this many cells per column
 	  app-profile=<app-profile-id>        The app profile ID to use for the request
+	  format-file=<path-to-format-file>   The path to a format-configuration file to use for the request
 
 	    Examples: (see 'set' examples to create data to read)
 	      cbt read mobile-time-series prefix=phone columns=stats_summary:os_build,os_name count=10
