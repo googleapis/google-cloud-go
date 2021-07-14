@@ -53,12 +53,27 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}, nil
 }
 
-// NewManagedStream establishes a new managed stream for appending data into a table.
+// NewManagedStream establishes a managed stream for appending data.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
+	return c.buildManagedStream(ctx, c.rawClient.AppendRows, opts...)
+}
+
+func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, opts ...WriterOption) (*ManagedStream, error) {
+
+	ctx, cancel := context.WithCancel(ctx)
 
 	ms := &ManagedStream{
 		streamSettings: defaultStreamSettings(),
 		c:              c,
+		ctx:            ctx,
+		cancel:         cancel,
+		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+			arc, err := streamFunc(ctx)
+			if err == nil {
+				return nil, err
+			}
+			return arc, nil
+		},
 	}
 
 	// apply writer options

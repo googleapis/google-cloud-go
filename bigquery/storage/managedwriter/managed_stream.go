@@ -16,8 +16,12 @@ package managedwriter
 
 import (
 	"context"
+	"io"
+	"sync"
 
+	"github.com/googleapis/gax-go/v2"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/protobuf/types/descriptorpb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
@@ -62,9 +66,23 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
 	streamSettings   *streamSettings
+	schemaDescriptor *descriptorpb.DescriptorProto
 	destinationTable string
 	c                *Client
+
+	// aspects of the stream client
+	ctx             context.Context // retained context for the stream
+	cancel          context.CancelFunc
+	open            func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	arc             *storagepb.BigQueryWrite_AppendRowsClient                // current stream connection
+	mu              sync.Mutex
+	err             error // terminal error
+	pending         chan *pendingWrite
+	sentFirstAppend bool
 }
+
+// enables testing
+type streamClientFunc func(context.Context, ...gax.CallOption) (storagepb.BigQueryWrite_AppendRowsClient, error)
 
 // streamSettings govern behavior of the append stream RPCs.
 type streamSettings struct {
@@ -139,4 +157,119 @@ func (ms *ManagedStream) Finalize(ctx context.Context) (int64, error) {
 		return 0, err
 	}
 	return resp.GetRowCount(), nil
+}
+
+// streamConn tracks things we need to keep in sync for a single ARC.
+type streamConn struct {
+	arc               *storagepb.BigQueryWrite_AppendRowsClient
+	sentFirstResponse bool
+	pending           chan *pendingWrite
+}
+
+// getStream returns either a valid client or permanent error.
+func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient) (*storagepb.BigQueryWrite_AppendRowsClient, error) {
+	ms.mu.Lock()
+	defer ms.mu.Unlock()
+	if ms.err != nil {
+		return nil, ms.err
+	}
+	ms.err = ms.ctx.Err()
+	if ms.err != nil {
+		return nil, ms.err
+	}
+
+	// Always return the retained ARC if the arg differs.
+	if arc != ms.arc {
+		return ms.arc, nil
+	}
+
+	ms.arc = new(storagepb.BigQueryWrite_AppendRowsClient)
+	*ms.arc, ms.err = ms.openWithRetry()
+	// TODO: wire up receiver for processing responses.
+	ms.sentFirstAppend = false
+	return ms.arc, ms.err
+}
+
+func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, error) {
+	r := defaultRetryer{}
+	for {
+		arc, err := ms.open()
+		bo, shouldRetry := r.Retry(err)
+		if err != nil && shouldRetry {
+			if err := gax.Sleep(ms.ctx, bo); err != nil {
+				return nil, err
+			}
+			continue
+		}
+		return arc, err
+	}
+}
+
+func (ms *ManagedStream) call(f func(storagepb.BigQueryWrite_AppendRowsClient) error, opts ...gax.CallOption) error {
+	var settings gax.CallSettings
+	for _, opt := range opts {
+		opt.Resolve(&settings)
+	}
+	var r gax.Retryer = &defaultRetryer{}
+	if settings.Retry != nil {
+		r = settings.Retry()
+	}
+
+	var arc *storagepb.BigQueryWrite_AppendRowsClient
+	var err error
+
+	for {
+		arc, err = ms.getStream(arc)
+		if err != nil {
+			return err
+		}
+		err = f(*arc)
+		if err != nil {
+			bo, shouldRetry := r.Retry(err)
+			if shouldRetry {
+				if err := gax.Sleep(ms.ctx, bo); err != nil {
+					return err
+				}
+				continue
+			}
+			ms.mu.Lock()
+			ms.err = err
+			ms.mu.Unlock()
+		}
+		return err
+	}
+}
+
+func (ms *ManagedStream) append(req *storagepb.AppendRowsRequest) error {
+	return ms.call(func(arc storagepb.BigQueryWrite_AppendRowsClient) error {
+		// TODO: we should only send stream ID and schema for the first message in a new stream, but
+		// we need to find the best place to toggle this for new streams.
+		req.WriteStream = ms.streamSettings.streamID
+		req.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
+			ProtoDescriptor: ms.schemaDescriptor,
+		}
+		ms.mu.Unlock()
+		return arc.Send(req)
+	})
+}
+
+func (ms *ManagedStream) CloseSend() error {
+	err := ms.call(func(arc storagepb.BigQueryWrite_AppendRowsClient) error {
+		return arc.CloseSend()
+	})
+	ms.mu.Lock()
+	ms.err = io.EOF
+	ms.mu.Unlock()
+	return err
+}
+
+// AppendRows sends the append requests to the service, and returns one AppendResult per row.
+func (ms *ManagedStream) AppendRows(data [][]byte, offset int64) ([]*AppendResult, error) {
+	pw := newPendingWrite(data, offset)
+	if err := ms.append(pw.request); err != nil {
+		// pending write is DOA, mark it done.
+		pw.markDone(NoStreamOffset, err)
+		return nil, err
+	}
+	return pw.results, nil
 }
