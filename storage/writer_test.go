@@ -19,6 +19,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"net/http"
+	"os"
 	"strings"
 	"testing"
 
@@ -174,4 +175,27 @@ func TestCloseDoesNotLeak(t *testing.T) {
 	wc.Write([]byte(contents))
 
 	wc.Close()
+}
+
+func TestEmulatorDoesNotBreakBasePath(t *testing.T) {
+	emulatorHost := os.Getenv("STORAGE_EMULATOR_HOST")
+	defer os.Setenv("STORAGE_EMULATOR_HOST", emulatorHost)
+
+	os.Setenv("STORAGE_EMULATOR_HOST", "example.com:8080")
+	transport := &mockTransport{}
+	httpClient := &http.Client{Transport: transport}
+	ctx := context.Background()
+	client, err := NewClient(ctx, option.WithHTTPClient(httpClient))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	transport.addResult(&http.Response{StatusCode: http.StatusInternalServerError}, nil)
+	wc := client.Bucket("fake_bucket").Object("fake_object").NewWriter(ctx)
+	wc.Write([]byte("fake content"))
+	wc.Close()
+
+	if wc.o.c.raw.BasePath != "http://example.com:8080/storage/v1/" {
+		t.Fatalf("BasePath is broken (%s)", wc.o.c.raw.BasePath)
+	}
 }
