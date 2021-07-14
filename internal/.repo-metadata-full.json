@@ -224,6 +224,14 @@
     "release_level": "ga",
     "library_type": "GAPIC_MANUAL"
   },
+  "cloud.google.com/go/bigtable/admin/apiv2": {
+    "distribution_name": "cloud.google.com/go/bigtable/admin/apiv2",
+    "description": "Cloud Bigtable Admin API",
+    "language": "Go",
+    "client_library_type": "generated",
+    "docs_url": "https://pkg.go.dev/cloud.google.com/go/bigtable/admin/apiv2",
+    "release_level": "beta"
+  },
   "cloud.google.com/go/billing/apiv1": {
     "distribution_name": "cloud.google.com/go/billing/apiv1",
     "description": "Cloud Billing API",
