@@ -155,6 +155,52 @@ func (co ColumnOptions) SQL() string {
 	return str
 }
 
+func (ad AlterDatabase) SQL() string {
+	return "ALTER DATABASE " + ad.Name.SQL() + " " + ad.Alteration.SQL()
+}
+
+func (sdo SetDatabaseOptions) SQL() string {
+	return "SET " + sdo.Options.SQL()
+}
+
+func (do DatabaseOptions) SQL() string {
+	str := "OPTIONS ("
+	hasOpt := false
+	if do.OptimizerVersion != nil {
+		hasOpt = true
+		if *do.OptimizerVersion == 0 {
+			str += "optimizer_version=null"
+
+		} else {
+			str += fmt.Sprintf("optimizer_version=%v", *do.OptimizerVersion)
+		}
+	}
+	if do.VersionRetentionPeriod != nil {
+		hasOpt = true
+		if hasOpt {
+			str += ", "
+		}
+		if *do.VersionRetentionPeriod == "" {
+			str += "version_retention_period=null"
+		} else {
+			str += fmt.Sprintf("version_retention_period='%s'", *do.VersionRetentionPeriod)
+		}
+	}
+	if do.EnableKeyVisualizer != nil {
+		hasOpt = true
+		if hasOpt {
+			str += ", "
+		}
+		if *do.EnableKeyVisualizer {
+			str += "enable_key_visualizer=true"
+		} else {
+			str += "enable_key_visualizer=null"
+		}
+	}
+	str += ")"
+	return str
+}
+
 func (d *Delete) SQL() string {
 	return "DELETE FROM " + d.Table.SQL() + " WHERE " + d.Where.SQL()
 }
