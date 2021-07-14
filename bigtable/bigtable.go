@@ -17,7 +17,9 @@ limitations under the License.
 package bigtable // import "cloud.google.com/go/bigtable"
 
 import (
+	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -615,6 +617,14 @@ func (m *Mutation) Set(family, column string, ts Timestamp, value []byte) {
 		TimestampMicros: int64(ts.TruncateToMilliseconds()),
 		Value:           value,
 	}}})
+}
+
+// SetInt64 sets a value in a specified column, with the given timestamp.
+// It performs the 64-bit big-endian signed integer encoding.
+func (m *Mutation) SetInt64(family, column string, ts Timestamp, value int) {
+	buf := new(bytes.Buffer)
+	binary.Write(buf, binary.BigEndian, int64(value))
+	m.Set(family, column, ts, buf.Bytes())
 }
 
 // DeleteCellsInColumn will delete all the cells whose columns are family:column.
