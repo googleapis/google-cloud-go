@@ -1,5 +1,16 @@
 # Changes
 
+## [1.20.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.19.0...bigquery/v1.20.0) (2021-07-13)
+
+
+### Features
+
+* **bigquery/connection:** add cloud spanner connection support ([458f15b](https://www.github.com/googleapis/google-cloud-go/commit/458f15bb6f1193ce83dbfc7a82c3f2a672f52c06))
+* **bigquery/storage/managedwriter/adapt:** add schema -> proto support ([#4375](https://www.github.com/googleapis/google-cloud-go/issues/4375)) ([4ff6243](https://www.github.com/googleapis/google-cloud-go/commit/4ff62433f58c1c92976a66e890b7d5394198f77b))
+* **bigquery/storage/managedwriter:** add flow controller ([#4404](https://www.github.com/googleapis/google-cloud-go/issues/4404)) ([9dc78e0](https://www.github.com/googleapis/google-cloud-go/commit/9dc78e073b5f69037c6328460554c4354fcee11f))
+* **bigquery/storage/managedwriter:** add state tracking ([#4407](https://www.github.com/googleapis/google-cloud-go/issues/4407)) ([4638e17](https://www.github.com/googleapis/google-cloud-go/commit/4638e17dacd1fa76f9976f44974c4037fe4358dc))
+* **bigquery:** add more dml statistics to query statistics ([#4405](https://www.github.com/googleapis/google-cloud-go/issues/4405)) ([99d5728](https://www.github.com/googleapis/google-cloud-go/commit/99d57282f6668de91390ad29a888a89209689f39))
+
 ## [1.19.0](https://www.github.com/googleapis/google-cloud-go/compare/bigquery/v1.18.0...bigquery/v1.19.0) (2021-06-29)
 
 
