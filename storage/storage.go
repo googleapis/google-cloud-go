@@ -143,7 +143,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("storage client: %v", err)
 	}
 	// Update readHost with the chosen endpoint.
-	u, err := url.Parse(ep)
+	u, err := url.Parse(rawService.BasePath)
 	if err != nil {
 		return nil, fmt.Errorf("supplied endpoint %q is not valid: %v", ep, err)
 	}
