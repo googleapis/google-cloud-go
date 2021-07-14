@@ -83,15 +83,14 @@ type Server struct {
 // It is a separate and unexported type so the API won't be cluttered with
 // methods that are only relevant to the fake's implementation.
 type server struct {
-	mu        sync.Mutex
-	tables    map[string]*table          // keyed by fully qualified name
-	instances map[string]*btapb.Instance // keyed by fully qualified name
-	gcc       chan int                   // set when gcloop starts, closed when server shuts down
+	mu     sync.Mutex
+	tables map[string]*table // keyed by fully qualified name
+	gcc    chan int          // set when gcloop starts, closed when server shuts down
 
-	// Any unimplemented methods will cause a panic.
-	btapb.BigtableTableAdminServer
-	btapb.BigtableInstanceAdminServer
-	btpb.BigtableServer
+	// Any unimplemented methods will return unimplemented.
+	*btapb.UnimplementedBigtableTableAdminServer
+	*btapb.UnimplementedBigtableInstanceAdminServer
+	*btpb.UnimplementedBigtableServer
 }
 
 // NewServer creates a new Server.
@@ -108,8 +107,7 @@ func NewServer(laddr string, opt ...grpc.ServerOption) (*Server, error) {
 		l:    l,
 		srv:  grpc.NewServer(opt...),
 		s: &server{
-			tables:    make(map[string]*table),
-			instances: make(map[string]*btapb.Instance),
+			tables: make(map[string]*table),
 		},
 	}
 	btapb.RegisterBigtableInstanceAdminServer(s.srv, s.s)
@@ -326,22 +324,6 @@ func (s *server) CheckConsistency(ctx context.Context, req *btapb.CheckConsisten
 	return &btapb.CheckConsistencyResponse{
 		Consistent: true,
 	}, nil
-}
-
-func (s *server) SnapshotTable(context.Context, *btapb.SnapshotTableRequest) (*longrunning.Operation, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
-func (s *server) GetSnapshot(context.Context, *btapb.GetSnapshotRequest) (*btapb.Snapshot, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
-func (s *server) ListSnapshots(context.Context, *btapb.ListSnapshotsRequest) (*btapb.ListSnapshotsResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
-}
-
-func (s *server) DeleteSnapshot(context.Context, *btapb.DeleteSnapshotRequest) (*emptypb.Empty, error) {
-	return nil, status.Errorf(codes.Unimplemented, "the emulator does not currently support snapshots")
 }
 
 func (s *server) ReadRows(req *btpb.ReadRowsRequest, stream btpb.Bigtable_ReadRowsServer) error {

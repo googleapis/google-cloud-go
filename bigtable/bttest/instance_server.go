@@ -16,118 +16,26 @@ package bttest
 
 import (
 	"context"
-	"regexp"
 
-	"github.com/golang/protobuf/ptypes/empty"
 	btapb "google.golang.org/genproto/googleapis/bigtable/admin/v2"
 	iampb "google.golang.org/genproto/googleapis/iam/v1"
-	"google.golang.org/genproto/googleapis/longrunning"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
+var _ btapb.BigtableTableAdminServer = (*server)(nil)
 var _ btapb.BigtableInstanceAdminServer = (*server)(nil)
 
-var errUnimplemented = status.Error(codes.Unimplemented, "unimplemented feature")
+// Must tie-break methods implemented by both BigtableTableAdminServer and BigtableInstanceAdminServer
 
-func (s *server) CreateInstance(ctx context.Context, req *btapb.CreateInstanceRequest) (*longrunning.Operation, error) {
-	return nil, errUnimplemented
+func (s *server) GetIamPolicy(_ context.Context, _ *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetIamPolicy not implemented")
 }
 
-func (s *server) GetInstance(ctx context.Context, req *btapb.GetInstanceRequest) (*btapb.Instance, error) {
-	return nil, errUnimplemented
+func (s *server) SetIamPolicy(_ context.Context, _ *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SetIamPolicy not implemented")
 }
 
-func (s *server) ListInstances(ctx context.Context, req *btapb.ListInstancesRequest) (*btapb.ListInstancesResponse, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) UpdateInstance(ctx context.Context, req *btapb.Instance) (*btapb.Instance, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) PartialUpdateInstance(ctx context.Context, req *btapb.PartialUpdateInstanceRequest) (*longrunning.Operation, error) {
-	return nil, errUnimplemented
-}
-
-var (
-	// As per https://godoc.org/google.golang.org/genproto/googleapis/bigtable/admin/v2#DeleteInstanceRequest.Name
-	// the Name should be of the form:
-	//    `projects/<project>/instances/<instance>`
-	instanceNameRegRaw = `^projects/[a-z][a-z0-9\\-]+[a-z0-9]/instances/[a-z][a-z0-9\\-]+[a-z0-9]$`
-	regInstanceName    = regexp.MustCompile(instanceNameRegRaw)
-)
-
-func (s *server) DeleteInstance(ctx context.Context, req *btapb.DeleteInstanceRequest) (*empty.Empty, error) {
-	name := req.GetName()
-	if !regInstanceName.Match([]byte(name)) {
-		return nil, status.Errorf(codes.InvalidArgument,
-			"Error in field 'instance_name' : Invalid name for collection instances : Should match %s but found '%s'",
-			instanceNameRegRaw, name)
-	}
-
-	s.mu.Lock()
-	defer s.mu.Unlock()
-
-	_, ok := s.instances[name]
-	if !ok {
-		return nil, status.Errorf(codes.NotFound, "instance %q not found", name)
-	}
-
-	// Then finally remove the instance.
-	delete(s.instances, name)
-
-	return new(empty.Empty), nil
-}
-
-func (s *server) CreateCluster(ctx context.Context, req *btapb.CreateClusterRequest) (*longrunning.Operation, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) GetCluster(ctx context.Context, req *btapb.GetClusterRequest) (*btapb.Cluster, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) ListClusters(ctx context.Context, req *btapb.ListClustersRequest) (*btapb.ListClustersResponse, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) UpdateCluster(ctx context.Context, req *btapb.Cluster) (*longrunning.Operation, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) DeleteCluster(ctx context.Context, req *btapb.DeleteClusterRequest) (*empty.Empty, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) CreateAppProfile(ctx context.Context, req *btapb.CreateAppProfileRequest) (*btapb.AppProfile, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) GetAppProfile(ctx context.Context, req *btapb.GetAppProfileRequest) (*btapb.AppProfile, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) ListAppProfiles(ctx context.Context, req *btapb.ListAppProfilesRequest) (*btapb.ListAppProfilesResponse, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) UpdateAppProfile(ctx context.Context, req *btapb.UpdateAppProfileRequest) (*longrunning.Operation, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) DeleteAppProfile(ctx context.Context, req *btapb.DeleteAppProfileRequest) (*empty.Empty, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest) (*iampb.Policy, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest) (*iampb.Policy, error) {
-	return nil, errUnimplemented
-}
-
-func (s *server) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
-	return nil, errUnimplemented
+func (s *server) TestIamPermissions(_ context.Context, _ *iampb.TestIamPermissionsRequest) (*iampb.TestIamPermissionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TestIamPermissions not implemented")
 }
