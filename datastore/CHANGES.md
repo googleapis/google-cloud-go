@@ -1,5 +1,12 @@
 # Changes
 
+## [1.6.0](https://www.github.com/googleapis/google-cloud-go/compare/datastore/v1.5.0...datastore/v1.6.0) (2021-07-13)
+
+
+### Features
+
+* **datastore/admin:** Publish message definitions for new Cloud Datastore migration logging steps. ([528ffc9](https://www.github.com/googleapis/google-cloud-go/commit/528ffc9bd63090129a8b1355cd31273f8c23e34c))
+
 ## [1.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.4.0...v1.5.0) (2021-03-01)
 
 
