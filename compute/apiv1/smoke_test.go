@@ -160,14 +160,13 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		t.Fatal(err)
 	}
 	action := "allow"
-	versionExpr := computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1
 	matcher := &computepb.SecurityPolicyRuleMatcher{
 		Config: &computepb.SecurityPolicyRuleMatcherConfig{
 			SrcIpRanges: []string{
 				"*",
 			},
 		},
-		VersionedExpr: &versionExpr,
+		VersionedExpr: computepb.SecurityPolicyRuleMatcher_SRC_IPS_V1.Enum(),
 	}
 	securityPolicyRule := &computepb.SecurityPolicyRule{
 		Action:      &action,
@@ -181,18 +180,15 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		Description: proto.String("default rule"),
 		Match:       matcher,
 	}
-
-	securityPolicy := &computepb.SecurityPolicy{
-		Name: &name,
-		Rules: []*computepb.SecurityPolicyRule{
-			securityPolicyRule,
-			securityPolicyRuleDefault,
-		},
-	}
-
 	insertRequest := &computepb.InsertSecurityPolicyRequest{
 		Project:                projectId,
-		SecurityPolicyResource: securityPolicy,
+		SecurityPolicyResource: &computepb.SecurityPolicy{
+			Name: &name,
+			Rules: []*computepb.SecurityPolicyRule{
+				securityPolicyRule,
+				securityPolicyRuleDefault,
+			},
+		},
 	}
 	insert, err := c.Insert(ctx, insertRequest)
 	if err != nil {
@@ -207,7 +203,6 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("Inserted security policy named %s\n", name)
 	defer ForceDeleteSecurityPolicy(ctx, name, c)
 
 	removeRuleRequest := &computepb.RemoveRuleSecurityPolicyRequest{
@@ -240,7 +235,6 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	if len(get.GetRules()) != 1 {
 		t.Fatal(fmt.Sprintf("expected count for rules: %d, got: %d", 1, len(get.GetRules())))
 	}
-	testutil.Equal(1, len(get.GetRules()))
 
 	deleteRequest := &computepb.DeleteSecurityPolicyRequest{
 		Project:        projectId,
