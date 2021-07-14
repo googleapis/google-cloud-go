@@ -18,6 +18,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/uid"
@@ -132,6 +133,16 @@ type QueryConfig struct {
 	// Allows the schema of the destination table to be updated as a side effect of
 	// the query job.
 	SchemaUpdateOptions []string
+
+	// Sets a best-effort deadline on a specific job.  If job execution exceeds this
+	// timeout, BigQuery may attempt to cancel this work automatically.
+	//
+	// This deadline cannot be adjusted or removed once the job is created.  Consider
+	// using Job.Cancel in situations where you need more dynamic behavior.
+	//
+	// Experimental: this option is experimental and may be modified or removed in future versions,
+	// regardless of any other documented package stability guarantees.
+	JobTimeout time.Duration
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -178,6 +189,7 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 	if len(qc.Parameters) > 0 && qc.UseLegacySQL {
 		return nil, errors.New("bigquery: cannot provide both Parameters (implying standard SQL) and UseLegacySQL")
 	}
+
 	ptrue := true
 	pfalse := false
 	if qc.UseLegacySQL {
@@ -195,11 +207,18 @@ func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
 		}
 		qconf.QueryParameters = append(qconf.QueryParameters, qp)
 	}
-	return &bq.JobConfiguration{
+
+	jc := &bq.JobConfiguration{
 		Labels: qc.Labels,
 		DryRun: qc.DryRun,
 		Query:  qconf,
-	}, nil
+	}
+	// jobTimeout is part of the outer config in the API, not the query config.
+	if qc.JobTimeout > 0 {
+		jc.JobTimeoutMs = qc.JobTimeout.Milliseconds()
+	}
+	return jc, nil
+
 }
 
 func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
@@ -207,6 +226,7 @@ func bqToQueryConfig(q *bq.JobConfiguration, c *Client) (*QueryConfig, error) {
 	qc := &QueryConfig{
 		Labels:                      q.Labels,
 		DryRun:                      q.DryRun,
+		JobTimeout:                  time.Duration(q.JobTimeoutMs) * time.Millisecond,
 		Q:                           qq.Query,
 		CreateDisposition:           TableCreateDisposition(qq.CreateDisposition),
 		WriteDisposition:            TableWriteDisposition(qq.WriteDisposition),
@@ -395,6 +415,7 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		q.QueryConfig.Clustering != nil ||
 		q.QueryConfig.DestinationEncryptionConfig != nil ||
 		q.QueryConfig.SchemaUpdateOptions != nil ||
+		q.QueryConfig.JobTimeout != 0 ||
 		// User has defined the jobID generation behavior
 		q.JobIDConfig.JobID != "" {
 		return nil, fmt.Errorf("QueryConfig incompatible with fastPath")
