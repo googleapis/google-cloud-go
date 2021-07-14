@@ -53,9 +53,7 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}, nil
 }
 
-// NewManagedStream establishes a new stream for writing.
-//
-// destinationTable should be of the format: projects/{project}/datasets/{dataset}/tables/{table}
+// NewManagedStream establishes a new managed stream for appending data into a table.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
 
 	ms := &ManagedStream{
