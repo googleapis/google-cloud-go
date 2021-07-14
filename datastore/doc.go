@@ -41,7 +41,7 @@ Valid value types are:
   - Any type whose underlying type is one of the above predeclared types
   - *Key
   - GeoPoint
-  - time.Time (stored with microsecond precision, retrieved as local time)
+  - time.Time (stored with microsecond precision, retrieved as UTC)
   - Structs whose fields are all valid value types
   - Pointers to structs whose fields are all valid value types
   - Slices of any of the above
