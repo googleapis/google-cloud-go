@@ -192,7 +192,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	}
 	insert, err := c.Insert(ctx, insertRequest)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	waitGlobalRequest := &computepb.WaitGlobalOperationRequest{
