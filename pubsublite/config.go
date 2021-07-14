@@ -68,6 +68,11 @@ type TopicConfig struct {
 	// messages will be retained as long as the bytes retained for each partition
 	// is below `PerPartitionBytes`. Otherwise, must be > 0.
 	RetentionDuration time.Duration
+
+	// The path of the reservation to use for this topic's throughput capacity, in
+	// the format:
+	// "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+	ThroughputReservation string
 }
 
 func (tc *TopicConfig) toProto() *pb.Topic {
@@ -89,6 +94,11 @@ func (tc *TopicConfig) toProto() *pb.Topic {
 	if tc.RetentionDuration >= 0 {
 		topicpb.RetentionConfig.Period = ptypes.DurationProto(tc.RetentionDuration)
 	}
+	if len(tc.ThroughputReservation) > 0 {
+		topicpb.ReservationConfig = &pb.Topic_ReservationConfig{
+			ThroughputReservation: tc.ThroughputReservation,
+		}
+	}
 	return topicpb
 }
 
@@ -102,6 +112,7 @@ func protoToTopicConfig(t *pb.Topic) (*TopicConfig, error) {
 		SubscribeCapacityMiBPerSec: int(partitionCfg.GetCapacity().GetSubscribeMibPerSec()),
 		PerPartitionBytes:          retentionCfg.GetPerPartitionBytes(),
 		RetentionDuration:          InfiniteRetention,
+		ThroughputReservation:      t.GetReservationConfig().GetThroughputReservation(),
 	}
 	// An unset retention period proto denotes "infinite retention".
 	if retentionCfg.Period != nil {
@@ -141,6 +152,11 @@ type TopicConfigToUpdate struct {
 	// clear a retention duration (i.e. retain messages as long as there is
 	// available storage), set this to `InfiniteRetention`.
 	RetentionDuration optional.Duration
+
+	// The path of the reservation to use for this topic's throughput capacity, in
+	// the format:
+	// "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+	ThroughputReservation optional.String
 }
 
 func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
@@ -179,6 +195,12 @@ func (tc *TopicConfigToUpdate) toUpdateRequest() *pb.UpdateTopicRequest {
 		// An unset retention period proto denotes "infinite retention".
 		if duration >= 0 {
 			updatedTopic.RetentionConfig.Period = ptypes.DurationProto(duration)
+		}
+	}
+	if tc.ThroughputReservation != nil {
+		fields = append(fields, "reservation_config.throughput_reservation")
+		updatedTopic.ReservationConfig = &pb.Topic_ReservationConfig{
+			ThroughputReservation: optional.ToString(tc.ThroughputReservation),
 		}
 	}
 
@@ -285,5 +307,71 @@ func (sc *SubscriptionConfigToUpdate) toUpdateRequest() *pb.UpdateSubscriptionRe
 	return &pb.UpdateSubscriptionRequest{
 		Subscription: updatedSubs,
 		UpdateMask:   &fmpb.FieldMask{Paths: fields},
+	}
+}
+
+// ReservationConfig describes the properties of a Pub/Sub Lite reservation.
+type ReservationConfig struct {
+	// The full path of the reservation, in the format:
+	// "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+	//
+	// - PROJECT_ID: The project ID (e.g. "my-project") or the project number
+	//   (e.g. "987654321") can be provided.
+	// - REGION: The Google Cloud region (e.g. "us-central1") for the reservation.
+	//   See https://cloud.google.com/pubsub/lite/docs/locations for the list of
+	//   regions where Pub/Sub Lite is available.
+	// - RESERVATION_ID: The ID of the reservation (e.g. "my-reservation"). See
+	//   https://cloud.google.com/pubsub/docs/admin#resource_names for information
+	//   about valid reservation IDs.
+	Name string
+
+	// The reserved throughput capacity. Every unit of throughput capacity is
+	// equivalent to 1 MiB/s of published messages or 2 MiB/s of subscribed
+	// messages.
+	//
+	// Any topics which are declared as using capacity from a reservation will
+	// consume resources from this reservation instead of being charged
+	// individually.
+	ThroughputCapacity int
+}
+
+func (rc *ReservationConfig) toProto() *pb.Reservation {
+	return &pb.Reservation{
+		Name:               rc.Name,
+		ThroughputCapacity: int64(rc.ThroughputCapacity),
+	}
+}
+
+func protoToReservationConfig(r *pb.Reservation) *ReservationConfig {
+	return &ReservationConfig{
+		Name:               r.GetName(),
+		ThroughputCapacity: int(r.GetThroughputCapacity()),
+	}
+}
+
+// ReservationConfigToUpdate specifies the properties to update for a
+// reservation.
+type ReservationConfigToUpdate struct {
+	// The full path of the reservation to update, in the format:
+	// "projects/PROJECT_ID/locations/REGION/reservations/RESERVATION_ID".
+	// Required.
+	Name string
+
+	// If non-zero, updates the throughput capacity.
+	ThroughputCapacity int
+}
+
+func (rc *ReservationConfigToUpdate) toUpdateRequest() *pb.UpdateReservationRequest {
+	var fields []string
+	if rc.ThroughputCapacity > 0 {
+		fields = append(fields, "throughput_capacity")
+	}
+
+	return &pb.UpdateReservationRequest{
+		Reservation: &pb.Reservation{
+			Name:               rc.Name,
+			ThroughputCapacity: int64(rc.ThroughputCapacity),
+		},
+		UpdateMask: &fmpb.FieldMask{Paths: fields},
 	}
 }
