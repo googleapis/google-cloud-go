@@ -41,7 +41,7 @@ type Query struct {
 	parentPath             string // path of the collection's parent (document)
 	collectionID           string
 	selection              []*pb.StructuredQuery_FieldReference
-	filters                []filter
+	filters                []*pb.StructuredQuery_Filter
 	orders                 []order
 	offset                 int32
 	limit                  *wrappers.Int32Value
@@ -122,7 +122,13 @@ func (q Query) Where(path, op string, value interface{}) Query {
 		q.err = err
 		return q
 	}
-	q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
+	// q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
+	proto, err := filter{fp, op, value}.toProto()
+	if err != nil {
+		q.err = err
+		return q
+	}
+	q.filters = append(append([]*pb.StructuredQuery_Filter(nil), q.filters...), proto)
 	return q
 }
 
@@ -131,7 +137,14 @@ func (q Query) Where(path, op string, value interface{}) Query {
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
-	q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
+	// q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
+	proto, err := filter{fp, op, value}.toProto()
+	if err != nil {
+		q.err = err
+		return q
+	}
+	q.filters = append(append([]*pb.StructuredQuery_Filter(nil), q.filters...), proto)
+
 	return q
 }
 
@@ -394,26 +407,29 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 
 	// 	filters                []filter
 	if w := pbq.GetWhere(); w != nil {
-		fieldFilters := make([]filter, 0)
+		// fieldFilters := make([]filter, 0)
+		fieldFilters := make([]*pb.StructuredQuery_Filter, 0)
 
 		if cf := w.GetCompositeFilter(); cf != nil {
 			for _, v := range cf.GetFilters() {
-				f, err := filter{}.fromProto(v)
-				if err != nil {
-					q.err = err
-					return q, err
-				}
-				fieldFilters = append(fieldFilters, f)
+				// f, err := filter{}.fromProto(v)
+				// if err != nil {
+				// 	q.err = err
+				// 	return q, err
+				// }
+				fieldFilters = append(fieldFilters, v)
 
 			}
 		} else {
-			f, err := filter{}.fromProto(w)
-			if err != nil {
-				q.err = err
-				return q, err
+			// f, err := filter{}.fromProto(w)
+			// if err != nil {
+			// 	q.err = err
+			// 	return q, err
 
-			}
-			fieldFilters = append(fieldFilters, f)
+			// }
+			// fieldFilters = append(fieldFilters, f)
+			fieldFilters = append(fieldFilters, w)
+
 		}
 		q.filters = fieldFilters
 	}
@@ -492,10 +508,8 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	// If there is only filter, use it directly. Otherwise, construct
 	// a CompositeFilter.
 	if len(q.filters) == 1 {
-		pf, err := q.filters[0].toProto()
-		if err != nil {
-			return nil, err
-		}
+		pf := q.filters[0]
+
 		p.Where = pf
 	} else if len(q.filters) > 1 {
 		cf := &pb.StructuredQuery_CompositeFilter{
@@ -505,11 +519,11 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
 		}
 		for _, f := range q.filters {
-			pf, err := f.toProto()
-			if err != nil {
-				return nil, err
-			}
-			cf.Filters = append(cf.Filters, pf)
+			// pf, err := f.toProto()
+			// if err != nil {
+			// 	return nil, err
+			// }
+			cf.Filters = append(cf.Filters, f)
 		}
 	}
 	orders := q.orders
@@ -558,10 +572,19 @@ func (q *Query) adjustOrders() []order {
 	// for the field of the first inequality.
 	var orders []order
 	for _, f := range q.filters {
-		if f.op != "==" {
-			orders = []order{{fieldPath: f.fieldPath, dir: Asc}}
-			break
+		// p, _ := f.toProto()
+		p := f
+		if fieldFilter := p.GetFieldFilter(); fieldFilter != nil {
+			if fieldFilter.Op != pb.StructuredQuery_FieldFilter_EQUAL {
+				fp := f.GetFieldFilter().Field
+				orders = []order{{fieldReference: fp, dir: Asc}}
+				break
+			}
 		}
+		// if f.op != "==" {
+		// 	orders = []order{{fieldPath: f.fieldPath, dir: Asc}}
+		// 	break
+		// }
 	}
 	// Add an ascending OrderBy(DocumentID).
 	return append(orders, order{fieldPath: FieldPath{DocumentID}, dir: Asc})
@@ -624,7 +647,18 @@ func (q *Query) docSnapshotToCursorValues(ds *DocumentSnapshot, orders []order) 
 			}
 			vals[i] = &pb.Value{ValueType: &pb.Value_ReferenceValue{ds.Ref.Path}}
 		} else {
-			val, err := valueAtPath(ord.fieldPath, ds.proto.Fields)
+			var val *pb.Value
+			var err error
+			if len(ord.fieldPath) > 0 {
+				val, err = valueAtPath(ord.fieldPath, ds.proto.Fields)
+			} else {
+				// parse the field reference field path so we can use it to look up
+				fp, err := parseDotSeparatedString(ord.fieldReference.FieldPath)
+				if err != nil {
+					return nil, err
+				}
+				val, err = valueAtPath(fp, ds.proto.Fields)
+			}
 			if err != nil {
 				return nil, err
 			}
@@ -673,11 +707,6 @@ type filter struct {
 	fieldPath FieldPath
 	op        string
 	value     interface{}
-}
-
-func (f filter) fromProto(sq *pb.StructuredQuery_Filter) (filter, error) {
-	// TODO: implement fromProto
-	return f, errors.New("not yet implemented")
 }
 
 func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
