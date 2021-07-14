@@ -49,6 +49,7 @@ var (
 
 	config              *cbtconfig.Config
 	client              *bigtable.Client
+	table               tableLike
 	adminClient         *bigtable.AdminClient
 	instanceAdminClient *bigtable.InstanceAdminClient
 
@@ -57,6 +58,16 @@ var (
 	revisionDate = "<unknown revision date>"
 	cliUserAgent = "cbt-cli-go/unknown"
 )
+
+type tableLike interface {
+	ReadRows(
+		context.Context,
+		bigtable.RowSet,
+		func(bigtable.Row) bool,
+		...bigtable.ReadOption,
+	) error
+	ReadRow(context.Context, string, ...bigtable.ReadOption) (bigtable.Row, error)
+}
 
 func getCredentialOpts(opts []option.ClientOption) []option.ClientOption {
 	if ts := config.TokenSource; ts != nil {
@@ -83,6 +94,14 @@ func getClient(clientConf bigtable.ClientConfig) *bigtable.Client {
 		}
 	}
 	return client
+}
+
+func getTable(clientConf bigtable.ClientConfig, tableName string) tableLike {
+	if table != nil {
+		return table
+	}
+	table = getClient(clientConf).Open(tableName)
+	return table
 }
 
 func getAdminClient() *bigtable.AdminClient {
@@ -146,6 +165,10 @@ func main() {
 		os.Stdout = f
 	}
 
+	doMain(config, flag.Args())
+}
+
+func doMain(config *cbtconfig.Config, args []string) {
 	if config.UserAgent != "" {
 		cliUserAgent = config.UserAgent
 	}
@@ -156,15 +179,15 @@ func main() {
 	}
 
 	for _, cmd := range commands {
-		if cmd.Name == flag.Arg(0) {
+		if cmd.Name == args[0] {
 			if err := config.CheckFlags(cmd.Required); err != nil {
 				log.Fatal(err)
 			}
-			cmd.do(ctx, flag.Args()[1:]...)
+			cmd.do(ctx, args[1:]...)
 			return
 		}
 	}
-	log.Fatalf("Unknown command %q", flag.Arg(0))
+	log.Fatalf("Unknown command %q", args[0])
 }
 
 func usage(w io.Writer) {
@@ -581,7 +604,7 @@ func doCount(ctx context.Context, args ...string) {
 	if len(args) != 1 {
 		log.Fatal("usage: cbt count <table>")
 	}
-	tbl := getClient(bigtable.ClientConfig{}).Open(args[0])
+	tbl := getTable(bigtable.ClientConfig{}, args[0])
 
 	n := 0
 	err := tbl.ReadRows(ctx, bigtable.InfiniteRange(""), func(_ bigtable.Row) bool {
@@ -962,49 +985,91 @@ func doListClusters(ctx context.Context, args ...string) {
 	tw.Flush()
 }
 
+func getDataFilter(
+	parsed map[string]string, filters ...bigtable.Filter,
+) (bigtable.ReadOption, bool, error) {
+	var err error
+
+	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
+		n, err := strconv.Atoi(cellsPerColumn)
+		if err != nil {
+			return nil, false, fmt.Errorf(
+				"Bad number of cells per column %q: %v",
+				cellsPerColumn, err)
+		}
+		filters = append(filters, bigtable.LatestNFilter(n))
+	}
+
+	keysOnly := false
+	if keysOnlyS := parsed["keys-only"]; keysOnlyS != "" {
+		keysOnly, err = strconv.ParseBool(keysOnlyS)
+		if err != nil {
+			return nil, false, fmt.Errorf(
+				"Bad value for keys-only: %v", keysOnlyS)
+		}
+		if keysOnly {
+			filters = append(filters, bigtable.StripValueFilter())
+		}
+	}
+
+	if columns := parsed["columns"]; columns != "" {
+		columnFilters, err := parseColumnsFilter(columns)
+		if err != nil {
+			return nil, keysOnly, err
+		}
+		filters = append(filters, columnFilters)
+	}
+
+	var filter bigtable.Filter = nil
+	var option bigtable.ReadOption
+	if len(filters) > 0 {
+		if len(filters) > 1 {
+			filter = bigtable.ChainFilters(filters...)
+		} else if len(filters) == 1 {
+			filter = filters[0]
+		}
+		option = bigtable.RowFilter(filter)
+	}
+
+	return option, keysOnly, nil
+}
+
 func doLookup(ctx context.Context, args ...string) {
 	if len(args) < 2 {
 		log.Fatalf("usage: cbt lookup <table> <row> [columns=<family:qualifier>...] [cells-per-column=<n>] " +
 			"[app-profile=<app profile id>]")
 	}
 
-	parsed, err := parseArgs(args[2:], []string{"columns", "cells-per-column", "app-profile"})
+	parsed, err := parseArgs(
+		args[2:], []string{
+			"columns", "cells-per-column", "app-profile", "keys-only"},
+	)
 	if err != nil {
 		log.Fatal(err)
 	}
-	var opts []bigtable.ReadOption
-	var filters []bigtable.Filter
-	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
-		n, err := strconv.Atoi(cellsPerColumn)
-		if err != nil {
-			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
-		}
-		filters = append(filters, bigtable.LatestNFilter(n))
-	}
-	if columns := parsed["columns"]; columns != "" {
-		columnFilters, err := parseColumnsFilter(columns)
-		if err != nil {
-			log.Fatal(err)
-		}
-		filters = append(filters, columnFilters)
+
+	opt, keysOnly, err := getDataFilter(parsed)
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	if len(filters) > 1 {
-		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
-	} else if len(filters) == 1 {
-		opts = append(opts, bigtable.RowFilter(filters[0]))
+	var opts []bigtable.ReadOption
+	if opt != nil {
+		opts = append(opts, opt)
 	}
 
 	table, row := args[0], args[1]
-	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(table)
+	tbl := getTable(
+		bigtable.ClientConfig{AppProfile: parsed["app-profile"]},
+		table)
 	r, err := tbl.ReadRow(ctx, row, opts...)
 	if err != nil {
 		log.Fatalf("Reading row: %v", err)
 	}
-	printRow(r)
+	printRow(r, keysOnly)
 }
 
-func printRow(r bigtable.Row) {
+func printRow(r bigtable.Row, keysOnly bool) {
 	fmt.Println(strings.Repeat("-", 40))
 	fmt.Println(r.Key())
 
@@ -1018,8 +1083,11 @@ func printRow(r bigtable.Row) {
 		sort.Sort(byColumn(ris))
 		for _, ri := range ris {
 			ts := time.Unix(0, int64(ri.Timestamp)*1e3)
-			fmt.Printf("  %-40s @ %s\n", ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
-			fmt.Printf("    %q\n", ri.Value)
+			fmt.Printf("  %-40s @ %s\n",
+				ri.Column, ts.Format("2006/01/02-15:04:05.000000"))
+			if !keysOnly {
+				fmt.Printf("    %q\n", ri.Value)
+			}
 		}
 	}
 }
@@ -1101,7 +1169,9 @@ func doRead(ctx context.Context, args ...string) {
 	}
 
 	parsed, err := parseArgs(args[1:], []string{
-		"start", "end", "prefix", "columns", "count", "cells-per-column", "regex", "app-profile", "limit",
+		"start", "end", "prefix", "columns", "count",
+		"cells-per-column", "regex", "app-profile", "limit",
+		"keys-only",
 	})
 	if err != nil {
 		log.Fatal(err)
@@ -1134,34 +1204,24 @@ func doRead(ctx context.Context, args ...string) {
 	}
 
 	var filters []bigtable.Filter
-	if cellsPerColumn := parsed["cells-per-column"]; cellsPerColumn != "" {
-		n, err := strconv.Atoi(cellsPerColumn)
-		if err != nil {
-			log.Fatalf("Bad number of cells per column %q: %v", cellsPerColumn, err)
-		}
-		filters = append(filters, bigtable.LatestNFilter(n))
-	}
 	if regex := parsed["regex"]; regex != "" {
 		filters = append(filters, bigtable.RowKeyFilter(regex))
 	}
-	if columns := parsed["columns"]; columns != "" {
-		columnFilters, err := parseColumnsFilter(columns)
-		if err != nil {
-			log.Fatal(err)
-		}
-		filters = append(filters, columnFilters)
-	}
 
-	if len(filters) > 1 {
-		opts = append(opts, bigtable.RowFilter(bigtable.ChainFilters(filters...)))
-	} else if len(filters) == 1 {
-		opts = append(opts, bigtable.RowFilter(filters[0]))
+	opt, keysOnly, err := getDataFilter(parsed, filters...)
+	if err != nil {
+		log.Fatal(err)
+	}
+	if opt != nil {
+		opts = append(opts, opt)
 	}
 
 	// TODO(dsymonds): Support filters.
-	tbl := getClient(bigtable.ClientConfig{AppProfile: parsed["app-profile"]}).Open(args[0])
+	tbl := getTable(
+		bigtable.ClientConfig{AppProfile: parsed["app-profile"]},
+		args[0])
 	err = tbl.ReadRows(ctx, rr, func(r bigtable.Row) bool {
-		printRow(r)
+		printRow(r, keysOnly)
 		return true
 	}, opts...)
 	if err != nil {
