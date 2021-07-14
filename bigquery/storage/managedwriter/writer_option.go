@@ -28,11 +28,21 @@ func WithType(st StreamType) WriterOption {
 // append to explicitly.  By default, the managed client will create the
 // stream when instantiated.
 //
-// Caveat: It is possible to specify stream name and type explicitly, which
-// is not validated for correctness.  In such cases, behavior is indeterminate.
+// Note:  Supplying this option causes other options such as WithStreamType
+// and WithDestinationTable to be ignored.
 func WithStreamName(name string) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.streamID = name
+	}
+}
+
+// WithDestinationTable specifies the destination table to which a created
+// stream will append rows.  Format of the table:
+//
+//   projects/{projectid}/datasets/{dataset}/tables/{table}
+func WithDestinationTable(destTable string) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.destinationTable = destTable
 	}
 }
 

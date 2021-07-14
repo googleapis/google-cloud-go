@@ -20,7 +20,6 @@ import (
 	"runtime"
 	"strings"
 
-	"cloud.google.com/go/bigquery"
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
@@ -55,7 +54,9 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 }
 
 // NewManagedStream establishes a new stream for writing.
-func (c *Client) NewManagedStream(ctx context.Context, table *bigquery.Table, opts ...WriterOption) (*ManagedStream, error) {
+//
+// destinationTable should be of the format: projects/{project}/datasets/{dataset}/tables/{table}
+func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
 
 	ms := &ManagedStream{
 		streamSettings: defaultStreamSettings(),
@@ -67,16 +68,17 @@ func (c *Client) NewManagedStream(ctx context.Context, table *bigquery.Table, op
 		opt(ms)
 	}
 
-	if ms.streamSettings.streamID == "" && ms.streamSettings.streamType == "" {
-		return nil, fmt.Errorf("TODO insufficient validation")
+	if err := c.validateOptions(ctx, ms); err != nil {
+		return nil, err
 	}
+
 	if ms.streamSettings.streamID == "" {
 		// not instantiated with a stream, construct one.
-		streamName := fmt.Sprintf("projects/%s/datasets/%s/tables/%s/_default", table.ProjectID, table.DatasetID, table.TableID)
+		streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
 		if ms.streamSettings.streamType != DefaultStream {
 			// For everything but a default stream, we create a new stream on behalf of the user.
 			req := &storagepb.CreateWriteStreamRequest{
-				Parent: fmt.Sprintf("projects/%s/datasets/%s/tables/%s", table.ProjectID, table.DatasetID, table.TableID),
+				Parent: ms.destinationTable,
 				WriteStream: &storagepb.WriteStream{
 					Type: streamTypeToEnum(ms.streamSettings.streamType),
 				}}
@@ -91,6 +93,32 @@ func (c *Client) NewManagedStream(ctx context.Context, table *bigquery.Table, op
 	}
 
 	return ms, nil
+}
+
+// validateOptions is used to validate that we received a sane/compatible set of WriterOptions
+// for constructing a new managed stream.
+func (c *Client) validateOptions(ctx context.Context, ms *ManagedStream) error {
+	if ms == nil {
+		return fmt.Errorf("no managed stream definition")
+	}
+	if ms.streamSettings.streamID != "" {
+		// User supplied a stream, we need to verify it exists.
+		info, err := c.getWriteStream(ctx, ms.streamSettings.streamID)
+		if err != nil {
+			return fmt.Errorf("a streamname was specified, but lookup of stream failed: %v", err)
+		}
+		// update type and destination based on stream metadata
+		ms.streamSettings.streamType = StreamType(info.Type.String())
+		ms.destinationTable = tableParentFromStreamName(ms.streamSettings.streamID)
+	}
+	if ms.destinationTable == "" {
+		return fmt.Errorf("no destination table specified")
+	}
+	// we could auto-select DEFAULT here, but let's force users to be specific for now.
+	if ms.StreamType() == "" {
+		return fmt.Errorf("stream type wasn't specified")
+	}
+	return nil
 }
 
 // BatchCommit is used to commit one or more PendingStream streams belonging to the same table
@@ -113,7 +141,7 @@ func (c *Client) BatchCommit(ctx context.Context, parentTable string, streamName
 
 // getWriteStream returns information about a given write stream.
 //
-// It is not currently exported because it's unclear what we should surface here to the client, but we can use it for validation.
+// It's primarily used for setup validation, and not exposed directly to end users.
 func (c *Client) getWriteStream(ctx context.Context, streamName string) (*storagepb.WriteStream, error) {
 	req := &storagepb.GetWriteStreamRequest{
 		Name: streamName,

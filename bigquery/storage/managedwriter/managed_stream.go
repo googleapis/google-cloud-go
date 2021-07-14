@@ -61,8 +61,9 @@ func streamTypeToEnum(t StreamType) storagepb.WriteStream_Type {
 
 // ManagedStream is the abstraction over a single write stream.
 type ManagedStream struct {
-	streamSettings *streamSettings
-	c              *Client
+	streamSettings   *streamSettings
+	destinationTable string
+	c                *Client
 }
 
 // streamSettings govern behavior of the append stream RPCs.

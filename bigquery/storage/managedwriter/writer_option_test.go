@@ -72,6 +72,17 @@ func TestWriterOptions(t *testing.T) {
 			}(),
 		},
 		{
+			desc:    "WithDestinationTable",
+			options: []WriterOption{WithDestinationTable("foo")},
+			want: func() *ManagedStream {
+				ms := &ManagedStream{
+					streamSettings:   defaultStreamSettings(),
+					destinationTable: "foo",
+				}
+				return ms
+			}(),
+		},
+		{
 			desc: "multiple",
 			options: []WriterOption{
 				WithType(PendingStream),
