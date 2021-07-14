@@ -19,11 +19,13 @@ package spanner
 import (
 	"bytes"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"math"
 	"math/big"
 	"reflect"
 	"strconv"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/civil"
@@ -452,6 +454,59 @@ func (n *NullNumeric) UnmarshalJSON(payload []byte) error {
 		return fmt.Errorf("payload cannot be converted to big.Rat: got %v", string(payload))
 	}
 	n.Numeric = *val
+	n.Valid = true
+	return nil
+}
+
+// NullJSON represents a Cloud Spanner JSON that may be NULL.
+//
+// This type must always be used when encoding values to a JSON column in Cloud
+// Spanner.
+type NullJSON struct {
+	Value interface{} // Val contains the value when it is non-NULL, and nil when NULL.
+	Valid bool        // Valid is true if Json is not NULL.
+}
+
+// IsNull implements NullableValue.IsNull for NullJSON.
+func (n NullJSON) IsNull() bool {
+	return !n.Valid
+}
+
+// String implements Stringer.String for NullJSON
+func (n NullJSON) String() string {
+	if !n.Valid {
+		return nullString
+	}
+	b, err := json.Marshal(n.Value)
+	if err != nil {
+		return fmt.Sprintf("error: %v", err)
+	}
+	return fmt.Sprintf("%v", string(b))
+}
+
+// MarshalJSON implements json.Marshaler.MarshalJSON for NullJSON.
+func (n NullJSON) MarshalJSON() ([]byte, error) {
+	if n.Valid {
+		return json.Marshal(n.Value)
+	}
+	return jsonNullBytes, nil
+}
+
+// UnmarshalJSON implements json.Unmarshaler.UnmarshalJSON for NullJSON.
+func (n *NullJSON) UnmarshalJSON(payload []byte) error {
+	if payload == nil {
+		return fmt.Errorf("payload should not be nil")
+	}
+	if bytes.Equal(payload, jsonNullBytes) {
+		n.Valid = false
+		return nil
+	}
+	var v interface{}
+	err := json.Unmarshal(payload, &v)
+	if err != nil {
+		return fmt.Errorf("payload cannot be converted to a struct: got %v, err: %s", string(payload), err)
+	}
+	n.Value = v
 	n.Valid = true
 	return nil
 }
@@ -1032,6 +1087,59 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return errUnexpectedNumericStr(x)
 		}
 		*p = *y
+	case *NullJSON:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if code == sppb.TypeCode_ARRAY {
+			if acode != sppb.TypeCode_JSON {
+				return errTypeMismatch(code, acode, ptr)
+			}
+			x, err := getListValue(v)
+			if err != nil {
+				return err
+			}
+			y, err := decodeNullJSONArrayToNullJSON(x)
+			if err != nil {
+				return err
+			}
+			*p = *y
+		} else {
+			if code != sppb.TypeCode_JSON {
+				return errTypeMismatch(code, acode, ptr)
+			}
+			if isNull {
+				*p = NullJSON{}
+				break
+			}
+			x := v.GetStringValue()
+			var y interface{}
+			err := json.Unmarshal([]byte(x), &y)
+			if err != nil {
+				return err
+			}
+			*p = NullJSON{y, true}
+		}
+	case *[]NullJSON:
+		if p == nil {
+			return errNilDst(p)
+		}
+		if acode != sppb.TypeCode_JSON {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			*p = nil
+			break
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeNullJSONArray(x)
+		if err != nil {
+			return err
+		}
+		*p = y
 	case *NullNumeric:
 		if p == nil {
 			return errNilDst(p)
@@ -1402,6 +1510,7 @@ const (
 	spannerTypeNullTime
 	spannerTypeNullDate
 	spannerTypeNullNumeric
+	spannerTypeNullJSON
 	spannerTypeArrayOfNonNullString
 	spannerTypeArrayOfByteArray
 	spannerTypeArrayOfNonNullInt64
@@ -1415,6 +1524,7 @@ const (
 	spannerTypeArrayOfNullBool
 	spannerTypeArrayOfNullFloat64
 	spannerTypeArrayOfNullNumeric
+	spannerTypeArrayOfNullJSON
 	spannerTypeArrayOfNullTime
 	spannerTypeArrayOfNullDate
 )
@@ -1447,6 +1557,7 @@ var typeOfNullFloat64 = reflect.TypeOf(NullFloat64{})
 var typeOfNullTime = reflect.TypeOf(NullTime{})
 var typeOfNullDate = reflect.TypeOf(NullDate{})
 var typeOfNullNumeric = reflect.TypeOf(NullNumeric{})
+var typeOfNullJSON = reflect.TypeOf(NullJSON{})
 
 // getDecodableSpannerType returns the corresponding decodableSpannerType of
 // the given pointer.
@@ -1477,6 +1588,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		t := val.Type()
 		if t.ConvertibleTo(typeOfNullNumeric) {
 			return spannerTypeNullNumeric
+		}
+		if t.ConvertibleTo(typeOfNullJSON) {
+			return spannerTypeNullJSON
 		}
 	case reflect.Struct:
 		t := val.Type()
@@ -1509,6 +1623,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 		}
 		if t.ConvertibleTo(typeOfNullNumeric) {
 			return spannerTypeNullNumeric
+		}
+		if t.ConvertibleTo(typeOfNullJSON) {
+			return spannerTypeNullJSON
 		}
 	case reflect.Slice:
 		kind := val.Type().Elem().Kind()
@@ -1561,6 +1678,9 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 			}
 			if t.ConvertibleTo(typeOfNullNumeric) {
 				return spannerTypeArrayOfNullNumeric
+			}
+			if t.ConvertibleTo(typeOfNullJSON) {
+				return spannerTypeArrayOfNullJSON
 			}
 		case reflect.Slice:
 			// The only array-of-array type that is supported is [][]byte.
@@ -1697,6 +1817,21 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 		} else {
 			result = &NullNumeric{*y, true}
 		}
+	case spannerTypeNullJSON:
+		if code != sppb.TypeCode_JSON {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			result = &NullJSON{}
+			break
+		}
+		x := v.GetStringValue()
+		var y interface{}
+		err := json.Unmarshal([]byte(x), &y)
+		if err != nil {
+			return err
+		}
+		result = &NullJSON{y, true}
 	case spannerTypeNonNullTime, spannerTypeNullTime:
 		var nt NullTime
 		err := parseNullTime(v, &nt, code, isNull)
@@ -1827,6 +1962,23 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 			return err
 		}
 		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, numericType(), "NUMERIC")
+		if err != nil {
+			return err
+		}
+		result = y
+	case spannerTypeArrayOfNullJSON:
+		if acode != sppb.TypeCode_JSON {
+			return errTypeMismatch(code, acode, ptr)
+		}
+		if isNull {
+			ptr = nil
+			return nil
+		}
+		x, err := getListValue(v)
+		if err != nil {
+			return err
+		}
+		y, err := decodeGenericArray(reflect.TypeOf(ptr).Elem(), x, jsonType(), "JSON")
 		if err != nil {
 			return err
 		}
@@ -2174,6 +2326,42 @@ func decodeNullNumericArray(pb *proto3.ListValue) ([]NullNumeric, error) {
 		}
 	}
 	return a, nil
+}
+
+// decodeNullJSONArray decodes proto3.ListValue pb into a NullJSON slice.
+func decodeNullJSONArray(pb *proto3.ListValue) ([]NullJSON, error) {
+	if pb == nil {
+		return nil, errNilListValue("JSON")
+	}
+	a := make([]NullJSON, len(pb.Values))
+	for i, v := range pb.Values {
+		if err := decodeValue(v, jsonType(), &a[i]); err != nil {
+			return nil, errDecodeArrayElement(i, v, "JSON", err)
+		}
+	}
+	return a, nil
+}
+
+// decodeNullJSONArray decodes proto3.ListValue pb into a NullJSON pointer.
+func decodeNullJSONArrayToNullJSON(pb *proto3.ListValue) (*NullJSON, error) {
+	if pb == nil {
+		return nil, errNilListValue("JSON")
+	}
+	strs := []string{}
+	for _, v := range pb.Values {
+		if _, ok := v.Kind.(*proto3.Value_NullValue); ok {
+			strs = append(strs, "null")
+		} else {
+			strs = append(strs, v.GetStringValue())
+		}
+	}
+	s := fmt.Sprintf("[%s]", strings.Join(strs, ","))
+	var y interface{}
+	err := json.Unmarshal([]byte(s), &y)
+	if err != nil {
+		return nil, err
+	}
+	return &NullJSON{y, true}, nil
 }
 
 // decodeNumericPointerArray decodes proto3.ListValue pb into a *big.Rat slice.
@@ -2676,6 +2864,23 @@ func encodeValue(v interface{}) (*proto3.Value, *sppb.Type, error) {
 			}
 		}
 		pt = listType(numericType())
+	case NullJSON:
+		if v.Valid {
+			b, err := json.Marshal(v.Value)
+			if err != nil {
+				return nil, nil, err
+			}
+			pb.Kind = stringKind(string(b))
+		}
+		return pb, jsonType(), nil
+	case []NullJSON:
+		if v != nil {
+			pb, err = encodeArray(len(v), func(i int) interface{} { return v[i] })
+			if err != nil {
+				return nil, nil, err
+			}
+		}
+		pt = listType(jsonType())
 	case *big.Rat:
 		if v != nil {
 			pb.Kind = stringKind(NumericString(v))
@@ -2856,6 +3061,8 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(big.Rat{})))
 	case spannerTypeNullNumeric:
 		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullNumeric{})))
+	case spannerTypeNullJSON:
+		destination = reflect.Indirect(reflect.New(reflect.TypeOf(NullJSON{})))
 	case spannerTypeArrayOfNonNullString:
 		if reflect.ValueOf(v).IsNil() {
 			return []string(nil), nil
@@ -2931,6 +3138,11 @@ func convertCustomTypeValue(sourceType decodableSpannerType, v interface{}) (int
 			return []NullNumeric(nil), nil
 		}
 		destination = reflect.MakeSlice(reflect.TypeOf([]NullNumeric{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
+	case spannerTypeArrayOfNullJSON:
+		if reflect.ValueOf(v).IsNil() {
+			return []NullJSON(nil), nil
+		}
+		destination = reflect.MakeSlice(reflect.TypeOf([]NullJSON{}), reflect.ValueOf(v).Len(), reflect.ValueOf(v).Cap())
 	default:
 		// This should not be possible.
 		return nil, fmt.Errorf("unknown decodable type found: %v", sourceType)
