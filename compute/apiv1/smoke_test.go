@@ -44,40 +44,38 @@ func TestCreateGetListInstance(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	diskType := computepb.AttachedDisk_PERSISTENT
-	instance := &computepb.Instance{
-		Name:        &name,
-		Description: proto.String("тест"),
-		MachineType: proto.String(fmt.Sprintf("https://www.googleapis.com/compute/v1/projects/%s/zones/%s/machineTypes/n1-standard-1", projectId, defaultZone)),
-		Disks: []*computepb.AttachedDisk{
-			{
-				AutoDelete: proto.Bool(true),
-				Boot:       proto.Bool(true),
-				Type:       &diskType,
-				InitializeParams: &computepb.AttachedDiskInitializeParams{
-					SourceImage: proto.String("projects/debian-cloud/global/images/family/debian-10"),
+	createRequest := &computepb.InsertInstanceRequest{
+		Project: projectId,
+		Zone:    defaultZone,
+		InstanceResource: &computepb.Instance{
+			Name:        &name,
+			Description: proto.String("тест"),
+			MachineType: proto.String(fmt.Sprintf("https://www.googleapis.com/compute/v1/projects/%s/zones/%s/machineTypes/n1-standard-1", projectId, defaultZone)),
+			Disks: []*computepb.AttachedDisk{
+				{
+					AutoDelete: proto.Bool(true),
+					Boot:       proto.Bool(true),
+					Type:       computepb.AttachedDisk_PERSISTENT.Enum(),
+					InitializeParams: &computepb.AttachedDiskInitializeParams{
+						SourceImage: proto.String("projects/debian-cloud/global/images/family/debian-10"),
+					},
 				},
 			},
-		},
-		NetworkInterfaces: []*computepb.NetworkInterface{
-			{
-				AccessConfigs: []*computepb.AccessConfig{
-					{
-						Name: proto.String("default"),
+			NetworkInterfaces: []*computepb.NetworkInterface{
+				{
+					AccessConfigs: []*computepb.AccessConfig{
+						{
+							Name: proto.String("default"),
+						},
 					},
 				},
 			},
 		},
 	}
-	createRequest := &computepb.InsertInstanceRequest{
-		Project:          projectId,
-		Zone:             defaultZone,
-		InstanceResource: instance,
-	}
 
 	insert, err := c.Insert(ctx, createRequest)
 	if err != nil {
-		t.Error(err)
+		t.Fatal(err)
 	}
 
 	waitZonalRequest := &computepb.WaitZoneOperationRequest{
@@ -89,7 +87,6 @@ func TestCreateGetListInstance(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	fmt.Printf("Inserted instance named %s\n", name)
 	defer ForceDeleteInstance(ctx, name, c)
 
 	getRequest := &computepb.GetInstanceRequest{
@@ -101,8 +98,12 @@ func TestCreateGetListInstance(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	testutil.Equal(name, get.GetName())
-	testutil.Equal("тест", get.GetDescription())
+	if name != get.GetName() {
+		t.Fatal(fmt.Sprintf("expected instance name: %s, got: %s", name, get.GetName()))
+	}
+	if "тест" != get.GetDescription() {
+		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "тест", get.GetDescription()))
+	}
 	listRequest := &computepb.ListInstancesRequest{
 		Project: projectId,
 		Zone:    defaultZone,
@@ -235,6 +236,9 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 	get, err := c.Get(ctx, getRequest)
 	if err != nil {
 		t.Error(err)
+	}
+	if len(get.GetRules()) != 1 {
+		t.Fatal(fmt.Sprintf("expected count for rules: %d, got: %d", 1, len(get.GetRules())))
 	}
 	testutil.Equal(1, len(get.GetRules()))
 
