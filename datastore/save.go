@@ -450,6 +450,12 @@ func interfaceToProto(iv interface{}, noIndex bool) (*pb.Value, error) {
 			return nil, err
 		}
 		val.ValueType = &pb.Value_EntityValue{EntityValue: e}
+	case *pb.Value:
+		if v != nil {
+			return v, nil
+		}
+		val.ValueType = &pb.Value_NullValue{}
+		return val, nil
 	case []interface{}:
 		arr := make([]*pb.Value, 0, len(v))
 		for i, v := range v {

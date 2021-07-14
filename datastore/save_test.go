@@ -34,6 +34,7 @@ func TestInterfaceToProtoNil(t *testing.T) {
 		(*float64)(nil),
 		(*GeoPoint)(nil),
 		(*time.Time)(nil),
+		(*pb.Value)(nil),
 	} {
 		got, err := interfaceToProto(in, false)
 		if err != nil {
