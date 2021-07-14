@@ -1286,12 +1286,12 @@
     "release_level": "ga",
     "library_type": "GAPIC_MANUAL"
   },
-  "cloud.google.com/go/storage/internal/apiv1": {
-    "distribution_name": "cloud.google.com/go/storage/internal/apiv1",
+  "cloud.google.com/go/storage/internal/apiv2": {
+    "distribution_name": "cloud.google.com/go/storage/internal/apiv2",
     "description": "Cloud Storage API",
     "language": "Go",
     "client_library_type": "generated",
-    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/storage/internal/apiv1",
+    "docs_url": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/latest/storage/internal/apiv2",
     "release_level": "alpha",
     "library_type": ""
   },
