@@ -76,6 +76,8 @@ func reflectFieldSave(props *[]Property, p Property, name string, opts saveOpts,
 		p.Value = x.In(time.UTC)
 		*props = append(*props, p)
 		return nil
+	case fmt.Stringer:
+		p.Value = x.String()
 	default:
 		switch v.Kind() {
 		case reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64:

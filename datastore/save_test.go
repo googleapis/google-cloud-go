@@ -34,6 +34,7 @@ func TestInterfaceToProtoNil(t *testing.T) {
 		(*float64)(nil),
 		(*GeoPoint)(nil),
 		(*time.Time)(nil),
+		(*fmt.Stringer)(nil),
 	} {
 		got, err := interfaceToProto(in, false)
 		if err != nil {
@@ -487,6 +488,78 @@ func TestSaveFieldsWithInterface(t *testing.T) {
 				t.Fatal(err)
 			}
 			if diff := testutil.Diff(got, tt.want); diff != "" {
+				t.Fatalf("got - want +\n%s", diff)
+			}
+		})
+	}
+}
+
+type EnumWithStringer int
+
+const (
+	EnumWithStringerA EnumWithStringer = 0
+	EnumWithStringerB EnumWithStringer = 1
+)
+
+func (e EnumWithStringer) String() string {
+	return []string{"enum-A", "enum-B"}[e]
+}
+
+type EnumWithoutStringer int
+
+const (
+	EnumWithoutStringerA EnumWithoutStringer = 0
+	EnumWithoutStringerB EnumWithoutStringer = 1
+)
+
+func TestSaveEntityWithEnums(t *testing.T) {
+	type WithEnums struct {
+		WithStringer    EnumWithStringer
+		WithoutStringer EnumWithoutStringer
+	}
+
+	type WithEnumsInSlice struct {
+		WithStringer    []EnumWithStringer
+		WithoutStringer []EnumWithoutStringer
+	}
+
+	cases := []struct {
+		desc string
+		src  interface{}
+		want []Property
+	}{
+		{
+			desc: "in struct fields",
+			src: &WithEnums{
+				WithStringer:    EnumWithStringerA,
+				WithoutStringer: EnumWithoutStringerA,
+			},
+			want: []Property{
+				{Name: "WithStringer", Value: "enum-A"},
+				{Name: "WithoutStringer", Value: int64(0)},
+			},
+		},
+		{
+			desc: "in slice values",
+			src: &WithEnumsInSlice{
+				WithStringer:    []EnumWithStringer{EnumWithStringerB},
+				WithoutStringer: []EnumWithoutStringer{EnumWithoutStringerB},
+			},
+			want: []Property{
+				{Name: "WithStringer", Value: []interface{}{"enum-B"}},
+				{Name: "WithoutStringer", Value: []interface{}{int64(1)}},
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.desc, func(t *testing.T) {
+			got, err := SaveStruct(tc.src)
+			if err != nil {
+				t.Fatal(err)
+			}
+
+			if diff := testutil.Diff(got, tc.want); diff != "" {
 				t.Fatalf("got - want +\n%s", diff)
 			}
 		})
