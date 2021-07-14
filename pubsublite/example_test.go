@@ -175,6 +175,33 @@ func ExampleAdminClient_UpdateSubscription() {
 	}
 }
 
+func ExampleAdminClient_SeekSubscription() {
+	ctx := context.Background()
+	// NOTE: region must correspond to the zone of the subscription.
+	admin, err := pubsublite.NewAdminClient(ctx, "region")
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	const subscription = "projects/my-project/locations/zone/subscriptions/my-subscription"
+	seekOp, err := admin.SeekSubscription(ctx, subscription, pubsublite.Beginning)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	// Optional: Wait for the seek operation to complete, which indicates when
+	// subscribers for all partitions are receiving messages from the seek target.
+	err = seekOp.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	metadata, err := seekOp.Metadata()
+	if err != nil {
+		// TODO: Handle error.
+	}
+	fmt.Println(metadata)
+}
+
 func ExampleAdminClient_DeleteSubscription() {
 	ctx := context.Background()
 	// NOTE: region must correspond to the zone of the subscription.

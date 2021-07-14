@@ -29,18 +29,6 @@ var (
 	errNoSubscriptionFieldsUpdated = errors.New("pubsublite: no fields updated for subscription")
 )
 
-// BacklogLocation refers to a location with respect to the message backlog.
-type BacklogLocation int
-
-const (
-	// End refers to the location past all currently published messages. End
-	// skips the entire message backlog.
-	End BacklogLocation = iota + 1
-
-	// Beginning refers to the location of the oldest retained message.
-	Beginning
-)
-
 // AdminClient provides admin operations for Pub/Sub Lite resources within a
 // Google Cloud region. The zone component of resource paths must be within this
 // region. See https://cloud.google.com/pubsub/lite/docs/locations for the list
@@ -229,6 +217,25 @@ func (ac *AdminClient) UpdateSubscription(ctx context.Context, config Subscripti
 		return nil, err
 	}
 	return protoToSubscriptionConfig(subspb), nil
+}
+
+// SeekSubscription initiates an out-of-band seek for a subscription to a
+// specified target, which may be timestamps or named positions within the
+// message backlog. A valid subscription path has the format:
+// "projects/PROJECT_ID/locations/ZONE/subscriptions/SUBSCRIPTION_ID".
+//
+// See https://cloud.google.com/pubsub/lite/docs/seek for more information.
+func (ac *AdminClient) SeekSubscription(ctx context.Context, subscription string, target SeekTarget, opts ...SeekSubscriptionOption) (*SeekSubscriptionOperation, error) {
+	if _, err := wire.ParseSubscriptionPath(subscription); err != nil {
+		return nil, err
+	}
+	req := &pb.SeekSubscriptionRequest{Name: subscription}
+	target.setRequest(req)
+	op, err := ac.admin.SeekSubscription(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+	return &SeekSubscriptionOperation{op}, err
 }
 
 // DeleteSubscription deletes a subscription. A valid subscription path has the

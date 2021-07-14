@@ -21,9 +21,14 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsublite/internal/test"
 	"google.golang.org/api/iterator"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 
 	emptypb "github.com/golang/protobuf/ptypes/empty"
+	tspb "github.com/golang/protobuf/ptypes/timestamp"
 	pb "google.golang.org/genproto/googleapis/cloud/pubsublite/v1"
+	lrpb "google.golang.org/genproto/googleapis/longrunning"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 )
 
 func newTestAdminClient(t *testing.T) *AdminClient {
@@ -447,5 +452,203 @@ func TestAdminValidateResourcePaths(t *testing.T) {
 	subsIt := admin.Subscriptions(ctx, "INVALID")
 	if _, err := subsIt.Next(); err == nil {
 		t.Errorf("SubscriptionIterator.Next() should fail")
+	}
+}
+
+func TestAdminSeekSubscription(t *testing.T) {
+	const subscriptionPath = "projects/my-proj/locations/us-central1-a/subscriptions/my-subscription"
+	const operationPath = "projects/my-proj/locations/us-central1-a/operations/seek-op"
+	ctx := context.Background()
+
+	for _, tc := range []struct {
+		desc    string
+		target  SeekTarget
+		wantReq *pb.SeekSubscriptionRequest
+	}{
+		{
+			desc:   "Beginning",
+			target: Beginning,
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
+					NamedTarget: pb.SeekSubscriptionRequest_TAIL,
+				},
+			},
+		},
+		{
+			desc:   "End",
+			target: End,
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_NamedTarget_{
+					NamedTarget: pb.SeekSubscriptionRequest_HEAD,
+				},
+			},
+		},
+		{
+			desc:   "PublishTime",
+			target: PublishTime(time.Unix(1234, 0)),
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_TimeTarget{
+					TimeTarget: &pb.TimeTarget{
+						Time: &pb.TimeTarget_PublishTime{
+							PublishTime: &tspb.Timestamp{Seconds: 1234},
+						},
+					},
+				},
+			},
+		},
+		{
+			desc:   "EventTime",
+			target: EventTime(time.Unix(2345, 0)),
+			wantReq: &pb.SeekSubscriptionRequest{
+				Name: subscriptionPath,
+				Target: &pb.SeekSubscriptionRequest_TimeTarget{
+					TimeTarget: &pb.TimeTarget{
+						Time: &pb.TimeTarget_EventTime{
+							EventTime: &tspb.Timestamp{Seconds: 2345},
+						},
+					},
+				},
+			},
+		},
+	} {
+		t.Run(tc.desc, func(t *testing.T) {
+			initialOpResponse := &lrpb.Operation{
+				Name: operationPath,
+				Done: false,
+				Metadata: test.MakeAny(&pb.OperationMetadata{
+					Target:     subscriptionPath,
+					Verb:       "seek",
+					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
+				}),
+			}
+			wantInitialMetadata := &OperationMetadata{
+				Target:     subscriptionPath,
+				Verb:       "seek",
+				CreateTime: time.Unix(123456, 700),
+			}
+
+			wantGetOpReq := &lrpb.GetOperationRequest{
+				Name: operationPath,
+			}
+			successOpResponse := &lrpb.Operation{
+				Name: operationPath,
+				Done: true,
+				Metadata: test.MakeAny(&pb.OperationMetadata{
+					Target:     subscriptionPath,
+					Verb:       "seek",
+					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
+					EndTime:    &tspb.Timestamp{Seconds: 234567, Nanos: 800},
+				}),
+				Result: &lrpb.Operation_Response{
+					Response: test.MakeAny(&pb.SeekSubscriptionResponse{}),
+				},
+			}
+			failedOpResponse := &lrpb.Operation{
+				Name: operationPath,
+				Done: true,
+				Metadata: test.MakeAny(&pb.OperationMetadata{
+					Target:     subscriptionPath,
+					Verb:       "seek",
+					CreateTime: &tspb.Timestamp{Seconds: 123456, Nanos: 700},
+					EndTime:    &tspb.Timestamp{Seconds: 234567, Nanos: 800},
+				}),
+				Result: &lrpb.Operation_Error{
+					Error: &statuspb.Status{Code: 10},
+				},
+			}
+			wantCompleteMetadata := &OperationMetadata{
+				Target:     subscriptionPath,
+				Verb:       "seek",
+				CreateTime: time.Unix(123456, 700),
+				EndTime:    time.Unix(234567, 800),
+			}
+
+			seekErr := status.Error(codes.FailedPrecondition, "")
+
+			verifiers := test.NewVerifiers(t)
+			// Seek 1
+			verifiers.GlobalVerifier.Push(tc.wantReq, initialOpResponse, nil)
+			verifiers.GlobalVerifier.Push(wantGetOpReq, successOpResponse, nil)
+			// Seek 2
+			verifiers.GlobalVerifier.Push(tc.wantReq, initialOpResponse, nil)
+			verifiers.GlobalVerifier.Push(wantGetOpReq, failedOpResponse, nil)
+			// Seek 3
+			verifiers.GlobalVerifier.Push(tc.wantReq, nil, seekErr)
+			mockServer.OnTestStart(verifiers)
+			defer mockServer.OnTestEnd()
+
+			admin := newTestAdminClient(t)
+			defer admin.Close()
+
+			// Seek 1 - Successful operation.
+			op, err := admin.SeekSubscription(ctx, subscriptionPath, tc.target)
+			if err != nil {
+				t.Fatalf("SeekSubscription() got err: %v", err)
+			}
+			if got, want := op.Done(), false; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			if got, want := op.Name(), operationPath; got != want {
+				t.Errorf("Name() got %v, want %v", got, want)
+			}
+			gotMetadata, err := op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantInitialMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			if err := op.Wait(ctx); err != nil {
+				t.Fatalf("Wait() got err: %v", err)
+			}
+			if got, want := op.Done(), true; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			gotMetadata, err = op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantCompleteMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			// Seek 2 - Failed operation.
+			op, err = admin.SeekSubscription(ctx, subscriptionPath, tc.target)
+			if err != nil {
+				t.Fatalf("SeekSubscription() got err: %v", err)
+			}
+			if got, want := op.Done(), false; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			if got, want := op.Name(), operationPath; got != want {
+				t.Errorf("Name() got %v, want %v", got, want)
+			}
+			gotMetadata, err = op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantInitialMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			if gotErr, wantErr := op.Wait(ctx), status.Error(codes.Aborted, ""); !test.ErrorEqual(gotErr, wantErr) {
+				t.Fatalf("Wait() got err: %v, want err: %v", gotErr, wantErr)
+			}
+			if got, want := op.Done(), true; got != want {
+				t.Errorf("Done() got %v, want %v", got, want)
+			}
+			gotMetadata, err = op.Metadata()
+			if err != nil {
+				t.Errorf("Metadata() got err: %v", err)
+			} else if diff := testutil.Diff(gotMetadata, wantCompleteMetadata); diff != "" {
+				t.Errorf("Metadata() got: -, want: +\n%s", diff)
+			}
+
+			// Seek 3 - Failed seek.
+			if _, gotErr := admin.SeekSubscription(ctx, subscriptionPath, tc.target); !test.ErrorEqual(gotErr, seekErr) {
+				t.Errorf("SeekSubscription() got err: %v, want err: %v", gotErr, seekErr)
+			}
+		})
 	}
 }
