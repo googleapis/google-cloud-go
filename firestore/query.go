@@ -21,6 +21,7 @@ import (
 	"io"
 	"math"
 	"reflect"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/btree"
@@ -39,7 +40,7 @@ type Query struct {
 	path                   string // path to query (collection)
 	parentPath             string // path of the collection's parent (document)
 	collectionID           string
-	selection              []FieldPath
+	selection              []*pb.StructuredQuery_FieldReference
 	filters                []filter
 	orders                 []order
 	offset                 int32
@@ -49,6 +50,8 @@ type Query struct {
 	startDoc, endDoc       *DocumentSnapshot
 	startBefore, endBefore bool
 	err                    error
+
+	structuredQueryProto *pb.StructuredQuery
 
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
@@ -83,10 +86,26 @@ func (q Query) Select(paths ...string) Query {
 //
 // An empty SelectPaths call will produce a query that returns only document IDs.
 func (q Query) SelectPaths(fieldPaths ...FieldPath) Query {
+
 	if len(fieldPaths) == 0 {
-		q.selection = []FieldPath{{DocumentID}}
+		ref, err := fref(FieldPath{DocumentID})
+		if err != nil {
+			q.err = err
+			return q
+		}
+		q.selection = []*pb.StructuredQuery_FieldReference{
+			ref,
+		}
 	} else {
-		q.selection = fieldPaths
+		q.selection = make([]*pb.StructuredQuery_FieldReference, len(fieldPaths))
+		for i, fieldPath := range fieldPaths {
+			ref, err := fref(fieldPath)
+			if err != nil {
+				q.err = err
+				return q
+			}
+			q.selection[i] = ref
+		}
 	}
 	return q
 }
@@ -141,7 +160,7 @@ func (q Query) OrderBy(path string, dir Direction) Query {
 		q.err = err
 		return q
 	}
-	q.orders = append(q.copyOrders(), order{fp, dir})
+	q.orders = append(q.copyOrders(), order{fp, nil, dir})
 	return q
 }
 
@@ -149,7 +168,7 @@ func (q Query) OrderBy(path string, dir Direction) Query {
 // returned. A Query can have multiple OrderBy/OrderByPath specifications.
 // OrderByPath appends the specification to the list of existing ones.
 func (q Query) OrderByPath(fp FieldPath, dir Direction) Query {
-	q.orders = append(q.copyOrders(), order{fp, dir})
+	q.orders = append(q.copyOrders(), order{fp, nil, dir})
 	return q
 }
 
@@ -250,6 +269,191 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q Query) query() *Query { return &q }
 
+func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
+	switch vProto.ValueType.(type) {
+	case *pb.Value_ReferenceValue:
+		refVal := vProto.GetReferenceValue()
+		if strings.HasPrefix(refVal, q.path) {
+			refVal = refVal[len(q.path)+1:]
+		}
+		return refVal, nil
+	default:
+		i, err := createFromProtoValue(vProto, q.c)
+		if err != nil {
+			q.err = err
+			return q, err
+		}
+		return i, nil
+	}
+}
+
+// FromProto creates a new Query object from a RunQueryRequest. This can be used
+// in combintation with ToProto to serialize Query objects.
+func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
+	// Ensure we are starting from an empty query, but with this client.
+	q = *q.c.Query()
+
+	// 	err                    error
+	q.err = nil
+	pbq := pbQuery.GetStructuredQuery()
+	if from := pbq.GetFrom(); len(from) > 0 {
+		if len(from) > 1 {
+			err := errors.New("can only deserialize query with exactly one collection selector")
+			q.err = err
+			return q, err
+		}
+
+		// collectionID           string
+		q.collectionID = from[0].CollectionId
+		// allDescendants indicates whether this query is for all collections
+		// that match the ID under the specified parentPath.
+		q.allDescendants = from[0].AllDescendants
+	}
+
+	// 	path                   string // path to query (collection)
+	// 	parentPath             string // path of the collection's parent (document)
+	parent := pbQuery.GetParent()
+	q.parentPath = parent
+	q.path = parent + "/" + q.collectionID
+
+	// 	startVals, endVals     []interface{}
+	// 	startDoc, endDoc       *DocumentSnapshot
+	// 	startBefore, endBefore bool
+	if startAt := pbq.GetStartAt(); startAt != nil {
+		if startAt.GetBefore() {
+			q.startBefore = true
+		}
+		for _, v := range startAt.GetValues() {
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
+			}
+
+			var newQ Query
+			if startAt.GetBefore() {
+				newQ = q.StartAt(c)
+			} else {
+				newQ = q.StartAfter(c)
+			}
+
+			q.startVals = append(q.startVals, newQ.startVals...)
+		}
+	}
+	if endAt := pbq.GetEndAt(); endAt != nil {
+		for _, v := range endAt.GetValues() {
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
+			}
+
+			var newQ Query
+			if endAt.GetBefore() {
+				newQ = q.EndBefore(c)
+				q.endBefore = true
+			} else {
+				newQ = q.EndAt(c)
+			}
+			q.endVals = append(q.endVals, newQ.endVals...)
+
+		}
+	}
+
+	// TODO: fromProto
+	//     if (structuredQuery.hasSelect()) {
+	//       queryOptions.setFieldProjections(
+	//           ImmutableList.copyOf(structuredQuery.getSelect().getFieldsList()));
+	//     }
+	// 	selection              []FieldPath
+	if s := pbq.GetSelect(); s != nil {
+		fields := s.GetFields()
+		fieldStrings := make([]string, 0)
+
+		// As part of sending to protos, field paths are escaped. Unescape
+		for _, v := range fields {
+			fieldPath := v.GetFieldPath()
+			if strings.Contains(fieldPath, "`") {
+				fieldPath = strings.ReplaceAll(fieldPath, "`", "")
+			}
+			fieldStrings = append(fieldStrings, fieldPath)
+		}
+
+		// Take Fieldpath strings, and populate selection
+		// Do not use `q.Select` as validation fails things like "*"
+		q.selection = make([]*pb.StructuredQuery_FieldReference, len(fields))
+		for i, v := range fieldStrings {
+			ref, err := fref(FieldPath{v})
+			if err != nil {
+				q.err = err
+				return q, err
+			}
+			q.selection[i] = ref
+		}
+	}
+
+	// 	filters                []filter
+	if w := pbq.GetWhere(); w != nil {
+		fieldFilters := make([]filter, 0)
+
+		if cf := w.GetCompositeFilter(); cf != nil {
+			for _, v := range cf.GetFilters() {
+				f, err := filter{}.fromProto(v)
+				if err != nil {
+					q.err = err
+					return q, err
+				}
+				fieldFilters = append(fieldFilters, f)
+
+			}
+		} else {
+			f, err := filter{}.fromProto(w)
+			if err != nil {
+				q.err = err
+				return q, err
+
+			}
+			fieldFilters = append(fieldFilters, f)
+		}
+		q.filters = fieldFilters
+	}
+
+	// 	orders                 []order
+	if orderBy := pbq.GetOrderBy(); orderBy != nil {
+		for _, v := range orderBy {
+			fp := v.GetField()
+			q.orders = append(q.orders, order{nil, fp, Direction(v.GetDirection())})
+		}
+	}
+
+	// 	offset                 int32
+	q.offset = pbq.GetOffset()
+
+	// 	limit                  *wrappers.Int32Value
+	if limit := pbq.GetLimit(); limit != nil {
+		q.limit = limit
+	}
+
+	// NOTE: limit to last isn't part of the proto, this is a clientside idea.
+	// 	limitToLast            bool
+	return q, q.err
+}
+
+// ToProto creates a RunQueryRequest from a Query object. This can be used
+// in combintation with FromProto to serialize Query objects.
+func (q Query) ToProto() (*pb.RunQueryRequest, error) {
+	structuredQuery, err := q.toProto()
+	if err != nil {
+		return nil, err
+	}
+
+	req := &pb.RunQueryRequest{
+		Parent:    q.parentPath,
+		QueryType: &pb.RunQueryRequest_StructuredQuery{structuredQuery},
+	}
+	return req, nil
+}
+
 func (q Query) toProto() (*pb.StructuredQuery, error) {
 	if q.err != nil {
 		return nil, q.err
@@ -277,12 +481,13 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	}
 	if len(q.selection) > 0 {
 		p.Select = &pb.StructuredQuery_Projection{}
-		for _, fp := range q.selection {
-			if err := fp.validate(); err != nil {
-				return nil, err
-			}
-			p.Select.Fields = append(p.Select.Fields, fref(fp))
-		}
+		// for _, fp := range q.selection {
+		// 	if err := fp.validate(); err != nil {
+		// 		return nil, err
+		// 	}
+		// 	p.Select.Fields = append(p.Select.Fields, fref(fp))
+		// }
+		p.Select.Fields = q.selection
 	}
 	// If there is only filter, use it directly. Otherwise, construct
 	// a CompositeFilter.
@@ -436,7 +641,7 @@ func (q Query) compareFunc() func(d1, d2 *DocumentSnapshot) (int, error) {
 	if len(q.orders) > 0 {
 		lastDir = q.orders[len(q.orders)-1].dir
 	}
-	orders := append(q.copyOrders(), order{[]string{DocumentID}, lastDir})
+	orders := append(q.copyOrders(), order{[]string{DocumentID}, nil, lastDir})
 	return func(d1, d2 *DocumentSnapshot) (int, error) {
 		for _, ord := range orders {
 			var cmp int
@@ -470,6 +675,11 @@ type filter struct {
 	value     interface{}
 }
 
+func (f filter) fromProto(sq *pb.StructuredQuery_Filter) (filter, error) {
+	// TODO: implement fromProto
+	return f, errors.New("not yet implemented")
+}
+
 func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if err := f.fieldPath.validate(); err != nil {
 		return nil, err
@@ -478,11 +688,15 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 		if f.op != "==" {
 			return nil, fmt.Errorf("firestore: must use '==' when comparing %v", f.value)
 		}
+		ref, err := fref(f.fieldPath)
+		if err != nil {
+			return nil, err
+		}
 		return &pb.StructuredQuery_Filter{
 			FilterType: &pb.StructuredQuery_Filter_UnaryFilter{
 				UnaryFilter: &pb.StructuredQuery_UnaryFilter{
 					OperandType: &pb.StructuredQuery_UnaryFilter_Field{
-						Field: fref(f.fieldPath),
+						Field: ref,
 					},
 					Op: uop,
 				},
@@ -521,10 +735,14 @@ func (f filter) toProto() (*pb.StructuredQuery_Filter, error) {
 	if sawTransform {
 		return nil, errors.New("firestore: transforms disallowed in query value")
 	}
+	ref, err := fref(f.fieldPath)
+	if err != nil {
+		return nil, err
+	}
 	return &pb.StructuredQuery_Filter{
 		FilterType: &pb.StructuredQuery_Filter_FieldFilter{
 			FieldFilter: &pb.StructuredQuery_FieldFilter{
-				Field: fref(f.fieldPath),
+				Field: ref,
 				Op:    op,
 				Value: val,
 			},
@@ -555,26 +773,43 @@ func isNaN(x interface{}) bool {
 }
 
 type order struct {
-	fieldPath FieldPath
-	dir       Direction
+	fieldPath      FieldPath
+	fieldReference *pb.StructuredQuery_FieldReference
+	dir            Direction
 }
 
 func (r order) isDocumentID() bool {
+	if r.fieldReference != nil {
+		return r.fieldReference.GetFieldPath() == DocumentID
+	}
 	return len(r.fieldPath) == 1 && r.fieldPath[0] == DocumentID
 }
 
 func (r order) toProto() (*pb.StructuredQuery_Order, error) {
-	if err := r.fieldPath.validate(); err != nil {
+	if r.fieldReference != nil {
+		return &pb.StructuredQuery_Order{
+			Field:     r.fieldReference,
+			Direction: pb.StructuredQuery_Direction(r.dir),
+		}, nil
+	}
+
+	field, err := fref(r.fieldPath)
+	if err != nil {
 		return nil, err
 	}
+
 	return &pb.StructuredQuery_Order{
-		Field:     fref(r.fieldPath),
+		Field:     field,
 		Direction: pb.StructuredQuery_Direction(r.dir),
 	}, nil
 }
 
-func fref(fp FieldPath) *pb.StructuredQuery_FieldReference {
-	return &pb.StructuredQuery_FieldReference{FieldPath: fp.toServiceFieldPath()}
+func fref(fp FieldPath) (*pb.StructuredQuery_FieldReference, error) {
+	err := fp.validate()
+	if err != nil {
+		return &pb.StructuredQuery_FieldReference{}, err
+	}
+	return &pb.StructuredQuery_FieldReference{FieldPath: fp.toServiceFieldPath()}, nil
 }
 
 func trunc32(i int) int32 {
