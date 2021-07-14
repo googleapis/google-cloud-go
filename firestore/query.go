@@ -381,27 +381,9 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	selection              []FieldPath
 	if s := pbq.GetSelect(); s != nil {
 		fields := s.GetFields()
-		fieldStrings := make([]string, 0)
-
-		// As part of sending to protos, field paths are escaped. Unescape
-		for _, v := range fields {
-			fieldPath := v.GetFieldPath()
-			if strings.Contains(fieldPath, "`") {
-				fieldPath = strings.ReplaceAll(fieldPath, "`", "")
-			}
-			fieldStrings = append(fieldStrings, fieldPath)
-		}
-
-		// Take Fieldpath strings, and populate selection
-		// Do not use `q.Select` as validation fails things like "*"
 		q.selection = make([]*pb.StructuredQuery_FieldReference, len(fields))
-		for i, v := range fieldStrings {
-			ref, err := fref(FieldPath{v})
-			if err != nil {
-				q.err = err
-				return q, err
-			}
-			q.selection[i] = ref
+		for i, v := range fields {
+			q.selection[i] = v
 		}
 	}
 
@@ -412,24 +394,11 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 
 		if cf := w.GetCompositeFilter(); cf != nil {
 			for _, v := range cf.GetFilters() {
-				// f, err := filter{}.fromProto(v)
-				// if err != nil {
-				// 	q.err = err
-				// 	return q, err
-				// }
 				fieldFilters = append(fieldFilters, v)
 
 			}
 		} else {
-			// f, err := filter{}.fromProto(w)
-			// if err != nil {
-			// 	q.err = err
-			// 	return q, err
-
-			// }
-			// fieldFilters = append(fieldFilters, f)
 			fieldFilters = append(fieldFilters, w)
-
 		}
 		q.filters = fieldFilters
 	}
