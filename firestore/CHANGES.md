@@ -1,5 +1,13 @@
 # Changes
 
+### [1.5.1](https://www.github.com/googleapis/google-cloud-go/compare/firestore/v1.5.0...firestore/v1.5.1) (2021-06-24)
+
+
+### Bug Fixes
+
+* **firestore:** remove excessive spans on iterator ([#4163](https://www.github.com/googleapis/google-cloud-go/issues/4163)) ([812ef1f](https://www.github.com/googleapis/google-cloud-go/commit/812ef1ffdce2e87570660b58f0e725ad51f68546))
+* **firestore:** retry RESOURCE_EXHAUSTED errors docs: various documentation improvements ([9a459d5](https://www.github.com/googleapis/google-cloud-go/commit/9a459d5d149b9c3b02a35d4245d164b899ff09b3))
+
 ## [1.5.0](https://www.github.com/googleapis/google-cloud-go/compare/v1.4.0...v1.5.0) (2021-02-24)
 
 
