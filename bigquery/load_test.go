@@ -367,6 +367,23 @@ func TestLoad(t *testing.T) {
 				return j
 			}(),
 		},
+		{
+			dst: c.Dataset("dataset-id").Table("table-id"),
+			src: func() *GCSReference {
+				g := NewGCSReference("uri")
+				g.SourceFormat = Parquet
+				return g
+			}(),
+			config: LoadConfig{
+				DecimalTargetTypes: []DecimalTargetType{BigNumericTargetType, NumericTargetType, StringTargetType},
+			},
+			want: func() *bq.Job {
+				j := defaultLoadJob()
+				j.Configuration.Load.SourceFormat = "PARQUET"
+				j.Configuration.Load.DecimalTargetTypes = []string{"BIGNUMERIC", "NUMERIC", "STRING"}
+				return j
+			}(),
+		},
 	}
 
 	for i, tc := range testCases {

@@ -96,6 +96,11 @@ type ExternalDataConfig struct {
 	// HivePartitioningOptions allows use of Hive partitioning based on the
 	// layout of objects in Google Cloud Storage.
 	HivePartitioningOptions *HivePartitioningOptions
+
+	// DecimalTargetTypes allows prioritizing of how decimal values are converted when
+	// processed in bigquery, subject to the value type having sufficient precision/scale
+	// to support the values.  StringTargetType supports all precision and scale values.
+	DecimalTargetTypes []DecimalTargetType
 }
 
 func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
@@ -114,6 +119,9 @@ func (e *ExternalDataConfig) toBQ() bq.ExternalDataConfiguration {
 	if e.Options != nil {
 		e.Options.populateExternalDataConfig(&q)
 	}
+	for _, v := range e.DecimalTargetTypes {
+		q.DecimalTargetTypes = append(q.DecimalTargetTypes, string(v))
+	}
 	return q
 }
 
@@ -127,6 +135,9 @@ func bqToExternalDataConfig(q *bq.ExternalDataConfiguration) (*ExternalDataConfi
 		MaxBadRecords:           q.MaxBadRecords,
 		Schema:                  bqToSchema(q.Schema),
 		HivePartitioningOptions: bqToHivePartitioningOptions(q.HivePartitioningOptions),
+	}
+	for _, v := range q.DecimalTargetTypes {
+		e.DecimalTargetTypes = append(e.DecimalTargetTypes, DecimalTargetType(v))
 	}
 	switch {
 	case q.CsvOptions != nil:
