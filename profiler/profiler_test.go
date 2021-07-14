@@ -56,7 +56,7 @@ const (
 	testService                  = "test-service"
 	testSvcVersion               = "test-service-version"
 	testProfileDuration          = time.Second * 10
-	testProfileCollectionTimeout = time.Second * 15
+	testProfileCollectionTimeout = time.Second * 25
 )
 
 func createTestDeployment() *pb.Deployment {

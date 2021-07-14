@@ -96,7 +96,12 @@ const (
 	instanceLabel    = "instance"
 	scope            = "https://www.googleapis.com/auth/monitoring.write"
 
-	initialBackoff = time.Minute
+	// The main loop, pollProfilerService(), will sleep to ensure each
+	// iteration takes at least this long, to prevent that loop from running a
+	// CPU into the ground.
+	minimumIteration = 10 * time.Second
+
+	initialBackoff   = time.Minute
 	// Ensure the agent will recover within 1 hour.
 	maxBackoff        = time.Hour
 	backoffMultiplier = 1.3 // Backoff envelope increases by this factor on each retry.
@@ -315,11 +320,11 @@ func (r *retryer) Retry(err error) (time.Duration, bool) {
 	return r.backoff.Pause(), true
 }
 
-// createProfile talks to the profiler server to create profile. In
-// case of error, the goroutine will sleep and retry. Sleep duration may
-// be specified by the server. Otherwise it will be an exponentially
-// increasing value, bounded by maxBackoff. Special handling for
-// certificate errors is described below.
+// createProfile talks to the profiler server to create profile. In case of
+// error the goroutine might sleep and retry, but some failures may return
+// immediately (such as certificate errors). Sleep duration may be specified by
+// the server. Otherwise it will be an exponentially increasing value, bounded
+// by maxBackoff.
 func (a *agent) createProfile(ctx context.Context) *pb.Profile {
 	req := pb.CreateProfileRequest{
 		Parent:      "projects/" + a.deployment.ProjectId,
@@ -612,12 +617,43 @@ func initializeConfig(cfg Config) error {
 func pollProfilerService(ctx context.Context, a *agent) {
 	debugLog("Cloud Profiler Go Agent version: %s", version.Repo)
 	debugLog("profiler has started")
+	defer func() {
+		debugLog("profiler has stopped")
+		if profilingDone != nil {
+			profilingDone <- true
+		}
+	}()
+
+	ticker := time.NewTicker(minimumIteration)
+	defer ticker.Stop()
+
 	for i := 0; config.numProfiles == 0 || i < config.numProfiles; i++ {
 		p := a.createProfile(ctx)
 		a.profileAndUpload(ctx, p)
-	}
-
-	if profilingDone != nil {
-		profilingDone <- true
+		select {
+		case <-ctx.Done():
+			break
+		case <-ticker.C:
+			// In the nominal case, .createProfile() will have taken more than
+			// minimumIteration, so the channel will be immediately ready for
+			// read and we will progress to the next iteration of the loop
+			// immediately.
+			//
+			// But if something went wrong and .createProfile() and
+			// .profileAndUpload() returned very quickly, we don't want to run
+			// the CPU into the ground and generate huge log volumes as those
+			// functions repeatedly fail. Thus, we will wait up to
+			// minimumIteration here, ensuring there's always some idle time in
+			// the loop.
+			//
+			// You might think the gax retry logic would guarantee
+			// .createProfile() will always take some time, and that's usually
+			// true but not always. See
+			// https://github.com/googleapis/google-cloud-go/issues/3158 for
+			// once case where it's not. There may be other cases, known and
+			// unknown, present and future, and since the consequences of
+			// having no idle time in this loop are severe, it's appropriate to
+			// be defensive.
+		}
 	}
 }
