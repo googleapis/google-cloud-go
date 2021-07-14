@@ -806,6 +806,12 @@ func newRegexp(pat []byte) (*binaryregexp.Regexp, error) {
 }
 
 func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*btpb.MutateRowResponse, error) {
+	if len(req.Mutations) == 0 {
+		return nil, status.Errorf(
+			codes.InvalidArgument,
+			"No mutations provided",
+		)
+	}
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()
@@ -823,6 +829,16 @@ func (s *server) MutateRow(ctx context.Context, req *btpb.MutateRowRequest) (*bt
 }
 
 func (s *server) MutateRows(req *btpb.MutateRowsRequest, stream btpb.Bigtable_MutateRowsServer) error {
+	nMutations := 0
+	for _, entry := range req.Entries {
+		nMutations += len(entry.Mutations)
+	}
+	if nMutations == 0 {
+		return status.Errorf(
+			codes.InvalidArgument,
+			"No mutations provided",
+		)
+	}
 	s.mu.Lock()
 	tbl, ok := s.tables[req.TableName]
 	s.mu.Unlock()

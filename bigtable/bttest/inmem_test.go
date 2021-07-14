@@ -1979,3 +1979,47 @@ func TestValueFilterRowWithAlternationInRegex(t *testing.T) {
 		t.Fatalf("Response chunks mismatch: got: + want -\n%s", diff)
 	}
 }
+
+func TestMutateRowEmptyMutationErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	ctx := context.Background()
+	req := &btpb.MutateRowRequest{
+		TableName: "mytable",
+		RowKey:    []byte("r"),
+		Mutations: []*btpb.Mutation{},
+	}
+
+	resp, err := srv.MutateRow(ctx, req)
+	if resp != nil ||
+		fmt.Sprint(err) !=
+			"rpc error: code = InvalidArgument"+
+				" desc = No mutations provided" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
+
+type bigtableTestingMutateRowsServer struct {
+	grpc.ServerStream
+}
+
+func (x *bigtableTestingMutateRowsServer) Send(m *btpb.MutateRowsResponse) error {
+	return nil
+}
+
+func TestMutateRowsEmptyMutationErrors(t *testing.T) {
+	srv := &server{tables: make(map[string]*table)}
+	req := &btpb.MutateRowsRequest{
+		TableName: "mytable",
+		Entries: []*btpb.MutateRowsRequest_Entry{
+			{Mutations: []*btpb.Mutation{}},
+			{Mutations: []*btpb.Mutation{}},
+		},
+	}
+
+	err := srv.MutateRows(req, &bigtableTestingMutateRowsServer{})
+	if fmt.Sprint(err) !=
+		"rpc error: code = InvalidArgument "+
+			"desc = No mutations provided" {
+		t.Fatalf("Failed to error %s", err)
+	}
+}
