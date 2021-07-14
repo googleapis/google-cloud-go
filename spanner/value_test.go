@@ -213,6 +213,8 @@ func TestEncodeValue(t *testing.T) {
 	numValuePtr := big.NewRat(12345, 1e3)
 	var numNilPtr *big.Rat
 	num2ValuePtr := big.NewRat(12345, 1e4)
+	maxNumValuePtr, _ := (&big.Rat{}).SetString("99999999999999999999999999999.999999999")
+	minNumValuePtr, _ := (&big.Rat{}).SetString("-99999999999999999999999999999.999999999")
 
 	var (
 		tString  = stringType()
@@ -281,6 +283,8 @@ func TestEncodeValue(t *testing.T) {
 		// NUMERIC / NUMERIC ARRAY
 		{*numValuePtr, numericProto(numValuePtr), tNumeric, "big.Rat"},
 		{numValuePtr, numericProto(numValuePtr), tNumeric, "*big.Rat"},
+		{maxNumValuePtr, numericProto(maxNumValuePtr), tNumeric, "max numeric"},
+		{minNumValuePtr, numericProto(minNumValuePtr), tNumeric, "min numeric"},
 		{numNilPtr, nullProto(), tNumeric, "*big.Rat with null"},
 		{NullNumeric{*numValuePtr, true}, numericProto(numValuePtr), tNumeric, "NullNumeric with value"},
 		{NullNumeric{*numValuePtr, false}, nullProto(), tNumeric, "NullNumeric with null"},
@@ -402,6 +406,40 @@ func TestEncodeValue(t *testing.T) {
 		}
 		if !testEqual(gotType, test.wantType) {
 			t.Errorf("#%d (%s): got encode type: %v, want %v", i, test.name, gotType, test.wantType)
+		}
+	}
+}
+
+// Test encoding invalid values.
+func TestEncodeInvalidValues(t *testing.T) {
+	type CustomNumeric big.Rat
+
+	invalidNumPtr1 := big.NewRat(11234567891, 1e10)
+	invalidNumPtr2, _ := (&big.Rat{}).SetString("199999999999999999999999999999.999999999")
+
+	// Enable error mode.
+	LossOfPrecisionHandling = NumericError
+
+	for i, test := range []struct {
+		desc   string
+		in     interface{}
+		errMsg string
+	}{
+		// NUMERIC
+		{desc: "numeric pointer with invalid scale component", in: invalidNumPtr1, errMsg: "max scale for a numeric is 9. The requested numeric has more"},
+		{desc: "numeric pointer with invalid whole component", in: invalidNumPtr2, errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+		{desc: "numeric with invalid scale component", in: *invalidNumPtr1, errMsg: "max scale for a numeric is 9. The requested numeric has more"},
+		{desc: "numeric with invalid whole component", in: *invalidNumPtr2, errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+		// CUSTOM NUMERIC
+		{desc: "custom numeric type with invalid scale component", in: CustomNumeric(*invalidNumPtr1), errMsg: "max scale for a numeric is 9. The requested numeric has more"},
+		{desc: "custom numeric type with invalid whole component", in: CustomNumeric(*invalidNumPtr2), errMsg: "max precision for the whole component of a numeric is 29. The requested numeric has a whole component with precision 30"},
+	} {
+		_, _, err := encodeValue(test.in)
+		if err == nil {
+			t.Fatalf("#%d (%s): want error during encoding, but got nil", i, test.desc)
+		}
+		if err.Error() != test.errMsg {
+			t.Errorf("#%d (%s): incorrect error message, got %v, want %v", i, test.desc, err, test.errMsg)
 		}
 	}
 }
