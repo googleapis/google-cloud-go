@@ -41,6 +41,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
+	gapic "cloud.google.com/go/storage/internal/apiv1"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -95,6 +96,8 @@ type Client struct {
 	envHost string
 	// ReadHost is the default host used on the reader.
 	readHost string
+
+	gc *gapic.Client
 }
 
 // NewClient creates a new Google Cloud Storage client.
@@ -158,6 +161,21 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
+func NewClientWithGRPC(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+	c, err := NewClient(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+
+	g, err := gapic.NewClient(ctx, opts...)
+	if err != nil {
+		return nil, err
+	}
+	c.gc = g
+
+	return c, nil
+}
+
 // Close closes the Client.
 //
 // Close need not be called at program exit.
@@ -165,6 +183,9 @@ func (c *Client) Close() error {
 	// Set fields to nil so that subsequent uses will panic.
 	c.hc = nil
 	c.raw = nil
+	if c.gc != nil {
+		return c.gc.Close()
+	}
 	return nil
 }
 
