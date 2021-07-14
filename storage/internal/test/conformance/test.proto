@@ -25,6 +25,7 @@ option java_multiple_files = true;
 message TestFile {
   repeated SigningV4Test signing_v4_tests = 1;
   repeated PostPolicyV4Test post_policy_v4_tests = 2;
+  repeated RetryTest retry_tests = 3;
 }
 
 enum UrlStyle {
@@ -82,4 +83,53 @@ message PostPolicyV4Test {
   string description = 1;
   PolicyInput policyInput = 2;
   PolicyOutput policyOutput = 3;
+}
+
+/*
+Data types for retry conformance tests.
+*/
+
+// A list of instructions to send as headers to the GCS emulator. Each
+// instruction will force a specified failure for that request.
+message InstructionList {
+  repeated string instructions = 1;
+}
+
+// Test resources that are necessary for a method call. For example,
+// storage.objects.get would require BUCKET and OBJECT.
+enum Resource {
+  BUCKET = 0;
+  OBJECT = 1;
+  NOTIFICATION = 2;
+  HMAC_KEY = 3;
+}
+
+// A particular storage API method and required resources in order to test it.
+// Methods must be implemented in tests for each language.
+message Method {
+  string name = 1;  // e.g. storage.objects.get
+  repeated Resource resources = 2;
+}
+
+// Schema for a retry test, corresponding to a single scenario from the design
+// doc.
+message RetryTest {
+  int32 id = 1;
+
+  // Human-readable description of the test case.
+  string description = 2;
+
+  // List of emulator instructions.
+  repeated InstructionList cases = 3;
+
+  // List of API methods to be tested.
+  repeated Method methods = 4;
+
+  // Whether a precondition is provided (for conditionally-idempotent methods
+  // only).
+  bool preconditionProvided = 5;
+
+  // Whether we expect the method calls to eventually succeed after the client
+  // library retries.
+  bool expectSuccess = 6;
 }

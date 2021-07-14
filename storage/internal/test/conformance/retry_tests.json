@@ -1,0 +1,93 @@
+{
+  "retryTests": [
+    {
+      "id": 1,
+      "description": "always idempotent",
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],
+      "methods": [
+        {"name": "storage.buckets.get", "resources":  ["BUCKET"]},
+        {"name": "storage.objects.get", "resources":  ["BUCKET", "OBJECT"]}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": true
+    },
+    {
+      "id": 2,
+      "description": "conditionally idempotent, precondition present",
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],
+      "methods": [
+        {"name":  "storage.buckets.insert", "resources":  []},
+        {"name":  "storage.buckets.update", "resources":  ["BUCKET"]},
+        {"name":  "storage.objects.insert", "resources":  ["BUCKET"]},
+        {"name":  "storage.objects.update", "resources":  ["BUCKET", "OBJECT"]}
+      ],
+      "preconditionProvided": true,
+      "expectSuccess": true
+    },
+    {
+      "id": 3,
+      "description": "conditionally idempotent, precondition not present",
+      "cases": [
+        {
+          "instructions": ["return-503", "return-503", "return-503"]
+        },
+        {
+          "instructions": ["reset-connection", "reset-connection", "reset-connection"]
+        },
+        {
+          "instructions": ["reset-connection", "return-503", "return-503"]
+        }
+      ],
+      "methods": [
+        {"name":  "storage.buckets.insert", "resources":  []},
+        {"name":  "storage.buckets.update", "resources":  ["BUCKET"]},
+        {"name":  "storage.objects.insert", "resources":  ["BUCKET"]},
+        {"name":  "storage.objects.update", "resources":  ["BUCKET", "OBJECT"]}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": false
+    },
+    {
+      "id": 6,
+      "description": "non-retryable errors",
+      "cases": [
+        {
+          "instructions": ["return-400", "return-400", "return-400"]
+        },
+        {
+          "instructions": ["return-401", "return-401", "return-401"]
+        }
+      ],
+      "methods": [
+        {"name":  "storage.objects.get", "resources":  ["BUCKET", "OBJECT"]},
+        {"name": "storage.buckets.get", "resources":  ["BUCKET"]},
+        {"name":  "storage.buckets.insert", "resources":  []},
+        {"name":  "storage.buckets.update", "resources":  ["BUCKET"]},
+        {"name":  "storage.objects.insert", "resources":  ["BUCKET"]},
+        {"name":  "storage.objects.update", "resources":  ["BUCKET", "OBJECT"]}
+      ],
+      "preconditionProvided": false,
+      "expectSuccess": false
+    }
+  ]
+}

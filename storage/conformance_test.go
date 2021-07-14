@@ -16,20 +16,314 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"net/url"
+	"os"
 	"strconv"
 	"strings"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/uid"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/google/go-cmp/cmp"
+	"google.golang.org/api/option"
+	raw "google.golang.org/api/storage/v1"
+	htransport "google.golang.org/api/transport/http"
 )
+
+var (
+	bucketIDs           = uid.NewSpace("bucket", nil)
+	objectIDs           = uid.NewSpace("object", nil)
+	notificationIDs     = uid.NewSpace("notification", nil)
+	projectID           = "my-project-id"
+	serviceAccountEmail = "my-sevice-account@my-project-id.iam.gserviceaccount.com"
+)
+
+// Holds the resources for a particular test case. Only the necessary fields will
+// be populated; others will be nil.
+type resources struct {
+	bucket       *BucketAttrs
+	object       *ObjectAttrs
+	notification *Notification
+	hmacKey      *HMACKey
+}
+
+func (fs *resources) populate(ctx context.Context, c *Client, resource storage_v1_tests.Resource) error {
+	switch resource {
+	case storage_v1_tests.Resource_BUCKET:
+		bkt := c.Bucket(bucketIDs.New())
+		if err := bkt.Create(ctx, projectID, &BucketAttrs{}); err != nil {
+			return fmt.Errorf("creating bucket: %v", err)
+		}
+		attrs, err := bkt.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("getting bucket attrs: %v", err)
+		}
+		fs.bucket = attrs
+	case storage_v1_tests.Resource_OBJECT:
+		// Assumes bucket has been populated first.
+		obj := c.Bucket(fs.bucket.Name).Object(objectIDs.New())
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write([]byte("abcdef")); err != nil {
+			return fmt.Errorf("writing object: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("closing object: %v", err)
+		}
+		attrs, err := obj.Attrs(ctx)
+		if err != nil {
+			return fmt.Errorf("getting object attrs: %v", err)
+		}
+		fs.object = attrs
+	case storage_v1_tests.Resource_NOTIFICATION:
+		// Assumes bucket has been populated first.
+		n, err := c.Bucket(fs.bucket.Name).AddNotification(ctx, &Notification{
+			TopicProjectID: projectID,
+			TopicID:        notificationIDs.New(),
+			PayloadFormat:  JSONPayload,
+		})
+		if err != nil {
+			return fmt.Errorf("adding notification: %v", err)
+		}
+		fs.notification = n
+	case storage_v1_tests.Resource_HMAC_KEY:
+		key, err := c.CreateHMACKey(ctx, projectID, serviceAccountEmail)
+		if err != nil {
+			return fmt.Errorf("creating HMAC key: %v", err)
+		}
+		fs.hmacKey = key
+	}
+	return nil
+}
+
+type retryFunc func(ctx context.Context, c *Client, fs *resources, preconditions bool) error
+
+// Methods to retry. This is a map whose keys are a string describing a standard
+// API call (e.g. storage.objects.get) and values are a list of functions which
+// wrap library methods that implement these calls. There may be multiple values
+// because multiple library methods may use the same call (e.g. get could be a
+// read or just a metadata get).
+var methods = map[string][]retryFunc{
+	"storage.objects.get": {
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			_, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).Attrs(ctx)
+			return err
+		},
+		func(ctx context.Context, c *Client, fs *resources, _ bool) error {
+			r, err := c.Bucket(fs.bucket.Name).Object(fs.object.Name).NewReader(ctx)
+			if err != nil {
+				return err
+			}
+			_, err = io.Copy(ioutil.Discard, r)
+			return err
+		},
+	},
+	"storage.objects.update": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			uattrs := ObjectAttrsToUpdate{Metadata: map[string]string{"foo": "bar"}}
+			obj := c.Bucket(fs.bucket.Name).Object(fs.object.Name)
+			if preconditions {
+				obj = obj.If(Conditions{MetagenerationMatch: fs.object.Metageneration})
+			}
+			_, err := obj.Update(ctx, uattrs)
+			return err
+		},
+	},
+	"storage.buckets.update": {
+		func(ctx context.Context, c *Client, fs *resources, preconditions bool) error {
+			uattrs := BucketAttrsToUpdate{StorageClass: "ARCHIVE"}
+			bkt := c.Bucket(fs.bucket.Name)
+			if preconditions {
+				bkt = bkt.If(BucketConditions{MetagenerationMatch: fs.bucket.MetaGeneration})
+			}
+			_, err := bkt.Update(ctx, uattrs)
+			return err
+		}},
+}
+
+func TestRetryConformance(t *testing.T) {
+	host := os.Getenv("STORAGE_EMULATOR_HOST")
+	if host == "" {
+		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
+	}
+	host = "http://" + host
+
+	ctx := context.Background()
+
+	// Create non-wrapped client to use for setup steps.
+	client, err := NewClient(ctx, option.WithEndpoint(host + "/storage/v1/"))
+	if err != nil {
+		t.Fatalf("storage.NewClient: %v", err)
+	}
+
+	_, _, testFiles := parseFiles(t)
+	for _, testFile := range testFiles {
+		for _, tc := range testFile.RetryTests {
+			for _, instructions := range tc.Cases {
+				for _, m := range tc.Methods {
+					if len(methods[m.Name]) == 0 {
+						t.Logf("No tests for operation %v", m.Name)
+					}
+					for i, f := range methods[m.Name] {
+						testName := fmt.Sprintf("%v-%v-%v-%v", tc.Id, instructions.Instructions, m.Name, i)
+						t.Run(testName, func(t *testing.T) {
+
+							// Create the retry test in the emulator to handle instructions.
+							testID, err := createRetryTest(host, map[string][]string{
+								m.Name: instructions.Instructions,
+							})
+							if err != nil {
+								t.Fatalf("setting up retry test: %v", err)
+							}
+
+							fs := &resources{}
+							for _, f := range m.Resources {
+								if err := fs.populate(ctx, client, f); err != nil {
+									t.Fatalf("creating test resources: %v", err)
+								}
+							}
+
+							// Create wrapped client which will send emulator instructions.
+							wrapped, err := wrappedClient(host, testID)
+							if err != nil {
+								t.Errorf("error creating wrapped client: %v", err)
+							}
+							err = f(ctx, wrapped, fs, tc.PreconditionProvided)
+							if tc.ExpectSuccess && err != nil {
+								t.Errorf("want success, got %v", err)
+							}
+							if !tc.ExpectSuccess && err == nil {
+								t.Errorf("want failure, got success")
+							}
+
+							// Verify that all instructions were used up during the test
+							// (indicates that the client sent the correct requests).
+							if err := checkRetryTest(host, testID); err != nil {
+								t.Errorf("checking instructions: %v", err)
+							}
+
+							// Close out test in emulator.
+							if err := deleteRetryTest(host, testID); err != nil {
+								t.Errorf("deleting retry test: %v", err)
+							}
+
+						})
+					}
+
+				}
+			}
+		}
+	}
+
+}
+
+// Create a retry test resource in the emulator. Returns the ID to pass as
+// a header in the test execution.
+func createRetryTest(host string, instructions map[string][]string) (string, error) {
+	endpoint := host + "/retry_test"
+	c := http.DefaultClient
+	data := struct {
+		Instructions map[string][]string `json:"test_instructions"`
+	}{
+		Instructions: instructions,
+	}
+
+	buf := new(bytes.Buffer)
+	if err := json.NewEncoder(buf).Encode(data); err != nil {
+		return "", fmt.Errorf("encoding request: %v", err)
+	}
+	resp, err := c.Post(endpoint, "application/json", buf)
+	if err != nil || resp.StatusCode != 200 {
+		return "", fmt.Errorf("creating retry test: err: %v, resp: %+v", err, resp)
+	}
+	defer resp.Body.Close()
+	testRes := struct {
+		TestID string `json:"id"`
+	}{}
+	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
+		return "", fmt.Errorf("decoding test ID: %v", err)
+	}
+	return testRes.TestID, nil
+}
+
+// Verify that all instructions for a given retry testID have been used up.
+func checkRetryTest(host, testID string) error {
+	endpoint := strings.Join([]string{host, "retry_test", testID}, "/")
+	c := http.DefaultClient
+	resp, err := c.Get(endpoint)
+	if err != nil || resp.StatusCode != 200 {
+		return fmt.Errorf("getting retry test: err: %v, resp: %+v", err, resp)
+	}
+	defer resp.Body.Close()
+	testRes := struct {
+		Instructions map[string][]string
+		Completed bool
+	}{}
+	if err := json.NewDecoder(resp.Body).Decode(&testRes); err != nil {
+		return fmt.Errorf("decoding response: %v", err)
+	}
+	if !testRes.Completed {
+		return fmt.Errorf("test not completed; unused instructions: %+v", testRes.Instructions)
+	}
+	return nil
+}
+
+// Delete a retry test resource.
+func deleteRetryTest(host, testID string) error {
+	endpoint := strings.Join([]string{host, "retry_test", testID}, "/")
+	c := http.DefaultClient
+	req, err := http.NewRequest("DELETE", endpoint, nil)
+	if err != nil {
+		return fmt.Errorf("creating request: %v", err)
+	}
+	resp, err := c.Do(req)
+	if err != nil || resp.StatusCode != 200 {
+		return fmt.Errorf("deleting test: err: %v, resp: %+v", err, resp)
+	}
+	return nil
+}
+
+type withTestID struct {
+	rt     http.RoundTripper
+	testID string
+}
+
+func (wt *withTestID) RoundTrip(r *http.Request) (*http.Response, error) {
+	r.Header.Add("x-retry-test-id", wt.testID)
+	resp, err := wt.rt.RoundTrip(r)
+	//if err != nil{
+	//	log.Printf("Error: %+v", err)
+	//}
+	return resp, err
+}
+
+// Create custom client that sends instruction
+func wrappedClient(host, testID string) (*Client, error) {
+	ctx := context.Background()
+	base := http.DefaultTransport
+	trans, err := htransport.NewTransport(ctx, base, option.WithScopes(raw.DevstorageFullControlScope),
+		option.WithUserAgent("custom-user-agent"))
+	if err != nil {
+		return nil, fmt.Errorf("failed to create http client: %v", err)
+	}
+	c := http.Client{Transport: trans}
+
+	// Add RoundTripper to the created HTTP client.
+	wrappedTrans := &withTestID{rt: c.Transport, testID: testID}
+	c.Transport = wrappedTrans
+
+	// Supply this client to storage.NewClient
+	client, err := NewClient(ctx, option.WithHTTPClient(&c), option.WithEndpoint(host + "/storage/v1/"))
+	return client, err
+}
 
 func TestPostPolicyV4Conformance(t *testing.T) {
 	oldUTCNow := utcNow
