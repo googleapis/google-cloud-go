@@ -1672,6 +1672,24 @@ func TestToStructEmbedded(t *testing.T) {
 	}
 }
 
+func TestRowToString(t *testing.T) {
+	r := Row{
+		[]*sppb.StructType_Field{
+			{Name: "F1", Type: stringType()},
+			{Name: "F2", Type: stringType()},
+		},
+		[]*proto3.Value{
+			stringProto("v1"),
+			stringProto("v2"),
+		},
+	}
+	got := r.String()
+	want := `{fields: [name:"F1" type:{code:STRING} name:"F2" type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
+	if !testEqual(r.String(), want) {
+		t.Errorf("got %+v, want %+v", got, want)
+	}
+}
+
 // Test helpers for getting column names.
 func TestColumnNameAndIndex(t *testing.T) {
 	// Test Row.Size().

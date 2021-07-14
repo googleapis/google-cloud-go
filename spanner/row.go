@@ -88,6 +88,11 @@ type Row struct {
 	vals   []*proto3.Value // keep decoded for now
 }
 
+// String implements fmt.stringer.
+func (r *Row) String() string {
+	return fmt.Sprintf("{fields: %s, values: %s}", r.fields, r.vals)
+}
+
 // errNamesValuesMismatch returns error for when columnNames count is not equal
 // to columnValues count.
 func errNamesValuesMismatch(columnNames []string, columnValues []interface{}) error {
