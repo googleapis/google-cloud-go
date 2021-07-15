@@ -21,6 +21,7 @@ import (
 	"io"
 	"math"
 	"reflect"
+	"strings"
 	"time"
 
 	"cloud.google.com/go/internal/btree"
@@ -35,23 +36,22 @@ import (
 // Query values are immutable. Each Query method creates
 // a new Query; it does not modify the old.
 type Query struct {
-	c            *Client
-	path         string // path to query (collection)
-	parentPath   string // path of the collection's parent (document)
-	collectionID string
-	selection    []*pb.StructuredQuery_FieldReference
-	filters      []*pb.StructuredQuery_Filter
-	orders       []order
-	offset       int32
-	limit        *wrappers.Int32Value
-	limitToLast  bool
-	//startVals, endVals     []interface{}
-	//startDoc, endDoc       *DocumentSnapshot
-	startDoc, endDoc bool
-	startCursor      *pb.Cursor
-	endCursor        *pb.Cursor
-	//startBefore, endBefore bool
-	err error
+	c                      *Client
+	path                   string // path to query (collection)
+	parentPath             string // path of the collection's parent (document)
+	collectionID           string
+	selection              []*pb.StructuredQuery_FieldReference
+	filters                []*pb.StructuredQuery_Filter
+	orders                 []order
+	offset                 int32
+	limit                  *wrappers.Int32Value
+	limitToLast            bool
+	startVals, endVals     []interface{}
+	startDoc, endDoc       *DocumentSnapshot
+	startBefore, endBefore bool
+	err                    error
+
+	structuredQueryProto *pb.StructuredQuery
 
 	// allDescendants indicates whether this query is for all collections
 	// that match the ID under the specified parentPath.
@@ -129,15 +129,6 @@ func (q Query) Where(path, op string, value interface{}) Query {
 	}
 	q.filters = append(append([]*pb.StructuredQuery_Filter(nil), q.filters...), proto)
 	return q
-
-	// TODO: Java version prohibits a few things we don't
-	// https://github.com/googleapis/java-firestore/blob/9ff2f41b765c8878c3b3fb7df962f6f1ed537f05/google-cloud-firestore/src/main/java/com/google/cloud/firestore/Query.java#L849
-	// if (fieldPath.equals(FieldPath.DOCUMENT_ID)) {
-	// 	if (operator == ARRAY_CONTAINS || operator == ARRAY_CONTAINS_ANY) {
-	// 	  throw new IllegalArgumentException(
-	// 		  String.format(
-	// 			  "Invalid query. You cannot perform '%s' queries on FieldPath.documentId().",
-	// 			  operator.toString()));
 }
 
 // WherePath returns a new Query that filters the set of results.
@@ -240,25 +231,8 @@ func (q Query) LimitToLast(n int) Query {
 //
 // Calling StartAt overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAt(docSnapshotOrFieldValues ...interface{}) Query {
-	startBefore := true
-
-	startVals, startDoc, err := q.processCursorArg("StartAt", docSnapshotOrFieldValues)
-	if err != nil {
-		q.err = err
-		return q
-	}
-	if startDoc != nil {
-		q.startDoc = true
-		// q.orders = q.adjustOrders()
-	}
-	orders := q.orders
-	cursor, err := q.toCursor(startVals, startDoc, startBefore, orders)
-	if err != nil {
-		q.err = err
-		return q
-	}
-	q.startCursor = cursor
-
+	q.startBefore = true
+	q.startVals, q.startDoc, q.err = q.processCursorArg("StartAt", docSnapshotOrFieldValues)
 	return q
 }
 
@@ -267,27 +241,8 @@ func (q Query) StartAt(docSnapshotOrFieldValues ...interface{}) Query {
 //
 // Calling StartAfter overrides a previous call to StartAt or StartAfter.
 func (q Query) StartAfter(docSnapshotOrFieldValues ...interface{}) Query {
-	startBefore := false
-
-	startVals, startDoc, err := q.processCursorArg("StartAfter", docSnapshotOrFieldValues)
-	if err != nil {
-		q.err = err
-		return q
-	}
-
-	if startDoc != nil {
-		// q.orders = q.adjustOrders()
-		q.startDoc = true
-
-	}
-	orders := q.orders
-	cursor, err := q.toCursor(startVals, startDoc, startBefore, orders)
-	if err != nil {
-		q.err = err
-		return q
-	}
-	q.startCursor = cursor
-
+	q.startBefore = false
+	q.startVals, q.startDoc, q.err = q.processCursorArg("StartAfter", docSnapshotOrFieldValues)
 	return q
 }
 
@@ -296,28 +251,8 @@ func (q Query) StartAfter(docSnapshotOrFieldValues ...interface{}) Query {
 //
 // Calling EndAt overrides a previous call to EndAt or EndBefore.
 func (q Query) EndAt(docSnapshotOrFieldValues ...interface{}) Query {
-	endBefore := false
-
-	endVals, endDoc, err := q.processCursorArg("EndAt", docSnapshotOrFieldValues)
-	if err != nil {
-		q.err = err
-		return q
-	}
-
-	// EndAt Cursor
-	if endDoc != nil {
-		//q.orders = q.adjustOrders()
-		q.endDoc = true
-
-	}
-	orders := q.orders
-	cursor, err := q.toCursor(endVals, endDoc, endBefore, orders)
-	if err != nil {
-		q.err = err
-		return q
-	}
-	q.endCursor = cursor
-
+	q.endBefore = false
+	q.endVals, q.endDoc, q.err = q.processCursorArg("EndAt", docSnapshotOrFieldValues)
 	return q
 }
 
@@ -326,27 +261,8 @@ func (q Query) EndAt(docSnapshotOrFieldValues ...interface{}) Query {
 //
 // Calling EndBefore overrides a previous call to EndAt or EndBefore.
 func (q Query) EndBefore(docSnapshotOrFieldValues ...interface{}) Query {
-	endBefore := true
-	endVals, endDoc, err := q.processCursorArg("EndBefore", docSnapshotOrFieldValues)
-	if err != nil {
-		q.err = err
-		return q
-	}
-	// EndAt Cursor
-	if endDoc != nil {
-		//.orders = q.adjustOrders()
-		q.endDoc = true
-
-	}
-	orders := q.orders
-
-	cursor, err := q.toCursor(endVals, endDoc, endBefore, orders)
-	if err != nil {
-		q.err = err
-		return q
-	}
-	q.endCursor = cursor
-
+	q.endBefore = true
+	q.endVals, q.endDoc, q.err = q.processCursorArg("EndBefore", docSnapshotOrFieldValues)
 	return q
 }
 
@@ -364,23 +280,23 @@ func (q *Query) processCursorArg(name string, docSnapshotOrFieldValues []interfa
 
 func (q Query) query() *Query { return &q }
 
-// func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
-// 	switch vProto.ValueType.(type) {
-// 	case *pb.Value_ReferenceValue:
-// 		refVal := vProto.GetReferenceValue()
-// 		if strings.HasPrefix(refVal, q.path) {
-// 			refVal = refVal[len(q.path)+1:]
-// 		}
-// 		return refVal, nil
-// 	default:
-// 		i, err := createFromProtoValue(vProto, q.c)
-// 		if err != nil {
-// 			q.err = err
-// 			return q, err
-// 		}
-// 		return i, nil
-// 	}
-// }
+func getSafeCursorValue(vProto *pb.Value, q Query) (interface{}, error) {
+	switch vProto.ValueType.(type) {
+	case *pb.Value_ReferenceValue:
+		refVal := vProto.GetReferenceValue()
+		if strings.HasPrefix(refVal, q.path) {
+			refVal = refVal[len(q.path)+1:]
+		}
+		return refVal, nil
+	default:
+		i, err := createFromProtoValue(vProto, q.c)
+		if err != nil {
+			q.err = err
+			return q, err
+		}
+		return i, nil
+	}
+}
 
 // FromProto creates a new Query object from a RunQueryRequest. This can be used
 // in combintation with ToProto to serialize Query objects.
@@ -415,47 +331,44 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 	// 	startDoc, endDoc       *DocumentSnapshot
 	// 	startBefore, endBefore bool
 	if startAt := pbq.GetStartAt(); startAt != nil {
-		q.startCursor = startAt
-		// if startAt.GetBefore() {
-		// 	q.startBefore = true
-		// }
-		// for _, v := range startAt.GetValues() {
-		// 	c, err := getSafeCursorValue(v, q)
-		// 	if err != nil {
-		// 		q.err = err
-		// 		return q, err
-		// 	}
+		if startAt.GetBefore() {
+			q.startBefore = true
+		}
+		for _, v := range startAt.GetValues() {
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
+			}
 
-		// 	var newQ Query
-		// 	if startAt.GetBefore() {
-		// 		newQ = q.StartAt(c)
-		// 	} else {
-		// 		newQ = q.StartAfter(c)
-		// 	}
+			var newQ Query
+			if startAt.GetBefore() {
+				newQ = q.StartAt(c)
+			} else {
+				newQ = q.StartAfter(c)
+			}
 
-		// 	q.startVals = append(q.startVals, newQ.startVals...)
-		// }
+			q.startVals = append(q.startVals, newQ.startVals...)
+		}
 	}
 	if endAt := pbq.GetEndAt(); endAt != nil {
-		q.endCursor = endAt
+		for _, v := range endAt.GetValues() {
+			c, err := getSafeCursorValue(v, q)
+			if err != nil {
+				q.err = err
+				return q, err
+			}
 
-		// for _, v := range endAt.GetValues() {
-		// 	c, err := getSafeCursorValue(v, q)
-		// 	if err != nil {
-		// 		q.err = err
-		// 		return q, err
-		// 	}
+			var newQ Query
+			if endAt.GetBefore() {
+				newQ = q.EndBefore(c)
+				q.endBefore = true
+			} else {
+				newQ = q.EndAt(c)
+			}
+			q.endVals = append(q.endVals, newQ.endVals...)
 
-		// 	var newQ Query
-		// 	if endAt.GetBefore() {
-		// 		newQ = q.EndBefore(c)
-		// 		q.endBefore = true
-		// 	} else {
-		// 		newQ = q.EndAt(c)
-		// 	}
-		// 	q.endVals = append(q.endVals, newQ.endVals...)
-
-		// }
+		}
 	}
 
 	// 	selection              []*pb.StructuredQuery_FieldReference
@@ -515,11 +428,15 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	if q.collectionID == "" {
 		return nil, errors.New("firestore: query created without CollectionRef")
 	}
-	if q.startCursor != nil && q.startCursor.Before && len(q.startCursor.Values) == 0 {
-		return nil, errors.New("firestore: StartAt/StartAfter must be called with at least one value")
+	if q.startBefore {
+		if len(q.startVals) == 0 && q.startDoc == nil {
+			return nil, errors.New("firestore: StartAt/StartAfter must be called with at least one value")
+		}
 	}
-	if q.endCursor != nil && q.endCursor.Before && len(q.endCursor.Values) == 0 {
-		return nil, errors.New("firestore: EndAt/EndBefore must be called with at least one value")
+	if q.endBefore {
+		if len(q.endVals) == 0 && q.endDoc == nil {
+			return nil, errors.New("firestore: EndAt/EndBefore must be called with at least one value")
+		}
 	}
 	p := &pb.StructuredQuery{
 		From: []*pb.StructuredQuery_CollectionSelector{{
@@ -549,11 +466,8 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		cf.Filters = append(cf.Filters, q.filters...)
 	}
 	orders := q.orders
-	// TODO: this may need to go in start and end at?
-	if q.startDoc || q.endDoc {
+	if q.startDoc != nil || q.endDoc != nil {
 		orders = q.adjustOrders()
-		// 	q.startDoc = false
-		// 	q.endDoc = false
 	}
 	for _, ord := range orders {
 		po, err := ord.toProto()
@@ -562,19 +476,17 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		}
 		p.OrderBy = append(p.OrderBy, po)
 	}
-	// StartAt Cursor
-	// cursor, err := q.toCursor(q.startVals, q.startDoc, q.startBefore, orders)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	p.StartAt = q.startCursor
 
-	// EndAt Cursor
-	// cursor, err = q.toCursor(q.endVals, q.endDoc, q.endBefore, orders)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	p.EndAt = q.endCursor
+	cursor, err := q.toCursor(q.startVals, q.startDoc, q.startBefore, orders)
+	if err != nil {
+		return nil, err
+	}
+	p.StartAt = cursor
+	cursor, err = q.toCursor(q.endVals, q.endDoc, q.endBefore, orders)
+	if err != nil {
+		return nil, err
+	}
+	p.EndAt = cursor
 	return p, nil
 }
 
@@ -615,7 +527,6 @@ func (q *Query) toCursor(fieldValues []interface{}, ds *DocumentSnapshot, before
 	var vals []*pb.Value
 	var err error
 	if ds != nil {
-		orders = q.adjustOrders()
 		vals, err = q.docSnapshotToCursorValues(ds, orders)
 	} else if len(fieldValues) != 0 {
 		vals, err = q.fieldValuesToCursorValues(fieldValues)
@@ -940,10 +851,9 @@ func (it *DocumentIterator) GetAll() ([]*DocumentSnapshot, error) {
 			}
 		}
 		// Swap cursors.
-		q.startCursor, q.endCursor = q.endCursor, q.startCursor
-		// q.startVals, q.endVals = q.endVals, q.startVals
-		// q.startDoc, q.endDoc = q.endDoc, q.startDoc
-		//q.startBefore, q.endBefore = q.endBefore, q.startBefore
+		q.startVals, q.endVals = q.endVals, q.startVals
+		q.startDoc, q.endDoc = q.endDoc, q.startDoc
+		q.startBefore, q.endBefore = q.endBefore, q.startBefore
 
 		q.limitToLast = false
 	}
