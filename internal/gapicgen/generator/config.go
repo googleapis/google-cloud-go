@@ -1259,11 +1259,11 @@ var microgenGapicConfigs = []*microgenConfig{
 		releaseLevel:          "ga",
 	},
 	{
-		inputDirectoryPath:    "google/storage/v1",
+		inputDirectoryPath:    "google/storage/v2",
 		pkg:                   "storage",
-		importPath:            "cloud.google.com/go/storage/internal/apiv1",
+		importPath:            "cloud.google.com/go/storage/internal/apiv2",
 		gRPCServiceConfigPath: "storage_grpc_service_config.json",
-		apiServiceConfigPath:  "storage_v1.yaml",
+		apiServiceConfigPath:  "storage_v2.yaml",
 		releaseLevel:          "alpha",
 	},
 }
