@@ -20,43 +20,16 @@ import (
 	"encoding/binary"
 	"fmt"
 	"io/ioutil"
-	"os"
 	"path/filepath"
 	"regexp"
-	"runtime"
 	"sort"
 	"testing"
 
-	"cloud.google.com/go/internal/testutil"
 	"github.com/jhump/protoreflect/desc"
 	"github.com/jhump/protoreflect/dynamic"
 
 	"cloud.google.com/go/bigtable"
 )
-
-func assertEqual(t *testing.T, got, want interface{}) {
-	if !testutil.Equal(got, want) {
-		_, fpath, lno, ok := runtime.Caller(1)
-		if ok {
-			_, fname := filepath.Split(fpath)
-			t.Errorf("%s:%d:\n%s\nDidn't match:\n%s\n", fname, lno, got, want)
-		} else {
-			t.Errorf("Didn't match:\n%s", got)
-		}
-	}
-}
-
-func assertNoError(t *testing.T, err error) {
-	if err != nil {
-		_, fpath, lno, ok := runtime.Caller(1)
-		if ok {
-			_, fname := filepath.Split(fpath)
-			t.Fatalf("%s:%d: %s", fname, lno, err)
-		} else {
-			t.Fatal(err)
-		}
-	}
-}
 
 func TestParseValueFormatSettings(t *testing.T) {
 	want := valueFormatSettings{
@@ -414,27 +387,6 @@ func TestValueFormattingFormat(t *testing.T) {
 	}
 }
 
-func grabStdout(f func()) (string, error) {
-	buf := make([]byte, 9999)
-	n := 0
-
-	saved := os.Stdout
-	defer func() { os.Stdout = saved }()
-
-	tmp, err := ioutil.TempFile("", "test")
-	if err == nil {
-		defer os.Remove(tmp.Name())
-		defer tmp.Close()
-		os.Stdout = tmp
-		f()
-		_, err = tmp.Seek(0, 0)
-	}
-	if err == nil {
-		n, err = tmp.Read(buf)
-	}
-	return string(buf[:n]), err
-}
-
 func TestPrintRow(t *testing.T) {
 	row := bigtable.Row{
 		"f1": {
@@ -458,8 +410,7 @@ func TestPrintRow(t *testing.T) {
 			},
 		},
 	}
-	out, err := grabStdout(func() { printRow(row) })
-	assertNoError(t, err)
+	out := captureStdout(func() { printRow(row) })
 	expect :=
 		"----------------------------------------\n" +
 			"r1\n" +
@@ -507,7 +458,6 @@ func TestPrintRow(t *testing.T) {
 		"    >\n" +
 		"")
 
-	out, err = grabStdout(func() { printRow(row) })
-	assertNoError(t, err)
+	out = captureStdout(func() { printRow(row) })
 	assertEqual(t, stripTimestamps(out), expectf)
 }
