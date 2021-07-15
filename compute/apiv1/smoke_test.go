@@ -181,7 +181,7 @@ func TestCreateGetRemoveSecurityPolicies(t *testing.T) {
 		Match:       matcher,
 	}
 	insertRequest := &computepb.InsertSecurityPolicyRequest{
-		Project:                projectId,
+		Project: projectId,
 		SecurityPolicyResource: &computepb.SecurityPolicy{
 			Name: &name,
 			Rules: []*computepb.SecurityPolicyRule{
