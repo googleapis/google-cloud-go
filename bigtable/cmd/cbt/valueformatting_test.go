@@ -39,7 +39,7 @@ func assertEqual(t *testing.T, got, want interface{}) {
 		_, fpath, lno, ok := runtime.Caller(1)
 		if ok {
 			_, fname := filepath.Split(fpath)
-			t.Errorf("%s:%d: Didn't match:\n%s", fname, lno, got)
+			t.Errorf("%s:%d:\n%s\nDidn't match:\n%s\n", fname, lno, got, want)
 		} else {
 			t.Errorf("Didn't match:\n%s", got)
 		}
@@ -444,14 +444,14 @@ func TestPrintRow(t *testing.T) {
 				Value:  []byte("Hello!"),
 			},
 			bigtable.ReadItem{
-				Row:    "r2",
+				Row:    "r1",
 				Column: "c2",
 				Value:  []byte{1, 2},
 			},
 		},
 		"f2": {
 			bigtable.ReadItem{
-				Row:    "r2",
+				Row:    "r1",
 				Column: "person",
 				Value: []byte("\n\x03Jim\x10*\x1a\x0fjim@example.com\"" +
 					"\x0c\n\x08555-1212\x10\x01"),
