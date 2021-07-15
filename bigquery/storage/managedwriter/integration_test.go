@@ -34,7 +34,7 @@ import (
 
 var (
 	datasetIDs         = uid.NewSpace("managedwriter_test_dataset", &uid.Options{Sep: '_', Time: time.Now()})
-	tableIDs           = uid.NewSpace("testtable", &uid.Options{Sep: '_', Time: time.Now()})
+	tableIDs           = uid.NewSpace("table", &uid.Options{Sep: '_', Time: time.Now()})
 	defaultTestTimeout = 15 * time.Second
 )
 
@@ -64,25 +64,29 @@ func getTestClients(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 }
 
 // validateRowCount confirms the number of rows in a table visible to the query engine.
-func validateRowCount(ctx context.Context, client *bigquery.Client, tbl *bigquery.Table) (int64, error) {
+func validateRowCount(ctx context.Context, t *testing.T, client *bigquery.Client, tbl *bigquery.Table, expectedRows int64) {
 
 	// Verify data is present in the table with a count query.
 	sql := fmt.Sprintf("SELECT COUNT(1) FROM `%s`.%s.%s", tbl.ProjectID, tbl.DatasetID, tbl.TableID)
 	q := client.Query(sql)
 	it, err := q.Read(ctx)
 	if err != nil {
-		return 0, fmt.Errorf("failed to issue validation query: %v", err)
+		t.Errorf("failed to issue validation query: %v", err)
+		return
 	}
 	var rowdata []bigquery.Value
 	err = it.Next(&rowdata)
 	if err != nil {
-		return 0, fmt.Errorf("iterator error: %v", err)
+		t.Errorf("error fetching validation results: %v", err)
+		return
 	}
-
-	if count, ok := rowdata[0].(int64); ok {
-		return count, nil
+	count, ok := rowdata[0].(int64)
+	if !ok {
+		t.Errorf("got unexpected data from validation query: %v", rowdata[0])
 	}
-	return 0, fmt.Errorf("got unexpected value %v", rowdata[0])
+	if count != expectedRows {
+		t.Errorf("rows mismatch expected rows: got %d want %d", count, expectedRows)
+	}
 }
 
 func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (ds *bigquery.Dataset, cleanup func(), err error) {
@@ -151,13 +155,7 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 	}
 
 	// prevalidate we have no data in table.
-	rc, err := validateRowCount(ctx, bqClient, testTable)
-	if err != nil {
-		t.Fatalf("failed to execute validation: %v", err)
-	}
-	if rc != 0 {
-		t.Errorf("expected no rows at start, got %d", rc)
-	}
+	validateRowCount(ctx, t, bqClient, testTable, 0)
 
 	testData := []*testdata.SimpleMessage{
 		{Name: "one", Value: 1},
@@ -167,7 +165,7 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 		{Name: "five", Value: 2},
 	}
 
-	// First, send the rows individually.
+	// First, send the test rows individually.
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
@@ -176,17 +174,10 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 		data := [][]byte{b}
 		ms.AppendRows(data, NoStreamOffset)
 	}
+	wantRows := int64(len(testData))
+	validateRowCount(ctx, t, bqClient, testTable, wantRows)
 
-	rc, err = validateRowCount(ctx, bqClient, testTable)
-	if err != nil {
-		t.Fatalf("failed to execute validation: %v", err)
-	}
-	want := int64(len(testData))
-	if rc != want {
-		t.Errorf("validation mismatch on first round, got %d, want %d", rc, want)
-	}
-
-	// Now, send the rows in a single message:
+	// Now, send the rows grouped into in a single append.
 	var data [][]byte
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
@@ -197,12 +188,6 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 		ms.AppendRows(data, NoStreamOffset)
 	}
 
-	rc, err = validateRowCount(ctx, bqClient, testTable)
-	if err != nil {
-		t.Fatalf("failed to execute validation: %v", err)
-	}
-	want = int64(2 * len(testData))
-	if rc != want {
-		t.Errorf("validation mismatch on second round, got %d, want %d", rc, want)
-	}
+	wantRows = wantRows * 2
+	validateRowCount(ctx, t, bqClient, testTable, wantRows)
 }

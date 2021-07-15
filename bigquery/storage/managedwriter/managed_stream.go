@@ -304,6 +304,7 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 				return
 			}
 
+			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
 				log.Printf("recv got err: %#v", err)
