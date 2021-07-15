@@ -300,9 +300,19 @@
         "grpc": {
           "libraryClient": "PipelineClient",
           "rpcs": {
+            "CancelPipelineJob": {
+              "methods": [
+                "CancelPipelineJob"
+              ]
+            },
             "CancelTrainingPipeline": {
               "methods": [
                 "CancelTrainingPipeline"
+              ]
+            },
+            "CreatePipelineJob": {
+              "methods": [
+                "CreatePipelineJob"
               ]
             },
             "CreateTrainingPipeline": {
@@ -310,14 +320,29 @@
                 "CreateTrainingPipeline"
               ]
             },
+            "DeletePipelineJob": {
+              "methods": [
+                "DeletePipelineJob"
+              ]
+            },
             "DeleteTrainingPipeline": {
               "methods": [
                 "DeleteTrainingPipeline"
               ]
             },
+            "GetPipelineJob": {
+              "methods": [
+                "GetPipelineJob"
+              ]
+            },
             "GetTrainingPipeline": {
               "methods": [
                 "GetTrainingPipeline"
+              ]
+            },
+            "ListPipelineJobs": {
+              "methods": [
+                "ListPipelineJobs"
               ]
             },
             "ListTrainingPipelines": {

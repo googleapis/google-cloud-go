@@ -137,3 +137,105 @@ func ExamplePipelineClient_CancelTrainingPipeline() {
 		// TODO: Handle error.
 	}
 }
+
+func ExamplePipelineClient_CreatePipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.CreatePipelineJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.CreatePipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePipelineClient_GetPipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.GetPipelineJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	resp, err := c.GetPipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExamplePipelineClient_ListPipelineJobs() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.ListPipelineJobsRequest{
+		// TODO: Fill request struct fields.
+	}
+	it := c.ListPipelineJobs(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+	}
+}
+
+func ExamplePipelineClient_DeletePipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.DeletePipelineJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	op, err := c.DeletePipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	err = op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
+
+func ExamplePipelineClient_CancelPipelineJob() {
+	ctx := context.Background()
+	c, err := aiplatform.NewPipelineClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &aiplatformpb.CancelPipelineJobRequest{
+		// TODO: Fill request struct fields.
+	}
+	err = c.CancelPipelineJob(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+}
