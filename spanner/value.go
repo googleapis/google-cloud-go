@@ -1355,8 +1355,8 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}) error {
 			return errNilDst(p)
 		}
 		if !isPtrStructPtrSlice(vp.Type()) {
-			// The container is not a pointer to a struct pointer slice.
-			return errTypeMismatch(code, acode, ptr)
+			// The container is not a slice of struct pointers.
+			return fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(code, acode, ptr))
 		}
 		// Only use reflection for nil detection on slow path.
 		// Also, IsNil panics on many types, so check it after the type check.

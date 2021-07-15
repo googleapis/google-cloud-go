@@ -2233,26 +2233,17 @@ func (c *instancesRESTClient) Update(ctx context.Context, req *computepb.UpdateI
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/instances/%v", req.GetProject(), req.GetZone(), req.GetInstance())
 
 	params := url.Values{}
-	if req.GetInstance() != "" {
-		params.Add("instance", fmt.Sprintf("%v", req.GetInstance()))
-	}
 	if req != nil && req.MinimalAction != nil {
 		params.Add("minimalAction", fmt.Sprintf("%v", req.GetMinimalAction()))
 	}
 	if req != nil && req.MostDisruptiveAllowedAction != nil {
 		params.Add("mostDisruptiveAllowedAction", fmt.Sprintf("%v", req.GetMostDisruptiveAllowedAction()))
 	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetZone() != "" {
-		params.Add("zone", fmt.Sprintf("%v", req.GetZone()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
