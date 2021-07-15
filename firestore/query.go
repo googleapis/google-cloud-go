@@ -122,7 +122,6 @@ func (q Query) Where(path, op string, value interface{}) Query {
 		q.err = err
 		return q
 	}
-	// q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
 	proto, err := filter{fp, op, value}.toProto()
 	if err != nil {
 		q.err = err
@@ -137,7 +136,6 @@ func (q Query) Where(path, op string, value interface{}) Query {
 // The op argument must be one of "==", "!=", "<", "<=", ">", ">=",
 // "array-contains", "array-contains-any", "in" or "not-in".
 func (q Query) WherePath(fp FieldPath, op string, value interface{}) Query {
-	// q.filters = append(append([]filter(nil), q.filters...), filter{fp, op, value})
 	proto, err := filter{fp, op, value}.toProto()
 	if err != nil {
 		q.err = err
@@ -373,34 +371,18 @@ func (q Query) FromProto(pbQuery *pb.RunQueryRequest) (Query, error) {
 		}
 	}
 
-	// TODO: fromProto
-	//     if (structuredQuery.hasSelect()) {
-	//       queryOptions.setFieldProjections(
-	//           ImmutableList.copyOf(structuredQuery.getSelect().getFieldsList()));
-	//     }
-	// 	selection              []FieldPath
+	// 	selection              []*pb.StructuredQuery_FieldReference
 	if s := pbq.GetSelect(); s != nil {
-		fields := s.GetFields()
-		q.selection = make([]*pb.StructuredQuery_FieldReference, len(fields))
-		for i, v := range fields {
-			q.selection[i] = v
-		}
+		q.selection = s.GetFields()
 	}
 
-	// 	filters                []filter
+	// 	filters                []*pb.StructuredQuery_Filter
 	if w := pbq.GetWhere(); w != nil {
-		// fieldFilters := make([]filter, 0)
-		fieldFilters := make([]*pb.StructuredQuery_Filter, 0)
-
 		if cf := w.GetCompositeFilter(); cf != nil {
-			for _, v := range cf.GetFilters() {
-				fieldFilters = append(fieldFilters, v)
-
-			}
+			q.filters = cf.GetFilters()
 		} else {
-			fieldFilters = append(fieldFilters, w)
+			q.filters = []*pb.StructuredQuery_Filter{w}
 		}
-		q.filters = fieldFilters
 	}
 
 	// 	orders                 []order
@@ -466,12 +448,6 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 	}
 	if len(q.selection) > 0 {
 		p.Select = &pb.StructuredQuery_Projection{}
-		// for _, fp := range q.selection {
-		// 	if err := fp.validate(); err != nil {
-		// 		return nil, err
-		// 	}
-		// 	p.Select.Fields = append(p.Select.Fields, fref(fp))
-		// }
 		p.Select.Fields = q.selection
 	}
 	// If there is only filter, use it directly. Otherwise, construct
@@ -487,13 +463,7 @@ func (q Query) toProto() (*pb.StructuredQuery, error) {
 		p.Where = &pb.StructuredQuery_Filter{
 			FilterType: &pb.StructuredQuery_Filter_CompositeFilter{cf},
 		}
-		for _, f := range q.filters {
-			// pf, err := f.toProto()
-			// if err != nil {
-			// 	return nil, err
-			// }
-			cf.Filters = append(cf.Filters, f)
-		}
+		cf.Filters = append(cf.Filters, q.filters...)
 	}
 	orders := q.orders
 	if q.startDoc != nil || q.endDoc != nil {
