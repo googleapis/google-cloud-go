@@ -30,17 +30,20 @@ func TestCGR_TestQueryPartition_ToQuery(t *testing.T) {
 	got := qp.toQuery()
 
 	want := Query{
-		c:              testClient,
-		path:           "projects/projectID/databases/(default)",
-		parentPath:     "projects/projectID/databases/(default)/documents",
-		collectionID:   "collectionID",
-		startVals:      []interface{}{"documents/start/at"},
-		endVals:        []interface{}{"documents/end/before"},
-		startBefore:    true,
-		endBefore:      true,
+		c:            testClient,
+		path:         "projects/projectID/databases/(default)",
+		parentPath:   "projects/projectID/databases/(default)/documents",
+		collectionID: "collectionID",
+		//startVals:      []interface{}{"documents/start/at"},
+		//endVals:        []interface{}{"documents/end/before"},
+		// startBefore:    true,
+		// endBefore:      true,
 		allDescendants: true,
 		orders:         []order{{fieldPath: []string{"__name__"}, dir: 1}},
 	}
+
+	want.startCursor, _ = want.toCursor([]interface{}{"documents/start/at"}, nil, true, want.orders)
+	want.endCursor, _ = want.toCursor([]interface{}{"documents/end/before"}, nil, true, want.orders)
 
 	if !testEqual(got, want) {
 		t.Errorf("got %+v, want %+v", got, want)
