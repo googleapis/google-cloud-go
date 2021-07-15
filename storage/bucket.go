@@ -949,8 +949,10 @@ func (b *BucketHandle) LockRetentionPolicy(ctx context.Context) error {
 		metageneration = b.conds.MetagenerationMatch
 	}
 	req := b.c.raw.Buckets.LockRetentionPolicy(b.name, metageneration)
-	_, err := req.Context(ctx).Do()
-	return err
+	return runWithRetry(ctx, func() error {
+		_, err := req.Context(ctx).Do()
+		return err
+	})
 }
 
 // applyBucketConds modifies the provided call using the conditions in conds.
