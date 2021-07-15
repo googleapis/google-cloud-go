@@ -41,7 +41,7 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/internal/version"
-	gapic "cloud.google.com/go/storage/internal/apiv1"
+	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"

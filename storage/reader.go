@@ -29,7 +29,7 @@ import (
 
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
-	storagepb "google.golang.org/genproto/googleapis/storage/v1"
+	storagepb "google.golang.org/genproto/googleapis/storage/v2"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -100,14 +100,14 @@ func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		return
 	}
 
-	req := &storagepb.GetObjectMediaRequest{
+	req := &storagepb.ReadObjectRequest{
 		Bucket: o.bucket,
 		Object: o.object,
 	}
 
 	// Define a function that initiates a Read with offset and length, assuming we
 	// have already read seen bytes.
-	reopen := func(seen int64) (storagepb.Storage_GetObjectMediaClient, error) {
+	reopen := func(seen int64) (storagepb.Storage_ReadObjectClient, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
 		if err := ctx.Err(); err != nil {
@@ -121,7 +121,7 @@ func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, lengt
 		}
 		req.ReadOffset = start
 
-		res, err := o.c.gc.GetObjectMedia(ctx, req)
+		res, err := o.c.gc.ReadObject(ctx, req)
 		if err != nil {
 			return nil, err
 		}
@@ -400,8 +400,8 @@ type Reader struct {
 	gotCRC             uint32 // running crc
 	reopen             func(seen int64) (*http.Response, error)
 
-	stream         storagepb.Storage_GetObjectMediaClient
-	reopenWithGRPC func(seen int64) (storagepb.Storage_GetObjectMediaClient, error)
+	stream         storagepb.Storage_ReadObjectClient
+	reopenWithGRPC func(seen int64) (storagepb.Storage_ReadObjectClient, error)
 	leftovers      []byte
 }
 
