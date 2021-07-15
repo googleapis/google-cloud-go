@@ -31,7 +31,7 @@
 //
 // For information about setting deadlines, reusing contexts, and more
 // please visit https://pkg.go.dev/cloud.google.com/go.
-package storage // import "cloud.google.com/go/storage/internal/apiv1"
+package storage // import "cloud.google.com/go/storage/internal/apiv2"
 
 import (
 	"context"
