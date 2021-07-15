@@ -65,12 +65,20 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 				return nil, err
 			},
 		}
-		_, _, err := ms.openWithRetry()
+		arc, ch, err := ms.openWithRetry()
 		if tc.wantFail && err == nil {
 			t.Errorf("case %s: wanted failure, got success", tc.desc)
 		}
 		if !tc.wantFail && err != nil {
 			t.Errorf("case %s: wanted success, got %v", tc.desc, err)
+		}
+		if err == nil {
+			if arc == nil {
+				t.Errorf("case %s: expected append client, got nil", tc.desc)
+			}
+			if ch == nil {
+				t.Errorf("case %s: expected channel, got nil", tc.desc)
+			}
 		}
 	}
 }
