@@ -154,7 +154,7 @@ func (c *regionInstancesRESTClient) Connection() *grpc.ClientConn {
 
 // BulkInsert creates multiple instances in a given region. Count specifies the number of instances to create.
 func (c *regionInstancesRESTClient) BulkInsert(ctx context.Context, req *computepb.BulkInsertRegionInstanceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBulkInsertInstanceResourceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

@@ -277,7 +277,7 @@ func (c *regionBackendServicesRESTClient) Get(ctx context.Context, req *computep
 
 // GetHealth gets the most recent health check results for this regional BackendService.
 func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *computepb.GetHealthRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.BackendServiceGroupHealth, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetResourceGroupReferenceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -321,7 +321,7 @@ func (c *regionBackendServicesRESTClient) GetHealth(ctx context.Context, req *co
 
 // Insert creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
 func (c *regionBackendServicesRESTClient) Insert(ctx context.Context, req *computepb.InsertRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -428,7 +428,7 @@ func (c *regionBackendServicesRESTClient) List(ctx context.Context, req *compute
 
 // Patch updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *computepb.PatchRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -479,7 +479,7 @@ func (c *regionBackendServicesRESTClient) Patch(ctx context.Context, req *comput
 
 // Update updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
 func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *computepb.UpdateRegionBackendServiceRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendServiceResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -487,18 +487,9 @@ func (c *regionBackendServicesRESTClient) Update(ctx context.Context, req *compu
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/backendServices/%v", req.GetProject(), req.GetRegion(), req.GetBackendService())
 
 	params := url.Values{}
-	if req.GetBackendService() != "" {
-		params.Add("backendService", fmt.Sprintf("%v", req.GetBackendService()))
-	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
-	if req.GetRegion() != "" {
-		params.Add("region", fmt.Sprintf("%v", req.GetRegion()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

@@ -336,7 +336,7 @@ func (c *autoscalersRESTClient) Get(ctx context.Context, req *computepb.GetAutos
 
 // Insert creates an autoscaler in the specified project using the data included in the request.
 func (c *autoscalersRESTClient) Insert(ctx context.Context, req *computepb.InsertAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -443,7 +443,7 @@ func (c *autoscalersRESTClient) List(ctx context.Context, req *computepb.ListAut
 
 // Patch updates an autoscaler in the specified project using the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -497,7 +497,7 @@ func (c *autoscalersRESTClient) Patch(ctx context.Context, req *computepb.PatchA
 
 // Update updates an autoscaler in the specified project using the data included in the request.
 func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.UpdateAutoscalerRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetAutoscalerResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -505,20 +505,14 @@ func (c *autoscalersRESTClient) Update(ctx context.Context, req *computepb.Updat
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/autoscalers", req.GetProject(), req.GetZone())
 
 	params := url.Values{}
 	if req != nil && req.Autoscaler != nil {
 		params.Add("autoscaler", fmt.Sprintf("%v", req.GetAutoscaler()))
 	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetZone() != "" {
-		params.Add("zone", fmt.Sprintf("%v", req.GetZone()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

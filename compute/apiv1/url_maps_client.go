@@ -352,7 +352,7 @@ func (c *urlMapsRESTClient) Get(ctx context.Context, req *computepb.GetUrlMapReq
 
 // Insert creates a UrlMap resource in the specified project using the data included in the request.
 func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -405,7 +405,7 @@ func (c *urlMapsRESTClient) Insert(ctx context.Context, req *computepb.InsertUrl
 //
 // For more information, see Invalidating cached content (at /cdn/docs/invalidating-cached-content).
 func (c *urlMapsRESTClient) InvalidateCache(ctx context.Context, req *computepb.InvalidateCacheUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetCacheInvalidationRuleResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -512,7 +512,7 @@ func (c *urlMapsRESTClient) List(ctx context.Context, req *computepb.ListUrlMaps
 
 // Patch patches the specified UrlMap resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -563,7 +563,7 @@ func (c *urlMapsRESTClient) Patch(ctx context.Context, req *computepb.PatchUrlMa
 
 // Update updates the specified UrlMap resource with the data included in the request.
 func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrlMapRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -571,17 +571,11 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/urlMaps/%v", req.GetProject(), req.GetUrlMap())
 
 	params := url.Values{}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetUrlMap() != "" {
-		params.Add("urlMap", fmt.Sprintf("%v", req.GetUrlMap()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -620,7 +614,7 @@ func (c *urlMapsRESTClient) Update(ctx context.Context, req *computepb.UpdateUrl
 
 // Validate runs static validation for the UrlMap. In particular, the tests of the provided UrlMap will be run. Calling this method does NOT create the UrlMap.
 func (c *urlMapsRESTClient) Validate(ctx context.Context, req *computepb.ValidateUrlMapRequest, opts ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetUrlMapsValidateRequestResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {

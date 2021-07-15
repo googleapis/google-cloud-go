@@ -203,7 +203,7 @@ func (c *backendBucketsRESTClient) Connection() *grpc.ClientConn {
 
 // AddSignedUrlKey adds a key for validating requests with signed URLs for this backend bucket.
 func (c *backendBucketsRESTClient) AddSignedUrlKey(ctx context.Context, req *computepb.AddSignedUrlKeyBackendBucketRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetSignedUrlKeyResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -382,7 +382,7 @@ func (c *backendBucketsRESTClient) Get(ctx context.Context, req *computepb.GetBa
 
 // Insert creates a BackendBucket resource in the specified project using the data included in the request.
 func (c *backendBucketsRESTClient) Insert(ctx context.Context, req *computepb.InsertBackendBucketRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -489,7 +489,7 @@ func (c *backendBucketsRESTClient) List(ctx context.Context, req *computepb.List
 
 // Patch updates the specified BackendBucket resource with the data included in the request. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.PatchBackendBucketRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -540,7 +540,7 @@ func (c *backendBucketsRESTClient) Patch(ctx context.Context, req *computepb.Pat
 
 // Update updates the specified BackendBucket resource with the data included in the request.
 func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.UpdateBackendBucketRequest, opts ...gax.CallOption) (*computepb.Operation, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, EmitUnpopulated: true}
+	m := protojson.MarshalOptions{AllowPartial: true}
 	body := req.GetBackendBucketResource()
 	jsonReq, err := m.Marshal(body)
 	if err != nil {
@@ -548,15 +548,9 @@ func (c *backendBucketsRESTClient) Update(ctx context.Context, req *computepb.Up
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/backendBuckets/%v", req.GetProject(), req.GetBackendBucket())
 
 	params := url.Values{}
-	if req.GetBackendBucket() != "" {
-		params.Add("backendBucket", fmt.Sprintf("%v", req.GetBackendBucket()))
-	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
