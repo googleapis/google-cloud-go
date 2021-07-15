@@ -436,15 +436,9 @@ func (c *firewallsRESTClient) Update(ctx context.Context, req *computepb.UpdateF
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/global/firewalls/%v", req.GetProject(), req.GetFirewall())
 
 	params := url.Values{}
-	if req.GetFirewall() != "" {
-		params.Add("firewall", fmt.Sprintf("%v", req.GetFirewall()))
-	}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}
