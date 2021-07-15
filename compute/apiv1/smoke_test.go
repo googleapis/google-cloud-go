@@ -99,10 +99,10 @@ func TestCreateGetListInstance(t *testing.T) {
 	if err != nil {
 		t.Error(err)
 	}
-	if name != get.GetName() {
+	if get.GetName() != name {
 		t.Fatal(fmt.Sprintf("expected instance name: %s, got: %s", name, get.GetName()))
 	}
-	if "тест" != get.GetDescription() {
+	if get.GetDescription() != "тест" {
 		t.Fatal(fmt.Sprintf("expected instance description: %s, got: %s", "тест", get.GetDescription()))
 	}
 	listRequest := &computepb.ListInstancesRequest{
