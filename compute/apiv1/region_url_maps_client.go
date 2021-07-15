@@ -443,20 +443,11 @@ func (c *regionUrlMapsRESTClient) Update(ctx context.Context, req *computepb.Upd
 	}
 
 	baseUrl, _ := url.Parse(c.endpoint)
-	baseUrl.Path += fmt.Sprintf("")
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/regions/%v/urlMaps/%v", req.GetProject(), req.GetRegion(), req.GetUrlMap())
 
 	params := url.Values{}
-	if req.GetProject() != "" {
-		params.Add("project", fmt.Sprintf("%v", req.GetProject()))
-	}
-	if req.GetRegion() != "" {
-		params.Add("region", fmt.Sprintf("%v", req.GetRegion()))
-	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
-	}
-	if req.GetUrlMap() != "" {
-		params.Add("urlMap", fmt.Sprintf("%v", req.GetUrlMap()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
