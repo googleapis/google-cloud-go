@@ -17,13 +17,14 @@
 package compute
 
 import (
-	"cloud.google.com/go/internal/testutil"
-	"cloud.google.com/go/internal/uid"
 	"context"
 	"fmt"
+	"testing"
+
+	"cloud.google.com/go/internal/testutil"
+	"cloud.google.com/go/internal/uid"
 	computepb "google.golang.org/genproto/googleapis/cloud/compute/v1"
 	"google.golang.org/protobuf/proto"
-	"testing"
 )
 
 var projectId = testutil.ProjID()
