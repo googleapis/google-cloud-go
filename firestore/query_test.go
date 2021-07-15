@@ -464,11 +464,6 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 	c := &Client{projectID: "P", databaseID: "DB"}
 
 	for _, test := range createTestScenarios(t) {
-		if len(test.in.filters) > 0 {
-			// TODO: Currently we cannot convert Proto to Query that contain filters
-			// Requires work that isn't currently needed for use.
-			continue
-		}
 		fmt.Println(test.desc)
 		proto, err := test.in.ToProto()
 		if err != nil {
@@ -489,10 +484,7 @@ func TestQueryFromProtoRoundTrip(t *testing.T) {
 			t.Fatalf("%s: %v", test.desc, err)
 		}
 
-		// Compare protos, not query. This is due to subtle non-reversible bits.
-		// For instance query has a snapshot, but query proto converts to reference values.
-		// we can convert back to a query with values, but not a document snapshot.
-		// despite this difference, we should be able to go proto -> query -> proto.
+		// Compare protos before and after taking to a query. proto -> query -> proto.
 		if diff := cmp.Diff(gotProto, proto, protocmp.Transform()); diff != "" {
 			t.Errorf("%s:\ngot\n%v\nwant\n%v\ndiff\n%v", test.desc, pretty.Value(got), pretty.Value(want), diff)
 		}
