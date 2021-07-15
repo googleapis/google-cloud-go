@@ -17,6 +17,7 @@ package managedwriter
 import (
 	"context"
 	"io"
+	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -251,7 +252,7 @@ func (ms *ManagedStream) append(pw *pendingWrite) error {
 			ProtoDescriptor: ms.schemaDescriptor,
 		}
 		err := arc.Send(pw.request)
-		if err != nil {
+		if err == nil {
 			ch <- pw
 		}
 		return err
@@ -305,10 +306,12 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 
 			resp, err := arc.Recv()
 			if err != nil {
+				log.Printf("recv got err: %#v", err)
 				nextWrite.markDone(NoStreamOffset, err)
 			}
 
 			if status := resp.GetError(); status != nil {
+				log.Printf("recv got err status: %#v", status)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status))
 				continue
 			}

@@ -21,8 +21,10 @@ import (
 	"strings"
 
 	storage "cloud.google.com/go/bigquery/storage/apiv1beta2"
+	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
 	storagepb "google.golang.org/genproto/googleapis/cloud/bigquery/storage/v1beta2"
+	"google.golang.org/grpc"
 )
 
 // Client is a managed BigQuery Storage write client scoped to a single project.
@@ -61,10 +63,10 @@ func (c *Client) Close() error {
 
 // NewManagedStream establishes a new managed stream for appending data into a table.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
-	return c.buildManagedStream(ctx, c.rawClient.AppendRows, opts...)
+	return c.buildManagedStream(ctx, c.rawClient.AppendRows, false, opts...)
 }
 
-func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, opts ...WriterOption) (*ManagedStream, error) {
+func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClientFunc, skipSetup bool, opts ...WriterOption) (*ManagedStream, error) {
 
 	ctx, cancel := context.WithCancel(ctx)
 
@@ -74,8 +76,8 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		ctx:            ctx,
 		cancel:         cancel,
 		open: func() (storagepb.BigQueryWrite_AppendRowsClient, error) {
-			arc, err := streamFunc(ctx)
-			if err == nil {
+			arc, err := streamFunc(ctx, gax.WithGRPCOptions(grpc.MaxCallRecvMsgSize(10*1024*1024)))
+			if err != nil {
 				return nil, err
 			}
 			return arc, nil
@@ -87,28 +89,31 @@ func (c *Client) buildManagedStream(ctx context.Context, streamFunc streamClient
 		opt(ms)
 	}
 
-	if err := c.validateOptions(ctx, ms); err != nil {
-		return nil, err
-	}
-
-	if ms.streamSettings.streamID == "" {
-		// not instantiated with a stream, construct one.
-		streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
-		if ms.streamSettings.streamType != DefaultStream {
-			// For everything but a default stream, we create a new stream on behalf of the user.
-			req := &storagepb.CreateWriteStreamRequest{
-				Parent: ms.destinationTable,
-				WriteStream: &storagepb.WriteStream{
-					Type: streamTypeToEnum(ms.streamSettings.streamType),
-				}}
-			resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
-			if err != nil {
-				return nil, fmt.Errorf("couldn't create write stream: %v", err)
-			}
-			streamName = resp.GetName()
+	// skipSetup exists for testing scenarios.
+	if !skipSetup {
+		if err := c.validateOptions(ctx, ms); err != nil {
+			return nil, err
 		}
-		ms.streamSettings.streamID = streamName
-		// TODO(followup CLs): instantiate an appendstream client, flow controller, etc.
+
+		if ms.streamSettings.streamID == "" {
+			// not instantiated with a stream, construct one.
+			streamName := fmt.Sprintf("%s/_default", ms.destinationTable)
+			if ms.streamSettings.streamType != DefaultStream {
+				// For everything but a default stream, we create a new stream on behalf of the user.
+				req := &storagepb.CreateWriteStreamRequest{
+					Parent: ms.destinationTable,
+					WriteStream: &storagepb.WriteStream{
+						Type: streamTypeToEnum(ms.streamSettings.streamType),
+					}}
+				resp, err := ms.c.rawClient.CreateWriteStream(ctx, req)
+				if err != nil {
+					return nil, fmt.Errorf("couldn't create write stream: %v", err)
+				}
+				streamName = resp.GetName()
+			}
+			ms.streamSettings.streamID = streamName
+			// TODO(followup CLs): instantiate an appendstream client, flow controller, etc.
+		}
 	}
 
 	return ms, nil

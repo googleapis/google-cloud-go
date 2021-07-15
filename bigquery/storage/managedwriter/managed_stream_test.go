@@ -83,6 +83,10 @@ func TestManagedStream_OpenWithRetry(t *testing.T) {
 	}
 }
 
+func TestManagedStream_GetStream(t *testing.T) {
+
+}
+
 type testAppendRowsClient struct {
 	storagepb.BigQueryWrite_AppendRowsClient
 	err error
