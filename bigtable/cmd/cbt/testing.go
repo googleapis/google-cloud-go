@@ -42,7 +42,6 @@ func captureStdout(f func()) string {
 
 	outC := make(chan string)
 	// https://stackoverflow.com/questions/10473800/in-go-how-do-i-capture-stdout-of-a-function-into-a-string
-	// copy the output in a separate goroutine so printing can't block indefinitely
 	go func() {
 		var buf bytes.Buffer
 		io.Copy(&buf, r)
@@ -51,7 +50,6 @@ func captureStdout(f func()) string {
 
 	f()
 
-	// back to normal state
 	w.Close()
 	return <-outC
 }
