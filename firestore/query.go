@@ -511,19 +511,13 @@ func (q *Query) adjustOrders() []order {
 	// for the field of the first inequality.
 	var orders []order
 	for _, f := range q.filters {
-		// p, _ := f.toProto()
-		p := f
-		if fieldFilter := p.GetFieldFilter(); fieldFilter != nil {
+		if fieldFilter := f.GetFieldFilter(); fieldFilter != nil {
 			if fieldFilter.Op != pb.StructuredQuery_FieldFilter_EQUAL {
 				fp := f.GetFieldFilter().Field
 				orders = []order{{fieldReference: fp, dir: Asc}}
 				break
 			}
 		}
-		// if f.op != "==" {
-		// 	orders = []order{{fieldPath: f.fieldPath, dir: Asc}}
-		// 	break
-		// }
 	}
 	// Add an ascending OrderBy(DocumentID).
 	return append(orders, order{fieldPath: FieldPath{DocumentID}, dir: Asc})
