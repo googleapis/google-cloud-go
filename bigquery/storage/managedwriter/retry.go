@@ -18,6 +18,8 @@ import (
 	"time"
 
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 type defaultRetryer struct {
@@ -25,9 +27,19 @@ type defaultRetryer struct {
 }
 
 func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
-	// TODO: define this logic in a subsequent PR, there's some service-specific
+	// TODO: refine this logic in a subsequent PR, there's some service-specific
 	// retry predicates in addition to statuscode-based.
-	return r.bo.Pause(), false
+	s, ok := status.FromError(err)
+	if !ok {
+		// non-status based errors as retryable
+		return r.bo.Pause(), true
+	}
+	switch s.Code() {
+	case codes.Unavailable:
+		return r.bo.Pause(), true
+	default:
+		return r.bo.Pause(), false
+	}
 }
 
 type streamingRetryer struct {
@@ -35,7 +47,7 @@ type streamingRetryer struct {
 }
 
 func (r *streamingRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
-	// TODO: define this logic in a subsequent PR, there's some service-specific
+	// TODO: refine this logic in a subsequent PR, there's some service-specific
 	// retry predicates in addition to statuscode-based.
 	return r.defaultRetryer.Retry(err)
 }
