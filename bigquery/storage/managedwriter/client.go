@@ -53,7 +53,13 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 	}, nil
 }
 
-// NewManagedStream establishes a managed stream for appending data.
+// Close releases resources held by the client.
+func (c *Client) Close() error {
+	// TODO: we should retain a references to instantiated clients, or have a client-local context.
+	return fmt.Errorf("not implemented")
+}
+
+// NewManagedStream establishes a new managed stream for appending data into a table.
 func (c *Client) NewManagedStream(ctx context.Context, opts ...WriterOption) (*ManagedStream, error) {
 	return c.buildManagedStream(ctx, c.rawClient.AppendRows, opts...)
 }

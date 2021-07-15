@@ -14,6 +14,8 @@
 
 package managedwriter
 
+import "google.golang.org/protobuf/types/descriptorpb"
+
 // WriterOption is used to configure a ManagedWriteClient.
 type WriterOption func(*ManagedStream)
 
@@ -65,5 +67,12 @@ func WithMaxInflightBytes(n int) WriterOption {
 func WithTracePrefix(prefix string) WriterOption {
 	return func(ms *ManagedStream) {
 		ms.streamSettings.TracePrefix = prefix
+	}
+}
+
+// WithDescriptor describes the format of messages you'll be sending to the service.
+func WithSchemaDescriptor(dp *descriptorpb.DescriptorProto) WriterOption {
+	return func(ms *ManagedStream) {
+		ms.schemaDescriptor = dp
 	}
 }
