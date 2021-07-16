@@ -74,7 +74,8 @@ func NewGenprotoGenerator(c *Config) *GenprotoGenerator {
 }
 
 var skipPrefixes = []string{
-	"google.golang.org/genproto/googleapis/ads",
+	// We want to generate only this pkg
+	//"google.golang.org/genproto/googleapis/ads",
 }
 
 func hasPrefix(s string, prefixes []string) bool {
