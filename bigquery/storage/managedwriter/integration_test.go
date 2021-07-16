@@ -131,7 +131,8 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 	}
 	defer cleanup()
 
-	ctx, _ := context.WithTimeout(context.Background(), defaultTestTimeout)
+	ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
+	defer cancel()
 
 	// prep a suitable destination table.
 	testTable := dataset.Table(tableIDs.New())

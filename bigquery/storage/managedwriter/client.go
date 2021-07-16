@@ -57,8 +57,13 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 
 // Close releases resources held by the client.
 func (c *Client) Close() error {
-	// TODO: we should retain a references to instantiated clients, or have a client-local context.
-	return fmt.Errorf("not implemented")
+	// TODO: consider if we should propagate a cancellation from client to all associated managed streams.
+	if c.rawClient == nil {
+		return fmt.Errorf("already closed")
+	}
+	c.rawClient.Close()
+	c.rawClient = nil
+	return nil
 }
 
 // NewManagedStream establishes a new managed stream for appending data into a table.

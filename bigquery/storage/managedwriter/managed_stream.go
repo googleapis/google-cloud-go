@@ -17,7 +17,6 @@ package managedwriter
 import (
 	"context"
 	"io"
-	"log"
 	"sync"
 
 	"github.com/googleapis/gax-go/v2"
@@ -73,13 +72,14 @@ type ManagedStream struct {
 	c                *Client
 
 	// aspects of the stream client
-	ctx     context.Context // retained context for the stream
-	cancel  context.CancelFunc
-	open    func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
-	arc     *storagepb.BigQueryWrite_AppendRowsClient                // current stream connection
+	ctx    context.Context // retained context for the stream
+	cancel context.CancelFunc
+	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+
 	mu      sync.Mutex
-	err     error // terminal error
-	pending chan *pendingWrite
+	arc     *storagepb.BigQueryWrite_AppendRowsClient // current stream connection
+	err     error                                     // terminal error
+	pending chan *pendingWrite                        // writes awaiting status
 }
 
 // enables testing
@@ -261,7 +261,7 @@ func (ms *ManagedStream) append(pw *pendingWrite) error {
 	})
 }
 
-func (ms *ManagedStream) CloseSend() error {
+func (ms *ManagedStream) Close() error {
 	err := ms.call(func(arc storagepb.BigQueryWrite_AppendRowsClient, ch chan *pendingWrite) error {
 		err := arc.CloseSend()
 		if err == nil {
@@ -311,12 +311,10 @@ func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsCl
 			// block until we get a corresponding response or err from stream.
 			resp, err := arc.Recv()
 			if err != nil {
-				log.Printf("recv got err: %#v", err)
 				nextWrite.markDone(NoStreamOffset, err)
 			}
 
 			if status := resp.GetError(); status != nil {
-				log.Printf("recv got err status: %#v", status)
 				nextWrite.markDone(NoStreamOffset, grpcstatus.ErrorProto(status))
 				continue
 			}
