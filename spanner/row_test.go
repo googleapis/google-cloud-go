@@ -18,6 +18,7 @@ package spanner
 
 import (
 	"encoding/base64"
+	"fmt"
 	"reflect"
 	"strconv"
 	"strings"
@@ -417,6 +418,9 @@ func TestColumnTypeErr(t *testing.T) {
 			etc = f.Type.ArrayElementType.Code
 		}
 		wantErr := errDecodeColumn(i, errTypeMismatch(tc, etc, badDst))
+		if strings.Contains(f.Name, "STRUCT_ARRAY") {
+			wantErr = errDecodeColumn(i, fmt.Errorf("the container is not a slice of struct pointers: %v", errTypeMismatch(tc, etc, badDst)))
+		}
 		if gotErr := row.Column(i, badDst); !testEqual(gotErr, wantErr) {
 			t.Errorf("Column(%v): decoding into destination with wrong type %T returns error %v, want %v",
 				i, badDst, gotErr, wantErr)
