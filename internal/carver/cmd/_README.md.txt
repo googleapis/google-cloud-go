@@ -29,7 +29,7 @@ section in the root directory's README.
 
 ## Contributing
 
-Contributions are welcome. Please, see the[CONTRIBUTING](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CONTRIBUTING.md)
+Contributions are welcome. Please, see the [CONTRIBUTING](https://github.com/GoogleCloudPlatform/google-cloud-go/blob/master/CONTRIBUTING.md)
 document for details.
 
 Please note that this project is released with a Contributor Code of Conduct.
