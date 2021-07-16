@@ -13,4 +13,8 @@ gapicgen contains three binaries:
   gapic regen CL that needs to have reviewers added and go.mod update, and then
   does so. Intended to be run periodically as a bot, but humans can use it too.
 
+## Additional Notes
+- Build new genbot: `go build -o genbot cloud.google.com/go/internal/gapicgen/cmd/genbot`
+- Regenerate Google ADS packages: `genbot -local -forceAll -tempDir="~/RV/" -gapic="google.golang.org/google/ads/googleads"`
+
 See the README.md in each folder for more specific instructions.
