@@ -73,13 +73,15 @@ type ManagedStream struct {
 	c                *Client
 
 	// aspects of the stream client
-	ctx     context.Context // retained context for the stream
-	cancel  context.CancelFunc
-	open    func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
-	arc     *storagepb.BigQueryWrite_AppendRowsClient                // current stream connection
-	mu      sync.Mutex
-	err     error // terminal error
-	pending chan *pendingWrite
+	ctx    context.Context // retained context for the stream
+	cancel context.CancelFunc
+	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	arc    *storagepb.BigQueryWrite_AppendRowsClient                // current stream connection
+	mu     sync.Mutex
+	err    error // terminal error
+
+	pending    chan *pendingWrite
+	recvCancel context.CancelFunc
 }
 
 // enables testing
@@ -183,6 +185,7 @@ func (ms *ManagedStream) getStream(arc *storagepb.BigQueryWrite_AppendRowsClient
 }
 
 // openWithRetry is responsible for navigating the (re)opening of the underlying stream connection.
+// The expectation is this is only ever invoked when the caller has the mutex lock.
 func (ms *ManagedStream) openWithRetry() (storagepb.BigQueryWrite_AppendRowsClient, chan *pendingWrite, error) {
 	r := defaultRetryer{}
 	for {
@@ -246,7 +249,8 @@ func (ms *ManagedStream) call(f func(storagepb.BigQueryWrite_AppendRowsClient, c
 func (ms *ManagedStream) append(pw *pendingWrite) error {
 	return ms.call(func(arc storagepb.BigQueryWrite_AppendRowsClient, ch chan *pendingWrite) error {
 		// TODO: we should only send stream ID and schema for the first message in a new stream, but
-		// we need an elegant way to handle this.
+		// we've decoupled the individual appends from caring about state of the connection.  We likely
+		// need to do this via a mutex-guarded state flag.
 		pw.request.WriteStream = ms.streamSettings.streamID
 		pw.request.GetProtoRows().WriterSchema = &storagepb.ProtoSchema{
 			ProtoDescriptor: ms.schemaDescriptor,
@@ -269,6 +273,7 @@ func (ms *ManagedStream) CloseSend() error {
 	})
 	ms.mu.Lock()
 	ms.err = io.EOF
+	close(ms.pending)
 	ms.mu.Unlock()
 	return err
 }
@@ -284,13 +289,14 @@ func (ms *ManagedStream) AppendRows(data [][]byte, offset int64) ([]*AppendResul
 	return pw.results, nil
 }
 
-// recvProcessor is used to pair responses back up with the origin writes.
+// recvProcessor is used to propagate append responses back up with the originating write requests in a goroutine.
 func recvProcessor(ctx context.Context, arc storagepb.BigQueryWrite_AppendRowsClient, ch <-chan *pendingWrite) {
+	// TODO:  We'd like to re-send requests that are in an ambiguous state due to channel errors.  For now, we simply
+	// ensure that pending writes get acknowledged with a terminal state.
 	for {
 		select {
 		case <-ctx.Done():
-			// Context is done, so we're not going to get further updates.  However, we need to finalize all remaining
-			// writes on the channel so users don't block indefinitely.
+			// Context is done, so we're not going to get further updates.  Mark all work failed with the context error.
 			for {
 				pw, ok := <-ch
 				if !ok {

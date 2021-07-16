@@ -89,6 +89,7 @@ func validateRowCount(ctx context.Context, t *testing.T, client *bigquery.Client
 	}
 }
 
+// setupTestDataset generates a unique dataset for testing, and a cleanup that can be deferred.
 func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (ds *bigquery.Dataset, cleanup func(), err error) {
 	dataset := bqc.Dataset(datasetIDs.New())
 	if err := dataset.Create(ctx, nil); err != nil {
@@ -101,6 +102,7 @@ func setupTestDataset(ctx context.Context, t *testing.T, bqc *bigquery.Client) (
 	}, nil
 }
 
+// setupDynamicDescriptors aids testing when not using a supplied proto
 func setupDynamicDescriptors(t *testing.T, schema bigquery.Schema) (protoreflect.MessageDescriptor, *descriptorpb.DescriptorProto) {
 	convertedSchema, err := adapt.BQSchemaToStorageTableSchema(schema)
 	if err != nil {
@@ -140,7 +142,8 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 	if err := testTable.Create(ctx, &bigquery.TableMetadata{Schema: schema}); err != nil {
 		t.Fatalf("failed to create test table %s: %v", testTable.FullyQualifiedName(), err)
 	}
-	// We'll use a test proto, but we need a descriptorproto
+	// We'll use a precompiled test proto, but we need it's corresponding descriptorproto representation
+	// to send as the stream's schema.
 	m := &testdata.SimpleMessage{}
 	descriptorProto := protodesc.ToDescriptorProto(m.ProtoReflect().Descriptor())
 
@@ -166,18 +169,24 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 	}
 
 	// First, send the test rows individually.
+	var results []*AppendResult
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
 		if err != nil {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := [][]byte{b}
-		ms.AppendRows(data, NoStreamOffset)
+		results, err = ms.AppendRows(data, NoStreamOffset)
+		if err != nil {
+			t.Errorf("single-row append %d failed: %v", k, err)
+		}
 	}
+	// wait for the result to indicate ready, then validate.
+	results[0].Ready()
 	wantRows := int64(len(testData))
 	validateRowCount(ctx, t, bqClient, testTable, wantRows)
 
-	// Now, send the rows grouped into in a single append.
+	// Now, send the test rows grouped into in a single append.
 	var data [][]byte
 	for k, mesg := range testData {
 		b, err := proto.Marshal(mesg)
@@ -185,9 +194,13 @@ func TestIntegration_ManagedWriter_BasicOperation(t *testing.T) {
 			t.Errorf("failed to marshal message %d: %v", k, err)
 		}
 		data := append(data, b)
-		ms.AppendRows(data, NoStreamOffset)
+		results, err = ms.AppendRows(data, NoStreamOffset)
+		if err != nil {
+			t.Errorf("grouped-row append failed: %v", err)
+		}
 	}
-
+	// wait for the result to indicate ready, then validate again.
+	results[0].Ready()
 	wantRows = wantRows * 2
 	validateRowCount(ctx, t, bqClient, testTable, wantRows)
 }

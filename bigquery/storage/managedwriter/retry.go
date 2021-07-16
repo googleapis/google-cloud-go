@@ -41,13 +41,3 @@ func (r *defaultRetryer) Retry(err error) (pause time.Duration, shouldRetry bool
 		return r.bo.Pause(), false
 	}
 }
-
-type streamingRetryer struct {
-	defaultRetryer gax.Retryer
-}
-
-func (r *streamingRetryer) Retry(err error) (pause time.Duration, shouldRetry bool) {
-	// TODO: refine this logic in a subsequent PR, there's some service-specific
-	// retry predicates in addition to statuscode-based.
-	return r.defaultRetryer.Retry(err)
-}
