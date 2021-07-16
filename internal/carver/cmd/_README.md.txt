@@ -12,10 +12,12 @@ go get {{.ImportPath}}
 
 ## Stability
 
-The stability of this module is indicated by semver. That said, some stable
-modules will include unstable packages in them. You can identify if a package is
-unstable if the import path includes alpha or beta and/or if it is noted in the
-package documentation.
+The stability of this module is indicated by SemVer.
+
+However, a `v1+` module may have breaking changes in two scenarios:
+
+* Packages with `alpha` or `beta` in the import path
+* The GoDoc has an explicit stability disclaimer (for example, for an experimental feature).
 
 ## Go Version Support
 
