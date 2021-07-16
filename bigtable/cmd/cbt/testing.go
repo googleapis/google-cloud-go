@@ -18,12 +18,13 @@ package main
 
 import (
 	"bytes"
-	"cloud.google.com/go/internal/testutil"
 	"io"
 	"os"
 	"path/filepath"
 	"runtime"
 	"testing"
+
+	"cloud.google.com/go/internal/testutil"
 )
 
 func captureStdout(f func()) string {
