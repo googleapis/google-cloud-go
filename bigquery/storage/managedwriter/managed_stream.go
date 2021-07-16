@@ -73,15 +73,13 @@ type ManagedStream struct {
 	c                *Client
 
 	// aspects of the stream client
-	ctx    context.Context // retained context for the stream
-	cancel context.CancelFunc
-	open   func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
-	arc    *storagepb.BigQueryWrite_AppendRowsClient                // current stream connection
-	mu     sync.Mutex
-	err    error // terminal error
-
-	pending    chan *pendingWrite
-	recvCancel context.CancelFunc
+	ctx     context.Context // retained context for the stream
+	cancel  context.CancelFunc
+	open    func() (storagepb.BigQueryWrite_AppendRowsClient, error) // how we get a new connection
+	arc     *storagepb.BigQueryWrite_AppendRowsClient                // current stream connection
+	mu      sync.Mutex
+	err     error // terminal error
+	pending chan *pendingWrite
 }
 
 // enables testing
