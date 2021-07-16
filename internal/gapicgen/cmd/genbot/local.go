@@ -38,11 +38,12 @@ type localConfig struct {
 	onlyGapics         bool
 	regenOnly          bool
 	forceAll           bool
+	tempDir            string
 }
 
 func genLocal(ctx context.Context, c localConfig) error {
 	log.Println("creating temp dir")
-	tmpDir, err := ioutil.TempDir("", "update-genproto")
+	tmpDir, err := ioutil.TempDir(c.tempDir, "update-genproto")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -42,6 +42,7 @@ func main() {
 	githubEmail := flag.String("githubEmail", os.Getenv("GITHUB_EMAIL"), "The email address of the author.")
 	localMode := flag.Bool("local", strToBool(os.Getenv("GENBOT_LOCAL_MODE")), "Enables generating sources locally. This mode will not open any pull requests.")
 	forceAll := flag.Bool("forceAll", strToBool(os.Getenv("GENBOT_FORCE_ALL")), "Enables regenerating everything regardless of changes in googleapis.")
+	tempDir := flag.String("tempDir", os.Getenv("TEMP_DIR"), "The name of the temp directory. If empty, use random.")
 
 	// flags for local mode
 	googleapisDir := flag.String("googleapis-dir", os.Getenv("GOOGLEAPIS_DIR"), "Directory where sources of googleapis/googleapis resides. If unset the sources will be cloned to a temporary directory that is not cleaned up.")
@@ -66,6 +67,7 @@ func main() {
 			onlyGapics:         *onlyGapics,
 			regenOnly:          *regenOnly,
 			forceAll:           *forceAll,
+			tempDir:            *tempDir,
 		}); err != nil {
 			log.Fatal(err)
 		}
