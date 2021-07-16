@@ -4,7 +4,7 @@
 
 Go Client Library for {{.Name}}.
 
-## Import
+## Install
 
 ```bash
 go get {{.ImportPath}}

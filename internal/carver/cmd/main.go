@@ -64,9 +64,9 @@ type carver struct {
 }
 
 func main() {
-	parent := flag.String("parent", "", "The path to the parent module.")
-	child := flag.String("child", "", "The relative path to the child module from the parent module.")
-	repoMetadataPath := flag.String("repo-metadata", "", "The full path to the repo metadata file.")
+	parent := flag.String("parent", "", "The path to the parent module. Required.")
+	child := flag.String("child", "", "The relative path to the child module from the parent module. Required.")
+	repoMetadataPath := flag.String("repo-metadata", "", "The full path to the repo metadata file. Required.")
 	name := flag.String("name", "", "The name used to identify the API in the README. Optional")
 	parentTagPrefix := flag.String("parent-tag-prefix", "", "The prefix for a git tag, should end in a '/'. Only required if parent is not the root module. Optional.")
 	parentTag := flag.String("parent-tag", "", "The newest tag from the parent module, this will override the lookup. If not specified the latest tag will be used. Optional.")
@@ -186,13 +186,13 @@ func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error 
 		return err
 	}
 
-	fp := filepath.Join(c.childModPath, "README.md")
-	log.Printf("Creating %q", fp)
-	f, err := c.newWriterCloser(fp)
+	readmePath := filepath.Join(c.childModPath, "README.md")
+	log.Printf("Creating %q", readmePath)
+	readmeFile, err := c.newWriterCloser(readmePath)
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer readmeFile.Close()
 	t := template.Must(template.New("readme").Parse(readmeTmpl))
 	importPath := rootMod.moduleName + strings.TrimPrefix(c.childModPath, rootMod.filePath)
 	name := c.name
@@ -202,31 +202,31 @@ func (c *carver) CreateChildCommonFiles(pkgName string, rootMod *modInfo) error 
 			return fmt.Errorf("unable to determine a name from API metadata, please set -name flag")
 		}
 	}
-	data := struct {
+	readmeData := struct {
 		Name       string
 		ImportPath string
 	}{
 		Name:       name,
 		ImportPath: importPath,
 	}
-	if err := t.Execute(f, data); err != nil {
+	if err := t.Execute(readmeFile, readmeData); err != nil {
 		return err
 	}
 
-	fp2 := filepath.Join(c.childModPath, "CHANGES.md")
-	log.Printf("Creating %q", fp2)
-	f2, err := c.newWriterCloser(fp2)
+	changesPath := filepath.Join(c.childModPath, "CHANGES.md")
+	log.Printf("Creating %q", changesPath)
+	changesFile, err := c.newWriterCloser(changesPath)
 	if err != nil {
 		return err
 	}
-	defer f2.Close()
+	defer changesFile.Close()
 	t2 := template.Must(template.New("changes").Parse(changesTmpl))
-	data2 := struct {
+	changesData := struct {
 		Package string
 	}{
 		Package: pkgName,
 	}
-	return t2.Execute(f2, data2)
+	return t2.Execute(changesFile, changesData)
 }
 
 func (c *carver) CreateChildModule(pkgName string, rootMod *modInfo) error {
@@ -386,10 +386,10 @@ func sortTags(tags []string) {
 	})
 }
 
-func parsePkgName(importPath string) (string, error) {
-	ss := strings.Split(importPath, "/")
+func parsePkgName(childModFilePath string) (string, error) {
+	ss := strings.Split(childModFilePath, "/")
 	if len(ss) < 2 {
-		return "", fmt.Errorf("unable to parse package name from %q", importPath)
+		return "", fmt.Errorf("unable to parse package name from %q", childModFilePath)
 	}
 	return ss[len(ss)-1], nil
 }
