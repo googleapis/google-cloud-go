@@ -858,20 +858,45 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	createSubscription(ctx, t, admin, subscriptionPath, topicPath)
 	defer cleanUpSubscription(ctx, t, admin, subscriptionPath)
 
-	var msgBatch1, msgBatch3 []string
+	var msgBatch3 []string
 	var publishTimes3 *publishTimeRange
 
 	// Note: Subtests need to be run sequentially.
 
-	t.Run("PublishBatch1", func(t *testing.T) {
-		msgBatch1 = publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch1", messageCount, 0)
-
+	t.Run("SeekToBeginning", func(t *testing.T) {
+		// Publish the first batch of messages.
+		msgBatch1 := publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch1", messageCount, 0)
 		msgTracker := test.NewMsgTracker()
 		msgTracker.Add(msgBatch1...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
-	})
 
-	t.Run("SeekToBeginning", func(t *testing.T) {
+		// Keep the subscriber alive to test the subscriber client's handling of
+		// out-of-band seek notifications from the server.
+		cctx, stopSubscriber := context.WithTimeout(context.Background(), defaultTestTimeout)
+		messageReceiver := func(ctx context.Context, msg *pubsub.Message) {
+			msg.Ack()
+			data := string(msg.Data)
+			if !msgTracker.Remove(data) {
+				stopSubscriber()
+				t.Errorf("Received unexpected message: %q", data)
+			}
+		}
+		subscriber := subscriberClient(context.Background(), t, recvSettings, subscriptionPath)
+		receiveDone := test.NewCondition("subscriber-stopped")
+		go func() {
+			// Receive messages in a goroutine, as Receive is blocking.
+			if err := subscriber.Receive(cctx, messageReceiver); err != nil {
+				t.Errorf("Receive() got err: %v", err)
+			}
+			receiveDone.SetDone()
+		}()
+
+		// Receive batch 1 once.
+		if err := msgTracker.Wait(defaultTestTimeout); err != nil {
+			t.Fatal(err)
+		}
+		msgTracker.Add(msgBatch1...)
+
+		// Seek to beginning.
 		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.Beginning)
 		if err != nil {
 			t.Errorf("SeekSubscription() got err: %v", err)
@@ -880,21 +905,23 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 		}
 
 		// Verify that messages are received from the beginning of batch 1.
-		msgTracker := test.NewMsgTracker()
-		msgTracker.Add(msgBatch1...)
-		receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
+		if err := msgTracker.Wait(defaultTestTimeout); err != nil {
+			t.Fatal(err)
+		}
+		stopSubscriber()
+		receiveDone.WaitUntilDone(t, defaultTestTimeout)
 
 		if seekOp != nil {
 			validateCompleteSeekOperation(ctx, t, subscriptionPath, seekOp)
 		}
 	})
 
-	t.Run("PublishBatch2", func(t *testing.T) {
-		publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch2", messageCount, 0)
-		// Messages deliberately not received in order to test seeking to head/end.
-	})
-
 	t.Run("SeekToEnd", func(t *testing.T) {
+		// Publish batch 2, but do not receive messages in order to test seeking to
+		// head/end.
+		publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch2", messageCount, 0)
+
+		// Seek to end.
 		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.End)
 		if err != nil {
 			t.Errorf("SeekSubscription() got err: %v", err)
@@ -902,9 +929,10 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 			validateNewSeekOperation(t, subscriptionPath, seekOp)
 		}
 
+		// Publish batch 3 and verify that messages are only received from batch 3
+		// (batch 2 skipped).
 		msgBatch3 = publishPrefixedMessages(t, DefaultPublishSettings, topicPath, "seek-batch3", messageCount, 0)
 
-		// Verify that messages are received from batch 3 (batch 2 skipped).
 		msgTracker := test.NewMsgTracker()
 		msgTracker.Add(msgBatch3...)
 		publishTimes3 = receiveAllMessages(t, msgTracker, recvSettings, subscriptionPath)
@@ -915,7 +943,7 @@ func TestIntegration_SeekSubscription(t *testing.T) {
 	})
 
 	t.Run("SeekToPublishTime", func(t *testing.T) {
-		// Seek to the beginning of batch 3.
+		// Seek to min publish time of batch 3.
 		seekOp, err := admin.SeekSubscription(ctx, subscriptionPath.String(), pubsublite.PublishTime(publishTimes3.Min()))
 		if err != nil {
 			t.Errorf("SeekSubscription() got err: %v", err)
