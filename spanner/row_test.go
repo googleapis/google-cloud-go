@@ -1689,7 +1689,11 @@ func TestRowToString(t *testing.T) {
 	}
 	got := r.String()
 	want := `{fields: [name:"F1" type:{code:STRING} name:"F2" type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
-	if !testEqual(r.String(), want) {
+	// In protobuf-go, the encoder will add an additional space based on a
+	// deterministically random boolean value.
+	wantWithTwoSpaces := `{fields: [name:"F1"  type:{code:STRING} name:"F2"  type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
+
+	if !testEqual(r.String(), want) && !testEqual(r.String(), wantWithTwoSpaces) {
 		t.Errorf("got %+v, want %+v", got, want)
 	}
 }
