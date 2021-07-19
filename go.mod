@@ -8,7 +8,7 @@ require (
 	github.com/golang/protobuf v1.5.2
 	github.com/google/go-cmp v0.5.6
 	github.com/google/martian/v3 v3.2.1
-	github.com/google/pprof v0.0.0-20210609004039-a478d1d731e9
+	github.com/google/pprof v0.0.0-20210715191844-86eeefc3e471
 	github.com/googleapis/gax-go/v2 v2.0.5
 	github.com/jstemmer/go-junit-report v0.9.1
 	go.opencensus.io v0.23.0
