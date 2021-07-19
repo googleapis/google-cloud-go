@@ -365,12 +365,16 @@ func (sel Select) addSQL(sb *strings.Builder) {
 
 func (sft SelectFromTable) SQL() string {
 	str := sft.Table.SQL()
-	if len(sft.Hint) > 0 {
-		for k, v := range sft.Hint {
-			str += fmt.Sprintf("@{%s=%s}", k, v)
-			// table hint exists only one key
-			break
+	if len(sft.Hints) > 0 {
+		str += "@{"
+		kvs := make([]string, len(sft.Hints))
+		i := 0
+		for k, v := range sft.Hints {
+			kvs[i] = fmt.Sprintf("%s=%s", k, v)
+			i += 1
 		}
+		str += strings.Join(kvs, ",")
+		str += "}"
 	}
 
 	if sft.Alias != "" {

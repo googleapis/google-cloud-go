@@ -315,7 +315,7 @@ func TestSQL(t *testing.T) {
 					List: []Expr{ID("A")},
 					From: []SelectFrom{SelectFromTable{
 						Table: "Table",
-						Hint:  map[string]string{"FORCE_INDEX": "Idx"},
+						Hints: map[string]string{"FORCE_INDEX": "Idx"},
 					}},
 					Where: ComparisonOp{
 						LHS: ID("B"),
@@ -325,6 +325,24 @@ func TestSQL(t *testing.T) {
 				},
 			},
 			`SELECT A FROM Table@{FORCE_INDEX=Idx} WHERE B = @b`,
+			reparseQuery,
+		},
+		{
+			Query{
+				Select: Select{
+					List: []Expr{ID("A")},
+					From: []SelectFrom{SelectFromTable{
+						Table: "Table",
+						Hints: map[string]string{"FORCE_INDEX": "Idx", "GROUPBY_SCAN_OPTIMIZATION": "TRUE"},
+					}},
+					Where: ComparisonOp{
+						LHS: ID("B"),
+						Op:  Eq,
+						RHS: Param("b"),
+					},
+				},
+			},
+			`SELECT A FROM Table@{FORCE_INDEX=Idx,GROUPBY_SCAN_OPTIMIZATION=TRUE} WHERE B = @b`,
 			reparseQuery,
 		},
 		{

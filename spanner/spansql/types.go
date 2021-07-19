@@ -394,7 +394,7 @@ type SelectFrom interface {
 type SelectFromTable struct {
 	Table ID
 	Alias ID // empty if not aliased
-	Hint  map[string]string
+	Hints map[string]string
 }
 
 func (SelectFromTable) isSelectFrom() {}

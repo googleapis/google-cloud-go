@@ -2112,11 +2112,11 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	}
 	sf := SelectFromTable{Table: tname}
 	if p.eat("@") {
-		hint, err := p.parseHints(map[string]string{}, false)
+		hints, err := p.parseHints(map[string]string{})
 		if err != nil {
 			return nil, err
 		}
-		sf.Hint = hint
+		sf.Hints = hints
 	}
 
 	// TODO: The "AS" keyword is optional.
@@ -2173,7 +2173,7 @@ func (p *parser) parseSelectFrom() (SelectFrom, *parseError) {
 	}
 
 	if p.eat("@") {
-		h, err := p.parseHints(hints, true)
+		h, err := p.parseHints(hints)
 		if err != nil {
 			return nil, err
 		}
@@ -2870,7 +2870,7 @@ func (p *parser) parseAlias() (ID, *parseError) {
 	return p.parseTableOrIndexOrColumnName()
 }
 
-func (p *parser) parseHints(hints map[string]string, multiple bool) (map[string]string, *parseError) {
+func (p *parser) parseHints(hints map[string]string) (map[string]string, *parseError) {
 	if hints == nil {
 		hints = map[string]string{}
 	}
@@ -2895,7 +2895,7 @@ func (p *parser) parseHints(hints map[string]string, multiple bool) (map[string]
 		}
 		v := tok.value
 		hints[k] = v
-		if !multiple || !p.eat(",") {
+		if !p.eat(",") {
 			break
 		}
 	}
