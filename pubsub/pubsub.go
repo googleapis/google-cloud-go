@@ -150,12 +150,14 @@ func NewClientWithConfig(ctx context.Context, projectID string, config *ClientCo
 	if err != nil {
 		return nil, fmt.Errorf("pubsub(publisher): %v", err)
 	}
-	pubc.CallOptions = mergePublisherCallOptions(pubc.CallOptions, config.PublisherCallOptions)
 	subc, err := vkit.NewSubscriberClient(ctx, o...)
 	if err != nil {
 		return nil, fmt.Errorf("pubsub(subscriber): %v", err)
 	}
-	subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
+	if config != nil {
+		pubc.CallOptions = mergePublisherCallOptions(pubc.CallOptions, config.PublisherCallOptions)
+		subc.CallOptions = mergeSubscriberCallOptions(subc.CallOptions, config.SubscriberCallOptions)
+	}
 	pubc.SetGoogleClientInfo("gccl", version.Repo)
 	return &Client{
 		projectID: projectID,
