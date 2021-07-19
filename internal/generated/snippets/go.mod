@@ -23,14 +23,14 @@ replace cloud.google.com/go/spanner => ../../../spanner
 replace cloud.google.com/go/storage => ../../../storage
 
 require (
-	cloud.google.com/go v0.86.0
-	cloud.google.com/go/bigquery v0.86.0
-	cloud.google.com/go/datastore v0.86.0
-	cloud.google.com/go/firestore v0.86.0
-	cloud.google.com/go/logging v0.86.0
+	cloud.google.com/go v0.87.0
+	cloud.google.com/go/bigquery v0.87.0
+	cloud.google.com/go/datastore v0.87.0
+	cloud.google.com/go/firestore v0.87.0
+	cloud.google.com/go/logging v0.87.0
 	cloud.google.com/go/pubsub v1.9.1
-	cloud.google.com/go/pubsublite v0.86.0
-	cloud.google.com/go/spanner v0.86.0
+	cloud.google.com/go/pubsublite v0.87.0
+	cloud.google.com/go/spanner v0.87.0
 	google.golang.org/api v0.50.0
-	google.golang.org/genproto v0.0.0-20210714021259-044028024a4f
+	google.golang.org/genproto v0.0.0-20210715145939-324b959e9c22
 )
