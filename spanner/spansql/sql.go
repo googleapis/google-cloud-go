@@ -371,7 +371,7 @@ func (sft SelectFromTable) SQL() string {
 		i := 0
 		for k, v := range sft.Hints {
 			kvs[i] = fmt.Sprintf("%s=%s", k, v)
-			i += 1
+			i++
 		}
 		str += strings.Join(kvs, ",")
 		str += "}"
