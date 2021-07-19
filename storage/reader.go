@@ -84,6 +84,8 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 	return o.NewRangeReader(ctx, 0, -1)
 }
 
+// NewRangeReaderWithGRPC creates a new Reader with the given range that uses
+// gRPC to read Object content.
 func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReaderWithGRPC")
 	defer func() { trace.EndSpan(ctx, err) }()
@@ -407,12 +409,13 @@ type Reader struct {
 
 // Close closes the Reader. It must be called when done reading.
 func (r *Reader) Close() error {
-	if r.stream != nil {
-		// Drop the stream client referenced so it and its resources are GC'd.
-		r.stream = nil
-		return nil
+	if r.body != nil {
+		return r.body.Close()
 	}
-	return r.body.Close()
+
+	// Drop the stream client referenced so it and its resources are GC'd.
+	r.stream = nil
+	return nil
 }
 
 func (r *Reader) Read(p []byte) (int, error) {

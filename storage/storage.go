@@ -161,6 +161,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}, nil
 }
 
+// NewClientWithGRPC creates a new Storage client that initializes a gRPC-based client
+// for media upload and download operations.
 func NewClientWithGRPC(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	c, err := NewClient(ctx, opts...)
 	if err != nil {
