@@ -499,9 +499,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		}
 
 		if r.size == 0 {
-			r.size = msg.GetMetadata().GetSize()
-			r.remain = r.size
 			r.Attrs = metadataToAttrs(msg.GetMetadata())
+			r.size = r.Attrs.Size
+			r.remain = r.Attrs.Size
 		}
 
 		content := msg.GetChecksummedData().GetContent()
