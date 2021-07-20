@@ -475,6 +475,8 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			if err != nil {
 				return n, err
 			}
+			// Reset flag to avoid reopening the client every iteration.
+			usedLeftovers = false
 		}
 		msg, err := r.stream.Recv()
 		if err != nil {
@@ -484,17 +486,20 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 				return n, err
 			}
 
-			// TODO: how many times do we try to read before stopping?
-			// TODO: backoff?
+			// TODO: How many times do we try to read before stopping?
+			// TODO: Should we backoff?
 
-			// initialize new stream
+			// Save the original error to return instead of the reinit error.
+			e := err
+
+			// Initialize new stream with updated offset.
 			r.stream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
-				// cannot reinstantiate the stream so we bail
-				return n, err
+				// Cannot reinstantiate the stream so return the original error.
+				return n, e
 			}
 
-			// try again
+			// Try to Recv again.
 			continue
 		}
 
@@ -504,11 +509,13 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			r.remain = r.Attrs.Size
 		}
 
+		// TODO: Handle Crc32C digest.
 		content := msg.GetChecksummedData().GetContent()
 		cp := copy(p[n:], content)
 		leftover := len(content) - cp
 		if leftover > 0 {
-			// wasn't able to copy all of the data in the message
+			// Wasn't able to copy all of the data in the message, store for
+			// future Read calls.
 			r.leftovers = make([]byte, leftover)
 			copy(r.leftovers, content[cp:])
 		}
