@@ -419,12 +419,12 @@ func (r *Reader) Close() error {
 }
 
 func (r *Reader) Read(p []byte) (int, error) {
+	read := r.readWithRetry
 	if r.reopenWithGRPC != nil {
-		n, err := r.readWithGRPC(p)
-		return n, err
+		read = r.readWithGRPC
 	}
 
-	n, err := r.readWithRetry(p)
+	n, err := read(p)
 	if r.remain != -1 {
 		r.remain -= int64(n)
 	}
@@ -455,10 +455,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	if len(r.leftovers) > 0 {
 		cp := copy(p, r.leftovers)
 		r.seen += int64(cp)
-		r.remain -= int64(cp)
 		r.leftovers = r.leftovers[cp:]
 
-		if len(p[cp:]) == 0 || r.remain == 0 {
+		if len(p[cp:]) == 0 || r.size == r.seen {
 			return cp, nil
 		}
 
@@ -514,7 +513,6 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		}
 		n += cp
 		r.seen += int64(cp)
-		r.remain -= int64(cp)
 	}
 
 	return n, nil
