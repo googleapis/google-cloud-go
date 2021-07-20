@@ -90,3 +90,16 @@ func Vet(dir string) error {
 	c.Dir = dir
 	return c.Run()
 }
+
+// CurrentMod returns the module name of the provided directory.
+func CurrentMod(dir string) (string, error) {
+	log.Println("detecting current module")
+	c := execv.Command("go", "list", "-m")
+	c.Dir = dir
+	var out []byte
+	var err error
+	if out, err = c.Output(); err != nil {
+		return "", err
+	}
+	return strings.TrimSpace(string(out)), nil
+}
