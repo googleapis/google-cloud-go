@@ -478,7 +478,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		}
 		msg, err := r.stream.Recv()
 		if err != nil {
-			if err == io.EOF && r.remain == 0 {
+			if err == io.EOF && r.seen == r.size {
 				// Free the stream once we've reached EOF and nothing remains.
 				r.stream = nil
 				return n, err
