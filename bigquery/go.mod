@@ -11,7 +11,7 @@ require (
 	golang.org/x/sync v0.0.0-20210220032951-036812b2e83c
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1
 	google.golang.org/api v0.50.0
-	google.golang.org/genproto v0.0.0-20210714021259-044028024a4f
+	google.golang.org/genproto v0.0.0-20210719143636-1d5a45f8e492
 	google.golang.org/grpc v1.39.0
 	google.golang.org/protobuf v1.27.1
 )
