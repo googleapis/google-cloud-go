@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"net"
 	"reflect"
 	"strings"
 	"sync"
@@ -33,6 +34,31 @@ import (
 	"google.golang.org/protobuf/types/known/durationpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
+
+func TestNewServerWithPort(t *testing.T) {
+	// Allocate an available port to use with NewServerWithPort and then close it so it's available.
+	// Note: There is no guarantee that the port does not become used between closing
+	// the listener and creating the new server with NewServerWithPort, but the chances are
+	// very small.
+	l, err := net.Listen("tcp", ":0")
+	if err != nil {
+		t.Fatal(err)
+	}
+	port := l.Addr().(*net.TCPAddr).Port
+	l.Close()
+
+	// Pass a non 0 port to demonstrate we can pass a hardcoded port for the server to listen on
+	srv := NewServerWithPort(port)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer srv.Close()
+	conn, err := grpc.Dial(srv.Addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+}
 
 func TestTopics(t *testing.T) {
 	pclient, _, server, cleanup := newFake(context.TODO(), t)

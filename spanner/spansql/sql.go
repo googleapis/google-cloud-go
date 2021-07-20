@@ -365,6 +365,18 @@ func (sel Select) addSQL(sb *strings.Builder) {
 
 func (sft SelectFromTable) SQL() string {
 	str := sft.Table.SQL()
+	if len(sft.Hints) > 0 {
+		str += "@{"
+		kvs := make([]string, len(sft.Hints))
+		i := 0
+		for k, v := range sft.Hints {
+			kvs[i] = fmt.Sprintf("%s=%s", k, v)
+			i++
+		}
+		str += strings.Join(kvs, ",")
+		str += "}"
+	}
+
 	if sft.Alias != "" {
 		str += " AS " + sft.Alias.SQL()
 	}
