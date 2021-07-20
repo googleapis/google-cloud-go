@@ -482,7 +482,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			if err == io.EOF && r.remain == 0 {
 				// Free the stream once we've reached EOF and nothing remains.
 				r.stream = nil
-				return n, nil
+				return n, err
 			}
 
 			// TODO: how many times do we try to read before stopping?
