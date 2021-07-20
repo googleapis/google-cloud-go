@@ -501,6 +501,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		if r.size == 0 {
 			r.size = msg.GetMetadata().GetSize()
 			r.remain = r.size
+			r.Attrs = metadataToAttrs(msg.GetMetadata())
 		}
 
 		content := msg.GetChecksummedData().GetContent()
@@ -516,6 +517,17 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	}
 
 	return n, nil
+}
+
+// metadataToAttrs converts Object metadata into ReaderObjectAttributes.
+func metadataToAttrs(met *storagepb.Object) ReaderObjectAttrs {
+	return ReaderObjectAttrs{
+		Size:            met.GetSize(),
+		ContentType:     met.GetContentType(),
+		ContentEncoding: met.GetContentEncoding(),
+		CacheControl:    met.GetCacheControl(),
+		LastModified:    met.GetUpdateTime().AsTime(),
+	}
 }
 
 func (r *Reader) readWithRetry(p []byte) (int, error) {
