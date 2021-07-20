@@ -1,5 +1,13 @@
 # Changes
 
+### [0.87.1](https://www.github.com/googleapis/google-cloud-go/compare/v0.87.0...v0.87.1) (2021-07-20)
+
+
+### Bug Fixes
+
+* **internal/godocfx:** set exit code, print cmd output, no go get ... ([#4445](https://www.github.com/googleapis/google-cloud-go/issues/4445)) ([cc70f77](https://www.github.com/googleapis/google-cloud-go/commit/cc70f77ac279a62e24e1b07f6e53fd126b7286b0))
+* **internal:** detect module for properly generating docs URLs ([#4460](https://www.github.com/googleapis/google-cloud-go/issues/4460)) ([1eaba8b](https://www.github.com/googleapis/google-cloud-go/commit/1eaba8bd694f7552a8e3e09b4f164de8b6ca23f0)), refs [#4447](https://www.github.com/googleapis/google-cloud-go/issues/4447)
+
 ## [0.87.0](https://www.github.com/googleapis/google-cloud-go/compare/v0.86.0...v0.87.0) (2021-07-13)
 
 
