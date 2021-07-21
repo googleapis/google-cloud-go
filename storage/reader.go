@@ -30,6 +30,8 @@ import (
 	"cloud.google.com/go/internal/trace"
 	"google.golang.org/api/googleapi"
 	storagepb "google.golang.org/genproto/googleapis/storage/v2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 var crc32cTable = crc32.MakeTable(crc32.Castagnoli)
@@ -483,6 +485,11 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			if err == io.EOF && r.seen == r.size {
 				// Free the stream once we've reached EOF and nothing remains.
 				r.stream = nil
+				return n, err
+			}
+
+			// Do not retry PermissionDenied.
+			if st, ok := status.FromError(err); ok && st.Code() == codes.PermissionDenied {
 				return n, err
 			}
 
