@@ -100,11 +100,11 @@ func (g *GapicGenerator) Regen(ctx context.Context) error {
 		return err
 	}
 
-	if !g.onlyGenerateGapic {
-		if err := g.regenSnippets(ctx); err != nil {
-			return err
-		}
-	}
+	// if !g.onlyGenerateGapic {
+	// 	if err := g.regenSnippets(ctx); err != nil {
+	// 		return err
+	// 	}
+	// }
 
 	if err := execv.ForEachMod(g.googleCloudDir, g.addModReplaceGenproto); err != nil {
 		return err

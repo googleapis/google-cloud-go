@@ -65,6 +65,7 @@ func main() {
 			gapicToGenerate:    *gapicToGenerate,
 			onlyGapics:         *onlyGapics,
 			regenOnly:          *regenOnly,
+			forceAll:           *forceAll,
 		}); err != nil {
 			log.Fatal(err)
 		}
