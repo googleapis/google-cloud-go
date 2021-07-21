@@ -1634,27 +1634,6 @@ func conditionsQuery(gen int64, conds *Conditions) string {
 	return string(buf)
 }
 
-// setGenerationQuery returns the generation as a URL query string suitable
-// for downloads using the XML API.
-func setGenerationQuery(gen int64) string {
-	// URL escapes are elided because integer strings are URL-safe.
-	var buf []byte
-
-	appendParam := func(s string, n int64) {
-		if len(buf) > 0 {
-			buf = append(buf, '&')
-		}
-		buf = append(buf, s...)
-		buf = strconv.AppendInt(buf, n, 10)
-	}
-
-	if gen >= 0 {
-		appendParam("generation=", gen)
-	}
-
-	return string(buf)
-}
-
 // setConditionsHeaders sets precondition request headers for downloads
 // using the XML API. It assumes that the conditions have been validated.
 func setConditionsHeaders(headers http.Header, conds *Conditions) error {

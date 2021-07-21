@@ -152,7 +152,9 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 		if err := setConditionsHeaders(req.Header, o.conds); err != nil {
 			return nil, err
 		}
-		req.URL.RawQuery = setGenerationQuery(gen)
+		if gen >= 0 {
+			req.URL.RawQuery = fmt.Sprintf("generation=%d", gen)
+		}
 
 		var res *http.Response
 		err = runWithRetry(ctx, func() error {
