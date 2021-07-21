@@ -459,7 +459,10 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		r.seen += int64(cp)
 		r.leftovers = r.leftovers[cp:]
 
-		if len(p[cp:]) == 0 || r.size == r.seen {
+		if r.size == r.seen {
+			return cp, io.EOF
+		}
+		if len(p[cp:]) == 0 {
 			return cp, nil
 		}
 
