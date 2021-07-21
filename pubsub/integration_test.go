@@ -1166,6 +1166,7 @@ func TestIntegration_OrderedKeys_Basic(t *testing.T) {
 }
 
 func TestIntegration_OrderedKeys_JSON(t *testing.T) {
+	t.Skip("TestIntegration_OrderedKeys_JSON")
 	ctx := context.Background()
 	client := integrationTestClient(ctx, t, option.WithEndpoint("us-west1-pubsub.googleapis.com:443"))
 	defer client.Close()
