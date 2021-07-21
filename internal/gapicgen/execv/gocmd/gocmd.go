@@ -74,7 +74,13 @@ func Build(dir string) error {
 	log.Println("building generated code")
 	c := execv.Command("go", "build", "./...")
 	c.Dir = dir
-	return c.Run()
+	if _, err := c.Output(); err != nil {
+		if ee, ok := err.(*exec.ExitError); ok {
+			log.Printf("Error Output: %s", ee.Stderr)
+		}
+		return err
+	}
+	return nil
 }
 
 // Vet runs linters on all .go files recursively from the given directory.
