@@ -1634,6 +1634,46 @@ func conditionsQuery(gen int64, conds *Conditions) string {
 	return string(buf)
 }
 
+// setGenerationQuery returns the generation as a URL query string suitable
+// for downloads using the XML API.
+func setGenerationQuery(gen int64) string {
+	// URL escapes are elided because integer strings are URL-safe.
+	var buf []byte
+
+	appendParam := func(s string, n int64) {
+		if len(buf) > 0 {
+			buf = append(buf, '&')
+		}
+		buf = append(buf, s...)
+		buf = strconv.AppendInt(buf, n, 10)
+	}
+
+	if gen >= 0 {
+		appendParam("generation=", gen)
+	}
+
+	return string(buf)
+}
+
+// setConditionsHeaders sets precondition request headers for downloads
+// using the XML API. It assumes that the conditions have been validated.
+func setConditionsHeaders(headers http.Header, conds *Conditions) error {
+	if conds == nil {
+		return nil
+	}
+	switch {
+	case conds.GenerationMatch != 0:
+		headers.Set("x-goog-if-generation-match", fmt.Sprint(conds.GenerationMatch))
+	case conds.DoesNotExist:
+		headers.Set("x-goog-if-generation-match", "0")
+	}
+	switch {
+	case conds.MetagenerationMatch != 0:
+		headers.Set("x-goog-if-metageneration-match", fmt.Sprint(conds.MetagenerationMatch))
+	}
+	return nil
+}
+
 // composeSourceObj wraps a *raw.ComposeRequestSourceObjects, but adds the methods
 // that modifyCall searches for by name.
 type composeSourceObj struct {
