@@ -149,7 +149,11 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64)
 			req.Header.Set("Range", fmt.Sprintf("bytes=%d-%d", start, offset+length-1))
 		}
 		// We wait to assign conditions here because the generation number can change in between reopen() runs.
-		req.URL.RawQuery = conditionsQuery(gen, o.conds)
+		if err := setConditionsHeaders(req.Header, o.conds); err != nil {
+			return nil, err
+		}
+		req.URL.RawQuery = setGenerationQuery(gen)
+
 		var res *http.Response
 		err = runWithRetry(ctx, func() error {
 			res, err = o.c.hc.Do(req)
