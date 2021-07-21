@@ -25,6 +25,7 @@ package spansql
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -373,6 +374,7 @@ func (sft SelectFromTable) SQL() string {
 			kvs[i] = fmt.Sprintf("%s=%s", k, v)
 			i++
 		}
+		sort.Strings(kvs)
 		str += strings.Join(kvs, ",")
 		str += "}"
 	}
