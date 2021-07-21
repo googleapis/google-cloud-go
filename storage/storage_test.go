@@ -646,34 +646,6 @@ func TestCondition(t *testing.T) {
 		},
 		{
 			func() error {
-				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifGenerationMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{GenerationNotMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifGenerationNotMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{MetagenerationMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifMetagenerationMatch=1234",
-		},
-		{
-			func() error {
-				_, err := obj.If(Conditions{MetagenerationNotMatch: 1234}).NewReader(ctx)
-				return err
-			},
-			"GET /buck/obj?ifMetagenerationNotMatch=1234",
-		},
-		{
-			func() error {
 				_, err := obj.If(Conditions{MetagenerationNotMatch: 1234}).Attrs(ctx)
 				return err
 			},
@@ -723,6 +695,51 @@ func TestCondition(t *testing.T) {
 		select {
 		case r := <-gotReq:
 			got := r.Method + " " + r.RequestURI
+			if got != tt.want {
+				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
+			}
+		case <-time.After(5 * time.Second):
+			t.Fatalf("%d. timeout", i)
+		}
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+
+	readerTests := []struct {
+		fn   func() error
+		want string
+	}{
+		{
+			func() error {
+				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: 1234",
+		},
+		{
+			func() error {
+				_, err := obj.If(Conditions{MetagenerationMatch: 5}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-metageneration-match: 5",
+		},
+	}
+
+	for i, tt := range readerTests {
+		if err := tt.fn(); err != nil && err != io.EOF {
+			t.Error(err)
+			continue
+		}
+		gen_preconditions := "x-goog-if-generation-match: "
+		metagen_preconditions := "x-goog-if-metageneration-match: "
+
+		select {
+		case r := <-gotReq:
+			got := gen_preconditions + r.Header.Get("x-goog-if-generation-match")
+			if r.Header.Get("x-goog-if-metageneration-match") != "" {
+				got = metagen_preconditions + r.Header.Get("x-goog-if-metageneration-match")
+			}
 			if got != tt.want {
 				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
 			}
