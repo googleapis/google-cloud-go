@@ -1661,15 +1661,14 @@ func setConditionsHeaders(headers http.Header, conds *Conditions) error {
 	if conds == nil {
 		return nil
 	}
+	if conds.MetagenerationMatch != 0 {
+		headers.Set("x-goog-if-metageneration-match", fmt.Sprint(conds.MetagenerationMatch))
+	}
 	switch {
 	case conds.GenerationMatch != 0:
 		headers.Set("x-goog-if-generation-match", fmt.Sprint(conds.GenerationMatch))
 	case conds.DoesNotExist:
 		headers.Set("x-goog-if-generation-match", "0")
-	}
-	switch {
-	case conds.MetagenerationMatch != 0:
-		headers.Set("x-goog-if-metageneration-match", fmt.Sprint(conds.MetagenerationMatch))
 	}
 	return nil
 }
