@@ -715,14 +715,21 @@ func TestCondition(t *testing.T) {
 				_, err := obj.If(Conditions{GenerationMatch: 1234}).NewReader(ctx)
 				return err
 			},
-			"x-goog-if-generation-match: 1234",
+			"x-goog-if-generation-match: 1234, x-goog-if-metageneration-match: ",
 		},
 		{
 			func() error {
 				_, err := obj.If(Conditions{MetagenerationMatch: 5}).NewReader(ctx)
 				return err
 			},
-			"x-goog-if-metageneration-match: 5",
+			"x-goog-if-generation-match: , x-goog-if-metageneration-match: 5",
+		},
+		{
+			func() error {
+				_, err := obj.If(Conditions{GenerationMatch: 1234, MetagenerationMatch: 5}).NewReader(ctx)
+				return err
+			},
+			"x-goog-if-generation-match: 1234, x-goog-if-metageneration-match: 5",
 		},
 	}
 
@@ -731,17 +738,18 @@ func TestCondition(t *testing.T) {
 			t.Error(err)
 			continue
 		}
-		gen_preconditions := "x-goog-if-generation-match: "
-		metagen_preconditions := "x-goog-if-metageneration-match: "
 
 		select {
 		case r := <-gotReq:
-			got := gen_preconditions + r.Header.Get("x-goog-if-generation-match")
-			if r.Header.Get("x-goog-if-metageneration-match") != "" {
-				got = metagen_preconditions + r.Header.Get("x-goog-if-metageneration-match")
-			}
+			gen_preconditions := r.Header.Get("x-goog-if-generation-match")
+			metagen_preconditions := r.Header.Get("x-goog-if-metageneration-match")
+			got := fmt.Sprintf(
+				"x-goog-if-generation-match: %s, x-goog-if-metageneration-match: %s",
+				gen_preconditions,
+				metagen_preconditions,
+			)
 			if got != tt.want {
-				t.Errorf("%d. RequestURI = %q; want %q", i, got, tt.want)
+				t.Errorf("%d. RequestHeaders = %q; want %q", i, got, tt.want)
 			}
 		case <-time.After(5 * time.Second):
 			t.Fatalf("%d. timeout", i)
