@@ -637,7 +637,7 @@ func TestIntegration_SingleUse_WithQueryOptions(t *testing.T) {
 	}
 	qo := QueryOptions{Options: &sppb.ExecuteSqlRequest_QueryOptions{
 		OptimizerVersion:           "1",
-		OptimizerStatisticsPackage: "auto_20191128_14_47_22UTC",
+		OptimizerStatisticsPackage: "latest",
 	}}
 	got, err := readAll(client.Single().QueryWithOptions(ctx, Statement{
 		"SELECT SingerId, FirstName, LastName FROM Singers WHERE SingerId IN (@id1, @id3, @id4)",
