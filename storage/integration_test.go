@@ -28,6 +28,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"math"
 	"math/rand"
 	"mime/multipart"
 	"net/http"
@@ -61,6 +62,7 @@ const (
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+	grpcBucket             = "golang-grpc-test"
 )
 
 var (
@@ -741,6 +743,121 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 				t.Fatalf("Body length mismatch, got %d want %d", got, want)
 			}
 		})
+	}
+}
+
+func TestIntegration_ObjectReadGRPC(t *testing.T) {
+	ctx := context.Background()
+	client, err := newClientWithGRPC(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+	defer client.Close()
+	bkt := client.Bucket(grpcBucket)
+
+	objName := uidSpace.New()
+	obj := bkt.Object(objName)
+	contents := []byte("Hello, world this is a grpc request")
+
+	if err := retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			return fmt.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to close writer: %v", err)
+		}
+		return nil
+	}, nil); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := obj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+	defer r.Close()
+	buf := make([]byte, len(contents))
+	n, err := r.Read(buf)
+	if err != nil && err != io.EOF {
+		t.Error(err)
+		t.FailNow()
+	}
+	if n == 0 && err != io.EOF {
+		t.Error("Expected to have read more than 0 bytes")
+	}
+
+	got := string(buf)
+	want := string(contents)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got(-),want(+):\n%s", diff)
+	}
+}
+
+func TestIntegration_ObjectReadChunksGRPC(t *testing.T) {
+	ctx := context.Background()
+	client, err := newClientWithGRPC(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+	defer client.Close()
+
+	bkt := client.Bucket(grpcBucket)
+
+	objName := uidSpace.New()
+	obj := bkt.Object(objName)
+	contents := []byte("Hello, world this is a grpc request")
+
+	if err := retry(ctx, func() error {
+		w := obj.NewWriter(ctx)
+		if _, err := w.Write(contents); err != nil {
+			return fmt.Errorf("Failed to write contents: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			return fmt.Errorf("Failed to close writer: %v", err)
+		}
+		return nil
+	}, nil); err != nil {
+		t.Fatal(err)
+	}
+	defer func() {
+		if err := obj.Delete(ctx); err != nil {
+			log.Printf("failed to delete test object: %v", err)
+		}
+	}()
+
+	r, err := obj.NewReader(ctx)
+	if err != nil {
+		t.Error(err)
+	}
+	defer r.Close()
+
+	bufSize := len(contents)
+	buf := make([]byte, bufSize)
+	chunk := 3
+	offset := 0
+	for {
+		end := math.Min(float64(offset+chunk), float64(bufSize))
+		n, err := r.Read(buf[offset:int(end)])
+		if err == io.EOF {
+			break
+		}
+		if err != nil && err != io.EOF {
+			t.Error(err)
+			t.FailNow()
+		}
+		offset += n
+	}
+
+	got := string(buf)
+	want := string(contents)
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("got(-),want(+):\n%s", diff)
 	}
 }
 
