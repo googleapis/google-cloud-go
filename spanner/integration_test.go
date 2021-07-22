@@ -1733,38 +1733,42 @@ func TestIntegration_BasicTypes(t *testing.T) {
 		{col: "NumericArray", val: nil, want: []NullNumeric(nil)},
 	}
 
-	// Write rows into table first using DML.
-	statements := make([]Statement, 0)
-	for i, test := range tests {
-		stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
-		// Note: We are not setting the parameter type here to ensure that it
-		// can be automatically recognized when it is actually needed.
-		stmt.Params["id"] = i
-		stmt.Params["value"] = test.val
-		statements = append(statements, stmt)
-	}
-	_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
-		rowCounts, err := tx.BatchUpdate(ctx, statements)
-		if err != nil {
-			return err
+	// Write rows into table first using DML. Only do this on real Spanner
+	// as the emulator does not support untyped parameters.
+	// TODO: Remove when the emulator supports untyped parameters.
+	if isEmulatorEnvSet() {
+		statements := make([]Statement, 0)
+		for i, test := range tests {
+			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
+			// Note: We are not setting the parameter type here to ensure that it
+			// can be automatically recognized when it is actually needed.
+			stmt.Params["id"] = i
+			stmt.Params["value"] = test.val
+			statements = append(statements, stmt)
 		}
-		if len(rowCounts) != len(tests) {
-			return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
-		}
-		for i, c := range rowCounts {
-			if c != 1 {
-				return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+		_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+			rowCounts, err := tx.BatchUpdate(ctx, statements)
+			if err != nil {
+				return err
 			}
+			if len(rowCounts) != len(tests) {
+				return fmt.Errorf("rowCounts length mismatch\nGot: %v\nWant: %v", len(rowCounts), len(tests))
+			}
+			for i, c := range rowCounts {
+				if c != 1 {
+					return fmt.Errorf("row count mismatch for row %v:\nGot: %v\nWant: %v", i, c, 1)
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			t.Fatalf("failed to insert values using DML: %v", err)
 		}
-		return nil
-	})
-	if err != nil {
-		t.Fatalf("failed to insert values using DML: %v", err)
-	}
-	// Delete all the rows so we can insert them using mutations as well.
-	_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
-	if err != nil {
-		t.Fatalf("failed to delete all rows: %v", err)
+		// Delete all the rows so we can insert them using mutations as well.
+		_, err = client.Apply(ctx, []*Mutation{Delete("Types", AllKeys())})
+		if err != nil {
+			t.Fatalf("failed to delete all rows: %v", err)
+		}
 	}
 
 	// Verify that we can insert the rows using mutations.
@@ -1782,7 +1786,6 @@ func TestIntegration_BasicTypes(t *testing.T) {
 			t.Fatalf("Unable to fetch row %v: %v", i, err)
 		}
 		verifyDirectPathRemoteAddress(t)
-
 		// Create new instance of type of test.want.
 		want := test.want
 		if want == nil {
