@@ -461,8 +461,14 @@ func (r *Reader) Read(p []byte) (int, error) {
 
 func (r *Reader) readWithGRPC(p []byte) (int, error) {
 	// No stream to read from, either never initiliazed or Close was called.
+	// TODO: should an error be returned here? "reader has been closed"?
 	if r.stream == nil {
-		return 0, nil
+		return 0, io.EOF
+	}
+
+	// The entire object has been read by this reader, return EOF.
+	if r.size != 0 && r.size == r.seen {
+		return 0, io.EOF
 	}
 
 	n := 0
@@ -473,14 +479,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		r.seen += int64(cp)
 		r.leftovers = r.leftovers[cp:]
 
-		// The leftovers contained the rest of the content, done reading.
-		// TODO: should this return eof? Or should this return cp here, then
-		// return 0, io.EOF on a subsequent call to Read when true?
-		if r.size == r.seen {
-			return cp, io.EOF
-		}
-		// No more room left in the user's buffer.
-		if len(p[cp:]) == 0 {
+		// No more room left in the user's buffer or the entire object has been
+		// read.
+		if len(p[cp:]) == 0 || r.size == r.seen {
 			return cp, nil
 		}
 
@@ -503,13 +504,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		}
 		msg, err := r.stream.Recv()
 		if err != nil {
-			// Preemptively free stream as all cases in here result in the old
-			// stream being canceled and possibly replaced.
-			r.closeStream()
-
 			if err == io.EOF && r.seen == r.size {
-				// Free the stream once we've reached EOF and nothing remains.
-				return n, err
+				// Let the next call to readWithGRPC return EOF.
+				return n, nil
 			}
 
 			// Do not retry PermissionDenied.
@@ -523,7 +520,9 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			// Save the original error to return instead of the reinit error.
 			e := err
 
-			// Initialize new stream with updated offset.
+			// Close existing stream and initialize new stream with updated
+			// offset.
+			r.closeStream()
 			r.stream, r.cancelStream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
 				// Cannot reinstantiate the stream so return the original error.
