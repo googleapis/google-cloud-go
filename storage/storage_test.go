@@ -741,12 +741,12 @@ func TestCondition(t *testing.T) {
 
 		select {
 		case r := <-gotReq:
-			gen_preconditions := r.Header.Get("x-goog-if-generation-match")
-			metagen_preconditions := r.Header.Get("x-goog-if-metageneration-match")
+			generationConds := r.Header.Get("x-goog-if-generation-match")
+			metagenerationConds := r.Header.Get("x-goog-if-metageneration-match")
 			got := fmt.Sprintf(
 				"x-goog-if-generation-match: %s, x-goog-if-metageneration-match: %s",
-				gen_preconditions,
-				metagen_preconditions,
+				generationConds,
+				metagenerationConds,
 			)
 			if got != tt.want {
 				t.Errorf("%d. RequestHeaders = %q; want %q", i, got, tt.want)
