@@ -988,7 +988,9 @@ func timelineFromProto(timeline []*bq.QueryTimelineSample) []*QueryTimelineSampl
 	return res
 }
 
+// TransactionInfo contains information about a multi-statement transaction that may have associated with a job.
 type TransactionInfo struct {
+	// TransactionID is the system-generated identifier for the transaction.
 	TransactionID string
 }
 
