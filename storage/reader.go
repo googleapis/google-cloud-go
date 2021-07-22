@@ -81,14 +81,14 @@ type ReaderObjectAttrs struct {
 // The caller must call Close on the returned Reader when done reading.
 func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 	if o.c.gc != nil {
-		return o.NewRangeReaderWithGRPC(ctx, 0, 0)
+		return o.newRangeReaderWithGRPC(ctx, 0, 0)
 	}
 	return o.NewRangeReader(ctx, 0, -1)
 }
 
-// NewRangeReaderWithGRPC creates a new Reader with the given range that uses
+// newRangeReaderWithGRPC creates a new Reader with the given range that uses
 // gRPC to read Object content.
-func (o *ObjectHandle) NewRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
+func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReaderWithGRPC")
 	defer func() { trace.EndSpan(ctx, err) }()
 
@@ -475,6 +475,10 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		if usedLeftovers {
 			// Free up the previously opened stream so we can create a new one
 			// starting at the offset after reading the leftovers.
+			//
+			// TODO: Maintain separate stream context and cancel it before
+			// reopening to force close the stream and save streams per
+			// connection.
 			r.stream = nil
 			r.stream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
