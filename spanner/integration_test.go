@@ -1736,7 +1736,7 @@ func TestIntegration_BasicTypes(t *testing.T) {
 	// Write rows into table first using DML. Only do this on real Spanner
 	// as the emulator does not support untyped parameters.
 	// TODO: Remove when the emulator supports untyped parameters.
-	if isEmulatorEnvSet() {
+	if !isEmulatorEnvSet() {
 		statements := make([]Statement, 0)
 		for i, test := range tests {
 			stmt := NewStatement(fmt.Sprintf("INSERT INTO Types (RowId, `%s`) VALUES (@id, @value)", test.col))
