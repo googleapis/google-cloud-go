@@ -89,7 +89,7 @@ func (o *ObjectHandle) NewReader(ctx context.Context) (*Reader, error) {
 // newRangeReaderWithGRPC creates a new Reader with the given range that uses
 // gRPC to read Object content.
 func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, length int64) (r *Reader, err error) {
-	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.NewRangeReaderWithGRPC")
+	ctx = trace.StartSpan(ctx, "cloud.google.com/go/storage.Object.newRangeReaderWithGRPC")
 	defer func() { trace.EndSpan(ctx, err) }()
 
 	if o.c.gc == nil {
@@ -111,28 +111,34 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 
 	// Define a function that initiates a Read with offset and length, assuming we
 	// have already read seen bytes.
-	reopen := func(seen int64) (storagepb.Storage_ReadObjectClient, error) {
+	reopen := func(seen int64) (storagepb.Storage_ReadObjectClient, context.CancelFunc, error) {
 		// If the context has already expired, return immediately without making a
 		// call.
 		if err := ctx.Err(); err != nil {
-			return nil, err
+			return nil, nil, err
 		}
 
+		cc, cancel := context.WithCancel(ctx)
+
 		start := offset + seen
-		// Only set a ReadLimit if length is non-zero, because zero means read it all.
+		// Only set a ReadLimit if length is greater than zero, because zero
+		// means read it all.
 		if length > 0 {
 			req.ReadLimit = length - seen
 		}
 		req.ReadOffset = start
 
-		res, err := o.c.gc.ReadObject(ctx, req)
+		res, err := o.c.gc.ReadObject(cc, req)
 		if err != nil {
-			return nil, err
+			// Close the stream context we just created to ensure we don't leak
+			// resources.
+			cancel()
+			return nil, nil, err
 		}
-		return res, nil
+		return res, cancel, nil
 	}
 
-	res, err := reopen(0)
+	res, cancel, err := reopen(0)
 	if err != nil {
 		return nil, err
 	}
@@ -140,6 +146,7 @@ func (o *ObjectHandle) newRangeReaderWithGRPC(ctx context.Context, offset, lengt
 	return &Reader{
 		stream:         res,
 		reopenWithGRPC: reopen,
+		cancelStream:   cancel,
 	}, nil
 }
 
@@ -405,8 +412,9 @@ type Reader struct {
 	reopen             func(seen int64) (*http.Response, error)
 
 	stream         storagepb.Storage_ReadObjectClient
-	reopenWithGRPC func(seen int64) (storagepb.Storage_ReadObjectClient, error)
+	reopenWithGRPC func(seen int64) (storagepb.Storage_ReadObjectClient, context.CancelFunc, error)
 	leftovers      []byte
+	cancelStream   context.CancelFunc
 }
 
 // Close closes the Reader. It must be called when done reading.
@@ -415,9 +423,15 @@ func (r *Reader) Close() error {
 		return r.body.Close()
 	}
 
-	// Drop the stream client referenced so it and its resources are GC'd.
-	r.stream = nil
+	r.closeStream()
 	return nil
+}
+
+func (r *Reader) closeStream() {
+	if r.cancelStream != nil {
+		r.cancelStream()
+	}
+	r.stream = nil
 }
 
 func (r *Reader) Read(p []byte) (int, error) {
@@ -459,9 +473,13 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		r.seen += int64(cp)
 		r.leftovers = r.leftovers[cp:]
 
+		// The leftovers contained the rest of the content, done reading.
+		// TODO: should this return eof? Or should this return cp here, then
+		// return 0, io.EOF on a subsequent call to Read when true?
 		if r.size == r.seen {
 			return cp, io.EOF
 		}
+		// No more room left in the user's buffer.
 		if len(p[cp:]) == 0 {
 			return cp, nil
 		}
@@ -472,15 +490,13 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 
 	var err error
 	for len(p[n:]) > 0 {
-		if usedLeftovers {
+		// TODO: Should we use remain here? because it doesn't change in
+		// execution of this function.
+		if usedLeftovers && r.remain > 0 {
 			// Free up the previously opened stream so we can create a new one
 			// starting at the offset after reading the leftovers.
-			//
-			// TODO: Maintain separate stream context and cancel it before
-			// reopening to force close the stream and save streams per
-			// connection.
-			r.stream = nil
-			r.stream, err = r.reopenWithGRPC(r.seen)
+			r.closeStream()
+			r.stream, r.cancelStream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
 				return n, err
 			}
@@ -489,9 +505,12 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 		}
 		msg, err := r.stream.Recv()
 		if err != nil {
+			// Preemptively free stream as all cases in here result in the old
+			// stream being canceled and possibly replaced.
+			r.closeStream()
+
 			if err == io.EOF && r.seen == r.size {
 				// Free the stream once we've reached EOF and nothing remains.
-				r.stream = nil
 				return n, err
 			}
 
@@ -507,7 +526,7 @@ func (r *Reader) readWithGRPC(p []byte) (int, error) {
 			e := err
 
 			// Initialize new stream with updated offset.
-			r.stream, err = r.reopenWithGRPC(r.seen)
+			r.stream, r.cancelStream, err = r.reopenWithGRPC(r.seen)
 			if err != nil {
 				// Cannot reinstantiate the stream so return the original error.
 				return n, e
