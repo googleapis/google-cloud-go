@@ -876,6 +876,69 @@ func TestUpdateFilter(t *testing.T) {
 	}
 }
 
+// Test Create, Get, List, and Delete methods for schema client.
+// Updating a schema is not available at this moment.
+func TestSchemaAdminClient(t *testing.T) {
+	ctx := context.Background()
+	_, _, srv, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	conn, err := grpc.DialContext(ctx, srv.Addr, grpc.WithInsecure())
+	if err != nil {
+		t.Fatal(err)
+	}
+	project := "projects/some-project"
+	schemaID := "some-schema"
+	sclient := pb.NewSchemaServiceClient(conn)
+	pbs, err := sclient.CreateSchema(ctx, &pb.CreateSchemaRequest{
+		Parent: project,
+		Schema: &pb.Schema{
+			Type:       pb.Schema_AVRO,
+			Definition: "avro-definition",
+		},
+		SchemaId: schemaID,
+	})
+	if err != nil {
+		t.Errorf("cannot create schema: %v", err)
+	}
+	pbs2, err := sclient.GetSchema(ctx, &pb.GetSchemaRequest{
+		Name: fmt.Sprintf("%s/schemas/%s", project, schemaID),
+		View: pb.SchemaView_FULL,
+	})
+	if err != nil {
+		t.Errorf("cannot get schema: %v", err)
+	}
+	if diff := testutil.Diff(pbs, pbs2); diff != "" {
+		t.Errorf("returned schema different, -want, +got, %s", diff)
+	}
+
+	resp, err := sclient.ListSchemas(ctx, &pb.ListSchemasRequest{
+		Parent: project,
+		View:   pb.SchemaView_FULL,
+	})
+	if err != nil {
+		t.Errorf("cannot list schema: %v", err)
+	}
+	schemas := resp.Schemas
+	if len(schemas) != 1 {
+		for _, schema := range schemas {
+			fmt.Printf("schema: %v\n", schema)
+		}
+		t.Errorf("got wrong number of schemas in list: %d", len(schemas))
+	}
+
+	_, err = sclient.DeleteSchema(ctx, &pb.DeleteSchemaRequest{
+		Name: fmt.Sprintf("%s/schemas/%s", project, schemaID),
+	})
+	if err != nil {
+		t.Errorf("cannot delete schema: %v", err)
+	}
+	if got, want := len(srv.GServer.schemas), 0; got != want {
+		t.Fatalf("got %d topics, want %d", got, want)
+	}
+
+}
+
 func mustStartStreamingPull(ctx context.Context, t *testing.T, sc pb.SubscriberClient, sub *pb.Subscription) pb.Subscriber_StreamingPullClient {
 	spc, err := sc.StreamingPull(ctx)
 	if err != nil {
