@@ -372,6 +372,9 @@ type JobStatistics struct {
 
 	// ReservationUsage attributes slot consumption to reservations.
 	ReservationUsage []*ReservationUsage
+
+	// TransactionInfo indicates the transaction ID associated with the job, if any.
+	TransactionInfo *TransactionInfo
 }
 
 // Statistics is one of ExtractStatistics, LoadStatistics or QueryStatistics.
@@ -880,6 +883,7 @@ func (j *Job) setStatistics(s *bq.JobStatistics, c *Client) {
 		ParentJobID:         s.ParentJobId,
 		ScriptStatistics:    bqToScriptStatistics(s.ScriptStatistics),
 		ReservationUsage:    bqToReservationUsage(s.ReservationUsage),
+		TransactionInfo:     bqToTransactionInfo(s.TransactionInfo),
 	}
 	switch {
 	case s.Extract != nil:
@@ -982,4 +986,17 @@ func timelineFromProto(timeline []*bq.QueryTimelineSample) []*QueryTimelineSampl
 		})
 	}
 	return res
+}
+
+type TransactionInfo struct {
+	TransactionID string
+}
+
+func bqToTransactionInfo(in *bq.TransactionInfo) *TransactionInfo {
+	if in == nil {
+		return nil
+	}
+	return &TransactionInfo{
+		TransactionID: in.TransactionId,
+	}
 }
